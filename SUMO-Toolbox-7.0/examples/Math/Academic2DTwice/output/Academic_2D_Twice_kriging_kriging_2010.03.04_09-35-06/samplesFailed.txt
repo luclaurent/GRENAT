@@ -1,0 +1,5 @@
+% This file contains all the samples that failed to evaluate in this run. Each line contains the input values for one sample followed by outputs.
+% Selected inputs are:
+% [x,y] -> [out,outinverse]
+% All inputs:
+% [] -> [] (mapping UNKNOWN)

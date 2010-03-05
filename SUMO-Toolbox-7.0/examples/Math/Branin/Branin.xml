@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Branin</Name>
+	<Description>
+		Branin's function
+		The global minima: x* =  (-pi, 12.275), (pi , 2.275), (9.42478, 2.475),
+		f(x*) = 0.397887
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real" minimum="-5" maximum="10"/>
+		<Parameter name="y" type="real" minimum="0" maximum="15"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<!-- A simulator may have multiple implementations: as an executable, a 
+	     java main class, a dataset, ...-->
+	<Implementation>
+		
+		<Executables>
+			<!-- An arch attribute may make sense here as well -->
+			<Executable platform="matlab">bra</Executable>
+		</Executables>
+		
+        <DataFiles>
+            <!-- A 23x23 grid saved as a scattered datafile -->
+            <ScatteredDataFile id="default">BraninScatteredGrid.txt</ScatteredDataFile>
+			
+			<!-- all lhd's: number indicates size -->
+			<ScatteredDataFile id="lhd10">lhd10.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd20">lhd20.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd30">lhd30.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd40">lhd40.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd50">lhd50.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd60">lhd60.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd70">lhd70.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd80">lhd80.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd90">lhd90.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd100">lhd100.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd110">lhd110.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd120">lhd120.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd130">lhd130.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd140">lhd140.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd150">lhd150.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd160">lhd160.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd170">lhd170.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd180">lhd180.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd190">lhd190.txt</ScatteredDataFile>
+			<ScatteredDataFile id="lhd200">lhd200.txt</ScatteredDataFile>
+        </DataFiles>
+	</Implementation>
+</Simulator>
+

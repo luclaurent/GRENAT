@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+	<Simulator>
+		<Name>Peter Job Data</Name>
+		<Description>
+			Job completion time from Peter Hellinckx.  Given 4 parameters of a parameter sweep
+			problem, predict the running time of that job.
+		</Description>
+		
+		<!-- The input parameters -->
+		<InputParameters>
+			<Parameter name="li" type="real"/>
+			<Parameter name="Kj" type="real"/>
+			<Parameter name="lj" type="real"/>
+			<Parameter name="Exp" type="real"/>
+		</InputParameters>
+			
+		<!-- The output parameters -->
+		<OutputParameters>
+			<Parameter name="time" type="real"/>
+		</OutputParameters>
+			
+		<Implementation>
+			
+			<Executables>
+				
+			</Executables>
+			<DataFiles>
+				<ScatteredDataFile>PeterJobData</ScatteredDataFile>
+			</DataFiles>
+	
+		</Implementation>
+	</Simulator>

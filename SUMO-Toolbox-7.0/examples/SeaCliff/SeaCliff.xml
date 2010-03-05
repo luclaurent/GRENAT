@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>SeaCliff</Name>
+	<Description>
+		2D Mountain elevation data.
+		Source: Seacliff_Terrain.txt from http://spinmass.blogspot.com/2005_06_01_spinmass_archive.html
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+		<Parameter name="y" type="real"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+		
+	<Implementation>
+			
+		<DataFiles>
+			<ScatteredDataFile>SeaCliff.txt</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>
+

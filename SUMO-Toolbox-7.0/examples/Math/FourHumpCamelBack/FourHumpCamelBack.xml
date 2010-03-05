@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Four-hump camel</Name>
+	<Description>
+		Four-hump camel
+		domain (-1.9,-1.1)-(1.9,1.1)
+		minima:    
+		0.08983,-0.7126 = -1.0316
+		-0.08983,0.7126 = -1.0316
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real" minimum="-1.9" maximum="1.9" />
+		<Parameter name="y" type="real" minimum="-1.1" maximum="1.1" />
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab">cam</Executable>
+		</Executables>
+		
+	</Implementation>
+</Simulator>
+

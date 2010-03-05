@@ -1,0 +1,391 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/*
+ * ConfigElementPanel.java
+ *
+ * Created on Jul 22, 2009, 1:08:06 PM
+ */
+
+package ibbt.sumo.gui.forms;
+
+import ibbt.sumo.gui.context.ConfigElement;
+import ibbt.sumo.gui.context.ConfigXMLFile;
+import ibbt.sumo.gui.context.DefaultXMLFile;
+import ibbt.sumo.gui.context.SimulatorXMLFile;
+import ibbt.sumo.gui.util.Util;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+
+/**
+ *
+ * @author Sasa Berberovic
+ */
+public class ConfigElementPanel extends javax.swing.JPanel {
+    private DefaultXMLFile defXML;
+    private SimulatorXMLFile simXML;
+    private String name;
+    private JPanel parent;
+    private JCheckBox selectAll;
+
+    /**
+     *
+     * @param name
+     * @param defXML
+     * @param simXML
+     */
+    public ConfigElementPanel(String name, DefaultXMLFile defXML, SimulatorXMLFile simXML, JPanel parent) {
+        this.name = name;
+        this.defXML = defXML;
+        this.simXML = simXML;
+        this.parent = parent;
+
+        initComponents();
+        this.chkConfigElement.setText(this.name + ": ");
+        this.chkConfigElement.setSelected(true);
+        
+        initConfigElementPanel();
+
+    }
+
+    /**
+     * 
+     * @param name
+     * @param config
+     * @param parent
+     */
+    public ConfigElementPanel(String name, ConfigXMLFile config, PlanElementTab parent) {
+        this.name = name;
+        this.defXML = config;
+        this.simXML = config.getSimXMLFile();
+        this.parent = parent;
+
+        initComponents();
+        this.chkConfigElement.setText(this.name + ": ");
+        
+        initConfigElementPanel();
+
+    }
+
+    /**
+     *
+     * @param name
+     * @param config
+     * @param parent
+     */
+    public ConfigElementPanel(String name, ConfigXMLFile config, RunElementPanel parent) {
+        this.name = name;
+        this.defXML = config;
+        this.simXML = config.getSimXMLFile();
+        this.parent = parent;
+
+        initComponents();
+        this.chkConfigElement.setText(this.name + ": ");
+
+        initConfigElementPanel();
+
+    }
+
+    /**
+     * Fill in the ComboBox with the apropriate values
+     */
+    public void initConfigElementPanel() {
+        if (this.defXML instanceof ConfigXMLFile){
+            ConfigXMLFile configXML = (ConfigXMLFile) this.defXML;
+            if (name.equals("SampleEvaluator")){
+                this.cmbConfigElement.setModel(configXML.getSampleEvaluators());
+                String id = this.cmbConfigElement.getSelectedItem().toString();
+                if (configXML.getSampleEvaluatorElement(id).elements().isEmpty())
+                    this.optionsButton.setEnabled(false);
+                else
+                    this.optionsButton.setEnabled(true);
+            }
+            else{
+                this.cmbConfigElement.setModel(configXML.getComboBoxModel(this.name));
+            }
+
+            if (this.name.equals("SampleSelector")){
+                 String id = this.cmbConfigElement.getSelectedItem().toString();
+                 if (id.equals("none"))
+                     this.optionsButton.setEnabled(false);
+                 else{
+                     if (configXML.getConfigElement(name, id).elements().isEmpty())
+                         this.optionsButton.setEnabled(false);
+                     else
+                         this.optionsButton.setEnabled(true);
+                 }
+            }
+        }
+        else{
+            if (name.equals("SampleEvaluator")){
+                this.cmbConfigElement.setModel(this.simXML.sampleEvaluators());
+                this.cmbConfigElement.setSelectedIndex(1);
+
+                String id = this.cmbConfigElement.getSelectedItem().toString();
+                if (this.defXML.getSampleEvaluatorElement(id).elements().isEmpty())
+                    this.optionsButton.setEnabled(false);
+                else
+                    this.optionsButton.setEnabled(true);
+            }
+            else{
+                this.cmbConfigElement.setModel(this.defXML.getComboBoxModel(this.name));
+            }
+            
+            if (this.name.equals("SampleSelector")){
+                String id = this.cmbConfigElement.getSelectedItem().toString();
+                if (id.equals("none"))
+                    this.optionsButton.setEnabled(false);
+            else{
+                if (this.defXML.getConfigElement(name, id).elements().isEmpty())
+                    this.optionsButton.setEnabled(false);
+                else
+                    this.optionsButton.setEnabled(true);
+            }
+            }
+        }       
+    }
+
+    /**
+     * Setter for selectAll chk
+     *
+     * @param chk
+     */
+    public void setSelectAll(JCheckBox chk){
+        this.selectAll = chk;
+    }
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        chkConfigElement = new javax.swing.JCheckBox();
+        cmbConfigElement = new javax.swing.JComboBox();
+        optionsButton = new javax.swing.JButton();
+        infoButton = new javax.swing.JButton();
+
+        chkConfigElement.setText("config element name");
+        chkConfigElement.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkConfigElementActionPerformed(evt);
+            }
+        });
+
+        cmbConfigElement.setModel(new javax.swing.DefaultComboBoxModel(new String[] {}));
+        cmbConfigElement.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbConfigElementActionPerformed(evt);
+            }
+        });
+
+        optionsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ibbt/sumo/gui/inputfiles/options_icon.png"))); // NOI18N
+        optionsButton.setText("Options");
+        optionsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionsButtonActionPerformed(evt);
+            }
+        });
+
+        infoButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ibbt/sumo/gui/inputfiles/info_icon.png"))); // NOI18N
+        infoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                infoButtonActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createSequentialGroup()
+                .add(chkConfigElement, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 183, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(cmbConfigElement, 0, 298, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(infoButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 32, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(18, 18, 18)
+                .add(optionsButton, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 94, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.CENTER)
+                .add(optionsButton)
+                .add(chkConfigElement)
+                .add(infoButton)
+                .add(cmbConfigElement, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     *
+     * @param evt
+     */
+    private void chkConfigElementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkConfigElementActionPerformed
+        this.cmbConfigElement.setEnabled(this.chkConfigElement.isSelected());
+        this.optionsButton.setEnabled(this.chkConfigElement.isSelected());
+        this.infoButton.setEnabled(this.chkConfigElement.isSelected());
+        if (this.selectAll.isSelected()){
+            this.selectAll.setSelected(false);
+        }
+    }//GEN-LAST:event_chkConfigElementActionPerformed
+
+    /**
+     *
+     * @param evt
+     */
+    private void infoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_infoButtonActionPerformed
+        ConfigElement ce = this.getConfigElement();
+        InformationFrame info = new InformationFrame(ce);
+        info.setModal(true);
+        info.setVisible(true);
+    }//GEN-LAST:event_infoButtonActionPerformed
+
+    /**
+     * 
+     * @param evt
+     */
+    private void cmbConfigElementActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbConfigElementActionPerformed
+        int itemIndex = this.cmbConfigElement.getSelectedIndex();
+        String item = (String)this.cmbConfigElement.getSelectedItem();
+        if (item.contains("---")){
+            this.cmbConfigElement.setSelectedIndex(++itemIndex);
+        }
+
+        String id = this.cmbConfigElement.getSelectedItem().toString();
+        if (this.name.equals("SampleSelector")){
+             if (id.equals("none"))
+                 this.optionsButton.setEnabled(false);
+             else{
+                 if (this.defXML.getConfigElement(name, id).elements().isEmpty())
+                     this.optionsButton.setEnabled(false);
+                 else
+                     this.optionsButton.setEnabled(true);
+             }
+        }
+        else if (this.name.equals("SampleEvaluator")){
+            if (this.defXML.getSampleEvaluatorElement(id).elements().isEmpty())
+                this.optionsButton.setEnabled(false);
+            else
+                this.optionsButton.setEnabled(true);
+        }
+    }//GEN-LAST:event_cmbConfigElementActionPerformed
+
+    /**
+     *
+     * @param evt
+     */
+    private void optionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionsButtonActionPerformed
+        OptionsFrameV2 op = null;
+        String id = this.cmbConfigElement.getSelectedItem().toString();
+        if (this.defXML instanceof ConfigXMLFile){
+            ConfigXMLFile configXML = (ConfigXMLFile) this.defXML;
+            if (this.name.equals("SampleEvaluator")){
+                op = new OptionsFrameV2(this, configXML.getSampleEvaluatorElement(id), configXML, this.parent.getName());
+            }
+            else{
+                op = new OptionsFrameV2(this, configXML.getConfigElement(this.name, id), configXML, this.parent.getName());
+            }
+        }
+        else{
+            if (this.name.equals("SampleEvaluator")){
+                op = new OptionsFrameV2(this, this.defXML.getSampleEvaluatorElement(id), this.defXML, this.parent.getName());
+            }
+            else{
+                op = new OptionsFrameV2(this, this.defXML.getConfigElement(this.name, id), this.defXML, this.parent.getName());
+            }
+        }
+        op.setModal(true);
+        op.setVisible(true);
+        op.pack();
+    }//GEN-LAST:event_optionsButtonActionPerformed
+
+    /**
+     *
+     * @param b
+     */
+    public void setSelected(boolean b){
+        this.chkConfigElement.setSelected(b);
+        this.cmbConfigElement.setEnabled(b);
+        this.optionsButton.setEnabled(b);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public boolean isSelected(){
+        return this.chkConfigElement.isSelected();
+    }
+
+    /**
+     * Return a ConfigElement object, with the values selected on this panel.
+     *
+     * @return ConfigElement object
+     */
+    public ConfigElement getConfigElement(){
+        String id = this.cmbConfigElement.getSelectedItem().toString();
+        String type = "";
+        String descr = "";
+        if (this.name.equals("SampleSelector")){
+            if (id.equals("none")){
+                //do nothing
+            }
+        }
+        else if (this.name.equals("SampleEvaluator")){
+            if (this.defXML instanceof ConfigXMLFile){
+                ConfigXMLFile configXML = (ConfigXMLFile) this.defXML;
+                type = configXML.getSampleEvaluatorElement(id).attributeValue("type");
+//                String sampleEvalID = configXML.getSampleEvaluatorElement(id).attributeValue("id");
+            }
+            else{
+                type = this.defXML.getSampleEvaluatorElement(id).attributeValue("type");
+                String sampleEvalID = this.defXML.getSampleEvaluatorElement(id).attributeValue("id");
+                descr = Util.getCommentOf(this.name, sampleEvalID, this.defXML.getRootElement());
+            }
+        }
+        else{
+            if (this.defXML instanceof ConfigXMLFile){
+                ConfigXMLFile configXML = (ConfigXMLFile) this.defXML;
+                type = configXML.getConfigElement(this.name, id).attributeValue("type");
+            }
+            else{
+                type = this.defXML.getConfigElement(this.name, id).attributeValue("type");
+                descr = Util.getCommentOf(this.name, id, this.defXML.getRootElement());
+            }
+        }
+        ConfigElement c = new ConfigElement(this.name, id, type, descr);
+        return c;
+    }
+
+    /**
+     *
+     * @param id
+     */
+    public void setID(String id) {
+        this.cmbConfigElement.setSelectedItem(id);
+    }
+
+    /**
+     *
+     * @param model
+     */
+    public void setModel(DefaultComboBoxModel model) {
+        this.cmbConfigElement.setModel(model);
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox chkConfigElement;
+    private javax.swing.JComboBox cmbConfigElement;
+    private javax.swing.JButton infoButton;
+    private javax.swing.JButton optionsButton;
+    // End of variables declaration//GEN-END:variables
+
+}

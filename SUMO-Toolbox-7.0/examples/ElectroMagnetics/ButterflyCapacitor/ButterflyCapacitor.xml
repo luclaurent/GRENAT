@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+	<Simulator>
+		<Name>Butterfly Capacitor</Name>
+		<Description>
+			Electromagnetic simulations of a butterfly capacitor.
+			Outputs are the scattering parameters.
+		</Description>
+		
+		<!-- The input parameters -->
+		<InputParameters>
+			<Parameter name="Radius" type="real"/>
+			<Parameter name="Angle" type="real"/>
+			<Parameter name="Frequency" type="real"/>
+		</InputParameters>
+			
+		<!-- The output parameters -->
+		<OutputParameters>
+			<Parameter name="S11" type="complex"/>
+			<Parameter name="S12" type="complex"/>
+		</OutputParameters>
+		
+		<Implementation>
+			<DataFiles>
+				<GriddedDataFile gridsize="65,65,90">ButterflyCapacitorGrid</GriddedDataFile>
+			</DataFiles>
+		
+		</Implementation>
+	</Simulator>

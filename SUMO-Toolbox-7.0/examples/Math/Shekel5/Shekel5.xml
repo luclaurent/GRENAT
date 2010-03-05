@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Shekel 5</Name>
+	<Description>
+		Shekel 5
+		The global minima: x* =  (4, 4 , 4, 4),
+		f(x*) = -10.1532 for m = 5.
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real" minimum="2" maximum="6"/>
+		<Parameter name="y" type="real" minimum="2" maximum="6"/>
+		<Parameter name="z" type="real" minimum="2" maximum="6"/>
+		<Parameter name="u" type="real" minimum="2" maximum="6"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab">sh5</Executable>
+		</Executables>
+		
+		<DataFiles>
+			<ScatteredDataFile id="default">sh5-10000</ScatteredDataFile>
+			<ScatteredDataFile id="validation">sh5-20000</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>
+

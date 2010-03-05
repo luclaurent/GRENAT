@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Test2D</Name>
+	<Description>
+		A predefined, one-dimensional academic function.
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real" minimum="-25" maximum="25"/>
+	</OutputParameters>
+		
+	<Implementation>
+			
+		<Executables>
+			<Executable platform="matlab">TestKarel</Executable>
+		</Executables>
+		
+		<DataFiles>
+			<ScatteredDataFile id="default">Test1D</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>
+

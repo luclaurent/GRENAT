@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Exponential Tapered TML</Name>
+	<Description>
+		A tapered TML.
+		Source:
+		  Robust Parametric Macromodeling using Multivariate Orthonormal Vector Fitting
+		  D. Deschrijver, T. Dhaene, D. De Zutter,
+		  IEEE Transactions on Microwave Theory and Techniques,
+		  Vol. 56, No. 7, pp. 1661-1667, July 2008.
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="length" type="real" minimum="0.01" maximum="0.1" />
+		<Parameter name="eps_r" type="real" minimum="3" maximum="5" />
+		<!-- frequency is in GHz -->
+		<Parameter name="frequency" type="real" autoSampling="false" minimum="1e-6" maximum="3" />
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="gamma_in" type="complex"/>
+	</OutputParameters>
+	
+	<!-- A simulator may have multiple implementations: as an executable, a 
+	java main class, a dataset, ...-->
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab" batch="false" batchSize="1">ExponentialTaperedTML</Executable>
+		</Executables>
+		
+		<DataFiles>
+			<ScatteredDataFile id="default">ExponentialTaperedTMLScattered</ScatteredDataFile>
+		</DataFiles>
+	
+	</Implementation>
+</Simulator>
+

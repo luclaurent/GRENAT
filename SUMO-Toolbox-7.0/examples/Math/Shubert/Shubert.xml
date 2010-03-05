@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Shubert</Name>
+	<Description>
+		Implements Shuberts Function
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real" minimum="-10" maximum="10"/>
+		<Parameter name="y" type="real" minimum="-10" maximum="10"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab">Shubert</Executable>
+		</Executables>
+		<DataFiles>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>

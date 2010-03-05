@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>TwoSpiral</Name>
+	<Description>
+		The two spiral classification problem
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x1" type="real"/>
+		<Parameter name="x2" type="real"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="y" type="real"/>
+	</OutputParameters>
+		
+	<Implementation>
+			
+	   <DataFiles>
+	      <ScatteredDataFile id="default">twospiral.txt</ScatteredDataFile>
+	   </DataFiles>
+		
+	</Implementation>
+</Simulator>
+

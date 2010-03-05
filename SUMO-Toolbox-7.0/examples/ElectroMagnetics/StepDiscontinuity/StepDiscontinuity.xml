@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+	<Simulator>
+		<Name>Step Discontinuity</Name>
+		<Description>
+			The stepdiscontinuity example contains a simulator
+			and some datasets concerning a step discontinuity
+			in a rectangular waveguide. Simulator code was written
+			by Robert Lehmensiek and Petrie Meyer.
+		</Description>
+		
+		<!-- The input parameters -->
+		<InputParameters>
+			<!-- type is one of "real", "complex"  or "discrete" -->
+			<Parameter name="frequency" type="real"/>
+			<Parameter name="gapHeight" type="real"/>
+			<Parameter name="stepLength" type="real"/>
+		</InputParameters>
+			
+		<!-- The output parameters -->
+		<OutputParameters>
+			<Parameter name="S11" type="complex"/>
+			<Parameter name="S12" type="complex"/>
+			<Parameter name="S21" type="complex"/> <!-- Symmetrical to S12 -->
+			<Parameter name="S22" type="complex"/> <!-- Symmetrical to S11 -->
+		</OutputParameters>
+		
+		<Implementation>		
+			<Executables>
+				<Executable platform="matlab">StepDiscontinuity</Executable>
+				<Executable platform="unix" arch="x86">StepDiscontinuity</Executable>
+				<Executable platform="unix" arch="i386">StepDiscontinuity</Executable>
+				<Executable platform="unix" arch="amd64">StepDiscontinuity</Executable>
+				<!-- <Executable platform="windows" arch="x86">StepDiscontinuity.exe</Executable> -->
+			</Executables>
+			<DataFiles>
+				<ScatteredDataFile>StepDiscontinuityScattered</ScatteredDataFile>
+			</DataFiles>
+		
+		</Implementation>
+	</Simulator>

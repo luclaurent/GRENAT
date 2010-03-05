@@ -1,0 +1,16 @@
+SUMO-Toolbox LICENSE NOTICE
+----------------------------
+
+* Revision: $Rev: 4818 $
+* Last changed on $Date: 2009-03-23 21:15:44 +0100 (Mon, 23 Mar 2009) $
+* By $Author: dgorissen $
+
+Only our own original work is licensed under the terms described in LICENSE.txt.
+The licenses of some libraries used might impose different redistribution or
+general licensing terms than those stated in LICENSE.txt. Users and
+redistributors are hereby requested to verify these conditions and agree upon
+them.
+
+A list of the licenses of these 3rd party libraries can be found in doc/licenses.
+The corresponding code can be found in the src/matlab/contrib directory and the
+ibbt.sumo.contrib Java package.

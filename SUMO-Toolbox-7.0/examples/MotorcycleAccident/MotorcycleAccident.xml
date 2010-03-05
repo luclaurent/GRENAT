@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>MotorcycleAccident</Name>
+	<Description>
+		SUMMARY:
+		The mcycle data frame has 133 rows and 2 columns.
+		
+		In an experiment  to  test  crash  helmets,  a  series  of
+		measurements   of  head  acceleration  after  a  simulated
+		motorcycle crash were recorded.
+		
+		DATA DESCRIPTION:
+		This data frame contains the following columns:
+		times:    The time in milliseconds since impact.
+		accel:    The recorded head acceleration (in g).
+		
+		SOURCE:
+		The data were obtained from
+		
+		Silverman,  B.W.  (1985)  Some  aspects  of   the   spline
+		smoothing   approach   to  non-parametric  curve  fitting.
+		Journal of the Royal Statistical Society, B, 47, 1-52.
+		
+		OTHER REFERENCES:
+		Davison, A.C. and Hinkley, D.V. (1997)  Bootstrap  Methods
+		and Their Application. Cambridge University Press.
+		
+		Venables, W.N. and  Ripley,  B.D.  (1994)  Modern  Applied
+		Statistics with S-Plus. Springer-Verlag.
+ 	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="times" type="real"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="accel" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<DataFiles>
+			<ScatteredDataFile id="default">MotorcycleAccident.txt</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>

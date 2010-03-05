@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>vlmop2</Name>
+	<Description>
+		OKA1 function
+		
+		The Pareto optima (in the parameter space) lie on the curve
+		x1 element of [0,2pi]
+		x2 = 3cos(x1) + 3
+		In addition, the density of
+		solutions falls away near to the Pareto front.
+		
+		Bounds:
+		x1 in [6*sin(PI/12.0), 6*sin(PI/12.0)+2*PI*cos(PI/12.0)]
+	   x2 in [-2*PI*sin(PI/12.0), 6*cos(PI/12.0)]
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x1" type="real" minimum="1.5529" maximum="7.6220"/>
+		<Parameter name="x2" type="real" minimum="-1.6262" maximum="5.7956"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="f1" type="real"/>
+		<Parameter name="f2" type="real"/>
+	</OutputParameters>
+	
+	<!-- A simulator may have multiple implementations: as an executable, a 
+	     java main class, a dataset, ...-->
+	<Implementation>
+		
+		<Executables>
+			<!-- An arch attribute may make sense here as well -->
+			<Executable platform="matlab">oka1</Executable>
+		</Executables>
+		
+	</Implementation>
+</Simulator>
+

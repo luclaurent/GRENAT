@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Thurber</Name>
+	<Description>
+		http://www.itl.nist.gov/div898/strd/nls/data/thurber.shtml
+ 	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<DataFiles>
+			<ScatteredDataFile>ThurberScattered.txt</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>

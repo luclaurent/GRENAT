@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+	<Simulator>
+		<Name>Ackley2D</Name>
+		<Description>
+			Ackley's Path [Ack87] is a widely used multimodal test function
+			2D version
+		</Description>
+		
+		<!-- The input parameters -->
+		<InputParameters>
+			<Parameter name="x1" type="real"/>
+			<Parameter name="x2" type="real"/>
+		</InputParameters>
+			
+		<!-- The output parameters -->
+		<OutputParameters>
+			<Parameter name="y" type="real"/>
+		</OutputParameters>
+			
+		<!-- A simulator may have multiple implementations: as an executable, a 
+		java main class, a dataset, ...-->
+		<Implementation>
+			
+			<Executables>
+				<Executable platform="java" classpath="">ibbt.sumo.examples.AckleySimulator</Executable>
+				<Executable platform="matlab">Ackley</Executable>
+			</Executables>
+			<DataFiles>
+ 				<ScatteredDataFile id="default">Ackley2DScattered</ScatteredDataFile>
+				<ScatteredDataFile id="validation">Ackley2DScattered2</ScatteredDataFile>
+				<GriddedDataFile id="test" gridsize="30,30">Ackley2DGrid</GriddedDataFile>
+			</DataFiles>
+		
+		</Implementation>
+	</Simulator>

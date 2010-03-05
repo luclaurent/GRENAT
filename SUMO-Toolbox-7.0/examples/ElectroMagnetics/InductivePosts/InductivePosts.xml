@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+	<Simulator>
+		<Name>Inductive Posts</Name>
+		<Description>
+			The inductive posts example contains a simulator
+			and some datasets concerning 2 inductive posts
+			in a rectangular waveguide. Simulator code was written
+			by Robert Lehmensiek and Petrie Meyer.
+		</Description>
+		
+		<!-- The input parameters -->
+		<InputParameters>
+			<Parameter name="Frequency" type="real"/>
+			<Parameter name="PostDiameter" type="real"/>
+			<Parameter name="Distance" type="real"/>
+		</InputParameters>
+			
+		<!-- The output parameters -->
+		<OutputParameters>
+			<Parameter name="S11" type="complex" minimum="-5" maximum="5"/>
+			<Parameter name="S12" type="complex" minimum="-5" maximum="5"/>
+			<Parameter name="S21" type="complex" minimum="-5" maximum="5"/><!-- Symmetrical to S12 -->
+			<Parameter name="S22" type="complex" minimum="-5" maximum="5"/> <!-- symmetrical to S11 -->
+		</OutputParameters>
+
+		<Implementation>
+			<Executables>
+				<Executable platform="matlab">InductivePosts</Executable>
+				<Executable platform="unix" arch="x86">InductivePosts</Executable>
+				<Executable platform="unix" arch="amd64">InductivePosts</Executable>
+			</Executables>
+			<DataFiles>
+				<GriddedDataFile id="grid" gridsize="40,40,40">InductivePostsGrid</GriddedDataFile>
+                <ScatteredDataFile id="default">InductivePostsScattered</ScatteredDataFile>
+            </DataFiles>
+		</Implementation>
+	</Simulator>

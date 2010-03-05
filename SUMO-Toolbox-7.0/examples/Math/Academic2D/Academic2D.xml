@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Academic 2D</Name>
+	<Description>
+		A predefined, two dimensional academic function also
+		appearing in [lehmensiek] and [cuyt]
+		<!-- TODO: add refs -->
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+		<Parameter name="y" type="real" autoSampling="false" />
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real" minimum="-1" maximum="1"/>
+	</OutputParameters>
+		
+	<Implementation>
+			
+		<Executables>
+			<Executable platform="java" classpath="">ibbt.sumo.examples.Academic2DSimulator</Executable>
+			<Executable platform="unix" arch="amd64" batch="yes">Academic2D</Executable>
+			<Executable platform="windows" arch="x86" batch="yes">Academic2D.exe</Executable>
+			<Executable platform="matlab">Academic2DMatlab</Executable>
+		</Executables>
+		<DataFiles>
+ 			<ScatteredDataFile id="default">Academic2DScattered</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>
+

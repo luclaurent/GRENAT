@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>borehole</Name>
+	<Description>
+		Borehole model
+        
+        [1] Worley, B.A. (1987), "Deterministic Uncertainty Analysis", ORNL-6428, available from National Technical Information Service, 5258 Port Royal Road, Springfield, VA 22161
+        [2] Morris, M.D. Mitchel, T.J. and Ylvisaker, D. (1993), "Bayesian Design and Analysis of Computer Experiments: Use of Derivatives in Surface Prediction", Technometrics, 35, 243-255
+        
+        rw = radius of borehole (m)
+        r = radius of influence (m)
+        Tu = transmissivity of upper aquifer (m^2/year)
+        Hu = potentiometric head of upper aquifer (m)
+        Tl = transmissivity of lower aquifer (m^2/year)
+        Hl = potentiometric head of lower aquifer (m)
+        L = length of borehole (m)
+        Kw = hydraulic conductivity of borehole (m/year)
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="rw" type="real" minimum="0.05" maximum="0.15"/>
+		<Parameter name="r" type="real" minimum="100" maximum="50000"/>
+		<Parameter name="Tu" type="real" minimum="63070" maximum="115600"/>
+		<Parameter name="Hu" type="real" minimum="990" maximum="1110"/>
+		<Parameter name="Tl" type="real" minimum="63.1" maximum="116"/>
+		<Parameter name="Hl" type="real" minimum="700" maximum="820"/>
+		<Parameter name="L" type="real" minimum="1120" maximum="1680"/>
+		<Parameter name="Kw" type="real" minimum="9855" maximum="12045"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="flow_rate" type="real"/>
+	</OutputParameters>
+	
+	<!-- A simulator may have multiple implementations: as an executable, a 
+	     java main class, a dataset, ...-->
+	<Implementation>
+		
+		<Executables>
+			<!-- An arch attribute may make sense here as well -->
+			<Executable platform="matlab">borehole</Executable>
+		</Executables>
+		
+	</Implementation>
+</Simulator>
+

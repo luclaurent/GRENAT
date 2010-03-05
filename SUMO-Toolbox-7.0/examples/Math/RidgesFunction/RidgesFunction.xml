@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>TestFunction3</Name>
+	<Description>
+		Implements the Ridges function
+ 	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+		<Parameter name="y" type="real"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="java" classpath="">ibbt.sumo.examples.RidgesFunction</Executable>
+		</Executables>
+		<DataFiles>
+ 			<ScatteredDataFile>RidgesScattered.txt</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>

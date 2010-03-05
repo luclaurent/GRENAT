@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Multi Objective Test Function</Name>
+	<Description>
+		A simple multi objective test function
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x1" type="real" minimum="-2" maximum="2"/>
+		<Parameter name="x2" type="real" minimum="-2" maximum="2"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="rosenbrock" 	type="real"/>
+		<Parameter name="ackley" 	type="real"/>
+	</OutputParameters>
+		
+	<Implementation>
+			
+		<Executables>
+			<Executable platform="matlab">MOTestFunction1</Executable>
+		</Executables>
+		
+		<DataFiles>
+			<!-- A 30x30 grid saved as a scattered data file -->
+			<ScatteredDataFile id="default">MOTestFunction1Grid</ScatteredDataFile>
+			<!-- A 12x12 grid saved as a scattered data file -->
+			<ScatteredDataFile id="small">MOTestFunction1GridSmall</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>
+

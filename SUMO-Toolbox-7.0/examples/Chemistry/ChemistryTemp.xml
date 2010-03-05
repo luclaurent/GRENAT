@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>ChemistryTemp</Name>
+	<Description>
+		Data received from Matthias Ihme (mihme@stanford.edu) on Feb 20, 2007
+		This is the data as used for the publication:
+			Generation of optimal artificial neural networks
+			using a pattern search algorithm: application to
+			approximation of chemical systems
+			- Accepted for publication in Neural Computation: Jan. 16, 2007
+		The data only contains the Temperature, not the chemical source term, see Chemistry.xml
+		for the full data.
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="z" type="real"/>
+		<Parameter name="c" type="real"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="temp" type="real"/>
+	</OutputParameters>
+		
+	<!-- A simulator may have multiple implementations: as an executable, a 
+	java main class, a dataset, ...-->
+	<Implementation>
+		<DataFiles>
+			<ScatteredDataFile id="default">ChemistryTempTrain</ScatteredDataFile>
+			<ScatteredDataFile id="validation">ChemistryTempTest</ScatteredDataFile>
+			<ScatteredDataFile id="test">ChemistryTempTest2</ScatteredDataFile>
+		</DataFiles>
+	</Implementation>
+</Simulator>
+

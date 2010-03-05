@@ -1,0 +1,8 @@
+JFreeChart is licensed under the terms of the GNU Lesser General Public License (LGPL). The
+full text of this license is reproduced in this appendix. You should read and understand this license
+before using JFreeChart in your own projects.
+If you are not familiar with the idea of free software, you can find out more at the Free Software
+Foundation’s web site:
+http://www.fsf.org
+Please send e-mail to david.gilbert@object-refinery.com if you have any questions about the
+licensing of JFreeChart (but please read section C.3 first).

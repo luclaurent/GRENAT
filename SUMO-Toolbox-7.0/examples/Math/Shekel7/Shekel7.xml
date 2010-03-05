@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Shekel 7</Name>
+	<Description>
+		Shekel 7
+		x* = (4,4,4,4)    
+		f(x*) = -10.4029 for m = 7.    
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real" minimum="0" maximum="10"/>
+		<Parameter name="y" type="real" minimum="0" maximum="10"/>
+		<Parameter name="z" type="real" minimum="0" maximum="10"/>
+		<Parameter name="u" type="real" minimum="0" maximum="10"/>   
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab">sh7</Executable>
+		</Executables>
+		
+	</Implementation>
+</Simulator>
+

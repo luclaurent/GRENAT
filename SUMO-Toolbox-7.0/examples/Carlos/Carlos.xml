@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Carlos</Name>
+	<Description>
+		Data from Rastrigins function, around minimum, found by SPSA
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+		<Parameter name="y" type="real"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+		
+	<Implementation>
+		
+		
+		<Executables>
+		
+		</Executables>
+		<DataFiles>		
+ 			<ScatteredDataFile>Carlos</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>
+

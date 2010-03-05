@@ -1,0 +1,90 @@
+<!-- SUMO Toolbox, Ant build file.  Compiles all the java files, this is enough for a working toolbox
+
+Revision: $Rev: 5997 $
+Last changed on $Date: 2009-10-13 17:09:04 +0200 (Tue, 13 Oct 2009) $ by $Author: dgorissen $
+-->
+
+<project name="SUMO Toolbox" default="lib" basedir=".">
+
+	<description>
+		Builds all the SUMO Toolbox java files.
+		http://www.sumo.intec.ugent.be
+	</description>
+
+	<!-- set global properties for this build -->
+	<property name="src" location="src/java"/>
+	<property name="build" location="bin/java"/>
+	<property name="lib"  location="lib"/>
+	<property name="apidoc"  location="doc/apidoc/java"/>
+	
+	<target name="init">
+		<echo message="Buildfile configured with Matlab directory '${MATLABDIR}'"/>
+		<!-- Create the time stamp -->
+		<tstamp/>
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build}"/>
+	</target>
+	
+	<target name="compile" depends="init" description="compile the source" >
+	
+		<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}">
+		
+			<!-- set class paths -->
+			<classpath>
+				<pathelement location="lib/kd.jar"/>
+				<pathelement location="lib/jmf.jar"/>
+				<pathelement location="lib/dom4j-1.6.1.jar"/>
+				<pathelement location="lib/jaxen-1.1.1.jar"/>
+				<pathelement location="lib/trilead-ssh2-build213.jar"/>
+				<pathelement location="lib/jcommon-1.0.14.jar"/>
+				<pathelement location="lib/jfreechart-1.0.11.jar"/>
+				<pathelement location="lib/swing-layout-1.0.3.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-graphics2d-2.1.1.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-graphicsio-2.1.1.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-graphicsio-ps-2.1.1.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-graphicsio-pdf-2.1.1.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-util-2.0.2.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-io-2.0.2.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-graphicsio-svg-2.1.1.jar"/>
+				<pathelement location="lib/vectorgraphics-2.1.1/freehep-xml-2.1.1.jar"/>
+				<pathelement location="${MATLABDIR}/java/jar/jmi.jar"/>
+			</classpath>
+			<compilerarg value="-Xlint"/>
+
+		</javac>
+	</target>
+	
+	<target name="javadoc">
+	<!-- Generate java documentation -->
+		<javadoc packagenames="ibbt.sumo.*" sourcepath="${src}" destdir="${apidoc}" author="true" version="true" use="true" windowtitle="SUMO Toolbox 6.1">
+			<doctitle><![CDATA[<h1>SUMO Toolbox</h1>]]></doctitle>
+			<bottom><![CDATA[<i><a href="http://www.sumo.intec.ugent.be">SUMO Toolobx</a></i>]]></bottom>
+			<tag name="todo" scope="all" description="To do:"/>
+			<link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+		</javadoc>
+	</target>
+
+	
+	<target name="lib" depends="compile" description="generate the jar file" >
+		<!-- Create the distribution directory -->
+		<mkdir dir="${lib}"/>
+	
+		<!-- Put everything in ${build} into the jar file -->
+		<jar jarfile="${lib}/SUMO-Toolbox.jar">
+			<fileset dir="${build}"/>
+			<manifest>
+				<attribute name="Built-By" value="www.sumo.intec.ugent.be"/>
+			</manifest>
+		</jar>
+		
+	</target>
+	
+	<target name="clean" description="clean up" >
+		<!-- Delete the ${build} and ${dist} directory trees -->
+		<delete dir="${build}"/>
+		<delete dir="${apidoc}"/>
+	</target>
+
+</project>
+

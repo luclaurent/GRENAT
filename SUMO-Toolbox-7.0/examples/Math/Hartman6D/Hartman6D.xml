@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Hartman 6</Name>
+	<Description>
+		Hartman 6
+		domain: 0 &lt; xi &lt; 1, i = 1, 2, . . . , 6.
+		Number of local minima: 6 local minima.
+		The global minima: x* =  (0.20169, 0.150011, 0.476874, 0.275332, 0.311652, 0.6573), f(x*) = - 3.32237
+		
+		NOTE:
+		hartman6D is implemented as a maximization optimization problem here, thus,
+		x* =  (0.20169, 0.150011, 0.476874, 0.275332, 0.311652, 0.6573), f(x*) = 3.32237
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x1" type="real" minimum="0" maximum="1"/>
+		<Parameter name="x2" type="real" minimum="0" maximum="1"/>
+		<Parameter name="x3" type="real" minimum="0" maximum="1"/>
+		<Parameter name="x4" type="real" minimum="0" maximum="1"/>
+		<Parameter name="x5" type="real" minimum="0" maximum="1"/>
+		<Parameter name="x6" type="real" minimum="0" maximum="1"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab">hm6</Executable>
+		</Executables>
+		
+		<DataFiles>
+			<ScatteredDataFile id="default">test.txt</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>
+

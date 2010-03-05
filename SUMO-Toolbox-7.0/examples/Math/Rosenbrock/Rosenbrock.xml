@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+	<Simulator>
+		<Name>Rosenbrock</Name>
+		<Description>
+			Rosenbrock's banana function
+		</Description>
+		
+		<!-- The input parameters -->
+		<InputParameters>
+			<Parameter name="x" type="real"/>
+			<Parameter name="y" type="real"/>
+		</InputParameters>
+			
+		<!-- The output parameters -->
+		<OutputParameters>
+			<Parameter name="out" type="real" />
+			<Parameter name="logout" type="real"/>
+		</OutputParameters>
+			
+		<!-- A simulator may have multiple implementations: as an executable, a 
+		java main class, a dataset, ...-->
+		<Implementation>
+			
+			<Executables>
+				<!-- An arch attribute may make sense here as well -->
+				<Executable platform="java">ibbt.sumo.examples.RosenbrockSimulator</Executable>
+				<Executable platform="matlab">Rosenbrock</Executable>
+			</Executables>
+			<DataFiles>
+				<ScatteredDataFile id="default">Rosenbrock2DScattered.txt</ScatteredDataFile>
+				<ScatteredDataFile id="validation">Rosenbrock2DScattered2.txt</ScatteredDataFile>
+			</DataFiles>
+		
+		</Implementation>
+	</Simulator>
+

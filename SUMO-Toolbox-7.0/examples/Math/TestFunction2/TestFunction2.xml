@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>TestFunction1</Name>
+	<Description>
+		A 2D function with discontinuiteis
+		Example function taken from Matlab (ps_example.m)
+ 		For a plot see: http://www.mathworks.com/access/helpdesk/help/toolbox/gads/f6436.html#f12782
+ 	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+		<Parameter name="y" type="real"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="java" classpath="">ibbt.sumo.examples.TestFunction2</Executable>
+		</Executables>
+		<DataFiles>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>

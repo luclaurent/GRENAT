@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>PhStirring</Name>
+	<Description>
+		Simulation data of a pH neutralization process in a constant volume
+		stirring tank. 
+		Volume of the tank 1100 liters 
+		Concentration of the acid solution (HAC) 0.0032 Mol/l
+		Concentration of the base solution (NaOH) 0,05 Mol/l
+		http://homes.esat.kuleuven.be/~smc/daisy/daisydata.html
+		Data scaled with:
+		8 12
+		0 2
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="acid" type="real"/>
+		<Parameter name="base" type="real"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="pH" type="real"/>
+	</OutputParameters>
+		
+	<!-- A simulator may have multiple implementations: as an executable, a 
+	java main class, a dataset, ...-->
+	<Implementation>
+		<DataFiles>
+			<ScatteredDataFile>PHStirring</ScatteredDataFile>
+		</DataFiles>
+	</Implementation>
+</Simulator>
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Jennrich and Sampson</Name>
+	<Description>
+		Jenrich and Sampson function [6]
+		Standard starting point x=(0.3,0.4)
+		minima of f=124.362 at x1=x2=0.2578 for m=10
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real"/>
+		<Parameter name="y" type="real"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab">jensam</Executable>
+		</Executables>
+		
+	</Implementation>
+</Simulator>
+

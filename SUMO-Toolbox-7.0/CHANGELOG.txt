@@ -1,0 +1,268 @@
+SUMO Toolbox Changelog
+-----------------------
+
+Also see the release notes on http://www.sumowiki.intec.ugent.be
+
+* 7.0 - Released 29 Jan 2009
+	+ Move to a open source licence (AGPL), see http://www.sumowiki.intec.ugent.be/index.php/License_terms
+	+ Experimental support for classification and 3D geometric modeling  problems (see the 2 new demos)
+	+ Thorough cleanup of SampleEvaluator related classes and package structure
+	+ Improved speed and stability in (Blind) Kriging models and fixed the correlation function derivatives.
+	+ Vastly improved the utilization of compute nodes if a distributed sample evaluator is used that interfaces with a cluster or grid
+	+ Support for plotting the prediction uncertainty in the model browser GUI 
+	+ Support for quasi random sequences as initial design
+
+* 6.2.1 - Released 19 Oct 2009
+        + Various bugfixes
+
+* 6.2 - Released 6 Oct 2009 
+	+ A new neural network modelbuilder "ann".  This is a lot faster than the existing "anngenetic" and the quality of the models is roughly the same
+	+ The sample selection infrastructure is now much more powerful, sample selection criteria can be combined with much more flexibility.
+	  This opens the way to dynamic variation of sampling criteria.
+	+ Support for Input constraints / multiple output sampling in the LOLA-Voronoi sample selection algorithm
+	+ Support for auto-sampled inputs (e.g., frequency in an EM context) in LOLA-Voronoi.  This is useful if a particular input is already sampled by your simulator.
+	+ Automatic filtering of samples close to each other in CombinedSampleSelector
+	+ Support for TriScatteredInterp in InterpolationModel when it is available (Matlab version 2009a and later)
+	+ Sample selectors that support it (for example: LOLA-Voronoi) now give priorities to new samples, to that samples are
+	  submitted and evaluated in order of importance.
+	+ Support for pre-calculated Latin Hypercube Designs, these will be automatically downloaded and used where possible and will improve performance
+	+ The Blind Kriging models have been improved and can now also be used as ordinary Kriging models.  Since these models
+	  are superior to the existing DACE Toolbox models, the DACE Toolbox backend has been removed.
+	+ The EGOModelBuilder (do model parameter optimization using the EGO algorithm) now uses a nested blind kriging model
+	  instead of one based on the DACE Toolbox.  This allows for better accuracy
+	+ The Kriging correlation functions can now be chosen automatically (instead of only the correlation parameters)
+	+ Support for multiobjective optimization in the EGO framewok (extended version of probability of improvement)
+	+ DelaunaySampleSelector, OptimizeCriterion support the same set of criterions
+	+ EGO Improvement criteria can now be used together with DACEModel, RBFModel, and SVMModel (LS-SVM backend only)
+	+ Added a model type and builder that does linear/cubic/nearest neighbour interpolation
+	+ All error functions and measures now consistently deal with complex valued data and multiple output models
+	+ Various improvements in the Model Info GUI as part of the Model browser tool
+	+ Improved stability in LRMMeasure, a behavioral complexity metric to help ensure parsimonious models
+	+ The profiler GUI has been updated and improved, and support for textual profilers has been added.
+	+ Improved performance when using Measures, especially for models with multiple outputs.
+	+ Improved management of the best model trace, also in pareto mode
+	+ Removed the debug output when using (LS-)SVM models and added compiled mex files for Windows
+	+ Ported the remaining classes to Matlabs Classdef format
+	+ Increased use of the parallel computing toolbox (if available) in order to speed up modeling
+	+ Improved the Matlab file headers so the help text is more informative (always includes at least the signature)
+	+ Support for plotting the model prediction uncertainty in the model browser (only for 1D plots and not supported by all model types)
+	+ Added support for so-called "reference by id" on every level of the config. If a tag of a particular type is defined on top-level with an id,
+	  it can be referenced everywhere else, instead of copying it entirely. See rationalPoleSupression sample selector and patternsearch Optimizer, for example.
+	+ EmptyModelBuilder added - in case you just want to use the sequential design facilities of the toolbox, but not its models.
+	+ Various cleanups and bugfixes
+
+* 6.1.1 - Released 17 Apr 2009
+	+ Various cleanups and bugfixes (see known bugs for 6.1)
+
+* 6.1 - Released 16 Feb 2009
+	+ The default error function is now the Bayesian Error Estimation Quotient (BEEQ)
+	+ Full support for multi-objective model generation, multiple measures can now be enforced simultaneously.  This 
+	  can also be applied to generating models with multiple outputs (combineOutputs = true).  Together with the
+	  automatic model type selection algorithm (heterogenetic) this allows the automatic selection of the best model
+	  type per output.
+	+ The model browser GUI now supports QQ plots
+	+ The Gradient Sample Selection Algorithm has been renamed to the Local Linear Sample Selector (LOLASampleSelector)
+	+ The modelbuilders have been refactored and some removed.  This is a result of the optimizer hierarchy being
+	  cleaned up.  Adding a new model parameter optimization routine should now be more straightforward.
+	+ The interface classes have been renamed to factories as this is more correct.  All implementations have been 
+	  ported to Matlab's new Classdef format and the inherritance hierarchy has been cleaned up.  It should now
+	  be significantly easier to add support for new approximation types.
+	+ The ModelInterfaces are now known as ModelFactories, this is more correct.  Note that the XML tagnames have 
+	  been changed as well.
+	+ The Model class hierarchy has been converted to the new Classdef format.  This means that models generated  
+	  with previous versions of the toolbox will no longer be loadable in this version.
+	+ The heterogenetic model builder for automatic model type selection has been cleaned up and made more robust.
+	+ Rational models now support all available modelbuilders.  This means that order selection can be done by PSO
+	  DIRECT, Simulated Annealing, ... instead of just GA and Sequential.
+	+ New optimizers added are (they can also be used as model builders): Differential Evolution
+	+ Added a Blind Kriging model type implementation as a backend of KrigingModel
+	+ Addition of an EGO model builder.  This allows optimization of the model parameters using the well known 
+	  Efficient Global Optimization (EGO) algorithm.  In essence this uses a nested Kriging Model to predict which 
+	  parameters should be used to build the next model.
+	+ Trivial dependencies on the Statistics Toolbox have been removed
+	+ Added a new smoothness measure (LRMMeasure) that helps to ensure smooth models and reduce erratic bumps.  It 
+	  works best when combined with other Measures (such as SampleError for ANN models) 
+	+ Models now have a simple evaluateDerivative() method that allows one to easily get gradient information.  The 
+	  base class implementation is very simple but works. Models can override this method to get more efficient 
+	  implementations.
+	+ Added experimental support for the Matlab Parallel Computing Toolbox (local scheduler only).  
+	  This means that when the parallelMode option in ContextConfig is switched on, model construction will make
+	  use of all available cores/cpu's.
+	+ Many speed improvements, some quite significant.
+	+ Various cleanups and bugfixes
+
+* 6.0.1 - Released 23 August 2008
+	+ Various bug fixes to the 6.0 release
+
+* 6.0 - Released 06 August 2008
+	+ Many important bugs have been fixed that could have resulted in sub-optimal models
+	+ Addition of a Model Browser GUI, this allows you to easily 'walk' through multi-dimensional models
+	+ Moved the InitialDesign tag outside of the SUMO tag
+	+ Some speed improvements
+	+ Removed support for dummy inputs
+	+ Measure scores and input/output names are saved inside the models, allowing for more usable plots
+	+ Added the project directory concept, each example is now self contained in its own directory
+	+ #simulatorname# can now be used in the run name, it will get replaced	by the real simulator name
+	+ Input dimensions can be ignored during sampling if the simulator samples them for you.
+	  This is useful in EM applications for example where frequency points can be cheap.
+	+ Logging framework revamped, logs can now be saved on a per run basis
+	+ The global score calculation has changed! it is a weighted sum of all
+	individual measures. (the weights are configurable but default to 1)
+	+ Added a simple polynomial model where the orders can be chosen manually
+	+ Countless cleanups, minor bugfixes and feature enhancements
+
+* 5.0 - Released 08 April 2008
+	+ Full rebranding from M3-Toolbox to SUrrogate MOdeling (SUMO) Toolbox
+	+ Fixed the 'Known bugs' for v4.2 (see Wiki)
+	+ data points now have priorities (assigned by the sample selectors)
+	+ Vastly reworked and improved the sample evaluator framework
+		+ robust handling of failed or 'lost' data points
+		+ pluggable input queue infrastructure to make advanced scheduling policies possible
+	+ The number of samples to select each iteration is now selected dynamically, based
+	  on the time needed for modeling, the length of one simulation, the number of compute nodes
+	  available, ...
+	  A user specified upper bound can till be specified of course.
+	+ Model plots are now in the original space instead of the normalized ([-1 1]) space
+	+ The default error function is now the root relative square error (= a global relative error)
+	+ Intelligent seeding of each new model parameter optimization iteration.
+	  This means the model parameter space is searched much more efficiently and completely
+	+ Added a fast Neural Network Modeler based on FANN (http://fann.sf.net)
+	+ Added a Neural Network Modeler based on NNSYSID 
+	  (http://www.iau.dtu.dk/research/control/nnsysid.html)
+	+ The LS-SVM model type has been merged with the SVM model type.  The SVM model now supports three
+	  backends: libSVM, SVMlight, and lssvm
+	+ Added a SampleSelector using infill sampling criterions (ISC).
+		+ The expected improvement from EGO/superEGO is provided among others.
+		(only usable with Kriging and RBF)
+	+ More robust handling of SSH sessions when running simulators on a remote cluster
+	+ The TestSamples measure has been renamed to ValidationSet
+	+ The Polynomial model type has been renamed to the more apt Rational model
+	+ The grid and voronoi sample selectors have been renamed to Error and Density respectively
+	+ Drastically reduced memory usage when performing many runs with multiple datasets
+	  (datasets are cached)
+	+ Added utility functions for easily summarizing profiler data from a large number of runs
+	+ Lots of speed improvements in the gradient sample selector
+	+ The default settings have been harmonized and much improved
+	+ The (LS)SVM parameter space is now searched in log10 instead of ln space
+	+ Added a TestMinimum measure 
+		+ compares the minimum of the surrogate model against a predefined value (for instance a known minimum)
+	+ Added a MinimumProfiler
+		+ tracks the minimum of the surrogate model versus the number of iterations
+	+ Movie creation now works on all supported platforms
+	+ Added an optimizer class hierarchy for solving subproblems transparantly
+	+ Cleaned up the structure of all the model classes so they no longer contain an interface
+	  object.  This was confusing and led to error prone code.  All subsref and subassgn implementations
+	  have also been removed.
+	+ The MinMax measure is now enabled by default
+	+ The Optimization framework was removed (and replaced) for various reasons, see:
+		http://sumowiki.intec.ugent.be/index.php/FAQ#What_about_surrogate_driven_optimization.3F
+	+ Fixed the file output of the profiler, formatting is correct now
+	+ New implementation of a maximin latin hypercube design
+		+ Minimizes pairwise correlation
+		+ Minimizes intersite distance
+	+ Removed dependency of factorial design on the statistics toolbox
+	+ Added a plotOptions tag, this allows for more customisability of model plots (grey scale, light effects, ...)
+	+ Profiler plots can now also be saved as JPG, PNG, EPS, PDF, PS and SVG
+	+ Countless cleanups, minor bugfixes and feature enhancements
+
+* 4.2 - Released 18 October 2007
+	+ Fixed the 'Known bugs' for v4.1 (see Wiki)
+	+ Simulators can be passed options through an <Options> tag
+	+ Added a fixed model builder so you can manually force which model parameters to use
+	+ Removed ProActive dependency for the SGE distributed backend
+	+ Improved Makefile under unix/linux
+	+ Data produced by simulators no longer needs to be pre-scaled to [-1 1],
+	  this can be done automatically from the simulator configuration file
+	+ Deprecated the optimization framework. It is currently under re-design and a better,
+	  more integrated version, will be released with the next toolbox version.
+	+ Lots of cleanups, minor bugfixes and small feature enhancements
+
+* 4.1 - Released 27 July 2007
+	+ Fixed the 'Known bugs' for v4.0 (see Wiki)
+	+ Vastly improved test sample distribution if a test set is created on the fly
+	+ Gradient sample selector now works with complex outputs and has improved neighbourhood selection
+	+ Speed and usability improvements in the profiler framework
+	+ Improvements in the profiler DockedView widget (added a right click context menu)
+	+ Addition of some new examples
+	+ Added an option (on by default) that selects a certain percentage of the grid sample selector's points randomly, making the algorithm more robust
+	+ Some cleanups, minor bugfixes and feature enhancements
+
+* 4.0 - Released 22 June 2007
+	+ IMPORTANT: the best model score is now 0 instead of 1, this is more intuitive
+	+ Reworked and improved the model scoring mechanism, now based on a pareto analysis.  
+	  This makes it possible to combine multpile measures in a sensible way.
+	+ Added a proof of concept surrogate driven optimization framework.  
+	  Note this is an initial implementation which works, but don't expect state of the art results.
+	+ Cleanup and refactoring of the profiler framework
+	+ The profiling of model parameters has been totally reworked and this can now easily
+	  be tracked in a nice GUI widget
+	+ Cleanup of error function logic so you can now easily use different error functions (relative, RMS, ...)
+	  in the measures
+	+ Improved model plotting
+	+ Support for the SVMlight library (you must download it yourself in order to use it)
+	+ Added a MinMax measure which can be used to suppress spikes in rational models
+	+ Support for extinction prevention in the heterogenetic modeler
+	+ Fixed warnings (and in some cases errors) when loading models from disk
+	+ Respect the maximum running time more accurately
+	+ Many cleanups, minor bugfixes and feature enhancements
+
+* 3.3 - Released 2 May 2007
+	+ Fixed incorrect summary at the end of a run
+	+ Fixed bug due to duplicate sample points
+	+ Ability to evaluate multiple samples in parallel locally (support for dual/multi-core machines)
+	+ Speedups when reading in datasets
+	+ Added 2 new modelbuilders that optimize the parameters using;
+		+ Pattern Search (requires the Matlab direct search toolbox)
+		+ Simulated Annealing (requires Matlab v7.4 and the direct search toolbox)
+		+ The Matlab Optimization Toolbox (includes different gradient based methods like BGFS)
+	+ A new density based sample selction algorithm (VoronoiSampleSelector)
+	+ New simulator examples to test with
+	+ Addition of a profiler to generate levelplots
+	+ Ability to generate Matlab API documentation using m2html
+	+ New neural network training algorithms based on Differential Evolution and Particle Swarm Optimization
+	+ It is now possible to call the toolbox with specific samples/values directly,
+	  e.g., go('myConfigFile.xml',xValues,yValues);
+	+ Many minor bugfixes and feature enhancements
+
+* 3.2 - Released 9 Mar 2007
+	+ Many important bugfixes
+	+ Documentation improvements
+	+ Fully working support for RBF models
+	+ New measure profilers that track the errors on measures
+	+ Many new predefined functions and datasets to test with.  We now have over 50 examples!
+
+* 3.1 - Released 28 Feb 2007
+	+ Small bugfixes and usability improvements
+	+ Improved documentation
+	+ Working implementation of a heterogenous evolutionary modelbuilder
+	+ More examples
+
+* 3.0 - Released 14 Feb 2007
+	+ Availability of pre-built binaries
+	+ Extensive refactoring and code cleanups
+	+ Many bugfixes and usability improvements
+	+ Resilience against simulator crashes
+	+ Ability to set the maximum running time for one sample evaluation
+	+ Vastly improved Genetic model builder + a neural network implementation
+	+ Addition of a RandomModelBuilder to use as a baseline benchmark
+	+ Possible to add dummy input variables or to model only a subset of the available inputs while clamping others
+  	+ Improved multiple output support
+		+ outputs can be modeled in parallel
+		+ each output can be configured separately (eg. per output: model type,
+		  accuracy requirements (measure), sample selection algorithm, complex handling flag, etc) 
+		+ mutliple outputs can be combined into one model if the model type supports this
+	+ Noisy (gaussian, outliers, ...) versions of a given output can be automatically added 
+  	+ New and improved directory structure for output data
+  	+ New model types:
+		+ Kriging (based on the DACE MATLAB Kriging Toolbox by Lophaven, Nielsen and Sondergaard)
+  		+ Splines (based on the MATLAB Splines Toolbox, only for 1D and 2D)
+  	+ Now matlab scripts can be used as datasources (simulators) as well
+  	+ New initial experimental design
+		+ Based on a dataset
+		+ Combination of existing designs
+		+ Based on the complexity of different 1D fits
+  	+ Addition of new datasets and predefined functions as modeling examples
+
+* 2.0 - Released 15 Nov 2006
+	+ initial release
+	

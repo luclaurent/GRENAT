@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>Test2D2</Name>
+	<Description>
+		A predefined, one-dimensional academic function.
+	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real" minimum="-20" maximum="25"/>
+	</InputParameters>
+		
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+		
+	<Implementation>
+		<Executables>
+			<Executable platform="matlab">Test1D2</Executable>
+		</Executables>
+	</Implementation>
+</Simulator>
+

@@ -1,0 +1,2013 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- Revision Id: $Id: default.xml 6429 2010-01-04 13:35:14Z ilm $ -->
+
+<!-- This is the default SUMO toolbox configuration, this is what gets used when you run 'go' without any arguments
+      You can edit this file directly or make a copy and run that.  See the wiki for detailed information. -->
+
+<ToolboxConfiguration version="7.0">
+	
+	<!--
+	A plan defines an experimental plan, a collection of tests you want to run
+	A plan may consist of multiple runs, where each run may be a different composition of the available
+	configuration components.   For example you want to investigate the impact of certain config values,
+	compare distributed and local runtimes, or compare different modeling methods.
+	Configuration components can be specified on run level or plan level, where run level has a higher
+	priority than plan level. Components that hold for all runs may be specified in the Plan tag and need not be duplicated 
+	within each Run tag.
+	-->
+	<Plan>
+		<!-- Default components, these should normally not be changed unless you know what you are doing -->
+		<ContextConfig>default</ContextConfig>
+		<SUMO>default</SUMO>
+		<LevelPlot>default</LevelPlot>
+		
+		<!-- This is the problem we are going to model, it refers to the name of a project
+		     directory in the examples/ folder.  It is also possible to specify an absolute
+		     path or to specify a particular xml file within a project directory -->
+		<Simulator>Math/Academic2DTwice</Simulator>
+
+		<!--
+		Runs can given a custom name by using the name attribute, a repeat attribute is 
+		also possible to repeat a run multiple times.  Placeholders available for run names include:
+		  #adaptivemodelbuilder#
+		  #simulator#
+		  #sampleselector#
+		  #output#
+		  #measure#
+		-->
+		<Run name="" repeat="1">
+			<!-- Enties listed here override those defined on plan level -->
+			
+			<!-- What experimental design to use for the very first set of samples -->
+			<InitialDesign>lhdWithCornerPoints</InitialDesign>
+			
+			<!--
+			    The method to use for selecting new samples. Again 'default' is an id that refers to a
+			    SampleSelector tag defined below.  To switch off sampling simply remove this tag. -->
+			<SampleSelector>default</SampleSelector>
+			
+			<!--
+			How is the simulator implemented (ie, where does the data come from): 
+			  - Matlab script (matlab)
+			  - scattered dataset (scatteredDataset), 
+			  - local executable or script (local)
+			  - etc
+			  
+			  Make sure this entry matches what is declared in the simulator xml file
+			  in the project directory.  For example, it makes no sense to put matlab here if you only
+			  have a scattered dataset to work with.
+			-->
+			<SampleEvaluator>matlab</SampleEvaluator>
+	
+			<!--
+			    The AdaptiveModelBuilder specifies the model type and the hyperparameter optimization
+			    algorithm (= the algorithm to choose the model parameters, also referred to as the
+			    modeling algorithm or model builder) to use. The default value 'kriging' refers to Kriging models.
+			    'kriging' is an id that refers to an AdaptiveModelBuilder tag that is defined below.
+			-->
+			<AdaptiveModelBuilder>kriging</AdaptiveModelBuilder>
+			
+			<!-- How the quality of a model is assesed is determined by one or more Measures.  You can try different combinations
+			     of measures by specifying different measure tags.  It is the measure score(s) that drive the model parameter optimization.
+			     We recommend you do not use more than one measure unless you know what you are doing.
+				 
+			     If the use attribute is set to 'off' then the measure score is printed and logged, but is not used in the modeling itself.
+			    More examples of measures are shown below.
+			-->
+			
+			<Measure type="CrossValidation" target="0.01" errorFcn="rootRelativeSquareError" use="on" />
+			
+			<!-- By default all inputs are modeled.  If you want to only model a couple of inputs you can specify an Inputs tag as follows: 
+			
+			<Inputs>
+				<Input name="x" />
+				<Input name="y" />
+				// Setting a simulator input to a constant (default is 0):
+				<Input name="z"  value="14.6"/>
+			</Inputs>
+			-->
+			
+			<!-- 			
+			By default the toolbox will model every single output using a separate model.  If you want to change this
+			e.g., you only want to model a specific output, or you want to use different settings for each output; then you
+			can specify an Outputs tag.
+			
+			The following is an example for the Academic2DTwice problem used in this file.  Remember that if you change
+			the problem you are modeling, you will have to change this section too.
+			-->
+			<Outputs>
+				<Output name="out">
+					<!--
+					    You can specify output specific configuration here
+					    
+					<SampleSelector>lola</SampleSelector>
+					<AdaptiveModelBuilder>rational</AdaptiveModelBuilder>
+					<Measure type="CrossValidation" target=".01" errorFcn="meanSquareError" use="on" />
+					-->
+				</Output>
+				
+				<Output name="outinverse">
+					<!--
+					<SampleSelector>delaunay</SampleSelector>
+					<AdaptiveModelBuilder>rbf</AdaptiveModelBuilder>
+					<Measure type="ValidationSet" target=".05" use="on" />
+					-->
+				</Output>
+				
+			</Outputs>
+
+			<!--	
+				This is a more complex example of how you can have different configurations per output.
+			-->
+			<!--
+			<Outputs>
+
+				* Model the modulus of complex output S22 using cross-validation and the default model
+				builder and sample selector.
+				
+				<Output name="S22" complexHandling="modulus">
+					<Measure type="CrossValidation" target=".05" />
+				</Output>
+				
+				* Model the real part of complex output S22, but introduce some normally-distributed noise
+				(variance .01 by default).
+				
+				<Output name="S22" complexHandling="real">
+					<Measure type="CrossValidation" target=".05" />
+					* for other types of modifiers see the datamodifiers subdirectory
+					<Modifier type="Noise" />
+				</Output>
+			-->
+
+		    <!-- 
+			More complex examples of how you can use measures:
+
+			* 5-fold crossvalidation (warning expensive on some model types!)
+			<Measure type="CrossValidation" target=".001" use="on">
+				<Option key="folds" value="5"/>
+			</Measure>	
+
+			* Using a validation set, the size taken as 20% of the available samples
+			<Measure type="ValidationSet" target=".001" errorFcn="meanAbsoluteError">
+				<Option key="percentUsed" value="20"/>
+			</Measure>
+
+			* Using a validation set defined in an external file (scattered data)
+		       	<Measure type="ValidationSet" target=".001">
+					* the validation set come from a file
+					<Option key="type" value="file"/>
+					* the test data is scattered data so we need a scattered sample evaluator
+					to load the data and evaluate the points. The filename is taken from the
+					<ScatteredDataFile> tag in the simulator xml file.
+					Optionally you can specify an option with key "id" to specify a specifc
+					dataset if there is more than one choice.
+					<SampleEvaluator
+					type="ibbt.sumo.sampleevaluators.datasets.ScatteredDatasetSampleEvaluator"/>
+               		</Measure>
+
+			* Used for testing optimization problems
+				* Calculates the (relative) error between the current minimum and a known minimum.
+				  Often one uses this just as a stopping criterion for benchmarking problems.
+				* trueValue: a known global minimum
+			<Measure type="TestMinimum" errorFcn="relativeError" trueValue="-5.0" target="0.1" use="on" />	
+			-->
+		</Run>
+	</Plan>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- ContextConfig contains configuration options global to the toolbox behavior -->
+	<ContextConfig id="default">
+		
+		<!-- Specifies the directory to use to store the results, logs, ... 
+		     An absolute path can be specified, if not it is relative to the project directory. -->
+		<OutputDirectory>output</OutputDirectory>
+
+		<!-- Several options for configuring the intermediate plots can be found here -->
+		<PlotOptions>
+
+			<!-- save model to disk as Matlab .mat file -->
+			<Option key="saveModels" value="true"/>
+
+			<!-- plot models model plots to disk -->
+			<Option key="plotModels" value="true"/>
+
+			<!-- contours are  only available for 2 dimensions -->
+			
+			<!-- also show the contour lines underneath a surface plot -->
+			<Option key="withContour" value="true"/>
+			<!-- use a contour plot instead of a surface plot -->
+			<Option key="plotContour" value="false" />
+			<!-- also plot the model uncertainty, only supported by some models types -->
+			<Option key="plotUncertainty" value="false"/>
+
+			<!--
+			Other options to customize plotting:
+			
+			<Option key="plotPoints" value="true"/>
+			<Option key="lighting" value="false"/>
+			<Option key="slices" value="3"/>
+			<Option key="grayScale" value="false"/>
+			<Option key="meshSize" value="41"/>
+			<Option key="fontSize" value="14"/>
+			<Option key="logScale" value="false"/>
+			-->
+
+			<!-- Output file format of the plot: png (default),eps,bmp,jpg,... -->
+			<Option key="outputType" value="png"/>
+		</PlotOptions>
+		
+		<!-- Keep models from previous model iterations.
+		     See:
+		     http://www.sumowiki.intec.ugent.be/index.php/FAQ#I_sometimes_see_the_error_of_the_best_model_go_up.2C_shouldn.27t_it_decrease_monotonically.3F
+			-->
+		<Option key="keepOldModels" value="off"/>
+		<!-- If set to on the parallelMode option will check if the Matlab Parallel Computing Toolbox
+		is installed.  If so, model construction will occur in parallel where possible, thus speeding
+		things up. Note that this option is still somewhat experimental.  If you get weird problems switch it off again. -->
+		<Option key="parallelMode" value="off"/>
+				
+		<!--
+		Configuration options for the profilers.  Profilers allow you to track the modeling process and understand what happens.
+		Within a profiler block, one or more <Output type="type"/> specifiers should be present. Possible types are toFile, toPanel, toTable, and toImage.
+		-->
+		<Profiling>
+			<!--
+			You can restrict the available profilers to use by specifying a wildcard to disable the docked output if you dont want a window containing all the profilers.
+			To select all profilers, simply put ".*"
+			-->
+			<Profiler name=".*SampleMinimum.*|.*Measure.*|.*BestModel.*|.*ElapsedTime.*|.*MemoryUse.*" enabled="true">
+				<!-- note that the toImage/toPanel handlers are quite expensive to use, removing them will speed things up -->
+				<Output type="toPanel"/>
+				<Output type="toImage"/>
+				<Output type="toTable"/>
+				<Output type="toFile"/>
+			</Profiler>		
+		</Profiling>
+		
+	</ContextConfig>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	<!-- How much logging information should the toolbox produce -->
+	<Logging>
+
+		<!-- Root logger -->
+		<RootLogger>
+		
+			<!-- log all run-specific information in the main log as well -->
+			<Option key="runsInMainLog" value="true"/>
+		
+			<!-- Set the default logging level for the root logger -->
+			<Option key="Level" value="INFO"/>
+
+			<!-- Specify the handlers to create in the root logger
+			 (all loggers are children of the root logger).  The handlers determine
+			 where logging output is sent to. 
+			 
+			 Possible levels are: OFF, SEVERE, WARNING, INFO, FINE, FINER, FINEST, ALL
+			 -->		
+			<Handlers>
+				<!-- Configure ConsoleHandler (= output to the screen) -->
+				<ConsoleHandler>
+					<Option key="Level" value="INFO"/>
+				</ConsoleHandler>
+
+				<!-- Configure FileHandler (= output to file)-->
+				<FileHandler>
+					<Option key="Level" value="ALL"/>
+				</FileHandler>
+			</Handlers>
+		</RootLogger>
+		
+		<!-- The Options here specify the level for a specific logger
+		      This configures which log messages actually get generated -->
+		<!-- <Option key="loggername" value="level" /> -->
+		<Option key="ibbt.sumo" value="FINEST"/> 
+		<Option key="Matlab" value="FINEST"/> 
+	</Logging>
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	<!-- A Level plot is a kind error histogram of the best model over time -->
+	<LevelPlot id="default" type="LevelPlot" combineOutputs="true">
+		<!--
+		This option enables the levelPlotProfiler (be sure to enable it in the  profilers section too). A sample evaluator should provide the reference
+		data set over which the error should be calculated.
+		-->
+		<Option key="makeLevelPlots" value="off"/>
+
+		<!-- This tag defines the SampleEvaluator that is used by the levelplot  (it needs to get its data from somewhere) -->
+		<SampleEvaluator type="ibbt.sumo.sampleevaluators.datasets.ScatteredDatasetSampleEvaluator">
+			<!-- <Option key="id" value="validation"/> --> 
+		</SampleEvaluator>
+	</LevelPlot>	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- Important options that influence the whole modeling process -->
+	<SUMO id="default" type="SUMO">
+		<!--Should a movie be created of the model plots when the toolbox has terminated-->
+		<Option key="createMovie" value="yes"/>
+		<!-- The minimum amount of samples alotted to *EACH RUN*, dont stop untill we have at least this many samples -->
+		<Option key="minimumTotalSamples" value="0"/>
+		<!--The maximum amount of samples alotted to *EACH RUN*, stop the run and proceed to the next if this number of samples is exceeded (set to Inf to disable) -->
+		<Option key="maximumTotalSamples" value="1000"/>
+		<!--The amount of time (in minutes) alotted to *EACH RUN*, stop the run and proceed to the next if this number is exceeded (set to Inf to disable) -->
+		<Option key="maximumTime" value="Inf"/>
+		<!--
+		The maximum number of adaptive modeling iterations  alotted to *EACH RUN*,
+		stop the run and proceed to the	next if this number is exceeded
+		(set to Inf to disable).
+		-->
+		<Option key="maxModelingIterations" value="Inf"/>
+		<!--
+		How should the random number generator files be seeded, 3 options:
+		  - default: do nothing, the same seed will be used each time matlab is started
+		  - random: random initial state
+		  - file: load the state from the file specified by the randomStateFile option
+		-->
+		<Option key="seedRandomState" value="default"/>			
+		<!--
+		Stop the main loop if a fatal error occurs in the sample evaluator, if set to false
+		the toolbox will switch to adaptive modeling mode (further sampling is switched off).
+		-->
+		<Option key="stopOnError" value="true"/>
+		<!-- Minimum amount of samples that are to be evaluated from the initial sample set before the modeling process starts. 
+		     This can either be an absolute number (e.g., 23) or a percentage (e.g., 95%) -->
+		<Option key="minimumInitialSamples" value="100%"/>
+		<!-- Maximum number of pending samples allowed at any time in the toolbox. -->
+		<Option key="maximumSamples" value="10"/>
+		<!--
+			How many % samples should be at least retrieved every iteration (relative to the number of selected samples):
+			0 %: just takes what is finished and continue modeling
+			100 %: wait until all selected samples have been evaluated
+		-->
+		<Option key="minimumAdaptiveSamples" value="0" />
+		<!-- Must samples be checked against the constraints before they are submitted for evaluation? -->
+		<Option key="newSamplesMustSatisfyConstraints" value="yes"/>
+		<!-- Must the entire dataset be used in adaptive modeling mode or not?
+			 true: only the initial design is evaluated, and is used in adaptive modeling mode
+			 false: the entire dataset is loaded immediately and used in adaptive modeling mode
+		-->
+		<Option key="adaptiveModelingInitialDesignOnly" value="no"/>
+	</SUMO>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!--Use this if you data generator is a native executable, shell script, or java class-->
+	<SampleEvaluator id="local" type="ibbt.sumo.sampleevaluators.LocalSampleEvaluator">
+		<!-- Maximum number of times to resubmit a point (e.g., in case something went wrong) -->
+		<Option key="maxResubmissions" value="1"/>
+		<!-- If a sample takes longer than "sampleTimeout*average evaluation time of one sample" 
+		seconds to evaluate it is removed from the pending list (set to -1 to disable) -->
+		<Option key="sampleTimeout" value="-1"/>
+		<!-- Can be set to "java" for java executables, to "external" for platform-specific
+		     binaries/scripts and to nothing at all for auto-detection.-->
+		<Option key="simulatorType" value="" />
+		<!-- Can be set to a number of seconds, if one simulator evaluation exceeds this timeout,
+		     the simulation is aborted -->
+		<!-- <Option key="timeout" value="12"/> -->
+		<!-- Number of samples to evaluate concurrently, useful if you have a dual or multi-core machine -->
+		<Option key="threadCount" value="1"/>
+	</SampleEvaluator>
+	
+	<!-- Evaluate samples using a matlab script (ie. your simulator is a matlab script) -->
+	<SampleEvaluator id="matlab" type="ibbt.sumo.sampleevaluators.matlab.MatlabSampleEvaluator">
+		<!-- Maximum number of times to resubmit a point (e.g., in case something went wrong) -->
+		<Option key="maxResubmissions" value="1"/>
+		<!-- If a sample takes longer than "sampleTimeout*average evaluation time of one sample" 
+		seconds to evaluate it is removed from the pending list (set to -1 to disable) -->
+		<Option key="sampleTimeout" value="-1"/>
+	</SampleEvaluator>
+
+	<!-- Evaluate samples using a gridded dataset -->
+	<SampleEvaluator id="griddedDataset" type="ibbt.sumo.sampleevaluators.datasets.GriddedDatasetSampleEvaluator">
+		<!-- Using an ID you can specify which dataset from the simulator file to use -->
+		<!-- <Option key="id" value="someDataset"/> -->
+	</SampleEvaluator>
+	
+	<!-- Evaluate samples using a scattered dataset -->
+	<SampleEvaluator id="scatteredDataset" type="ibbt.sumo.sampleevaluators.datasets.ScatteredDatasetSampleEvaluator">
+		<!-- Using an ID you can specify which dataset from the simulator file to use -->
+		<!-- <Option key="id" value="someDataset"/> -->
+	</SampleEvaluator>
+	
+	<!--Evaluate samples on a SGE administered cluster through a remote, ssh reachable frontnode-->
+	<SampleEvaluator id="calcua" type="ibbt.sumo.sampleevaluators.distributed.sge.RemoteSGESampleEvaluator">
+		<!-- Maximum number of times to resubmit a point (e.g., in case something went wrong) -->
+		<Option key="maxResubmissions" value="1"/>
+		<!-- If a sample takes longer than "sampleTimeout*average evaluation time of one sample" 
+		     seconds to evaluate it is removed from the pending list (set to -1 to disable) -->
+		<Option key="sampleTimeout" value="-1"/>
+		
+		<!--The platform specs of the cluster-->
+		<Executable platform="linux" arch="x86_64"/>
+		<Backend id="remoteSGE" type="ibbt.sumo.sampleevaluators.distributed.sge.RemoteSGEBackend">
+			<!--ssh user name to login on the front node-->
+			<Option key="user" value="dgorisse"/>
+			<!--Submissions happen from this front node, you need to have key-based ssh authentication-->
+			<Option key="frontNode" value="submit.calcua.ua.ac.be"/>
+			<!--Directory on the front node where input/output files, dependencies, etc. are stored-->
+			<Option key="remoteDirectory" value="/storeA/users/dgorisse/output"/>
+			<!--poll for result files every xx seconds-->
+			<Option key="pollInterval" value="20"/>
+			<!--queues we can submit to-->
+			<Option key="queues" value="all.q,fast.q"/>
+			<!--check for faster queues (more slots available) every xx seconds-->
+			<Option key="queueRevisionRate" value="10"/>
+			<!--script on the frontnode that sets up the necessary shell environment-->
+			<Option key="environmentCommand" value=". ~/.profile;"/>
+		</Backend>
+	</SampleEvaluator>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!-- Don't select any new samples, useful when modeling multiple outputs, and you don't want to involve one of these outputs in the sampling process. -->
+	<SampleSelector id="empty" type="EmptySampleSelector" combineOutputs="false"/>
+	
+	<!-- Selects new samples randomly in the design space. -->
+	<SampleSelector id="random" type="RandomSampleSelector" combineOutputs="false"/>
+	
+	<!-- This sample selector uses a Delaunay triangulation of the data to select samples in locations far from previous samples, or in locations where the estimated model error is largest.
+	This algorithm uses QHull, which is very slow for high dimensions, so you should only use this sample selector for less than 6D and for less than 1000 samples. -->
+	<SampleSelector id="delaunay" type="PipelineSampleSelector" combineOutputs="false">
+		
+		<CandidateGenerator type="DelaunayCandidateGenerator"/>
+		
+        <CandidateRanker type="modelDifference">
+        	<Option key="criterion_parameter" value="2"/>
+        </CandidateRanker>
+        <CandidateRanker type="delaunayVolume"/>
+        
+        <MergeCriterion type="WeightedAverage" weights="[1 1]"/>
+        
+	</SampleSelector>
+	
+	
+	<!-- A space-filling sampling algorithm which uses an approximation of the Voronoi tessellation of the design space. Will only sample
+	within the "allowed" areas if constraints are specified. -->
+	<SampleSelector id="density" type="VoronoiSampleRanker" combineOutputs="false"/>
+	
+	<!-- An adaptive sample selection algorithm (error based), driven by the evaluation of your model on a dense grid, which selects samples in locations where the model error is estimated to be the largest. -->
+	<SampleSelector id="error" type="PipelineSampleSelector" combineOutputs="false">
+	
+		<CandidateGenerator type="GridCandidateGenerator"/>
+		
+		<CandidateRanker type="modelDifference">
+        	<Option key="criterion_parameter" value="4"/>
+        </CandidateRanker>
+        
+        <MergeCriterion type="ClosenessThreshold">
+		
+			<!-- Closeness threshold, Double -->
+			<Option key="closenessThreshold" value="0.05"/>
+			<!-- Set a % of the maximumSamples to randomly chosen -->
+			<Option key="randomPercentage" value="20"/>
+		
+			<Option key="debug" value="off" />
+		</MergeCriterion>
+	</SampleSelector>
+	
+	
+	<!-- A highly adaptive sampling algorithm which performs a trade-off between exploration (filling up the design space as equally as possible)
+	and exploitation (selecting data points in highly nonlinear regions). lola-voronoi is the only sample selector which currently supports
+	multiple outputs, auto-sampled inputs and constraints. -->
+	<SampleSelector id="lola-voronoi" type="LOLAVoronoiSampleSelector" combineOutputs="false">
+		<!-- Integer between 2 and 20 -->
+		<Option key="neighbourhoodSize" value="2"/>
+		<!-- Number of frequency values returned for each submitted sample. Only used with auto-sampled inputs. -->
+		<Option key="frequencies" value="11"/>
+	</SampleSelector>
+	
+	
+	<!-- A sampling algorithm aimed at supressing poles in rational models by sampling them (only for Rational models) -->	
+	<SampleSelector id="rationalPoleSupression" type="OptimizeCriterion" combineOutputs="false">
+
+		<!-- This criterion has to be solved to choose new samples, one can choose the optimizer used here -->
+		<Optimizer>patternsearch</Optimizer>
+		
+		<CandidateRanker type="rationalPoleSupression" scaling="none"/>
+		<CandidateRanker type="modelDifference" scaling="none"/>
+
+		<!--
+		when debug is 'on' a contour plot of the criterion function is drawn every iteration.
+		Together with the current samples and the chosen samples
+		-->
+		<Option key="debug" value="off" />
+	</SampleSelector>
+	
+
+	<!-- A sampling algorithm aimed at optimization problems (only for Kriging and RBF) -->	
+	<SampleSelector id="expectedImprovement" type="OptimizeCriterion" combineOutputs="false">
+	
+		<!-- This criterion has to be solved to choose new samples, one can choose the optimizer used here -->
+		<Optimizer>patternsearch</Optimizer>
+		
+		<CandidateRanker type="expectedImprovement" scaling="none">
+		</CandidateRanker>
+		<CandidateRanker type="maxvar" scaling="none" />
+
+		<!--
+		when debug is 'on' a contour plot of the criterion function is drawn every iteration.
+		Together with the current samples and the chosen samples
+		-->
+		<Option key="debug" value="off" />
+	</SampleSelector>
+
+	
+	<!-- LOLA-Voronoi sample selector supplemented with 1 sample at the minimum and maximum -->
+	<SampleSelector id="extremaLOLA" type="CombinedSampleSelector" combineOutputs="false">
+		<!-- A highly adaptive sampling algorithm, error and density based -->
+		<SampleSelector weight="0.8">lola-voronoi</SampleSelector>
+		<SampleSelector weight="0.1">sampleMinimum</SampleSelector>
+		<SampleSelector weight="0.1">sampleMaximum</SampleSelector>
+		
+		<MergeCriterion type="ClosenessThreshold">
+		
+			<!-- Closeness threshold, Double -->
+			<Option key="closenessThreshold" value="0.05"/>
+			<!-- Set a % of the maximumSamples to randomly chosen -->
+			<Option key="randomPercentage" value="0"/>
+		
+			<Option key="debug" value="off" />
+		</MergeCriterion>
+	</SampleSelector>
+	
+	<!-- Selects one sample at the minimum of the model. -->
+	<SampleSelector id="sampleMinimum" type="OptimizeCriterion" combineOutputs="false">
+		<Optimizer>patternsearch</Optimizer>
+		<CandidateRanker type="minmodel" scaling="none"/>
+	</SampleSelector>
+
+	<!-- Selects one sample at the maximum of the model. -->
+	<SampleSelector id="sampleMaximum" type="OptimizeCriterion" combineOutputs="false">
+		<Optimizer>patternsearch</Optimizer>
+		<CandidateRanker type="maxmodel" scaling="none"/>
+	</SampleSelector>
+
+	<!-- LOLA sample selector combined with error based sample selector -->
+	<SampleSelector id="default" type="CombinedSampleSelector" combineOutputs="false">
+		<SampleSelector weight="0.7">lola-voronoi</SampleSelector>
+		<SampleSelector weight="0.3">error</SampleSelector>
+		
+		<MergeCriterion type="ClosenessThreshold">	
+			<!-- Closeness threshold, Double -->
+			<Option key="closenessThreshold" value="0.05"/>
+			<!-- Set a % of the maximumSamples to randomly chosen -->
+			<Option key="randomPercentage" value="0"/>
+		
+			<Option key="debug" value="off" />
+		</MergeCriterion>
+	</SampleSelector>
+		
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!-- Now we list the Adaptive Model Builders.  Each adaptive model builder is a combination
+	    of a model type (svm, ann, rbf, ...) and an optimization algorithm to choose the model 
+	    parameters.  Note that the list here is NOT EXHAUSTIVE for else it would simply be too long -->
+	
+	<!-- Build rational models using a custom stochastic hillclimber to select the model parameters -->
+	<AdaptiveModelBuilder id="rational" type="SequentialModelBuilder" combineOutputs="true">
+		<!-- Maximum number of models built before selecting new samples -->	
+		<Option key="maximumRunLength" value="30"/>
+		<!-- Degeneration of score if a model gets older -->
+		<Option key="decay" value=".99"/>
+		<!-- Size of the best model history -->
+		<Option key="historySize" value="15"/>
+		<!-- One of best, last. When set to best the best `historySize' models are kept,
+		 - - when set to last, the last `historySize' models are kept -->
+		<Option key="strategy" value="best"/>
+		<!-- <Option key="strategy" value="window"/> -->
+		
+		<ModelFactory type="RationalFactory">
+			<!-- Bounds for the weights of the rational modeller -->
+			<Option key="weightBounds" value="1,40"/>
+			<!-- Bounds for the percentage of degrees of freedom wrt number of samples -->
+			<Option key="percentBounds" value="1,100"/>
+			<!-- Regardless of the percentage bounds, never use more than this many degrees of freedom -->
+			<Option key="maxDegrees" value="80"/>
+			<!-- When randomizing rational flags, what percentage should be set -->
+			<Option key="percentRational" value="70"/>
+			<!-- If a variable is named "f" of "frequency" it will be modelled differently, if this is set to auto,
+			 - - If this field is set to a variable name, that variable will be considered to be the frequency -->
+			<Option key="frequencyVariable" value="auto"/>
+			<!-- Base function for interpolation, one of chebyshev, power, legendre -->
+			<Option key="basis" value="power"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build rational models using a genetic algorithm -->
+	<AdaptiveModelBuilder id="rationalgenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!--See that matlab gads toolbox documentation for more information on the options-->
+		<Option key="restartStrategy"	value="continue"/>
+		<Option key="populationType" value="custom"/>
+		<Option key="populationSize" value="30"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="maxGenerations" value="20"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="5"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory type="RationalFactory">
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			<Option key="creationFcn" value="createInitialPopulation"/>
+			<!-- Use the next three functions instead of the previous three if you set the
+			      population type to doubleVector -->
+			<!--<Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>-->
+
+ 			<!-- Bounds for the weights of the rational modeller -->
+			<Option key="weightBounds" value="1,40"/>
+			<!-- Bounds for the percentage of degrees of freedom wrt number of samples -->
+			<Option key="percentBounds" value="1,100"/>
+			<!-- Regardless of the percentage bounds, never use more than this many degrees of freedom -->
+			<Option key="maxDegrees" value="80"/>
+			<!-- When randomizing rational flags, what percentage should be set -->
+			<Option key="percentRational" value="70"/>
+			<!-- If a variable is named "f" of "frequency" 
+				it will be modelled differently, if this is set to auto -->
+			<!-- If this field is set to a variable name, that variable will be considered to be the frequency -->
+			<Option key="frequencyVariable" value="auto"/>
+			<!-- Base function for interpolation, one of chebyshev, power, legendre -->
+			<Option key="basis" value="power"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- Generate Rational models using PSO -->
+	<AdaptiveModelBuilder id="rationalpso" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="PSOtOptimizer">
+			<Option key="typePSO" value="0"/>
+			<Option key="seedPSO" value="1"/>
+			<Option key="popSize" value="10"/>
+			<Option key="maxiters" value="10"/>
+			<Option key="epochInertia" value="8"/>
+			<Option key="gradientTermination" value="8"/>
+		</Optimizer>
+		
+		<ModelFactory type="RationalFactory">
+			<!-- Bounds for the weights of the rational modeller -->
+			<Option key="weightBounds" value="1,40"/>
+			<!-- Bounds for the percentage of degrees of freedom wrt number of samples -->
+			<Option key="percentBounds" value="1,100"/>
+			<!-- Regardless of the percentage bounds, never use more than this many degrees of freedom -->
+			<Option key="maxDegrees" value="80"/>
+			<!-- When randomizing rational flags, what percentage should be set -->
+			<Option key="percentRational" value="70"/>
+			<!-- If a variable is named "f" of "frequency" 
+				it will be modelled differently, if this is set to auto -->
+			<!-- If this field is set to a variable name, that variable will be considered to be the frequency -->
+			<Option key="frequencyVariable" value="auto"/>
+			<!-- Base function for interpolation, one of chebyshev, power, legendre -->
+			<Option key="basis" value="power"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build polynomial models with a fixed order -->
+	<AdaptiveModelBuilder id="polynomialfixed" type="AdaptiveModelBuilder" combineOutputs="false">
+
+		<ModelFactory type="PolynomialFactory">
+			<!-- Specifies the structure of the polynomial -->
+			<!-- Expects matlab matrix: Element (i,j) is the exponent of variable i for term j.  -->
+			<Option key="degrees" value="[0 0;1 0;0 1;1 1;2 0;0 2;2 2]"/> <!-- Equals to 1+x+y+xy+xx+yy+xxyy -->
+			<!-- Base function for interpolation, one of chebyshev, power, legendre -->
+			<Option key="basis" value="power"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- Build Radial Basis Function models -->
+	<AdaptiveModelBuilder id="rbf" type="SequentialModelBuilder" combineOutputs="false">
+		<!-- Maximum number of models built before selecting new samples -->	
+		<Option key="maximumRunLength" value="20"/>
+		<!-- Degeneration of score if a model gets older -->
+		<Option key="decay" value=".9"/>
+		<!-- Size of the best model history -->
+		<Option key="historySize" value="15"/>
+		<!-- One of best, last. When set to best the best `historySize' models are kept,
+		- - when set to last, the last `historySize' models are kept -->
+		<Option key="strategy" value="best"/>
+		
+		<!-- <Option key="strategy" value="window"/> -->
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="RBF"/>
+			
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			<BasisFunction name="multiquadric" min=".1"    max="5"    scale="ln"/>
+			<!--<BasisFunction name="biharmonic"   min=".1"    max="5"    scale="ln"/> -->
+			<BasisFunction name="exponential"  min=".1,.5" max="5,2"  scale="ln,lin"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- Build Radial Basis Function models using a genetic algorithm -->
+	<AdaptiveModelBuilder id="rbfgenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<Option key="restartStrategy"	value="continue"/>
+		<!--See that matlab gads toolbox documentation for more information on the options-->
+		<Option key="populationType" value="custom"/>
+		<Option key="populationSize" value="15"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="RBF"/>
+			
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			<Option key="creationFcn" value="createInitialPopulation"/>
+			
+			<!-- Bounds for the shape parameter -->
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			<BasisFunction name="multiquadric" min=".1"    max="5"    scale="ln"/>
+			<!-- <BasisFunction name="biharmonic"   min=".1"    max="5"    scale="ln"/> -->
+			<BasisFunction name="exponential"  min=".1,.5" max="5,2"  scale="ln,lin"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<!-- Basisfunction, one of 'multiquadric', 'triharmonic', 'biharmonic' -->
+			<!-- Specify which implementation to use, currently, 'Direct', 'AP', 'Greedy' and
+			'FastRBF' are supported.
+			
+			'Direct' solves the direct problem by inverting the interpolation
+			matrix
+			'AP' uses an alternating projections method when the system gets
+			too large. This is *MUCH* slower than 'Direct', and doesn't
+			guarantee convergence, use with caution
+			'Greedy' uses a one point greedy algorithm for selecting the 
+			interpolation centers. Same remark applies as with 'AP'
+			'FastRBF' interfaces the FastRBF library. When using FastRBF, 
+			make sure your copy of the software is installed under 
+			the src/matlab/contrib directory and that the software 
+			is licensed properly.
+			The FastRBF matlab toolbox can be found at
+			http://www.farfieldtechnology.com
+			-->
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- Build DACE models (equivalent to Kriging but a custom implementation)  -->
+	<AdaptiveModelBuilder id="dace" type="SequentialModelBuilder" combineOutputs="false">
+		<!-- Maximum number of models built before selecting new samples -->	
+		<Option key="maximumRunLength" value="20"/>
+		<!-- Degeneration of score if a model gets older -->
+		<Option key="decay" value=".9"/>
+		<!-- Size of the best model history -->
+		<Option key="historySize" value="15"/>
+		<!-- One of best, last. When set to best the best `historySize' models are kept,
+		     - - when set to last, the last `historySize' models are kept -->
+		<Option key="strategy" value="best"/>
+		
+		<!-- <Option key="strategy" value="window"/> -->
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="DACE"/>
+			
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			<BasisFunction name="multiquadric" min=".1"    max="5"    scale="ln"/>
+			<!--<BasisFunction name="biharmonic"   min=".1"    max="5"    scale="ln"/> -->
+			<BasisFunction name="exponential"  min=".1,.5" max="5,2"  scale="ln,lin"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- Build DACE models using a genetic algorithm -->
+	<AdaptiveModelBuilder id="dacegenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!--See that matlab gads toolbox documentation for more information on the options-->
+		<Option key="populationType" value="custom"/>
+		<Option key="populationSize" value="15"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="DACE"/>
+			
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			<Option key="creationFcn" value="createInitialPopulation"/>
+			
+			<!-- Bounds for the shape parameter -->
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			<BasisFunction name="multiquadric" min=".1"    max="5"    scale="ln"/>
+			<!-- <BasisFunction name="biharmonic"   min=".1"    max="5"    scale="ln"/> -->
+			<BasisFunction name="exponential"  min=".1,.5" max="5,2"  scale="ln,lin"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build DACE using pattern search -->	
+	<AdaptiveModelBuilder id="daceps" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabPatternSearch">
+			<Option key="maxIterations" value="500"/>
+			<Option key="maxFunEvals" value="100"/>
+			<Option key="searchMethod" value="GPSPositiveBasis2N"/>
+			<Option key="pollMethod" value="MADSPositiveBasis2N"/>			
+		</Optimizer>
+
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="DACE"/>
+			
+			<!--Option key="multipleBasisFunctionsAllowed" value="false"/-->
+			
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build DACE models using PSO -->
+	<AdaptiveModelBuilder id="dacepso" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="PSOtOptimizer">
+			<Option key="typePSO" value="0"/>
+			<Option key="seedPSO" value="1"/>
+			<Option key="popSize" value="10"/>
+			<Option key="maxiters" value="10"/>
+			<Option key="epochInertia" value="8"/>
+			<Option key="gradientTermination" value="8"/>
+		</Optimizer>
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="DACE"/>
+			
+			<!--Option key="multipleBasisFunctionsAllowed" value="false"/-->
+			
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- Build GP using pattern search -->
+	<AdaptiveModelBuilder id="gpps" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabPatternSearch">
+			<Option key="maxIterations" value="500"/>
+			<Option key="maxFunEvals" value="100"/>
+			<Option key="searchMethod" value="GPSPositiveBasis2N"/>
+			<Option key="pollMethod" value="MADSPositiveBasis2N"/>			
+		</Optimizer>
+
+		<ModelFactory type="GaussianProcessFactory">
+			<Option key="covFunction" value="covSEiso"/>		
+			
+			<Option key="lowerThetaBound" value="-5"/>
+			<Option key="upperThetaBound" value="3"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build Gaussian Process models using a GA -->
+	<AdaptiveModelBuilder id="gpgenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!--See that matlab gads toolbox documentation for more information on the options-->
+		<Option key="populationType" value="doubleVector"/>
+		<Option key="populationSize" value="15"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory type="GaussianProcessFactory">
+            <Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>
+            <!--
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			<Option key="creationFcn" value="createInitialPopulation"/>
+            -->
+			
+			<Option key="covFunction" value="covSEiso"/>
+			<Option key="lowerThetaBound" value="-5"/>
+			<Option key="upperThetaBound" value="3"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- Build kriging models using Simulated Annealing -->
+	<AdaptiveModelBuilder id="krigingsim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabSimAnnealing" >
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+		
+		<!-- See the documentaion for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+			<Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly1"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			<BasisFunction>corrgauss</BasisFunction>
+		</ModelFactory>
+		
+	</AdaptiveModelBuilder>
+
+	<!-- Build kriging models using pattern search -->
+	<AdaptiveModelBuilder id="krigingps" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabPatternSearch">
+			<Option key="maxIterations" value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+			<Option key="searchMethod" value="GPSPositiveBasis2N"/>
+			<Option key="pollMethod" value="MADSPositiveBasis2N"/>			
+		</Optimizer>
+		
+		<ModelFactory type="KrigingFactory">
+			<Option key="regressionMetric" value="" />
+			<Option key="regressionFunction" value="regpoly1"/>
+			<Option key="multipleBasisFunctionsAllowed" value="true" />
+			<BasisFunction>corrgauss</BasisFunction>
+			<BasisFunction>correxp</BasisFunction>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build kriging models using the matlab optimization toolbox -->
+	<AdaptiveModelBuilder id="krigingoptim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabOptimizer">
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+
+		<!-- See the documentaion for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+            <Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly1"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			<BasisFunction>corrgauss</BasisFunction>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build kriging models using a genetic algorithm-->
+	<AdaptiveModelBuilder id="kriginggenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- If you specify "custom" as the population type you will be evolving models
+		and will use the genetic operators defined in the KrigingFactory class -->
+		<Option key="populationType" value="doubleVector"/>
+		<Option key="populationSize" value="10"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+
+        <!-- See the documentaion for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+			<Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>
+<!--			 <Option key="creationFcn" value="createInitialPopulation"/>
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/> 			-->
+					<!-- See the documentaion for possible regression and correlation functions -->
+		    
+            <Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly1"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			<BasisFunction>corrgauss</BasisFunction>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build kriging models using PSO -->
+	<AdaptiveModelBuilder id="krigingpso" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+
+		<Optimizer type="PSOtOptimizer">
+			<Option key="typePSO" value="0"/>
+			<Option key="seedPSO" value="1"/>
+			<Option key="popSize" value="10"/>
+			<Option key="maxiters" value="10"/>
+			<Option key="epochInertia" value="8"/>
+			<Option key="gradientTermination" value="8"/>
+		</Optimizer>
+	
+		<!-- See the documentaion for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+            <Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly1"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			<BasisFunction>corrgauss</BasisFunction>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build kriging models using NSGA-II, requires a multi-output or multi-measure setup -->
+	<AdaptiveModelBuilder id="krigingnsga" type="ParetoModelBuilder" combineOutputs="true">
+		<Option key="restartStrategy"	value="model"/>
+		<Option key="populationSize" value="30"/>
+		<Option key="maxGenerations" value="30"/>
+		<Option key="plotParetoFront" value="false"/>
+		<Option key="paretoMode" value="true"/>
+        
+		<!-- See the documentaion for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+            <Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly1"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			<BasisFunction>corrgauss</BasisFunction>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build kriging models randomly, useful as a baseline comparison -->
+	<AdaptiveModelBuilder id="krigingrandom" type="RandomModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!-- Build 100 random models before restarting -->
+		<Option key="runSize" value="100"/>
+		
+		<!-- See the documentaion for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+            <Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly1"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			<BasisFunction>corrgauss</BasisFunction>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build blind kriging models -->
+	<AdaptiveModelBuilder id="blindkriging" type="AdaptiveModelBuilder" combineOutputs="false">
+		<Option key="nBestModels" value="1" />
+		
+		<!-- See the documentation for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+            <Option key="regressionMetric" value="cvpe"/>
+			<Option key="regressionFunction" value="regpoly0"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			
+			<Option key="initialHp" value="0.5" />
+			<BasisFunction>corrgauss</BasisFunction>
+			
+			<Optimizer>fminconWithDerivatives</Optimizer>
+		</ModelFactory>
+	
+	</AdaptiveModelBuilder>
+
+	<!-- Build kriging models using the maximum likelihood to set the thetas -->
+	<AdaptiveModelBuilder id="kriging" type="AdaptiveModelBuilder" combineOutputs="false">
+		<Option key="nBestModels" value="1" />
+		
+		<!-- See the documentation for possible regression and correlation functions -->
+		<ModelFactory type="KrigingFactory">
+            <Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly0"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			
+			<Option key="initialHp" value="0.5" />
+			<BasisFunction>corrgauss</BasisFunction>
+			
+			<Optimizer>fminconWithDerivatives</Optimizer>
+		</ModelFactory>
+		
+	</AdaptiveModelBuilder>	
+	
+	<BasisFunction id="corrgauss" type="BasisFunction" name="corrgauss" >
+		<Parameter name="theta" min="-2" max="2" scale="log" duplicate="true" />
+	</BasisFunction>
+	
+	<BasisFunction id="correxp" type="BasisFunction" name="correxp" >
+		<Parameter name="theta" min="-2" max="2" scale="log" duplicate="true" />
+	</BasisFunction>
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- Build spline models using a GA -->
+	<AdaptiveModelBuilder id="splinesgenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<Option key="populationType" value="doubleVector"/>
+		<Option key="populationSize" value="10"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory id="spline" type="SplineFactory">
+			<Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>
+			<!-- <Option key="creationFcn" value="createInitialPopulation"/>
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/> -->
+
+			<Option key="smoothingBounds" value="0,1"/>	
+		</ModelFactory>
+	</AdaptiveModelBuilder>	
+
+	<!-- Build spline models using the Simulated Annealing modelbuilder -->
+	<AdaptiveModelBuilder id="splinessim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabSimAnnealing" >
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="spline" type="SplineFactory">
+			<Option key="smoothingBounds" value="0,1"/>		
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build spline models using the Pattern Search modelbuilder -->
+	<AdaptiveModelBuilder id="splinesps" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabPatternSearch">
+			<Option key="maxIterations" value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+			<Option key="searchMethod" value="GPSPositiveBasis2N"/>
+			<Option key="pollMethod" value="MADSPositiveBasis2N"/>			
+		</Optimizer>
+		
+		<ModelFactory id="spline" type="SplineFactory">
+			<Option key="smoothingBounds" value="0,1"/>				
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Use the Matlab optimization toolbox to build spline models -->
+	<AdaptiveModelBuilder id="splinesoptim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+
+		<Optimizer type="MatlabOptimizer">
+			<Option key="maxIterations" value="100"/>
+			<Option key="maxFunEvals"   value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="spline" type="SplineFactory">
+			<Option key="smoothingBounds" value="0,1"/>		
+		</ModelFactory>
+		
+	</AdaptiveModelBuilder>	
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- Simple linear/cubic/nearest neighbour interpolation models for scattered data.  For one D uses interp1, for nD uses griddata(n) -->
+   	<AdaptiveModelBuilder id="ipol" type="AdaptiveModelBuilder" combineOutputs="false">
+        <ModelFactory id="ipol" type="InterpolationFactory">
+			<!--  depending on the input dimension options are: linear, nearest, and cubic
+			if you are using Matlab r2009 or later you can also use 'natural' -->
+			<Option key="method" value="linear"/>	
+        </ModelFactory>
+    </AdaptiveModelBuilder>	
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+    <!-- Use a custom evolutionary-like strategy to generate ANN models, this is much faster than the GA approach
+	      but not necessarily better -->
+	<AdaptiveModelBuilder id="ann" type="SequentialModelBuilder" combineOutputs="false">
+		<Option key="maximumRunLength" value="15"/>
+		<!-- Degeneration of score if a model gets older -->
+		<Option key="decay" value=".99"/>
+		<!-- Size of the best model history -->
+		<Option key="historySize" value="6"/>
+		<!-- One of best, last. When set to best the best `historySize' models are kept,
+		 - - when set to last, the last `historySize' models are kept -->
+		<Option key="strategy" value="best"/>
+
+		<ModelFactory id="ann" type="ANNFactory">
+			<!--initial hidden layer dimension-->
+			<Option key="initialSize" 		value="3,3"/>
+			<!--comma separated list of allowed learning rules-->
+			<Option key="allowedLearningRules"	value="trainbr"/>
+			<!--performance function to use, empty means use the matlab default-->
+			<Option key="performFcn"		value=""/>
+			<!--how many epochs to train for-->
+			<Option key="epochs" 			value="300"/>
+			<!--max time to train for-->
+			<Option key="trainingTime"		value="Inf"/>
+			<!--range of initial random weights-->
+			<Option key="initWeightRange" 		value="-0.8,0.8"/>
+			<!--mutation changes x neurons at a time (in a random layer) with x in [lb ub]-->
+			<Option key="hiddenUnitDelta" 		value="-2,3"/>
+			<!--train until the error reaches this goal-->
+			<Option key="trainingGoal" 		value="0"/>
+			<!--show training progress every x epochs, set to NaN to disable-->
+			<Option key="trainingProgress" 		value="NaN"/>
+			<!--How to train the network, one of 'auto' or 'earlyStopping'
+				auto: train with early stopping unless regularization is employed
+				Set to any other value for simply training on all the data, doing nothing special -->
+			<Option key="trainMethod" 		value="auto"/>
+			<!--the training set - validation set - testset ratios-->
+			<Option key="earlyStoppingRatios" 	value="0.80,0.20,0"/>
+			<!-- Transfer function to use for all hidden layers and the output layer
+			So should be a list of max 2 items -->
+			<Option key="transferFunctionTemplate" 	value="tansig,purelin"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!--Use the matlab gads toolbox to select ANN parameters using a GA -->
+	<AdaptiveModelBuilder id="anngenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="continue"/>
+		<!--See that matlab gads toolbox documentation for more information on the options-->
+		<Option key="populationType" value="custom"/>
+		<Option key="populationSize" value="10"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory id="ann" type="ANNFactory">
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			<Option key="creationFcn" value="createInitialPopulation"/>
+			
+			<!--initial hidden layer dimension-->
+			<Option key="initialSize" 		value="3,3"/>
+			<!--comma separated list of allowed learning rules-->
+			<Option key="allowedLearningRules"	value="trainbr"/>
+			<!--performance function to use, empty means use the matlab default-->
+			<Option key="performFcn"		value=""/>
+			<!--how many epochs to train for-->
+			<Option key="epochs" 			value="300"/>
+			<!--max time to train for-->
+			<Option key="trainingTime"		value="Inf"/>
+			<!--range of initial random weights-->
+			<Option key="initWeightRange" 		value="-0.8,0.8"/>
+			<!--mutation changes x neurons at a time (in a random layer) with x in [lb ub]-->
+			<Option key="hiddenUnitDelta" 		value="-2,3"/>
+			<!--train until the error reaches this goal-->
+			<Option key="trainingGoal" 		value="0"/>
+			<!--show training progress every x epochs, set to NaN to disable-->
+			<Option key="trainingProgress" 		value="NaN"/>
+			<!--How to train the network, one of 'auto' or 'earlyStopping'
+				auto: train with early stopping unless regularization is employed
+				Set to any other value for simply training on all the data, doing nothing special -->
+			<Option key="trainMethod" 		value="auto"/>
+			<!--the training set - validation set - testset ratios-->
+			<Option key="earlyStoppingRatios" 	value="0.80,0.20,0"/>
+			<!-- Transfer function to use for all hidden layers and the output layer
+			So should be a list of max 2 items -->
+			<Option key="transferFunctionTemplate" 	value="tansig,purelin"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!--Fixed ANN model builder, allows you to choose the hidden layer structure manually Thus there is no optimization algorithm involved. -->
+	<AdaptiveModelBuilder id="annfixed" type="AdaptiveModelBuilder" combineOutputs="false">
+		<ModelFactory id="ann" type="ANNFactory">
+			<Option key="allowedLearningRules"	value="trainbr"/>
+			<Option key="initialSize" 		value="3,3"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!--Random ANN model builder, usefull as a baseline comparison -->
+	<AdaptiveModelBuilder id="annrandom" type="RandomModelBuilder" combineOutputs="false">
+		<!--This many iterations before allowing new samples-->
+		<Option key="runSize" value="10"/>
+		<ModelFactory id="ann" type="ANNFactory">
+			<Option key="allowedLearningRules"	value="trainbr,trainlm,trainscg"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!--Use the matlab gads toolbox to select ANN parameters using a GA (based on the FANN library) --> 	 
+	<AdaptiveModelBuilder id="fanngenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="continue"/>
+		<!--See that matlab gads toolbox documentation for more information on the options--> 	 
+		<Option key="populationType" value="custom"/> 	 
+		<Option key="populationSize" value="10"/> 	 
+		<Option key="crossoverFraction" value="0.7"/> 	 
+		<Option key="maxGenerations" value="10"/> 	 
+		<Option key="eliteCount" value="1"/> 	 
+		<Option key="stallGenLimit" value="4"/> 	 
+		<Option key="stallTimeLimit" value="Inf"/> 	 
+		
+		<ModelFactory id="fann" type="FANNFactory"> 	 
+			<Option key="crossoverFcn" value="crossover"/> 	 
+			<Option key="mutationFcn" value="mutation"/> 	 
+			<Option key="creationFcn" value="createInitialPopulation"/> 	 
+			
+			<!--initial hidden layer dimension--> 	 
+			<Option key="initialSize"               value="4,4"/> 	 
+			<!--how many epochs to train for--> 	 
+			<Option key="epochs"                    value="1500"/> 	 
+			<!--range of initial random weights--> 	 
+			<Option key="initWeightRange"           value="-0.8,0.8"/> 	 
+			<!--mutation changes x neurons at a time (in a random layer) with x in [lb ub]--> 	 
+			<Option key="hiddenUnitDelta"           value="-2,2"/> 	 
+			<!--train until the error reaches this goal--> 	 
+			<Option key="trainingGoal"              value="0"/> 	 
+		</ModelFactory> 	 
+	</AdaptiveModelBuilder> 	 
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!--Use the matlab gads toolbox to select ANN parameters using a GA (based on the NNSYSID library) --> 	 
+	<AdaptiveModelBuilder id="nanngenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="continue"/>
+		<!--See that matlab gads toolbox documentation for more information on the options--> 	 
+		<Option key="populationType" value="custom"/> 	 
+		<Option key="populationSize" value="10"/> 	 
+		<Option key="crossoverFraction" value="0.7"/> 	 
+		<Option key="maxGenerations" value="10"/> 	 
+		<Option key="eliteCount" value="1"/> 	 
+		<Option key="stallGenLimit" value="4"/> 	 
+		<Option key="stallTimeLimit" value="Inf"/> 	 
+		
+		<ModelFactory id="nann" type="NANNFactory"> 	 
+			<Option key="crossoverFcn" value="crossover"/> 	 
+			<Option key="mutationFcn" value="mutation"/> 	 
+			<Option key="creationFcn" value="createInitialPopulation"/> 	 
+			
+			<!--initial hidden layer dimension--> 	 
+			<Option key="initialSize" value="10"/> 	 
+			<!--how many epochs to train for--> 	 
+			<Option key="epochs" value="500"/> 	 
+			<!--range of initial random weights--> 	 
+			<Option key="initWeightRange" value="-0.8,0.8"/> 	 
+			<!--mutation changes x neurons at a time (in a random layer) with x in [lb ub]--> 	 
+			<Option key="hiddenUnitDelta" value="-2,3"/> 	 
+			<!-- pruning techniques used : 0: none, 1: Mag Threshold, 2: Iterative Mag, 3: OBD, 4: OBS --> 	 
+			<Option key="allowedPruneTechniques" value="0,1,2,3,4"/>
+			<!-- threshold for magnitude based pruning --> 	 
+			<Option key="threshold" value="0.2"/> 	 
+			<!-- retrain epochs while pruning--> 	 
+			<Option key="retrain" value="50"/> 	 
+		</ModelFactory> 	 
+	</AdaptiveModelBuilder> 	 
+ 
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!--Use the matlab gads toolbox to select LSSVM parameters using a GA (based on LSSVM-lab) -->
+	<AdaptiveModelBuilder id="lssvmgenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<Option key="populationType" value="doubleVector"/>
+		<Option key="populationSize" value="10"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory id="LSSVM" type="SVMFactory">
+			<Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>
+			<!-- <Option key="creationFcn" value="createInitialPopulation"/>
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/> -->
+			
+			<Option key="backend" 			value="lssvm"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Use the matlab gads toolbox to select LSSVM parameters using Pattern Search -->
+	<AdaptiveModelBuilder id="lssvmps" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		
+		<!--See that matlab gads toolbox documentation for more information on the options-->		
+		<Optimizer type="MatlabPatternSearch">
+			<Option key="maxIterations" value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+			<Option key="searchMethod" value="GPSPositiveBasis2N"/>
+			<Option key="pollMethod" value="MADSPositiveBasis2N"/>			
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 				value="lssvm"/>
+			<Option key="kernel" 				value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!--Use the matlab optimization toolbox to select LSSVM parameters -->
+	<AdaptiveModelBuilder id="lssvmoptim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!--See the interface matlab file and the optimization toolbox documentation for more information on the options-->
+		<Optimizer type="MatlabOptimizer">
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 				value="lssvm"/>
+			<Option key="kernel" 				value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!--Use the PSO toolbox to select LSSVM parameters using Particle Swarm Optimization -->
+	<AdaptiveModelBuilder id="lssvmpso" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+			
+		<Optimizer type="PSOtOptimizer">
+			<Option key="typePSO" value="0"/>
+			<Option key="seedPSO" value="1"/>
+			<Option key="popSize" value="10"/>
+			<Option key="maxiters" value="10"/>
+			<Option key="epochInertia" value="8"/>
+			<Option key="gradientTermination" value="8"/>
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 				value="lssvm"/>
+			<Option key="kernel" 				value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!--Use the matlab gads toolbox to select LSSVM parameters using simulated annealing -->
+	<AdaptiveModelBuilder id="lssvmsim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!--See the interface matlab file and the gads toolbox documentation for more information on the options-->
+		<Optimizer type="MatlabSimAnnealing" >
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 				value="lssvm"/>
+			<Option key="kernel" 				value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!--Use the DIviding RECtangles algorithm to optimize the LS-SVM hyperparameters-->
+	<AdaptiveModelBuilder id="lssvmdirect" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface" value="false"/>
+		
+		<Optimizer id="opt" type="DirectOptimizer">
+			<Option key="maxits" value="100"/>
+			<Option key="maxevals" value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 				value="lssvm"/>
+			<Option key="kernel" 				value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!--Generate LS-SVM models using Efficient Global Optimization (EGO).  This means internally a kriging model is constructed
+		to predict where one can expect to find good model parameters -->
+	<AdaptiveModelBuilder id="lssvmego" type="EGOModelBuilder" combineOutputs="false">
+		<Option key="numIterations" value="10"/>
+		<Option key="initPopSize" value="5"/>
+		<Option key="restartStrategy"	value="continue"/>
+		
+		<ModelFactory id="LSSVM" type="SVMFactory">
+			<Option key="backend"               value="lssvm"/>
+			<Option key="kernel"                value="rbf"/>
+			<Option key="kernelParamBounds"     value="-4,4"/>
+			<Option key="regParamBounds"        value="-5,5"/>
+		</ModelFactory>
+		
+		<!-- Optimizer for the internal kriging model -->
+		<Optimizer>fminconWithDerivatives</Optimizer>
+		
+		<!-- Sampleselector to use -->
+		<SampleSelector>expectedImprovement</SampleSelector>
+	</AdaptiveModelBuilder>
+	
+	<!--Generate random LSSVM models, useful as a baseline comparison -->
+	<AdaptiveModelBuilder id="lssvmrandom" type="RandomModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		
+		<Option key="runSize" value="20"/>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 				value="lssvm"/>
+			<Option key="kernel" 				value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!--Use the matlab gads toolbox to select SVM parameters using a GA (based on libsvm) -->
+	<AdaptiveModelBuilder id="svmgenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!--See the interface matlab file and the gads toolbox documentation for more information on the options-->
+		<Option key="populationType" value="doubleVector"/>
+		<Option key="populationSize" value="10"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>
+			<!-- <Option key="creationFcn" value="createInitialPopulation"/>
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>-->
+			
+			<Option key="backend" 			value="libSVM"/>
+			<Option key="type" 				value="epsilon-SVR"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" value="-4,4"/>
+			<Option key="regParamBounds" 	value="-5,5"/>
+			<Option key="nu" 				value="0.01"/>
+			<Option key="epsilon" 			value="0"/>
+			<Option key="stoppingTolerance"	value="1e-6"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!--Use the matlab gads toolbox to select SVM parameters using Pattern Search -->
+	<AdaptiveModelBuilder id="svmps" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		
+		<!--See the interface matlab file and the gads toolbox documentation for more information on the options-->
+		<Optimizer type="MatlabPatternSearch">
+			<Option key="maxIterations" value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+			<Option key="searchMethod" value="GPSPositiveBasis2N"/>
+			<Option key="pollMethod" value="MADSPositiveBasis2N"/>			
+		</Optimizer>
+
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 			value="libSVM"/>
+			<Option key="type" 				value="epsilon-SVR"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+			<Option key="nu" 				value="0.01"/>
+			<Option key="epsilon" 			value="0"/>
+			<Option key="stoppingTolerance"		value="1e-6"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!--Use the matlab gads toolbox to select SVM parameters using simulated annealing -->
+	<AdaptiveModelBuilder id="svmsim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!--See the interface matlab file and the gads toolbox documentation for more information on the options-->		
+		<Optimizer type="MatlabSimAnnealing" >
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 			value="libSVM"/>
+			<Option key="type" 			value="epsilon-SVR"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+			<Option key="nu" 			value="0.01"/>
+			<Option key="epsilon" 			value="0"/>
+			<Option key="stoppingTolerance"		value="1e-6"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	
+	<!--Use the matlab optimization toolbox to select SVM parameters -->
+	<AdaptiveModelBuilder id="svmoptim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		<!--See the interface matlab file and the optimization toolbox documentation for more
+			information on the options-->
+		<Optimizer type="MatlabOptimizer">
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 			value="libSVM"/>
+			<Option key="type" 			value="epsilon-SVR"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+			<Option key="nu" 			value="0.01"/>
+			<Option key="epsilon" 			value="0"/>
+			<Option key="stoppingTolerance"		value="1e-6"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!--Use the PSO toolbox to select SVM parameters using Particle Swarm Optimization -->
+	<AdaptiveModelBuilder id="svmpso" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		
+		<Optimizer id="pso" type="PSOtOptimizer">
+			<Option key="typePSO" value="0"/>
+			<Option key="seedPSO" value="1"/>
+			<Option key="popSize" value="10"/>
+			<Option key="maxiters" value="10"/>
+			<Option key="epochInertia" value="8"/>
+			<Option key="gradientTermination" value="8"/>
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 			value="libSVM"/>
+			<Option key="type" 			value="epsilon-SVR"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+			<Option key="nu" 			value="0.01"/>
+			<Option key="epsilon" 			value="0"/>
+			<Option key="stoppingTolerance"		value="1e-6"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!--Use the DIviding RECtangles algorithm to optimize the SVM hyperparameters-->
+	<AdaptiveModelBuilder id="svmdirect" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface" value="false"/>
+		
+		<Optimizer id="opt" type="DirectOptimizer">
+			<Option key="maxits" value="100"/>
+			<Option key="maxevals" value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 			value="libSVM"/>
+			<Option key="type" 			value="epsilon-SVR"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+			<Option key="nu" 			value="0.01"/>
+			<Option key="epsilon" 			value="0"/>
+			<Option key="stoppingTolerance"		value="1e-6"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- Generate random SVMs, useful as a baseline comparison -->
+	<AdaptiveModelBuilder id="svmrandom" type="RandomModelBuilder" combineOutputs="false">
+		<!-- Plot the optimization surface, visualizes the search through the parameter space (2D only) -->
+		<Option key="plotOptimSurface"	value="false"/>
+		
+		<Option key="runSize" value="20"/>
+		
+		<ModelFactory id="SVM" type="SVMFactory">
+			<Option key="backend" 			value="libSVM"/>
+			<Option key="type" 			value="epsilon-SVR"/>
+			<Option key="kernel" 			value="rbf"/>
+			<Option key="kernelParamBounds" 	value="-2,2"/>
+			<Option key="regParamBounds" 		value="-5,5"/>
+			<Option key="nu" 			value="0.01"/>
+			<Option key="epsilon" 			value="0"/>
+			<Option key="stoppingTolerance"		value="1e-6"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+		
+	<!--Genetic model builder for Radial Basis Function Neural networks  -->
+	<AdaptiveModelBuilder id="rbfnngenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		<Option key="populationType" value="doubleVector"/>
+		<Option key="populationSize" value="10"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory id="rbfnn" type="RBFNNFactory">
+			<Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>
+    <!--		<Option key="creationFcn" value="createInitialPopulation"/>
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/> -->
+			
+			<!--Error goal when constructing the network-->
+			<Option key="goal" value="0"/>
+			<!--Initial value for the spread -->
+			<Option key="spread" value="1"/>
+			<!--Spread bounds -->
+			<Option key="spreadBounds" value="0.0001,30"/>
+			<!--Maximum number of neurons to use per network-->
+			<Option key="maxNeurons" value="500"/>
+			<Option key="trainingProgress" value="Inf"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build Radial Basis Function Neural networks using Pattern Search -->
+	<AdaptiveModelBuilder id="rbfnnps" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabPatternSearch">
+			<Option key="maxIterations" value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+			<Option key="searchMethod" value="GPSPositiveBasis2N"/>
+			<Option key="pollMethod" value="MADSPositiveBasis2N"/>			
+		</Optimizer>
+
+		<ModelFactory id="rbfnn" type="RBFNNFactory">
+			<!--Error goal when constructing the network-->
+			<Option key="goal" 			value="0"/>
+			<!--Initial value for the spread -->
+			<Option key="spread"			value="1"/>
+			<!--Spread bounds -->
+			<Option key="spreadBounds"		value="0.0001,30"/>
+			<!--Maximum number of neurons to use per network-->
+			<Option key="maxNeurons"		value="500"/>
+			<Option key="trainingProgress" 		value="Inf"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+
+	<!-- Build Radial Basis Function Neural networks using Simulated Annealing -->
+	<AdaptiveModelBuilder id="rbfnnsim" type="OptimizerModelBuilder" combineOutputs="false">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="intelligent"/>
+		
+		<Optimizer type="MatlabSimAnnealing" >
+			<Option key="maxIterations" 	value="100"/>
+			<Option key="maxFunEvals" value="20"/>
+		</Optimizer>
+		
+		<ModelFactory id="rbfnn" type="RBFNNFactory">
+			<!--Error goal when constructing the network-->
+			<Option key="goal" 			value="0"/>
+			<!--Initial value for the spread -->
+			<Option key="spread"			value="1"/>
+			<!--Spread bounds -->
+			<Option key="spreadBounds"		value="0.0001,30"/>
+			<!--Maximum number of neurons to use per network-->
+			<Option key="maxNeurons"		value="500"/>
+			<Option key="trainingProgress" 		value="Inf"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!--A heterogeneous genetic model builder.  Uses a genetic algorithm with speciation (island model)
+	      to evolve different model types together.  The models types compete against each other until the
+	      best model prevails. So this model builder is a way to automatically select the best model type. -->
+	<AdaptiveModelBuilder id="heterogenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<Option key="restartStrategy"	value="continue"/>
+		<Option key="populationType" value="custom"/>
+		<!-- the population size must match the number of model interfaces minus 1 -->
+		<Option key="populationSize" value="10,10,10"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="crossoverFraction" value="0.7"/> 
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		<Option key="migrationDirection" value="forward"/>
+		<Option key="migrationFraction" value="0.1"/>
+		<Option key="migrationInterval" value="4"/>
+		<!-- Do we want to prevent any model type going completely extinct -->
+		<Option key="extinctionPrevention" value="yes"/>	
+	
+		<ModelFactory id="hetero" type="HeterogeneousFactory">
+			<Option key="creationFcn" value="createInitialPopulation"/>
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			
+			<ModelFactory id="Ensemble" type="EnsembleFactory">
+				<Option key="crossoverFcn" value="crossover"/>
+				<Option key="mutationFcn" value="mutation"/>
+				<!-- the maximum ensemble size -->
+				<Option key="maxSize" value="4"/>
+				<!-- Ensemble members should differ this much percent -->
+				<Option key="equalityThreshold" value="0.05"/>
+			</ModelFactory>
+
+			<ModelFactory id="LSSVM" type="SVMFactory">
+				<Option key="creationFcn" value="createInitialPopulation"/>
+				<Option key="crossoverFcn" value="crossover"/>
+				<Option key="mutationFcn" value="mutation"/>
+				
+				<Option key="backend" 			value="lssvm"/>
+				<Option key="kernel" 			value="rbf"/>
+				<Option key="kernelParamBounds" 	value="-2,2"/>
+				<Option key="regParamBounds" 		value="-5,5"/>
+			</ModelFactory>
+			
+			<ModelFactory type="RationalFactory">
+				<Option key="crossoverFcn" value="crossover"/>
+				<Option key="mutationFcn" value="mutation"/>
+				<Option key="creationFcn" value="createInitialPopulation"/>
+				<Option key="weightBounds" value="1,40"/>
+				<Option key="percentBounds" value="1,100"/>
+				<Option key="percentRational" value="70"/>
+				<Option key="frequencyVariable" value="off"/>
+				<Option key="basis" value="power"/>
+			</ModelFactory>
+
+			<ModelFactory type="BFFactory">
+				<Option key="type" value="RBF"/>
+
+				<Option key="crossoverFcn" value="crossover"/>
+				<Option key="mutationFcn" value="mutation"/>
+				<Option key="creationFcn" value="createInitialPopulation"/>
+				
+				<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+				<BasisFunction name="multiquadric" min=".1"    max="5"    scale="ln"/>
+				<BasisFunction name="exponential"  min=".1,.5" max="5,2"  scale="ln,lin"/>
+				
+				<Option key="regression" value="-1,0,1,2"/>
+				<Option key="backend" value="Direct"/>
+			</ModelFactory>			
+		</ModelFactory>
+	</AdaptiveModelBuilder>	
+	
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+
+	<!-- Latin Hypercube DOE -->
+	<InitialDesign id="lhd" type="LatinHypercubeDesign">
+		<!-- how many points to generate -->
+		<Option key="points" value="20"/>
+		<!--<Option key="weight" value="0.5"/>-->
+		<!--<Option key="coolingFactor" value="0.9"/>-->
+		<!--<Option key="p" value="5.0"/>-->
+	</InitialDesign>
+
+	<!-- Specifies a simple Factorial Design (uniform grid) -->
+	<InitialDesign id="factorial" type="FactorialDesign">
+		<!-- how many points to generate for each dimension as a vector -->
+		<!-- a scalar value (l) is the same as [l l ... l] (length of input dimension) -->
+		<Option key="levels" value="3" />
+	</InitialDesign>
+
+	<!-- Specifies a trivial Random design -->
+	<InitialDesign id="random" type="RandomDesign">
+		<Option key="points" value="20"/>
+	</InitialDesign>
+	
+	<!-- Specifies a combined Latin HyperCube and FactorialDesign -->
+	<InitialDesign id="lhdWithCornerPoints" type="CombinedDesign">
+		<!-- Select samples in a Latin Hypercube Design -->
+		<InitialDesign type="LatinHypercubeDesign">
+			<!-- how many points to generate -->
+			<Option key="points" value="20"/>
+			<!--<Option key="weight" value="0.5"/>-->
+			<!--<Option key="coolingFactor" value="0.9"/>-->
+			<!--<Option key="p" value="5.0"/>-->
+		</InitialDesign>
+
+		<InitialDesign type="FactorialDesign">
+			<!-- how many points to generate for each dimension as a vector -->
+			<!-- a scalar value (l) is the same as [l l ... l] (length of input dimension) -->
+			<Option key="levels" value="2" />
+		</InitialDesign>
+	</InitialDesign>
+	
+	<!-- Use an exsiting dataset as the initial design -->
+	<InitialDesign id="dataset" type="DatasetDesign">
+		<!-- Where should we load the dataset from? -->
+		<Option key="filename" value="/path/to/your/dataset.txt"/>
+		<!-- Does the dataset also contain responses? (instead of only the inputs) 
+		     If so, hasOutputs must be set to yes and the range of the inputs in the file must
+		     match the range of the simulator.  If not, the range of the inputs must be [-1 1].
+		-->
+		<Option key="hasOutputs" value="no"/>
+	</InitialDesign>
+
+	<!-- /////////////////////////////////////////////////////////////////////// -->
+	
+	<!-- Different optimizers that can be used in other components, others are possible (See wiki)  -->
+	
+	<!-- The DIviding RECtangles (DIRECT) optimization technique of Donald D. R. Jones -->
+	<Optimizer id="directOptimizer" type="DirectOptimizer">
+		<Option key="maxevals" value="1000" />
+		<Option key="maxits" value="300" />
+	</Optimizer>
+	
+	<!-- Matlab Pattern search (patternsearch function of Matlab Direct Search toolbox) -->
+	<Optimizer id="patternsearch" type="MatlabPatternSearch">
+		<Option key="maxIterations" value="500" />
+		<Option key="maxFunEvals" value="1000" />
+	</Optimizer>
+	
+	<!-- Matlab fmincon (Active-set) using derivative information (used for kriging models in SUMO-toolbox)-->
+	<Optimizer id="fminconWithDerivatives" type="MatlabOptimizer">
+		<Option key="gradobj" value="on" />
+		<Option key="derivativecheck" value="off" />
+		<Option key="diagnostics" value="off" />
+		<Option key="algorithm" value="active-set" />
+	</Optimizer>
+	
+</ToolboxConfiguration>
+

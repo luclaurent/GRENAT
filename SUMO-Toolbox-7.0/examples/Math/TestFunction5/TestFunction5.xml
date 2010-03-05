@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<Simulator>
+	<Name>TestFunction5</Name>
+	<Description>
+		Test function from http://www.mathworks.com/company/newsletters/digest/sept04/optimization.html
+ 	</Description>
+	
+	<!-- The input parameters -->
+	<InputParameters>
+		<Parameter name="x" type="real" minimum="-6" maximum="6"/>
+		<Parameter name="y" type="real" minimum="-6" maximum="6"/>
+	</InputParameters>
+	
+	<!-- The output parameters -->
+	<OutputParameters>
+		<Parameter name="out" type="real"/>
+	</OutputParameters>
+	
+	<Implementation>
+		
+		<Executables>
+			<Executable platform="matlab">TestFunction5</Executable>
+		</Executables>
+		
+		<DataFiles>			
+			<ScatteredDataFile id="default">TestFunction4Scattered</ScatteredDataFile>
+			<ScatteredDataFile id="validation">TestFunction4Scattered2</ScatteredDataFile>
+		</DataFiles>
+		
+	</Implementation>
+</Simulator>

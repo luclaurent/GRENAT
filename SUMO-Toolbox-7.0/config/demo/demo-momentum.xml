@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- Revision Id: $Id: demo-momentum.xml 6377 2009-12-11 11:20:29Z dgorissen $ -->
+
+<!-- This is an example of how to couple the SUMO Toolbox to ADS Momentum to model an EM problem -->
+
+<ToolboxConfiguration version="7.0">
+
+	<Plan>
+		<LevelPlot>default</LevelPlot>
+		<ContextConfig>default</ContextConfig>
+		<SUMO>default</SUMO>
+		<InitialDesign>lhdWithCornerPoints</InitialDesign>
+		<SampleSelector>lola-voronoi</SampleSelector>
+		
+        <Simulator>private\Momentum\Filter</Simulator>
+		<SampleEvaluator>matlab</SampleEvaluator>	
+		
+        <Measure type="ValidationSet" target="0" use="off" errorFcn="meanSquareError">
+			<Option key="type" value="file"/>
+			<SampleEvaluator type="ibbt.sumo.sampleevaluators.datasets.ScatteredDatasetSampleEvaluator">
+                <Option key="id" value="small"/>
+            </SampleEvaluator>
+        </Measure>
+            
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>ann</AdaptiveModelBuilder>
+    		<Measure type="SampleError" target="0" use="on" errorFcn="meanSquareError"/>
+        	<Measure type="LRMMeasure" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S11" complexHandling="split"/>
+			</Outputs>
+		</Run>
+	
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>rationalgenetic</AdaptiveModelBuilder>
+    		<Measure type="CrossValidation" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S11" complexHandling="complex"/>
+			</Outputs>
+		</Run>
+	
+        <!--
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>dace</AdaptiveModelBuilder>
+    		<Measure type="CrossValidation" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S11" complexHandling="complex"/>
+			</Outputs>
+		</Run>
+        
+        	
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>kriging</AdaptiveModelBuilder>
+    		<Measure type="CrossValidation" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S11" complexHandling="complex"/>
+			</Outputs>
+		</Run>
+        -->
+        
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>ann</AdaptiveModelBuilder>
+    		<Measure type="SampleError" target="0" use="on" errorFcn="meanSquareError"/>
+        	<Measure type="LRMMeasure" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S12" complexHandling="split"/>
+			</Outputs>
+		</Run>
+	
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>rationalgenetic</AdaptiveModelBuilder>
+    		<Measure type="CrossValidation" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S12" complexHandling="complex"/>
+			</Outputs>
+		</Run>
+	
+        <!--
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>dace</AdaptiveModelBuilder>
+    		<Measure type="CrossValidation" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S12" complexHandling="complex"/>
+			</Outputs>
+		</Run>
+        	
+		<Run name="#simulator#_#output#_#adaptivemodelbuilder#" repeat="1">
+            <AdaptiveModelBuilder>kriging</AdaptiveModelBuilder>
+    		<Measure type="CrossValidation" target="0" use="on" errorFcn="meanSquareError"/>
+		
+			<Outputs>
+				<Output name="S12" complexHandling="complex"/>
+			</Outputs>
+		</Run>
+        -->
+    </Plan>
+
+
+	<ContextConfig id="default">
+		<OutputDirectory>output</OutputDirectory>
+		
+		<PlotOptions>
+			<Option key="saveModels" value="true"/>
+			<Option key="plotModels" value="false"/>
+			<Option key="withContour" value="true"/>
+			<Option key="plotContour" value="false" />
+			<Option key="outputType" value="png"/>
+		</PlotOptions>
+
+		<Option key="keepOldModels" value="off"/>
+		<Option key="parallelMode" value="off"/>
+        
+		<Path>
+		</Path>
+
+		<Profiling>
+			<Profiler name=".*" enabled="true">
+				<Output type="Docked"/>
+				<Output type="toPanel"/>
+				<Output type="toImage"/>
+				<Output type="toFile"/>
+			</Profiler>
+						
+		</Profiling>
+		
+	</ContextConfig>
+	
+	<Logging>
+		<RootLogger>
+		
+			<Option key="runsInMainLog" value="true"/>
+			<Option key="Level" value="INFO"/>
+
+			<Handlers>
+				<ConsoleHandler>
+					<Option key="Level" value="INFO"/>
+				</ConsoleHandler>
+
+				<FileHandler>
+					<Option key="Level" value="ALL"/>
+				</FileHandler>
+			</Handlers>
+		</RootLogger>
+		
+		<Option key="ibbt.sumo" value="FINEST"/> 
+		<Option key="Matlab" value="FINEST"/> 
+	</Logging>
+	
+	<SUMO id="default" type="SUMO">
+		<Option key="createMovie" value="yes"/>
+		<Option key="minimumTotalSamples" value="0"/>
+		<Option key="maximumTotalSamples" value="5100"/>
+		<Option key="maximumTime" value="Inf"/>
+		<Option key="maxModelingIterations" value="Inf"/>
+		<Option key="seedRandomState" value="default"/>			
+		<Option key="stopOnError" value="true"/>
+		<Option key="minimumInitialSamples" value="100%"/>
+		<Option key="maximumSamples" value="5"/>
+		<Option key="minimumAdaptiveSamples" value="100" />
+	</SUMO>
+	
+    	<!-- Use a custom evolutionary-like strategy to generate ANN models, this is much faster than the GA approach
+        but not necessarily better -->
+	<AdaptiveModelBuilder id="ann" type="SequentialModelBuilder" combineOutputs="true">
+		<Option key="maximumRunLength" value="30"/>
+		<!-- Degeneration of score if a model gets older -->
+		<Option key="decay" value=".99"/>
+		<!-- Size of the best model history -->
+		<Option key="historySize" value="7"/>
+		<!-- One of best, last. When set to best the best `historySize' models are kept,
+		 - - when set to last, the last `historySize' models are kept -->
+		<Option key="strategy" value="best"/>
+
+		<ModelFactory id="ann" type="ANNFactory">
+			<!--initial hidden layer dimension-->
+			<Option key="initialSize" 		value="1,1"/>
+			<!--comma separated list of allowed learning rules-->
+			<Option key="allowedLearningRules"	value="trainbr"/>
+			<!--performance function to use, empty uses training rule default default-->
+			<Option key="performFcn"		value=""/>
+			<!--how many epochs to train for-->
+			<Option key="epochs" 			value="300"/>
+			<!--max time to train for-->
+			<Option key="trainingTime"		value="Inf"/>
+			<!--range of initial random weights-->
+			<Option key="initWeightRange" 		value="-0.8,0.8"/>
+			<!--mutation changes x neurons at a time (in a random layer) with x in [lb ub]-->
+			<Option key="hiddenUnitDelta" 		value="-2,3"/>
+			<!--train until the error reaches this goal-->
+			<Option key="trainingGoal" 		value="0"/>
+			<!--show training progress every x epochs, set to NaN to disable-->
+			<Option key="trainingProgress" 		value="NaN"/>
+			<!--How to train the network, one of 'auto' or 'earlyStopping'
+				auto: train with early stopping unless regularization is employed
+				Set to any other value for simply training on all the data, doing nothing special -->
+			<Option key="trainMethod" 		value="auto"/>
+			<!--the training set - validation set - testset ratios-->
+			<Option key="earlyStoppingRatios" 	value="0.80,0.20,0"/>
+			<!-- Transfer function to use for all hidden layers and the output layer
+			So should be a list of max 2 items -->
+			<Option key="transferFunctionTemplate" 	value="tansig,purelin"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+		
+	<AdaptiveModelBuilder id="anngenetic" type="GeneticModelBuilder" combineOutputs="true">
+		<!-- Re-start strategy for resuming the optimization process between sampling iterations.
+		     One of 'random','continue','model' and 'intelligent' (Default).  See the docs for more information -->
+		<Option key="restartStrategy"	value="continue"/>
+		<!--See that matlab gads toolbox documentation for more information on the options-->
+		<Option key="populationType" value="custom"/>
+		<Option key="populationSize" value="10"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="maxGenerations" value="10"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="4"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory id="ann" type="ANNFactory">
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			<Option key="creationFcn" value="createInitialPopulation"/>
+			
+			<!--initial hidden layer dimension-->
+			<Option key="initialSize" 		value="3"/>
+			<!--comma separated list of allowed learning rules-->
+			<Option key="allowedLearningRules"	value="trainbr"/>
+			<!--performance function to use, empty uses training rule default default-->
+			<Option key="performFcn"		value=""/>
+			<!--how many epochs to train for-->
+			<Option key="epochs" 			value="300"/>
+			<!--max time to train for-->
+			<Option key="trainingTime"		value="Inf"/>
+			<!--range of initial random weights-->
+			<Option key="initWeightRange" 		value="-0.8,0.8"/>
+			<!--mutation changes x neurons at a time (in a random layer) with x in [lb ub]-->
+			<Option key="hiddenUnitDelta" 		value="-2,3"/>
+			<!--train until the error reaches this goal-->
+			<Option key="trainingGoal" 		value="0"/>
+			<!--show training progress every x epochs, set to NaN to disable-->
+			<Option key="trainingProgress" 		value="NaN"/>
+			<!--How to train the network, one of 'auto' or 'earlyStopping'
+				auto: train with early stopping unless regularization is employed
+				Set to any other value for simply training on all the data, doing nothing special -->
+			<Option key="trainMethod" 		value="auto"/>
+			<!--the training set - validation set - testset ratios-->
+			<Option key="earlyStoppingRatios" 	value="0.80,0.20,0"/>
+			<!-- Transfer function to use for all hidden layers and the output layer
+			So should be a list of max 2 items -->
+			<Option key="transferFunctionTemplate" 	value="tansig,purelin"/>
+		</ModelFactory>
+	  </AdaptiveModelBuilder>
+      
+	<AdaptiveModelBuilder id="rationalgenetic" type="GeneticModelBuilder" combineOutputs="false">
+		<!--See that matlab gads toolbox documentation for more information on the options-->
+		<Option key="restartStrategy"	value="continue"/>
+		<Option key="populationType" value="custom"/>
+		<Option key="populationSize" value="20"/>
+		<Option key="crossoverFraction" value="0.7"/>
+		<Option key="maxGenerations" value="20"/>
+		<Option key="eliteCount" value="1"/>
+		<Option key="stallGenLimit" value="5"/>
+		<Option key="stallTimeLimit" value="Inf"/>
+		
+		<ModelFactory type="RationalFactory">
+			<Option key="crossoverFcn" value="crossover"/>
+			<Option key="mutationFcn" value="mutation"/>
+			<Option key="creationFcn" value="createInitialPopulation"/>
+			<!-- Use the next three functions instead of the previous three if you set the
+			      population type to doubleVector -->
+			<!--<Option key="creationFcn" value="@gacreationuniform"/>
+			<Option key="crossoverFcn" value="@crossoverheuristic"/>
+			<Option key="mutationFcn" value="@mutationadaptfeasible"/>-->
+
+ 			<!-- Bounds for the weights of the rational modeller -->
+			<Option key="weightBounds" value="1,40"/>
+			<!-- Bounds for the percentage of degrees of freedom wrt number of samples -->
+			<Option key="percentBounds" value="1,100"/>
+			<!-- Regardless of the percentage bounds, never use more than this many degrees of freedom -->
+			<Option key="maxDegrees" value="80"/>
+			<!-- When randomizing rational flags, what percentage should be set -->
+			<Option key="percentRational" value="70"/>
+			<!-- If a variable is named "f" of "frequency" 
+				it will be modelled differently, if this is set to auto -->
+			<!-- If this field is set to a variable name, that variable will be considered to be the frequency -->
+			<Option key="frequencyVariable" value="auto"/>
+			<!-- Base function for interpolation, one of chebyshev, power, legendre -->
+			<Option key="basis" value="power"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+    
+    <!-- Build Radial Basis Function models -->
+	<AdaptiveModelBuilder id="rbf" type="SequentialModelBuilder" combineOutputs="false">
+		<!-- Maximum number of models built before selecting new samples -->	
+		<Option key="maximumRunLength" value="20"/>
+		<!-- Degeneration of score if a model gets older -->
+		<Option key="decay" value=".9"/>
+		<!-- Size of the best model history -->
+		<Option key="historySize" value="15"/>
+		<!-- One of best, last. When set to best the best `historySize' models are kept,
+		- - when set to last, the last `historySize' models are kept -->
+		<Option key="strategy" value="best"/>
+		
+		<!-- <Option key="strategy" value="window"/> -->
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="RBF"/>
+			
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			<BasisFunction name="multiquadric" min=".1"    max="5"    scale="ln"/>
+			<!--<BasisFunction name="biharmonic"   min=".1"    max="5"    scale="ln"/> -->
+			<BasisFunction name="exponential"  min=".1,.5" max="5,2"  scale="ln,lin"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+    
+    	<!-- Build DACE models (equivalent to Kriging but a custom implementation)  -->
+	<AdaptiveModelBuilder id="dace" type="SequentialModelBuilder" combineOutputs="false">
+		<!-- Maximum number of models built before selecting new samples -->	
+		<Option key="maximumRunLength" value="20"/>
+		<!-- Degeneration of score if a model gets older -->
+		<Option key="decay" value=".9"/>
+		<!-- Size of the best model history -->
+		<Option key="historySize" value="15"/>
+		<!-- One of best, last. When set to best the best `historySize' models are kept,
+		     - - when set to last, the last `historySize' models are kept -->
+		<Option key="strategy" value="best"/>
+		
+		<!-- <Option key="strategy" value="window"/> -->
+		
+		<ModelFactory type="BFFactory">
+			<Option key="type" value="DACE"/>
+			
+			<BasisFunction name="gaussian"     min=".1"    max="5"    scale="ln"/>
+			<BasisFunction name="multiquadric" min=".1"    max="5"    scale="ln"/>
+			<!--<BasisFunction name="biharmonic"   min=".1"    max="5"    scale="ln"/> -->
+			<BasisFunction name="exponential"  min=".1,.5" max="5,2"  scale="ln,lin"/>
+			
+			<Option key="regression" value="-1,0,1,2"/>
+			<Option key="backend" value="AP"/>
+		</ModelFactory>
+	</AdaptiveModelBuilder>
+    
+    <AdaptiveModelBuilder id="kriging" type="AdaptiveModelBuilder" combineOutputs="false">
+		
+		<Option key="nBestModels" value="1" />
+		
+		<!-- See the documentation for possible regression and correlation functions -->
+		<ModelFactory id="kriging" type="KrigingFactory">
+            <Option key="regressionMetric" value=""/>
+			<Option key="regressionFunction" value="regpoly0"/>
+			<Option key="multipleBasisFunctionsAllowed" value="false" />
+			
+			<Option key="initialTheta" value="0.5" />
+			<BasisFunction name="corrgauss" min="-2" max="2" scale="log"/>
+			
+			<Optimizer>fminconWithDerivatives</Optimizer>
+		</ModelFactory>
+		
+	</AdaptiveModelBuilder>	
+    
+	<InitialDesign id="factorial" type="FactorialDesign">
+		<Option key="levels" value="3" />
+	</InitialDesign>
+   
+	<!-- A highly adaptive sampling algorithm, error and density based -->
+	<SampleSelector id="lola-voronoi" type="LOLAVoronoiSampleSelector" combineOutputs="false">
+		<!-- Integer between 2 and 20 -->
+		<Option key="neighbourhoodSize" value="2"/>
+		<Option key="frequencies" value="31"/>
+	</SampleSelector>
+    
+	<SampleEvaluator id="matlab" type="ibbt.sumo.sampleevaluators.matlab.MatlabSampleEvaluator">
+		<Option key="maxResubmissions" value="1"/>
+		<Option key="sampleTimeout" value="-1"/>
+	</SampleEvaluator>
+    
+	<LevelPlot id="default" type="LevelPlot" combineOutputs="true">
+		<Option key="makeLevelPlots" value="on"/>
+		<SampleEvaluator type="ibbt.sumo.sampleevaluators.datasets.ScatteredDatasetSampleEvaluator">
+			<Option key="id" value="small"/>
+		</SampleEvaluator>
+	</LevelPlot>
+	
+	<InitialDesign id="lhdWithCornerPoints" type="CombinedDesign">
+		<!-- Select samples in a Latin Hypercube Design -->
+		<InitialDesign type="LatinHypercubeDesign">
+			<!-- how many points to generate -->
+			<Option key="points" value="4"/>
+			<!--<Option key="weight" value="0.5"/>-->
+			<!--<Option key="coolingFactor" value="0.9"/>-->
+			<!--<Option key="p" value="5.0"/>-->
+		</InitialDesign>
+
+		<InitialDesign type="FactorialDesign">
+			<!-- how many points to generate for each dimension as a vector -->
+			<!-- a scalar value (l) is the same as [l l ... l] (length of input dimension) -->
+			<Option key="levels" value="2" />
+		</InitialDesign>
+	</InitialDesign>
+	
+</ToolboxConfiguration>

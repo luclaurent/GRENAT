@@ -28,6 +28,9 @@ nb_samples=25;
 xmin=[xmin,ymin];
 xmax=[xmax,ymax];
 tirages=lhsu(xmin,xmax,nb_samples);
+%évaluations aux points
+eval=rosenbrock(tirages(:,1),tirages(:,2));
+
 
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
@@ -35,3 +38,5 @@ disp('===== METAMODELE =====');
 %PRG: regression polynomiale
 
 meta.type='PRG';
+
+meta_prg(tirages,eval);

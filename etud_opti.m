@@ -29,14 +29,14 @@ lightangle(hlight,48,70) % dir. éclairage
 %% Tirages: plan d'expérience
 disp('===== DOE =====');
 %nb d'échantillons
-nb_samples=500;
+nb_samples=50;
 %LHS uniform
 xmin=[xmin,ymin];
 xmax=[xmax,ymax];
 tirages=lhsu(xmin,xmax,nb_samples);
 %évaluations aux points
-%eval=rosenbrock(tirages(:,1),tirages(:,2));
-eval=peaks(tirages(:,1),tirages(:,2));
+eval=rosenbrock(tirages(:,1),tirages(:,2));
+%eval=peaks(tirages(:,1),tirages(:,2));
 
 
 %% Génération du métamodèle
@@ -50,7 +50,7 @@ meta.deg=4;
 %paramètre Krigeage
 meta.theta=0.5;
 meta.regr='regpoly2';
-meta.corr='corrgauss';
+meta.corr='corrspline';
 
 
 switch meta.type
@@ -172,6 +172,13 @@ view(3)
         lighting('gouraud')
         lightangle(hlight,48,70) % dir. éclairage
         view(3)
+        
+        figure;
+        surf(X,Y,ZK)
+        xlabel('x_{1}')
+ylabel('x_{2}')
+zlabel('F')
+view(3)
 end
         
 

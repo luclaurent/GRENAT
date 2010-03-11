@@ -11,12 +11,12 @@ ymax=3;
 
 
 %Tracé de la fonction de la fonction étudiée
-pas=0.1;
+pas=0.05;
 x=xmin:pas:xmax;
 y=ymin:pas:ymax;
 [X,Y]=meshgrid(x,y);
-%Z=rosenbrock(X,Y);
-Z=peaks(X,Y);
+Z=rosenbrock(X,Y);
+%Z=peaks(X,Y);
 figure;
 surfc(X,Y,Z)
 
@@ -29,7 +29,7 @@ lightangle(hlight,48,70) % dir. éclairage
 %% Tirages: plan d'expérience
 disp('===== DOE =====');
 %nb d'échantillons
-nb_samples=50;
+nb_samples=100;
 %LHS uniform
 xmin=[xmin,ymin];
 xmax=[xmax,ymax];
@@ -48,9 +48,9 @@ meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=4;
 %paramètre Krigeage
-meta.theta=0.5;
+meta.theta=0.1;
 meta.regr='regpoly2';
-meta.corr='corrspline';
+meta.corr='correxp';
 
 
 switch meta.type

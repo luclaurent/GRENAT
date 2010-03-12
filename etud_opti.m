@@ -1,22 +1,72 @@
 %Fichier d'étude et de mise en oeuvre des démarche de la biblio
 %L LAURENT   --  31/01/2010   --  luc.laurent@ens-cachan.fr
 clf;clc;close all; clear all;
-addpath('doe/lhs');addpath('dace');
+addpath('doe/lhs');addpath('dace');addpath('doe');
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Définition de l'espace de conception
+esp.type='auto';   %gestion automatique de l'espace de conception pour fonction étudiée standards
 xmin=-2;
 xmax=2;
 ymin=-1;
 ymax=3;
+%Fonction utilisée
+fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
+%pas du tracé
+pas=0.1;
+
+%%Métamodèle
+%type d'interpolation
+%PRG: regression polynomiale
+meta.type='KRG';
+%degré de linterpolation/regression (si nécessaire)
+meta.deg=2;
+%paramètre Krigeage
+meta.theta=0.5;
+meta.regr='regpoly2';
+meta.corr='correxp';
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%définition du domaine d'étude
+switch esp.type
+    case 'auto'
+        disp('Définition auto du domaine de conception');
+        switch fct
+            case 'rosen'
+                xmin=-2;
+                xmax=2;
+                ymin=-1;
+                ymax=3;
+            case 'peaks'
+                xmin=-3;
+                xmax=3;
+                ymin=-3;
+                ymax=3;
+        end
+    case 'manu'
+        disp('Définition manu du domaine de conception');
+end
+
 
 
 %Tracé de la fonction de la fonction étudiée
-pas=0.05;
 x=xmin:pas:xmax;
 y=ymin:pas:ymax;
 [X,Y]=meshgrid(x,y);
-Z=rosenbrock(X,Y);
-%Z=peaks(X,Y);
+
+switch fct
+    case 'rosen'
+        Z=rosenbrock(X,Y);
+    case 'peaks'
+        Z=peaks(X,Y);
+end
+
 figure;
 surfc(X,Y,Z)
 
@@ -29,28 +79,24 @@ lightangle(hlight,48,70) % dir. éclairage
 %% Tirages: plan d'expérience
 disp('===== DOE =====');
 %nb d'échantillons
-nb_samples=100;
+nb_samples=10;
 %LHS uniform
-xmin=[xmin,ymin];
-xmax=[xmax,ymax];
-tirages=lhsu(xmin,xmax,nb_samples);
+Xmin=[xmin,ymin];
+Xmax=[xmax,ymax];
+tirages=factorial_design(nb_samples,nb_samples,xmin,xmax,ymin,ymax);
+%tirages=lhsu(Xmin,Xmax,nb_samples);
 %évaluations aux points
-eval=rosenbrock(tirages(:,1),tirages(:,2));
-%eval=peaks(tirages(:,1),tirages(:,2));
+switch fct
+    case 'rosen'
+        eval=rosenbrock(tirages(:,1),tirages(:,2));
+    case 'peaks'
+        eval=peaks(tirages(:,1),tirages(:,2));
+end
 
 
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
-%type d'interpolation
-%PRG: regression polynomiale
 
-meta.type='KRG';
-%degré de linterpolation/regression (si nécessaire)
-meta.deg=4;
-%paramètre Krigeage
-meta.theta=0.1;
-meta.regr='regpoly2';
-meta.corr='correxp';
 
 
 switch meta.type

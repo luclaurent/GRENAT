@@ -3,6 +3,10 @@
 clf;clc;close all; clear all;
 addpath('doe/lhs');addpath('dace');addpath('doe');
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%Définition de l'espace de conception
 esp.type='auto';   %gestion automatique de l'espace de conception pour fonction étudiée standards
 xmin=-2;
@@ -10,12 +14,29 @@ xmax=2;
 ymin=-1;
 ymax=3;
 %Fonction utilisée
-fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='peaks';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
 pas=0.1;
 
 %%Métamodèle
+%type d'interpolation
+%PRG: regression polynomiale
+%KRG: krigeage (utilisation de la toolbox DACE)
+%RBF: fonctions à base radiale
+meta.type='RBF';
+%degré de linterpolation/regression (si nécessaire)
+meta.deg=2;
+%paramètre Krigeage
+meta.theta=0.5;
+meta.regr='regpoly2';
+meta.corr='correxp';
+%paramètre RBF
+meta.para=0.4;
+meta.fct='multiqua';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'Cauchy'
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %définition du domaine d'étude
 switch esp.type
@@ -70,8 +91,12 @@ Xmax=[xmax,ymax];
 tirages=factorial_design(nb_samples,nb_samples,xmin,xmax,ymin,ymax);
 %tirages=lhsu(Xmin,Xmax,nb_samples);
 %évaluations aux points
-eval=rosenbrock(tirages(:,1),tirages(:,2));
-%eval=peaks(tirages(:,1),tirages(:,2));
+switch fct
+    case 'rosen'
+        eval=rosenbrock(tirages(:,1),tirages(:,2));
+    case 'peaks'
+        eval=peaks(tirages(:,1),tirages(:,2));
+end
 
 
 %% Génération du métamodèle
@@ -81,7 +106,7 @@ disp('===== METAMODELE =====');
 
 switch meta.type
     case 'PRG'
-
+disp('>>> Régression polynomiale');
 [coef,MSE]=meta_prg(tirages,eval,meta.deg);
 disp(MSE)
 ZRG=polyrg(coef,X,Y,meta.deg);
@@ -168,6 +193,7 @@ zlabel('F')
 view(3)
 
     case 'KRG' %utilisation de la Toolbox DACE
+        disp('>>> Interpolation par Krigeage');
         [model,perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
         Zk=zeros(size(X));
         for ii=1:size(X,1)
@@ -202,9 +228,44 @@ view(3)
         figure;
         surf(X,Y,ZK)
         xlabel('x_{1}')
-ylabel('x_{2}')
-zlabel('F')
-view(3)
+        ylabel('x_{2}')
+        zlabel('F')
+        view(3)
+
+    case 'RBF'  %fonctions à base radiale
+        
+        w=meta_rbf(tirages,eval,meta.para,meta.fct);
+        ZRBF=eval_rbf(X,Y,tirages,w,meta.para,meta.fct);
+         %%%affichage des surfaces
+        figure;
+        hold on
+        mesh(x,y,ZRBF);
+        hlight=light;
+        lighting('gouraud')
+        lightangle(hlight,48,70) % dir. éclairage
+        hold on
+        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                        'MarkerFaceColor','g',...
+                        'MarkerSize',30)
+        title('Surface obtenue par regression polynomiale');
+        view(3)
+
+        figure;
+        hold on
+        surf(X,Y,Z,'FaceColor','white','EdgeColor','blue')
+        hold on
+        surf(X,Y,ZRBF,'FaceColor','white','EdgeColor','red')
+        hlight=light;
+        lighting('gouraud')
+        lightangle(hlight,48,70) % dir. éclairage
+        view(3)
+        
+        figure;
+        surf(X,Y,ZRBF)
+        xlabel('x_{1}')
+        ylabel('x_{2}')
+        zlabel('F')
+        view(3)
 end
         
 

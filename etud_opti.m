@@ -14,20 +14,29 @@ xmax=2;
 ymin=-1;
 ymax=3;
 %Fonction utilisée
-fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='peaks';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
 pas=0.1;
+
+%%DOE
+%nb d'échantillons
+nb_samples=9;
 
 %%Métamodèle
 %type d'interpolation
 %PRG: regression polynomiale
-meta.type='KRG';
+%KRG: krigeage (utilisation de la toolbox DACE)
+%RBF: fonctions à base radiale
+meta.type='RBF';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=2;
 %paramètre Krigeage
 meta.theta=0.5;
 meta.regr='regpoly2';
 meta.corr='correxp';
+%paramètre RBF
+meta.para=0.6;
+meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'Cauchy'
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,8 +87,7 @@ lightangle(hlight,48,70) % dir. éclairage
 
 %% Tirages: plan d'expérience
 disp('===== DOE =====');
-%nb d'échantillons
-nb_samples=10;
+
 %LHS uniform
 Xmin=[xmin,ymin];
 Xmax=[xmax,ymax];
@@ -101,7 +109,7 @@ disp('===== METAMODELE =====');
 
 switch meta.type
     case 'PRG'
-
+disp('>>> Régression polynomiale');
 [coef,MSE]=meta_prg(tirages,eval,meta.deg);
 disp(MSE)
 ZRG=polyrg(coef,X,Y,meta.deg);
@@ -188,6 +196,7 @@ zlabel('F')
 view(3)
 
     case 'KRG' %utilisation de la Toolbox DACE
+        disp('>>> Interpolation par Krigeage');
         [model,perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
         Zk=zeros(size(X));
         for ii=1:size(X,1)
@@ -222,9 +231,44 @@ view(3)
         figure;
         surf(X,Y,ZK)
         xlabel('x_{1}')
-ylabel('x_{2}')
-zlabel('F')
-view(3)
+        ylabel('x_{2}')
+        zlabel('F')
+        view(3)
+
+    case 'RBF'  %fonctions à base radiale
+        disp('>>> Interpolation par fonctions à base radiale');
+        w=meta_rbf(tirages,eval,meta.para,meta.fct);
+        ZRBF=eval_rbf(X,Y,tirages,w,meta.para,meta.fct);
+         %%%affichage des surfaces
+        figure;
+        hold on
+        mesh(x,y,ZRBF);
+        hlight=light;
+        lighting('gouraud')
+        lightangle(hlight,48,70) % dir. éclairage
+        hold on
+        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                        'MarkerFaceColor','g',...
+                        'MarkerSize',30)
+        title('Surface obtenue par regression polynomiale');
+        view(3)
+
+        figure;
+        hold on
+        surf(X,Y,Z,'FaceColor','white','EdgeColor','blue')
+        hold on
+        surf(X,Y,ZRBF,'FaceColor','white','EdgeColor','red')
+        hlight=light;
+        lighting('gouraud')
+        lightangle(hlight,48,70) % dir. éclairage
+        view(3)
+        
+        figure;
+        surf(X,Y,ZRBF)
+        xlabel('x_{1}')
+        ylabel('x_{2}')
+        zlabel('F')
+        view(3)
 end
         
 

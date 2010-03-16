@@ -27,7 +27,8 @@ nb_samples=9;
 %PRG: regression polynomiale
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
-meta.type='RBF';
+%POD: décomposition en valeurs singulières
+meta.type='POD';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=2;
 %paramètre Krigeage
@@ -37,6 +38,8 @@ meta.corr='correxp';
 %paramètre RBF
 meta.para=0.6;
 meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'Cauchy'
+%paramètre POD
+meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -269,6 +272,10 @@ view(3)
         ylabel('x_{2}')
         zlabel('F')
         view(3)
+        
+    case 'POD'  %décomposition en valeurs singulières
+        disp('>>> décomposition en valeurs singulières');
+        meta_pod(tirages,eval,meta.nb_vs);
 end
         
 

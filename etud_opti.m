@@ -19,8 +19,11 @@ fct='peaks';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 pas=0.1;
 
 %%DOE
+%type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
+meta.doe='sfill';
+
 %nb d'échantillons
-nb_samples=9;
+nb_samples=50;
 
 %%Métamodèle
 %type d'interpolation
@@ -94,8 +97,25 @@ disp('===== DOE =====');
 %LHS uniform
 Xmin=[xmin,ymin];
 Xmax=[xmax,ymax];
-tirages=factorial_design(nb_samples,nb_samples,xmin,xmax,ymin,ymax);
-%tirages=lhsu(Xmin,Xmax,nb_samples);
+switch meta.doe
+    case 'ffact'
+        tirages=factorial_design(nb_samples,nb_samples,xmin,xmax,ymin,ymax);
+    case 'sfill'
+        xxx=linspace(xmin,xmax,nb_samples);
+        yyy=linspace(ymin,ymax,nb_samples);
+        tirages=zeros(size(xxx,2)^2,2);
+        for ii=1:size(xxx,2)
+            for jj=1:size(xxx,2)
+                tirages(size(xxx,2)*(ii-1)+jj,1)=xxx(ii);
+                tirages(size(xxx,2)*(ii-1)+jj,2)=yyy(jj);
+            end
+        end
+    case 'LHS'
+        tirages=lhsu(Xmin,Xmax,nb_samples);
+    otherwise
+        error('le type de tirage nest pas défini');
+end
+
 %évaluations aux points
 switch fct
     case 'rosen'
@@ -275,7 +295,12 @@ view(3)
         
     case 'POD'  %décomposition en valeurs singulières
         disp('>>> décomposition en valeurs singulières');
-        meta_pod(tirages,eval,meta.nb_vs);
+        S=meta_pod(tirages,xxx,yyy,eval,meta.nb_vs);
+        extr_vs=zeros(size(S,1),2);
+        for ii=1:size(S,1)
+            extr_vs(ii,1)=ii;
+            extr_vs(ii,2)=S(ii,ii);
+        end
 end
         
 

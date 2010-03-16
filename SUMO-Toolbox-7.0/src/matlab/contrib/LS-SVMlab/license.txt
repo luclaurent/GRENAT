@@ -1,3 +1,0 @@
-The LS-SVMlab software is made available for non commercial research purposes only under the GNU General Public License. However, notwithstanding any provision of the GNU General Public License, LS-SVMlab software may not be used for commercial purposes without explicit written permission after contacting LS-SVMlab@esat.kuleuven.ac.be.
-
- 

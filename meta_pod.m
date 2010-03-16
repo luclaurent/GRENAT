@@ -3,11 +3,12 @@
 %%L. LAURENT      luc.laurent@ens-cachan.fr
 %% 16/03/2010
 
-function w=meta_pod(tirages,eval,nb_vs)
+function S=meta_pod(tirages,xx,yy,eval,nb_vs)
 
     A=zeros(sqrt(size(eval,1)));
-    Xv=meshgrid(tirages(:,1));
-    Yv=meshgrid(tirages(:,2));
+    [Xv,Yv]=meshgrid(xx,yy);
+    %Xv=zeros(size(A));
+    %Yv=zeros(size(A));
     
     int=1;
     for ii=1:size(A,1)
@@ -15,17 +16,34 @@ function w=meta_pod(tirages,eval,nb_vs)
             A(ii,jj)=eval(int);
             int=int+1;
         end
+        Xv(ii)=tirages(ii,1);
+        Yv(ii)=tirages(ii,2);
      end
     
     %Calcul de la décomposition en valeurs singulières
     [U,S,V]=svd(A);
     
+    
+    subplot(floor(sqrt(nb_vs)),floor(sqrt(nb_vs))+1,1)
+    hold on
+    mesh(Xv,Yv,A)
+    view(3)
     for k=1:nb_vs
-        figure;
+       
        zz=U(:,1:k)*S(1:k,1:k)*V(:,1:k)';
-       surf(Xv,Yv,zz);
+       %size(zz)
+       %size(Xv)
+       %hold on
+       %subplot(floor(sqrt(nb_vs)),floor(sqrt(nb_vs))+1,k+1)
+       figure;
+       %hold on
+       %mesh(Xv,Yv,zz)
+       surf(Xv,Yv,zz)
+       %hold on
        xlabel('x1');ylabel('x2');zlabel('F');
+       %hold on
        title(['Approximation à ',num2str(k),' valeurs singulières']);
+       view(3)
     end
     
 

@@ -20,10 +20,10 @@ pas=0.1;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='sfill';
+meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=50;
+nb_samples=7;
 
 %%Métamodèle
 %type d'interpolation
@@ -31,7 +31,7 @@ nb_samples=50;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='POD';
+meta.type='PRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=2;
 %paramètre Krigeage
@@ -174,7 +174,9 @@ for ii=2
 [coef,MSE]=meta_prg(tirages,eval,meta.deg);
 disp(MSE)
 ZRG=polyrg(coef,X,Y,meta.deg);
-
+plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                'MarkerFaceColor','g',...
+                'MarkerSize',30)
 hold on
 surf(X,Y,ZRG)
 %colormap hsv
@@ -200,7 +202,9 @@ for ii=4
 [coef,MSE]=meta_prg(tirages,eval,meta.deg);
 disp(MSE)
 ZRG=polyrg(coef,X,Y,meta.deg);
-
+plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                'MarkerFaceColor','g',...
+                'MarkerSize',30)
 hold on
 surf(X,Y,ZRG)
 %colormap hsv

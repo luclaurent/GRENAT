@@ -1,7 +1,7 @@
 %%%Fichier d'étude des plans d'expérience à deux variables de conception
 %L LAURENT   --  05/03/2010   --  luc.laurent@ens-cachan.fr
 clf;clc;close all; clear all;
-addpath('lhs');addpath('dace');
+addpath('lhs');
 %%type de plan d'expérience
 %plan factoriel: 'factorial_design'
 %Latin Hypercube Sampling from uniform distribution: 'LHSU'
@@ -11,7 +11,7 @@ addpath('lhs');addpath('dace');
 %Combined Design: CD
 %Quasi Random Design: QRD
 %Random Design: RD
-doe.type='BBD';  
+doe.type='LHSN';  
 
 
 %nombre de tirages selon x1, x2 et/ou x3 ou total (LHS)
@@ -22,16 +22,16 @@ doe.nb_samples=25; %(LHS,BBD)
 doe.nb_var=2; %(LHSN,BBD)
 %valeurs moyennes des variables (LHSN)
 doe.x1_mean=0;
-doe.x2_mean=0;
+doe.x2_mean=1;
 %écart-type (LHSN)
-doe.x1_sd=0.5;
-doe.x2_sd=0.5;
+doe.x1_sd=0.8;
+doe.x2_sd=1;
 
 %valeurs min et max
-doe.x1_min=-1;
+doe.x1_min=-2;
 doe.x2_min=-1;
-doe.x1_max=1;
-doe.x2_max=1;
+doe.x1_max=2;
+doe.x2_max=3;
 
 
 

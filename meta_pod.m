@@ -24,9 +24,10 @@ function S=meta_pod(tirages,xx,yy,eval,nb_vs)
     [U,S,V]=svd(A);
     
     
-    subplot(floor(sqrt(nb_vs)),floor(sqrt(nb_vs))+1,1)
+    %subplot(floor(sqrt(nb_vs)),floor(sqrt(nb_vs))+1,1)
+    figure
     hold on
-    mesh(Xv,Yv,A)
+    surf(Xv,Yv,A)
     view(3)
     for k=1:nb_vs
        

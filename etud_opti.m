@@ -31,7 +31,7 @@ nb_samples=9;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='RBF';
+meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=2;
 %paramètre Krigeage

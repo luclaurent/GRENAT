@@ -23,7 +23,7 @@ pas=0.1;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=7;
+nb_samples=9;
 
 %%Métamodèle
 %type d'interpolation
@@ -31,7 +31,7 @@ nb_samples=7;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='PRG';
+meta.type='RBF';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=2;
 %paramètre Krigeage
@@ -39,7 +39,7 @@ meta.theta=0.5;
 meta.regr='regpoly2';
 meta.corr='correxp';
 %paramètre RBF
-meta.para=0.6;
+meta.para=0.8;
 meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'Cauchy'
 %paramètre POD
 meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
@@ -152,15 +152,15 @@ lightangle(hlight,48,70) % dir. éclairage
 hold on
 plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
                 'MarkerFaceColor','g',...
-                'MarkerSize',30)
+                'MarkerSize',15)
 title('Surface obtenue par regression polynomiale');
 view(3)
 
 figure;
 hold on
-surf(X,Y,Z,'FaceColor','white','EdgeColor','blue')
+surf(X,Y,Z,'FaceColor','blue','EdgeColor','blue')
 hold on
-surf(X,Y,ZRG,'FaceColor','white','EdgeColor','red')
+surf(X,Y,ZRG,'FaceColor','red','EdgeColor','red')
 hlight=light;
 lighting('gouraud')
 lightangle(hlight,48,70) % dir. éclairage
@@ -176,7 +176,7 @@ disp(MSE)
 ZRG=polyrg(coef,X,Y,meta.deg);
 plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
                 'MarkerFaceColor','g',...
-                'MarkerSize',30)
+                'MarkerSize',15)
 hold on
 surf(X,Y,ZRG)
 %colormap hsv
@@ -204,7 +204,7 @@ disp(MSE)
 ZRG=polyrg(coef,X,Y,meta.deg);
 plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
                 'MarkerFaceColor','g',...
-                'MarkerSize',30)
+                'MarkerSize',15)
 hold on
 surf(X,Y,ZRG)
 %colormap hsv
@@ -257,6 +257,10 @@ view(3)
         
         figure;
         surf(X,Y,ZK)
+        hold on
+        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                'MarkerFaceColor','g',...
+                'MarkerSize',15)
         xlabel('x_{1}')
         ylabel('x_{2}')
         zlabel('F')
@@ -282,9 +286,9 @@ view(3)
 
         figure;
         hold on
-        surf(X,Y,Z,'FaceColor','white','EdgeColor','blue')
+        surf(X,Y,Z,'FaceColor','blue','EdgeColor','blue')
         hold on
-        surf(X,Y,ZRBF,'FaceColor','white','EdgeColor','red')
+        surf(X,Y,ZRBF,'FaceColor','red','EdgeColor','red')
         hlight=light;
         lighting('gouraud')
         lightangle(hlight,48,70) % dir. éclairage

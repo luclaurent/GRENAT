@@ -2,7 +2,7 @@
 %L LAURENT   --  31/01/2010   --  luc.laurent@ens-cachan.fr
 clf;clc;close all; clear all;
 addpath('doe/lhs');addpath('dace');addpath('doe');
-
+addpath('crit');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,7 +50,11 @@ aff.on=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+disp('=====================================');
+disp('=====================================');
+disp('=======Construction métamodèle=======');
+disp('=====================================');
+disp('=====================================');
 %définition du domaine d'étude
 switch esp.type
     case 'auto'
@@ -140,7 +144,10 @@ disp('===== METAMODELE =====');
 switch meta.type
     case 'PRG'
         for degre=meta.deg
+            disp(' ')
             disp('>>> Régression polynomiale');
+            dd=['-- Degré du polynôme',num2str(degre)];
+            disp(dd)
             [coef,MSE]=meta_prg(tirages,eval,degre);
             disp(MSE)
             ZRG=polyrg(coef,X,Y,degre);
@@ -175,8 +182,18 @@ switch meta.type
             aff.newfig=false;
             aff.color='red';
             affichage(X,Y,ZRG,tirages,eval,aff);
+            err=['R2=',num2str(r_square(Z,ZRG))];
+            eraae=['RAAE=',num2str(raae(Z,ZRG))];
+            ermae=['RMAE=',num2str(rmae(Z,ZRG))];
+            disp(err)
+            disp(eraae)
+            disp(ermae)
+            disp('=====================================');
+            disp('=====================================');
         end
-
+        
+        disp('=====================================');
+        disp('=====================================');
 
 
     case 'KRG' %utilisation de la Toolbox DACE
@@ -219,8 +236,14 @@ switch meta.type
             aff.newfig=false;
             aff.color='red';
             affichage(X,Y,ZK,tirages,eval,aff);
-        
-
+            err=['R2=',num2str(r_square(Z,ZK))];
+            eraae=['RAAE=',num2str(raae(Z,ZK))];
+            ermae=['RMAE=',num2str(rmae(Z,ZK))];
+            disp(err)
+            disp(eraae)
+            disp(ermae)
+        disp('=====================================');
+        disp('=====================================');
 
     case 'RBF'  %fonctions à base radiale
         disp('>>> Interpolation par fonctions à base radiale');
@@ -258,10 +281,16 @@ switch meta.type
             aff.newfig=false;
             aff.color='red';
             affichage(X,Y,ZRBF,tirages,eval,aff);
+            err=['R2=',num2str(r_square(Z,ZRBF))];
+            eraae=['RAAE=',num2str(raae(Z,ZRBF))];
+            ermae=['RMAE=',num2str(rmae(Z,ZRBF))];
+            disp(err)
+            disp(eraae)
+            disp(ermae)
         
         
-        
-
+        disp('=====================================');
+        disp('=====================================');
         
     case 'POD'  %décomposition en valeurs singulières
         disp('>>> décomposition en valeurs singulières');

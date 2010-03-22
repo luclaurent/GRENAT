@@ -14,7 +14,7 @@ xmax=2;
 ymin=-1;
 ymax=3;
 %Fonction utilisée
-fct='peaks';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
 pas=0.1;
 
@@ -31,7 +31,7 @@ nb_samples=9;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='RBF';
+meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=[2 3 4];
 %paramètre Krigeage
@@ -146,10 +146,9 @@ switch meta.type
         for degre=meta.deg
             disp(' ')
             disp('>>> Régression polynomiale');
-            dd=['-- Degré du polynôme',num2str(degre)];
+            dd=['-- Degré du polynôme ',num2str(degre)];
             disp(dd)
             [coef,MSE]=meta_prg(tirages,eval,degre);
-            disp(MSE)
             ZRG=polyrg(coef,X,Y,degre);
 
             %%%affichage de la surface obtenue par PRG
@@ -182,9 +181,11 @@ switch meta.type
             aff.newfig=false;
             aff.color='red';
             affichage(X,Y,ZRG,tirages,eval,aff);
+            emse=['MSE=',num2str(mse(Z,ZRG))];
             err=['R2=',num2str(r_square(Z,ZRG))];
             eraae=['RAAE=',num2str(raae(Z,ZRG))];
             ermae=['RMAE=',num2str(rmae(Z,ZRG))];
+            disp(emse);
             disp(err)
             disp(eraae)
             disp(ermae)
@@ -236,9 +237,11 @@ switch meta.type
             aff.newfig=false;
             aff.color='red';
             affichage(X,Y,ZK,tirages,eval,aff);
+            emse=['MSE=',num2str(mse(Z,ZK))];
             err=['R2=',num2str(r_square(Z,ZK))];
             eraae=['RAAE=',num2str(raae(Z,ZK))];
             ermae=['RMAE=',num2str(rmae(Z,ZK))];
+            disp(emse)
             disp(err)
             disp(eraae)
             disp(ermae)
@@ -281,9 +284,11 @@ switch meta.type
             aff.newfig=false;
             aff.color='red';
             affichage(X,Y,ZRBF,tirages,eval,aff);
+            emse=['MSE=',num2str(mse(Z,ZRBF))];
             err=['R2=',num2str(r_square(Z,ZRBF))];
             eraae=['RAAE=',num2str(raae(Z,ZRBF))];
             ermae=['RMAE=',num2str(rmae(Z,ZRBF))];
+            disp(emse)
             disp(err)
             disp(eraae)
             disp(ermae)

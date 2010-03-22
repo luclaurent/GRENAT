@@ -23,7 +23,7 @@ pas=0.1;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=7;
+nb_samples=9;
 
 %%Métamodèle
 %type d'interpolation
@@ -31,18 +31,21 @@ nb_samples=7;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='PRG';
+meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
-meta.deg=2;
+meta.deg=[2 3 4];
 %paramètre Krigeage
 meta.theta=0.5;
 meta.regr='regpoly2';
 meta.corr='correxp';
 %paramètre RBF
-meta.para=0.6;
+meta.para=0.8;
 meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'Cauchy'
 %paramètre POD
 meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
+
+%affichage actif ou non
+aff.on=true;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,14 +85,6 @@ switch fct
         Z=peaks(X,Y);
 end
 
-figure;
-surfc(X,Y,Z)
-
-hlight=light;              % activ. éclairage
-lighting('gouraud')        % type de rendu
-lightangle(hlight,48,70) % dir. éclairage
-%shading interp
-
 
 %% Tirages: plan d'expérience
 disp('===== DOE =====');
@@ -125,102 +120,64 @@ switch fct
 end
 
 
+%%Affichage courbe initiale
+%paramètrage options
+aff.newfig=true;
+aff.contour=true;
+aff.rendu=true;
+aff.uni=false;
+aff.pts=true;
+aff.titre='Surface de la fonction objectif';
+aff.xlabel='x_{1}';
+aff.ylabel='x_{2}';
+aff.zlabel='F';
+affichage(X,Y,Z,tirages,eval,aff);
+
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
 
 
-
 switch meta.type
     case 'PRG'
-disp('>>> Régression polynomiale');
-[coef,MSE]=meta_prg(tirages,eval,meta.deg);
-disp(MSE)
-ZRG=polyrg(coef,X,Y,meta.deg);
+        for degre=meta.deg
+            disp('>>> Régression polynomiale');
+            [coef,MSE]=meta_prg(tirages,eval,degre);
+            disp(MSE)
+            ZRG=polyrg(coef,X,Y,degre);
+
+            %%%affichage de la surface obtenue par PRG
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour=false;
+            aff.rendu=false;
+            aff.uni=false;
+            aff.pts=false;
+            aff.titre=['Surface obtenue par régression polynômiale de degré ',num2str(degre)];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F_{PRG}';
+            affichage(X,Y,ZRG,tirages,eval,aff);
+
+            %%%affichage de l'écart entre la fonction objectif et la fonction
+            %%%approchée
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour=false;
+            aff.rendu=true;
+            aff.uni=true;
+            aff.color='blue';
+            aff.pts=false;
+            aff.titre=['Surface obtenue par régression polynômiale de degré ',num2str(degre)];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F';
+            affichage(X,Y,ZRG,tirages,eval,aff);
+            aff.newfig=false;
+            aff.color='red';
+            affichage(X,Y,Z,tirages,eval,aff);
+        end
 
 
-
-
-
-
-%%%affichage des surfaces
-figure;
-hold on
-surfc(X,Y,ZRG)
-hlight=light;
-lighting('gouraud')
-lightangle(hlight,48,70) % dir. éclairage
-hold on
-plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-                'MarkerFaceColor','g',...
-                'MarkerSize',20)
-title('Surface obtenue par regression polynomiale');
-view(3)
-
-figure;
-hold on
-surf(X,Y,Z,'FaceColor','white','EdgeColor','blue')
-hold on
-surf(X,Y,ZRG,'FaceColor','white','EdgeColor','red')
-hlight=light;
-lighting('gouraud')
-lightangle(hlight,48,70) % dir. éclairage
-view(3)
-
-
-figure;
-for ii=2
-    meta.deg=ii;
-
-[coef,MSE]=meta_prg(tirages,eval,meta.deg);
-disp(MSE)
-ZRG=polyrg(coef,X,Y,meta.deg);
-plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-                'MarkerFaceColor','g',...
-                'MarkerSize',30)
-hold on
-surf(X,Y,ZRG)
-%colormap hsv
-end
-%hlight=light;
-%lighting('gouraud')
-%lightangle(hlight,48,70) % dir. éclairage
-%hold on
-%plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-%                'MarkerFaceColor','g',...
-%                'MarkerSize',30)
-%title('Surface obtenue par regression polynomiale');
-xlabel('x_{1}')
-ylabel('x_{2}')
-zlabel('F')
-
-view(3)
-
-figure;
-for ii=4
-    meta.deg=ii;
-
-[coef,MSE]=meta_prg(tirages,eval,meta.deg);
-disp(MSE)
-ZRG=polyrg(coef,X,Y,meta.deg);
-plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-                'MarkerFaceColor','g',...
-                'MarkerSize',30)
-hold on
-surf(X,Y,ZRG)
-%colormap hsv
-end
-%hlight=light;
-%lighting('gouraud')
-%lightangle(hlight,48,70) % dir. éclairage
-%hold on
-%plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-%                'MarkerFaceColor','g',...
-%                'MarkerSize',30)
-%title('Surface obtenue par regression polynomiale');
-xlabel('x_{1}')
-ylabel('x_{2}')
-zlabel('F')
-view(3)
 
     case 'KRG' %utilisation de la Toolbox DACE
         disp('>>> Interpolation par Krigeage');
@@ -231,6 +188,42 @@ view(3)
                 ZK(ii,jj)=predictor([X(ii,jj) Y(ii,jj)],model);
             end
         end
+        
+            %%%affichage de la surface obtenue par KRG
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour=false;
+            aff.rendu=false;
+            aff.uni=false;
+            aff.pts=false;
+            aff.titre=['Surface obtenue par Krigeage: theta ',num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F_{PRG}';
+            affichage(X,Y,ZK,tirages,eval,aff);
+
+            %%%affichage de l'écart entre la fonction objectif et la fonction
+            %%%approchée
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour=false;
+            aff.rendu=true;
+            aff.uni=true;
+            aff.color='blue';
+            aff.pts=false;
+            aff.titre=['Surface obtenue par Krigeage: theta ',num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F';
+            affichage(X,Y,ZK,tirages,eval,aff);
+            aff.newfig=false;
+            aff.color='red';
+            affichage(X,Y,Z,tirages,eval,aff);
+        
+        
+        
+        
+        
             %%%affichage des surfaces
         figure;
         hold on
@@ -257,6 +250,10 @@ view(3)
         
         figure;
         surf(X,Y,ZK)
+        hold on
+        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                'MarkerFaceColor','g',...
+                'MarkerSize',15)
         xlabel('x_{1}')
         ylabel('x_{2}')
         zlabel('F')
@@ -282,9 +279,9 @@ view(3)
 
         figure;
         hold on
-        surf(X,Y,Z,'FaceColor','white','EdgeColor','blue')
+        surf(X,Y,Z,'FaceColor','blue','EdgeColor','blue')
         hold on
-        surf(X,Y,ZRBF,'FaceColor','white','EdgeColor','red')
+        surf(X,Y,ZRBF,'FaceColor','red','EdgeColor','red')
         hlight=light;
         lighting('gouraud')
         lightangle(hlight,48,70) % dir. éclairage

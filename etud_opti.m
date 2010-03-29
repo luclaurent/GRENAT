@@ -14,7 +14,7 @@ xmax=2;
 ymin=-1;
 ymax=3;
 %Fonction utilisée
-fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='peaks';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
 pas=0.1;
 
@@ -31,13 +31,13 @@ nb_samples=9;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='KRG';
+meta.type='RBF';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=[2 3 4];
 %paramètre Krigeage
-meta.theta=0.5;
+meta.theta=0.8;
 meta.regr='regpoly2';
-meta.corr='correxp';
+meta.corr='corrspline';
 %paramètre RBF
 meta.para=0.8;
 meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'Cauchy'
@@ -45,7 +45,7 @@ meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiq
 meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
 
 %affichage actif ou non
-aff.on=true;
+aff.on=false;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,13 +139,14 @@ affichage(X,Y,Z,tirages,eval,aff);
 
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
-
+disp(' ')
 
 switch meta.type
     case 'PRG'
         for degre=meta.deg
-            disp(' ')
+            
             disp('>>> Régression polynomiale');
+            disp(' ')
             dd=['-- Degré du polynôme ',num2str(degre)];
             disp(dd)
             [coef,MSE]=meta_prg(tirages,eval,degre);
@@ -185,10 +186,12 @@ switch meta.type
             err=['R2=',num2str(r_square(Z,ZRG))];
             eraae=['RAAE=',num2str(raae(Z,ZRG))];
             ermae=['RMAE=',num2str(rmae(Z,ZRG))];
+            disp(' ')
             disp(emse);
             disp(err)
             disp(eraae)
             disp(ermae)
+            disp(' ')
             disp('=====================================');
             disp('=====================================');
         end
@@ -199,6 +202,7 @@ switch meta.type
 
     case 'KRG' %utilisation de la Toolbox DACE
         disp('>>> Interpolation par Krigeage');
+        disp(' ')
         [model,perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
         Zk=zeros(size(X));
         for ii=1:size(X,1)
@@ -241,15 +245,18 @@ switch meta.type
             err=['R2=',num2str(r_square(Z,ZK))];
             eraae=['RAAE=',num2str(raae(Z,ZK))];
             ermae=['RMAE=',num2str(rmae(Z,ZK))];
+            disp(' ')
             disp(emse)
             disp(err)
             disp(eraae)
             disp(ermae)
+            disp(' ')
         disp('=====================================');
         disp('=====================================');
 
     case 'RBF'  %fonctions à base radiale
         disp('>>> Interpolation par fonctions à base radiale');
+        disp(' ')
         w=meta_rbf(tirages,eval,meta.para,meta.fct);
         ZRBF=eval_rbf(X,Y,tirages,w,meta.para,meta.fct);
         
@@ -288,17 +295,19 @@ switch meta.type
             err=['R2=',num2str(r_square(Z,ZRBF))];
             eraae=['RAAE=',num2str(raae(Z,ZRBF))];
             ermae=['RMAE=',num2str(rmae(Z,ZRBF))];
+            disp(' ')
             disp(emse)
             disp(err)
             disp(eraae)
             disp(ermae)
-        
+        disp(' ')
         
         disp('=====================================');
         disp('=====================================');
         
     case 'POD'  %décomposition en valeurs singulières
         disp('>>> décomposition en valeurs singulières');
+        disp(' ')
         S=meta_pod(tirages,xxx,yyy,eval,meta.nb_vs);
         extr_vs=zeros(size(S,1),2);
         for ii=1:size(S,1)

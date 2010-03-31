@@ -7,10 +7,11 @@
 function w=meta_rbf(tirages,eval,para,fct)
 
     F=eval;
-    
-    A=zeros(size(eval,1));
-    for ii=1:size(eval,1)
-        for jj=1:size(eval,1)
+    %pour éviter les erreurs de mauvaise dimensions du vecteur eval
+    taille=max(size(eval,1),size(eval,2));
+    A=zeros(taille);
+    for ii=1:taille
+        for jj=1:taille
             
            A(ii,jj)=feval(fct,(tirages(ii,:)-tirages(jj,:))',para);            
         end

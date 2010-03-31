@@ -17,8 +17,6 @@ function w=meta_rbf(tirages,eval,para,fct)
     end
     
     w=inv(A)*F;
-    
-
 
 
 end

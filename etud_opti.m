@@ -23,7 +23,7 @@ pas=0.1;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=9;
+nb_samples=4;
 
 %%Métamodèle
 %type d'interpolation
@@ -45,7 +45,7 @@ meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiq
 meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
 
 %affichage actif ou non
-aff.on=false;
+aff.on=true;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -282,7 +282,7 @@ switch meta.type
             aff.rendu=true;
             aff.uni=true;
             aff.color='blue';
-            aff.pts=false;
+            aff.pts=true;
             aff.titre=['Surface obtenue par interpolation par fonctions à base radiale: r=',num2str(meta.para),' fonction  ',meta.fct];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';

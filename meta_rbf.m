@@ -6,7 +6,11 @@
 
 function w=meta_rbf(tirages,eval,para,fct)
 
+if (size(eval,1)<size(eval,2))
+    F=eval';
+else
     F=eval;
+end
     %pour éviter les erreurs de mauvaise dimensions du vecteur eval
     taille=max(size(eval,1),size(eval,2));
     A=zeros(taille);

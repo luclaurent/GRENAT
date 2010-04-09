@@ -7,10 +7,21 @@
 
 function emse=mse(Zex,Zap)
 
-
+%Zex=Zex';
 MSE=0;
+
+%permutation du vecteur pour permettre le calcul de MSE
+if(size(Zap,1)<size(Zap,2))
+Zap=Zap';
+end
+if(size(Zex,1)<size(Zex,2))
+Zex=Zex';
+end
+
+%boucle de calcul de MSE
 for ii=1:size(Zex,1)
     for jj=1:size(Zex,2)
+
         MSE=MSE+(Zex(ii,jj)-Zap(ii,jj))^2;
     end
 end

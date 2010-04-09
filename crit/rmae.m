@@ -1,18 +1,33 @@
 %%fonction permettant le calcul de l'erreur RMAE
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
 
-%%Zex: correspond à l'ensemble des valeurs obtenues par évalutions de la
-%%fonction objectif
-%%Zap: correspond à l'ensemble des valeurs
+%%Zex: valeurs de la fonction objectif "exactes" obtenues par simulation
+%%Zap: valeurs approchées de la fonction objectif obtenues par le
+%%métamodèle
 function rmae=rmae(Zex,Zap)
 
-bor=size(Zex,1)*size(Zex,1);
-for kk=1:bor
-    vvx(kk)=Zex(kk);
-    vva(kk)=Zap(kk);
+
+
+
+%permutation du vecteur pour permettre le calcul de MSE
+if(size(Zap,1)<size(Zap,2))
+Zap=Zap';
+end
+if(size(Zex,1)<size(Zex,2))
+Zex=Zex';
 end
 
-vec=zeros(bor,1);
+hh=1;
+
+for kk=1:size(Zex,1)
+    for ll=1:size(Zex,2)
+        vvx(hh)=Zex(kk,ll);
+        vva(hh)=Zap(kk,ll);
+        hh=hh+1;
+    end
+end
+
+vec=zeros(size(vvx));
 STD=std(vvx);
 
 

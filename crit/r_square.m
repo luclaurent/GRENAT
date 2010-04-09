@@ -8,6 +8,16 @@
 function r2=r_square(Zex,Zap)
 
 
+%permutation du vecteur pour permettre le calcul de MSE
+if(size(Zap,1)<size(Zap,2))
+Zap=Zap';
+end
+if(size(Zex,1)<size(Zex,2))
+Zex=Zex';
+end
+
+
+
 MSE=0;
 VAR=0;
 moy=mean(mean(Zex));

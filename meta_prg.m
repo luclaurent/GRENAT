@@ -14,12 +14,13 @@ if(deg==1) %%polynome de degré 1
         fs(i,1)=eval(i);
     end
     
-elseif(deg==2)  %%polynome de degré 2
+elseif(deg==2)  %%polynome de degré 2    
     matx=zeros(size(eval,1),6);
     for i=1:size(eval,1)
         matx(i,:)=[1 xx(i,1) xx(i,2) xx(i,1)^2 xx(i,2)^2 xx(i,1)*xx(i,2)];
         fs(i,1)=eval(i);
     end
+    
     
 elseif(deg==3)  %%polynome de degré 3
     matx=zeros(size(eval,1),10);

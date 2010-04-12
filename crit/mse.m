@@ -7,8 +7,9 @@
 
 function emse=mse(Zex,Zap)
 
-%Zex=Zex';
+
 MSE=0;
+
 
 %permutation du vecteur pour permettre le calcul de MSE
 if(size(Zap,1)<size(Zap,2))

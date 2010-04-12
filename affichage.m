@@ -42,5 +42,7 @@ if aff.on
     ylabel(aff.ylabel);
     zlabel(aff.zlabel);
     view(3)
+    
+    
 end
 end

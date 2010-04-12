@@ -1,7 +1,7 @@
 %Fichier d'étude et de mise en oeuvre des démarche de la biblio
 %L LAURENT   --  31/01/2010   --  luc.laurent@ens-cachan.fr
 clf;clc;close all; clear all;
-addpath('doe/lhs');addpath('dace');addpath('doe');
+addpath('doe/lhs');addpath('dace');addpath('doe');addpath('fct');
 addpath('crit');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -23,7 +23,7 @@ pas=0.1;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=4;
+nb_samples=9;
 
 %%Métamodèle
 %type d'interpolation
@@ -46,6 +46,9 @@ meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
 
 %affichage actif ou non
 aff.on=true;
+
+%affichage des gradients
+aff.grad=true;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -259,7 +262,7 @@ switch meta.type
         disp(' ')
         w=meta_rbf(tirages,eval,meta.para,meta.fct);
         ZRBF=eval_rbf(X,Y,tirages,w,meta.para,meta.fct);
-        
+        [GRBF1,GRBF2]=evald_rbf(X,Y,tirages,w,meta.para,meta.fct);
         
             %%%affichage de la surface obtenue par RBF
             %paramètrage options
@@ -273,7 +276,14 @@ switch meta.type
             aff.ylabel='x_{2}';
             aff.zlabel='F_{RBF}';
             affichage(X,Y,ZRBF,tirages,eval,aff);
-
+            
+            %%affichage du gradient de la fonction
+            aff.titre=['Gradient de linterpolation par fonctions à base radiale'];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='dF_{RBF}/dx';
+            affichage_gr(X,Y,ZRBF,GRBF1,GRBF2,aff);
+            
             %%%affichage de l'écart entre la fonction objectif et la fonction
             %%%approchée
             %paramètrage options

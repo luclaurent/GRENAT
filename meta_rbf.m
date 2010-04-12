@@ -2,7 +2,7 @@
 %%base radiale
 
 %%L. LAURENT      luc.laurent@ens-cachan.fr
-%% 15/03/2010
+%% 15/03/2010 modif le 12/04/2010
 
 function w=meta_rbf(tirages,eval,para,fct)
 
@@ -17,7 +17,7 @@ end
     for ii=1:taille
         for jj=1:taille
             
-           A(ii,jj)=feval(fct,(tirages(ii,:)-tirages(jj,:))',para);            
+           A(ii,jj)=feval(fct,(tirages(ii,:)-tirages(jj,:))',para,'f');            
         end
     end
     

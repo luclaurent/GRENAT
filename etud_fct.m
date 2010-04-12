@@ -77,7 +77,6 @@ figure
 quiver3(x,y,eval,evald1,evald2,zeros(size(X)),0.5);
 figure
 [C,h] = contour(X,Y,eval,5);
-h = findobj('Type','patch');
 set(h,'LineWidth',2)
 
 hold on

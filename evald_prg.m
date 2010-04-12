@@ -11,8 +11,8 @@ if (deg==1)
    a1=coef(2,1);
    a2=coef(3,1);
    
-   GRG1=a1;
-   GRG2=a2;
+   GRG1=a1*ones(size(xx));
+   GRG2=a2*ones(size(xx));
    
 elseif(deg==2)
    

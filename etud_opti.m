@@ -31,9 +31,9 @@ nb_samples=9;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='RBF';
+meta.type='PRG';
 %degré de linterpolation/regression (si nécessaire)
-meta.deg=[2 3 4];
+meta.deg=4;
 %paramètre Krigeage
 meta.theta=0.8;
 meta.regr='regpoly2';
@@ -153,7 +153,8 @@ switch meta.type
             dd=['-- Degré du polynôme ',num2str(degre)];
             disp(dd)
             [coef,MSE]=meta_prg(tirages,eval,degre);
-            ZRG=polyrg(coef,X,Y,degre);
+            ZRG=eval_prg(coef,X,Y,degre);
+            [GRG1,GRG2]=evald_prg(coef,X,Y,degre);
 
             %%%affichage de la surface obtenue par PRG
             %paramètrage options
@@ -167,6 +168,13 @@ switch meta.type
             aff.ylabel='x_{2}';
             aff.zlabel='F_{PRG}';
             affichage(X,Y,ZRG,tirages,eval,aff);
+            
+            %%affichage du gradient de la fonction
+            aff.titre=['Gradient de linterpolation par fonctions à base radiale'];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='dF_{RBF}/dx';
+            affichage_gr(X,Y,ZRG,GRG1,GRG2,aff);
 
             %%%affichage de l'écart entre la fonction objectif et la fonction
             %%%approchée

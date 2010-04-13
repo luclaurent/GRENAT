@@ -10,17 +10,32 @@ if aff.on
         hold on
     end
 
-    if aff.contour
-        if aff.uni          
-            surfc(X,Y,Z,'FaceColor',aff.color,'EdgeColor',aff.color)
+    if aff.d3
+        if aff.contour3
+            if aff.uni          
+                surfc(X,Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
+            else
+                surfc(X,Y,Z.Z)
+            end
         else
-            surfc(X,Y,Z)
+            if aff.uni          
+                surf(X,Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
+            else
+                surf(X,Y,Z.Z)
+            end
         end
-    else
-        if aff.uni          
-            surf(X,Y,Z,'FaceColor',aff.color,'EdgeColor',aff.color)
-        else
-            surf(X,Y,Z)
+    end
+    
+    if aff.d2
+        if aff.contour2
+           [C,h]=contourf(X,Y,Z.Z);       
+           set(h,'LineWidth',2)
+
+           hold on;
+           quiver(X,Y,Z.GR1,Z.GR2);
+           text_handle = clabel(C,h);
+            set(text_handle,'BackgroundColor',[1 1 .6],...
+            'Edgecolor',[.7 .7 .7])
         end
     end
 
@@ -40,8 +55,10 @@ if aff.on
     title(aff.titre);
     xlabel(aff.xlabel);
     ylabel(aff.ylabel);
-    zlabel(aff.zlabel);
-    view(3)
+    if aff.d3
+        zlabel(aff.zlabel);    
+        view(3)
+    end
     
     
 end

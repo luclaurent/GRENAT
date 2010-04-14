@@ -30,9 +30,10 @@ if aff.on
         if aff.contour2
            [C,h]=contourf(X,Y,Z.Z);       
            set(h,'LineWidth',2)
-
-           hold on;
-           quiver(X,Y,Z.GR1,Z.GR2);
+           if aff.grad
+                hold on;
+                quiver(X,Y,Z.GR1,Z.GR2);
+           end
            text_handle = clabel(C,h);
             set(text_handle,'BackgroundColor',[1 1 .6],...
             'Edgecolor',[.7 .7 .7])

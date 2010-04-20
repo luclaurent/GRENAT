@@ -3,6 +3,9 @@
 
 
 function status=affichage(X,Y,Z,tirages,eval,aff)
+
+global cofast resultats;
+
 if aff.on
     if aff.newfig
         figure;
@@ -24,6 +27,13 @@ if aff.on
                 surf(X,Y,Z.Z)
             end
         end
+        if aff.pts
+        hold on
+        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                'MarkerFaceColor','g',...
+                'MarkerSize',15)
+     
+    end
     end
     
     if aff.d2
@@ -34,6 +44,17 @@ if aff.on
                 hold on;
                 quiver(X,Y,Z.GR1,Z.GR2);
            end
+            if aff.pts
+                hold on
+                plot(tirages(:,1),tirages(:,2),'.','MarkerEdgeColor','g',...
+                'MarkerFaceColor','g',...
+                'MarkerSize',15)     
+            end
+            if cofast.grad
+                hold on;
+                quiver(tirages(:,1),tirages(:,2),resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),'LineWidth',2);
+            end
+           
            text_handle = clabel(C,h);
             set(text_handle,'BackgroundColor',[1 1 .6],...
             'Edgecolor',[.7 .7 .7])
@@ -46,13 +67,7 @@ if aff.on
         lightangle(hlight,48,70) % dir. éclairage
     end
 
-    if aff.pts
-        hold on
-        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-                'MarkerFaceColor','g',...
-                'MarkerSize',15)
-     
-    end
+    
     title(aff.titre);
     xlabel(aff.xlabel);
     ylabel(aff.ylabel);

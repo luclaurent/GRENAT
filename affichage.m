@@ -29,9 +29,9 @@ if aff.on
         end
         if aff.pts
         hold on
-        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-                'MarkerFaceColor','g',...
-                'MarkerSize',15)
+        %plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+          %      'MarkerFaceColor','g',...
+           %     'MarkerSize',15)
      
         end
         if aff.grad
@@ -42,12 +42,25 @@ if aff.on
                     vec.X(ii,jj)=-Z.GR1(ii,jj);
                     vec.Y(ii,jj)=-Z.GR2(ii,jj);
                     vec.Z(ii,jj)=-Z.GR1(ii,jj)^2-Z.GR2(ii,jj)^2;
+                    %normalisation du vecteur de plus grande pente
+                    vec.N(ii,jj)=sqrt(vec.X(ii,jj)^2+vec.Y(ii,jj)^2+vec.Z(ii,jj)^2);
+                    vec.Xn(ii,jj)=vec.X(ii,jj)/vec.N(ii,jj);
+                    vec.Yn(ii,jj)=vec.Y(ii,jj)/vec.N(ii,jj);
+                    vec.Zn(ii,jj)=vec.Z(ii,jj)/vec.N(ii,jj);
+                    
                 end
             end
             hold on
-            quiver3(X,Y,Z.Z,vec.X,vec.Y,vec.Z,4,'r')
+      
+           hcones =coneplot(X,Y,Z.Z,vec.X,vec.Y,vec.Z,0.1,'nointerp');
+           % hcones=coneplot(X,Y,Z.Z,Z.GR1,Z.GR2,-ones(size(Z.GR1)),0.1,'nointerp');
+           % set(hcones,'FaceColor','red','EdgeColor','none')
+            
+            %hold on
+            %quiver3(X,Y,Z.Z,Z.GR1,Z.GR2,-ones(size(Z.GR1)),0.001,'b')
         end
     end
+    
     
     if aff.d2
         if aff.contour2

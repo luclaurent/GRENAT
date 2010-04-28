@@ -309,50 +309,13 @@ switch meta.type
             aff.ylabel='x_{2}';
             aff.zlabel='dF_{RBF}/dx';
             aff.grad=true;
-            affichage_gr(X,Y,Za.Z,GRBF1,GRBF2,aff);
+            %affichage_gr(X,Y,Za.Z,GRBF1,GRBF2,aff);
+            Za.GR1=GRBF1;
+            Za.GR2=GRBF2;
+            aff.d2=false;
+            affichage(X,Y,Za,tirages,eval,aff);
             
-            
-            %détermination du vecteur de plus grande pente
-            for ii=1:size(X,1)
-                for jj=1:size(X,2)
-%                     uu=GRBF1(ii,jj);
-%                     vv=GRBF2(ii,jj);
-%                     ww=-1;
-%                     xx=X(ii,jj);
-%                     yy=Y(ii,jj);
-%                     zz=Za.Z(ii,jj);
-%                     ll=-vv*xx+uu*yy;
-%                     kk=-(uu*xx+vv*yy+ww*zz);
-%                    vec.Y(ii,jj)=(uu+ll*uu/vv-kk-ww)*(vv/(uu^2+vv^2));
-%                    vec.X(ii,jj)=-1+uu*yy/vv-ll/vv;
-%                    vec.Z(ii,jj)=1;
-                    vec.X(ii,jj)=-GRBF1(ii,jj);
-                    vec.Y(ii,jj)=-GRBF2(ii,jj);
-                    vec.Z(ii,jj)=-GRBF1(ii,jj)^2-GRBF2(ii,jj)^2;
-                end
-                
-            end
-            
-            figure;
-            surf(X,Y,Za.Z)
-            hold on
-            %tracé des normales à la courbes
-            quiver3(X,Y,Za.Z,GRBF1,GRBF2,-ones(size(GRBF1)),0.8,'b')
-            hold on;
-            %tracé vecteur de plus grande pente
-            quiver3(X,Y,Za.Z,vec.X,vec.Y,vec.Z,1,'r')
-%             hold on
-%             quiver3(X,Y,Za.Z,-GRBF1.*GRBF2,ones(size(GRBF1))+GRBF1.*GRBF1,GRBF2,0.8,'g')
-%             figure;
-%             contour(X,Y,Za.Z)
-%             hold on
-%             quiver(X,Y,GRBF1,GRBF2,0.8,'b')
-%             hold on;
-%             quiver(X,Y,GRBF1,zeros(size(GRBF1)),0.8,'r')
-%             hold on
-%             quiver(X,Y,zeros(size(GRBF1)),GRBF2,0.8,'g')
-            %hold on;
-            %surf(X,Y,Za.Z)
+
             
             %%%affichage de l'écart entre la fonction objectif et la fonction
             %%%approchée

@@ -33,7 +33,20 @@ if aff.on
                 'MarkerFaceColor','g',...
                 'MarkerSize',15)
      
-    end
+        end
+        if aff.grad
+            %détermination des vecteurs de plus grandes pentes (dans le
+            %sens de descente du gradient)
+            for ii=1:size(Z.GR1,1)
+                for jj=1:size(Z.GR1,2)
+                    vec.X(ii,jj)=-Z.GR1(ii,jj);
+                    vec.Y(ii,jj)=-Z.GR2(ii,jj);
+                    vec.Z(ii,jj)=-Z.GR1(ii,jj)^2-Z.GR2(ii,jj)^2;
+                end
+            end
+            hold on
+            quiver3(X,Y,Z.Z,vec.X,vec.Y,vec.Z,4,'r')
+        end
     end
     
     if aff.d2

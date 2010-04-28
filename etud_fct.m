@@ -67,14 +67,14 @@ figure;
 surf(X,Y,eval)
 %figure;
 hold on;
-quiver3(x,y,eval,evald1,evald2,zeros(size(X)),0.5);
+quiver3(x,y,eval,evald1,evald2,-ones(size(X)),0.5);
 %ylim([-2,2])
 xlabel('x');
 ylabel('f(x) et df/dx');
 titre=['Evaluation de la fonction ' fct ' et de sa dérivée'];
 title(titre);
 figure
-quiver3(x,y,eval,evald1,evald2,zeros(size(X)),0.5);
+quiver3(x,y,eval,evald1,evald2,-ones(size(X)),0.5);
 figure
 [C,h] = contour(X,Y,eval,5);
 set(h,'LineWidth',2)

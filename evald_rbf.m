@@ -12,7 +12,7 @@ for kk=1:size(xx,1)
         for ii=1:size(w,1)
             pt=[xx(kk,ll) yy(kk,ll)];
             %calcul du gradient de la fonction support en un pt
-            G=feval(fct,(tirages(ii,:)-pt)',para,'d');
+            G=feval(fct,(pt-tirages(ii,:))',para,'d');
             %calcul du gradient du métamodèle en un pt
             Grbf1(kk,ll)=Grbf1(kk,ll)+w(ii)*G(1);
             Grbf2(kk,ll)=Grbf2(kk,ll)+w(ii)*G(2);

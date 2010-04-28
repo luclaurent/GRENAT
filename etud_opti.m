@@ -2,7 +2,7 @@
 %L LAURENT   --  31/01/2010   --  luc.laurent@ens-cachan.fr
 clf;clc;close all; clear all;
 addpath('doe/lhs');addpath('dace');addpath('doe');addpath('fct');
-addpath('crit');
+addpath('crit');global cofast;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -31,7 +31,7 @@ nb_samples=9;
 %KRG: krigeage (utilisation de la toolbox DACE)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='PRG';
+meta.type='RBF';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=4;
 %paramètre Krigeage
@@ -40,15 +40,20 @@ meta.regr='regpoly2';
 meta.corr='corrspline';
 %paramètre RBF
 meta.para=0.8;
-meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'Cauchy'
+meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
 %paramètre POD
 meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
 
 %affichage actif ou non
 aff.on=true;
+aff.d3=true;
+aff.d2=true;
+aff.contour3=true;
+aff.contour2=true;
 
 %affichage des gradients
 aff.grad=true;
+cofast.grad=false;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -87,9 +92,9 @@ y=ymin:pas:ymax;
 
 switch fct
     case 'rosen'
-        Z=rosenbrock(X,Y);
+        Z.Z=rosenbrock(X,Y);
     case 'peaks'
-        Z=peaks(X,Y);
+        Z.Z=peaks(X,Y);
 end
 
 
@@ -138,7 +143,9 @@ aff.titre='Surface de la fonction objectif';
 aff.xlabel='x_{1}';
 aff.ylabel='x_{2}';
 aff.zlabel='F';
+aff.grad=false;
 affichage(X,Y,Z,tirages,eval,aff);
+aff.grad=true;
 
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
@@ -153,7 +160,7 @@ switch meta.type
             dd=['-- Degré du polynôme ',num2str(degre)];
             disp(dd)
             [coef,MSE]=meta_prg(tirages,eval,degre);
-            ZRG=eval_prg(coef,X,Y,degre);
+            ZRG=eval_prg(coef,X,Y,degre);Za.Z=ZRG;
             [GRG1,GRG2]=evald_prg(coef,X,Y,degre);
 
             %%%affichage de la surface obtenue par PRG
@@ -167,20 +174,29 @@ switch meta.type
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F_{PRG}';
-            affichage(X,Y,ZRG,tirages,eval,aff);
+            aff.grad=false;
+            affichage(X,Y,Za,tirages,eval,aff);
             
             %%affichage du gradient de la fonction
             aff.titre=['Gradient de linterpolation par fonctions à base radiale'];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='dF_{RBF}/dx';
-            affichage_gr(X,Y,ZRG,GRG1,GRG2,aff);
+            aff.grad=true;
+            affichage_gr(X,Y,Za.Z,GRG1,GRG2,aff);
+            
+             figure;
+            quiver3(X,Y,Za.Z,GRG1,GRG2,-ones(size(GRG1)),0.5)
+            hold on;
+            surf(X,Y,Za.Z)
+            
 
             %%%affichage de l'écart entre la fonction objectif et la fonction
             %%%approchée
             %paramètrage options
             aff.newfig=true;
-            aff.contour=false;
+            aff.contour3=false;
+            aff.contour2=false;
             aff.rendu=true;
             aff.uni=true;
             aff.color='blue';
@@ -189,14 +205,15 @@ switch meta.type
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F';
+            aff.grad=false;
             affichage(X,Y,Z,tirages,eval,aff);
             aff.newfig=false;
             aff.color='red';
-            affichage(X,Y,ZRG,tirages,eval,aff);
-            emse=['MSE=',num2str(mse(Z,ZRG))];
-            err=['R2=',num2str(r_square(Z,ZRG))];
-            eraae=['RAAE=',num2str(raae(Z,ZRG))];
-            ermae=['RMAE=',num2str(rmae(Z,ZRG))];
+            affichage(X,Y,Za,tirages,eval,aff);
+            emse=['MSE=',num2str(mse(Z.Z,ZRG))];
+            err=['R2=',num2str(r_square(Z.Z,ZRG))];
+            eraae=['RAAE=',num2str(raae(Z.Z,ZRG))];
+            ermae=['RMAE=',num2str(rmae(Z.Z,ZRG))];
             disp(' ')
             disp(emse);
             disp(err)
@@ -269,7 +286,7 @@ switch meta.type
         disp('>>> Interpolation par fonctions à base radiale');
         disp(' ')
         w=meta_rbf(tirages,eval,meta.para,meta.fct);
-        ZRBF=eval_rbf(X,Y,tirages,w,meta.para,meta.fct);
+        ZRBF=eval_rbf(X,Y,tirages,w,meta.para,meta.fct);Za.Z=ZRBF;
         [GRBF1,GRBF2]=evald_rbf(X,Y,tirages,w,meta.para,meta.fct);
         
             %%%affichage de la surface obtenue par RBF
@@ -283,14 +300,21 @@ switch meta.type
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F_{RBF}';
-            affichage(X,Y,ZRBF,tirages,eval,aff);
+            aff.grad=false;
+            affichage(X,Y,Za,tirages,eval,aff);
             
             %%affichage du gradient de la fonction
             aff.titre=['Gradient de linterpolation par fonctions à base radiale'];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='dF_{RBF}/dx';
-            affichage_gr(X,Y,ZRBF,GRBF1,GRBF2,aff);
+            aff.grad=true;
+            affichage_gr(X,Y,Za.Z,GRBF1,GRBF2,aff);
+            
+            figure;
+            quiver3(X,Y,Za.Z,GRBF1,GRBF2,-ones(size(GRBF1)),0.5)
+            hold on;
+            surf(X,Y,Za.Z)
             
             %%%affichage de l'écart entre la fonction objectif et la fonction
             %%%approchée
@@ -305,14 +329,15 @@ switch meta.type
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F';
+            aff.grad=false;
             affichage(X,Y,Z,tirages,eval,aff);
             aff.newfig=false;
             aff.color='red';
-            affichage(X,Y,ZRBF,tirages,eval,aff);
-            emse=['MSE=',num2str(mse(Z,ZRBF))];
-            err=['R2=',num2str(r_square(Z,ZRBF))];
-            eraae=['RAAE=',num2str(raae(Z,ZRBF))];
-            ermae=['RMAE=',num2str(rmae(Z,ZRBF))];
+            affichage(X,Y,Za,tirages,eval,aff);
+            emse=['MSE=',num2str(mse(Z.Z,ZRBF))];
+            err=['R2=',num2str(r_square(Z.Z,ZRBF))];
+            eraae=['RAAE=',num2str(raae(Z.Z,ZRBF))];
+            ermae=['RMAE=',num2str(rmae(Z.Z,ZRBF))];
             disp(' ')
             disp(emse)
             disp(err)

@@ -21,10 +21,8 @@ switch type
     case 'd'
         dd=zeros(size(xx,1),1);
         taille=size(xx,1);
-        for ii=1:size(xx,1)
-            mm=zeros(taille,1);
-            mm(ii,1)=1;
-            dd(ii,1)=-xx'*mm*ev^3 /para^2;
+        for ii=1:taille
+            dd(ii,1)=-xx(ii,1)*ev^3 /para^2;
         end
          G=dd;
     otherwise

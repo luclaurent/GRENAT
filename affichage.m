@@ -29,9 +29,9 @@ if aff.on
         end
         if aff.pts
         hold on
-        %plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-          %      'MarkerFaceColor','g',...
-           %     'MarkerSize',15)
+        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+                'MarkerFaceColor','g',...
+                'MarkerSize',15)
      
         end
         if aff.grad
@@ -78,7 +78,7 @@ if aff.on
             end
             if cofast.grad
                 hold on;
-                quiver(tirages(:,1),tirages(:,2),resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),'LineWidth',2);
+                quiver(resultats.tirages(:,1),resultats.tirages(:,2),resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),'LineWidth',2);
             end
            
            text_handle = clabel(C,h);

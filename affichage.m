@@ -4,7 +4,7 @@
 
 function status=affichage(X,Y,Z,tirages,eval,aff)
 
-global cofast resultats;
+global cofast resultats doe;
 
 if aff.on
     if aff.newfig
@@ -52,12 +52,18 @@ if aff.on
             end
             hold on
       
-           hcones =coneplot(X,Y,Z.Z,vec.X,vec.Y,vec.Z,0.1,'nointerp');
+           %hcones =coneplot(X,Y,Z.Z,vec.X,vec.Y,vec.Z,0.1,'nointerp');
            % hcones=coneplot(X,Y,Z.Z,Z.GR1,Z.GR2,-ones(size(Z.GR1)),0.1,'nointerp');
            % set(hcones,'FaceColor','red','EdgeColor','none')
             
             %hold on
-            %quiver3(X,Y,Z.Z,Z.GR1,Z.GR2,-ones(size(Z.GR1)),0.001,'b')
+            %dimension maximale espace de conception
+            dimm=max(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y)))); 
+            %dimension espace de réponse
+            dimr=abs(max(max(Z.Z))-min(min(Z.Z)));
+            %norme maxi du gradient
+            nmax=max(max(vec.N));
+            quiver3(X,Y,Z.Z,vec.X,vec.Y,vec.Z,10^4*dimr/nmax,'b','MaxHeadSize',0.1*dimr/nmax,'AutoScaleFactor',10^4*dimr/nmax,'AutoScale','off')
         end
     end
     

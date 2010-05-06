@@ -67,14 +67,28 @@ if aff.on
         end
     end
     
+    if aff.grad||cofast.grad
+                        %dimension maxi espace de conception
+                dimm=max(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y))));
+                %calcul norme gradient
+                ngr=zeros(size(Z.GR1));
+                for ii=1:size(Z.GR1,1)
+                    for jj=1:size(Z.GR1,2)
+                        ngr(ii,jj)=norm([Z.GR1(ii,jj) Z.GR2(ii,jj)],2);
+                    end
+                end
+                %recherche du maxi de la norme du gradient
+                nm=mean(mean(ngr));
+    end
     
     if aff.d2
         if aff.contour2
            [C,h]=contourf(X,Y,Z.Z);       
            set(h,'LineWidth',2)
-           if aff.grad
-                hold on;
-                quiver(X,Y,Z.GR1,Z.GR2);
+           if aff.grad                
+               hold on;
+
+                quiver(X,Y,Z.GR1,Z.GR2,nm*0.001);
            end
             if aff.pts
                 hold on
@@ -83,8 +97,12 @@ if aff.on
                 'MarkerSize',15)     
             end
             if cofast.grad
-                hold on;
-                quiver(resultats.tirages(:,1),resultats.tirages(:,2),resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),'LineWidth',2);
+                %hold on;
+                %figure;
+                
+               quiver(resultats.tirages(:,1),resultats.tirages(:,2),resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),...
+                   nm*0.001,'LineWidth',2);
+               
             end
            
            text_handle = clabel(C,h);
@@ -94,9 +112,9 @@ if aff.on
     end
 
     if aff.rendu
-        hlight=light;              % activ. éclairage
-        lighting('gouraud')        % type de rendu
-        lightangle(hlight,48,70) % dir. éclairage
+        hlight=light;               % activ. éclairage
+        lighting('gouraud')         % type de rendu
+        lightangle(hlight,48,70)    % dir. éclairage
     end
 
     

@@ -68,8 +68,8 @@ if aff.on
     end
     
     if aff.grad||cofast.grad
-                        %dimension maxi espace de conception
-                dimm=max(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y))));
+                %dimension mini espace de conception
+                dimm=min(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y))));
                 %calcul norme gradient
                 ngr=zeros(size(Z.GR1));
                 for ii=1:size(Z.GR1,1)
@@ -78,7 +78,17 @@ if aff.on
                     end
                 end
                 %recherche du maxi de la norme du gradient
-                nm=mean(mean(ngr));
+                nm=max(max(ngr));
+                
+                %définition de la taille mini de la grille d'affichage
+                tailg=aff.pas;
+                
+                %taille de la plus grande flèche
+                para_fl=1.3;
+                tailf=para_fl*tailg;
+                
+                %echelle
+                ech=tailf/nm;
     end
     
     if aff.d2
@@ -88,7 +98,7 @@ if aff.on
            if aff.grad                
                hold on;
 
-                quiver(X,Y,Z.GR1,Z.GR2,nm*0.001);
+                quiver(X,Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
            end
             if aff.pts
                 hold on
@@ -100,8 +110,9 @@ if aff.on
                 %hold on;
                 %figure;
                 
-               quiver(resultats.tirages(:,1),resultats.tirages(:,2),resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),...
-                   nm*0.001,'LineWidth',2);
+               quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
+                   ech*resultats.grad.gradients(:,1),ech*resultats.grad.gradients(:,2),...
+                   'LineWidth',2,'AutoScale','off');
                
             end
            

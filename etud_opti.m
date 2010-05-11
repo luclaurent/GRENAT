@@ -33,13 +33,13 @@ nb_samples=9;
 %CKRG: CoKrigeage (nécessite le calcul des gradients)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='RBF';
+meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
-meta.deg=4;
+meta.deg=2;
 %paramètre Krigeage
 meta.theta=0.8;
 meta.regr='regpoly2';
-meta.corr='corrspline';
+meta.corr='corr_exp';
 %paramètre RBF
 meta.para=0.8;
 meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
@@ -136,6 +136,7 @@ end
 
 %%Affichage courbe initiale
 %paramètrage options
+aff.on=true;
 aff.newfig=true;
 aff.contour=true;
 aff.rendu=true;
@@ -229,17 +230,17 @@ switch meta.type
         disp('=====================================');
         disp('=====================================');
 
-
-    case 'DACE' %utilisation de la Toolbox DACE
+    case 'KRG' 
         disp('>>> Interpolation par Krigeage');
         disp(' ')
-        [model,perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
-        Zk=zeros(size(X));
-        for ii=1:size(X,1)
-            for jj=1:size(X,2)
-                ZK(ii,jj)=predictor([X(ii,jj) Y(ii,jj)],model);
-            end
-        end
+        [krg]=meta_krg(tirages,eval,meta);
+        ZZ=zeros(size(X));
+         for ii=1:size(X,1)
+             for jj=1:size(X,2)
+                 ZZ(ii,jj)=eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
+             end
+         end
+         ZK.Z=ZZ;
         
             %%%affichage de la surface obtenue par KRG
             %paramètrage options
@@ -248,6 +249,65 @@ switch meta.type
             aff.rendu=false;
             aff.uni=false;
             aff.pts=false;
+            aff.titre=['Surface obtenue par Krigeage: theta ',...
+                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F_{KRG}';
+            aff.grad=false;
+            affichage(X,Y,ZK,tirages,eval,aff);
+
+            %%%affichage de l'écart entre la fonction objectif et la fonction
+            %%%approchée
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour=false;
+            aff.rendu=true;
+            aff.uni=true;
+            aff.color='blue';
+            aff.pts=false;
+            aff.grad=false;
+            aff.titre=['Surface obtenue par Krigeage: theta ',...
+                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F';
+            affichage(X,Y,Z,tirages,eval,aff);
+            aff.newfig=false;
+            aff.color='red';
+            affichage(X,Y,ZK,tirages,eval,aff);
+            emse=['MSE=',num2str(mse(Z.Z,ZK.Z))];
+            err=['R2=',num2str(r_square(Z.Z,ZK.Z))];
+            eraae=['RAAE=',num2str(raae(Z.Z,ZK.Z))];
+            ermae=['RMAE=',num2str(rmae(Z.Z,ZK.Z))];
+            disp(' ')
+            disp(emse)
+            disp(err)
+            disp(eraae)
+            disp(ermae)
+            disp(' ')
+        disp('=====================================');
+        disp('=====================================');
+
+    case 'DACE' %utilisation de la Toolbox DACE
+        disp('>>> Interpolation par Krigeage (Toolbox DACE)');
+        disp(' ')
+        [model,perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
+        ZZ=zeros(size(X));
+        for ii=1:size(X,1)
+            for jj=1:size(X,2)
+                ZZ(ii,jj)=predictor([X(ii,jj) Y(ii,jj)],model);
+            end
+        end
+        ZK.Z=ZZ;
+            %%%affichage de la surface obtenue par KRG
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour=false;
+            aff.rendu=false;
+            aff.uni=false;
+            aff.pts=false;
+            aff.grad=false;
             aff.titre=['Surface obtenue par Krigeage: theta ',...
                 num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
             aff.xlabel='x_{1}';
@@ -273,10 +333,10 @@ switch meta.type
             aff.newfig=false;
             aff.color='red';
             affichage(X,Y,ZK,tirages,eval,aff);
-            emse=['MSE=',num2str(mse(Z,ZK))];
-            err=['R2=',num2str(r_square(Z,ZK))];
-            eraae=['RAAE=',num2str(raae(Z,ZK))];
-            ermae=['RMAE=',num2str(rmae(Z,ZK))];
+            emse=['MSE=',num2str(mse(Z.Z,ZK.Z))];
+            err=['R2=',num2str(r_square(Z.Z,ZK.Z))];
+            eraae=['RAAE=',num2str(raae(Z.Z,ZK.Z))];
+            ermae=['RMAE=',num2str(rmae(Z.Z,ZK.Z))];
             disp(' ')
             disp(emse)
             disp(err)

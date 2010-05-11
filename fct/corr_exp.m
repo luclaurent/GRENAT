@@ -5,7 +5,7 @@ function corr=corr_exp(xx,theta)
 
 %vérification de la dimension de theta
 lt=length(theta);
-d=size(xx);
+d=size(xx,1);
 
 if lt==1
     %theta est un réel, alors on en fait une matrice

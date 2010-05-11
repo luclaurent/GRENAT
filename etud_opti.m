@@ -23,7 +23,7 @@ pas=0.1;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=9;
+nb_samples=5;
 
 %%Métamodèle
 %type d'interpolation
@@ -39,7 +39,7 @@ meta.deg=2;
 %paramètre Krigeage
 meta.theta=0.8;
 meta.regr='regpoly2';
-meta.corr='corr_exp';
+meta.corr='corr_spline';
 %paramètre RBF
 meta.para=0.8;
 meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'

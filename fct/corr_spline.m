@@ -7,9 +7,10 @@ function corr=corr_spline(xx,theta,type)
 lt=length(theta);
 d=size(xx);
 
+
 if lt==1
     %theta est un réel, alors on en fait une matrice
-    theta = repmat(theta,1,d);
+    theta = repmat(theta,d,1);
 elseif lt~=d
     error('mauvaise dimension de theta');
 end
@@ -18,14 +19,38 @@ end
 td=min(0,1-theta.*abs(xx));
 sp=zeros(size(td,1));
 for kk=1:size(td,1)
-    if (0=<td(kk) && td(kk)=<0.2)
+    
+    if (0<=td(kk) && td(kk)<=0.2)
         sp(kk)=1-15*td(kk)^2+30*td(kk)^3;
-    elseif (0.2=<td(kk) && td(kk)=<1)
+    elseif (0.2<=td(kk) && td(kk)<=1)
         sp(kk)=1.25*(1-td(kk))^3;
     else
         sp(kk)=0;
     end
+end
 
-corr=prod(sp,2);
+ev=prod(sp,2);
+
+%évaluation ou dérivée
+if strcmp(type,'e')
+    corr=ev;
+elseif strcmp(type,'d')
+    
+    for kk=1:size(td,1)
+        if (0<=td(kk) && td(kk)<=0.2)
+            evd(kk)=(-30*td(kk)+90*td(kk)^2).*sign(xx).*theta;
+        elseif (0.2<=td(kk) && td(kk)<=1)
+            evd(kk)=3.75*(1-td(kk))^2.*sign(xx).*theta;
+        else
+            evd(kk)=0;
+        end
+    end
+    %for
+        
+    %end
+else
+    error('Mauvais argument de la fonction corr_spline');
+end  
 
 end
+

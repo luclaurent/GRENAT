@@ -21,7 +21,7 @@ rc=zeros(ns);
 
 for ii=1:ns
     for jj=1:ns
-       rc(ii,jj)=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+       rc(ii,jj)=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta,'e');
     end
 end
 
@@ -40,5 +40,6 @@ krg.dim=ns;
 krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.theta=meta.theta;
+krg.con=size(tirages,2);
 
 end

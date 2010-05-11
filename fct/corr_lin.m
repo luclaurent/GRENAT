@@ -24,6 +24,6 @@ if strcmp(type,'e')
 elseif strcmp(type,'d')
     corr=-theta.*prod(td(:,1:j-1 j+1:n]),2).*sign(xx);
 else
-    error('Mauvais argument de la fonction corr_cubique');
+    error('Mauvais argument de la fonction corr_lin');
 end  
 end

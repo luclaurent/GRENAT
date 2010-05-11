@@ -28,7 +28,9 @@ nb_samples=9;
 %%Métamodèle
 %type d'interpolation
 %PRG: regression polynomiale
-%KRG: krigeage (utilisation de la toolbox DACE)
+%DACE: krigeage (utilisation de la toolbox DACE)
+%KRG: krigeage
+%CKRG: CoKrigeage (nécessite le calcul des gradients)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
 meta.type='RBF';
@@ -228,7 +230,7 @@ switch meta.type
         disp('=====================================');
 
 
-    case 'KRG' %utilisation de la Toolbox DACE
+    case 'DACE' %utilisation de la Toolbox DACE
         disp('>>> Interpolation par Krigeage');
         disp(' ')
         [model,perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
@@ -246,7 +248,8 @@ switch meta.type
             aff.rendu=false;
             aff.uni=false;
             aff.pts=false;
-            aff.titre=['Surface obtenue par Krigeage: theta ',num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.titre=['Surface obtenue par Krigeage: theta ',...
+                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F_{KRG}';
@@ -261,7 +264,8 @@ switch meta.type
             aff.uni=true;
             aff.color='blue';
             aff.pts=false;
-            aff.titre=['Surface obtenue par Krigeage: theta ',num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.titre=['Surface obtenue par Krigeage: theta ',...
+                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F';
@@ -296,7 +300,8 @@ switch meta.type
             aff.rendu=false;
             aff.uni=false;
             aff.pts=false;
-            aff.titre=['Surface obtenue par interpolation par fonctions à base radiale: r=',num2str(meta.para),' fonction  ',meta.fct];
+            aff.titre=['Surface obtenue par interpolation par fonctions à base radiale: r=',...
+                num2str(meta.para),' fonction  ',meta.fct];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F_{RBF}';
@@ -326,7 +331,8 @@ switch meta.type
             aff.uni=true;
             aff.color='blue';
             aff.pts=true;
-            aff.titre=['Surface obtenue par interpolation par fonctions à base radiale: r=',num2str(meta.para),' fonction  ',meta.fct];
+            aff.titre=['Surface obtenue par interpolation par fonctions à base radiale: r=',...
+                num2str(meta.para),' fonction  ',meta.fct];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F';

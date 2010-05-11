@@ -1,7 +1,7 @@
 %%fonction de corrélation spline (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
-function corr=corr_spline(xx,theta)
+function corr=corr_spline(xx,theta,type)
 
 %vérification de la dimension de theta
 lt=length(theta);

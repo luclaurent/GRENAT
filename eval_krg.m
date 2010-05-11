@@ -7,7 +7,7 @@ function Z=eval_krg(X,tirages,krg)
 %matrice de corrélation aux points d'évaluations
 rr=zeros(krg.dim,1);
 for ll=1:krg.dim
-   rr(ll)=feval(krg.corr,tirages(ll,:)-X,krg.theta);
+   rr(ll)=feval(krg.corr,tirages(ll,:)-X,krg.theta,'e');
 end
 
 %matrice de régression aux points d'évalutions

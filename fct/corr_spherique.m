@@ -1,7 +1,7 @@
 %%fonction de corrélation sphérique (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
-function corr=corr_spherical(xx,theta)
+function corr=corr_spherique(xx,theta)
 
 %vérification de la dimension de theta
 lt=length(theta);

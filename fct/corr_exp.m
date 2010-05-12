@@ -1,8 +1,13 @@
 %%fonction de corrélation exponentielle (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
-function corr=corr_exp(xx,theta,type)
+function [corr,dcorr]=corr_exp(xx,theta)
 
+if nargout==2
+    deriv=true;
+else
+    deriv=false;
+end
 %vérification de la dimension de theta
 lt=length(theta);
 d=size(xx,2);
@@ -19,10 +24,9 @@ td=-abs(xx).*theta;
 ev=exp(sum(td,2));
 
 %évaluation ou dérivée
-if strcmp(type,'e')
+if ~deriv
     corr=ev;
-elseif strcmp(type,'d')
-    corr=-theta.*sign(ev).*ev;
 else
-    error('Mauvais argument de la fonction corr_cubique');
+    corr=ev;
+    dcorr=-theta.*sign(ev).*ev;
 end  

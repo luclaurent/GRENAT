@@ -1,8 +1,13 @@
 %%fonction de corrélation spline (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
-function corr=corr_spline(xx,theta,type)
+function corr=corr_spline(xx,theta)
 
+if nargout==2
+    deriv=true;
+else
+    deriv=false;
+end
 %vérification de la dimension de theta
 lt=length(theta);
 d=size(xx,2);
@@ -32,10 +37,10 @@ end
 ev=prod(sp,2);
 
 %évaluation ou dérivée
-if strcmp(type,'e')
+if ~deriv
     corr=ev;
-elseif strcmp(type,'d')
-    sp=zeros(1,d);
+else 
+    evd=zeros(1,d);
     for kk=1:size(td,1)
         if (0<=td(kk) && td(kk)<=0.2)
             evd(kk)=(-30*td(kk)+90*td(kk)^2).*sign(xx).*theta;

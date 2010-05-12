@@ -18,12 +18,15 @@ fct='peaks';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
 pas=0.1;
 
+%calcul des gradients des fonctions initiales
+calc_grad=true;
+
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='ffact';
+meta.doe='LHS';
 
 %nb d'échantillons
-nb_samples=10;
+nb_samples=5;
 
 %%Métamodèle
 %type d'interpolation
@@ -33,13 +36,13 @@ nb_samples=10;
 %CKRG: CoKrigeage (nécessite le calcul des gradients)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='KRG';
+meta.type='CKRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=2;
 %paramètre Krigeage
 meta.theta=0.5;
 meta.regr='regpoly2';
-meta.corr='corr_spherique';
+meta.corr='corr_exp';
 %paramètre RBF
 meta.para=0.8;
 meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
@@ -87,17 +90,27 @@ end
 
 
 
-%Tracé de la fonction de la fonction étudiée
+%Tracé de la fonction de la fonction étudiée et des gradients
 x=xmin:pas:xmax;
 y=ymin:pas:ymax;
 [X,Y]=meshgrid(x,y);
 
 switch fct
     case 'rosen'
-        Z.Z=rosenbrock(X,Y);
+        if calc_grad
+            [Z.Z,Z.GR1,Z.GR2]=fct_rosenbrock(X,Y);
+        else
+            Z.Z=fct_rosenbrock(X,Y);
+        end
     case 'peaks'
-        Z.Z=peaks(X,Y);
+        if calc_grad
+           [Z.Z,Z.GR1,Z.GR2]=fct_peaks(X,Y);
+        else
+            Z.Z=fct_peaks(X,Y);
+        end
 end
+
+
 
 
 %% Tirages: plan d'expérience
@@ -128,9 +141,17 @@ end
 %évaluations aux points
 switch fct
     case 'rosen'
-        eval=rosenbrock(tirages(:,1),tirages(:,2));
+        if calc_grad
+            [eval,grad(:,1),grad(:,2)]=fct_rosenbrock(tirages(:,1),tirages(:,2));
+        else
+            [eval]=fct_rosenbrock(tirages(:,1),tirages(:,2));
+        end
     case 'peaks'
-        eval=peaks(tirages(:,1),tirages(:,2));
+        if calc_grad
+            [eval,grad(:,1),grad(:,2)]=fct_peaks(tirages(:,1),tirages(:,2));
+        else
+            [eval]=fct_peaks(tirages(:,1),tirages(:,2));
+        end
 end
 
 
@@ -146,9 +167,18 @@ aff.titre='Surface de la fonction objectif';
 aff.xlabel='x_{1}';
 aff.ylabel='x_{2}';
 aff.zlabel='F';
-aff.grad=false;
+aff.grad=true;
+aff.pas=pas;
+aff.contour2=false;
+aff.contour3=false;
+affichage(X,Y,Z,tirages,eval,aff);
+aff.d3=false;
+aff.d2=true;
+aff.contour2=true;
 affichage(X,Y,Z,tirages,eval,aff);
 aff.grad=true;
+
+
 
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
@@ -229,15 +259,19 @@ switch meta.type
         
         disp('=====================================');
         disp('=====================================');
-
-    case 'KRG' 
-        disp('>>> Interpolation par Krigeage');
+        
+   case 'CKRG' 
+        disp('>>> Interpolation par CoKrigeage');
         disp(' ')
-        [krg]=meta_krg(tirages,eval,meta);
+        [krg]=meta_ckrg(tirages,eval,meta);
         ZZ=zeros(size(X));
+        GK1=zeros(size(X));
+        GK2=zeros(size(X));
          for ii=1:size(X,1)
              for jj=1:size(X,2)
-                 ZZ(ii,jj)=eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
+                 [ZZ(ii,jj)] =eval_ckrg([X(ii,jj) Y(ii,jj)],tirages,krg);
+                 %GK1(ii,jj)=GZ(1);
+                 %GK2(ii,jj)=GZ(2);
              end
          end
          ZK.Z=ZZ;
@@ -258,6 +292,109 @@ switch meta.type
             aff.grad=false;
             affichage(X,Y,ZK,tirages,eval,aff);
 
+%              %%affichage du gradient de la fonction
+%             aff.titre=['Gradient de linterpolation par Krigeage'];
+%             aff.xlabel='x_{1}';
+%             aff.ylabel='x_{2}';
+%             aff.zlabel='dF_{KRG}/dx';
+%             aff.grad=true;
+%             affichage_gr(X,Y,ZK.Z,GK1,GK2,aff);
+%             
+%              figure;
+%             quiver3(X,Y,ZK.Z,GK1,GK2,-ones(size(GK1)),0.5)
+%             hold on;
+%             surf(X,Y,ZK.Z)
+            
+            
+            %%%affichage de l'écart entre la fonction objectif et la fonction
+            %%%approchée
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour2=false;
+            aff.contour3=false;
+            aff.rendu=true;
+            aff.uni=true;
+            aff.color='blue';
+            aff.pts=false;
+            aff.grad=false;
+            aff.titre=['Surface obtenue par Krigeage: theta ',...
+                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F';
+            affichage(X,Y,Z,tirages,eval,aff);
+            aff.newfig=false;
+            aff.color='red';
+            affichage(X,Y,ZK,tirages,eval,aff);
+            emse=['MSE=',num2str(mse(Z.Z,ZK.Z))];
+            err=['R2=',num2str(r_square(Z.Z,ZK.Z))];
+            eraae=['RAAE=',num2str(raae(Z.Z,ZK.Z))];
+            ermae=['RMAE=',num2str(rmae(Z.Z,ZK.Z))];
+            disp(' ')
+            disp(emse)
+            disp(err)
+            disp(eraae)
+            disp(ermae)
+            disp(' ')
+        disp('=====================================');
+        disp('=====================================');
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    case 'KRG' 
+        disp('>>> Interpolation par Krigeage');
+        disp(' ')
+        [krg]=meta_krg(tirages,eval,meta);
+        ZZ=zeros(size(X));
+        GK1=zeros(size(X));
+        GK2=zeros(size(X));
+         for ii=1:size(X,1)
+             for jj=1:size(X,2)
+                 [ZZ(ii,jj),GZ] =eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
+                 GK1(ii,jj)=GZ(1);
+                 GK2(ii,jj)=GZ(2);
+             end
+         end
+         ZK.Z=ZZ;
+        
+            %%%affichage de la surface obtenue par KRG
+            %paramètrage options
+            aff.newfig=true;
+            aff.contour2=false;
+            aff.contour3=false;
+            aff.rendu=false;
+            aff.uni=false;
+            aff.pts=false;
+            aff.titre=['Surface obtenue par Krigeage: theta ',...
+                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='F_{KRG}';
+            aff.grad=false;
+            affichage(X,Y,ZK,tirages,eval,aff);
+
+             %%affichage du gradient de la fonction
+            aff.titre=['Gradient de linterpolation par Krigeage'];
+            aff.xlabel='x_{1}';
+            aff.ylabel='x_{2}';
+            aff.zlabel='dF_{KRG}/dx';
+            aff.grad=true;
+            affichage_gr(X,Y,ZK.Z,GK1,GK2,aff);
+            
+             figure;
+            quiver3(X,Y,ZK.Z,GK1,GK2,-ones(size(GK1)),0.5)
+            hold on;
+            surf(X,Y,ZK.Z)
+            
+            
             %%%affichage de l'écart entre la fonction objectif et la fonction
             %%%approchée
             %paramètrage options

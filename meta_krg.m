@@ -21,7 +21,7 @@ rc=zeros(ns);
 
 for ii=1:ns
     for jj=1:ns
-       rc(ii,jj)=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta,'e');
+       rc(ii,jj)=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
     end
 end
 

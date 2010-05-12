@@ -263,7 +263,7 @@ switch meta.type
    case 'CKRG' 
         disp('>>> Interpolation par CoKrigeage');
         disp(' ')
-        [krg]=meta_ckrg(tirages,eval,meta);
+        [krg]=meta_ckrg(tirages,eval,grad,meta);
         ZZ=zeros(size(X));
         GK1=zeros(size(X));
         GK2=zeros(size(X));

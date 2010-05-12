@@ -5,20 +5,20 @@ function corr=corr_spline(xx,theta,type)
 
 %vérification de la dimension de theta
 lt=length(theta);
-d=size(xx);
+d=size(xx,2);
 
 
 if lt==1
     %theta est un réel, alors on en fait une matrice
-    theta = repmat(theta,d,1);
+    theta = repmat(theta,1,d);
 elseif lt~=d
     error('mauvaise dimension de theta');
 end
 
 %calcul de la valeur de la fonction au point xx
-td=min(0,1-theta.*abs(xx));
-sp=zeros(size(td,1));
-for kk=1:size(td,1)
+td=theta.*abs(xx);
+sp=zeros(1,d);
+for kk=1:d
     
     if (0<=td(kk) && td(kk)<=0.2)
         sp(kk)=1-15*td(kk)^2+30*td(kk)^3;
@@ -35,7 +35,7 @@ ev=prod(sp,2);
 if strcmp(type,'e')
     corr=ev;
 elseif strcmp(type,'d')
-    
+    sp=zeros(1,d);
     for kk=1:size(td,1)
         if (0<=td(kk) && td(kk)<=0.2)
             evd(kk)=(-30*td(kk)+90*td(kk)^2).*sign(xx).*theta;

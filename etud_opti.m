@@ -23,7 +23,7 @@ pas=0.1;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=5;
+nb_samples=10;
 
 %%Métamodèle
 %type d'interpolation
@@ -37,9 +37,9 @@ meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=2;
 %paramètre Krigeage
-meta.theta=0.8;
+meta.theta=0.5;
 meta.regr='regpoly2';
-meta.corr='corr_spline';
+meta.corr='corr_spherique';
 %paramètre RBF
 meta.para=0.8;
 meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
@@ -245,7 +245,8 @@ switch meta.type
             %%%affichage de la surface obtenue par KRG
             %paramètrage options
             aff.newfig=true;
-            aff.contour=false;
+            aff.contour2=false;
+            aff.contour3=false;
             aff.rendu=false;
             aff.uni=false;
             aff.pts=false;
@@ -261,7 +262,8 @@ switch meta.type
             %%%approchée
             %paramètrage options
             aff.newfig=true;
-            aff.contour=false;
+            aff.contour2=false;
+            aff.contour3=false;
             aff.rendu=true;
             aff.uni=true;
             aff.color='blue';

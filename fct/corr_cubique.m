@@ -5,7 +5,7 @@ function corr=corr_cubique(xx,theta,type)
 
 %vérification de la dimension de theta
 lt=length(theta);
-d=size(xx);
+d=size(xx,2);
 
 if lt==1
     %theta est un réel, alors on en fait une matrice
@@ -14,10 +14,10 @@ elseif lt~=d
     error('mauvaise dimension de theta');
 end
 %calcul de la valeur de la fonction au point xx
-td=min(0,1-theta.*abs(xx));
+td=min(1,theta.*abs(xx));
 sp=1-3.*td.^2+2.*td.^3;
 ev=prod(sp,2);
-    
+
 %évaluation ou dérivée
 if strcmp(type,'e')
     corr=ev;

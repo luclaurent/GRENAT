@@ -5,7 +5,7 @@ function corr=corr_lin(xx,theta,type)
 
 %vérification de la dimension de theta
 lt=length(theta);
-d=size(xx);
+d=size(xx,2);
 
 if lt==1
     %theta est un réel, alors on en fait une matrice
@@ -22,7 +22,7 @@ ev=prod(td,2);
 if strcmp(type,'e')
     corr=ev;
 elseif strcmp(type,'d')
-    corr=-theta.*prod(td(:,1:j-1 j+1:n]),2).*sign(xx);
+   % corr=-theta.*prod(td(:,1:j-1 j+1:n]),2).*sign(xx);
 else
     error('Mauvais argument de la fonction corr_lin');
 end  

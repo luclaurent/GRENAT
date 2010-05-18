@@ -1,7 +1,7 @@
 %fonction assurant l'évaluation du métamodèle de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 
-function [Z,GZ]=eval_krg(X,tirages,krg)
+function [Z,GZ]=eval_ckrg(X,tirages,krg)
 
 if nargout==2
     grad=true;
@@ -12,7 +12,7 @@ end
 %calcul de l'évaluation du métamodèle au point considéré
 %matrice de corrélation aux points d'évaluations et matrice de corrélation
 %dérivée
-rr=zeros(krg.dim,1);
+rr=zeros(krg.nbt*(krg.dim+1),1);
 if grad
     jr=zeros(krg.dim,krg.con);
 end
@@ -21,7 +21,9 @@ for ll=1:krg.dim
    if grad  %si calcul des gradients
         [rr(ll),jr(ll,:)]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
    else %sinon
-        rr(ll)=feval(krg.corr,tirages(ll,:)-X,krg.theta);
+        [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
+        rr(ll)=ev;
+        rr(krg.dim*(krg.nbt-1)+1:krg.dim*(krg.nbt-1)+1)dev;
    end
 end
 

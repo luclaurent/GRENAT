@@ -5,7 +5,7 @@
 function krg=meta_ckrg(tirages,eval,grad,meta)
 
 ns=size(eval,1);
-
+dim=size(tirages,2);
 
 %rangement gradient
 tmp=zeros(2*ns,1);
@@ -25,32 +25,56 @@ for ii=1:ns
     fc(ii,:)=feval(fct,tirages(ii,:));
 end
 
-tmpp=repmat(0,2*ns,nbt);
+tmpp=repmat(0,dim*ns,nbt);
 fc=vertcat(fc,tmpp);
-%création matrice de corrélation
+%%%création matrice de corrélation
+%morceau de la matrice issu du krigeage
 rc=zeros(ns);
-
+rca=zeros(ns,dim*ns);
+rci=zeros(dim*ns,dim*ns);
+size(rca)
 for ii=1:ns
     for jj=1:ns
-       rc(ii,jj)=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+        %morceau de la matrice issu du krigeage
+        if ii==jj
+            [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+        else
+            [ev,dev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+        end
+        rc(ii,jj)=ev;
+        
+        %morceau de la matrice provenant du Cokrigeage
+        rca(ii,dim*jj-dim+1:dim*jj+dim-2)=dev;
+        rci(dim*ii-dim+1:dim*ii+dim-2,dim*jj-dim+1:dim*jj+dim-2)=ddev;
     end
 end
+
+%Nouvelle matrice rc dans le cas du CoKrigeage
+size(rc)
+size(rca)
+size(rci)
+rcc=[rc rca;rca' rci];
+disp(rcc)
+size(rcc)
+
 
 %création matrice de régression par moindres carrés
 %irc=inv(rc);
 ft=fc';
 size(y)
-size(fc);
-block1=((ft/rc)*fc);
-block2=((ft/rc)*y);
+size(fc)
+size(rcc)
+block1=((ft/rcc)*fc);
+block2=((ft/rcc)*y);
 krg.beta=block1\block2;
 
 
 %création de la matrice des facteurs de corrélation
-krg.gamma=rc\(y-fc*krg.beta);
+krg.gamma=rcc\(y-fc*krg.beta);
 
 krg.reg=fct;
-krg.dim=ns;
+krg.nbt=ns;
+krg.dim=dim;
 krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.theta=meta.theta;

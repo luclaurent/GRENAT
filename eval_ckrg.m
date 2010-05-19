@@ -25,7 +25,7 @@ for ll=1:krg.nbt
        
         [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
         rr(ll)=ev;
-        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
+        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=-dev;
         %disp(ev) 
         %disp(dev)
    end
@@ -43,6 +43,8 @@ end
 
 %évaluation du métamodèle au point X
 Z=ff*krg.beta+rr'*krg.gamma;
+
+
 if grad 
     GZ=jf*krg.beta+jr'*krg.gamma;
 end

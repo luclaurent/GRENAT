@@ -9,14 +9,16 @@ ns=size(eval,1);
 dim=size(tirages,2);
 
 %rangement gradient
-tmp=zeros(2*ns,1);
+tmp=zeros(dim*ns,1);
 for ii=1:ns
-    tmp(2*ii-1)=grad(ii,1);
-    tmp(2*ii)=grad(ii,2);
+    for jj=1:dim
+        tmp(dim*ii-dim+jj)=grad(ii,jj);
+    end
 end
 
 %évaluation aux points de l'espace de conception
 y=vertcat(eval,tmp) ;
+
 
 %création matrice de conception
 nbt=1/2*(meta.deg+1)*(meta.deg+2);
@@ -28,6 +30,7 @@ end
 
 tmpp=repmat(0,dim*ns,nbt);
 fc=vertcat(fc,tmpp);
+size(fc)
 %%%création matrice de corrélation
 %morceau de la matrice issu du krigeage
 rc=zeros(ns);
@@ -42,7 +45,7 @@ for ii=1:ns
         
         rc(ii,jj)=ev;
         %morceau de la matrice provenant du Cokrigeage
-        rca(ii,dim*jj-dim+1:dim*jj+dim-2)=-dev;
+        rca(ii,dim*jj-dim+1:dim*jj+dim-2)=dev;
         rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;
         
         

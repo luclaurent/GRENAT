@@ -115,8 +115,7 @@ if aff.on
             if cofast.grad
                 %hold on;
                 %figure;
-                
-               quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
+                quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
                    ech*resultats.grad.gradients(:,1),ech*resultats.grad.gradients(:,2),...
                    'LineWidth',2,'AutoScale','off');
                

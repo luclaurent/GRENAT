@@ -26,7 +26,7 @@ calc_grad=true;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=6;
+nb_samples=10;
 
 %%Métamodèle
 %type d'interpolation
@@ -44,7 +44,7 @@ meta.theta=0.8;
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_exp';
 %paramètre RBF
-meta.para=0.8;
+meta.para=1.5;
 meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
 %paramètre POD
 meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
@@ -58,7 +58,7 @@ aff.contour2=true;
 
 %affichage des gradients
 aff.grad=true;
-cofast.grad=false;
+cofast.grad=true;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,6 +176,9 @@ aff.newfig=true;
 aff.d3=false;
 aff.d2=true;
 aff.contour2=true;
+global resultats
+resultats.tirages=tirages;
+resultats.grad.gradients=grad;
 affichage(X,Y,Z,tirages,eval,aff);
 aff.grad=true;
 
@@ -292,6 +295,7 @@ switch meta.type
             aff.ylabel='x_{2}';
             aff.zlabel='F_{KRG}';
             aff.grad=false;
+            cofast.grad=false;
             affichage(X,Y,ZK,tirages,eval,aff);
 
 %              %%affichage du gradient de la fonction

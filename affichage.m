@@ -4,7 +4,7 @@
 
 function status=affichage(X,Y,Z,tirages,eval,aff)
 
-global cofast resultats doe;
+global cofast resultats;
 
 if aff.on
     if aff.newfig
@@ -13,6 +13,31 @@ if aff.on
         hold on
     end
 
+    %%mise à l'échelle des tracés de gradients
+    if aff.grad||cofast.grad
+            %dimension mini espace de conception
+            dimm=min(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y))));
+            %calcul norme gradient
+            ngr=zeros(size(Z.GR1));
+            for ii=1:size(Z.GR1,1)
+                for jj=1:size(Z.GR1,2)
+                    ngr(ii,jj)=norm([Z.GR1(ii,jj) Z.GR2(ii,jj)],2);
+                end
+            end
+            %recherche du maxi de la norme du gradient
+            nm=max(max(ngr));
+
+            %définition de la taille mini de la grille d'affichage
+            tailg=aff.pas;
+
+            %taille de la plus grande flèche
+            para_fl=1.3;
+            tailf=para_fl*tailg;
+
+            %echelle
+            ech=tailf/nm;
+    end
+    
     if aff.d3
         if aff.contour3
             if aff.uni          
@@ -34,6 +59,8 @@ if aff.on
                 'MarkerSize',15)
      
         end
+        
+    
         if aff.grad
             %détermination des vecteurs de plus grandes pentes (dans le
             %sens de descente du gradient)
@@ -63,33 +90,12 @@ if aff.on
             dimr=abs(max(max(Z.Z))-min(min(Z.Z)));
             %norme maxi du gradient
             nmax=max(max(vec.N));
-            quiver3(X,Y,Z.Z,vec.X,vec.Y,vec.Z,10^4*dimr/nmax,'b','MaxHeadSize',0.1*dimr/nmax,'AutoScaleFactor',10^4*dimr/nmax,'AutoScale','off')
+            quiver3(X,Y,Z.Z,ech*vec.X,ech*vec.Y,ech*vec.Z,...
+                'b','MaxHeadSize',0.1*dimr/nmax,'AutoScale','off')
         end
     end
     
-    if aff.grad||cofast.grad
-                %dimension mini espace de conception
-                dimm=min(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y))));
-                %calcul norme gradient
-                ngr=zeros(size(Z.GR1));
-                for ii=1:size(Z.GR1,1)
-                    for jj=1:size(Z.GR1,2)
-                        ngr(ii,jj)=norm([Z.GR1(ii,jj) Z.GR2(ii,jj)],2);
-                    end
-                end
-                %recherche du maxi de la norme du gradient
-                nm=max(max(ngr));
-                
-                %définition de la taille mini de la grille d'affichage
-                tailg=aff.pas;
-                
-                %taille de la plus grande flèche
-                para_fl=1.3;
-                tailf=para_fl*tailg;
-                
-                %echelle
-                ech=tailf/nm;
-    end
+    
     
     if aff.d2
         if aff.contour2

@@ -3,6 +3,7 @@
 
 function [Z,GZ]=eval_ckrg(X,tirages,krg)
 
+global rr
 if nargout==2
     grad=true;
 else
@@ -17,13 +18,16 @@ if grad
     jr=zeros(krg.dim,krg.con);
 end
 
-for ll=1:krg.dim
+for ll=1:krg.nbt
    if grad  %si calcul des gradients
         [rr(ll),jr(ll,:)]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
    else %sinon
+       
         [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
         rr(ll)=ev;
-        rr(krg.dim*(ll-1)+1:krg.dim*ll)=dev;
+        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
+        %disp(ev) 
+        %disp(dev)
    end
 end
 

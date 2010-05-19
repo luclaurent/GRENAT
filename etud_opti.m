@@ -38,10 +38,10 @@ nb_samples=6;
 %POD: décomposition en valeurs singulières
 meta.type='CKRG';
 %degré de linterpolation/regression (si nécessaire)
-meta.deg=2;
+meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
-meta.theta=0.5;
-meta.regr='regpoly2';
+meta.theta=0.8;
+meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_exp';
 %paramètre RBF
 meta.para=0.8;
@@ -172,6 +172,7 @@ aff.pas=pas;
 aff.contour2=false;
 aff.contour3=false;
 affichage(X,Y,Z,tirages,eval,aff);
+aff.newfig=true;
 aff.d3=false;
 aff.d2=true;
 aff.contour2=true;
@@ -284,7 +285,7 @@ switch meta.type
             aff.d3=true;
             aff.rendu=false;
             aff.uni=false;
-            aff.pts=false;
+            aff.pts=true;
             aff.titre=['Surface obtenue par Krigeage: theta ',...
                 num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
             aff.xlabel='x_{1}';
@@ -317,7 +318,7 @@ switch meta.type
             aff.rendu=true;
             aff.uni=true;
             aff.color='blue';
-            aff.pts=false;
+            aff.pts=true;
             aff.grad=false;
             aff.titre=['Surface obtenue par Krigeage: theta ',...
                 num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];

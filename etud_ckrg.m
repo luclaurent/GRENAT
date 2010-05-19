@@ -28,10 +28,10 @@ nb_samples=10;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Type de métamodèle
-meta.type='CKRG';
+meta.type='KRG';
 %paramètre
 meta.deg=0;
-meta.theta=0.5;
+meta.theta=1;
 meta.corr='corr_exp';
 meta.regr='regpoly0';
 
@@ -41,7 +41,7 @@ meta.regr='regpoly0';
 x=xmin:pas:xmax;X=x';
 
 Z.Z=feval(fct,X);
-grad=feval(fctd,X);
+%grad=feval(fctd,X);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,7 +67,7 @@ end
 
 %évaluations aux points
 eval=feval(fct,tirages);
-
+grad=feval(fctd,tirages);
 
 %tracé courbes initiales
 figure;
@@ -75,7 +75,8 @@ plot(X,Z.Z,'LineWidth',2);
 title('fonction de référence');
 hold on;
 plot(tirages,eval,'.','Color','red','LineWidth',2);
-
+hold on
+plot(tirages,grad,'.','Color','g','LineWidth',2);
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
 disp(' ')

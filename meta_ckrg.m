@@ -46,7 +46,7 @@ for ii=1:ns
         rc(ii,jj)=ev;
         %morceau de la matrice provenant du Cokrigeage
         rca(ii,dim*jj-dim+1:dim*jj+dim-2)=dev;
-        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;
+        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=ddev;
         
         
     end

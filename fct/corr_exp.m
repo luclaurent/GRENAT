@@ -23,15 +23,15 @@ if nargout==1
     corr=ev;
 elseif nargout==2
     corr=ev;
-    dcorr=-theta.*sign(ev).*ev;
+    dcorr=-theta.*sign(xx).*ev;
 elseif nargout==3
     corr=ev;
-    dcorr=-theta.*sign(ev).*ev;
+    dcorr=-theta.*sign(xx).*ev;
     ddcorr=zeros(d);
-    %calcul de la matrice des dérivées secondes (triangulaire supérieure)
+    %calcul de la matrice des dérivées secondes
     for ll=1:d
-        for mm=ll:d
-            ddcorr(mm,ll)=theta(ll)*theta(mm)*sign(xx(ll))*sign(xx(mm));
+        for mm=1:d
+            ddcorr(mm,ll)=theta(ll)*theta(mm)*sign(xx(ll))*sign(xx(mm))*ev;
         end
     end
 else

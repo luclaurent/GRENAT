@@ -23,10 +23,10 @@ calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='LHS';
+meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=5;
+nb_samples=6;
 
 %%Métamodèle
 %type d'interpolation
@@ -281,6 +281,7 @@ switch meta.type
             aff.newfig=true;
             aff.contour2=false;
             aff.contour3=false;
+            aff.d3=true;
             aff.rendu=false;
             aff.uni=false;
             aff.pts=false;
@@ -312,6 +313,7 @@ switch meta.type
             aff.newfig=true;
             aff.contour2=false;
             aff.contour3=false;
+            aff.d3=true;
             aff.rendu=true;
             aff.uni=true;
             aff.color='blue';
@@ -442,7 +444,9 @@ switch meta.type
             %%%affichage de la surface obtenue par KRG
             %paramètrage options
             aff.newfig=true;
-            aff.contour=false;
+            aff.contour2=false;
+            aff.contour3=false;
+            aff.d3=true;
             aff.rendu=false;
             aff.uni=false;
             aff.pts=false;
@@ -458,7 +462,9 @@ switch meta.type
             %%%approchée
             %paramètrage options
             aff.newfig=true;
-            aff.contour=false;
+            aff.contour2=false;
+            aff.contour3=false;
+            aff.d3=true;
             aff.rendu=true;
             aff.uni=true;
             aff.color='blue';

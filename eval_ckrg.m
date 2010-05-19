@@ -23,7 +23,7 @@ for ll=1:krg.dim
    else %sinon
         [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
         rr(ll)=ev;
-        rr(krg.dim*(krg.nbt-1)+1:krg.dim*(krg.nbt-1)+1)dev;
+        rr(krg.dim*(ll-1)+1:krg.dim*ll)=dev;
    end
 end
 

@@ -13,6 +13,7 @@ tmp=zeros(dim*ns,1);
 for ii=1:ns
     for jj=1:dim
         tmp(dim*ii-dim+jj)=grad(ii,jj);
+        
     end
 end
 
@@ -30,7 +31,7 @@ end
 
 tmpp=repmat(0,dim*ns,nbt);
 fc=vertcat(fc,tmpp);
-size(fc)
+
 %%%création matrice de corrélation
 %morceau de la matrice issu du krigeage
 rc=zeros(ns);
@@ -44,16 +45,36 @@ for ii=1:ns
         %[ev,dev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
         
         rc(ii,jj)=ev;
-        %morceau de la matrice provenant du Cokrigeage
-        rca(ii,dim*jj-dim+1:dim*jj+dim-2)=dev;
-        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=ddev;
         
-        
+                %morceau de la matrice provenant du Cokrigeage
+        rca(ii,dim*jj-dim+1:dim*jj)=dev;        
+        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;       
     end
 end
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
+
 rcc=[rc rca;rca' rci];
+
+
+% %Factorisation Cholesky
+% rcc
+% C=chol(rcc);
+% 
+% 
+% %résolution du problème des moindres carrés
+% C=C';
+% ft=C\fc;
+% 
+% %factorisation QR
+% [Q R]=qr(ft,0);
+% 
+% Yy=C\y;
+% krg.beta=R\(Q'*Yy);
+% krg.gamma=(Yy-ft*krg.beta)'/C;
+% krg.beta
+% krg.gamma=krg.gamma';
+
 
 
 %création matrice de régression par moindres carrés

@@ -26,10 +26,7 @@ for ll=1:krg.dim
 end
 
 %matrice de régression aux points d'évalutions
-nbt=1/2*(krg.deg+1)*(krg.deg+2);
-ff=zeros(nbt,1);
 if grad
-    jf=zeros(nbt,krg.con);
     [ff,jf]=feval(krg.reg,X);
 else
     ff=feval(krg.reg,X);

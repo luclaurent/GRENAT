@@ -23,16 +23,16 @@ pas=0.01;
 meta.doe='sfill';
 
 %nombre d'échantillons
-nb_samples=10;
+nb_samples=11;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Type de métamodèle
-meta.type='KRG';
+meta.type='CKRG';
 %paramètre
 meta.deg=0;
-meta.theta=1;
-meta.corr='corr_exp';
+meta.theta=0.5;
+meta.corr='corr_gauss';
 meta.regr='regpoly0';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

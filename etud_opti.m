@@ -23,7 +23,7 @@ calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='ffact';
+meta.doe='LHS';
 
 %nb d'échantillons
 nb_samples=10;
@@ -40,9 +40,9 @@ meta.type='CKRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
-meta.theta=0.8;
+meta.theta=0.5;
 meta.regr='regpoly2';  % toolbox DACE
-meta.corr='corr_exp';
+meta.corr='corr_gauss';
 %paramètre RBF
 meta.para=1.5;
 meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'

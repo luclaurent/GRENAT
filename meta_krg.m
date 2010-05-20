@@ -41,21 +41,7 @@ end
 % krg.beta
 % krg.gamma=krg.gamma';
 % 
-%création matrice de régression par moindres carrés
-%irc=inv(rc);
-ft=fc';
-
-%block1=((ft/rc)*fc);
-%block2=((ft/rc)*y);
-%krg.beta=block1\block2;
-block1=(ft*inv(rc)*fc);
-block2=(ft*inv(rc)*y);
-krg.beta=inv(block1)*block2;
-krg.beta
-%création de la matrice des facteurs de corrélation
-krg.gamma=inv(rc)*(y-fc*krg.beta);
-krg.gamma
-krg.reg=fct;
+exkrg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;
 krg.deg=meta.deg;

@@ -25,36 +25,36 @@ for ii=1:ns
     end
 end
 
-%Factorisation Cholesky
-C=chol(rc);
-
-%résolution du problème des moindres carrés
-C=C';
-ft=C\fc;
-
-%factorisation QR
-[Q R]=qr(ft,0);
-
-Yy=C\y;
-krg.beta=R\(Q'*Yy);
-krg.gamma=(Yy-ft*krg.beta)'/C;
-krg.beta
-krg.gamma=krg.gamma';
+% %Factorisation Cholesky
+% C=chol(rc);
 % 
-% %création matrice de régression par moindres carrés
-% %irc=inv(rc);
-% ft=fc';
+% %résolution du problème des moindres carrés
+% C=C';
+% ft=C\fc;
 % 
-% %block1=((ft/rc)*fc);
-% %block2=((ft/rc)*y);
-% %krg.beta=block1\block2;
-% block1=(ft*inv(rc)*fc);
-% block2=(ft*inv(rc)*y);
-% krg.beta=inv(block1)*block2;
+% %factorisation QR
+% [Q R]=qr(ft,0);
+% 
+% Yy=C\y;
+% krg.beta=R\(Q'*Yy);
+% krg.gamma=(Yy-ft*krg.beta)'/C;
 % krg.beta
-% %création de la matrice des facteurs de corrélation
-% krg.gamma=inv(rc)*(y-fc*krg.beta);
-% krg.gamma
+% krg.gamma=krg.gamma';
+% 
+%création matrice de régression par moindres carrés
+%irc=inv(rc);
+ft=fc';
+
+%block1=((ft/rc)*fc);
+%block2=((ft/rc)*y);
+%krg.beta=block1\block2;
+block1=(ft*inv(rc)*fc);
+block2=(ft*inv(rc)*y);
+krg.beta=inv(block1)*block2;
+krg.beta
+%création de la matrice des facteurs de corrélation
+krg.gamma=inv(rc)*(y-fc*krg.beta);
+krg.gamma
 krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;

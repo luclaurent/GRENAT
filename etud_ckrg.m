@@ -23,12 +23,12 @@ pas=0.01;
 meta.doe='sfill';
 
 %nombre d'échantillons
-nb_samples=11;
+nb_samples=4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Type de métamodèle
-meta.type='CKRG';
+meta.type='KRG';
 %paramètre
 meta.deg=0;
 meta.theta=0.5;
@@ -74,9 +74,9 @@ figure;
 plot(X,Z.Z,'LineWidth',2);
 title('fonction de référence');
 hold on;
-plot(tirages,eval,'.','Color','red','LineWidth',2);
+plot(tirages,eval,'.','Color','red','LineWidth',3);
 hold on
-plot(tirages,grad,'.','Color','g','LineWidth',2);
+plot(tirages,grad,'.','Color','g','LineWidth',3);
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
 disp(' ')
@@ -124,4 +124,5 @@ switch meta.type
          
 end
        %tracé de la courbe d'interpolation par Krigeage
+       hold on
          plot(X,ZZ,'Color','k','LineWidth',2); 

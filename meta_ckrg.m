@@ -37,7 +37,7 @@ fc=vertcat(fc,tmpp);
 rc=zeros(ns);
 rca=zeros(ns,dim*ns);
 rci=zeros(dim*ns,dim*ns);
-size(rca)
+
 for ii=1:ns
     for jj=1:ns
         %morceau de la matrice issu du krigeage
@@ -48,18 +48,18 @@ for ii=1:ns
         
                 %morceau de la matrice provenant du Cokrigeage
         rca(ii,dim*jj-dim+1:dim*jj)=dev;        
-        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;       
+        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=ddev;       
     end
 end
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
-
 rcc=[rc rca;rca' rci];
-
+rcc
 
 % %Factorisation Cholesky
 % rcc
-% C=chol(rcc);
+% %C=chol(rcc);
+% C=rcc;
 % 
 % 
 % %résolution du problème des moindres carrés

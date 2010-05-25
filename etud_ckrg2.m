@@ -33,7 +33,7 @@ nb=50;
 meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=5;
+nb_samples=2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,7 +45,7 @@ meta.theta=0.5;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
-meta.norm=false;
+meta.norm=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,6 +136,21 @@ disp(' ')
                 ZZ.DACE(ii,jj)=predictor([X(ii,jj) Y(ii,jj)],model);
            end
         end
+        
+        meta.norm=false;
+        disp('>>> Interpolation par Krigeage sans normalisation');
+        disp(' ')
+        [krgs]=meta_krg(tirages,eval,meta);
+        ZZ.KRGs=zeros(size(X));
+        GK1=zeros(size(X));
+        GK2=zeros(size(X));
+         for ii=1:size(X,1) 
+             for jj=1:size(X,2)
+                 [ZZ.KRGs(ii,jj)] =eval_krg([X(ii,jj) Y(ii,jj)],tirages,krgs);
+                 %GK1(ii,jj)=GZ(1);
+                 %GK2(ii,jj)=GZ(2);
+             end 
+         end
          
          
 %end
@@ -143,7 +158,7 @@ disp(' ')
        figure
        hold on
          surf(X,Y,ZZ.KRG,'FaceColor','blue','EdgeColor','k');
-         
+         surf(X,Y,ZZ.KRGs,'FaceColor','green','EdgeColor','k');
          surf(X,Y,ZZ.DACE,'FaceColor','red','EdgeColor','k');
             %axis([xmin xmax -1 max(Z.Z)+1])
             %legend('fonction de référence','evaluation','gradient','KRG,','DACE');
@@ -165,3 +180,9 @@ fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRG));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRG));
+disp(' ');
+disp('KRGs');
+fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGs));
+fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGs));
+fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGs));
+fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGs));

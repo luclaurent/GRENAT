@@ -8,6 +8,7 @@ ns=size(eval,1);
 
 %Normalisation
 if meta.norm
+    disp('normalisation');
     moy_e=mean(eval);
     std_e=std(eval);
     moy_t=mean(tirages);
@@ -42,7 +43,7 @@ for ii=1:ns
        rc(ii,jj)=feval(meta.corr,tirages(jj,:)-tirages(ii,:),meta.theta);      
     end
 end
-disp('conditionnement rc');
+disp('conditionnement R');
 disp(cond(rc));
 % %Factorisation Cholesky
 % C=chol(rc);

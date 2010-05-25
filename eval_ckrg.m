@@ -10,6 +10,14 @@ else
     grad=false;
 end
 
+dim_x=size(X,1);
+
+%normalisation
+if krg.norm.on
+X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
+tirages=(tirages-repmat(krg.norm.moy_tirages,krg.nbt,1))./repmat(krg.norm.std_tirages,krg.nbt,1);
+end
+
 %calcul de l'évaluation du métamodèle au point considéré
 %matrice de corrélation aux points d'évaluations et matrice de corrélation
 %dérivée
@@ -25,7 +33,7 @@ for ll=1:krg.nbt
        
         [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
         rr(ll)=ev;
-        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=-dev;
+        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
         %disp(ev) 
         %disp(dev)
    end
@@ -42,12 +50,13 @@ else
 end
 
 %évaluation du métamodèle au point X
-Z=ff*krg.beta;%+rr'*krg.gamma;
-rr
-ff
-krg.beta
-krg.gamma
+Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
     GZ=jf*krg.beta+jr'*krg.gamma;
+end
+
+%normalisation
+if krg.norm.on
+Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
 end

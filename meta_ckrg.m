@@ -12,14 +12,53 @@ dim=size(tirages,2);
 tmp=zeros(dim*ns,1);
 for ii=1:ns
     for jj=1:dim
-        tmp(dim*ii-dim+jj)=grad(ii,jj);
-        
+        tmp(dim*ii-dim+jj)=grad(ii,jj);        
     end
 end
 
-%évaluation aux points de l'espace de conception
-y=vertcat(eval,tmp) ;
+%Normalisation
+if meta.norm
+    %calcul des moyennes et des écarts type
+    moy_e=mean(eval);
+    std_e=std(eval);
+    moy_t=mean(tirages);
+    std_t=std(tirages);
+    moy_g=mean(tmp);
+    std_g=std(tmp);
+    %test pour vérification écart type
+    ind=find(std_e==0);
+    if ~isempty(ind)
+        std_e(ind)=1;
+    end
+    ind=find(std_t==0);
+    if ~isempty(ind)
+        std_t(ind)=1;
+    end
+    ind=find(std_g==0);
+    if ~isempty(ind)
+        std_g(ind)=1;
+    end
+    %normalisation
+    eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
+    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
+    tmp=(tmp-repmat(moy_g,ns,1))./repmat(std_g,ns,1);
+    
+    %sauvegarde des calculs
+    krg.norm.moy_eval=moy_e;
+    krg.norm.std_eval=std_e;
+    krg.norm.moy_tirages=moy_t;
+    krg.norm.std_tirages=std_t;
+    krg.norm.moy_gradients=moy_g;
+    krg.norm.std_gradients=std_g;
+    krg.norm.on=true;
+else
+    krg.norm.on=false;
+end
 
+
+%création du vecteur d'évaluation
+y=vertcat(eval,tmp) ;
+tmp
 
 %création matrice de conception
 nbt=1/2*(meta.deg+1)*(meta.deg+2);
@@ -31,7 +70,7 @@ end
 
 tmpp=repmat(0,dim*ns,nbt);
 fc=vertcat(fc,tmpp);
-
+%fc
 %%%création matrice de corrélation
 %morceau de la matrice issu du krigeage
 rc=zeros(ns);
@@ -43,19 +82,19 @@ for ii=1:ns
         %morceau de la matrice issu du krigeage
         [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
         %[ev,dev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+        rc(ii,jj)=ev;        
         
-        rc(ii,jj)=ev;
-        
-                %morceau de la matrice provenant du Cokrigeage
-        rca(ii,dim*jj-dim+1:dim*jj)=dev;        
-        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=ddev;       
+        %morceau de la matrice provenant du Cokrigeage
+        rca(ii,dim*jj-dim+1:dim*jj)=-dev;        
+        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;       
     end
 end
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
-rcc
-
+%rcc
+disp('conditionnement R');
+disp(cond(rcc));
 % %Factorisation Cholesky
 % rcc
 % %C=chol(rcc);

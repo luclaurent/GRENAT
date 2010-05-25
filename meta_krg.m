@@ -6,6 +6,24 @@ function krg=meta_krg(tirages,eval,meta)
 
 ns=size(eval,1);
 
+%Normalisation
+if meta.norm
+    moy_e=mean(eval);
+    std_e=std(eval);
+    moy_t=mean(tirages);
+    std_t=std(tirages);
+
+    eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
+    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
+    krg.norm.moy_eval=moy_e;
+    krg.norm.std_eval=std_e;
+    krg.norm.moy_tirages=moy_t;
+    krg.norm.std_tirages=std_t;
+    krg.norm.on=true;
+else
+    krg.norm.on=false;
+end
+
 %évaluation aux points de l'espace de conception
 y=eval;
 

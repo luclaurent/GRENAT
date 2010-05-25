@@ -1,28 +1,30 @@
 %%Fichier d'étude du CoKrigeage sur fonction 2D
 %%L. LAURENT -- 19/05/2010 -- luc.laurent@ens-cachan.fr
 clf;
-clc;
+%clc;
 close all; 
-hold off
-clear all;
+
+%clear all;
 addpath('doe/lhs');addpath('dace');addpath('doe');addpath('fct');
 addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Définition de l'espace de conception
-xmin=-2;
-xmax=2;
-ymin=-2;
-ymax=2;
+val=4;
+xmin=-val;
+xmax=val;
+ymin=-val;
+ymax=val;
 
 
 %fonction utilisée
 %fct=@(x) 5;
 %fctd=@(x) 0;
-fct='fct_rosenbrock';
+fct='fct_peaks';
 %pas du tracé
 pas=0.1;
+nb=50;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,12 +45,13 @@ meta.theta=0.5;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
+meta.norm=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluation de la fonction étudiée et des gradients
-x=xmin:pas:xmax;
-y=ymin:pas:ymax;
+x=linspace(xmin,xmax,nb);
+y=linspace(ymin,ymax,nb);
 [X,Y]=meshgrid(x,y);
 Z.Z=feval(fct,X,Y);
 %grad=feval(fctd,X);

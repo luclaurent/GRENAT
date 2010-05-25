@@ -119,14 +119,20 @@ disp(cond(rcc));
 %création matrice de régression par moindres carrés
 %irc=inv(rc);
 ft=fc';
-
+disp('R')
+rcc
+disp('inverse R')
+inv(rcc)
 block1=((ft/rcc)*fc);
 block2=((ft/rcc)*y);
 krg.beta=block1\block2;
-
+disp('beta')
+disp(krg.beta);
 
 %création de la matrice des facteurs de corrélation
 krg.gamma=rcc\(y-fc*krg.beta);
+disp('gamma')
+disp(krg.gamma);
 
 krg.reg=fct;
 krg.nbt=ns;

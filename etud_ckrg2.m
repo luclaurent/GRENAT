@@ -1,4 +1,4 @@
-%%Fichier d'étude du CoKrigeage sur fonction 1D
+%%Fichier d'étude du CoKrigeage sur fonction 2D
 %%L. LAURENT -- 19/05/2010 -- luc.laurent@ens-cachan.fr
 clf;
 clc;
@@ -11,15 +11,16 @@ addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Définition de l'espace de conception
-xmin=0;
-xmax=10;
-
+xmin=-2;
+xmax=2;
+ymin=-2;
+ymax=2;
 
 
 %fonction utilisée
 %fct=@(x) 5;
 %fctd=@(x) 0;
-
+fct='fct_rosenbrock';
 %pas du tracé
 pas=0.1;
 
@@ -27,15 +28,15 @@ pas=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Type de tirage
-meta.doe='sfill';
+meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=2;
+nb_samples=5;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Type de métamodèle
-meta.type=['KRG' 'DACE'];;
+meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
 meta.theta=0.5;
@@ -46,9 +47,10 @@ meta.regr='regpoly0';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluation de la fonction étudiée et des gradients
-x=xmin:pas:xmax;X=x';
-
-Z.Z=fct(X);
+x=xmin:pas:xmax;
+y=ymin:pas:ymax;
+[X,Y]=meshgrid(x,y);
+Z.Z=feval(fct,X,Y);
 %grad=feval(fctd,X);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,7 +65,7 @@ disp('=====================================');
 disp('===== DOE =====');
 switch meta.doe
     case 'ffact'
-        tirages=factorial_design(nb_samples,xmin,xmax);
+        tirages=factorial_design(nb_samples,nb_samples,xmin,xmax,ymin,ymax);
     case 'sfill'
         xxx=linspace(xmin,xmax,nb_samples);
         tirages=xxx';
@@ -74,17 +76,18 @@ switch meta.doe
 end
 
 %évaluations aux points
-eval=fct(tirages);
-grad=fctd(tirages);
+eval=feval(fct,tirages(:,1),tirages(:,2));
+%grad=fctd(tirages);
 
 %tracé courbes initiales
 figure;
-plot(X,Z.Z,'LineWidth',2);
+surf(X,Y,Z.Z,'LineWidth',2);
 title('fonction de référence');
 hold on;
-plot(tirages,eval,'.','Color','red','LineWidth',3);
-hold on
-plot(tirages,grad,'.','Color','g','LineWidth',3);
+
+plot3(tirages(:,1),tirages(:,2),eval,'.','Color','red','LineWidth',3);
+%hold on
+%plot(tirages,grad,'.','Color','g','LineWidth',3);
 %% Génération du métamodèle
 disp('===== METAMODELE =====');
 disp(' ')
@@ -111,10 +114,12 @@ disp(' ')
         ZZ.KRG=zeros(size(X));
         GK1=zeros(size(X));
         GK2=zeros(size(X));
-         for ii=1:size(X,1)            
-                 [ZZ.KRG(ii)] =eval_krg(X(ii),tirages,krg);
+         for ii=1:size(X,1) 
+             for jj=1:size(X,2)
+                 [ZZ.KRG(ii,jj)] =eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
                  %GK1(ii,jj)=GZ(1);
-                 %GK2(ii,jj)=GZ(2);             
+                 %GK2(ii,jj)=GZ(2);
+             end 
          end
         
          
@@ -124,24 +129,26 @@ disp(' ')
         [model,perf]=dacefit(tirages,eval,meta.regr,meta.corrd,meta.theta);
         ZZ.DACE=zeros(size(X));
         for ii=1:size(X,1)
-           
-                ZZ.DACE(ii)=predictor(X(ii),model);
-            
+           for jj=1:size(X,2)
+                ZZ.DACE(ii,jj)=predictor([X(ii,jj) Y(ii,jj)],model);
+           end
         end
          
          
 %end
        %tracé de la courbe d'interpolation par Krigeage
+       figure
        hold on
-         plot(X,ZZ.KRG,'Color','k','LineWidth',2); 
-         plot(X,ZZ.DACE,'Color','g','LineWidth',2);
-            axis([xmin xmax -1 max(Z.Z)+1])
-            legend('fonction de référence','evaluation','gradient','KRG,','DACE');
+         surf(X,Y,ZZ.KRG,'FaceColor','blue','EdgeColor','k');
+         
+         surf(X,Y,ZZ.DACE,'FaceColor','red','EdgeColor','k');
+            %axis([xmin xmax -1 max(Z.Z)+1])
+            %legend('fonction de référence','evaluation','gradient','KRG,','DACE');
 
 %tracé de la différence
 figure;
 diff=abs(ZZ.KRG-ZZ.DACE);
-plot(X,diff,'Color','k','LineWidth',2);  
+surf(X,Y,diff);  
             
 %calcul des erreurs
 disp('DACE');

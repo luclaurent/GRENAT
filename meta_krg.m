@@ -21,10 +21,11 @@ end
 rc=zeros(ns);
 for ii=1:ns
     for jj=1:ns
-       rc(ii,jj)=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);      
+       rc(ii,jj)=feval(meta.corr,tirages(jj,:)-tirages(ii,:),meta.theta);      
     end
 end
-
+disp('conditionnement rc');
+disp(cond(rc));
 % %Factorisation Cholesky
 % C=chol(rc);
 % 
@@ -41,7 +42,25 @@ end
 % krg.beta
 % krg.gamma=krg.gamma';
 % 
-exkrg.reg=fct;
+
+%création matrice de régression par moindres carrés
+%irc=inv(rc);
+ft=fc';
+
+%block1=((ft/rc)*fc);
+%block2=((ft/rc)*y);
+%krg.beta=block1\block2;
+block1=(ft*inv(rc)*fc);
+%fc
+block2=(ft*inv(rc)*y);
+krg.beta=inv(block1)*block2;
+
+%création de la matrice des facteurs de corrélation
+krg.gamma=inv(rc)*(y-fc*krg.beta);
+
+krg.reg=fct;
+
+krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;
 krg.deg=meta.deg;

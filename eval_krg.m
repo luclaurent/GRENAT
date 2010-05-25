@@ -33,7 +33,7 @@ else
 end
 
 %évaluation du métamodèle au point X
-Z=ff*krg.beta;
+Z=ff*krg.beta+rr'*krg.gamma;
 %+rr'*krg.gamma;
 if grad 
     GZ=jf*krg.beta+jr'*krg.gamma;

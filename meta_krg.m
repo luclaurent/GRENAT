@@ -5,7 +5,6 @@
 function krg=meta_krg(tirages,eval,meta)
 
 ns=size(eval,1);
-
 %Normalisation
 if meta.norm
     disp('normalisation');
@@ -77,7 +76,6 @@ krg.beta=inv(block1)*block2;
 %création de la matrice des facteurs de corrélation
 krg.gamma=inv(rc)*(y-fc*krg.beta);
 
-krg.reg=fct;
 
 krg.reg=fct;
 krg.dim=ns;

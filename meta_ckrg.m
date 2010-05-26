@@ -4,7 +4,7 @@
 
 function krg=meta_ckrg(tirages,eval,grad,meta)
 
-global rcc
+global rcc y
 ns=size(eval,1);
 dim=size(tirages,2);
 
@@ -15,7 +15,7 @@ for ii=1:ns
         tmp(dim*ii-dim+jj)=grad(ii,jj);        
     end
 end
-
+tmp
 %Normalisation
 if meta.norm
     %calcul des moyennes et des écarts type
@@ -41,7 +41,7 @@ if meta.norm
     %normalisation
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
     tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
-    tmp=(tmp-repmat(moy_g,ns,1))./repmat(std_g,ns,1);
+    %tmp=(tmp-repmat(moy_g,ns,1))./repmat(std_g,ns,1);
     
     %sauvegarde des calculs
     krg.norm.moy_eval=moy_e;
@@ -119,20 +119,26 @@ disp(cond(rcc));
 %création matrice de régression par moindres carrés
 %irc=inv(rc);
 ft=fc';
-disp('R')
-rcc
-disp('inverse R')
-inv(rcc)
+% disp('R')
+% rcc
+% disp('inverse R')
+% inv(rcc)
 block1=((ft/rcc)*fc);
 block2=((ft/rcc)*y);
+% ft
+% ft/rcc 
+% y
 krg.beta=block1\block2;
-disp('beta')
-disp(krg.beta);
+%control=((ft/rcc)*fc)\(ft/rcc)
+%global control
+
+% disp('beta')
+% disp(krg.beta);
 
 %création de la matrice des facteurs de corrélation
-krg.gamma=rcc\(y-fc*krg.beta);
-disp('gamma')
-disp(krg.gamma);
+krg.gamma=rcc\(y-fc.*krg.beta);
+% disp('gamma')
+% disp(krg.gamma);
 
 krg.reg=fct;
 krg.nbt=ns;

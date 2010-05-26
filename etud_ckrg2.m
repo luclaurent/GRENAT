@@ -33,15 +33,16 @@ nb=50;
 meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=2;
-
+nb_samples=5;
+meta.ajout=true;
+meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Type de métamodèle
 meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
-meta.theta=0.5;
+meta.theta=2;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
@@ -78,8 +79,53 @@ switch meta.doe
         error('le type de tirage nest pas défini');
 end
 
+%ajout de points à proximités des points existants
+if meta.ajout
+    %calcul de l'écartement autour du point initial
+    dist=meta.dist*abs(xmax-xmin);
+    %ajout de quatre points autour de chaque tirages
+%     j=find(tirages==xmin);
+%     k=find(tirages==xmax);
+%     if isempty(j)&isempty(k)
+%         tmp=zeros(size(tirages,1)+4*size(tirages,1),2);
+%     elseif (~isempty(j)&isempty(k))|(~isempty(k)&isempty(j))
+%         tmp=zeros(size(tirages,1)+4*size(tirages,1)-1,2);
+%     elseif ~isempty(j)&~isempty(k)
+%         tmp=zeros(size(tirages,1)+4*size(tirages,1)-2,2);
+%     end
+        tmp=zeros(size(tirages,1)+4*size(tirages,1),2);
+    %calcul de l'écartement aux points
+    %on parcours les tirages
+    kk=1;
+    for ii=1:size(tirages,1)
+        tt1=tirages(ii,1);
+        tt2=tirages(ii,2);
+        tmp(kk,1)=tt1-dist;
+        tmp(kk,2)=tt2;
+        kk=kk+1;
+        tmp(kk,1)=tt1;
+        tmp(kk,2)=tt2-dist;
+        kk=kk+1;
+        tmp(kk,1)=tt1+dist;
+        tmp(kk,2)=tt2;
+        kk=kk+1;
+        tmp(kk,1)=tt1;
+        tmp(kk,2)=tt2+dist;
+        kk=kk+1;
+        tmp(kk,1)=tt1;
+        tmp(kk,2)=tt2;
+        kk=kk+1;
+    end
+    %sauvegarde des nouveaux tirages
+    tirageso=tirages;
+    clear tirages;
+    tirages=tmp;
+    size(tmp)
+end
+
 %évaluations aux points
 eval=feval(fct,tirages(:,1),tirages(:,2));
+evalo=feval(fct,tirageso(:,1),tirageso(:,2));
 %grad=fctd(tirages);
 
 %tracé courbes initiales
@@ -124,7 +170,19 @@ disp(' ')
                  %GK2(ii,jj)=GZ(2);
              end 
          end
-        
+        disp('>>> Interpolation par Krigeage sans ajout de point');
+        disp(' ')
+        [krgo]=meta_krg(tirageso,evalo,meta);
+        ZZ.KRGo=zeros(size(X));
+        GK1=zeros(size(X));
+        GK2=zeros(size(X));
+         for ii=1:size(X,1) 
+             for jj=1:size(X,2)
+                 [ZZ.KRGo(ii,jj)] =eval_krg([X(ii,jj) Y(ii,jj)],tirageso,krgo);
+                 %GK1(ii,jj)=GZ(1);
+                 %GK2(ii,jj)=GZ(2);
+             end 
+         end
          
  %     case 'DACE' %utilisation de la Toolbox DACE
         disp('>>> Interpolation par Krigeage (Toolbox DACE)');
@@ -158,6 +216,7 @@ disp(' ')
        figure
        hold on
          surf(X,Y,ZZ.KRG,'FaceColor','blue','EdgeColor','k');
+         surf(X,Y,ZZ.KRGo,'FaceColor','yellow','EdgeColor','k');
          surf(X,Y,ZZ.KRGs,'FaceColor','green','EdgeColor','k');
          surf(X,Y,ZZ.DACE,'FaceColor','red','EdgeColor','k');
             %axis([xmin xmax -1 max(Z.Z)+1])
@@ -166,7 +225,20 @@ disp(' ')
 %tracé de la différence
 figure;
 diff=abs(ZZ.KRG-ZZ.DACE);
-surf(X,Y,diff);  
+surf(X,Y,diff); 
+title('diff KRG DACE');
+figure;
+diff=abs(Z.Z-ZZ.KRG);
+surf(X,Y,diff);
+title('diff ref KRG');
+figure;
+diff=abs(ZZ.KRGo-ZZ.DACE);
+surf(X,Y,diff);
+title('diff KRGo DACE');
+figure;
+diff=abs(ZZ.KRGo-ZZ.DACE);
+surf(X,Y,diff);
+title('diff KRGo DACE');
             
 %calcul des erreurs
 disp('DACE');
@@ -180,6 +252,12 @@ fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRG));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRG));
+disp(' ');
+disp('KRGo');
+fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGo));
+fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGo));
+fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGo));
+fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGo));
 disp(' ');
 disp('KRGs');
 fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGs));

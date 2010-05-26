@@ -3,7 +3,7 @@
 clf;
 %clc;
 close all; 
-clear all;
+%clear all;
 addpath('doe/lhs');addpath('dace');addpath('doe');addpath('fct');
 addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,6 +22,7 @@ xmax=10;
 %pas du tracé
 pas=0.1;
 
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -29,15 +30,17 @@ pas=0.1;
 meta.doe='sfill';
 
 %nombre d'échantillons
-nb_samples=5;
-
+nb_samples=4;
+%ajout de point
+meta.ajout=true;
+meta.dist=0.01;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Type de métamodèle
 meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
-meta.theta=0.1;
+meta.theta=0.5;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
@@ -73,8 +76,55 @@ switch meta.doe
         error('le type de tirage nest pas défini');
 end
 
+%ajout de points à proximités des points existants
+if meta.ajout
+    %calcul de l'écartement autour du point initial
+    dist=meta.dist*abs(xmax-xmin);
+    %ajout de deux points autour de chaque tirages
+    j=find(tirages==xmin);
+    k=find(tirages==xmax);
+    if isempty(j)&isempty(k)
+        tmp=zeros(size(tirages,1)+2*size(tirages,1),1);
+    elseif (~isempty(j)&isempty(k))|(~isempty(k)&isempty(j))
+        tmp=zeros(size(tirages,1)+2*size(tirages,1)-1,1);
+    elseif ~isempty(j)&~isempty(k)
+        tmp=zeros(size(tirages,1)+2*size(tirages,1)-2,1);
+    end
+        
+    %calcul de l'écartement aux points
+    %on parcours les tirages
+    kk=1;
+    for ii=1:size(tirages,1)
+        tt=tirages(ii);
+        if tt==xmin
+            tmp(kk)=tt;
+            kk=kk+1;
+            tmp(kk)=tt+dist;
+            kk=kk+1;
+        elseif tt==xmax
+            tmp(kk)=tt-dist;
+            kk=kk+1;
+            tmp(kk)=tt;
+            kk=kk+1;
+        else                
+            tmp(kk)=tt-dist;
+            kk=kk+1;
+            tmp(kk)=tt;
+            kk=kk+1;
+            tmp(kk)=tt+dist;
+            kk=kk+1;
+        end
+    end
+    %sauvegarde des nouveaux tirages
+    tirageso=tirages;
+    clear tirages;
+    tirages=tmp;
+    tmp
+end
+
 %évaluations aux points
 eval=fct(tirages);
+evalo=fct(tirageso);
 grad=fctd(tirages);
 
 %tracé courbes initiales
@@ -104,7 +154,17 @@ disp(' ')
                  %GK1(ii,jj)=GZ(1);
                  %GK2(ii,jj)=GZ(2);             
          end
-        
+        disp('>>> Interpolation par Krigeage');
+        disp(' ')
+        [krgo]=meta_krg(tirageso,evalo,meta);
+        ZZ.KRGo=zeros(size(X));
+        GK1=zeros(size(X));
+        GK2=zeros(size(X));
+         for ii=1:size(X,1)            
+                 [ZZ.KRGo(ii)] =eval_krg(X(ii),tirageso,krgo);
+                 %GK1(ii,jj)=GZ(1);
+                 %GK2(ii,jj)=GZ(2);             
+         end
          
  %     case 'DACE' %utilisation de la Toolbox DACE
         disp('>>> Interpolation par Krigeage (Toolbox DACE)');
@@ -147,11 +207,12 @@ disp(' ')
        %tracé de la courbe d'interpolation par Krigeage
        hold on
          plot(X,ZZ.KRG,'Color','k','LineWidth',2); 
+         plot(X,ZZ.KRGo,'--','Color','r','LineWidth',2);
          plot(X,ZZ.KRGs,'--','Color','k','LineWidth',2); 
          plot(X,ZZ.DACE,'Color','g','LineWidth',2);
          plot(X,ZZ.CKRG,'Color','r','LineWidth',2);
-            axis([xmin xmax -1 max(Z.Z)+1])
-            legend('fonction de référence','evaluation','gradient','KRG','KRG sans normalisation','DACE','CKRG');
+            axis([xmin xmax min(Z.Z)-1 max(Z.Z)+1])
+            legend('fonction de référence','evaluation','gradient','KRG','KRG sans ajout de point','KRG sans normalisation','DACE','CKRG');
         hold off
 %tracé de la différence
 figure;
@@ -175,6 +236,10 @@ subplot(3,2,5);
 diff=abs(Z.Z-ZZ.CKRG);
 plot(X,diff,'Color','k','LineWidth',2);  
 title('différence reférence-CKRG');
+subplot(3,2,6);
+diff=abs(Z.Z-ZZ.KRGo);
+plot(X,diff,'Color','k','LineWidth',2);  
+title('différence reférence-KRG sans ajout de point');
             
 %calcul des erreurs
 disp('DACE');
@@ -188,6 +253,12 @@ fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRG));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRG));
+disp(' ');
+disp('KRG sans ajout de point');
+fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGo));
+fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGo));
+fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGo));
+fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGo));
 disp(' ');
 disp('KRGs');
 fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGs));

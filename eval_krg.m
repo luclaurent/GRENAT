@@ -13,8 +13,8 @@ dim_x=size(X,1);
 
 %normalisation
 if krg.norm.on
-X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
-tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
+    X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
+    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
 end
 
 %calcul de l'évaluation du métamodèle au point considéré
@@ -42,6 +42,7 @@ end
 
 %évaluation du métamodèle au point X
 Z=ff*krg.beta+rr'*krg.gamma;
+
 %+rr'*krg.gamma;
 if grad 
     GZ=jf*krg.beta+jr'*krg.gamma;

@@ -28,12 +28,12 @@ end
 
 for ll=1:krg.nbt
    if grad  %si calcul des gradients
-        [rr(ll),jr(ll,:)]=feval(krg.corr,-tirages(ll,:)+X,krg.theta);
+        [rr(ll),jr(ll,:)]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
    else %sinon
        
-        [ev,dev]=feval(krg.corr,-tirages(ll,:)+X,krg.theta);
+        [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
         rr(ll)=ev;
-        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=-dev;
+        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
         %disp(ev) 
         %disp(dev)
    end
@@ -50,6 +50,7 @@ else
 end
 
 %évaluation du métamodèle au point X
+%global rr
 Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 

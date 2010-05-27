@@ -15,7 +15,7 @@ for ii=1:ns
         tmp(dim*ii-dim+jj)=grad(ii,jj);        
     end
 end
-tmp
+
 %Normalisation
 if meta.norm
     %calcul des moyennes et des écarts type
@@ -42,7 +42,7 @@ if meta.norm
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
     tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     %tmp=(tmp-repmat(moy_g,ns,1))./repmat(std_g,ns,1);
-    
+    tmp=(tmp)./repmat(std_e,ns,1);
     %sauvegarde des calculs
     krg.norm.moy_eval=moy_e;
     krg.norm.std_eval=std_e;

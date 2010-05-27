@@ -44,6 +44,7 @@ for ii=1:ns
 end
 disp('conditionnement R');
 disp(cond(rc));
+%global rc
 % %Factorisation Cholesky
 % C=chol(rc);
 % 
@@ -65,13 +66,13 @@ disp(cond(rc));
 %irc=inv(rc);
 ft=fc';
 
-%block1=((ft/rc)*fc);
-%block2=((ft/rc)*y);
-%krg.beta=block1\block2;
-block1=(ft*inv(rc)*fc);
+block1=((ft/rc)*fc);
+block2=((ft/rc)*y);
+krg.beta=block1\block2;
+%block1=(ft*inv(rc)*fc);
 %fc
-block2=(ft*inv(rc)*y);
-krg.beta=inv(block1)*block2;
+%block2=(ft*inv(rc)*y);
+%krg.beta=inv(block1)*block2;
 
 %création de la matrice des facteurs de corrélation
 krg.gamma=inv(rc)*(y-fc*krg.beta);

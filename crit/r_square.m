@@ -16,17 +16,13 @@ if(size(Zex,1)<size(Zex,2))
 Zex=Zex';
 end
 
-
-
-MSE=0;
-VAR=0;
 moy=mean(mean(Zex));
-for ii=1:size(Zex,1)
-    for jj=1:size(Zex,2)
-        MSE=MSE+(Zex(ii,jj)-Zap(ii,jj))^2;
-        VAR=VAR+(Zex(ii,jj)-moy)^2;
-    end
-end
 
+Zdiff2=(Zex-Zap).^2;
+Zdiffm=(Zex-repmat(moy,size(Zex,1),1)).^2;
+
+MSE=sum(Zdiff2,1);
+VAR=sum(Zdiffm,1);
 r2=1-MSE/VAR;
+
 end

@@ -15,6 +15,9 @@ dim_x=size(X,1);
 if krg.norm.on
     X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
     tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
+    
+    %X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(2*krg.norm.std_tirages,dim_x,1)+repmat(0.5,dim_x,1);
+    %tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(2*krg.norm.std_tirages,krg.dim,1)+repmat(0.5,krg.dim,1);
     %X=X/krg.dive;
     %tirages=tirages/krg.divt;
 end
@@ -53,5 +56,5 @@ end
 %normalisation
 if krg.norm.on
 Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
-
+%Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(2*krg.norm.std_eval,dim_x,1).*(Z-repmat(0.5,dim_x,1));
 end

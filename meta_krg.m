@@ -14,9 +14,13 @@ if meta.norm
     std_t=std(tirages);
 
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
+    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
+    
+    %eval=(eval-repmat(moy_e,ns,1))./repmat(2*std_e,ns,1)+repmat(0.5,ns,1);
+    %tirages=(tirages-repmat(moy_t,ns,1))./repmat(2*std_t,ns,1)+repmat(0.5,ns,1);
+    
     %krg.dive=max(max(eval),abs(min(eval)));
     %eval=eval/krg.dive;
-    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     %krg.divt=max(max(eval),abs(min(eval)));
     %tirages=tirages/krg.divt;
     
@@ -40,7 +44,7 @@ fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns
     fc(ii,:)=feval(fct,tirages(ii,:));
 end
-disp(fc)
+
 %création matrice de corrélation
 rc=zeros(ns);
 for ii=1:ns
@@ -78,7 +82,7 @@ block1=((ft/rc)*fc);
 block2=((ft/rc)*y);
 krg.beta=block1\block2;
 
-krg.beta
+
 %block1=(ft*inv(rc)*fc);
 %fc
 %block2=(ft*inv(rc)*y);
@@ -86,7 +90,7 @@ krg.beta
 
 %création de la matrice des facteurs de corrélation
 krg.gamma=inv(rc)*(y-fc*krg.beta);
-krg.gamma
+
 
 krg.reg=fct;
 krg.dim=ns;

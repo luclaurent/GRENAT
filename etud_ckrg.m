@@ -11,7 +11,7 @@ addpath('crit');global cofast;
 
 %%Définition de l'espace de conception
 xmin=0;
-xmax=pi;
+xmax=15;
 
 
 
@@ -30,7 +30,7 @@ pas=0.05;
 meta.doe='sfill';
 
 %nombre d'échantillons
-nb_samples=3;
+nb_samples=5;
 %ajout de point
 meta.ajout=false;
 meta.dist=0.01;
@@ -40,7 +40,7 @@ meta.dist=0.01;
 meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
-meta.theta=0.5;
+meta.theta=0.1;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';

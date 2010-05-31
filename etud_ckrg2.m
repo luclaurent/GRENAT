@@ -21,7 +21,7 @@ ymax=val;
 %fonction utilisée
 %fct=@(x) 5;
 %fctd=@(x) 0;
-fct='fct_rosenbrock';
+fctt='fct_peaks';
 %pas du tracé
 pas=0.1;
 nb=50;
@@ -30,11 +30,11 @@ nb=50;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Type de tirage
-meta.doe='ffact';
+meta.doe='LHS';
 
 %nombre d'échantillons
-nb_samples=5;
-meta.ajout=true;
+nb_samples=10;
+meta.ajout=false;
 meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +42,7 @@ meta.dist=0.1;
 meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
-meta.theta=0.5;
+meta.theta=2;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
@@ -54,7 +54,7 @@ meta.norm=true;
 x=linspace(xmin,xmax,nb);
 y=linspace(ymin,ymax,nb);
 [X,Y]=meshgrid(x,y);
-Z.Z=feval(fct,X,Y);
+Z.Z=feval(fctt,X,Y);
 %grad=feval(fctd,X);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,7 +74,9 @@ switch meta.doe
         xxx=linspace(xmin,xmax,nb_samples);
         tirages=xxx';
     case 'LHS'
-        tirages=lhsu(xmin,xmax,nb_samples);
+        Xmin=[xmin,ymin];
+        Xmax=[xmax,ymax];
+        tirages=lhsu(Xmin,Xmax,nb_samples);
     otherwise
         error('le type de tirage nest pas défini');
 end
@@ -136,9 +138,10 @@ if meta.ajout
 end
 
 %évaluations aux points
-eval=feval(fct,tirages(:,1),tirages(:,2));
+grad=zeros(size(tirages));
+[eval,grad(:,1),grad(:,2)]=feval(fctt,tirages(:,1),tirages(:,2));
 if meta.ajout
-    evalo=feval(fct,tirageso(:,1),tirageso(:,2));
+    evalo=feval(fctt,tirageso(:,1),tirageso(:,2));
 end
 %grad=fctd(tirages);
 
@@ -158,18 +161,18 @@ disp(' ')
 % switch meta.type
 %     
 %     case 'CKRG' 
-%         disp('>>> Interpolation par CoKrigeage');
-%         disp(' ')
-%         [krg]=meta_ckrg(tirages,eval,grad,meta);
-%         ZZ=zeros(size(X));
-%         GK1=zeros(size(X));
-%         GK2=zeros(size(X));
-%          for ii=1:size(X,1)
-%              [ZZ(ii)] =eval_ckrg(X(ii),tirages,krg);
-%                  %GK1(ii,jj)=GZ(1);
-%                  %GK2(ii,jj)=GZ(2);
-%              
-%          end
+         disp('>>> Interpolation par CoKrigeage');
+        disp(' ')
+         [ckrg]=meta_ckrg(tirages,eval,grad,meta);
+         ZZ.CKRG=zeros(size(X));
+         GK1=zeros(size(X));
+         GK2=zeros(size(X));
+          for ii=1:numel(X)              
+              [ZZ.CKRG(ii)] =eval_ckrg([X(ii) Y(ii)],tirages,ckrg);
+                  %GK1(ii,jj)=GZ(1);
+                  %GK2(ii,jj)=GZ(2);
+              
+          end
 %       case 'KRG' 
         disp('>>> Interpolation par Krigeage');
         disp(' ')
@@ -231,17 +234,19 @@ disp(' ')
        %tracé de la courbe d'interpolation par Krigeage
        figure
        hold on
+            surf(X,Y,Z.Z,'FaceColor','green','EdgeColor','k');
          surf(X,Y,ZZ.KRG,'FaceColor','blue','EdgeColor','k');
          if meta.ajout
             surf(X,Y,ZZ.KRGo,'FaceColor','yellow','EdgeColor','k');
          end
-         surf(X,Y,ZZ.KRGs,'FaceColor','green','EdgeColor','k');
+         %surf(X,Y,ZZ.KRGs,'FaceColor','green','EdgeColor','k');
          surf(X,Y,ZZ.DACE,'FaceColor','red','EdgeColor','k');
+         surf(X,Y,ZZ.CKRG,'FaceColor','yellow','EdgeColor','k');
             %axis([xmin xmax -1 max(Z.Z)+1])
           if meta.ajout  
-            legend('KRG','KRGo','KRGs','DACE');
+            legend('ref','KRG','KRGo','DACE','CKRG');
           else
-              legend('KRG','KRGs','DACE');
+              legend('ref','KRG','DACE','CKRG');
           end
 
 %tracé de la différence
@@ -250,13 +255,28 @@ diff=abs(ZZ.KRG-ZZ.DACE)./max(max(ZZ.KRG));
 surf(X,Y,diff); 
 title('diff KRG DACE');
 figure;
-diff=abs(Z.Z-ZZ.KRG)./max(max(Z.Z));
-surf(X,Y,diff);
-title('diff ref KRG');
-figure;
 diff=abs(ZZ.KRGs-ZZ.DACE)./max(max(ZZ.DACE));
 surf(X,Y,diff);
 title('diff KRGs DACE');
+
+figure;
+subplot(2,2,1);
+diff=abs(Z.Z-ZZ.KRG)./max(max(Z.Z));
+surf(X,Y,diff);
+title('diff ref KRG');
+subplot(2,2,2);
+diff=abs(Z.Z-ZZ.CKRG)./max(max(ZZ.CKRG));
+surf(X,Y,diff);
+title('diff CKRG ref');
+subplot(2,2,3);
+diff=abs(Z.Z-ZZ.DACE)./max(max(ZZ.DACE));
+surf(X,Y,diff);
+title('diff DACE ref');
+subplot(2,2,4);
+diff=abs(Z.Z-ZZ.KRGs)./max(max(ZZ.KRGs));
+surf(X,Y,diff);
+title('diff KRGs ref');
+
  if meta.ajout  
 figure;
 diff=abs(ZZ.KRGo-ZZ.DACE)./max(max(ZZ.DACE));
@@ -290,3 +310,9 @@ fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGs));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGs));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGs));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGs));
+disp(' ');
+disp('CKRG');
+fprintf('MSE=%g\n',mse(Z.Z,ZZ.CKRG));
+fprintf('R²=%g\n',r_square(Z.Z,ZZ.CKRG));
+fprintf('RAAE=%g\n',raae(Z.Z,ZZ.CKRG));
+fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.CKRG));

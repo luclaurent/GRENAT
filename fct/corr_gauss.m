@@ -29,7 +29,11 @@ elseif nargout==3
     ddcorr=zeros(d);
     for ll=1:d
         for mm=1:d
-            ddcorr(mm,ll)=4*theta(mm)*theta(ll)*xx(ll)*xx(mm)*ev;
+            if(mm==ll)
+                ddcorr(mm,ll)=4*theta(mm)^2*xx(ll)^2*ev-2*theta(ll)*ev;
+            else
+                ddcorr(mm,ll)=4*theta(mm)*theta(ll)*xx(ll)*xx(mm)*ev;
+            end
         end
     end
 else

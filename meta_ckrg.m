@@ -8,13 +8,7 @@ global rcc y
 ns=size(eval,1);
 dim=size(tirages,2);
 
-%rangement gradient
-der=zeros(dim*ns,1);
-for ii=1:ns
-    for jj=1:dim
-        der(dim*ii-dim+jj)=grad(ii,jj);        
-    end
-end
+
 
 %Normalisation
 if meta.norm
@@ -23,8 +17,7 @@ if meta.norm
     std_e=std(eval);
     moy_t=mean(tirages);
     std_t=std(tirages);
-    moy_g=mean(der);
-    std_g=std(der);
+    
     %test pour vérification écart type
     ind=find(std_e==0);
     if ~isempty(ind)
@@ -34,36 +27,32 @@ if meta.norm
     if ~isempty(ind)
         std_t(ind)=1;
     end
-    ind=find(std_g==0);
-    if ~isempty(ind)
-        std_g(ind)=1;
-    end
+    
     %normalisation
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
     size(repmat(moy_t,ns,1))
     size(tirages)
     tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     
-    der
-    %der=moy_g/std_g*(der-repmat(moy_e,dim*ns,1))./repmat(std_e,dim*ns,1);
-%     tmp=zeros(size(ns,1));
-%     for ii=1:ns
-%         tmp(ii)=(der(ii)-moy_g)/std_e*eval(ii);
-%     end
-%     der=(der-repmat(moy_g,dim*ns,1))./repmat(std_e,dim*ns,1)...
-%         -eval/ns*sum(tmp,2)./repmat(std_e,ns,1);
-    der=der*std_t/std_e;
-    der
+    grad=grad.*repmat(std_t,ns,1)/std_e;
+    
+    
     %sauvegarde des calculs
     krg.norm.moy_eval=moy_e;
     krg.norm.std_eval=std_e;
     krg.norm.moy_tirages=moy_t;
     krg.norm.std_tirages=std_t;
-    krg.norm.moy_gradients=moy_g;
-    krg.norm.std_gradients=std_g;
     krg.norm.on=true;
 else
     krg.norm.on=false;
+end
+
+%rangement gradient
+der=zeros(dim*ns,1);
+for ii=1:ns
+    for jj=1:dim
+        der(dim*ii-dim+jj)=grad(ii,jj);        
+    end
 end
 
 %création du vecteur d'évaluation

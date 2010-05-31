@@ -19,7 +19,7 @@ end
 moy=mean(mean(Zex));
 
 Zdiff2=(Zex-Zap).^2;
-Zdiffm=(Zex-repmat(moy,size(Zex,1),1)).^2;
+Zdiffm=(Zex-repmat(moy,size(Zex,1),size(Zex,2))).^2;
 
 MSE=sum(Zdiff2,1);
 VAR=sum(Zdiffm,1);

@@ -30,10 +30,10 @@ nb=50;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Type de tirage
-meta.doe='LHS';
+meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=10;
+nb_samples=6;
 meta.ajout=false;
 meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +42,7 @@ meta.dist=0.1;
 meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
-meta.theta=2;
+meta.theta=5;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
@@ -234,6 +234,7 @@ disp(' ')
        %tracé de la courbe d'interpolation par Krigeage
        figure
        hold on
+       plot3(tirages(:,1),tirages(:,2),eval,'.','Color','red','LineWidth',3);
             surf(X,Y,Z.Z,'FaceColor','green','EdgeColor','k');
          surf(X,Y,ZZ.KRG,'FaceColor','blue','EdgeColor','k');
          if meta.ajout
@@ -244,9 +245,9 @@ disp(' ')
          surf(X,Y,ZZ.CKRG,'FaceColor','yellow','EdgeColor','k');
             %axis([xmin xmax -1 max(Z.Z)+1])
           if meta.ajout  
-            legend('ref','KRG','KRGo','DACE','CKRG');
+            legend('tirages','ref','KRG','KRGo','DACE','CKRG');
           else
-              legend('ref','KRG','DACE','CKRG');
+              legend('tirages','ref','KRG','DACE','CKRG');
           end
 
 %tracé de la différence

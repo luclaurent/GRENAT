@@ -4,7 +4,7 @@
 
 function krg=meta_ckrg(tirages,eval,grad,meta)
 
-global rcc y
+
 ns=size(eval,1);
 dim=size(tirages,2);
 
@@ -69,7 +69,7 @@ end
 
 tmpp=repmat(0,dim*ns,nbt);
 fc=vertcat(fc,tmpp);
-%fc
+
 %%%création matrice de corrélation
 %morceau de la matrice issu du krigeage
 rc=zeros(ns);
@@ -94,50 +94,16 @@ rcc=[rc rca;rca' rci];
 %rcc
 disp('conditionnement R');
 disp(cond(rcc));
-% %Factorisation Cholesky
-% rcc
-% %C=chol(rcc);
-% C=rcc;
-% 
-% 
-% %résolution du problème des moindres carrés
-% C=C';
-% ft=C\fc;
-% 
-% %factorisation QR
-% [Q R]=qr(ft,0);
-% 
-% Yy=C\y;
-% krg.beta=R\(Q'*Yy);
-% krg.gamma=(Yy-ft*krg.beta)'/C;
-% krg.beta
-% krg.gamma=krg.gamma';
 
-
-
-%création matrice de régression par moindres carrés
-%irc=inv(rc);
+%calcul de beta
 ft=fc';
-% disp('R')
-% rcc
-% disp('inverse R')
-% inv(rcc)
 block1=((ft/rcc)*fc);
 block2=((ft/rcc)*y);
-% ft
-% ft/rcc 
-% y
 krg.beta=block1\block2;
-%control=((ft/rcc)*fc)\(ft/rcc)
-%global control
-
-% disp('beta')
-% disp(krg.beta);
 
 %création de la matrice des facteurs de corrélation
 krg.gamma=rcc\(y-fc.*krg.beta);
-% disp('gamma')
-% disp(krg.gamma);
+
 
 krg.reg=fct;
 krg.nbt=ns;

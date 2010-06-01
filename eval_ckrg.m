@@ -3,7 +3,7 @@
 
 function [Z,GZ]=eval_ckrg(X,tirages,krg)
 
-global rr
+
 if nargout==2
     grad=true;
 else
@@ -23,27 +23,25 @@ end
 %dérivée
 rr=zeros(krg.nbt*(krg.dim+1),1);
 if grad
-    jr=zeros(krg.dim,krg.con);
+    jr=zeros(krg.nbt*(krg.dim+1),krg.con);
 end
 
 for ll=1:krg.nbt
    if grad  %si calcul des gradients
-        [rr(ll),jr(ll,:)]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
-   else %sinon
-       
+        [ev,dev,ddev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
+        rr(ll)=ev;
+        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
+        jr(ll,:)=dev;
+        jr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll,:)=ddev;
+   else %sinon       
         [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
         rr(ll)=ev;
         rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
-        %disp(ev) 
-        %disp(dev)
    end
 end
 
 %matrice de régression aux points d'évalutions
-nbt=1/2*(krg.deg+1)*(krg.deg+2);
-ff=zeros(nbt,1);
-if grad
-    jf=zeros(nbt,krg.con);
+if grad    
     [ff,jf]=feval(krg.reg,X);
 else
     ff=feval(krg.reg,X);

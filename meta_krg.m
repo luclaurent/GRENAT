@@ -1,3 +1,4 @@
+
 %fonction assurant la création du métamodèle de Krigeage
 %L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
@@ -13,18 +14,11 @@ if meta.norm
     moy_t=mean(tirages);
     std_t=std(tirages);
 
+    %normalisation des valeur de la fonction objectif et des tirages
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
     tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     
-    %eval=(eval-repmat(moy_e,ns,1))./repmat(2*std_e,ns,1)+repmat(0.5,ns,1);
-    %tirages=(tirages-repmat(moy_t,ns,1))./repmat(2*std_t,ns,1)+repmat(0.5,ns,1);
-    
-    %krg.dive=max(max(eval),abs(min(eval)));
-    %eval=eval/krg.dive;
-    %krg.divt=max(max(eval),abs(min(eval)));
-    %tirages=tirages/krg.divt;
-    
-    
+    %sauvegarde des données
     krg.norm.moy_eval=moy_e;
     krg.norm.std_eval=std_e;
     krg.norm.moy_tirages=moy_t;
@@ -55,43 +49,17 @@ end
 disp('conditionnement R');
 disp(cond(rc));
 
-
-%global rc
-% %Factorisation Cholesky
-% C=chol(rc);
-% 
-% %résolution du problème des moindres carrés
-% C=C';
-% ft=C\fc;
-% 
-% %factorisation QR
-% [Q R]=qr(ft,0);
-% 
-% Yy=C\y;
-% krg.beta=R\(Q'*Yy);
-% krg.gamma=(Yy-ft*krg.beta)'/C;
-% krg.beta
-% krg.gamma=krg.gamma';
-% 
-
-%création matrice de régression par moindres carrés
-%irc=inv(rc);
+%calcul du coefficient beta
 ft=fc';
-
 block1=((ft/rc)*fc);
 block2=((ft/rc)*y);
 krg.beta=block1\block2;
 
-
-%block1=(ft*inv(rc)*fc);
-%fc
-%block2=(ft*inv(rc)*y);
-%krg.beta=inv(block1)*block2;
-
-%création de la matrice des facteurs de corrélation
-krg.gamma=inv(rc)*(y-fc*krg.beta);
+%calcul du coefficient gamma
+krg.gamma=rc\(y-fc*krg.beta);
 
 
+%sauvegarde de données
 krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;

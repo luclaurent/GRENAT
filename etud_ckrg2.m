@@ -165,12 +165,14 @@ disp(' ')
         disp(' ')
          [ckrg]=meta_ckrg(tirages,eval,grad,meta);
          ZZ.CKRG=zeros(size(X));
-         GK1=zeros(size(X));
-         GK2=zeros(size(X));
-          for ii=1:numel(X)              
-              [ZZ.CKRG(ii)] =eval_ckrg([X(ii) Y(ii)],tirages,ckrg);
-                  %GK1(ii,jj)=GZ(1);
-                  %GK2(ii,jj)=GZ(2);
+         GCKRG1=zeros(size(X));
+         GCKRG2=zeros(size(X));
+          for ii=1:size(X,1) 
+             for jj=1:size(X,2)
+              [ZZ.CKRG(ii,jj),GZ] =eval_ckrg([X(ii,jj) Y(ii,jj)],tirages,ckrg);
+                  GCKRG1(ii,jj)=GZ(1);
+                  GCKRG2(ii,jj)=GZ(2);
+             end
               
           end
 %       case 'KRG' 
@@ -178,13 +180,13 @@ disp(' ')
         disp(' ')
         [krg]=meta_krg(tirages,eval,meta);
         ZZ.KRG=zeros(size(X));
-        GK1=zeros(size(X));
-        GK2=zeros(size(X));
+        GKRG1=zeros(size(X));
+        GKRG2=zeros(size(X));
          for ii=1:size(X,1) 
              for jj=1:size(X,2)
-                 [ZZ.KRG(ii,jj)] =eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
-                 %GK1(ii,jj)=GZ(1);
-                 %GK2(ii,jj)=GZ(2);
+                 [ZZ.KRG(ii,jj),GZ] =eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
+                 GKRG1(ii,jj)=GZ(1);
+                 GKRG2(ii,jj)=GZ(2);
              end 
          end
          if meta.ajout
@@ -249,6 +251,35 @@ disp(' ')
           else
               legend('tirages','ref','KRG','DACE','CKRG');
           end
+          view(3) 
+          
+          %affichage des gradients
+          aff.pas=pas;
+          aff.on=true;
+          aff.newfig=true;
+          aff.d2=true;
+          aff.d3=false;
+          aff.titre='KRG';
+          aff.xlabel=' ';
+          aff.ylabel=' ';
+          cofast.grad=false;
+          aff.contour2=true;
+          aff.grad=true;
+          out.Z=ZZ.KRG;
+          out.GR1=GKRG1;
+          out.GR2=GKRG2;
+          aff.pts=true;
+          aff.rendu=false;
+          affichage(X,Y,out,tirages,eval,aff);
+          
+          aff.titre='CKRG';
+          out.Z=ZZ.CKRG;
+          out.GR1=GCKRG1;
+          out.GR2=GCKRG2;
+          aff.pts=true;
+          aff.rendu=false;
+          affichage(X,Y,out,tirages,eval,aff);
+
 
 %tracé de la différence
 figure;

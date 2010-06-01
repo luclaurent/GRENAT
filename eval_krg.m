@@ -55,6 +55,8 @@ end
 
 %normalisation
 if krg.norm.on
-Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
-%Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(2*krg.norm.std_eval,dim_x,1).*(Z-repmat(0.5,dim_x,1));
+    Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
+    if grad
+        GZ=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*GZ;
+    end
 end

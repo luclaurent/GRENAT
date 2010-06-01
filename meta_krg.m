@@ -32,7 +32,7 @@ end
 y=eval;
 
 %création matrice de conception
-nbt=1/2*(meta.deg+1)*(meta.deg+2);
+nbt=meta.deg+1;
 fc=zeros(ns,nbt);
 fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns

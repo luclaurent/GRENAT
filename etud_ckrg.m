@@ -39,7 +39,7 @@ meta.dist=0.01;
 %Type de métamodèle
 meta.type=['KRG' 'DACE'];
 %paramètre
-meta.deg=0;
+meta.deg=2;
 meta.theta=0.1;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';

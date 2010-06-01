@@ -3,10 +3,13 @@
 
 function [ret,dret]=reg_poly1(val)
 
-ret=[1 val(1) val(2)];
+d=size(val,2);
+
+%fonction polynomiale
+ret=[1 val];
+
+%dérivée
 if nargout==2
-    dret=zeros(2,3);
-    dret(1,:)=[0 1 0];
-    dret(2,:)=[0 0 1];
+    dret=[zeros(d,1) eye(d)];   
 end
 end

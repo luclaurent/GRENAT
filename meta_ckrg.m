@@ -60,15 +60,23 @@ y=vertcat(eval,der) ;
 
 
 %création matrice de conception
-nbt=1/2*(meta.deg+1)*(meta.deg+2);
-fc=zeros(ns,nbt);
+if meta.deg==0
+    p=1;
+elseif meta.deg==1
+    p=dim+1;
+elseif meta.deg==2
+    p=(dim+1)*(dim+2)*1/2;
+else
+    error('Degré de polynôme non encore prise en charge');
+end
+    
+fc=zeros((dim+1)*ns,p);
+size(fc)
 fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns
-    fc(ii,:)=feval(fct,tirages(ii,:));
+       [fc(ii,:),fc(ns+ii,:)]=feval(fct,tirages(ii,:));
 end
 
-tmpp=repmat(0,dim*ns,nbt);
-fc=vertcat(fc,tmpp);
 
 %%%création matrice de corrélation
 %morceau de la matrice issu du krigeage
@@ -94,7 +102,8 @@ rcc=[rc rca;rca' rci];
 %rcc
 disp('conditionnement R');
 disp(cond(rcc));
-
+size(fc)
+size(rcc)
 %calcul de beta
 ft=fc';
 block1=((ft/rcc)*fc);
@@ -102,8 +111,8 @@ block2=((ft/rcc)*y);
 krg.beta=block1\block2;
 
 %création de la matrice des facteurs de corrélation
-krg.gamma=rcc\(y-fc.*krg.beta);
-
+krg.gamma=rcc\(y-fc*krg.beta);
+fc
 
 krg.reg=fct;
 krg.nbt=ns;

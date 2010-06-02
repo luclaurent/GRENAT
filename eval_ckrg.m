@@ -52,10 +52,14 @@ end
 Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
-    GZ=jf*krg.beta+jr'*krg.gamma;
+    GZ=jf*krg.beta-jr'*krg.gamma;
 end
 
 %normalisation
 if krg.norm.on
     Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
+    if grad
+        GZ=repmat(krg.norm.std_eval,dim_x,1).*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
+        GZ=GZ';
+    end
 end

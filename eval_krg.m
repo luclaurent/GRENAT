@@ -32,9 +32,9 @@ end
 
 for ll=1:krg.dim
    if grad  %si calcul des gradients
-        [rr(ll),jr(ll,:)]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
+        [rr(ll),jr(ll,:)]=feval(krg.corr,X-tirages(ll,:),krg.theta);
    else %sinon
-        rr(ll)=feval(krg.corr,tirages(ll,:)-X,krg.theta);
+        rr(ll)=feval(krg.corr,X-tirages(ll,:),krg.theta);
    end
 end
 
@@ -57,6 +57,7 @@ end
 if krg.norm.on
     Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
     if grad
-        GZ=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*GZ;
+        GZ=repmat(krg.norm.std_eval,dim_x,1).*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
+        GZ=GZ';
     end
 end

@@ -39,8 +39,8 @@ meta.dist=0.01;
 %Type de métamodèle
 meta.type=['KRG' 'DACE'];
 %paramètre
-meta.deg=2;
-meta.theta=0.1;
+meta.deg=0;
+meta.theta=2;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
@@ -52,7 +52,7 @@ meta.norm=true;
 x=xmin:pas:xmax;X=x';
 
 Z.Z=fct(X);
-%grad=feval(fctd,X);
+Z.grad=fctd(X);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -148,10 +148,10 @@ disp(' ')
         disp(' ')
         [krg]=meta_krg(tirages,eval,meta);
         ZZ.KRG=zeros(size(X));
-        GK1=zeros(size(X));
-        GK2=zeros(size(X));
+        ZZ.GKRG=zeros(size(X));
+        
          for ii=1:size(X,1)            
-                 [ZZ.KRG(ii)] =eval_krg(X(ii),tirages,krg);
+                 [ZZ.KRG(ii),ZZ.GKRG(ii)] =eval_krg(X(ii),tirages,krg);
                  %GK1(ii,jj)=GZ(1);
                  %GK2(ii,jj)=GZ(2);             
          end
@@ -160,8 +160,7 @@ disp(' ')
         disp(' ')
         [krgo]=meta_krg(tirageso,evalo,meta);
         ZZ.KRGo=zeros(size(X));
-        GK1=zeros(size(X));
-        GK2=zeros(size(X));
+               
          for ii=1:size(X,1)            
                  [ZZ.KRGo(ii)] =eval_krg(X(ii),tirageso,krgo);
                  %GK1(ii,jj)=GZ(1);
@@ -184,12 +183,11 @@ disp(' ')
         disp(' ')
         [ckrg]=meta_ckrg(tirages,eval,grad,meta);
         ZZ.CKRG=zeros(size(X));
-        GK1=zeros(size(X));
-        GK2=zeros(size(X));
+        ZZ.GCKRG=zeros(size(X));
+        
          for ii=1:size(X,1)
-             [ZZ.CKRG(ii)] =eval_ckrg(X(ii),tirages,ckrg);
-                 %GK1(ii,jj)=GZ(1);
-                 %GK2(ii,jj)=GZ(2);
+             [ZZ.CKRG(ii),ZZ.GCKRG(ii)] =eval_ckrg(X(ii),tirages,ckrg);
+                
              
          end
          meta.norm=false;
@@ -210,17 +208,19 @@ disp(' ')
        %tracé de la courbe d'interpolation par Krigeage
        hold on
          plot(X,ZZ.KRG,'Color','k','LineWidth',2); 
+         plot(X,ZZ.GKRG,'--','Color','k','LineWidth',2); 
          if meta.ajout
          plot(X,ZZ.KRGo,'--','Color','r','LineWidth',2);
          end
-         plot(X,ZZ.KRGs,'--','Color','k','LineWidth',2); 
+         plot(X,ZZ.KRGs,'--','Color','y','LineWidth',2); 
          plot(X,ZZ.DACE,'Color','g','LineWidth',2);
          plot(X,ZZ.CKRG,'Color','r','LineWidth',2);
-            axis([xmin xmax min(Z.Z)-1 max(Z.Z)+1])
+         plot(X,ZZ.GCKRG,'--','Color','r','LineWidth',2);
+            axis([xmin xmax min(min(Z.Z),min(Z.grad))-1 max(max(Z.Z),max(Z.grad))+1])
             if meta.ajout
             legend('fonction de référence','evaluation','gradient','KRG','KRG sans ajout de point','KRG sans normalisation','DACE','CKRG');
             else
-                legend('fonction de référence','evaluation','gradient','KRG','KRG sans normalisation','DACE','CKRG');
+                legend('fonction de référence','evaluation','gradient','KRG','gradients KRG','KRG sans normalisation','DACE','CKRG','Gradients CKRG');
             end
         hold off
 %tracé de la différence

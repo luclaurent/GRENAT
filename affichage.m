@@ -103,8 +103,12 @@ if aff.on
            set(h,'LineWidth',2)
            if aff.grad                
                hold on;
-
+                    
+               if aff.scale
                 quiver(X,Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
+               else
+                   quiver(X,Y,Z.GR1,Z.GR2,'AutoScale','off');
+               end
            end
             if aff.pts
                 hold on
@@ -115,9 +119,15 @@ if aff.on
             if cofast.grad
                 %hold on;
                 %figure;
+                if aff.scale
                 quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
                    ech*resultats.grad.gradients(:,1),ech*resultats.grad.gradients(:,2),...
                    'LineWidth',2,'AutoScale','off');
+                else
+                    quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
+                   resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),...
+                   'LineWidth',2,'AutoScale','off');
+                end
                
             end
            

@@ -23,8 +23,8 @@ ymax=val;
 %fctd=@(x) 0;
 fctt='fct_peaks';
 %pas du tracé
-pas=0.1;
-nb=50;
+nb=20;
+pas=2*val/nb;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,7 +33,7 @@ nb=50;
 meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=6;
+nb_samples=9;
 meta.ajout=false;
 meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -54,7 +54,7 @@ meta.norm=true;
 x=linspace(xmin,xmax,nb);
 y=linspace(ymin,ymax,nb);
 [X,Y]=meshgrid(x,y);
-Z.Z=feval(fctt,X,Y);
+[Z.Z,Z.gr1,Z.gr2]=feval(fctt,X,Y);
 %grad=feval(fctd,X);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -262,7 +262,7 @@ disp(' ')
           aff.titre='KRG';
           aff.xlabel=' ';
           aff.ylabel=' ';
-          cofast.grad=false;
+          cofast.grad=true;
           aff.contour2=true;
           aff.grad=true;
           out.Z=ZZ.KRG;
@@ -270,6 +270,11 @@ disp(' ')
           out.GR2=GKRG2;
           aff.pts=true;
           aff.rendu=false;
+          aff.scale=true;
+          global resultats
+          resultats.tirages=tirages;
+          resultats.grad.gradients=grad;
+          
           affichage(X,Y,out,tirages,eval,aff);
           
           aff.titre='CKRG';

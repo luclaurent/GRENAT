@@ -26,7 +26,7 @@ calc_grad=true;
 meta.doe='LHS';
 
 %nb d'échantillons
-nb_samples=10;
+nb_samples=80;
 
 %%Métamodèle
 %type d'interpolation
@@ -40,7 +40,7 @@ meta.type='CKRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
-meta.theta=0.5;
+meta.theta=5;
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 %paramètre RBF
@@ -48,6 +48,9 @@ meta.para=1.5;
 meta.fct='cauchy';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
 %paramètre POD
 meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
+%normalisation
+meta.norm=true;
+
 
 %affichage actif ou non
 aff.on=true;
@@ -269,16 +272,18 @@ switch meta.type
         disp(' ')
         [krg]=meta_ckrg(tirages,eval,grad,meta);
         ZZ=zeros(size(X));
-        GK1=zeros(size(X));
-        GK2=zeros(size(X));
+        GCKRG1=zeros(size(X));
+        GCKRG2=zeros(size(X));
          for ii=1:size(X,1)
              for jj=1:size(X,2)
-                 [ZZ(ii,jj)] =eval_ckrg([X(ii,jj) Y(ii,jj)],tirages,krg);
-                 %GK1(ii,jj)=GZ(1);
-                 %GK2(ii,jj)=GZ(2);
+                 [ZZ(ii,jj),GZ] =eval_ckrg([X(ii,jj) Y(ii,jj)],tirages,krg);
+                 GCKRG1(ii,jj)=GZ(1);
+                 GCKRG2(ii,jj)=GZ(2);
              end
          end
          ZK.Z=ZZ;
+         ZK.GR1=GCKRG1;
+         ZK.GR2=GCKRG2;
         
             %%%affichage de la surface obtenue par KRG
             %paramètrage options
@@ -289,15 +294,25 @@ switch meta.type
             aff.rendu=false;
             aff.uni=false;
             aff.pts=true;
-            aff.titre=['Surface obtenue par Krigeage: theta ',...
-                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+            aff.titre=['Surface obtenue par CoKrigeage: theta ',...
+                num2str(meta.theta),' degré regression ',meta.deg,' corrélation ',meta.corr];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F_{KRG}';
             aff.grad=false;
             cofast.grad=false;
             affichage(X,Y,ZK,tirages,eval,aff);
-
+            aff.grad=true;
+            cofast.grad=true;
+            aff.newfig=true;
+            aff.contour2=true;
+            aff.contour3=false;
+            aff.d3=false;
+            aff.d2=true;
+            aff.rendu=false;
+            aff.uni=false;
+            aff.pts=true;
+affichage(X,Y,ZK,tirages,eval,aff)
 %              %%affichage du gradient de la fonction
 %             aff.titre=['Gradient de linterpolation par Krigeage'];
 %             aff.xlabel='x_{1}';

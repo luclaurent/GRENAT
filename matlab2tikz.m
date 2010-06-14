@@ -1546,7 +1546,7 @@ switch ( matlabMarker )
                 else
                             tikzMarker = 'triangle';
                 end
-                markOptions = [ markOptions, ',rotate=90' ];
+                markOptions = [ markOptions, ',rotate=270' ];
 
             case '>'
                 if faceColorToggle
@@ -1554,7 +1554,7 @@ switch ( matlabMarker )
                 else
                             tikzMarker = 'triangle';
                 end
-                markOptions = [ markOptions, ',rotate=270' ];
+                markOptions = [ markOptions, ',rotate=90' ];
 
             case {'p','pentagram'}
                 if faceColorToggle
@@ -1848,48 +1848,16 @@ function [m2t,env] = drawSurface( m2t, handle )
     dx = get(handle,'XData');
     dy = get(handle,'YData');
     dz = get(handle,'ZData');
-    [col, row] = size(dz);
-
     
-    % check, if surf plot is 'spectrogram' or 'surf' and run corresponding
-    % algorithm.
-    if isvector(dx)
-    
-        % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        % plot is 'spectrogram'
-        for i = 1:col
-            for j = 1:row
-                str = [ str, ...
-                        sprintf('(%g,%g,%g)', dx(j), dy(i), dz(i,j) ) ];
-            end
-            % insert an empty line to tell Pgfplots about one row ending here
-            str = [str, sprintf('\n\n')];
+    [col, row] = size(dx); 
+    for i = 1:col
+        for j = 1:row
+            str = [ str, ...
+                    sprintf('(%g,%g,%g)', dx(i,j), dy(i,j), dz(i,j) ) ];
         end
-        % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    
-    else
-       
-        % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-        % plot is 'surf'
-        for i = 1:col
-            for j = 1:row
-                str = [ str, ...
-                        sprintf('(%g,%g,%g)', dx(i,j), dy(i,j), dz(i,j) ) ];
-            end
-            % insert an empty line to tell Pgfplots about one row ending here
-            str = [str, sprintf('\n\n')];
-        end
-        % - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    end %if-else
-
-    % TODO:
-    % - remove grids in spectrogram by either removing grid command 
-    %   or adding: 'grid=none' from/in axis options
-    % - using a "real" colorbar instead of colorbar-png-flle
-    % - handling of huge data amounts in LaTeX.
-    % - correcting wrong colors
-        
+        % insert an empty line to tell Pgfplots about one row ending here
+        str = [str, sprintf('\n\n')];
+    end
     str = [str, sprintf('};\n\n')];
     env = str;
 
@@ -3218,6 +3186,9 @@ function [xcolorLiteral,errorcode] = rgb2xcolor( rgb )
       xcolorLiteral = 'orange';
       errorcode = 0;
   elseif isequal( rgb, [1,0.75,0.75] )
+      xcolorLiteral = 'pink';
+      errorcode = 0;
+  elseif isequal( rgb, [0.75,0,0.25] )
       xcolorLiteral = 'pink';
       errorcode = 0;
   elseif isequal( rgb, [0.75,0,0.25] )

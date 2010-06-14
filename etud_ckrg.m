@@ -30,7 +30,7 @@ pas=0.05;
 meta.doe='sfill';
 
 %nombre d'échantillons
-nb_samples=5;
+nb_samples=4;
 %ajout de point
 meta.ajout=false;
 meta.dist=0.01;

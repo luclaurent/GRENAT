@@ -99,7 +99,11 @@ if aff.on
     
     if aff.d2
         if aff.contour2
-           [C,h]=contourf(X,Y,Z.Z);       
+            disp('ici')
+           [C,h]=contourf(X,Y,Z.Z);   
+           text_handle = clabel(C,h);
+            set(text_handle,'BackgroundColor',[1 1 .6],...
+            'Edgecolor',[.7 .7 .7])
            set(h,'LineWidth',2)
            if aff.grad                
                hold on;
@@ -117,7 +121,7 @@ if aff.on
                 'MarkerSize',15)     
             end
             if cofast.grad
-                %hold on;
+                hold on;
                 %figure;
                 if aff.scale
                 quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
@@ -131,9 +135,7 @@ if aff.on
                
             end
            
-           text_handle = clabel(C,h);
-            set(text_handle,'BackgroundColor',[1 1 .6],...
-            'Edgecolor',[.7 .7 .7])
+           
         end
     end
 

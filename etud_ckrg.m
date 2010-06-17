@@ -160,9 +160,9 @@ disp(' ')
         disp(' ')
         [krgo]=meta_krg(tirageso,evalo,meta);
         ZZ.KRGo=zeros(size(X));
-               
+        ZZ.GKRGo=zeros(size(X));
          for ii=1:size(X,1)            
-                 [ZZ.KRGo(ii)] =eval_krg(X(ii),tirageso,krgo);
+                 [ZZ.KRGo(ii),ZZ.GKRGo(ii)] =eval_krg(X(ii),tirageso,krgo);
                  %GK1(ii,jj)=GZ(1);
                  %GK2(ii,jj)=GZ(2);             
          end
@@ -181,6 +181,8 @@ disp(' ')
         %     case 'CKRG' 
         disp('>>> Interpolation par CoKrigeage');
         disp(' ')
+        for i=[0.5 1 2 5 10 20 200]
+            meta.theta=i;
         [ckrg]=meta_ckrg(tirages,eval,grad,meta);
         ZZ.CKRG=zeros(size(X));
         ZZ.GCKRG=zeros(size(X));
@@ -190,15 +192,22 @@ disp(' ')
                 
              
          end
+         
+         hold on 
+         %plot(X,ZZ.CKRG,'Color','r','LineWidth',2);
+         plot(X,ZZ.GCKRG,'--','Color','r','LineWidth',2);
+        end
+        matlab2tikz('ckrg_dtheta.tex')
+         
          meta.norm=false;
          disp('>>> Interpolation par Krigeage (sans normalisation)');
         disp(' ')
         [krgs]=meta_krg(tirages,eval,meta);
         ZZ.KRGs=zeros(size(X));
-        GK1=zeros(size(X));
-        GK2=zeros(size(X));
+        ZZ.GKRGs=zeros(size(X));
+        
          for ii=1:size(X,1)            
-                 [ZZ.KRGs(ii)] =eval_krg(X(ii),tirages,krgs);
+                 [ZZ.KRGs(ii),ZZ.GKRGs(ii)] =eval_krg(X(ii),tirages,krgs);
                  %GK1(ii,jj)=GZ(1);
                  %GK2(ii,jj)=GZ(2);             
          end
@@ -206,9 +215,11 @@ disp(' ')
          
 %end
        %tracé de la courbe d'interpolation par Krigeage
+       hold off
+       figure;
        hold on
          plot(X,ZZ.KRG,'Color','k','LineWidth',2); 
-         plot(X,ZZ.GKRG,'--','Color','k','LineWidth',2); 
+         
          if meta.ajout
          plot(X,ZZ.KRGo,'--','Color','r','LineWidth',2);
          end
@@ -216,41 +227,43 @@ disp(' ')
          plot(X,ZZ.DACE,'Color','g','LineWidth',2);
          plot(X,ZZ.CKRG,'Color','r','LineWidth',2);
          plot(X,ZZ.GCKRG,'--','Color','r','LineWidth',2);
-            axis([xmin xmax min(min(Z.Z),min(Z.grad))-1 max(max(Z.Z),max(Z.grad))+1])
+         plot(X,ZZ.GKRG,'--','Color','k','LineWidth',2); 
+         plot(X,ZZ.GKRGs,'--','Color','g','LineWidth',2); 
+            %axis([xmin xmax min(min(Z.Z),min(Z.grad))-1 max(max(Z.Z),max(Z.grad))+1])
             if meta.ajout
             legend('fonction de référence','evaluation','gradient','KRG','KRG sans ajout de point','KRG sans normalisation','DACE','CKRG');
             else
-                legend('fonction de référence','evaluation','gradient','KRG','gradients KRG','KRG sans normalisation','DACE','CKRG','Gradients CKRG');
+                legend('fonction de référence','evaluation','gradient','KRG','KRG sans normalisation','DACE','CKRG','Gradients CKRG','Gradients KRG','Gradients KRG sans norm');
             end
         hold off
 %tracé de la différence
-figure;
-subplot(3,2,1);
-diff=abs(ZZ.KRG-ZZ.DACE);
-plot(X,diff,'Color','k','LineWidth',2);  
-title('différence KRG-DACE');
-subplot(3,2,2);
-diff=abs(ZZ.CKRG-ZZ.DACE);
-plot(X,diff,'Color','k','LineWidth',2);  
-title('différence CKRG-DACE');
-subplot(3,2,3);
-diff=abs(Z.Z-ZZ.DACE);
-plot(X,diff,'Color','k','LineWidth',2);  
-title('différence reférence-DACE');
-subplot(3,2,4);
-diff=abs(Z.Z-ZZ.KRG);
-plot(X,diff,'Color','k','LineWidth',2);  
-title('différence reférence-KRG');
-subplot(3,2,5);
-diff=abs(Z.Z-ZZ.CKRG);
-plot(X,diff,'Color','k','LineWidth',2);  
-title('différence reférence-CKRG');
-if meta.ajout
-subplot(3,2,6);
-diff=abs(Z.Z-ZZ.KRGo);
-plot(X,diff,'Color','k','LineWidth',2);  
-title('différence reférence-KRG sans ajout de point');
-end
+% figure;
+% subplot(3,2,1);
+% diff=abs(ZZ.KRG-ZZ.DACE);
+% plot(X,diff,'Color','k','LineWidth',2);  
+% title('différence KRG-DACE');
+% subplot(3,2,2);
+% diff=abs(ZZ.CKRG-ZZ.DACE);
+% plot(X,diff,'Color','k','LineWidth',2);  
+% title('différence CKRG-DACE');
+% subplot(3,2,3);
+% diff=abs(Z.Z-ZZ.DACE);
+% plot(X,diff,'Color','k','LineWidth',2);  
+% title('différence reférence-DACE');
+% subplot(3,2,4);
+% diff=abs(Z.Z-ZZ.KRG);
+% plot(X,diff,'Color','k','LineWidth',2);  
+% title('différence reférence-KRG');
+% subplot(3,2,5);
+% diff=abs(Z.Z-ZZ.CKRG);
+% plot(X,diff,'Color','k','LineWidth',2);  
+% title('différence reférence-CKRG');
+% if meta.ajout
+% subplot(3,2,6);
+% diff=abs(Z.Z-ZZ.KRGo);
+% plot(X,diff,'Color','k','LineWidth',2);  
+% title('différence reférence-KRG sans ajout de point');
+% end
             
 %calcul des erreurs
 disp('DACE');

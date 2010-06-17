@@ -23,7 +23,7 @@ ymax=val;
 %fctd=@(x) 0;
 fctt='fct_peaks';
 %pas du tracé
-nb=20;
+nb=50;
 pas=2*val/nb;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,7 +33,7 @@ pas=2*val/nb;
 meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=9;
+nb_samples=6;
 meta.ajout=false;
 meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +42,7 @@ meta.dist=0.1;
 meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
-meta.theta=5;
+meta.theta=3;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
@@ -147,7 +147,11 @@ end
 
 %tracé courbes initiales
 figure;
+        
 surf(X,Y,Z.Z,'LineWidth',1);
+hlight=light;               % activ. éclairage
+        lighting('gouraud')         % type de rendu
+        lightangle(hlight,48,70)    % dir. éclairage
 title('fonction de référence');
 hold on;
 
@@ -277,14 +281,27 @@ disp(' ')
           
           affichage(X,Y,out,tirages,eval,aff);
           
+          
+          
           aff.titre='CKRG';
+          aff.d3=true;
+          aff.d2=false;
+          aff.contour3=false;
           out.Z=ZZ.CKRG;
           out.GR1=GCKRG1;
           out.GR2=GCKRG2;
           aff.pts=true;
-          aff.rendu=false;
+          aff.rendu=true;
+          aff.uni=false;
+          aff.grad=false;
+          aff.xlabel='\mu_{1}';
+          aff.ylabel='\mu_{2}';
+          aff.zlabel='F_{CKRG}';
           affichage(X,Y,out,tirages,eval,aff);
-
+          out.Z=ZZ.KRG;
+          aff.titre='KRG';
+           aff.zlabel='F_{KRG}';
+          affichage(X,Y,out,tirages,eval,aff);
 
 %tracé de la différence
 figure;

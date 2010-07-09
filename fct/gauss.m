@@ -23,7 +23,7 @@ switch type
         for ii=1:taille
             dd(ii,1)=-2*xx(ii,1)*ev /para^2;
         end
-         G=dd;dd
+         G=dd;
     otherwise
         error('Type de paramètres non pris en compte (f ou d) cf. gauss.m');
         

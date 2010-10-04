@@ -5,7 +5,7 @@ clf;
 close all; 
 
 clear all;
-addpath('doe/lhs');addpath('dace');addpath('doe');addpath('fct');
+addpath('doe/lhs');addpath('meta/dace');addpath('meta');addpath('doe');addpath('fct');
 addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,7 +33,7 @@ pas=2*val/nb;
 meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=6;
+nb_samples=4;
 meta.ajout=false;
 meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -42,7 +42,7 @@ meta.dist=0.1;
 meta.type=['KRG' 'DACE'];
 %paramètre
 meta.deg=0;
-meta.theta=3;
+meta.theta=1;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';

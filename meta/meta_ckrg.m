@@ -30,8 +30,7 @@ if meta.norm
     
     %normalisation
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
-    size(repmat(moy_t,ns,1))
-    size(tirages)
+   
     tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     
     grad=grad.*repmat(std_t,ns,1)/std_e;
@@ -98,9 +97,14 @@ end
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
-%rcc
-disp('conditionnement R');
-disp(cond(rcc));
+
+
+%conditionnement de la matrice de corrélation
+condr=cond(rc);
+sprintf('conditionnement R: %6.5d\n',condr);
+krg.cond=condr;
+
+
 
 %calcul de beta
 ft=fc';

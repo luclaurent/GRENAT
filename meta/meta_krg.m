@@ -53,6 +53,7 @@ sprintf('conditionnement R: %6.5d\n',condr);
 krg.cond=condr;
 
 
+
 %calcul du coefficient beta
 ft=fc';
 block1=((ft/rc)*fc);

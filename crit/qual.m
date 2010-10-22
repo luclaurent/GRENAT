@@ -17,7 +17,7 @@ end
 
 
 %%Calcul des écarts 
-ecart=(Zex-Zap).^2/max(max(Zex));
+ecart=(Zex-Zap).^2/max(max(Zex))^2;
 
 %Calcul du critère 1 (max des écarts)
 q1=max(max(ecart));

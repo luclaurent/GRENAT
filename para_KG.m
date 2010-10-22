@@ -331,5 +331,8 @@ title('Conditionnement matrice de corrélation')
 saveas(gcf,[aff.doss '/bilan.eps'],'eps')
 saveas(gcf,[aff.doss '/bilan.fig'],'fig')
 
-save('para_KG.mat')
+
+%sauvegarde workspace
+nomfich=[aff.doss '/para_KG.mat'];
+save(nomfich)
 %diary([aff.doss '/log.txt'])

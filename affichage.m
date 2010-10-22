@@ -7,12 +7,16 @@ function status=affichage(X,Y,Z,tirages,eval,aff)
 global cofast resultats;
 
 if aff.on
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %affichage dans une nouvelle fenêtre
     if aff.newfig
         figure;
     else
         hold on
     end
-
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%mise à l'échelle des tracés de gradients
     if aff.grad||cofast.grad
             %dimension mini espace de conception
@@ -37,9 +41,13 @@ if aff.on
             %echelle
             ech=tailf/nm;
     end
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %affichage des surfaces 3D
     if aff.d3
+        %affichage des contour
         if aff.contour3
+            %affichage unicolor
             if aff.uni          
                 surfc(X,Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
             else
@@ -52,15 +60,15 @@ if aff.on
                 surf(X,Y,Z.Z)
             end
         end
+        %affichage des points d'évaluations
         if aff.pts
-        hold on
-        plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
+            hold on
+            plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
                 'MarkerFaceColor','g',...
-                'MarkerSize',15)
-     
+                'MarkerSize',1
         end
         
-    
+        %Affichage des gradients
         if aff.grad
             %détermination des vecteurs de plus grandes pentes (dans le
             %sens de descente du gradient)
@@ -96,41 +104,46 @@ if aff.on
     end
     
     
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %affichage des surfaces 2D (contours)
     if aff.d2
+        %affichage des contours
         if aff.contour2
-            disp('ici')
-           [C,h]=contourf(X,Y,Z.Z);   
-           text_handle = clabel(C,h);
+            [C,h]=contourf(X,Y,Z.Z);   
+            text_handle = clabel(C,h);
             set(text_handle,'BackgroundColor',[1 1 .6],...
-            'Edgecolor',[.7 .7 .7])
-           set(h,'LineWidth',2)
-           if aff.grad                
-               hold on;
-                    
-               if aff.scale
-                quiver(X,Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
-               else
-                   quiver(X,Y,Z.GR1,Z.GR2,'AutoScale','off');
-               end
-           end
+                'Edgecolor',[.7 .7 .7])
+            set(h,'LineWidth',2)
+            %affichage des gradients
+            if aff.grad                
+                hold on;
+                %remise à l'échelle
+                if aff.scale
+                    quiver(X,Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
+                else
+                    quiver(X,Y,Z.GR1,Z.GR2,'AutoScale','off');
+                end
+            end
+            %affichage des points d'évaluation
             if aff.pts
                 hold on
                 plot(tirages(:,1),tirages(:,2),'.','MarkerEdgeColor','g',...
                 'MarkerFaceColor','g',...
                 'MarkerSize',15)     
             end
+            %affichage des gradients
             if cofast.grad
                 hold on;
-                %figure;
+                %remise à l'échelle
                 if aff.scale
-                quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
-                   ech*resultats.grad.gradients(:,1),ech*resultats.grad.gradients(:,2),...
-                   'LineWidth',2,'AutoScale','off');
+                    quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
+                        ech*resultats.grad.gradients(:,1),ech*resultats.grad.gradients(:,2),...
+                        'LineWidth',2,'AutoScale','off');
                 else
                     quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
-                   resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),...
-                   'LineWidth',2,'AutoScale','off');
+                        resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),...
+                        'LineWidth',2,'AutoScale','off');
                 end
                
             end
@@ -138,14 +151,18 @@ if aff.on
            
         end
     end
-
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %rendu
     if aff.rendu
         hlight=light;               % activ. éclairage
         lighting('gouraud')         % type de rendu
         lightangle(hlight,48,70)    % dir. éclairage
     end
 
-    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % affichage label
     title(aff.titre);
     xlabel(aff.xlabel);
     ylabel(aff.ylabel);
@@ -154,8 +171,9 @@ if aff.on
         view(3)
     end
     
-    
-    %sauvegarde tracés
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %sauvegarde tracés figure
     if aff.save
         set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
         nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.eps']; 
@@ -164,6 +182,15 @@ if aff.on
         saveas(gcf, nomfig,'psc2');
         saveas(gcf, nomfigm,'fig');
     end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %exportation tikz
+    if aff.tikz
+        nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.tex'];
+        matlab2tikz(nomfig);
+    end
+    
     
     
 end

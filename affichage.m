@@ -65,7 +65,7 @@ if aff.on
             hold on
             plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
                 'MarkerFaceColor','g',...
-                'MarkerSize',1
+                'MarkerSize',1);
         end
         
         %Affichage des gradients

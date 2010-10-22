@@ -49,16 +49,26 @@ end
 
 %conditionnement de la matrice de corrélation
 condr=cond(rc);
-sprintf('conditionnement R: %6.5d\n',condr);
+sprintf('conditionnement R: %6.5d\n',condr)
 krg.cond=condr;
 
 
 
 %calcul du coefficient beta
-ft=fc';
-block1=((ft/rc)*fc);
-block2=((ft/rc)*y);
-krg.beta=block1\block2;
+%%approche classique
+ ft=fc';
+ block1=((ft/rc)*fc);
+ block2=((ft/rc)*y);
+ krg.beta=block1\block2;
+%approche factorisée
+%attention cette factorisation n'est possible que sous condition
+% %cholesky
+% c=chol(rc);
+% fcc=c\fc;
+% %QR
+% [qf,rf]=qr(fcc);
+% yc=c\y;
+% krg.beta=rf\(qf'*yc);
 
 %calcul du coefficient gamma
 krg.gamma=rc\(y-fc*krg.beta);

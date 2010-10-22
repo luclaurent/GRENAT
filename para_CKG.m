@@ -52,7 +52,7 @@ nb_samples=6;
 %CKRG: CoKrigeage (nécessite le calcul des gradients)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='CKRG';
+meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage

@@ -38,7 +38,7 @@ for ll=1:krg.dim
    end
 end
 
-%matrice de régression aux points d'évalutions
+%matrice de régression aux points d'évaluations
 if grad
     [ff,jf]=feval(krg.reg,X);
 else

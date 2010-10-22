@@ -46,8 +46,12 @@ for ii=1:ns
        rc(ii,jj)=feval(meta.corr,tirages(jj,:)-tirages(ii,:),meta.theta);      
     end
 end
-disp('conditionnement R');
-disp(cond(rc));
+
+%conditionnement de la matrice de corrélation
+condr=cond(rc);
+sprintf('conditionnement R: %6.5d\n',condr);
+krg.cond=condr;
+
 
 %calcul du coefficient beta
 ft=fc';

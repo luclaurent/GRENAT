@@ -155,5 +155,16 @@ if aff.on
     end
     
     
+    %sauvegarde tracés
+    if aff.save
+        set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
+        nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.eps']; 
+        nomfigm=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.fig'];
+        fprintf('>>Sauvegarde figure: \n fichier %s\n',nomfig)
+        saveas(gcf, nomfig,'psc2');
+        saveas(gcf, nomfigm,'fig');
+    end
+    
+    
 end
 end

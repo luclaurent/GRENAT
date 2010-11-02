@@ -1,4 +1,4 @@
-%fonction assurant l'évaluation du métamodèle de krigeage
+%fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 
 function [Z,GZ]=eval_krg(X,tirages,krg)

@@ -1,12 +1,14 @@
 %Fichier d'étude et de mise en oeuvre des démarche de la biblio
 %L LAURENT   --  31/01/2010   --  luc.laurent@ens-cachan.fr
 clf;clc;close all; clear all;
-addpath('doe/lhs');addpath('dace');addpath('doe');addpath('fct');
+addpath('doe/lhs');addpath('meta/dace');addpath('meta');addpath('doe');addpath('fct');
 addpath('crit');global cofast;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+aff.save=false;
+aff.tikz=false;
+aff.scale=false;
 %%Définition de l'espace de conception
 esp.type='auto';   %gestion automatique de l'espace de conception pour fonction étudiée standards
 xmin=-2;
@@ -274,12 +276,10 @@ switch meta.type
         ZZ=zeros(size(X));
         GCKRG1=zeros(size(X));
         GCKRG2=zeros(size(X));
-         for ii=1:size(X,1)
-             for jj=1:size(X,2)
-                 [ZZ(ii,jj),GZ] =eval_ckrg([X(ii,jj) Y(ii,jj)],tirages,krg);
-                 GCKRG1(ii,jj)=GZ(1);
-                 GCKRG2(ii,jj)=GZ(2);
-             end
+         for ii=1:size(X,1)*size(X,2)
+                 [ZZ(ii),GZ] =eval_ckrg([X(ii) Y(ii)],tirages,krg);
+                 GCKRG1(ii)=GZ(1);
+                 GCKRG2(ii)=GZ(2);
          end
          ZK.Z=ZZ;
          ZK.GR1=GCKRG1;

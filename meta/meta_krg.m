@@ -6,9 +6,10 @@
 function krg=meta_krg(tirages,eval,meta)
 
 ns=size(eval,1);
+
 %Normalisation
 if meta.norm
-    disp('normalisation');
+    disp('Normalisation\n');
     moy_e=mean(eval);
     std_e=std(eval);
     moy_t=mean(tirages);
@@ -32,6 +33,7 @@ end
 y=eval;
 
 %création matrice de conception
+%(régression polynomiale)
 nbt=meta.deg+1;
 fc=zeros(ns,nbt);
 fct=['reg_poly' num2str(meta.deg,1)];
@@ -48,11 +50,8 @@ for ii=1:ns
 end
 
 %conditionnement de la matrice de corrélation
-condr=cond(rc);
-sprintf('conditionnement R: %6.5d\n',condr)
-krg.cond=condr;
-
-
+krg.cond=cond(rc);
+sprintf('Conditionnement R: %6.5d\n',krg.cond)
 
 %calcul du coefficient beta
 %%approche classique

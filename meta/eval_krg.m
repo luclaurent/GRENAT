@@ -1,15 +1,19 @@
 %fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
+%modifs le 03/11/2010  (reecriture en vue d'accélérer)
 
 function [Z,GZ]=eval_krg(X,tirages,krg)
 
+%calcul ou non des gradients (en fonction du nombre de variables de sortie)
 if nargout==2
     grad=true;
 else
     grad=false;
 end
 
+%extraction des dimensions de la matrice des sites d'évaluations
 dim_x=size(X,1);
+dim_y=size(X,2);
 
 %normalisation
 if krg.norm.on

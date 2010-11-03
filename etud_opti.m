@@ -1,7 +1,7 @@
 %Fichier d'étude et de mise en oeuvre des démarche de la biblio
 %L LAURENT   --  31/01/2010   --  luc.laurent@ens-cachan.fr
 clf;clc;close all; clear all;
-addpath('doe/lhs');addpath('meta/dace');addpath('meta');addpath('doe');addpath('fct');
+addpath('doe/LHS');addpath('meta/dace');addpath('meta');addpath('doe');addpath('fct');
 addpath('crit');global cofast;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,7 +38,7 @@ nb_samples=80;
 %CKRG: CoKrigeage (nécessite le calcul des gradients)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='CKRG';
+meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
@@ -378,12 +378,11 @@ affichage(X,Y,ZK,tirages,eval,aff)
         ZZ=zeros(size(X));
         GK1=zeros(size(X));
         GK2=zeros(size(X));
-         for ii=1:size(X,1)
-             for jj=1:size(X,2)
-                 [ZZ(ii,jj),GZ] =eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
-                 GK1(ii,jj)=GZ(1);
-                 GK2(ii,jj)=GZ(2);
-             end
+         for ii=1:size(X,1)*size(X,2)
+                 [ZZ(ii),GZ] =eval_krg([X(ii) Y(ii)],tirages,krg);
+                 GK1(ii)=GZ(1);
+                 GK2(ii)=GZ(2);
+             
          end
          ZK.Z=ZZ;
         
@@ -401,6 +400,7 @@ affichage(X,Y,ZK,tirages,eval,aff)
             aff.ylabel='x_{2}';
             aff.zlabel='F_{KRG}';
             aff.grad=false;
+            cofast.grad=false;
             affichage(X,Y,ZK,tirages,eval,aff);
 
              %%affichage du gradient de la fonction
@@ -409,6 +409,7 @@ affichage(X,Y,ZK,tirages,eval,aff)
             aff.ylabel='x_{2}';
             aff.zlabel='dF_{KRG}/dx';
             aff.grad=true;
+            cofast.grad=false;
             affichage_gr(X,Y,ZK.Z,GK1,GK2,aff);
             
              figure;
@@ -476,6 +477,8 @@ affichage(X,Y,ZK,tirages,eval,aff)
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F_{KRG}';
+            aff.grad=false;
+            cofast.grad=false;
             affichage(X,Y,ZK,tirages,eval,aff);
 
             %%%affichage de l'écart entre la fonction objectif et la fonction

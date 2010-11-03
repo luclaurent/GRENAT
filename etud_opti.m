@@ -382,7 +382,6 @@ affichage(X,Y,ZK,tirages,eval,aff)
                  [ZZ(ii),GZ] =eval_krg([X(ii) Y(ii)],tirages,krg);
                  GK1(ii)=GZ(1);
                  GK2(ii)=GZ(2);
-             
          end
          ZK.Z=ZZ;
         

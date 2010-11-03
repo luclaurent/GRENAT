@@ -11,10 +11,7 @@ else
     grad=false;
 end
 
-%extraction des dimensions de la matrice des sites d'évaluations
-dim_x=size(X,1);
-dim_y=size(X,2);
-
+ dim_x=size(X,1);
 %normalisation
 if krg.norm.on
     X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
@@ -27,20 +24,22 @@ if krg.norm.on
 end
 
 %calcul de l'évaluation du métamodèle au point considéré
-%matrice de corrélation aux points d'évaluations et matrice de corrélation
-%dérivée
+%vecteur de corrélation aux points d'évaluations et vecteur de corrélation
+%dérivé
 rr=zeros(krg.dim,1);
 if grad
     jr=zeros(krg.dim,krg.con);
 end
 
-for ll=1:krg.dim
-   if grad  %si calcul des gradients
-        [rr(ll),jr(ll,:)]=feval(krg.corr,X-tirages(ll,:),krg.theta);
-   else %sinon
-        rr(ll)=feval(krg.corr,X-tirages(ll,:),krg.theta);
-   end
+%distance du point d'évaluation aux sites obtenus par DOE
+dist=repmat(X,krg.dim,1)-tirages;
+
+if grad  %si calcul des gradients
+    [rr,jr]=feval(krg.corr,dist,krg.theta);
+else %sinon
+    rr=feval(krg.corr,dist,krg.theta);
 end
+
 
 %matrice de régression aux points d'évaluations
 if grad

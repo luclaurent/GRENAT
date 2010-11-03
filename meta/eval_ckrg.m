@@ -26,19 +26,22 @@ if grad
     jr=zeros(krg.nbt*(krg.dim+1),krg.con);
 end
 
-for ll=1:krg.nbt
-   if grad  %si calcul des gradients
-        [ev,dev,ddev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
-        rr(ll)=ev;
-        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
-        jr(ll,:)=dev;
-        jr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll,:)=ddev;
-   else %sinon       
-        [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
-        rr(ll)=ev;
-        rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
-   end
+%distance du point d'évaluation aux sites obtenus par DOE
+dist=repmat(X,krg.dim,1)-tirages;
+
+
+if grad  %si calcul des gradients
+    [ev,dev,ddev]=feval(krg.corr,dist,krg.theta);
+    rr(ll)=ev;
+    rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
+    jr(ll,:)=dev;
+    jr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll,:)=ddev;
+else %sinon       
+    [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
+    rr(ll)=ev;
+    rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
 end
+
 
 %matrice de régression aux points d'évalutions
 if grad    

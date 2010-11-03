@@ -20,6 +20,8 @@ end
 %calcul de la valeur de la fonction au point xx
 td=-xx.^2.*theta;
 ev=exp(sum(td,2));
+
+
 if nargout==1
     corr=ev;
 elseif nargout==2

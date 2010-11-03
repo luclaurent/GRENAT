@@ -88,6 +88,7 @@ for ii=1:ns
         [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
         %[ev,dev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
         rc(ii,jj)=ev;        
+        %a reecrire (structure des dérivées modifiée)
         
         %morceau de la matrice provenant du Cokrigeage
         rca(ii,dim*jj-dim+1:dim*jj)=-dev;        

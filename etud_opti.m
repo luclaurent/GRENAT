@@ -25,10 +25,10 @@ calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='LHS';
+meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=80;
+nb_samples=5;
 
 %%Métamodèle
 %type d'interpolation
@@ -42,7 +42,7 @@ meta.type='CKRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
-meta.theta=5;
+meta.theta=0.5;
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 %paramètre RBF

@@ -15,34 +15,52 @@ dim_x=size(X,1);
 %normalisation
 if krg.norm.on
     X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
-    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.nbt,1))./repmat(krg.norm.std_tirages,krg.nbt,1);
+    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
 end
 
 %calcul de l'évaluation du métamodèle au point considéré
-%matrice de corrélation aux points d'évaluations et matrice de corrélation
+%vecteur de corrélation aux points d'évaluations et matrice de corrélation
 %dérivée
-rr=zeros(krg.nbt*(krg.dim+1),1);
+rr=zeros(krg.dim*(krg.con+1),1);
 if grad
-    jr=zeros(krg.nbt*(krg.dim+1),krg.con);
+    jr=zeros(krg.dim*(krg.con+1),krg.con);
 end
 
 %distance du point d'évaluation aux sites obtenus par DOE
-X 
-tirages
-krg.dim
+
 dist=repmat(X,krg.dim,1)-tirages;
 
 if grad  %si calcul des gradients
     [ev,dev,ddev]=feval(krg.corr,dist,krg.theta);
-    rr(ll)=ev;
-    rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
-    jr(ll,:)=dev;
+    rr(1:krg.dim)=ev;        
+    rr(krg.dim+1:krg.dim*(krg.con+1))=reshape(dev',1,krg.dim*krg.con);
+       
+    %dérivée du vecteur de corrélation aux points d'évaluations
+    jr(1:krg.dim,:)=dev;
+       
     
-    jr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll,:)=ddev;
+     %reconditionnement dérivées secondes     
+     mat_der=zeros(krg.dim*krg.con,krg.con);
+    
+     for mm=1:krg.dim
+         ders=diag(ddev(mm,1:krg.con));
+        itero=1;
+        for ll=1:(krg.con-1)
+            iter=krg.con-ll;
+            sto=ddev(mm,krg.con+itero:krg.con+iter);
+            ders(ll+1:krg.con,ll)=sto;
+            ders(ll,ll+1:krg.con)=sto';
+            itero=iter;
+        end
+        mat_der((mm-1)*krg.con+1:(mm-1)*krg.con+krg.con,:)=ders;
+     end
+        
+    jr(krg.dim+1:krg.dim*(1+krg.con),:)=mat_der;
+  
 else %sinon       
-    [ev,dev]=feval(krg.corr,tirages(ll,:)-X,krg.theta);
-    rr(ll)=ev;
-    rr(krg.nbt+krg.dim*(ll-1)+1:krg.nbt+krg.dim*ll)=dev;
+    [ev,dev]=feval(krg.corr,dist,krg.theta);
+    rr(1:krg.dim)=ev;
+    rr(krg.dim+1:krg.dim*(krg.con+1)+1)=dev;
 end
 
 
@@ -54,7 +72,7 @@ else
 end
 
 %évaluation du métamodèle au point X
-%global rr
+
 Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 

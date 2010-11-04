@@ -111,11 +111,11 @@ end
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
-
+global rcc fc y
 
 %conditionnement de la matrice de corrélation
 krg.cond=cond(rc);
-sprintf('Conditionnement R: %6.5d\n',krg.cond);
+sprintf('Conditionnement R: %6.5d\n',krg.cond)
 
 
 
@@ -128,6 +128,10 @@ krg.beta=block1\block2;
 
 %création de la matrice des facteurs de corrélation
 krg.gamma=rcc\(y-fc*krg.beta);
+rcc
+fc
+krg.beta
+krg.gamma
 
 krg.reg=fct;
 krg.dim=ns;

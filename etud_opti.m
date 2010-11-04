@@ -8,7 +8,7 @@ addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.save=false;
 aff.tikz=false;
-aff.scale=false;
+aff.scale=true;
 %%Définition de l'espace de conception
 esp.type='auto';   %gestion automatique de l'espace de conception pour fonction étudiée standards
 xmin=-2;

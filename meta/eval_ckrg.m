@@ -27,6 +27,9 @@ if grad
 end
 
 %distance du point d'évaluation aux sites obtenus par DOE
+X 
+tirages
+krg.dim
 dist=repmat(X,krg.dim,1)-tirages;
 
 if grad  %si calcul des gradients

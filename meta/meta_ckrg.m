@@ -4,8 +4,9 @@
 
 function krg=meta_ckrg(tirages,eval,grad,meta)
 
-
+%nombre d'évalutions
 ns=size(eval,1);
+%dimension du pb (nb de variables de conception)
 dim=size(tirages,2);
 
 
@@ -58,7 +59,8 @@ end
 y=vertcat(eval,der) ;
 
 
-%création matrice de conception
+%création matrice de conception (seul polynôme de degré 0 est pris en
+%charge /!\)
 if meta.deg==0
     p=1;
 elseif meta.deg==1
@@ -88,12 +90,23 @@ for ii=1:ns
         [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
         %[ev,dev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
         rc(ii,jj)=ev;        
-        %a reecrire (structure des dérivées modifiée)
-        
+                
         %morceau de la matrice provenant du Cokrigeage
-        rca(ii,dim*jj-dim+1:dim*jj)=-dev;        
-        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;       
-    end
+        rca(ii,dim*jj-dim+1:dim*jj)=-dev;
+        
+        %reconditionnement dérivées secondes
+        ders=diag(ddev(1:dim));
+        
+        itero=1;
+        for ll=1:(dim-1)
+            iter=dim-ll;
+            sto=ddev(dim+itero:dim+iter);
+            ders(ll+1:dim,ll)=sto;
+            ders(ll,ll+1:dim)=sto';
+            itero=iter;
+        end
+        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ders; 
+   end
 end
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
@@ -101,9 +114,9 @@ rcc=[rc rca;rca' rci];
 
 
 %conditionnement de la matrice de corrélation
-condr=cond(rc);
-sprintf('conditionnement R: %6.5d\n',condr);
-krg.cond=condr;
+krg.cond=cond(rc);
+sprintf('Conditionnement R: %6.5d\n',krg.cond);
+
 
 
 
@@ -117,8 +130,7 @@ krg.beta=block1\block2;
 krg.gamma=rcc\(y-fc*krg.beta);
 
 krg.reg=fct;
-krg.nbt=ns;
-krg.dim=dim;
+krg.dim=ns;
 krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.theta=meta.theta;

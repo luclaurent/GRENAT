@@ -28,7 +28,7 @@ calc_grad=true;
 meta.doe='LHS';
 
 %nb d'échantillons
-nb_samples=15;
+nb_samples=2;
 
 %%Métamodèle
 %type d'interpolation

@@ -91,22 +91,25 @@ for ii=1:ns
         %[ev,dev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
         rc(ii,jj)=ev;        
                 
+        ev
+        dev
+        ddev
         %morceau de la matrice provenant du Cokrigeage
-        rca(ii,dim*jj-dim+1:dim*jj)=dev;
+        rca(ii,dim*jj-dim+1:dim*jj)=-dev;
         
         %matrice des dérivées secondes
         rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=ddev; 
    end
 end
 
+
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
+rcc
 
 %conditionnement de la matrice de corrélation
 krg.cond=cond(rcc);
 sprintf('Conditionnement R: %6.5d\n',krg.cond)
-
-
 
 
 %calcul de beta

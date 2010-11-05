@@ -29,24 +29,42 @@ elseif nargout==2
     dcorr=-2*theta.*xx.*repmat(ev,1,nb_comp);
 elseif nargout==3
     corr=ev;
-    dcorr=-2*theta.*xx.*repmat(ev,1,nb_comp);
-    %stockage des dérivées secondes en chaque point sous forme de vecteurs
-    % pour 4 variables de conception, on aura alors les dérivées classées
-    % de la manière suivantes
-    % dx1dx1 dx2dx2 dx3dx3 dx4dx4 dx1dx2 dx1dx3 dx1dx4 dx2dx3 dx2dx4 dx3dx4
-    ddcorr=zeros(pt_eval,nb_comp*(1+nb_comp)*1/2);
-    for ll=1:nb_comp
-        ddcorr(:,ll)=4*theta(ll)^2.*xx(:,ll).^2.*ev-...
-            2*theta(ll).*ev;
-    end
-    ind=1;
-    for ll=1:nb_comp
-        for mm=(ll+1):nb_comp
-                ddcorr(:,nb_comp+ind)=4*theta(mm)*theta(ll)*xx(:,ll).*...
-                    xx(:,mm).*ev;
-                ind=ind+1;
+    dcorr=-2*theta.*xx.*repmat(ev,1,nb_comp);   
+    
+    %calcul des dérivées secondes    
+    
+    %suivant la taille de l'évaluation demandée on stocke les dérivées
+    %secondes de manières différentes
+    %si on ne demande le calcul des dérivées secondes en un seul point, on
+    %les stocke dans une matrice 
+    if pt_eval==1
+        ddcorr=zeros(nb_comp);
+        for ll=1:nb_comp
+           for mm=1:nb_comp
+                if(mm==ll)
+                    ddcorr(mm,ll)=4*theta(mm)^2*xx(ll)^2*ev-2*theta(ll)*ev;
+                else
+                    ddcorr(mm,ll)=4*theta(mm)*theta(ll)*xx(ll)*xx(mm)*ev;
+                end
+           end
         end
+       
+    %si on demande le calcul des dérivées secondes en plusieurs point, on
+    %les stocke dans un vecteur de matrices
+    else
+        ddcorr=zeros(nb_comp,nb_comp,pt_eval);
+        for ll=1:nb_comp
+           for mm=1:nb_comp
+                if(mm==ll)                    
+                    ddcorr(mm,ll,:)=4*theta(mm)^2.*xx(:,ll).^2.*ev-2*theta(ll).*ev;
+                else
+                    ddcorr(mm,ll,:)=4*theta(mm)*theta(ll).*xx(ll).*xx(:,mm).*ev;
+                end
+           end
+        end
+
     end
+   
     
 else
     error('Mauvais argument de sortie de la fonction corr_gauss');

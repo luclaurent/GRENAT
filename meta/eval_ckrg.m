@@ -39,20 +39,11 @@ if grad  %si calcul des gradients
     jr(1:krg.dim,:)=dev;
        
     
-     %reconditionnement dérivées secondes     
+     % dérivées secondes     
      mat_der=zeros(krg.dim*krg.con,krg.con);
     
      for mm=1:krg.dim
-         ders=diag(ddev(mm,1:krg.con));
-        itero=1;
-        for ll=1:(krg.con-1)
-            iter=krg.con-ll;
-            sto=ddev(mm,krg.con+itero:krg.con+iter);
-            ders(ll+1:krg.con,ll)=sto;
-            ders(ll,ll+1:krg.con)=sto';
-            itero=iter;
-        end
-        mat_der((mm-1)*krg.con+1:(mm-1)*krg.con+krg.con,:)=ders;
+        mat_der((mm-1)*krg.con+1:(mm-1)*krg.con+krg.con,:)=ddev(:,:,mm);
      end
         
     jr(krg.dim+1:krg.dim*(1+krg.con),:)=mat_der;

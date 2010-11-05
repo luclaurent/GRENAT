@@ -273,6 +273,8 @@ switch meta.type
         disp('>>> Interpolation par CoKrigeage');
         disp(' ')
         [krg]=meta_ckrg(tirages,eval,grad,meta);
+        tic;
+        tps_start=toc;
         ZZ=zeros(size(X));
         GCKRG1=zeros(size(X));
         GCKRG2=zeros(size(X));
@@ -281,6 +283,9 @@ switch meta.type
                  GCKRG1(ii)=GZ(1);
                  GCKRG2(ii)=GZ(2);
          end
+         tps_stop=toc;
+         txt=['Execution prédiction CoKrigeage: ',num2str(tps_stop-tps_start,'%6.4d') ' s'];
+         disp(txt);
          ZK.Z=ZZ;
          ZK.GR1=GCKRG1;
          ZK.GR2=GCKRG2;

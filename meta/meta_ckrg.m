@@ -3,6 +3,8 @@
 
 
 function krg=meta_ckrg(tirages,eval,grad,meta)
+tic;
+tps_start=toc;
 
 %nombre d'évalutions
 ns=size(eval,1);
@@ -106,7 +108,8 @@ rcc=[rc rca;rca' rci];
 
 %conditionnement de la matrice de corrélation
 krg.cond=cond(rcc);
-sprintf('Conditionnement R: %6.5d\n',krg.cond)
+txt=['Conditionnement R: ' num2str(krg.cond,'%6.5d')];
+disp(txt);
 
 
 %calcul de beta
@@ -128,4 +131,7 @@ krg.con=size(tirages,2);
 krg.tirages=tirages;
 krg.tiragesn=tiragesn;
 
+tps_stop=toc;
+txt=['Execution construction CoKrigeage: ',num2str(tps_stop-tps_start,'%6.4d') ' s'];
+disp(txt);
 end

@@ -277,7 +277,7 @@ switch meta.type
         GCKRG1=zeros(size(X));
         GCKRG2=zeros(size(X));
          for ii=1:size(X,1)*size(X,2)
-                 [ZZ(ii),GZ] =eval_ckrg([X(ii) Y(ii)],tirages,krg);
+                 [ZZ(ii),GZ] =eval_ckrg([X(ii) Y(ii)],krg);
                  GCKRG1(ii)=GZ(1);
                  GCKRG2(ii)=GZ(2);
          end

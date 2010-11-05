@@ -32,7 +32,7 @@ if meta.norm
     %normalisation
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
    
-    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
+    tiragesn=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     
     grad=grad.*repmat(std_t,ns,1)/std_e;
     
@@ -74,7 +74,7 @@ end
 fc=zeros((dim+1)*ns,p);
 fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns
-       [fc(ii,:),fc(ns+ii,:)]=feval(fct,tirages(ii,:));
+       [fc(ii,:),fc(ns+ii,:)]=feval(fct,tiragesn(ii,:));
 end
 
 
@@ -87,7 +87,7 @@ rci=zeros(dim*ns,dim*ns);
 for ii=1:ns
     for jj=1:ns
         %morceau de la matrice issue du krigeage
-        [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+        [ev,dev,ddev]=feval(meta.corr,tiragesn(ii,:)-tiragesn(jj,:),meta.theta);
        
         rc(ii,jj)=ev;        
                 
@@ -124,5 +124,8 @@ krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.theta=meta.theta;
 krg.con=size(tirages,2);
+
+krg.tirages=tirages;
+krg.tiragesn=tiragesn;
 
 end

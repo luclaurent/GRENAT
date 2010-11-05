@@ -1,7 +1,7 @@
 %fonction assurant l'évaluation du métamodèle de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 
-function [Z,GZ]=eval_ckrg(X,tirages,krg)
+function [Z,GZ]=eval_ckrg(X,krg)
 
 
 if nargout==2
@@ -14,9 +14,9 @@ dim_x=size(X,1);
 
 %normalisation
 if krg.norm.on
-    X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
-    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./...
-        repmat(krg.norm.std_tirages,krg.dim,1);
+    mat_moyt=repmat(krg.norm.moy_tirages,dim_x,1);
+    mat_stdt=repmat(krg.norm.std_tirages,dim_x,1);
+    X=(X-mat_moyt)./mat_stdt;
 end
 
 %calcul de l'évaluation du métamodèle au point considéré
@@ -28,8 +28,7 @@ if grad
 end
 
 %distance du point d'évaluation aux sites obtenus par DOE
-
-dist=repmat(X,krg.dim,1)-tirages;
+dist=repmat(X,krg.dim,1)-krg.tiragesn;
 
 if grad  %si calcul des gradients
     [ev,dev,ddev]=feval(krg.corr,dist,krg.theta);
@@ -73,9 +72,10 @@ end
 
 %normalisation
 if krg.norm.on
-    Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
+    mat_renorm=repmat(krg.norm.std_eval,dim_x,1);
+    Z=repmat(krg.norm.moy_eval,dim_x,1)+mat_renorm.*Z;
     if grad
-        GZ=repmat(krg.norm.std_eval,dim_x,1).*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
+        GZ=mat_renorm.*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
         GZ=GZ';
     end
 end

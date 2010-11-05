@@ -25,10 +25,10 @@ calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='LHS';
+meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=2;
+nb_samples=5;
 
 %%Métamodèle
 %type d'interpolation

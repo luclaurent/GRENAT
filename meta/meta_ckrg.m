@@ -86,26 +86,23 @@ rci=zeros(dim*ns,dim*ns);
 
 for ii=1:ns
     for jj=1:ns
-        %morceau de la matrice issu du krigeage
+        %morceau de la matrice issue du krigeage
         [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
-        %[ev,dev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+       
         rc(ii,jj)=ev;        
                 
-        ev
-        dev
-        ddev
         %morceau de la matrice provenant du Cokrigeage
         rca(ii,dim*jj-dim+1:dim*jj)=-dev;
         
         %matrice des dérivées secondes
-        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=ddev; 
+        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev; 
    end
 end
 
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
-rcc
+
 
 %conditionnement de la matrice de corrélation
 krg.cond=cond(rcc);
@@ -120,9 +117,7 @@ krg.beta=block1\block2;
 
 %création de la matrice des facteurs de corrélation
 krg.gamma=rcc\(y-fc*krg.beta);
-krg.y=y;
-krg.fc=fc;
-krg.rcc=rcc; 
+
 krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;    

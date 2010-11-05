@@ -15,7 +15,8 @@ dim_x=size(X,1);
 %normalisation
 if krg.norm.on
     X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
-    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
+    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./...
+        repmat(krg.norm.std_tirages,krg.dim,1);
 end
 
 %calcul de l'évaluation du métamodèle au point considéré
@@ -33,7 +34,7 @@ dist=repmat(X,krg.dim,1)-tirages;
 if grad  %si calcul des gradients
     [ev,dev,ddev]=feval(krg.corr,dist,krg.theta);
     rr(1:krg.dim)=ev;        
-    rr(krg.dim+1:krg.dim*(krg.con+1))=reshape(dev',1,krg.dim*krg.con);
+    rr(krg.dim+1:krg.dim*(krg.con+1))=-reshape(dev',1,krg.dim*krg.con);
        
     %dérivée du vecteur de corrélation aux points d'évaluations
     jr(1:krg.dim,:)=dev;
@@ -67,7 +68,7 @@ end
 Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
-    GZ=jf*krg.beta+jr'*krg.gamma;
+    GZ=jf*krg.beta-jr'*krg.gamma;
 end
 
 %normalisation

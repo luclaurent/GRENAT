@@ -210,6 +210,8 @@ eq1=zeros(size(theta));
 eq2=zeros(size(theta));
 eq3=zeros(size(theta));
 condr=zeros(size(theta));
+li=zeros(size(theta));
+logli=zeros(size(theta));
 
             
 for i=1:length(theta)
@@ -276,6 +278,13 @@ disp(' ')
             aff.color='red';
             aff.num=aff.num+1;
             affichage(X,Y,ZK,tirages,eval,aff);
+            
+            
+            %Vraisemblance
+            li(i)=krg.li;
+            loli(i)=krg.logli;
+            
+            
             condr(i)=krg.cond;
             emse(i)=mse(Z.Z,ZK.Z);
             err(i)=r_square(Z.Z,ZK.Z);
@@ -299,35 +308,44 @@ end
 
 %affichage des resultats
 figure;
-subplot(3,3,1);
+subplot(3,4,1);
 plot(theta,emse);
 xlabel('\theta');
 ylabel('MSE')
-subplot(3,3,2);
+subplot(3,4,2);
 plot(theta,eraae);
 xlabel('\theta');
 ylabel('RAAE')
-subplot(3,3,3);
+subplot(3,4,3);
 plot(theta,ermae);
 xlabel('\theta');
 ylabel('RMAE')
-subplot(3,3,4);
+subplot(3,4,4);
 plot(theta,err);
 xlabel('\theta');
 ylabel('R^2')
-subplot(3,3,5);
+subplot(3,4,5);
 plot(theta,eq1);
 xlabel('\theta');
 ylabel('Q1')
-subplot(3,3,6);
+subplot(3,4,6);
 plot(theta,eq2);
 xlabel('\theta');
 ylabel('Q2')
-subplot(3,3,7);
+subplot(3,4,7);
 plot(theta,eq3);
 xlabel('\theta');
 ylabel('Q3')
-subplot(3,3,8:9);
+subplot(3,4,8);
+plot(theta,li);
+xlabel('\theta');
+ylabel('Likelihood')
+subplot(3,4,9);
+plot(theta,logli);
+xlabel('\theta');
+ylabel('Log-Likelihood')
+
+subplot(3,4,10,12);
 plot(theta,condr);
 xlabel('\theta');
 title('Conditionnement matrice de corrélation')

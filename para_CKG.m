@@ -210,6 +210,8 @@ eq1=zeros(size(theta));
 eq2=zeros(size(theta));
 eq3=zeros(size(theta));
 condr=zeros(size(theta));
+li=zeros(size(theta));
+logli=zeros(size(theta));
 
             
 for i=1:length(theta)
@@ -303,6 +305,11 @@ disp(' ')
             aff.color='red';
             aff.num=aff.num+1;
             affichage(X,Y,ZK,tirages,eval,aff);
+            
+            %Vraisemblance
+            li(i)=krg.li;
+            loli(i)=krg.logli;
+            
             
             condr(i)=krg.cond;
             emse(i)=mse(Z.Z,ZK.Z);

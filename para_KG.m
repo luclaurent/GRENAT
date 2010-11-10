@@ -57,7 +57,7 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
 %meta.theta=5;  %variation du param�tre theta
-theta=linspace(0.08,5,100);
+theta=linspace(0.08,20,20);
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 %paramètre RBF
@@ -131,7 +131,7 @@ switch fct
 end
 
 %% Tirages: plan d'expérience
-sprintf('\n===== DOE =====\n');
+fprintf('\n===== DOE =====\n');
 
 %LHS uniform
 Xmin=[xmin,ymin];
@@ -218,7 +218,7 @@ for i=1:length(theta)
     meta.theta=theta(i);
 
 %% Génération du métamodèle
-sprintf('\n===== METAMODELE de Krigeage =====\n');
+fprintf('\n===== METAMODELE de Krigeage =====\n');
 disp(' ')
 
         disp('>>> Interpolation par Krigeage');
@@ -282,7 +282,7 @@ disp(' ')
             
             %Vraisemblance
             li(i)=krg.li;
-            loli(i)=krg.logli;
+            logli(i)=krg.lilog;
             
             
             condr(i)=krg.cond;
@@ -291,19 +291,20 @@ disp(' ')
             eraae(i)=raae(Z.Z,ZK.Z);
             ermae(i)=rmae(Z.Z,ZK.Z);
             [eq1(i),eq2(i),eq3(i)]=qual(Z.Z,ZK.Z);
-            sprintf('\nMSE= %6.4d\n',emse(i));
-            sprintf('R2= %6.4d\n',err(i));
-            sprintf('RAAE= %6.4d\n',eraae(i));
-            sprintf('RMAE= %6.4d\n',ermae(i));
-            sprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1(i),eq2(i),eq3(i));
+            fprintf('\nMSE= %6.4d\n',emse(i));
+            fprintf('R2= %6.4d\n',err(i));
+            fprintf('RAAE= %6.4d\n',eraae(i));
+            fprintf('RMAE= %6.4d\n',ermae(i));
+            fprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1(i),eq2(i),eq3(i));
+            fprintf('Likelihood= %6.4d, Log-Likelihood= %6.4d \n\n',li(i),logli(i));
 
         disp('=====================================');
         disp('=====================================');
 
    close all
-   if i==2
-     break
-    end
+%    if i==2
+%      break
+%     end
 end
 
 %affichage des resultats
@@ -345,7 +346,7 @@ plot(theta,logli);
 xlabel('\theta');
 ylabel('Log-Likelihood')
 
-subplot(3,4,10,12);
+subplot(3,4,10:12);
 plot(theta,condr);
 xlabel('\theta');
 title('Conditionnement matrice de corrélation')

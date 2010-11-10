@@ -3,7 +3,7 @@
 %L. LAURENT -- 10/11/2010 -- laurent@lmt.ens-cachan.fr
 
 %le calcul réalisé ici s'applique au krigeage
-[logli,li]=likelihood(mat_corr,fobs)
+function [logli,li]=likelihood(mat_corr,fobs)
 
 %nombre sites
 nb_t=size(mat_corr,1);

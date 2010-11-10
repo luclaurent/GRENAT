@@ -15,7 +15,7 @@ nb_t=size(mat_corr,1);
 %moindres carres)
 fobs=y-regr*beta;
 
-logli=-nb_t/2*log(2*pi)-1/2*log(det(mat_corr))-1/2*fobs'/mat_corr*fobs;
+logli=nb_t/2*log(2*pi)+1/2*log(det(mat_corr))+1/2*fobs'/mat_corr*fobs;
 
 if nargout==2
     %calcul de la vraisemblance d'après Jones 1993

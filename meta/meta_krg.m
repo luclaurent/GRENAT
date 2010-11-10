@@ -82,6 +82,6 @@ krg.theta=meta.theta;
 krg.con=size(tirages,2);
 
 %Maximum de vraisemblance
-[krg.lilog,krg.li]=likelihood(rc,y,ft,krg.beta);
+[krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);
 
 end

@@ -29,7 +29,7 @@ xmin=0;
 xmax=5;
 
 %pas du tracé
-pas=0.5;
+pas=0.01;
 
 
 %%DOE
@@ -45,7 +45,7 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.08,20,20);
+theta=linspace(0.01,5,100);
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
@@ -163,7 +163,7 @@ disp(' ')
             
             
             condr(i)=krg.cond;
-            emse(i)=mse(Z.Z,ZK.Z);
+            emse(i)=mse_p(Z.Z,ZK.Z);
             err(i)=r_square(Z.Z,ZK.Z);
             eraae(i)=raae(Z.Z,ZK.Z);
             ermae(i)=rmae(Z.Z,ZK.Z);

@@ -28,10 +28,8 @@ unix(['mkdir ' aff.doss]);
 xmin=0;
 xmax=5;
 
-%Fonction utilisée
-fct='fct';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
-pas=0.05;
+pas=0.5;
 
 
 %%DOE
@@ -48,6 +46,7 @@ meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
 theta=linspace(0.08,20,20);
+meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
 meta.norm=true;
@@ -92,7 +91,7 @@ eval=fct(tirages);
 
 
 %Tracé de la fonction de la fonction étudiée et des gradients
-x=xmin:pas:xmax;
+X=xmin:pas:xmax;
 
 Z.Z=fct(X);
 Z.grad=fctd(X);
@@ -118,6 +117,7 @@ condr=zeros(size(theta));
 li=zeros(size(theta));
 logli=zeros(size(theta));
 
+aff.on='true';
             
 for i=1:length(theta)
     meta.theta=theta(i);
@@ -131,55 +131,30 @@ disp(' ')
         [krg]=meta_krg(tirages,eval,meta);
         ZZ=zeros(size(X));
         GK1=zeros(size(X));
-         for ii=1:length(X,1)
-                 [ZZ(ii),GZ] =eval_krg(X(ii,jj),tirages,krg);
+         for ii=1:length(X)
+                 [ZZ(ii),GZ] =eval_krg(X(ii),tirages,krg);
                  GK1(ii)=GZ;
                 
          end
          ZK.Z=ZZ;
         
             %%%affichage de la surface obtenue par KRG
-            %paramètrage options
-            aff.newfig=true;
-            aff.contour2=false;
-            aff.contour3=false;
-            aff.rendu=false;
-            aff.uni=false;
-            aff.pts=false;
-            aff.titre=['Surface obtenue par Krigeage: theta ',...
-                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
-            aff.xlabel='x_{1}';
-            aff.ylabel='x_{2}';
-            aff.zlabel='F_{KRG}';
-            aff.grad=false;
+            figure;
+            plot(X,Z.Z,'LineWidth',2);
+            title('fonction de reference');
+            hold on;
+            plot(tirages,eval,'rs','Color','red','MarkerSize',10);
+            plot(X,ZK.Z,'Color','green');
+            plot(X,GK1,'Color','yellow');
+            legend('fct ref','Evaluations','Krigeage','Derivee KRG');
+            hold off
             aff.num=aff.num+1;
-            aff.d3=false;
-            affichage(X,ZK,tirages,eval,aff);
-
-           
-            
-            %%%affichage de l'écart entre la fonction objectif et la fonction
-            %%%approchée
-            %paramètrage options
-            aff.newfig=true;
-            aff.contour2=false;
-            aff.contour3=false;
-            aff.rendu=true;
-            aff.uni=true;
-            aff.color='blue';
-            aff.pts=false;
-            aff.grad=false;
-            aff.titre=['Surface obtenue par Krigeage: theta ',...
-                num2str(meta.theta),' regression ',meta.regr,' correlation ',meta.corr];
-            aff.xlabel='x_{1}';
-            aff.ylabel='x_{2}';
-            aff.zlabel='F';
-            aff.num=aff.num+1;
-            affichage(X,Y,Z,tirages,eval,aff);
-            aff.newfig=false;
-            aff.color='red';
-            aff.num=aff.num+1;
-            affichage(X,Y,ZK,tirages,eval,aff);
+            set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
+            nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.eps']; 
+            nomfigm=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.fig'];
+            fprintf('>>Sauvegarde figure: \n fichier %s\n',nomfig)
+            saveas(gcf, nomfig,'psc2');
+            saveas(gcf, nomfigm,'fig');
             
             
             %Vraisemblance

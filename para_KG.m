@@ -30,9 +30,9 @@ ymin=-1;
 ymax=3;
 
 %Fonction utilisée
-fct='peaks';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
-pas=0.1;
+pas=0.2;
 
 %calcul des gradients des fonctions initiales
 calc_grad=false;
@@ -42,7 +42,7 @@ calc_grad=false;
 meta.doe='ffact';
 
 %nb d'échantillons
-nb_samples=6;
+nb_samples=3;
 
 %%Métamodèle
 %type d'interpolation

@@ -32,7 +32,7 @@ ymax=3;
 %Fonction utilisée
 fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du tracé
-pas=0.2;
+pas=0.8;
 
 %calcul des gradients des fonctions initiales
 calc_grad=false;
@@ -57,7 +57,7 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
 %meta.theta=5;  %variation du param�tre theta
-theta=linspace(0.08,20,20);
+theta=linspace(1,7,50);
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 %paramètre RBF
@@ -212,7 +212,7 @@ eq3=zeros(size(theta));
 condr=zeros(size(theta));
 li=zeros(size(theta));
 logli=zeros(size(theta));
-
+sig=zeros(size(theta));
             
 for i=1:length(theta)
     meta.theta=theta(i);
@@ -272,9 +272,10 @@ disp(' ')
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F';
-            aff.num=aff.num+1;
+            aff.save=false;
             affichage(X,Y,Z,tirages,eval,aff);
             aff.newfig=false;
+            aff.save=true;
             aff.color='red';
             aff.num=aff.num+1;
             affichage(X,Y,ZK,tirages,eval,aff);
@@ -286,7 +287,8 @@ disp(' ')
             
             
             condr(i)=krg.cond;
-            emse(i)=mse(Z.Z,ZK.Z);
+            sig(i)=krg.sig;
+            emse(i)=mse_p(Z.Z,ZK.Z);
             err(i)=r_square(Z.Z,ZK.Z);
             eraae(i)=raae(Z.Z,ZK.Z);
             ermae(i)=rmae(Z.Z,ZK.Z);
@@ -345,8 +347,11 @@ subplot(3,4,9);
 plot(theta,logli);
 xlabel('\theta');
 ylabel('Log-Likelihood')
-
-subplot(3,4,10:12);
+subplot(3,4,10);
+plot(theta,sig);
+xlabel('\theta');
+ylabel('Ecart type')
+subplot(3,4,11:12);
 plot(theta,condr);
 xlabel('\theta');
 title('Conditionnement matrice de corrélation')

@@ -45,11 +45,11 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.01,5,100);
+theta=linspace(0.01,50,20);
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
-meta.norm=true;
+meta.norm=false;
 
 
 %affichage actif ou non

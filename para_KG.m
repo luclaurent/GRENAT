@@ -54,7 +54,7 @@ nb_samples=3;
 %POD: décomposition en valeurs singulières
 meta.type='KRG';
 %degré de linterpolation/regression (si nécessaire)
-meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
+meta.deg=2;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
 %meta.theta=5;  %variation du param�tre theta
 theta=linspace(1,7,50);

@@ -52,12 +52,12 @@ nb_samples=6;
 %CKRG: CoKrigeage (nécessite le calcul des gradients)
 %RBF: fonctions à base radiale
 %POD: décomposition en valeurs singulières
-meta.type='KRG';
+meta.type='CKRG';
 %degré de linterpolation/regression (si nécessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %paramètre Krigeage
 %meta.theta=5;  %variation du param�tre theta
-theta=linspace(0.4,5,3);
+theta=linspace(0.4,5,10);
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 %paramètre RBF
@@ -229,7 +229,7 @@ disp(' ')
         GCKRG2=zeros(size(X));
          for ii=1:size(X,1)
              for jj=1:size(X,2)
-                 [ZZ(ii,jj),GZ] =eval_ckrg([X(ii,jj) Y(ii,jj)],tirages,krg);
+                 [ZZ(ii,jj),GZ] =eval_ckrg([X(ii,jj) Y(ii,jj)],krg);
                  GCKRG1(ii,jj)=GZ(1);
                  GCKRG2(ii,jj)=GZ(2);
              end
@@ -308,7 +308,7 @@ disp(' ')
             
             %Vraisemblance
             li(i)=krg.li;
-            loli(i)=krg.logli;
+            logli(i)=krg.lilog;
             
             
             condr(i)=krg.cond;
@@ -331,35 +331,47 @@ end
 
 %affichage des resultats
 figure;
-subplot(3,3,1);
+subplot(3,4,1);
 plot(theta,emse);
 xlabel('\theta');
 ylabel('MSE')
-subplot(3,3,2);
+subplot(3,4,2);
 plot(theta,eraae);
 xlabel('\theta');
 ylabel('RAAE')
-subplot(3,3,3);
+subplot(3,4,3);
 plot(theta,ermae);
 xlabel('\theta');
 ylabel('RMAE')
-subplot(3,3,4);
+subplot(3,4,4);
 plot(theta,err);
 xlabel('\theta');
 ylabel('R^2')
-subplot(3,3,5);
+subplot(3,4,5);
 plot(theta,eq1);
 xlabel('\theta');
 ylabel('Q1')
-subplot(3,3,6);
+subplot(3,4,6);
 plot(theta,eq2);
 xlabel('\theta');
 ylabel('Q2')
-subplot(3,3,7);
+subplot(3,4,7);
 plot(theta,eq3);
 xlabel('\theta');
 ylabel('Q3')
-subplot(3,3,8:9);
+subplot(3,4,8);
+plot(theta,li);
+xlabel('\theta');
+ylabel('Likelihood')
+subplot(3,4,9);
+plot(theta,logli);
+xlabel('\theta');
+ylabel('Log-Likelihood')
+%subplot(3,4,10);
+%plot(theta,sig);
+%xlabel('\theta');
+%ylabel('Ecart type')
+subplot(3,4,11:12);
 plot(theta,condr);
 xlabel('\theta');
 title('Conditionnement matrice de corrélation')

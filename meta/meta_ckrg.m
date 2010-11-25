@@ -118,6 +118,9 @@ block1=((ft/rcc)*fc);
 block2=((ft/rcc)*y);
 krg.beta=block1\block2;
 
+%Maximum de vraisemblance
+[krg.lilog,krg.li]=likelihood(rcc,y,fc,krg.beta);
+
 %création de la matrice des facteurs de corrélation
 krg.gamma=rcc\(y-fc*krg.beta);
 

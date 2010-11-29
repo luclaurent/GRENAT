@@ -37,8 +37,6 @@ y=eval;
 nbt=(meta.deg+1)*(meta.deg+2)*1/2;
 fc=zeros(ns,nbt);
 fct=['reg_poly' num2str(meta.deg,1)];
-fc
-ns
 for ii=1:ns
     fc(ii,:)=feval(fct,tirages(ii,:));
 end

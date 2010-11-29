@@ -1,11 +1,11 @@
 %fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
-%modifs le 03/11/2010  (reecriture en vue d'accélérer)
+%modifs le 03/11/2010  (reecriture en vue d'accelerer)
 
-function [Z,GZ]=eval_krg(X,tirages,krg)
+function [Z,GZ,mse]=eval_krg(X,tirages,krg)
 
 %calcul ou non des gradients (en fonction du nombre de variables de sortie)
-if nargout==2
+if nargout>=2
     grad=true;
 else
     grad=false;
@@ -23,15 +23,15 @@ if krg.norm.on
     %tirages=tirages/krg.divt;
 end
 
-%calcul de l'évaluation du métamodèle au point considéré
-%vecteur de corrélation aux points d'évaluations et vecteur de corrélation
-%dérivé
+%calcul de l'evaluation du metamodele au point considere
+%vecteur de correlation aux points d'evaluations et vecteur de correlation
+%derive
 rr=zeros(krg.dim,1);
 if grad
     jr=zeros(krg.dim,krg.con);
 end
 
-%distance du point d'évaluation aux sites obtenus par DOE
+%distance du point d'evaluation aux sites obtenus par DOE
 dist=repmat(X,krg.dim,1)-tirages;
 
 if grad  %si calcul des gradients
@@ -41,19 +41,27 @@ else %sinon
 end
 
 
-%matrice de régression aux points d'évaluations
+%matrice de regression aux points d'evaluations
 if grad
     [ff,jf]=feval(krg.reg,X);
 else
     ff=feval(krg.reg,X);
 end
 
-%évaluation du métamodèle au point X
+%evaluation du metamodele au point X
 Z=ff*krg.beta+rr'*krg.gamma;
 
 %+rr'*krg.gamma;
 if grad 
     GZ=jf*krg.beta+jr'*krg.gamma;
+end
+
+%calcul de la variance de pr�diction (MSE) (Lophaven, Nielsen & Sondergaard
+%2004)
+if nargout ==3
+    rcrr=krg.rc \ rr;
+    u=krg.ft*rcrr-ff;
+    mse=krg.sig*(ones(dim_x,1)+u'*(krg.ft*krg.rc\*krg.ft) \ u - rr'*rcrr);
 end
 
 %normalisation

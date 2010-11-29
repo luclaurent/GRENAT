@@ -74,6 +74,8 @@ krg.gamma=rc\(y-fc*krg.beta);
 
 
 %sauvegarde de donnees
+krg.rc=rc;
+krg.ft=ft;
 krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;
@@ -84,7 +86,7 @@ krg.con=size(tirages,2);
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);
 
-%écart type
+%écart type a denormaliser !!!!!!
 krg.sig=1/size(rc,1)*(y-fc*krg.beta)'/rc*(y-fc*krg.beta);
 
 end

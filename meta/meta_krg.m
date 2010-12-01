@@ -87,6 +87,11 @@ krg.con=size(tirages,2);
 [krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);
 
 %écart type a denormaliser !!!!!!
-krg.sig=1/size(rc,1)*(y-fc*krg.beta)'/rc*(y-fc*krg.beta);
-
+sig2=1/size(rc,1)*(y-fc*krg.beta)'/rc*(y-fc*krg.beta);
+if meta.norm
+    disp('sigma')
+    krg.sig2=sig2*std_t^2;
+else
+    krg.sig2=sig2;
+end
 end

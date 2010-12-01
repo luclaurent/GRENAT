@@ -16,7 +16,7 @@ nb_t=size(mat_corr,1);
 fobs=y-regr*beta;
 
 %ecart type
-sig=1/nb_t*fobs'/mat_corr*fobs;
+sig=1/nb_t*(fobs'/mat_corr)*fobs;
 det_corr=det(mat_corr);
 
 

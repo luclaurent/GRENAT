@@ -1,4 +1,4 @@
-%%Fichier d'étude du CoKrigeage sur fonction 1D
+%%Fichier d'etude du CoKrigeage sur fonction 1D
 %%L. LAURENT -- 19/05/2010 -- luc.laurent@ens-cachan.fr
 clf;
 %clc;
@@ -9,17 +9,17 @@ addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%Définition de l'espace de conception
+%%Definition de l'espace de conception
 xmin=0;
 xmax=15;
 
 
 
-%fonction utilisée
+%fonction utilisee
 %fct=@(x) 5;
 %fctd=@(x) 0;
 
-%pas du tracé
+%pas du trace
 pas=0.05;
 
 %
@@ -29,16 +29,16 @@ pas=0.05;
 %Type de tirage
 meta.doe='sfill';
 
-%nombre d'échantillons
+%nombre d'echantillons
 nb_samples=4;
 %ajout de point
 meta.ajout=false;
 meta.dist=0.01;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Type de métamodèle
+%Type de metamodele
 meta.type=['KRG' 'DACE'];
-%paramètre
+%parametre
 meta.deg=0;
 meta.theta=20;
 meta.corr='corr_gauss';
@@ -48,7 +48,7 @@ meta.norm=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluation de la fonction étudiée et des gradients
+%Evaluation de la fonction etudiee et des gradients
 x=xmin:pas:xmax;X=x';
 
 Z.Z=fct(X);
@@ -58,11 +58,11 @@ Z.grad=fctd(X);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('=====================================');
 disp('=====================================');
-disp('=======Construction métamodèle=======');
+disp('=======Construction metamodele=======');
 disp('=====================================');
 disp('=====================================');
 
-%% Tirages: plan d'expérience
+%% Tirages: plan d'experience
 disp('===== DOE =====');
 switch meta.doe
     case 'ffact'
@@ -73,12 +73,12 @@ switch meta.doe
     case 'LHS'
         tirages=lhsu(xmin,xmax,nb_samples);
     otherwise
-        error('le type de tirage nest pas défini');
+        error('le type de tirage nest pas defini');
 end
 
-%ajout de points à proximités des points existants
+%ajout de points à proximites des points existants
 if meta.ajout
-    %calcul de l'écartement autour du point initial
+    %calcul de l'ecartement autour du point initial
     dist=meta.dist*abs(xmax-xmin);
     %ajout de deux points autour de chaque tirages
     j=find(tirages==xmin);
@@ -91,7 +91,7 @@ if meta.ajout
         tmp=zeros(size(tirages,1)+2*size(tirages,1)-2,1);
     end
         
-    %calcul de l'écartement aux points
+    %calcul de l'ecartement aux points
     %on parcours les tirages
     kk=1;
     for ii=1:size(tirages,1)
@@ -121,17 +121,17 @@ if meta.ajout
     tirages=tmp;
  end
 
-%évaluations aux points
+%evaluations aux points
 eval=fct(tirages);
 if meta.ajout
     evalo=fct(tirageso);
 end
 grad=fctd(tirages);
 
-%tracé courbes initiales
+%trace courbes initiales
 figure;
 plot(X,Z.Z,'LineWidth',2);
-title('fonction de référence');
+title('fonction de reference');
 hold on;
 plot(tirages,eval,'rs','Color','red','MarkerSize',10);
 hold on
@@ -141,7 +141,7 @@ legend('fct ref','Evaluations','Gradients');
 hold off
 
 
-%% Génération du métamodèle
+%% Generation du metamodele
 disp('===== METAMODELE =====');
 disp(' ')
 
@@ -217,7 +217,7 @@ disp(' ')
          
          
 %end
-       %tracé de la courbe d'interpolation par Krigeage
+       %trace de la courbe d'interpolation par Krigeage
        
        figure;
        hold on
@@ -236,47 +236,47 @@ disp(' ')
 %          plot(X,ZZ.GKRG,'--','Color','k','LineWidth',2); 
 %          plot(X,ZZ.GKRGs,'--','Color','g','LineWidth',2); 
             %axis([xmin xmax min(min(Z.Z),min(Z.grad))-1 max(max(Z.Z),max(Z.grad))+1])
-            legend('fonction de référence','eval','deriv','KRG','CKRG','deriv CKRG');
-%             legend('fonction de référence','eval','deriv','KRG',...
+            legend('fonction de reference','eval','deriv','KRG','CKRG','deriv CKRG');
+%             legend('fonction de reference','eval','deriv','KRG',...
 %                 'KRGs','DACE','CKRG',...
 %                 'deriv CKRG','deriv KRG','deriv CKRGs');
 %             if meta.ajout
-%             legend('fonction de référence','KRG',...
+%             legend('fonction de reference','KRG',...
 %                 'KRGs','DACE','CKRG',...
 %                 'deriv CKRG','deriv KRG','deriv CKRGs');
 %             else
-%                 legend('fonction de référence','evaluation',...
+%                 legend('fonction de reference','evaluation',...
 %                     'gradient','KRG','KRG sans normalisation','DACE',...
 %                     'CKRG','Gradients CKRG','Gradients KRG','Gradients KRG sans norm');
 %             end
         hold off
-%tracé de la différence
+%trace de la difference
 % figure;
 % subplot(3,2,1);
 % diff=abs(ZZ.KRG-ZZ.DACE);
 % plot(X,diff,'Color','k','LineWidth',2);  
-% title('différence KRG-DACE');
+% title('difference KRG-DACE');
 % subplot(3,2,2);
 % diff=abs(ZZ.CKRG-ZZ.DACE);
 % plot(X,diff,'Color','k','LineWidth',2);  
-% title('différence CKRG-DACE');
+% title('difference CKRG-DACE');
 % subplot(3,2,3);
 % diff=abs(Z.Z-ZZ.DACE);
 % plot(X,diff,'Color','k','LineWidth',2);  
-% title('différence reférence-DACE');
+% title('difference reference-DACE');
 % subplot(3,2,4);
 % diff=abs(Z.Z-ZZ.KRG);
 % plot(X,diff,'Color','k','LineWidth',2);  
-% title('différence reférence-KRG');
+% title('difference reference-KRG');
 % subplot(3,2,5);
 % diff=abs(Z.Z-ZZ.CKRG);
 % plot(X,diff,'Color','k','LineWidth',2);  
-% title('différence reférence-CKRG');
+% title('difference reference-CKRG');
 % if meta.ajout
 % subplot(3,2,6);
 % diff=abs(Z.Z-ZZ.KRGo);
 % plot(X,diff,'Color','k','LineWidth',2);  
-% title('différence reférence-KRG sans ajout de point');
+% title('difference reference-KRG sans ajout de point');
 % end
             
 %calcul des erreurs

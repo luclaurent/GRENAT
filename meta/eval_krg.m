@@ -61,7 +61,8 @@ end
 if nargout ==3
     rcrr=krg.rc \ rr;
     u=krg.ft*rcrr-ff;
-    mse=krg.sig*(ones(dim_x,1)+u'*(krg.ft*(krg.rc\krg.ft')) \ u - rr'*rcrr);
+    mse=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
+    
 end
 
 %normalisation

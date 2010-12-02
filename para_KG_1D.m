@@ -17,35 +17,35 @@ fprintf('Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n', day(3), day(2), day(1),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.scale=false;aff.tikz=false;
-aff.num=0; %itérateur numéros figures
+aff.num=0; %iterateur numeros figures
 aff.doss=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_1D']; %dossier de travail (pour sauvegarde figure)
 unix(['mkdir ' aff.doss]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%Définition de l'espace de conception
+%%Definition de l'espace de conception
 xmin=0;
 xmax=5;
 
-%pas du tracé
-pas=0.01;
+%pas du trace
+pas=0.05;
 
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 meta.doe='sfill';
 
-%nb d'échantillons
-nb_samples=4;
+%nb d'echantillons
+nb_samples=10;
 
 %%Metamodele
 meta.type='KRG';
-%degré de linterpolation/regression (si necessaire)
+%degre de linterpolation/regression (si necessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.01,50,20);
+theta=linspace(1,20,20);
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
@@ -58,20 +58,23 @@ aff.d3=false;
 aff.d2=true;
 aff.contour3=false;
 aff.contour2=true;
-aff.save=true; %sauvegarde de ts les tracés
+aff.save=true; %sauvegarde de ts les traces
 
 %affichage des gradients
 aff.grad=false;
 cofast.grad=false;
 
+%affichage de l'intervalle de confiance
+aff.ic='99'; %('68','95','99')
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('=====================================');
 disp('=====================================');
-disp('=======Construction métamodèle=======');
+disp('=======Construction metamodele=======');
 disp('=====================================');
 disp('=====================================');
-%% Tirages: plan d'expérience
+%% Tirages: plan d'experience
 disp('===== DOE =====');
 switch meta.doe
     case 'ffact'
@@ -82,7 +85,7 @@ switch meta.doe
     case 'LHS'
         tirages=lhsu(xmin,xmax,nb_samples);
     otherwise
-        error('le type de tirage nest pas défini');
+        error('le type de tirage nest pas defini');
 end
 
 %evaluations aux points
@@ -90,7 +93,7 @@ eval=fct(tirages);
 
 
 
-%Tracé de la fonction de la fonction étudiée et des gradients
+%Trace de la fonction de la fonction etudiee et des gradients
 X=xmin:pas:xmax;
 
 Z.Z=fct(X);
@@ -99,7 +102,7 @@ Z.grad=fctd(X);
 %trace courbes initiales
 figure;
 plot(X,Z.Z,'LineWidth',2);
-title('fonction de référence');
+title('fonction de reference');
 hold on;
 plot(tirages,eval,'rs','Color','red','MarkerSize',10);
 
@@ -122,7 +125,7 @@ aff.on='true';
 for i=1:length(theta)
     meta.theta=theta(i);
 
-%% Génération du métamodèle
+%% Generation du metamodele
 fprintf('\n===== METAMODELE de Krigeage =====\n');
 disp(' ')
 
@@ -131,22 +134,58 @@ disp(' ')
         [krg]=meta_krg(tirages,eval,meta);
         ZZ=zeros(size(X));
         GK1=zeros(size(X));
+        mse=GK1;
          for ii=1:length(X)
-                 [ZZ(ii),GZ] =eval_krg(X(ii),tirages,krg);
+                 [ZZ(ii),GZ,mse(ii)] =eval_krg(X(ii),tirages,krg);
                  GK1(ii)=GZ;
                 
          end
          ZK.Z=ZZ;
+         %%%g�n�ration des diff�rents intervalles de confiance
+         %a 68%
+         ic68.sup=ZZ+mse;
+         ic68.inf=ZZ-mse;
+         %a 95%
+         ic95.sup=ZZ+2*mse;
+         ic95.inf=ZZ-2*mse;
+         %a 99,7%
+         ic99.sup=ZZ+3*mse;
+         ic99.inf=ZZ-3*mse;
         
             %%%affichage de la surface obtenue par KRG
             figure;
+            hold on;
+            %IC99
+            switch aff.ic
+                case '99'
+                    h99s=area(X,ic99.sup,min(ic99.inf));
+                    h99i=area(X,ic99.inf,min(ic99.inf));
+                    set(h99s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
+                    set(h99i(1),'FaceColor',[1 1 1],'EdgeColor','none')
+                    ic='IC99';
+                case '95'
+                    disp('95')
+                    %IC95
+                    h95s=area(X,ic95.sup,min(ic95.inf));
+                    h95i=area(X,ic95.inf,min(ic95.inf));
+                    set(h95s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
+                    set(h95i(1),'FaceColor',[1 1 1],'EdgeColor','none')
+                    ic='IC95';
+                case '68'
+                    %IC68
+                    h68s=area(X,ic68.sup,min(ic68.inf));
+                    h68i=area(X,ic68.inf,min(ic68.inf));
+                    set(h68s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
+                    set(h68i(1),'FaceColor',[1 1 1],'EdgeColor','none')
+                    ic='IC68';
+            end
             plot(X,Z.Z,'LineWidth',2);
             title('fonction de reference');
             hold on;
             plot(tirages,eval,'rs','Color','red','MarkerSize',10);
             plot(X,ZK.Z,'Color','green');
             plot(X,GK1,'Color','yellow');
-            legend('fct ref','Evaluations','Krigeage','Derivee KRG');
+            legend(ic,' ','fct ref','Evaluations','Krigeage','Derivee KRG');
             hold off
             aff.num=aff.num+1;
             set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
@@ -226,7 +265,7 @@ ylabel('Log-Likelihood')
 subplot(3,4,10:12);
 plot(theta,condr);
 xlabel('\theta');
-title('Conditionnement matrice de corrélation')
+title('Conditionnement matrice de correlation')
 saveas(gcf,[aff.doss '/bilan.eps'],'eps')
 saveas(gcf,[aff.doss '/bilan.fig'],'fig')
 

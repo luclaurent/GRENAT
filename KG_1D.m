@@ -37,7 +37,7 @@ pas=0.01;
 meta.doe='sfill';
 
 %nb d'echantillons
-nb_samples=4;
+nb_samples=15;
 
 %%Metamodele
 meta.type='KRG';
@@ -45,7 +45,7 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-meta.theta=0.01;
+meta.theta=1;
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
@@ -64,6 +64,9 @@ aff.save=true; %sauvegarde de ts les traces
 %affichage des gradients
 aff.grad=false;
 cofast.grad=false;
+
+%affichage de l'intervalle de confiance
+aff.ic='99'; %('68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,30 +138,40 @@ switch meta.type
             figure;
             hold on;
             %IC99
-            %h99s=area(X,ic99.sup);
-            %h99i=area(X,ic99.inf);
-            %set(h99s(1),'Facecolor',[1 0.8 0.8],'EdgeColor','none')
-            %set(h99i(1),'FaceColor',[1 1 1],'EdgeColor','none')
-            %IC95
-            h95s=area(X,ic95.sup,min(ic95.inf));
-            h95i=area(X,ic95.inf,min(ic95.inf));
-            set(h95s(1),'Facecolor',[0.8 1 0.8],'EdgeColor','none')
-            set(h95i(1),'FaceColor',[1 1 1],'EdgeColor','none')
-            legend(h95i,'hide')
+            switch aff.ic
+                case '99'
+                    h99s=area(X,ic99.sup,min(ic99.inf));
+                    h99i=area(X,ic99.inf,min(ic99.inf));
+                    set(h99s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
+                    set(h99i(1),'FaceColor',[1 1 1],'EdgeColor','none')
+                    ic='IC99';
+                case '95'
+                    disp('95')
+                    %IC95
+                    h95s=area(X,ic95.sup,min(ic95.inf));
+                    h95i=area(X,ic95.inf,min(ic95.inf));
+                    set(h95s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
+                    set(h95i(1),'FaceColor',[1 1 1],'EdgeColor','none')
+                    ic='IC95';
+                case '68'
+                    %IC68
+                    h68s=area(X,ic68.sup,min(ic68.inf));
+                    h68i=area(X,ic68.inf,min(ic68.inf));
+                    set(h68s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
+                    set(h68i(1),'FaceColor',[1 1 1],'EdgeColor','none')
+                    ic='IC68';
+            end
+            
+            
             %fonction de référence
-            plot(X,Z.Z,'LineWidth',2);
-            %IC68
-            %h68s=area(X,ic68.sup);
-            %h68i=area(X,ic68.inf);
-            %set(h68s(1),'Facecolor',[0.8 0.8 1],'EdgeColor','none')
-            %set(h68i(1),'FaceColor',[1 1 1],'EdgeColor','none')
+            
             
             %%%%%%%%%%
             plot(tirages,eval,'rs','Color','red','MarkerSize',10);
             plot(X,ZK.Z,'Color','green','LineWidth',1.5);
             plot(X,GK1,'Color','red');
             plot(X,mse,'Color','blue');
-            legend('IC95',' ','Evaluations','Krigeage','Derivee KRG','MSE');
+            legend(ic,' ','Evaluations','Krigeage','Derivee KRG','MSE');
             hold off
             aff.num=aff.num+1;
             set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay

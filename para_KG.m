@@ -1,5 +1,5 @@
-%%%Etude de l'influence du param�tre de la fonction de corr�lation
-%%%gaussienne sur la qualit� du m�tamod�le de Krigeage construit
+%%%Etude de l'influence du parametre de la fonction de correlation
+%%%gaussienne sur la qualite du metamodele de Krigeage construit
 %% 21/10/2010
 
 
@@ -15,24 +15,24 @@ fprintf('Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n', day(3), day(2), day(1),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.scale=false;aff.tikz=false;
-aff.num=0; %itérateur numéros figures
+aff.num=0; %iterateur numeros figures
 aff.doss=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f')]; %dossier de travail (pour sauvegarde figure)
 unix(['mkdir ' aff.doss]);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%Définition de l'espace de conception
-esp.type='auto';   %gestion automatique de l'espace de conception pour fonction étudiée standards
+%%Definition de l'espace de conception
+esp.type='auto';   %gestion automatique de l'espace de conception pour fonction etudiee standards
 xmin=-2;
 xmax=2;
 ymin=-1;
 ymax=3;
 
-%Fonction utilisée
-fct='rosen';    %fonction utilisée (rosenbrock: 'rosen' / peaks: 'peaks')
-%pas du tracé
-pas=0.8;
+%Fonction utilisee
+fct='peaks';    %fonction utilisee (rosenbrock: 'rosen' / peaks: 'peaks')
+%pas du trace
+pas=0.1;
 
 %calcul des gradients des fonctions initiales
 calc_grad=false;
@@ -41,30 +41,30 @@ calc_grad=false;
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 meta.doe='ffact';
 
-%nb d'échantillons
-nb_samples=3;
+%nb d'echantillons
+nb_samples=6;
 
-%%Métamodèle
+%%Metamodele
 %type d'interpolation
 %PRG: regression polynomiale
 %DACE: krigeage (utilisation de la toolbox DACE)
 %KRG: krigeage
-%CKRG: CoKrigeage (nécessite le calcul des gradients)
+%CKRG: CoKrigeage (necessite le calcul des gradients)
 %RBF: fonctions à base radiale
-%POD: décomposition en valeurs singulières
+%POD: decomposition en valeurs singulieres
 meta.type='KRG';
-%degré de linterpolation/regression (si nécessaire)
-meta.deg=2;   %cas KRG/CKRG compris (mais pas DACE)
-%paramètre Krigeage
-%meta.theta=5;  %variation du param�tre theta
-theta=linspace(1,7,50);
-meta.regr='regpoly2';  % toolbox DACE
+%degre de linterpolation/regression (si necessaire)
+meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
+%parametre Krigeage
+%meta.theta=5;  %variation du parametre theta
+theta=linspace(1,50,10);
+meta.regr='regpoly0';  % toolbox DACE
 meta.corr='corr_gauss';
-%paramètre RBF
+%parametre RBF
 meta.para=1.5;
 meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
-%paramètre POD
-meta.nb_vs=3;        %nombre de valeurs singulières à prendre en compte
+%parametre POD
+meta.nb_vs=3;        %nombre de valeurs singulieres à prendre en compte
 %normalisation
 meta.norm=true;
 
@@ -75,7 +75,7 @@ aff.d3=true;
 aff.d2=true;
 aff.contour3=true;
 aff.contour2=true;
-aff.save=true; %sauvegarde de ts les tracés
+aff.save=true; %sauvegarde de ts les traces
 
 %affichage des gradients
 aff.grad=false;
@@ -85,13 +85,13 @@ cofast.grad=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('=====================================');
 disp('=====================================');
-disp('=======Construction métamodèle=======');
+disp('=======Construction metamodele=======');
 disp('=====================================');
 disp('=====================================');
-%définition du domaine d'étude
+%definition du domaine d'etude
 switch esp.type
     case 'auto'
-        disp('Définition auto du domaine de conception');
+        disp('Definition auto du domaine de conception');
         switch fct
             case 'rosen'
                 xmin=-2;
@@ -105,12 +105,12 @@ switch esp.type
                 ymax=3;
         end
     case 'manu'
-        disp('Définition manu du domaine de conception');
+        disp('Definition manu du domaine de conception');
 end
 
 
 
-%Tracé de la fonction de la fonction étudiée et des gradients
+%Trace de la fonction de la fonction etudiee et des gradients
 x=xmin:pas:xmax;
 y=ymin:pas:ymax;
 [X,Y]=meshgrid(x,y);
@@ -130,7 +130,7 @@ switch fct
         end
 end
 
-%% Tirages: plan d'expérience
+%% Tirages: plan d'experience
 fprintf('\n===== DOE =====\n');
 
 %LHS uniform
@@ -152,10 +152,10 @@ switch meta.doe
     case 'LHS'
         tirages=lhsu(Xmin,Xmax,nb_samples);
     otherwise
-        error('le type de tirage nest pas défini');
+        error('le type de tirage nest pas defini');
 end
 
-%évaluations aux points
+%evaluations aux points
 switch fct
     case 'rosen'
         if calc_grad
@@ -173,7 +173,7 @@ end
 
 
 %%Affichage courbe initiale
-%paramètrage options
+%parametrage options
 aff.on=true;
 aff.newfig=true;
 aff.contour=true;
@@ -217,7 +217,7 @@ sig=zeros(size(theta));
 for i=1:length(theta)
     meta.theta=theta(i);
 
-%% Génération du métamodèle
+%% Generation du metamodele
 fprintf('\n===== METAMODELE de Krigeage =====\n');
 disp(' ')
 
@@ -237,7 +237,7 @@ disp(' ')
          ZK.Z=ZZ;
         
             %%%affichage de la surface obtenue par KRG
-            %paramètrage options
+            %parametrage options
             aff.newfig=true;
             aff.contour2=false;
             aff.contour3=false;
@@ -245,7 +245,7 @@ disp(' ')
             aff.uni=false;
             aff.pts=false;
             aff.titre=['Surface obtenue par Krigeage: theta ',...
-                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+                num2str(meta.theta),' regression ',meta.regr,' correlation ',meta.corr];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F_{KRG}';
@@ -256,9 +256,9 @@ disp(' ')
 
            
             
-            %%%affichage de l'écart entre la fonction objectif et la fonction
-            %%%approchée
-            %paramètrage options
+            %%%affichage de l'ecart entre la fonction objectif et la fonction
+            %%%approchee
+            %parametrage options
             aff.newfig=true;
             aff.contour2=false;
             aff.contour3=false;
@@ -268,7 +268,7 @@ disp(' ')
             aff.pts=false;
             aff.grad=false;
             aff.titre=['Surface obtenue par Krigeage: theta ',...
-                num2str(meta.theta),' regression ',meta.regr,' corrélation ',meta.corr];
+                num2str(meta.theta),' regression ',meta.regr,' correlation ',meta.corr];
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F';
@@ -287,7 +287,7 @@ disp(' ')
             
             
             condr(i)=krg.cond;
-            sig(i)=krg.sig;
+            sig(i)=krg.sig2;
             emse(i)=mse_p(Z.Z,ZK.Z);
             err(i)=r_square(Z.Z,ZK.Z);
             eraae(i)=raae(Z.Z,ZK.Z);
@@ -354,7 +354,7 @@ ylabel('Ecart type')
 subplot(3,4,11:12);
 plot(theta,condr);
 xlabel('\theta');
-title('Conditionnement matrice de corrélation')
+title('Conditionnement matrice de correlation')
 saveas(gcf,[aff.doss '/bilan.eps'],'eps')
 saveas(gcf,[aff.doss '/bilan.fig'],'fig')
 

@@ -17,7 +17,7 @@ if meta.norm
 
     %normalisation des valeur de la fonction objectif et des tirages
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
-    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
+    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1).^2;
     
     %sauvegarde des donnees
     krg.norm.moy_eval=moy_e;
@@ -86,11 +86,10 @@ krg.con=size(tirages,2);
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);
 
-%écart type a denormaliser !!!!!!
+%écart type
 sig2=1/size(rc,1)*(y-fc*krg.beta)'/rc*(y-fc*krg.beta);
 if meta.norm
-    disp('sigma')
-    krg.sig2=sig2*std_t^2;
+    krg.sig2=sig2*std_e^2;
 else
     krg.sig2=sig2;
 end

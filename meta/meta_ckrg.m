@@ -1,4 +1,4 @@
-%fonction assurant la création du métamodèle de CoKrigeage
+%fonction assurant la creation du metamodele de CoKrigeage
 %L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
 
@@ -6,7 +6,7 @@ function krg=meta_ckrg(tirages,eval,grad,meta)
 tic;
 tps_start=toc;
 
-%nombre d'évalutions
+%nombre d'evalutions
 ns=size(eval,1);
 %dimension du pb (nb de variables de conception)
 dim=size(tirages,2);
@@ -15,13 +15,13 @@ dim=size(tirages,2);
 
 %Normalisation
 if meta.norm
-    %calcul des moyennes et des écarts type
+    %calcul des moyennes et des ecarts type
     moy_e=mean(eval);
     std_e=std(eval);
     moy_t=mean(tirages);
     std_t=std(tirages);
     
-    %test pour vérification écart type
+    %test pour verification ecart type
     ind=find(std_e==0);
     if ~isempty(ind)
         std_e(ind)=1;
@@ -33,9 +33,7 @@ if meta.norm
     
     %normalisation
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
-   
-    tiragesn=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
-    
+    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     grad=grad.*repmat(std_t,ns,1)/std_e;
     
     
@@ -57,11 +55,11 @@ for ii=1:ns
     end
 end
 
-%création du vecteur d'évaluation
+%creation du vecteur d'evaluation
 y=vertcat(eval,der) ;
 
 
-%création matrice de conception (seul polynôme de degré 0 est pris en
+%creation matrice de conception (seul polynome de degre 0 est pris en
 %charge /!\)
 if meta.deg==0
     p=1;
@@ -70,17 +68,17 @@ elseif meta.deg==1
 elseif meta.deg==2
     p=(dim+1)*(dim+2)*1/2;
 else
-    error('Degré de polynôme non encore prise en charge');
+    error('Degre de polynome non encore prise en charge');
 end
     
 fc=zeros((dim+1)*ns,p);
 fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns
-       [fc(ii,:),fc(ns+ii,:)]=feval(fct,tiragesn(ii,:));
+       [fc(ii,:),fc(ns+ii,:)]=feval(fct,tirages(ii,:));
 end
 
 
-%%%création matrice de corrélation
+%%%creation matrice de correlation
 %morceau de la matrice issu du krigeage
 rc=zeros(ns);
 rca=zeros(ns,dim*ns);
@@ -96,7 +94,7 @@ for ii=1:ns
         %morceau de la matrice provenant du Cokrigeage
         rca(ii,dim*jj-dim+1:dim*jj)=-dev;
         
-        %matrice des dérivées secondes
+        %matrice des derivees secondes
         rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev; 
    end
 end
@@ -106,7 +104,7 @@ end
 rcc=[rc rca;rca' rci];
 
 
-%conditionnement de la matrice de corrélation
+%conditionnement de la matrice de correlation
 krg.cond=cond(rcc);
 txt=['Conditionnement R: ' num2str(krg.cond,'%6.5d')];
 disp(txt);
@@ -121,7 +119,7 @@ krg.beta=block1\block2;
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rcc,y,fc,krg.beta);
 
-%création de la matrice des facteurs de corrélation
+%creation de la matrice des facteurs de correlation
 krg.gamma=rcc\(y-fc*krg.beta);
 
 krg.reg=fct;
@@ -131,8 +129,7 @@ krg.deg=meta.deg;
 krg.theta=meta.theta;
 krg.con=size(tirages,2);
 
-krg.tirages=tirages;
-krg.tiragesn=tiragesn;
+
 
 tps_stop=toc;
 txt=['Execution construction CoKrigeage: ',num2str(tps_stop-tps_start,'%6.4d') ' s'];

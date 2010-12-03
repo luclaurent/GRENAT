@@ -1,10 +1,10 @@
 %fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 
-function [Z,GZ]=eval_ckrg(X,krg)
+function [Z,GZ,mse]=eval_ckrg(X,tirages,krg)
 
 
-if nargout==2
+if nargout>=2
     grad=true;
 else
     grad=false;
@@ -28,7 +28,7 @@ if grad
 end
 
 %distance du point d'evaluation aux sites obtenus par DOE
-dist=repmat(X,krg.dim,1)-krg.tiragesn;
+dist=repmat(X,krg.dim,1)-tirages;
 
 if grad  %si calcul des gradients
     [ev,dev,ddev]=feval(krg.corr,dist,krg.theta);
@@ -51,7 +51,7 @@ if grad  %si calcul des gradients
 else %sinon       
     [ev,dev]=feval(krg.corr,dist,krg.theta);
     rr(1:krg.dim)=ev;
-    rr(krg.dim+1:krg.dim*(krg.con+1)+1)=dev;
+    rr(krg.dim+1:krg.dim*(krg.con+1))=dev;
 end
 
 
@@ -68,6 +68,13 @@ Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
     GZ=jf*krg.beta-jr'*krg.gamma;
+end
+
+%calcul de la variance de prédiction (MSE) (Koelher & Owen 1996)
+if nargout ==3
+    rcrr=krg.rcc \ rr;
+    u=krg.ft*rcrr-ff;
+    mse=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u) - rr'*rcrr);
 end
 
 %normalisation

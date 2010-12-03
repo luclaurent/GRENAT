@@ -91,6 +91,7 @@ end
 
 %evaluations aux points
 eval=fct(tirages);
+grad=fctd(tirages);
 
 
 
@@ -111,15 +112,15 @@ aff.on='true';
 fprintf('\n===== METAMODELE de CoKrigeage =====\n');
 disp(' ')
 switch meta.type
-    case 'KRG'
+    case 'CKRG'
         disp('>>> Interpolation par CoKrigeage');
         disp(' ')
-        [krg]=meta_ckrg(tirages,eval,meta);
+        [krg]=meta_ckrg(tirages,eval,grad,meta);
         ZZ=zeros(size(X));
         mse=zeros(size(X));
         GK1=zeros(size(X));
          for ii=1:length(X)
-                 [ZZ(ii),GZ,mse(ii)] =eval_ckrg(X(ii),tirages,krg);
+                 [ZZ(ii),GZ,mse(ii)]=eval_ckrg(X(ii),tirages,krg);
                  GK1(ii)=GZ;
                 
          end
@@ -165,6 +166,7 @@ switch meta.type
             
             %fonction de référence
             plot(X,Z.Z,'Color','blue','LineWidth',1.5);
+            plot(X,Z.grad,'--','Color','blue','LineWidth',1.5);
             
             %%%%%%%%%%
             plot(tirages,eval,'rs','Color','red','MarkerSize',10);
@@ -172,9 +174,9 @@ switch meta.type
             plot(X,GK1,'Color','red');
             plot(X,mse,'Color','blue');
             if str2num(aff.ic)~=0
-                legend(ic,' ','fct ref','Evaluations','Krigeage','Derivee KRG','MSE');
+                legend(ic,' ','fct ref','deriv fct ref','Evaluations','CoKrigeage','Derivee CKRG','MSE');
             else
-                legend('fct_ref','Evaluations','Krigeage','Derivee KRG','MSE');
+                legend('fct_ref','deriv fct ref','Evaluations','CoKrigeage','Derivee CKRG','MSE');
             end
             hold off
             aff.num=aff.num+1;

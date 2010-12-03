@@ -87,7 +87,7 @@ rci=zeros(dim*ns,dim*ns);
 for ii=1:ns
     for jj=1:ns
         %morceau de la matrice issue du krigeage
-        [ev,dev,ddev]=feval(meta.corr,tiragesn(ii,:)-tiragesn(jj,:),meta.theta);
+        [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
        
         rc(ii,jj)=ev;        
                 
@@ -133,6 +133,8 @@ end
 
 
 %%sauvegardes de données
+krg.rcc=rcc;
+krg.ft=ft;
 krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;    

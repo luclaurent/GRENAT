@@ -37,7 +37,7 @@ pas=0.05;
 meta.doe='sfill';
 
 %nb d'echantillons
-nb_samples=10;
+nb_samples=5;
 
 %%Metamodele
 meta.type='CKRG';
@@ -45,11 +45,11 @@ meta.type='CKRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.11,50,20);
+theta=linspace(0.11,100,20);
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
-meta.norm=false;
+meta.norm=true;
 
 
 %affichage actif ou non
@@ -65,7 +65,7 @@ aff.grad=false;
 cofast.grad=false;
 
 %affichage de l'intervalle de confiance
-aff.ic='99'; %('68','95','99')
+aff.ic='68'; %('68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,7 +90,7 @@ end
 
 %evaluations aux points
 eval=fct(tirages);
-
+grad=fctd(tirages);
 
 
 %Trace de la fonction de la fonction etudiee et des gradients
@@ -131,7 +131,7 @@ disp(' ')
 
         disp('>>> Interpolation par CoKrigeage');
         disp(' ')
-        [krg]=meta_ckrg(tirages,eval,meta);
+        [krg]=meta_ckrg(tirages,eval,grad,meta);
         ZZ=zeros(size(X));
         GK1=zeros(size(X));
         mse=GK1;

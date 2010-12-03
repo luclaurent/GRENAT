@@ -34,10 +34,10 @@ pas=0.05;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='sfill';
+meta.doe='LHS';
 
 %nb d'echantillons
-nb_samples=10;
+nb_samples=5;
 
 %%Metamodele
 meta.type='KRG';
@@ -45,8 +45,8 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.11,50,20);
-meta.regr='regpoly0';
+theta=linspace(0.011,30,30);
+%meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
 meta.norm=false;
@@ -65,7 +65,7 @@ aff.grad=false;
 cofast.grad=false;
 
 %affichage de l'intervalle de confiance
-aff.ic='99'; %('68','95','99')
+aff.ic='68'; %('68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

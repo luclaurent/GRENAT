@@ -86,8 +86,8 @@ krg.con=size(tirages,2);
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);
 
-%écart type
-sig2=1/size(rc,1)*(y-fc*krg.beta)'/rc*(y-fc*krg.beta);
+%variance de prédiction
+sig2=1/size(rc,1)*((y-fc*krg.beta)'/rc)*(y-fc*krg.beta);
 if meta.norm
     krg.sig2=sig2*std_e^2;
 else

@@ -57,7 +57,7 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(1,50,10);
+theta=linspace(0.1,10,10);
 meta.regr='regpoly0';  % toolbox DACE
 meta.corr='corr_gauss';
 %parametre RBF

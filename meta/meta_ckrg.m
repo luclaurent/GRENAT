@@ -122,6 +122,17 @@ krg.beta=block1\block2;
 %creation de la matrice des facteurs de correlation
 krg.gamma=rcc\(y-fc*krg.beta);
 
+
+%calcul de la variance de prédiction
+sig2=1/size(rcc,1)*((y-fc*krg.beta)'/rcc)*(y-fc*krg.beta);
+if meta.norm
+    krg.sig2=sig2*std_e^2;
+else
+    krg.sig2=sig2;
+end
+
+
+%%sauvegardes de données
 krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;    

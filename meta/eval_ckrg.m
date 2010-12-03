@@ -1,4 +1,4 @@
-%fonction assurant l'évaluation du métamodèle de krigeage
+%fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 
 function [Z,GZ]=eval_ckrg(X,krg)
@@ -19,15 +19,15 @@ if krg.norm.on
     X=(X-mat_moyt)./mat_stdt;
 end
 
-%calcul de l'évaluation du métamodèle au point considéré
-%vecteur de corrélation aux points d'évaluations et matrice de corrélation
-%dérivée
+%calcul de l'evaluation du metamodele au point considere
+%vecteur de correlation aux points d'evaluations et matrice de correlation
+%derivee
 rr=zeros(krg.dim*(krg.con+1),1);
 if grad
     jr=zeros(krg.dim*(krg.con+1),krg.con);
 end
 
-%distance du point d'évaluation aux sites obtenus par DOE
+%distance du point d'evaluation aux sites obtenus par DOE
 dist=repmat(X,krg.dim,1)-krg.tiragesn;
 
 if grad  %si calcul des gradients
@@ -35,11 +35,11 @@ if grad  %si calcul des gradients
     rr(1:krg.dim)=ev;        
     rr(krg.dim+1:krg.dim*(krg.con+1))=-reshape(dev',1,krg.dim*krg.con);
        
-    %dérivée du vecteur de corrélation aux points d'évaluations
+    %derivee du vecteur de correlation aux points d'evaluations
     jr(1:krg.dim,:)=dev;
        
     
-     % dérivées secondes     
+     % derivees secondes     
      mat_der=zeros(krg.dim*krg.con,krg.con);
     
      for mm=1:krg.dim
@@ -55,14 +55,14 @@ else %sinon
 end
 
 
-%matrice de régression aux points d'évalutions
+%matrice de regression aux points d'evalutions
 if grad    
     [ff,jf]=feval(krg.reg,X);
 else
     ff=feval(krg.reg,X);
 end
 
-%évaluation du métamodèle au point X
+%evaluation du metamodele au point X
 
 Z=ff*krg.beta+rr'*krg.gamma;
 

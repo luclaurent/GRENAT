@@ -1,5 +1,5 @@
 %%%Etude de l'influence du parametre de la fonction de correlation
-%%%gaussienne sur la qualite du metamodele de Krigeage construit
+%%%gaussienne sur la qualite du metamodele de CoKrigeage construit
 
 %%fonction étudiée: fonction cosinus
 %% 21/10/2010
@@ -40,7 +40,7 @@ meta.doe='sfill';
 nb_samples=4;
 
 %%Metamodele
-meta.type='KRG';
+meta.type='CKRG';
 %degre de linterpolation/regression (si necessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
@@ -108,25 +108,32 @@ aff.on='true';
 
 
 %% Generation du metamodele
-fprintf('\n===== METAMODELE de Krigeage =====\n');
+fprintf('\n===== METAMODELE de CoKrigeage =====\n');
 disp(' ')
 switch meta.type
     case 'KRG'
-        disp('>>> Interpolation par Krigeage');
+        disp('>>> Interpolation par CoKrigeage');
         disp(' ')
-        [krg]=meta_krg(tirages,eval,meta);
+        [krg]=meta_ckrg(tirages,eval,meta);
         ZZ=zeros(size(X));
         mse=zeros(size(X));
         GK1=zeros(size(X));
          for ii=1:length(X)
-                 [ZZ(ii),GZ,mse(ii)] =eval_krg(X(ii),tirages,krg);
+                 [ZZ(ii),GZ,mse(ii)] =eval_ckrg(X(ii),tirages,krg);
                  GK1(ii)=GZ;
                 
          end
          ZK.Z=ZZ;
          %%%génération des différents intervalles de confiance
-        
-         [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(mse));
+         %a 68%
+         ic68.sup=ZZ+mse;
+         ic68.inf=ZZ-mse;
+         %a 95%
+         ic95.sup=ZZ+2*mse;
+         ic95.inf=ZZ-2*mse;
+         %a 99,7%
+         ic99.sup=ZZ+3*mse;
+         ic99.inf=ZZ-3*mse;
          %%%affichage de la surface obtenue par KRG
             figure;
             hold on;

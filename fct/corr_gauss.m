@@ -1,17 +1,17 @@
-%%fonction de corrélation gauss (KRG)
+%%fonction de correlation gauss (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
 function [corr,dcorr,ddcorr]=corr_gauss(xx,theta)
 
-%vérification de la dimension de theta
+%verification de la dimension de theta
 lt=length(theta);
-%nombre de points à évaluer
+%nombre de points a� evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
 
 if lt==1
-    %theta est un réel, alors on en fait une matrice de la dimension de xx
+    %theta est un reel, alors on en fait une matrice de la dimension de xx
     theta = repmat(theta,pt_eval,nb_comp);
 elseif lt~=nb_comp
     error('mauvaise dimension de theta');
@@ -31,11 +31,11 @@ elseif nargout==3
     corr=ev;
     dcorr=-2*theta.*xx.*repmat(ev,1,nb_comp);   
     
-    %calcul des dérivées secondes    
+    %calcul des derivees secondes    
     
-    %suivant la taille de l'évaluation demandée on stocke les dérivées
-    %secondes de manières différentes
-    %si on ne demande le calcul des dérivées secondes en un seul point, on
+    %suivant la taille de l'evaluation demandee on stocke les derivees
+    %secondes de manieres differentes
+    %si on ne demande le calcul des derivees secondes en un seul point, on
     %les stocke dans une matrice 
     if pt_eval==1
         ddcorr=zeros(nb_comp);
@@ -49,7 +49,7 @@ elseif nargout==3
            end
         end
        
-    %si on demande le calcul des dérivées secondes en plusieurs point, on
+    %si on demande le calcul des derivees secondes en plusieurs point, on
     %les stocke dans un vecteur de matrices
     else
         ddcorr=zeros(nb_comp,nb_comp,pt_eval);

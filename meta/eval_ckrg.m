@@ -17,6 +17,7 @@ if krg.norm.on
     mat_moyt=repmat(krg.norm.moy_tirages,dim_x,1);
     mat_stdt=repmat(krg.norm.std_tirages,dim_x,1);
     X=(X-mat_moyt)./mat_stdt;
+    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
 end
 
 %calcul de l'evaluation du metamodele au point considere
@@ -34,10 +35,9 @@ if grad  %si calcul des gradients
     [ev,dev,ddev]=feval(krg.corr,dist,krg.theta);
     rr(1:krg.dim)=ev;        
     rr(krg.dim+1:krg.dim*(krg.con+1))=-reshape(dev',1,krg.dim*krg.con);
-       
+
     %derivee du vecteur de correlation aux points d'evaluations
     jr(1:krg.dim,:)=dev;
-       
     
      % derivees secondes     
      mat_der=zeros(krg.dim*krg.con,krg.con);
@@ -46,7 +46,8 @@ if grad  %si calcul des gradients
         mat_der((mm-1)*krg.con+1:(mm-1)*krg.con+krg.con,:)=ddev(:,:,mm);
      end
         
-    jr(krg.dim+1:krg.dim*(1+krg.con),:)=mat_der;
+    jr(krg.dim+1:krg.dim*(1+krg.con),:)=-mat_der;
+    
   
 else %sinon       
     [ev,dev]=feval(krg.corr,dist,krg.theta);
@@ -67,7 +68,8 @@ end
 Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
-    GZ=jf*krg.beta-jr'*krg.gamma;
+    GZ=jf*krg.beta+jr'*krg.gamma;
+    
 end
 
 %calcul de la variance de prédiction (MSE) (Koelher & Owen 1996)
@@ -79,10 +81,9 @@ end
 
 %normalisation
 if krg.norm.on
-    mat_renorm=repmat(krg.norm.std_eval,dim_x,1);
-    Z=repmat(krg.norm.moy_eval,dim_x,1)+mat_renorm.*Z;
+    Z=repmat(krg.norm.moy_eval,dim_x,1)+krg.norm.std_eval.*Z;
     if grad
-        GZ=mat_renorm.*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
+        GZ=krg.norm.std_eval.*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
         GZ=GZ';
     end
 end

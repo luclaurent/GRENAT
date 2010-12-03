@@ -1,10 +1,10 @@
-%%procédure d'étude des fonctions à support compact et de leur dérivée
+%%procedure d'etude des fonctions a� support compact et de leur derivee
 %%L. LAURENT -- 12/04/2010 -- luc.laurent@ens-cachan.fr
 clear all;close all;
 addpath('fct/');
 
-%%étude 2D
-%paramètres
+%%etude 2D
+%parametres
 para=10;
 pas=0.05;
 borne_sup=1;
@@ -12,34 +12,32 @@ borne_inf=0;
 %fonction
 fct='corr_gauss';
 
-%espace d'étude
+%espace d'etude
 x=borne_inf:pas:borne_sup;
+x=x';
 
-%évaluation de la fonction
-eval=zeros(1,size(x,2));
-evald=zeros(1,size(x,2));
-evaldd=zeros(1,size(x,2));
-for jj=1:size(x,2)
-   [eval(1,jj),evald(1,jj),evaldd(1,jj)]=feval(fct,x(jj),para);
-   
+%evaluation de la fonction
+[eval,evald,evaldd]=feval(fct,x,para);
+dder=zeros(size(x));
+for i=1:length(x)
+     dder(i)=evaldd(:,:,i);
 end
-
-%tracé 
+%trace 
 figure;
 plot(x,eval)
 hold on;
 plot(x,evald,'r');
 hold on
-plot(x,evaldd,'k');
+plot(x,dder,'k');
 %ylim([-2,2])
 xlabel('x');
 ylabel('f(x) et df/dx et d²f/dx²');
-titre=['Evaluation de la fonction ' fct ' et de ses dérivées'];
+titre=['Evaluation de la fonction ' fct ' et de ses derivees'];
 title(titre);
 
 % 
-% %%étude 3D
-% %paramètres
+% %%etude 3D
+% %parametres
 % para=0.2;
 % pas=0.05;
 % borne_sup=1;
@@ -47,12 +45,12 @@ title(titre);
 % %fonction
 % fct='cauchy';
 % 
-% %espace d'étude
+% %espace d'etude
 % x=borne_inf:pas:borne_sup;
 % y=x;
 % [X,Y]=meshgrid(x,y);
 % 
-% %évaluation de la fonction
+% %evaluation de la fonction
 % eval=zeros(size(X));
 % evald1=eval;evald2=eval;
 % for jj=1:size(X,1)
@@ -65,7 +63,7 @@ title(titre);
 %     end
 % end
 % 
-% %tracé 
+% %trace 
 % figure;
 % surf(X,Y,eval)
 % %figure;
@@ -74,7 +72,7 @@ title(titre);
 % %ylim([-2,2])
 % xlabel('x');
 % ylabel('f(x) et df/dx');
-% titre=['Evaluation de la fonction ' fct ' et de sa dérivée'];
+% titre=['Evaluation de la fonction ' fct ' et de sa derivee'];
 % title(titre);
 % figure
 % quiver3(x,y,eval,evald1,evald2,-ones(size(X)),0.5);

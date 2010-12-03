@@ -35,7 +35,7 @@ if meta.norm
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
     tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     grad=grad.*repmat(std_t,ns,1)/std_e;
-    
+  
     
     %sauvegarde des calculs
     krg.norm.moy_eval=moy_e;
@@ -98,7 +98,6 @@ for ii=1:ns
         rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev; 
    end
 end
-
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];

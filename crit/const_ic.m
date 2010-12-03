@@ -6,15 +6,15 @@
 function [ic68,ic95,ic99]=const_ic(ZZ,var)
 
 %a 68%
-ic68.sup=ZZ+sqrt(mse);
-ic68.inf=ZZ-mse;
+ic68.sup=ZZ+var;
+ic68.inf=ZZ-var;
 %a 95%
 if nargout>=2
-    ic95.sup=ZZ+2*mse;
-    ic95.inf=ZZ-2*mse;
+    ic95.sup=ZZ+2*var;
+    ic95.inf=ZZ-2*var;
 end
 %a 99,7%
-if nargout==2
-    ic99.sup=ZZ+3*mse;
-    ic99.inf=ZZ-3*mse;
+if nargout==3
+    ic99.sup=ZZ+3*var;
+    ic99.inf=ZZ-3*var;
 end

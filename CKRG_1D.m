@@ -45,12 +45,12 @@ meta.type='CKRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-meta.theta=0.1;
+meta.theta=5;
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 %normalisation
-meta.norm=false;
+meta.norm=true;
 
 
 %affichage actif ou non
@@ -66,7 +66,7 @@ aff.grad=false;
 cofast.grad=false;
 
 %affichage de l'intervalle de confiance
-aff.ic='0'; %('0','68','95','99')
+aff.ic='68'; %('0','68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,24 +117,16 @@ switch meta.type
         disp(' ')
         [krg]=meta_ckrg(tirages,eval,grad,meta);
         ZZ=zeros(size(X));
-        mse=zeros(size(X));
+        msep=zeros(size(X));
         GK1=zeros(size(X));
          for ii=1:length(X)
-                 [ZZ(ii),GZ,mse(ii)]=eval_ckrg(X(ii),tirages,krg);
+                 [ZZ(ii),GZ,msep(ii)]=eval_ckrg(X(ii),tirages,krg);
                  GK1(ii)=GZ;
                 
          end
          ZK.Z=ZZ;
          %%%génération des différents intervalles de confiance
-         %a 68%
-         ic68.sup=ZZ+mse;
-         ic68.inf=ZZ-mse;
-         %a 95%
-         ic95.sup=ZZ+2*mse;
-         ic95.inf=ZZ-2*mse;
-         %a 99,7%
-         ic99.sup=ZZ+3*mse;
-         ic99.inf=ZZ-3*mse;
+         [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(msep));
          %%%affichage de la surface obtenue par KRG
             figure;
             hold on;
@@ -170,13 +162,14 @@ switch meta.type
             
             %%%%%%%%%%
             plot(tirages,eval,'rs','Color','red','MarkerSize',10);
+            plot(tirages,grad,'o','Color','red','MarkerSize',10);
             plot(X,ZK.Z,'Color','green','LineWidth',1.5);
             plot(X,GK1,'Color','red');
-            plot(X,mse,'Color','blue');
-            if str2num(aff.ic)~=0
-                legend(ic,' ','fct ref','deriv fct ref','Evaluations','CoKrigeage','Derivee CKRG','MSE');
+            plot(X,msep,'Color','blue');
+            if str2double(aff.ic)~=0
+                legend(ic,' ','fct ref','deriv fct ref','Evaluations','derivées','CoKrigeage','Derivee CKRG','MSE');
             else
-                legend('fct_ref','deriv fct ref','Evaluations','CoKrigeage','Derivee CKRG','MSE');
+                legend('fct ref','deriv fct ref','Evaluations','derivées','CoKrigeage','Derivee CKRG','MSE');
             end
             hold off
             aff.num=aff.num+1;
@@ -215,7 +208,6 @@ switch meta.type
         DZ=ZZ;
         MSE=ZZ;
         for ii=1:size(X,2)
-           
                 [ZZ(ii),DZ(ii),MSE(ii)]=predictor(X(ii),model);
                 
         end

@@ -7,7 +7,6 @@ d=size(val,2);
 
 %fonction polynomiale
 ret=[1 val];
-ret
 %derivee
 if nargout==2
     dret=[zeros(d,1) eye(d)];   

@@ -42,7 +42,7 @@ nb_samples=4;
 %%Metamodele
 meta.type='KRG';
 %degre de linterpolation/regression (si necessaire)
-meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
+meta.deg=1;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
 meta.theta=0.1;

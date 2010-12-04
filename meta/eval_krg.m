@@ -44,6 +44,7 @@ end
 %matrice de regression aux points d'evaluations
 if grad
     [ff,jf]=feval(krg.reg,X);
+    ff
 else
     ff=feval(krg.reg,X);
 end

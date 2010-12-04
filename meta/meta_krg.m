@@ -6,6 +6,7 @@
 function krg=meta_krg(tirages,eval,meta)
 
 ns=size(eval,1);
+tai_conc=size(tirages,2);
 
 %Normalisation
 if meta.norm
@@ -34,12 +35,24 @@ y=eval;
 
 %creation matrice de conception
 %(regression polynomiale)
-nbt=(meta.deg+1)*(meta.deg+2)*1/2;
-fc=zeros(ns,nbt);
+if meta.deg==0
+    nb_termes=1;
+elseif meta.deg==1
+    nb_termes=1+tai_conc;
+elseif meta.deg==2
+    p=(tai_conc+1)*(tai_conc+2)/2;
+    nb_termes=p-tai_conc-1;
+else
+    error('Degre de regression non pris en charge')
+end
+
+fc=zeros(ns,nb_termes);
 fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns
     fc(ii,:)=feval(fct,tirages(ii,:));
+    fc(ii,:)
 end
+fc
 
 %creation matrice de correlation
 rc=zeros(ns);
@@ -81,7 +94,7 @@ krg.dim=ns;
 krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.theta=meta.theta;
-krg.con=size(tirages,2);
+krg.con=tai_conc;
 
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);

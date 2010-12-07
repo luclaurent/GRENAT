@@ -41,7 +41,7 @@ elseif meta.deg==1
     nb_termes=1+tai_conc;
 elseif meta.deg==2
     p=(tai_conc+1)*(tai_conc+2)/2;
-    nb_termes=p-tai_conc-1;
+    nb_termes=p;
 else
     error('Degre de regression non pris en charge')
 end

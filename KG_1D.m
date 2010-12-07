@@ -37,7 +37,7 @@ pas=0.01;
 meta.doe='sfill';
 
 %nb d'echantillons
-nb_samples=4;
+nb_samples=8;
 
 %%Metamodele
 meta.type='KRG';

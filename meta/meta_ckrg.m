@@ -59,8 +59,7 @@ end
 y=vertcat(eval,der) ;
 
 
-%creation matrice de conception (seul polynome de degre 0 est pris en
-%charge /!\)
+%creation matrice de conception
 if meta.deg==0
     p=1;
 elseif meta.deg==1

@@ -75,7 +75,7 @@ end
 %calcul de la variance de prédiction (MSE) (Koelher & Owen 1996)
 if nargout ==3
     rcrr=krg.rcc \ rr;
-    u=krg.ft*rcrr-ff;
+    u=krg.ft*rcrr-ff';
     mse=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u) - rr'*rcrr);
 end
 

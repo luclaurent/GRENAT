@@ -39,10 +39,10 @@ calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='ffact';
+meta.doe='LHS';
 
 %nb d'echantillons
-nb_samples=6;
+nb_samples=10;
 
 %%Metamodele
 %type d'interpolation
@@ -227,12 +227,10 @@ disp(' ')
         ZZ=zeros(size(X));
         GCKRG1=zeros(size(X));
         GCKRG2=zeros(size(X));
-         for ii=1:size(X,1)
-             for jj=1:size(X,2)
-                 [ZZ(ii,jj),GZ] =eval_ckrg([X(ii,jj) Y(ii,jj)],krg);
-                 GCKRG1(ii,jj)=GZ(1);
-                 GCKRG2(ii,jj)=GZ(2);
-             end
+         for ii=1:size(X,1)*size(X,2)
+                 [ZZ(ii),GZ] =eval_ckrg([X(ii) Y(ii)],tirages,krg);
+                 GCKRG1(ii)=GZ(1);
+                 GCKRG2(ii)=GZ(2);
          end
          ZK.Z=ZZ;
          ZK.GR1=GCKRG1;

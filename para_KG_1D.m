@@ -37,7 +37,7 @@ pas=0.05;
 meta.doe='LHS';
 
 %nb d'echantillons
-nb_samples=5;
+nb_samples=4;
 
 %%Metamodele
 meta.type='KRG';
@@ -49,7 +49,7 @@ theta=linspace(0.011,30,30);
 %meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
-meta.norm=false;
+meta.norm=true;
 
 
 %affichage actif ou non

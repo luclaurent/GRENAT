@@ -8,7 +8,7 @@ d=size(val,2);
 p=(d+1)*(d+2)*1/2;
 
 t=val;
-tt=zeros(p-d-1,1);
+tt=zeros(1,p-d-1);
 
 j=0;m=d;
 for  ii=1:d
@@ -19,17 +19,19 @@ end
 
 %evaluation de la fonction polynomiale
 ret=[1 t tt];
-ret
-val
-
-
 
 
 %evaluation de la derivee
 if nargout==2
     dd=zeros(d,p-d-1);
+    j=0;m=d;
     for ii=1:d
-        dd(ii,:)
+        dd(ii,j+(1:m))=[2*val(ii) val(ii+1:d)];
+        for jj=1:d-ii
+            dd(ii+jj,j+jj+1)=val(ii);
+        end
+        j=j+m;
+        m=m-1;
     end
     
     dret=[zeros(d,1) eye(d) dd];

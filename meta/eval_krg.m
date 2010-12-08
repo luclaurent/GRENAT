@@ -48,6 +48,7 @@ else
     ff=feval(krg.reg,X);
 end
 
+
 %evaluation du metamodele au point X
 Z=ff*krg.beta+rr'*krg.gamma;
 
@@ -60,7 +61,6 @@ end
 %2004)
 if nargout ==3
     rcrr=krg.rc \ rr;
-    krg.ft*rcrr
     u=krg.ft*rcrr-ff';
     mse=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
     

@@ -8,6 +8,7 @@
 clf;clc;close all; clear all;
 addpath('doe/LHS');addpath('meta/dace');addpath('doe');addpath('fct');addpath('meta');
 addpath('crit');global cofast;
+addpath('matlab2tikz/')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,20 +38,20 @@ pas=0.01;
 meta.doe='sfill';
 
 %nb d'echantillons
-nb_samples=8;
+nb_samples=7;
 
 %%Metamodele
 meta.type='KRG';
 %degre de linterpolation/regression (si necessaire)
-meta.deg=1;   %cas KRG/CKRG compris (mais pas DACE)
+meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-meta.theta=0.1;
+meta.theta=5;
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 %normalisation
-meta.norm=false;
+meta.norm=true;
 
 
 %affichage actif ou non
@@ -133,23 +134,23 @@ switch meta.type
             %IC99
             switch aff.ic
                 case '99'
-                    h99s=area(X,ic99.sup,min(ic99.inf));
-                    h99i=area(X,ic99.inf,min(ic99.inf));
+                    h99s=area(X,ic99.sup,min(min(ic99.sup,ic99.inf)));
+                    h99i=area(X,ic99.inf,min(min(ic99.sup,ic99.inf)));
                     set(h99s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
                     set(h99i(1),'FaceColor',[1 1 1],'EdgeColor','none')
                     ic='IC99';
                 case '95'
                     disp('95')
                     %IC95
-                    h95s=area(X,ic95.sup,min(ic95.inf));
-                    h95i=area(X,ic95.inf,min(ic95.inf));
+                    h95s=area(X,ic95.sup,min(min(ic95.sup,ic95.inf)));
+                    h95i=area(X,ic95.inf,min(min(ic95.sup,ic95.inf)));
                     set(h95s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
                     set(h95i(1),'FaceColor',[1 1 1],'EdgeColor','none')
                     ic='IC95';
                 case '68'
                     %IC68
-                    h68s=area(X,ic68.sup,min(ic68.inf));
-                    h68i=area(X,ic68.inf,min(ic68.inf));
+                    h68s=area(X,ic68.sup,min(min(ic68.sup,ic68.inf)));
+                    h68i=area(X,ic68.inf,min(min(ic68.sup,ic68.inf)));
                     set(h68s(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
                     set(h68i(1),'FaceColor',[1 1 1],'EdgeColor','none')
                     ic='IC68';

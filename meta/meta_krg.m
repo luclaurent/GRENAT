@@ -18,7 +18,7 @@ if meta.norm
 
     %normalisation des valeur de la fonction objectif et des tirages
     eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
-    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1).^2;
+    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     
     %sauvegarde des donnees
     krg.norm.moy_eval=moy_e;
@@ -49,10 +49,8 @@ end
 fc=zeros(ns,nb_termes);
 fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns
-    fc(ii,:)=feval(fct,tirages(ii,:));
-    fc(ii,:)
+    fc(ii,:)=feval(fct,tirages(ii,:)); 
 end
-fc
 
 %creation matrice de correlation
 rc=zeros(ns);

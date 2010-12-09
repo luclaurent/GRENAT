@@ -258,20 +258,22 @@ disp(' ')
           view(3) 
           
           %affichage des gradients
+          aff.save=false;
+          aff.tikz=false;
           aff.pas=pas;
           aff.on=true;
           aff.newfig=true;
           aff.d2=true;
           aff.d3=false;
-          aff.titre='KRG';
+          aff.titre='CKRG';
           aff.xlabel=' ';
           aff.ylabel=' ';
           cofast.grad=true;
           aff.contour2=true;
           aff.grad=true;
-          out.Z=ZZ.KRG;
-          out.GR1=GKRG1;
-          out.GR2=GKRG2;
+          out.Z=ZZ.CKRG;
+          out.GR1=GCKRG1;
+          out.GR2=GCKRG2;
           aff.pts=true;
           aff.rendu=false;
           aff.scale=true;
@@ -340,33 +342,33 @@ title('diff KRGo DACE');
             
 %calcul des erreurs
 disp('DACE');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.DACE));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.DACE));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.DACE));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.DACE));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.DACE));
 disp(' ');
 disp('KRG');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRG));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.KRG));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRG));
 disp(' ');
  if meta.ajout  
 disp('KRGo');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGo));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.KRGo));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGo));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGo));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGo));
  end
 disp(' ');
 disp('KRGs');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGs));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.KRGs));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGs));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGs));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGs));
 disp(' ');
 disp('CKRG');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.CKRG));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.CKRG));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.CKRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.CKRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.CKRG));

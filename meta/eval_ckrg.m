@@ -69,10 +69,11 @@ Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
     GZ=jf*krg.beta+jr'*krg.gamma;
-    
+    jf
+    jr
 end
 
-%calcul de la variance de prédiction (MSE) (Koelher & Owen 1996)
+%calcul de la variance de prï¿½diction (MSE) (Koelher & Owen 1996)
 if nargout ==3
     rcrr=krg.rcc \ rr;
     u=krg.ft*rcrr-ff';

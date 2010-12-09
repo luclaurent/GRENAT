@@ -1,7 +1,7 @@
 %%%Etude de l'influence du parametre de la fonction de correlation
 %%%gaussienne sur la qualite du metamodele de Krigeage construit
 
-%%fonction étudiée: fonction cosinus
+%%fonction ï¿½tudiï¿½e: fonction cosinus
 %% 21/10/2010
 
 
@@ -18,9 +18,9 @@ fprintf('Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n', day(3), day(2), day(1),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.scale=false;aff.tikz=false;
 aff.num=0; %iterateur numeros figures
-aff.doss=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
+aff.doss=['results/' num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_1D']; %dossier de travail (pour sauvegarde figure)
-unix(['mkdir ' aff.doss]);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -34,10 +34,10 @@ pas=0.05;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='sfill';
+meta.doe='LHS';
 
 %nb d'echantillons
-nb_samples=5;
+nb_samples=12;
 
 %%Metamodele
 meta.type='CKRG';
@@ -45,12 +45,17 @@ meta.type='CKRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.11,100,20);
+theta=linspace(1,10,20);
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
 meta.norm=true;
 
+aff.doss=[aff.doss '_' meta.type '_' meta.doe '_ns' num2str(nb_samples,'%d') '_reg' num2str(meta.deg,'%d') '_' meta.corr];
+if meta.norm
+    aff.doss=[aff.doss '_norm'];
+end
+unix(['mkdir ' aff.doss]);
 
 %affichage actif ou non
 aff.on=false;
@@ -65,7 +70,7 @@ aff.grad=false;
 cofast.grad=false;
 
 %affichage de l'intervalle de confiance
-aff.ic='68'; %('68','95','99')
+aff.ic='0'; %('68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,6 +89,8 @@ switch meta.doe
         tirages=xxx';
     case 'LHS'
         tirages=lhsu(xmin,xmax,nb_samples);
+    case 'rand'
+        tirages=xmin+(xmax-xmin)*rand(nb_samples,1);
     otherwise
         error('le type de tirage nest pas defini');
 end
@@ -120,7 +127,7 @@ condr=zeros(size(theta));
 li=zeros(size(theta));
 logli=zeros(size(theta));
 
-aff.on='true';
+
             
 for i=1:length(theta)
     meta.theta=theta(i);
@@ -141,7 +148,7 @@ disp(' ')
                 
          end
          ZK.Z=ZZ;
-         %%%génération des différents intervalles de confiance
+         %%%gï¿½nï¿½ration des diffï¿½rents intervalles de confiance
          %a 68%
          ic68.sup=ZZ+mse;
          ic68.inf=ZZ-mse;
@@ -151,7 +158,8 @@ disp(' ')
          %a 99,7%
          ic99.sup=ZZ+3*mse;
          ic99.inf=ZZ-3*mse;
-        
+            if aff.on
+                
             %%%affichage de la surface obtenue par KRG
             figure;
             hold on;
@@ -185,7 +193,11 @@ disp(' ')
             plot(tirages,eval,'rs','Color','red','MarkerSize',10);
             plot(X,ZK.Z,'Color','green');
             plot(X,GK1,'Color','yellow');
-            legend(ic,' ','fct ref','Evaluations','Krigeage','Derivee KRG');
+            if exist('ic')
+                legend(ic,' ','fct ref','Evaluations','Krigeage','Derivee KRG');
+            else
+                legend('fct ref','Evaluations','Krigeage','Derivee KRG');
+            end
             hold off
             aff.num=aff.num+1;
             set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
@@ -194,7 +206,7 @@ disp(' ')
             fprintf('>>Sauvegarde figure: \n fichier %s\n',nomfig)
             saveas(gcf, nomfig,'psc2');
             saveas(gcf, nomfigm,'fig');
-            
+            end
             
             %Vraisemblance
             li(i)=krg.li;
@@ -269,6 +281,9 @@ title('Conditionnement matrice de correlation')
 saveas(gcf,[aff.doss '/bilan.eps'],'eps')
 saveas(gcf,[aff.doss '/bilan.fig'],'fig')
 
+%%recherche du minimum de la log-vraisemblance
+[val,ind]=min(logli);
+fprintf('Maximum de vraisemblance atteint %6.4f pour theta= %6.4f\n',val,theta(ind));
 
 %sauvegarde workspace
 nomfich=[aff.doss '/para_KG.mat'];

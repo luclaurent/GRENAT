@@ -1,7 +1,7 @@
 %%%Etude de l'influence du parametre de la fonction de correlation
 %%%gaussienne sur la qualite du metamodele de Krigeage construit
 
-%%fonction étudiée: fonction cosinus
+%%fonction ï¿½tudiï¿½e: fonction cosinus
 %% 21/10/2010
 
 
@@ -34,28 +34,28 @@ pas=0.05;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='LHS';
+meta.doe='rand';
 
 %nb d'echantillons
-nb_samples=3;
+nb_samples=26;
 
 %%Metamodele
 meta.type='KRG';
 %degre de linterpolation/regression (si necessaire)
-meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
+meta.deg=2;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.011,5,30);
+theta=linspace(0.6,10,30);
 %meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
 meta.norm=true;
 
 
-aff.doss=[aff.doss '_' meta.doe '_ns' nb_samples '_reg' num2str(meta.deg,'%d') '_' meta.corr];
+aff.doss=[aff.doss '_' meta.type '_' meta.doe '_ns' num2str(nb_samples,'%d') '_reg' num2str(meta.deg,'%d') '_' meta.corr];
 if meta.norm
     aff.doss=[aff.doss '_norm'];
-end 
+end
 unix(['mkdir ' aff.doss]);
 
 %affichage actif ou non
@@ -127,8 +127,6 @@ eq3=zeros(size(theta));
 condr=zeros(size(theta));
 li=zeros(size(theta));
 logli=zeros(size(theta));
-
-aff.on='true';
             
 for i=1:length(theta)
     meta.theta=theta(i);
@@ -149,7 +147,7 @@ disp(' ')
                 
          end
          ZK.Z=ZZ;
-         %%%génération des différents intervalles de confiance
+         %%%gï¿½nï¿½ration des diffï¿½rents intervalles de confiance
          %a 68%
          ic68.sup=ZZ+sqrt(mse);
          ic68.inf=ZZ-sqrt(mse);
@@ -160,6 +158,8 @@ disp(' ')
          ic99.sup=ZZ+3*sqrt(mse);
          ic99.inf=ZZ-3*sqrt(mse);
         
+         
+         if aff.on
             %%%affichage de la surface obtenue par KRG
             figure;
             hold on;
@@ -206,6 +206,7 @@ disp(' ')
             fprintf('>>Sauvegarde figure: \n fichier %s\n',nomfig)
             saveas(gcf, nomfig,'psc2');
             saveas(gcf, nomfigm,'fig');
+         end
             
             
             %Vraisemblance
@@ -280,6 +281,12 @@ xlabel('\theta');
 title('Conditionnement matrice de correlation')
 saveas(gcf,[aff.doss '/bilan.eps'],'eps')
 saveas(gcf,[aff.doss '/bilan.fig'],'fig')
+
+
+%%recherche du minimum de la log-vraisemblance
+[val,ind]=min(logli);
+fprintf('Maximum de vraisemblance atteint %6.4f pour theta= %6.4f\n',val,theta(ind));
+
 
 
 %sauvegarde workspace

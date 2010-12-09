@@ -16,9 +16,9 @@ fprintf('Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n', day(3), day(2), day(1),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.scale=true;aff.tikz=false;
 aff.num=0; %iterateur numeros figures
-aff.doss=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
+aff.doss=['results/' num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f')]; %dossier de travail (pour sauvegarde figure)
-unix(['mkdir ' aff.doss]);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -42,7 +42,7 @@ calc_grad=true;
 meta.doe='LHS';
 
 %nb d'echantillons
-nb_samples=10;
+nb_samples=2;
 
 %%Metamodele
 %type d'interpolation
@@ -68,6 +68,11 @@ meta.nb_vs=3;        %nombre de valeurs singulieres à prendre en compte
 %normalisation
 meta.norm=true;
 
+aff.doss=[aff.doss '_' meta.type '_' meta.doe '_ns' num2str(nb_samples,'%d') '_reg' num2str(meta.deg,'%d') '_' meta.corr];
+if meta.norm
+    aff.doss=[aff.doss '_norm'];
+end
+unix(['mkdir ' aff.doss]);
 
 %affichage actif ou non
 aff.on=false;
@@ -150,7 +155,7 @@ switch meta.doe
             end
         end
     case 'LHS'
-        tirages=lhsu(Xmin,Xmax,nb_samples);
+        tirages=lhsu(Xmin,Xmax,nb_samples^2);
     otherwise
         error('le type de tirage nest pas defini');
 end
@@ -375,6 +380,11 @@ xlabel('\theta');
 title('Conditionnement matrice de correlation')
 saveas(gcf,[aff.doss '/bilan.eps'],'eps')
 saveas(gcf,[aff.doss '/bilan.fig'],'fig')
+
+
+%%recherche du minimum de la log-vraisemblance
+[val,ind]=min(logli);
+fprintf('Maximum de vraisemblance atteint %6.4f pour theta= %6.4f\n',val,theta(ind));
 
 %sauvegarde workspace
 nomfich=[aff.doss '/para_KG.mat'];

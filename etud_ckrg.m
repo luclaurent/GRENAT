@@ -281,33 +281,33 @@ disp(' ')
             
 %calcul des erreurs
 disp('DACE');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.DACE));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.DACE));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.DACE));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.DACE));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.DACE));
 disp(' ');
 disp('KRG');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRG));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.KRG));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRG));
 if meta.ajout
 disp(' ');
 disp('KRG sans ajout de point');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGo));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.KRGo));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGo));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGo));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGo));
 end
 disp(' ');
 disp('KRGs');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.KRGs));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.KRGs));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRGs));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRGs));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRGs));
 disp(' ');
 disp('CKRG');
-fprintf('MSE=%g\n',mse(Z.Z,ZZ.CKRG));
+fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.CKRG));
 fprintf('R²=%g\n',r_square(Z.Z,ZZ.CKRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.CKRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.CKRG));

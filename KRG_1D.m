@@ -1,7 +1,7 @@
 %%%Etude de l'influence du parametre de la fonction de correlation
 %%%gaussienne sur la qualite du metamodele de Krigeage construit
 
-%%fonction étudiée: fonction cosinus
+%%fonction ï¿½tudiï¿½e: fonction cosinus
 %% 21/10/2010
 
 
@@ -125,7 +125,7 @@ switch meta.type
                 
          end
          ZK.Z=ZZ;
-         %%%génération des différents intervalles de confiance
+         %%%gï¿½nï¿½ration des diffï¿½rents intervalles de confiance
         
          [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(mse));
          %%%affichage de la surface obtenue par KRG
@@ -157,7 +157,7 @@ switch meta.type
             end
             
             
-            %fonction de référence
+            %fonction de rï¿½fï¿½rence
             plot(X,Z.Z,'Color','blue','LineWidth',1.5);
             
             %%%%%%%%%%

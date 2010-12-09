@@ -10,7 +10,7 @@ tai_conc=size(tirages,2);
 
 %Normalisation
 if meta.norm
-    disp('Normalisation\n');
+    disp('Normalisation');
     moy_e=mean(eval);
     std_e=std(eval);
     moy_t=mean(tirages);
@@ -62,7 +62,7 @@ end
 
 %conditionnement de la matrice de correlation
 krg.cond=cond(rc);
-sprintf('Conditionnement R: %6.5d\n',krg.cond)
+fprintf('Conditionnement R: %6.5d\n',krg.cond)
 
 %calcul du coefficient beta
 %%approche classique
@@ -97,7 +97,7 @@ krg.con=tai_conc;
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);
 
-%variance de prédiction
+%variance de prï¿½diction
 sig2=1/size(rc,1)*((y-fc*krg.beta)'/rc)*(y-fc*krg.beta);
 if meta.norm
     krg.sig2=sig2*std_e^2;

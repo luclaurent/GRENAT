@@ -47,9 +47,11 @@ if grad  %si calcul des gradients
      end
         
     jr(krg.dim+1:krg.dim*(1+krg.con),:)=-mat_der;
-    
+    ddev
+    jr
   
-else %sinon       
+else %sinon
+    %a réécrire
     [ev,dev]=feval(krg.corr,dist,krg.theta);
     rr(1:krg.dim)=ev;
     rr(krg.dim+1:krg.dim*(krg.con+1))=dev;
@@ -69,8 +71,7 @@ Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
     GZ=jf*krg.beta+jr'*krg.gamma;
-    jf
-    jr
+   %size(jr)
 end
 
 %calcul de la variance de pr�diction (MSE) (Koelher & Owen 1996)

@@ -1,9 +1,3 @@
-%%%Etude de l'influence du parametre de la fonction de correlation
-%%%gaussienne sur la qualite du metamodele de CoKrigeage construit
-
-%%fonction étudiée: fonction cosinus
-%% 21/10/2010
-
 
 clf;clc;close all; clear all;
 addpath('doe/LHS');addpath('meta/dace');addpath('doe');addpath('fct');addpath('meta');
@@ -125,7 +119,7 @@ switch meta.type
                 
          end
          ZK.Z=ZZ;
-         %%%génération des différents intervalles de confiance
+         %%%gï¿½nï¿½ration des diffï¿½rents intervalles de confiance
          [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(msep));
          %%%affichage de la surface obtenue par KRG
             figure;
@@ -156,7 +150,7 @@ switch meta.type
             end
             
             
-            %fonction de référence
+            %fonction de rï¿½fï¿½rence
             plot(X,Z.Z,'Color','blue','LineWidth',1.5);
             plot(X,Z.grad,'--','Color','blue','LineWidth',1.5);
             
@@ -167,9 +161,9 @@ switch meta.type
             plot(X,GK1,'Color','red');
             plot(X,msep,'Color','blue');
             if str2double(aff.ic)~=0
-                legend(ic,' ','fct ref','deriv fct ref','Evaluations','derivées','CoKrigeage','Derivee CKRG','MSE');
+                legend(ic,' ','fct ref','deriv fct ref','Evaluations','derivï¿½es','CoKrigeage','Derivee CKRG','MSE');
             else
-                legend('fct ref','deriv fct ref','Evaluations','derivées','CoKrigeage','Derivee CKRG','MSE');
+                legend('fct ref','deriv fct ref','Evaluations','derivï¿½es','CoKrigeage','Derivee CKRG','MSE');
             end
             hold off
             aff.num=aff.num+1;

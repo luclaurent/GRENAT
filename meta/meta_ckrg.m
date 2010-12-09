@@ -95,9 +95,10 @@ for ii=1:ns
         
         %matrice des derivees secondes
         rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev; 
+       
    end
 end
-
+rci
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
 
@@ -121,7 +122,7 @@ krg.beta=block1\block2;
 krg.gamma=rcc\(y-fc*krg.beta);
 
 
-%calcul de la variance de prédiction
+%calcul de la variance de prï¿½diction
 sig2=1/size(rcc,1)*((y-fc*krg.beta)'/rcc)*(y-fc*krg.beta);
 if meta.norm
     krg.sig2=sig2*std_e^2;
@@ -130,7 +131,7 @@ else
 end
 
 
-%%sauvegardes de données
+%%sauvegardes de donnï¿½es
 krg.rcc=rcc;
 krg.ft=ft;
 krg.reg=fct;

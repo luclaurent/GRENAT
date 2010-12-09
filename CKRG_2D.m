@@ -33,7 +33,7 @@ pas=2*val/nb;
 meta.doe='ffact';
 
 %nombre d'échantillons
-nb_samples=4;
+nb_samples=3;
 meta.ajout=false;
 meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -113,14 +113,12 @@ disp(' ')
          ZZ.CKRG=zeros(size(X));
          GCKRG1=zeros(size(X));
          GCKRG2=zeros(size(X));
-          for ii=1:size(X,1) 
-             for jj=1:size(X,2)
-              [ZZ.CKRG(ii,jj),GZ] =eval_ckrg([X(ii,jj) Y(ii,jj)],tirages,ckrg);
-                  GCKRG1(ii,jj)=GZ(1);
-                  GCKRG2(ii,jj)=GZ(2);
-             end
-              
+          for ii=1:size(X,1)*size(X,2)
+              [ZZ.CKRG(ii),GZ] =eval_ckrg([X(ii) Y(ii)],tirages,ckrg);
+                  GCKRG1(ii)=GZ(1);
+                  GCKRG2(ii)=GZ(2);
           end
+
 %       
           
           %affichage des gradients
@@ -153,6 +151,7 @@ disp(' ')
           aff.contour3=true;
           aff.uni=false;
           aff.zlabel=' ';
+         aff.grad=false;
           affichage(X,Y,out,tirages,eval,aff);
           
 

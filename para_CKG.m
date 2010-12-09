@@ -315,7 +315,7 @@ disp(' ')
             
             
             condr(i)=krg.cond;
-            emse(i)=mse(Z.Z,ZK.Z);
+            emse(i)=mse_p(Z.Z,ZK.Z);
             err(i)=r_square(Z.Z,ZK.Z);
             eraae(i)=raae(Z.Z,ZK.Z);
             ermae(i)=rmae(Z.Z,ZK.Z);

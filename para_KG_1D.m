@@ -18,9 +18,9 @@ fprintf('Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n', day(3), day(2), day(1),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.scale=false;aff.tikz=false;
 aff.num=0; %iterateur numeros figures
-aff.doss=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
+aff.doss=['results/' num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_1D']; %dossier de travail (pour sauvegarde figure)
-unix(['mkdir ' aff.doss]);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -37,7 +37,7 @@ pas=0.05;
 meta.doe='LHS';
 
 %nb d'echantillons
-nb_samples=4;
+nb_samples=3;
 
 %%Metamodele
 meta.type='KRG';
@@ -45,12 +45,18 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.011,30,30);
+theta=linspace(0.011,5,30);
 %meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
 meta.norm=true;
 
+
+aff.doss=[aff.doss '_' meta.doe '_ns' nb_samples '_reg' num2str(meta.deg,'%d') '_' meta.corr];
+if meta.norm
+    aff.doss=[aff.doss '_norm'];
+end 
+unix(['mkdir ' aff.doss]);
 
 %affichage actif ou non
 aff.on=false;
@@ -65,7 +71,7 @@ aff.grad=false;
 cofast.grad=false;
 
 %affichage de l'intervalle de confiance
-aff.ic='68'; %('68','95','99')
+aff.ic='0'; %('68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,6 +90,8 @@ switch meta.doe
         tirages=xxx';
     case 'LHS'
         tirages=lhsu(xmin,xmax,nb_samples);
+    case 'rand'
+        tirages=xmin+(xmax-xmin)*rand(nb_samples,1);
     otherwise
         error('le type de tirage nest pas defini');
 end
@@ -185,7 +193,11 @@ disp(' ')
             plot(tirages,eval,'rs','Color','red','MarkerSize',10);
             plot(X,ZK.Z,'Color','green');
             plot(X,GK1,'Color','yellow');
-            legend(ic,' ','fct ref','Evaluations','Krigeage','Derivee KRG');
+            if exist('ic')
+                legend(ic,' ','fct ref','Evaluations','Krigeage','Derivee KRG');
+            else
+                legend('fct ref','Evaluations','Krigeage','Derivee KRG');
+            end
             hold off
             aff.num=aff.num+1;
             set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
@@ -271,6 +283,6 @@ saveas(gcf,[aff.doss '/bilan.fig'],'fig')
 
 
 %sauvegarde workspace
-nomfich=[aff.doss '/para_KG.mat'];
+nomfich=[aff.doss '/WS.mat'];
 save(nomfich)
 %diary([aff.doss '/log.txt'])

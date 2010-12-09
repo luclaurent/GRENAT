@@ -7,7 +7,7 @@
 
 clf;clc;close all; clear all;
 addpath('doe/LHS');addpath('meta/dace');addpath('doe');addpath('fct');addpath('meta');
-addpath('crit');global cofast;
+addpath('crit');global cofast;addpath('matlab2tikz/');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,7 +26,7 @@ unix(['mkdir ' aff.doss]);
 
 %%Definition de l'espace de conception
 xmin=0;
-xmax=10;
+xmax=15;
 
 %pas du trace
 pas=0.01;

@@ -27,7 +27,7 @@ unix(['mkdir ' aff.doss]);
 
 %%Definition de l'espace de conception
 xmin=0;
-xmax=10;
+xmax=15;
 
 %pas du trace
 pas=0.01;
@@ -38,7 +38,7 @@ pas=0.01;
 meta.doe='sfill';
 
 %nb d'echantillons
-nb_samples=7;
+nb_samples=4;
 
 %%Metamodele
 meta.type='KRG';

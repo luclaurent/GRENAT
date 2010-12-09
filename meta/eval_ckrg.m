@@ -47,9 +47,7 @@ if grad  %si calcul des gradients
      end
         
     jr(krg.dim+1:krg.dim*(1+krg.con),:)=-mat_der;
-    ddev
-    jr
-  
+   
 else %sinon
     %a réécrire
     [ev,dev]=feval(krg.corr,dist,krg.theta);

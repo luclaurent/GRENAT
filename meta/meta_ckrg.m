@@ -98,15 +98,15 @@ for ii=1:ns
        
    end
 end
-rci
+
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
 
 
 %conditionnement de la matrice de correlation
 krg.cond=cond(rcc);
-txt=['Conditionnement R: ' num2str(krg.cond,'%6.5d')];
-disp(txt);
+fprintf('Conditionnement R: %6.5d\n',krg.cond)
+
 
 
 %calcul de beta

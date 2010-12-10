@@ -5,6 +5,6 @@ function [ret,dret]=reg_poly0(val)
 
 ret=1;
 if nargout==2
-    dret=0;
+    dret=zeros(size(val));
 end
 end

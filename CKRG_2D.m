@@ -1,4 +1,4 @@
-%%Fichier d'étude du CoKrigeage sur fonction 2D
+%%Fichier d'etude du CoKrigeage sur fonction 2D
 %%L. LAURENT -- 19/05/2010 -- luc.laurent@ens-cachan.fr
 clf;
 %clc;
@@ -10,7 +10,7 @@ addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%Définition de l'espace de conception
+%%Definition de l'espace de conception
 val=4;
 xmin=-val;
 xmax=val;
@@ -18,11 +18,11 @@ ymin=-val;
 ymax=val;
 
 
-%fonction utilisée
+%fonction utilisee
 %fct=@(x) 5;
 %fctd=@(x) 0;
 fctt='fct_peaks';
-%pas du tracé
+%pas du trace
 nb=50;
 pas=2*val/nb;
 
@@ -32,24 +32,24 @@ pas=2*val/nb;
 %Type de tirage
 meta.doe='ffact';
 
-%nombre d'échantillons
-nb_samples=3;
+%nombre d'echantillons
+nb_samples=5;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Type de métamodèle
+%Type de metamodele
 
-%paramètre
+%parametre
 meta.deg=0;
-meta.theta=0.5;
+meta.theta=5;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
-meta.norm=false;
+meta.norm=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluation de la fonction étudiée et des gradients
+%Evaluation de la fonction etudiee et des gradients
 x=linspace(xmin,xmax,nb);
 y=linspace(ymin,ymax,nb);
 [X,Y]=meshgrid(x,y);
@@ -60,11 +60,11 @@ y=linspace(ymin,ymax,nb);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('=====================================');
 disp('=====================================');
-disp('=======Construction métamodèle=======');
+disp('=======Construction metamodele=======');
 disp('=====================================');
 disp('=====================================');
 
-%% Tirages: plan d'expérience
+%% Tirages: plan d'experience
 disp('===== DOE =====');
 switch meta.doe
     case 'ffact'
@@ -77,29 +77,29 @@ switch meta.doe
         Xmax=[xmax,ymax];
         tirages=lhsu(Xmin,Xmax,nb_samples);
     otherwise
-        error('le type de tirage nest pas défini');
+        error('le type de tirage nest pas defini');
 end
 
 
 
-%évaluations aux points
+%evaluations aux points
 grad=zeros(size(tirages));
 [eval,grad(:,1),grad(:,2)]=feval(fctt,tirages(:,1),tirages(:,2));
 
-%tracé courbes initiales
+%trace courbes initiales
 figure;
         
 surf(X,Y,Z.Z,'LineWidth',1);
-hlight=light;               % activ. éclairage
+hlight=light;               % activ. eclairage
         lighting('gouraud')         % type de rendu
-        lightangle(hlight,48,70)    % dir. éclairage
-title('fonction de référence');
+        lightangle(hlight,48,70)    % dir. eclairage
+title('fonction de reference');
 hold on;
 
 plot3(tirages(:,1),tirages(:,2),eval,'.','Color','red','LineWidth',3);
 %hold on
 %plot(tirages,grad,'.','Color','g','LineWidth',3);
-%% Génération du métamodèle
+%% Generation du metamodele
 disp('===== METAMODELE =====');
 disp(' ')
 
@@ -128,7 +128,6 @@ disp(' ')
           aff.newfig=true;
           aff.d2=true;
           aff.d3=false;
-          aff.titre='CKRG';
           aff.xlabel=' ';
           aff.ylabel=' ';
           cofast.grad=true;
@@ -143,6 +142,18 @@ disp(' ')
           global resultats
           resultats.tirages=tirages;
           resultats.grad.gradients=grad;
+          out1.Z=Z.Z;
+          out1.GR1=Z.gr1;
+          out1.GR2=Z.gr2;
+           aff.titre='REF';
+          affichage(X,Y,out1,tirages,eval,aff);
+          
+          out2.Z=out.Z-out1.Z;
+          out2.GR1=out.GR1-out1.GR1;
+          out2.GR2=out.GR2-out1.GR2;
+           aff.titre='diff';
+          affichage(X,Y,out2,tirages,eval,aff);
+           aff.titre='CKRG';
           affichage(X,Y,out,tirages,eval,aff);
           aff.contour2=false;
           aff.d2=false;
@@ -157,6 +168,6 @@ disp(' ')
 
 disp('CKRG');
 fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.CKRG));
-fprintf('R²=%g\n',r_square(Z.Z,ZZ.CKRG));
+fprintf('R2=%g\n',r_square(Z.Z,ZZ.CKRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.CKRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.CKRG));

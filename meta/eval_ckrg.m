@@ -33,30 +33,30 @@ dist=repmat(X,krg.dim,1)-tirages;
 
 if grad  %si calcul des gradients
     [ev,dev,ddev]=feval(krg.corr,dist,krg.theta);
-    rr(1:krg.dim)=ev;        
+    rr(1:krg.dim)=ev;  
     rr(krg.dim+1:krg.dim*(krg.con+1))=-reshape(dev',1,krg.dim*krg.con);
 
     %derivee du vecteur de correlation aux points d'evaluations
     jr(1:krg.dim,:)=dev;
-    
+
      % derivees secondes     
-     mat_der=zeros(krg.dim*krg.con,krg.con);
+     mat_der=zeros(krg.con,krg.dim*krg.con);
     
      for mm=1:krg.dim
-        mat_der((mm-1)*krg.con+1:(mm-1)*krg.con+krg.con,:)=ddev(:,:,mm);
+        mat_der(:,(mm-1)*krg.con+1:(mm-1)*krg.con+krg.con,:)=ddev(:,:,mm);
      end
         
-    jr(krg.dim+1:krg.dim*(1+krg.con),:)=-mat_der;
+    jr(krg.dim+1:krg.dim*(1+krg.con),:)=-mat_der';
    
 else %sinon
-    %a réécrire
+    %a reecrire
     [ev,dev]=feval(krg.corr,dist,krg.theta);
     rr(1:krg.dim)=ev;
     rr(krg.dim+1:krg.dim*(krg.con+1))=dev;
 end
 
 
-%matrice de regression aux points d'evalutions
+%matrice de regression aux points d'evaluations
 if grad    
     [ff,jf]=feval(krg.reg,X);
 else
@@ -64,12 +64,11 @@ else
 end
 
 %evaluation du metamodele au point X
-
-Z=ff*krg.beta+rr'*krg.gamma;
+%a reecrire pour passage au krigeage universel
+Z=krg.beta+rr'*krg.gamma;
 
 if grad 
-    GZ=jf*krg.beta+jr'*krg.gamma;
-   %size(jr)
+    GZ=jf'.*krg.beta+jr'*krg.gamma;
 end
 
 %calcul de la variance de pr�diction (MSE) (Koelher & Owen 1996)

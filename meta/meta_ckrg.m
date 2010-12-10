@@ -73,12 +73,10 @@ end
 fc=zeros((dim+1)*ns,p);
 fct=['reg_poly' num2str(meta.deg,1)];
 p=ns;
-size(fc)
 for ii=1:ns
        [fc(ii,:),fc(p+(1:dim),:)]=feval(fct,tirages(ii,:));
        p=p+dim;
 end
-size(fc)
 
 %%%creation matrice de correlation
 %morceau de la matrice issu du krigeage

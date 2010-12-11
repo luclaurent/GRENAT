@@ -16,7 +16,7 @@ fprintf('Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n', day(3), day(2), day(1),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.scale=true;aff.tikz=false;
 aff.num=0; %iterateur numeros figures
-aff.doss=['results/' num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
+aff.doss=['results\' num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f')]; %dossier de travail (pour sauvegarde figure)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,7 +30,7 @@ ymin=-1;
 ymax=3;
 
 %Fonction utilisee
-fct='peaks';    %fonction utilisee (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='rosen';    %fonction utilisee (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du trace
 pas=0.1;
 
@@ -39,40 +39,29 @@ calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='LHS';
+meta.doe='ffact';
 
 %nb d'echantillons
-nb_samples=2;
+nb_samples=6;
 
 %%Metamodele
-%type d'interpolation
-%PRG: regression polynomiale
-%DACE: krigeage (utilisation de la toolbox DACE)
-%KRG: krigeage
-%CKRG: CoKrigeage (necessite le calcul des gradients)
-%RBF: fonctions à base radiale
-%POD: decomposition en valeurs singulieres
+
 meta.type='CKRG';
 %degre de linterpolation/regression (si necessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.4,5,10);
+theta=linspace(1,10,30);
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
-%parametre RBF
-meta.para=1.5;
-meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiqua' et 'cauchy'
-%parametre POD
-meta.nb_vs=3;        %nombre de valeurs singulieres à prendre en compte
-%normalisation
+
 meta.norm=true;
 
 aff.doss=[aff.doss '_' meta.type '_' meta.doe '_ns' num2str(nb_samples,'%d') '_reg' num2str(meta.deg,'%d') '_' meta.corr];
 if meta.norm
     aff.doss=[aff.doss '_norm'];
 end
-unix(['mkdir ' aff.doss]);
+dos(['mkdir ' aff.doss]);
 
 %affichage actif ou non
 aff.on=false;
@@ -179,7 +168,7 @@ end
 
 %%Affichage courbe initiale
 %parametrage options
-aff.on=true;
+
 aff.newfig=true;
 aff.contour=true;
 aff.rendu=true;
@@ -302,8 +291,9 @@ disp(' ')
             aff.xlabel='x_{1}';
             aff.ylabel='x_{2}';
             aff.zlabel='F';
-            aff.num=aff.num+1;
+            aff.save=false;
             affichage(X,Y,Z,tirages,eval,aff);
+            aff.save=true;
             aff.newfig=false;
             aff.color='red';
             aff.num=aff.num+1;
@@ -320,11 +310,12 @@ disp(' ')
             eraae(i)=raae(Z.Z,ZK.Z);
             ermae(i)=rmae(Z.Z,ZK.Z);
             [eq1(i),eq2(i),eq3(i)]=qual(Z.Z,ZK.Z);
-            sprintf('\nMSE= %6.4d\n',emse(i));
-            sprintf('R2= %6.4d\n',err(i));
-            sprintf('RAAE= %6.4d\n',eraae(i));
-            sprintf('RMAE= %6.4d\n',ermae(i));
-            sprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1(i),eq2(i),eq3(i));
+            fprintf('\nMSE= %6.4d\n',emse(i));
+            fprintf('R2= %6.4d\n',err(i));
+            fprintf('RAAE= %6.4d\n',eraae(i));
+            fprintf('RMAE= %6.4d\n',ermae(i));
+            fprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1(i),eq2(i),eq3(i));
+            fprintf('Likelihood= %6.4d, Log-Likelihood= %6.4d \n\n',li(i),logli(i));
 
         disp('=====================================');
         disp('=====================================');

@@ -94,8 +94,6 @@ krg.deg=meta.deg;
 krg.theta=meta.theta;
 krg.con=tai_conc;
 
-%Maximum de vraisemblance
-[krg.lilog,krg.li]=likelihood(rc,y,fc,krg.beta);
 
 %variance de pr�diction
 sig2=1/size(rc,1)*((y-fc*krg.beta)'/rc)*(y-fc*krg.beta);
@@ -104,4 +102,8 @@ if meta.norm
 else
     krg.sig2=sig2;
 end
+
+
+%Maximum de vraisemblance
+[krg.lilog,krg.li]=likelihood(rc,sig2);
 end

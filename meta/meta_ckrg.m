@@ -103,7 +103,10 @@ end
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
 
-
+%amélioration du conditionnement de la matrice de corrélation
+if meta.recond
+    rcc=rcc+10^-4*eye(size(rcc));
+end
 %conditionnement de la matrice de correlation
 krg.cond=cond(rcc);
 fprintf('Conditionnement R: %6.5d\n',krg.cond)

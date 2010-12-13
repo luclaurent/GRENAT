@@ -30,19 +30,19 @@ ymin=-1;
 ymax=3;
 
 %Fonction utilisee
-fct='peaks';    %fonction utilisee (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='peaks';    %fonction utilisee (rosenbrock: 'rosen' / peaks: 'peaks' /Branin: 'branin' /Goldstein: 'gold' /Six-Hump camel back: 'sixh')
 %pas du trace
-pas=0.1;
+pas=0.8;
 
 %calcul des gradients des fonctions initiales
 calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='sfill';
+meta.doe='ffact';
 
 %nb d'echantillons
-nb_samples=8;
+nb_samples=7;
 
 %%Metamodele
 
@@ -51,7 +51,7 @@ meta.type='CKRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(2,5,30);
+theta=linspace(0.9,20,30);
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 
@@ -97,6 +97,21 @@ switch esp.type
                 xmax=3;
                 ymin=-3;
                 ymax=3;
+            case 'branin'
+                xmin=-5;
+                xmax=10;
+                ymin=0;
+                ymax=15;
+            case 'gold'
+                xmin=-2;
+                xmax=2;
+                ymin=-2;
+                ymax=2;
+            case 'sixh'
+                xmin=-2;
+                xmax=2;
+                ymin=-1;
+                ymax=1;
         end
     case 'manu'
         disp('Definition manu du domaine de conception');
@@ -122,6 +137,24 @@ switch fct
         else
             Z.Z=fct_peaks(X,Y);
         end
+    case 'branin'
+        if calc_grad
+           [Z.Z,Z.GR1,Z.GR2]=fct_branin(X,Y);
+        else
+            Z.Z=fct_branin(X,Y);
+        end
+    case 'gold'
+        if calc_grad
+           [Z.Z,Z.GR1,Z.GR2]=fct_gold(X,Y);
+        else
+            Z.Z=fct_gold(X,Y);
+        end
+    case 'sixh'
+        if calc_grad
+           [Z.Z,Z.GR1,Z.GR2]=fct_sixhump(X,Y);
+        else
+            Z.Z=fct_sixhump(X,Y);
+        end
 end
 
 %% Tirages: plan d'experience
@@ -143,6 +176,10 @@ switch meta.doe
                 tirages(size(xxx,2)*(ii-1)+jj,2)=yyy(jj);
             end
         end
+    case 'rand'
+        tirages=zeros(nb_samples^2,2);
+        tirages(:,1)=xmin+(xmax-xmin)*rand(nb_samples^2,1);
+        tirages(:,2)=ymin+(ymax-ymin)*rand(nb_samples^2,1);
     case 'LHS'
         tirages=lhsu(Xmin,Xmax,nb_samples^2);
     otherwise
@@ -162,6 +199,24 @@ switch fct
             [eval,grad(:,1),grad(:,2)]=fct_peaks(tirages(:,1),tirages(:,2));
         else
             [eval]=fct_peaks(tirages(:,1),tirages(:,2));
+        end
+    case 'branin'
+        if calc_grad
+            [eval,grad(:,1),grad(:,2)]=fct_branin(tirages(:,1),tirages(:,2));
+        else
+            [eval]=fct_branin(tirages(:,1),tirages(:,2));
+        end
+    case 'gold'
+        if calc_grad
+            [eval,grad(:,1),grad(:,2)]=fct_gold(tirages(:,1),tirages(:,2));
+        else
+            [eval]=fct_gold(tirages(:,1),tirages(:,2));
+        end
+    case 'sixh'
+        if calc_grad
+            [eval,grad(:,1),grad(:,2)]=fct_sixhump(tirages(:,1),tirages(:,2));
+        else
+            [eval]=fct_sixhump(tirages(:,1),tirages(:,2));
         end
 end
 

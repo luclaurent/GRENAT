@@ -8,7 +8,7 @@
 
 function [p,dp1,dp2]=fct_branin(xx,yy)
 
-a=1;b=5.2/pi;c=5/pi;d=6;e=10;f=1/(8*pi);
+a=1;b=5.1/(4*pi^2);c=5/pi;d=6;e=10;f=1/(8*pi);
 
 
 p = a*(yy-b*xx.^2+c*xx-d).^2+e*(1-f)*cos(xx)+e;

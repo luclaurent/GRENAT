@@ -11,17 +11,33 @@ addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Definition de l'espace de conception
-val=4;
-xmin=-val;
-xmax=val;
-ymin=-val;
-ymax=val;
-
+ val=4;
+% xmin=-val;
+% xmax=val;
+% ymin=-val;
+% ymax=val;
+% 
+% %branin
+ xmin=-5;
+ xmax=10;
+ymin=0;
+ ymax=15;
+%Goldstein
+% val=2;
+% xmin=-val;
+% xmax=val;
+% ymin=-val;
+% ymax=val;
+%SixHump
+%xmin=-2;
+%xmax=2;
+%ymin=-1;
+%ymax=1;
 
 %fonction utilisee
 %fct=@(x) 5;
 %fctd=@(x) 0;
-fctt='fct_peaks';
+fctt='fct_branin';
 %pas du trace
 nb=50;
 pas=2*val/nb;
@@ -30,10 +46,10 @@ pas=2*val/nb;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Type de tirage
-meta.doe='ffact';
+meta.doe='LHS';
 
 %nombre d'echantillons
-nb_samples=7;
+nb_samples=4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,6 +62,7 @@ meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
 meta.norm=true;
+meta.recond=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,11 +88,22 @@ switch meta.doe
         tirages=factorial_design(nb_samples,nb_samples,xmin,xmax,ymin,ymax);
     case 'sfill'
         xxx=linspace(xmin,xmax,nb_samples);
-        tirages=xxx';
+        yyy=linspace(ymin,ymax,nb_samples);
+        tirages=zeros(size(xxx,2)^2,2);
+        for ii=1:size(xxx,2)
+            for jj=1:size(xxx,2)
+                tirages(size(xxx,2)*(ii-1)+jj,1)=xxx(ii);
+                tirages(size(xxx,2)*(ii-1)+jj,2)=yyy(jj);
+            end
+        end
     case 'LHS'
         Xmin=[xmin,ymin];
         Xmax=[xmax,ymax];
-        tirages=lhsu(Xmin,Xmax,nb_samples);
+        tirages=lhsu(Xmin,Xmax,nb_samples^2);
+    case 'rand'
+        tirages=zeros(nb_samples^2,2);
+        tirages(:,1)=xmin+(xmax-xmin)*rand(nb_samples^2,1);
+        tirages(:,2)=ymin+(ymax-ymin)*rand(nb_samples^2,1);
     otherwise
         error('le type de tirage nest pas defini');
 end

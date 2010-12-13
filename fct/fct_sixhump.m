@@ -1,6 +1,13 @@
 %fonction Six-Hump camel back
 %L. LAURENT -- 13/12/2010 -- luc.laurent@ens-cachan.fr
 
+%6 minima locaux dont 2 globaux:
+%f(x1,x2)=-1.0316 pour (x1,x2)={(-0.0898,0.7126),(0.0898,0.7126)}
+
+%Domaine d'etude de la fonction: -3<x1<3 -2<x2<2
+%(conseille: -2<x1<2 -1<x2<1)
+
+
 function [p,dp1,dp2]=fct_sixhump(xx,yy)
 
 

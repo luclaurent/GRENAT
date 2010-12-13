@@ -16,7 +16,7 @@ fprintf('Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n', day(3), day(2), day(1),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 aff.scale=true;aff.tikz=false;
 aff.num=0; %iterateur numeros figures
-aff.doss=['results\' num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
+aff.doss=['results/' num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f')]; %dossier de travail (pour sauvegarde figure)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -30,7 +30,7 @@ ymin=-1;
 ymax=3;
 
 %Fonction utilisee
-fct='rosen';    %fonction utilisee (rosenbrock: 'rosen' / peaks: 'peaks')
+fct='peaks';    %fonction utilisee (rosenbrock: 'rosen' / peaks: 'peaks')
 %pas du trace
 pas=0.1;
 
@@ -39,10 +39,10 @@ calc_grad=true;
 
 %%DOE
 %type  LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-meta.doe='ffact';
+meta.doe='sfill';
 
 %nb d'echantillons
-nb_samples=6;
+nb_samples=8;
 
 %%Metamodele
 
@@ -51,7 +51,7 @@ meta.type='CKRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(1,10,30);
+theta=linspace(2,5,30);
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 
@@ -61,7 +61,7 @@ aff.doss=[aff.doss '_' meta.type '_' meta.doe '_ns' num2str(nb_samples,'%d') '_r
 if meta.norm
     aff.doss=[aff.doss '_norm'];
 end
-dos(['mkdir ' aff.doss]);
+unix(['mkdir ' aff.doss]);
 
 %affichage actif ou non
 aff.on=false;

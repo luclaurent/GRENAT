@@ -124,7 +124,7 @@ krg.beta=block1\block2;
 krg.gamma=rcc\(y-fc*krg.beta);
 
 
-%calcul de la variance de pr�diction
+%calcul de la variance de prediction
 sig2=1/size(rcc,1)*((y-fc*krg.beta)'/rcc)*(y-fc*krg.beta);
 if meta.norm
     krg.sig2=sig2*std_e^2;
@@ -136,7 +136,7 @@ end
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rcc,sig2);
 
-%%sauvegardes de donn�es
+%%sauvegardes de donnees
 krg.rcc=rcc;
 krg.ft=ft;
 krg.reg=fct;
@@ -149,6 +149,8 @@ krg.con=size(tirages,2);
 
 
 tps_stop=toc;
-txt=['Execution construction CoKrigeage: ',num2str(tps_stop-tps_start,'%6.4d') ' s'];
-disp(txt);
+fprintf('Execution construction CoKrigeage: %6.4d s',tps_stop-tps_start);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

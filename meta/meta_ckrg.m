@@ -139,6 +139,7 @@ end
 %%sauvegardes de donnees
 krg.rcc=rcc;
 krg.ft=ft;
+krg.fc=fc;
 krg.y=y;
 krg.reg=fct;
 krg.dim=ns;
@@ -150,7 +151,7 @@ krg.con=size(tirages,2);
 
 
 tps_stop=toc;
-fprintf('Execution construction CoKrigeage: %6.4d s',tps_stop-tps_start);
+fprintf('Execution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,10 +159,10 @@ fprintf('Execution construction CoKrigeage: %6.4d s',tps_stop-tps_start);
 %%%%%Validation croisée
 %%%%%Calcul des différentes erreurs
 if meta.cv
-    [krg.cv]=cross_validate_ckrg(krg,tirages);
+    [krg.cv]=cross_validate_ckrg(krg,tirages,eval);
 
     tps_cv=toc;
-    fprintf('Execution validation croisée CoKrigeage: %6.4d s',tps_stop-cv);
+    fprintf('Execution validation croisée CoKrigeage: %6.4d s\n',tps_stop-tps_cv);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

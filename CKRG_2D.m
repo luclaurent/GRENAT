@@ -29,7 +29,7 @@ ymin=0;
 % ymin=-val;
 % ymax=val;
 %SixHump
-%xmin=-2;
+xmin=-2;
 %xmax=2;
 %ymin=-1;
 %ymax=1;
@@ -63,6 +63,7 @@ meta.corrd='corrgauss';
 meta.regr='regpoly0';
 meta.norm=true;
 meta.recond=true;
+meta.cv=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,3 +200,8 @@ fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.CKRG));
 fprintf('R2=%g\n',r_square(Z.Z,ZZ.CKRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.CKRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.CKRG));
+fprintf('\n>>>Validation croisée<<<\n');
+fprintf('Biais moyen=%g\n',ckrg.cv.bm);
+fprintf('MSE=%g\n',ckrg.cv.msep);
+fprintf('Critere adequation=%g\n',ckrg.cv.adequ)
+fprintf('PRESS=%g\n',ckrg.cv.press);

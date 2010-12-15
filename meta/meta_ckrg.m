@@ -157,13 +157,12 @@ fprintf('Execution construction CoKrigeage: %6.4d s',tps_stop-tps_start);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%Validation croisée
 %%%%%Calcul des différentes erreurs
+if meta.cv
+    [krg.cv]=cross_validate_ckrg(krg,tirages);
 
-[]=cross_validate_ckrg(krg,tirages);
-
-
-
-tps_cv=toc;
-fprintf('Execution validation croisée CoKrigeage: %6.4d s',tps_stop-cv);
+    tps_cv=toc;
+    fprintf('Execution validation croisée CoKrigeage: %6.4d s',tps_stop-cv);
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

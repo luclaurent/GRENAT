@@ -1,7 +1,7 @@
 %fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 
-function [Z,GZ,mse]=eval_ckrg(X,tirages,krg)
+function [Z,GZ,var]=eval_ckrg(X,tirages,krg)
 
 
 if nargout>=2
@@ -71,11 +71,11 @@ if grad
     GZ=jf'.*krg.beta+jr'*krg.gamma;
 end
 
-%calcul de la variance de pr�diction (MSE) (Koelher & Owen 1996)
+%calcul de la variance de prediction (MSE) (Koelher & Owen 1996)
 if nargout ==3
     rcrr=krg.rcc \ rr;
     u=krg.ft*rcrr-ff';
-    mse=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u) - rr'*rcrr);
+    var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u) - rr'*rcrr);
 end
 
 %normalisation

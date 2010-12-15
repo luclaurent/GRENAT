@@ -75,7 +75,9 @@ end
 if nargout ==3
     rcrr=krg.rcc \ rr;
     u=krg.ft*rcrr-ff';
-    var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u) - rr'*rcrr);
+    var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u)...
+        - rr'*rcrr);
+
 end
 
 %normalisation
@@ -86,3 +88,5 @@ if krg.norm.on
         GZ=GZ';
     end
 end
+
+

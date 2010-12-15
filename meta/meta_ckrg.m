@@ -162,7 +162,7 @@ if meta.cv
     [krg.cv]=cross_validate_ckrg(krg,tirages,eval);
 
     tps_cv=toc;
-    fprintf('Execution validation croisée CoKrigeage: %6.4d s\n',tps_stop-tps_cv);
+    fprintf('Execution validation croisée CoKrigeage: %6.4d s\n',tps_cv-tps_stop);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -36,7 +36,7 @@ nb_samples=4;
 %%Metamodele
 meta.type='CKRG';
 %degre de linterpolation/regression (si necessaire)
-meta.deg=1;   %cas KRG/CKRG compris (mais pas DACE)
+meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
 meta.theta=5;
@@ -45,6 +45,8 @@ meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 %normalisation
 meta.norm=true;
+meta.recond=false;
+meta.cv=true;
 
 
 %affichage actif ou non
@@ -192,6 +194,11 @@ switch meta.type
             fprintf('RMAE= %6.4d\n',ermae);
             fprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1,eq2,eq3);
             fprintf('Likelihood= %6.4d, Log-Likelihood= %6.4d \n\n',li,logli);
+            fprintf('\n>>>Validation croisée<<<\n');
+            fprintf('Biais moyen=%g\n',krg.cv.bm);
+            fprintf('MSE=%g\n',krg.cv.msep);
+            fprintf('Critere adequation=%g\n',krg.cv.adequ)
+            fprintf('PRESS=%g\n',krg.cv.press);
      
     case 'DACE'
          

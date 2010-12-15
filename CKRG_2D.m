@@ -62,7 +62,7 @@ meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
 meta.norm=true;
-meta.recond=true;
+meta.recond=false;
 meta.cv=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,10 +141,11 @@ disp(' ')
          ZZ.CKRG=zeros(size(X));
          GCKRG1=zeros(size(X));
          GCKRG2=zeros(size(X));
+         var=zeros(size(X));
           for ii=1:size(X,1)*size(X,2)
-              [ZZ.CKRG(ii),GZ] =eval_ckrg([X(ii) Y(ii)],tirages,ckrg);
-                  GCKRG1(ii)=GZ(1);
-                  GCKRG2(ii)=GZ(2);
+              %[ZZ.CKRG(ii),GZ,var(ii)] =eval_ckrg([X(ii) Y(ii)],tirages,ckrg);
+                  %GCKRG1(ii)=GZ(1);
+                  %GCKRG2(ii)=GZ(2);
           end
 
 %       
@@ -195,7 +196,7 @@ disp(' ')
           
 
 
-disp('CKRG');
+fprintf('\nCKRG\n');
 fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.CKRG));
 fprintf('R2=%g\n',r_square(Z.Z,ZZ.CKRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.CKRG));

@@ -18,7 +18,7 @@ for tir=1:ckrg.dim
    %positions des element à retirer
    pos=[tir ckrg.dim+(tir:tir+ckrg.con-1)];
    cv_fc=ckrg.fc;
-   cv_fc(pos)=[];
+   cv_fc(pos,:)=[];
    cv_rcc=ckrg.rcc;
    cv_rcc(pos,:)=[];
    cv_rcc(:,pos)=[];
@@ -43,8 +43,17 @@ for tir=1:ckrg.dim
    %creation de la matrice des facteurs de correlation
    ckrg_cv.gamma=cv_rcc\(cv_y-cv_fc*ckrg_cv.beta);
    
+   %calcul de la variance de prediction
+    sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*ckrg_cv.beta)'/cv_rcc)...
+        *(cv_y-cv_fc*ckrg_cv.beta);
+    if ckrg.norm.on
+        ckrg_cv.sig2=sig2*ckrg.norm.std_eval^2;
+    else
+        ckrg_cv.sig2=sig2;
+    end
+   
    %%Evaluation du métamodèle au point supprime de la construction
-   [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_ckrg([tirages(tir,1) tirages(tir,2)],cv_tirages,ckrg_cv);
+   [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_ckrg(tirages(tir,:),cv_tirages,ckrg_cv);
 end
 
 
@@ -60,6 +69,6 @@ cv.msep=1/ckrg.dim*sum(diffc);
 %PRESS
 cv.press=sum(diffc);
 %critère d'adequation
-diffa=diff./cv_var;
+diffa=diffc./cv_var;
 cv.adequ=1/ckrg.dim*sum(diffa);
 

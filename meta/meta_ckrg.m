@@ -32,9 +32,9 @@ if meta.norm
     end
     
     %normalisation
-    eval=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
-    tirages=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
-    grad=grad.*repmat(std_t,ns,1)/std_e;
+    evaln=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
+    tiragesn=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
+    gradn=grad.*repmat(std_t,ns,1)/std_e;
   
     
     %sauvegarde des calculs
@@ -51,12 +51,12 @@ end
 der=zeros(dim*ns,1);
 for ii=1:ns
     for jj=1:dim
-        der(dim*ii-dim+jj)=grad(ii,jj);        
+        der(dim*ii-dim+jj)=gradn(ii,jj);        
     end
 end
 
 %creation du vecteur d'evaluation
-y=vertcat(eval,der) ;
+y=vertcat(evaln,der) ;
 
 
 %creation matrice de conception
@@ -74,7 +74,7 @@ fc=zeros((dim+1)*ns,p);
 fct=['reg_poly' num2str(meta.deg,1)];
 p=ns;
 for ii=1:ns
-       [fc(ii,:),fc(p+(1:dim),:)]=feval(fct,tirages(ii,:));
+       [fc(ii,:),fc(p+(1:dim),:)]=feval(fct,tiragesn(ii,:));
        p=p+dim;
 end
 
@@ -87,7 +87,7 @@ rci=zeros(dim*ns,dim*ns);
 for ii=1:ns
     for jj=1:ns
         %morceau de la matrice issue du krigeage
-        [ev,dev,ddev]=feval(meta.corr,tirages(ii,:)-tirages(jj,:),meta.theta);
+        [ev,dev,ddev]=feval(meta.corr,tiragesn(ii,:)-tiragesn(jj,:),meta.theta);
        
         rc(ii,jj)=ev;        
                 
@@ -159,7 +159,9 @@ fprintf('Execution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
 %%%%%Validation croisée
 %%%%%Calcul des différentes erreurs
 if meta.cv
-    [krg.cv]=cross_validate_ckrg(krg,tirages,eval);
+    [krg.cv]=cross_validate_ckrg(krg,tirages,eval);  
+    %les tirages et evaluations ne sont pas normalises (elles le seront
+    %plus tard lors de la CV)
 
     tps_cv=toc;
     fprintf('Execution validation croisée CoKrigeage: %6.4d s\n',tps_cv-tps_stop);

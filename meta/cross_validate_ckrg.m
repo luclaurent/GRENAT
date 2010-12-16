@@ -51,9 +51,10 @@ for tir=1:ckrg.dim
     else
         ckrg_cv.sig2=sig2;
     end
-   
+
    %%Evaluation du métamodèle au point supprime de la construction
    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_ckrg(tirages(tir,:),cv_tirages,ckrg_cv);
+   
 end
 
 
@@ -71,4 +72,3 @@ cv.press=sum(diffc);
 %critère d'adequation
 diffa=diffc./cv_var;
 cv.adequ=1/ckrg.dim*sum(diffa);
-

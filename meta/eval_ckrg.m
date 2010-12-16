@@ -49,7 +49,7 @@ if grad  %si calcul des gradients
     jr(krg.dim+1:krg.dim*(1+krg.con),:)=-mat_der';
    
 else %sinon
-    %a reecrire
+    %a reecrire //!!\\
     [ev,dev]=feval(krg.corr,dist,krg.theta);
     rr(1:krg.dim)=ev;
     rr(krg.dim+1:krg.dim*(krg.con+1))=dev;
@@ -77,7 +77,6 @@ if nargout ==3
     u=krg.ft*rcrr-ff';
     var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u)...
         - rr'*rcrr);
-
 end
 
 %normalisation

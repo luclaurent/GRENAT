@@ -121,7 +121,7 @@ switch meta.type
                 
          end
          ZK.Z=ZZ;
-         %%%g�n�ration des diff�rents intervalles de confiance
+         %%%generation des differents intervalles de confiance
          [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(msep));
          %%%affichage de la surface obtenue par KRG
             figure;
@@ -135,7 +135,6 @@ switch meta.type
                     set(h99i(1),'FaceColor',[1 1 1],'EdgeColor','none')
                     ic='IC99';
                 case '95'
-                    disp('95')
                     %IC95
                     h95s=area(X,ic95.sup,min(ic95.inf));
                     h95i=area(X,ic95.inf,min(ic95.inf));
@@ -152,7 +151,7 @@ switch meta.type
             end
             
             
-            %fonction de r�f�rence
+            %fonction de reference
             plot(X,Z.Z,'Color','blue','LineWidth',1.5);
             plot(X,Z.grad,'--','Color','blue','LineWidth',1.5);
             
@@ -163,9 +162,9 @@ switch meta.type
             plot(X,GK1,'Color','red');
             plot(X,msep,'Color','blue');
             if str2double(aff.ic)~=0
-                legend(ic,' ','fct ref','deriv fct ref','Evaluations','deriv�es','CoKrigeage','Derivee CKRG','MSE');
+                legend(ic,' ','fct ref','deriv fct ref','Evaluations','derivees','CoKrigeage','Derivee CKRG','MSE');
             else
-                legend('fct ref','deriv fct ref','Evaluations','deriv�es','CoKrigeage','Derivee CKRG','MSE');
+                legend('fct ref','deriv fct ref','Evaluations','derivees','CoKrigeage','Derivee CKRG','MSE');
             end
             hold off
             aff.num=aff.num+1;

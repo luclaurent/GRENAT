@@ -45,7 +45,7 @@ meta.type='CKRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(1,10,20);
+theta=linspace(0.1,10,20);
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 %normalisation
@@ -60,7 +60,7 @@ end
 unix(['mkdir ' aff.doss]);
 
 %affichage actif ou non
-aff.on=false;
+aff.on=true;
 aff.d3=false;
 aff.d2=true;
 aff.contour3=false;

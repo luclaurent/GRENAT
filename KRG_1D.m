@@ -46,13 +46,14 @@ meta.type='KRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-meta.theta=5;
+meta.theta=1;
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 %normalisation
 meta.norm=true;
-
+meta.recond=false;
+meta.cv=true;
 
 %affichage actif ou non
 aff.on=false;
@@ -117,17 +118,17 @@ switch meta.type
         disp(' ')
         [krg]=meta_krg(tirages,eval,meta);
         ZZ=zeros(size(X));
-        mse=zeros(size(X));
+        var=zeros(size(X));
         GK1=zeros(size(X));
          for ii=1:length(X)
-                 [ZZ(ii),GZ,mse(ii)] =eval_krg(X(ii),tirages,krg);
+                 [ZZ(ii),GZ,var(ii)] =eval_krg(X(ii),tirages,krg);
                  GK1(ii)=GZ;
                 
          end
          ZK.Z=ZZ;
          %%%gï¿½nï¿½ration des diffï¿½rents intervalles de confiance
         
-         [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(mse));
+         [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(var));
          %%%affichage de la surface obtenue par KRG
             figure;
             hold on;
@@ -164,7 +165,7 @@ switch meta.type
             plot(tirages,eval,'rs','Color','red','MarkerSize',10);
             plot(X,ZK.Z,'Color','green','LineWidth',1.5);
             plot(X,GK1,'Color','red');
-            plot(X,mse,'Color','blue');
+            plot(X,var,'Color','blue');
             if str2num(aff.ic)~=0
                 legend(ic,' ','fct ref','Evaluations','Krigeage','Derivee KRG','MSE');
             else
@@ -197,7 +198,14 @@ switch meta.type
             fprintf('RMAE= %6.4d\n',ermae);
             fprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1,eq2,eq3);
             fprintf('Likelihood= %6.4d, Log-Likelihood= %6.4d \n\n',li,logli);
-     
+            if meta.cv
+                fprintf('\n>>>Validation croisée<<<\n');
+                fprintf('Biais moyen=%g\n',krg.cv.bm);
+                fprintf('MSE=%g\n',krg.cv.msep);
+                fprintf('Critere adequation=%g\n',krg.cv.adequ)
+                fprintf('PRESS=%g\n',krg.cv.press);
+            end
+            
     case 'DACE'
          
          disp('>>> Interpolation par Krigeage (Toolbox DACE)');

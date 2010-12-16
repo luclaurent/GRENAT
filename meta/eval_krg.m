@@ -52,10 +52,10 @@ end
 %evaluation du metamodele au point X
 Z=ff*krg.beta+rr'*krg.gamma;
 
-%+rr'*krg.gamma;
 if grad 
-    GZ=jf*krg.beta+jr'*krg.gamma;
+    GZ=jf'*krg.beta+jr'*krg.gamma;
 end
+
 
 %calcul de la variance de prédiction (MSE) (Lophaven, Nielsen & Sondergaard
 %2004)

@@ -1,7 +1,7 @@
 %%%Etude de l'influence du parametre de la fonction de correlation
 %%%gaussienne sur la qualite du metamodele de Krigeage construit
 
-%%fonction �tudi�e: fonction cosinus
+%%fonction etudiee: fonction cosinus
 %% 21/10/2010
 
 
@@ -41,12 +41,12 @@ meta.doe='sfill';
 nb_samples=4;
 
 %%Metamodele
-meta.type='KRG';
+meta.type=['KRG' 'DACE'];
 %degre de linterpolation/regression (si necessaire)
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-meta.theta=1;
+meta.theta=2;
 meta.regr='regpoly0';
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
@@ -112,8 +112,8 @@ aff.on='true';
 %% Generation du metamodele
 fprintf('\n===== METAMODELE de Krigeage =====\n');
 disp(' ')
-switch meta.type
-    case 'KRG'
+%switch meta.type
+    %case 'KRG'
         disp('>>> Interpolation par Krigeage');
         disp(' ')
         [krg]=meta_krg(tirages,eval,meta);
@@ -126,7 +126,7 @@ switch meta.type
                 
          end
          ZK.Z=ZZ;
-         %%%g�n�ration des diff�rents intervalles de confiance
+         %%%generation des differents intervalles de confiance
         
          [ic68,ic95,ic99]=const_ic(ZK.Z,sqrt(var));
          %%%affichage de la surface obtenue par KRG
@@ -158,7 +158,7 @@ switch meta.type
             end
             
             
-            %fonction de r�f�rence
+            %fonction de reference
             plot(X,Z.Z,'Color','blue','LineWidth',1.5);
             
             %%%%%%%%%%
@@ -206,7 +206,7 @@ switch meta.type
                 fprintf('PRESS=%g\n',krg.cv.press);
             end
             
-    case 'DACE'
+    %case 'DACE'
          
          disp('>>> Interpolation par Krigeage (Toolbox DACE)');
         disp(' ')
@@ -233,7 +233,7 @@ switch meta.type
         
             
             
-end
+%end
 
         disp('=====================================');
         disp('=====================================');

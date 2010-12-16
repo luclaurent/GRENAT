@@ -67,6 +67,7 @@ meta.fct='gauss';     %fonction à base radiale: 'gauss', 'multiqua', 'invmultiq
 meta.nb_vs=3;        %nombre de valeurs singulieres à prendre en compte
 %normalisation
 meta.norm=true;
+meta.cv=false;
 
 
 %affichage actif ou non

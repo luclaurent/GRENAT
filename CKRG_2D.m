@@ -23,21 +23,21 @@ addpath('crit');global cofast;
 ymin=0;
  ymax=15;
 %Goldstein
-% val=2;
-% xmin=-val;
-% xmax=val;
-% ymin=-val;
-% ymax=val;
+val=2;
+xmin=-val;
+xmax=val;
+ymin=-val;
+ymax=val;
 %SixHump
 xmin=-2;
-%xmax=2;
-%ymin=-1;
-%ymax=1;
+xmax=2;
+ymin=-1;
+ymax=1;
 
 %fonction utilisee
 %fct=@(x) 5;
 %fctd=@(x) 0;
-fctt='fct_branin';
+fctt='fct_sixhump';
 %pas du trace
 nb=50;
 pas=2*val/nb;
@@ -46,10 +46,10 @@ pas=2*val/nb;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Type de tirage
-meta.doe='LHS';
+meta.doe='ffact';
 
 %nombre d'echantillons
-nb_samples=4;
+nb_samples=3;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,7 +57,7 @@ nb_samples=4;
 
 %parametre
 meta.deg=0;
-meta.theta=5;
+meta.theta=0.1;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
@@ -143,9 +143,9 @@ disp(' ')
          GCKRG2=zeros(size(X));
          var=zeros(size(X));
           for ii=1:size(X,1)*size(X,2)
-              %[ZZ.CKRG(ii),GZ,var(ii)] =eval_ckrg([X(ii) Y(ii)],tirages,ckrg);
-                  %GCKRG1(ii)=GZ(1);
-                  %GCKRG2(ii)=GZ(2);
+              [ZZ.CKRG(ii),GZ,var(ii)] =eval_ckrg([X(ii) Y(ii)],tirages,ckrg);
+                  GCKRG1(ii)=GZ(1);
+                  GCKRG2(ii)=GZ(2);
           end
 
 %       

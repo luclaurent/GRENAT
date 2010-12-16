@@ -1,4 +1,4 @@
-%%Fichier d'étude du CoKrigeage sur fonction 2D
+%%Fichier d'etude du CoKrigeage sur fonction 2D
 %%L. LAURENT -- 19/05/2010 -- luc.laurent@ens-cachan.fr
 clf;
 %clc;
@@ -10,19 +10,35 @@ addpath('crit');global cofast;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%Définition de l'espace de conception
+%%Definition de l'espace de conception
 val=4;
 xmin=-val;
 xmax=val;
 ymin=-val;
 ymax=val;
 
+% %branin
+ xmin=-5;
+ xmax=10;
+ymin=0;
+ ymax=15;
+%Goldstein
+val=2;
+xmin=-val;
+xmax=val;
+ymin=-val;
+ymax=val;
+%SixHump
+xmin=-2;
+xmax=2;
+ymin=-1;
+ymax=1;
 
-%fonction utilisée
+%fonction utilisee
 %fct=@(x) 5;
 %fctd=@(x) 0;
-fctt='fct_peaks';
-%pas du tracé
+fctt='fct_sixhump';
+%pas du trace
 nb=50;
 pas=2*val/nb;
 
@@ -32,25 +48,26 @@ pas=2*val/nb;
 %Type de tirage
 meta.doe='ffact';
 
-%nombre d'échantillons
-nb_samples=4;
+%nombre d'echantillons
+nb_samples=3;
 meta.ajout=false;
 meta.dist=0.1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Type de métamodèle
+%Type de metamodele
 
-%paramètre
+%parametre
 meta.deg=0;
 meta.theta=1;
 meta.corr='corr_gauss';
 meta.corrd='corrgauss';
 meta.regr='regpoly0';
 meta.norm=true;
+meta.cv=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluation de la fonction étudiée et des gradients
+%Evaluation de la fonction etudiee et des gradients
 x=linspace(xmin,xmax,nb);
 y=linspace(ymin,ymax,nb);
 [X,Y]=meshgrid(x,y);
@@ -61,11 +78,11 @@ y=linspace(ymin,ymax,nb);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 disp('=====================================');
 disp('=====================================');
-disp('=======Construction métamodèle=======');
+disp('=======Construction metamodele=======');
 disp('=====================================');
 disp('=====================================');
 
-%% Tirages: plan d'expérience
+%% Tirages: plan d'experience
 disp('===== DOE =====');
 switch meta.doe
     case 'ffact'
@@ -78,29 +95,29 @@ switch meta.doe
         Xmax=[xmax,ymax];
         tirages=lhsu(Xmin,Xmax,nb_samples);
     otherwise
-        error('le type de tirage nest pas défini');
+        error('le type de tirage nest pas defini');
 end
 
 
 
-%évaluations aux points
+%evaluations aux points
 grad=zeros(size(tirages));
 [eval,grad(:,1),grad(:,2)]=feval(fctt,tirages(:,1),tirages(:,2));
 
-%tracé courbes initiales
+%trace courbes initiales
 figure;
         
 surf(X,Y,Z.Z,'LineWidth',1);
-hlight=light;               % activ. éclairage
+hlight=light;               % activ. eclairage
         lighting('gouraud')         % type de rendu
-        lightangle(hlight,48,70)    % dir. éclairage
-title('fonction de référence');
+        lightangle(hlight,48,70)    % dir. eclairage
+title('fonction de reference');
 hold on;
 
 plot3(tirages(:,1),tirages(:,2),eval,'.','Color','red','LineWidth',3);
 %hold on
 %plot(tirages,grad,'.','Color','g','LineWidth',3);
-%% Génération du métamodèle
+%% Generation du metamodele
 disp('===== METAMODELE =====');
 disp(' ')
 
@@ -113,13 +130,11 @@ disp(' ')
          ZZ.KRG=zeros(size(X));
          GKRG1=zeros(size(X));
          GKRG2=zeros(size(X));
-          for ii=1:size(X,1) 
-             for jj=1:size(X,2)
-              [ZZ.KRG(ii,jj),GZ] =eval_krg([X(ii,jj) Y(ii,jj)],tirages,krg);
-                  GKRG1(ii,jj)=GZ(1);
-                  GKRG2(ii,jj)=GZ(2);
-             end
-              
+         var=zeros(size(X));
+          for ii=1:size(X,1)*size(X,2)
+              [ZZ.KRG(ii),GZ,var(ii)] =eval_krg([X(ii) Y(ii)],tirages,krg);
+                  GKRG1(ii)=GZ(1);
+                  GKRG2(ii)=GZ(2);
           end
 %       
           
@@ -148,12 +163,18 @@ disp(' ')
           resultats.grad.gradients=grad;
           
           affichage(X,Y,out,tirages,eval,aff);
-          
+          aff.d2=false;
+          aff.d3=true;
+          aff.contour3=false;
+          aff.uni=false;
+          aff.zlabel='';
+          aff.grad=false;
+          affichage(X,Y,out,tirages,eval,aff);
           
 
 
 disp('KRG');
 fprintf('MSE=%g\n',mse_p(Z.Z,ZZ.KRG));
-fprintf('R²=%g\n',r_square(Z.Z,ZZ.KRG));
+fprintf('R2=%g\n',r_square(Z.Z,ZZ.KRG));
 fprintf('RAAE=%g\n',raae(Z.Z,ZZ.KRG));
 fprintf('RMAE=%g\n',rmae(Z.Z,ZZ.KRG));

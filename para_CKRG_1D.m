@@ -1,7 +1,7 @@
 %%%Etude de l'influence du parametre de la fonction de correlation
 %%%gaussienne sur la qualite du metamodele de Krigeage construit
 
-%%fonction �tudi�e: fonction cosinus
+%%fonction etudiee: fonction cosinus
 %% 21/10/2010
 
 
@@ -60,7 +60,7 @@ end
 unix(['mkdir ' aff.doss]);
 
 %affichage actif ou non
-aff.on=true;
+aff.on=false;
 aff.d3=false;
 aff.d2=true;
 aff.contour3=false;
@@ -150,7 +150,7 @@ disp(' ')
                 
          end
          ZK.Z=ZZ;
-         %%%g�n�ration des diff�rents intervalles de confiance
+         %%%generation des differents intervalles de confiance
          %a 68%
          ic68.sup=ZZ+mse;
          ic68.inf=ZZ-mse;

@@ -72,3 +72,4 @@ cv.press=sum(diffc);
 %critère d'adequation
 diffa=diffc./cv_var;
 cv.adequ=1/ckrg.dim*sum(diffa);
+cv_var

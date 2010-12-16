@@ -51,11 +51,13 @@ meta.type='CKRG';
 meta.deg=0;   %cas KRG/CKRG compris (mais pas DACE)
 %parametre Krigeage
 %meta.theta=5;  %variation du parametre theta
-theta=linspace(0.9,20,30);
+theta=linspace(2,20,30);
 meta.regr='regpoly2';  % toolbox DACE
 meta.corr='corr_gauss';
 
 meta.norm=true;
+meta.recond=false;
+meta.cv=true;
 
 aff.doss=[aff.doss '_' meta.type '_' meta.doe '_ns' num2str(nb_samples,'%d') '_reg' num2str(meta.deg,'%d') '_' meta.corr];
 if meta.norm
@@ -371,7 +373,16 @@ disp(' ')
             fprintf('RMAE= %6.4d\n',ermae(i));
             fprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1(i),eq2(i),eq3(i));
             fprintf('Likelihood= %6.4d, Log-Likelihood= %6.4d \n\n',li(i),logli(i));
-
+            
+            cvbm(i)=krg.cv.bm;
+            cvmse(i)=krg.cv.msep;
+            cvadequ(i)=krg.cv.adequ;
+            cvpress(i)=krg.cv.press;
+            fprintf('\n>>>Validation croisée<<<\n');
+            fprintf('Biais moyen=%g\n',krg.cv.bm);
+            fprintf('MSE=%g\n',krg.cv.msep);
+            fprintf('Critere adequation=%g\n',krg.cv.adequ)
+            fprintf('PRESS=%g\n',krg.cv.press);
         disp('=====================================');
         disp('=====================================');
 
@@ -427,6 +438,26 @@ title('Conditionnement matrice de correlation')
 saveas(gcf,[aff.doss '/bilan.eps'],'eps')
 saveas(gcf,[aff.doss '/bilan.fig'],'fig')
 
+
+figure;
+subplot(2,2,1);
+plot(theta,cvbm)
+xlabel('\theta');
+ylabel('Biais moyen (CV)')
+subplot(2,2,2);
+plot(theta,cvmse)
+xlabel('\theta');
+ylabel('MSE (CV)')
+subplot(2,2,3);
+plot(theta,cvadequ)
+xlabel('\theta');
+ylabel('Critere d adequation (CV)')
+subplot(2,2,4);
+plot(theta,cvpress)
+xlabel('\theta');
+ylabel('PRESS (CV)')
+saveas(gcf,[aff.doss '/CV.eps'],'eps')
+saveas(gcf,[aff.doss '/CV.fig'],'fig')
 
 %%recherche du minimum de la log-vraisemblance
 [val,ind]=min(logli);

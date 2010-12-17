@@ -103,7 +103,7 @@ end
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
 
-%amélioration du conditionnement de la matrice de corrélation
+%amï¿½lioration du conditionnement de la matrice de corrï¿½lation
 if meta.recond
     rcc=rcc+10^-4*eye(size(rcc));
 end
@@ -156,15 +156,15 @@ fprintf('Execution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%Validation croisée
-%%%%%Calcul des différentes erreurs
+%%%%%Validation croisï¿½e
+%%%%%Calcul des diffï¿½rentes erreurs
 if meta.cv
     [krg.cv]=cross_validate_ckrg(krg,tirages,eval);  
     %les tirages et evaluations ne sont pas normalises (elles le seront
     %plus tard lors de la CV)
 
     tps_cv=toc;
-    fprintf('Execution validation croisée CoKrigeage: %6.4d s\n',tps_cv-tps_stop);
+    fprintf('Execution validation croisee CoKrigeage: %6.4d s\n',tps_cv-tps_stop);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

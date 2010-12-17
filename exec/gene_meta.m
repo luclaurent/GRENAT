@@ -55,7 +55,7 @@ if dim_conc==1
         case 'DACE'
             %% Evaluation du metamodèle de Krigeage (DACE)
             for jj=1:length(points)
-                [Z(jj),G,msep(jj)]=predictor(points(jj),model);
+                [Z(jj),G,msep(jj)]=predictor(points(jj),dace.model);
                 GZ(jj)=G;
             end
     end

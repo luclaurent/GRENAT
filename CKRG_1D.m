@@ -24,7 +24,7 @@ xmin=0;xmax=15;
 doe.bornes=[xmin xmax]';
 
 %pas du trace
-aff.pas=0.5;
+aff.pas=0.05;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 doe.type='sfill';
@@ -35,8 +35,9 @@ doe.nb_samples=4;
 % Parametrage du metamodele
 deg=0;
 theta=5;
-mod='CKRG';
-meta=init_meta(mod,deg,theta);
+mod='DACE';
+%meta=init_meta(mod,deg,theta);
+meta=init_meta(mod,'regpoly0',theta,'corrgauss');
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;

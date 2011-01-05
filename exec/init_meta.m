@@ -22,6 +22,6 @@ if strcmp(type,'DACE')
 end
 
 %normalisation
-meta.norm=false;         %normalisation
+meta.norm=true;         %normalisation
 meta.recond=false;      %amelioration du conditionnement de la matrice de correlation
 meta.cv=true;           %validation croisée

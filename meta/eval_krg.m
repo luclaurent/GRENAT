@@ -2,7 +2,7 @@
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 %modifs le 03/11/2010  (reecriture en vue d'accelerer)
 
-function [Z,GZ,mse]=eval_krg(U,tirages,krg)
+function [Z,GZ,var]=eval_krg(U,tirages,krg)
 
 %calcul ou non des gradients (en fonction du nombre de variables de sortie)
 if nargout>=2
@@ -56,14 +56,17 @@ if grad
 end
 
 
-%calcul de la variance de pr�diction (MSE) (Lophaven, Nielsen & Sondergaard
+%calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
 %2004)
 if nargout ==3
     rcrr=krg.rc \ rr;
     u=krg.ft*rcrr-ff';
-    mse=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
-    if mse<0
-        mse
+    var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
+    if var<0
+        format long e
+ones(dim_x,1)- rr'*rcrr
+u'*((krg.ft*(krg.rc\krg.ft')) \ u)
+        var
         U(:)'
         X
     end

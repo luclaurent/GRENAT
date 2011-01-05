@@ -62,14 +62,7 @@ if nargout ==3
     rcrr=krg.rc \ rr;
     u=krg.ft*rcrr-ff';
     var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
-    if var<0
-        format long e
-ones(dim_x,1)- rr'*rcrr
-u'*((krg.ft*(krg.rc\krg.ft')) \ u)
-        var
-        U(:)'
-        X
-    end
+
 end
 
 %normalisation

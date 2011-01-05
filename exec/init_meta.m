@@ -25,3 +25,6 @@ end
 meta.norm=true;         %normalisation
 meta.recond=false;      %amelioration du conditionnement de la matrice de correlation
 meta.cv=true;           %validation croisée
+
+%estimation parametre theta
+meta.para.estim=false;

@@ -66,13 +66,13 @@ if meta.para.estim
         case 'simplex'  %methode du simplexe
             
         case 'fmincon'
-            [x,fval,exitflag,output,lambda] = fmincon(
+            %[x,fval,exitflag,output,lambda] = fmincon()
         otherwise
             error('Stratégie de minimisation non prise en charge');
     end
 
 else
-    krg=bloc_krg(tiragesn,meta);
+    krg=bloc_krg(tiragesn,ns,fc,y,meta);
 end
 
 tps_stop=toc;

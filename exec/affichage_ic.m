@@ -25,5 +25,12 @@ else
     xlabel(aff.xlabel)
     ylabel(aff.ylabel)
     zlabel(aff.zlabel)
+
+    %rendu
+    if aff.rendu
+        hlight=light;               % activ. éclairage
+        lighting('gouraud')         % type de rendu
+        lightangle(hlight,48,70)    % dir. éclairage
+    end
 end
                     

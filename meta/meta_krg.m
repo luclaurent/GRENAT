@@ -31,6 +31,8 @@ if meta.norm
     krg.norm.on=true;
 else
     krg.norm.on=false;
+    evaln=eval;
+    tiragesn=tirages;
 end
 
 %evaluation aux points de l'espace de conception
@@ -114,7 +116,7 @@ end
 [krg.lilog,krg.li]=likelihood(rc,sig2);
 
 tps_stop=toc;
-fprintf('Execution construction Krigeage: %6.4d s\n',tps_stop-tps_start);
+fprintf('\nExecution construction Krigeage: %6.4d s\n',tps_stop-tps_start);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,7 +128,7 @@ if meta.cv
     %plus tard lors de la CV)
 
     tps_cv=toc;
-    fprintf('Execution validation croisee Krigeage: %6.4d s\n',tps_cv-tps_stop);
+    fprintf('Execution validation croisee Krigeage: %6.4d s\n\n',tps_cv-tps_stop);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

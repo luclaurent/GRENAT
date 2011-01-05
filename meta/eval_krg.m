@@ -2,7 +2,7 @@
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 %modifs le 03/11/2010  (reecriture en vue d'accelerer)
 
-function [Z,GZ,mse]=eval_krg(X,tirages,krg)
+function [Z,GZ,mse]=eval_krg(U,tirages,krg)
 
 %calcul ou non des gradients (en fonction du nombre de variables de sortie)
 if nargout>=2
@@ -11,16 +11,16 @@ else
     grad=false;
 end
 
+ X=U(:)';    %correction (changement type d'element)
  dim_x=size(X,1);
+
 %normalisation
 if krg.norm.on
-    X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(krg.norm.std_tirages,dim_x,1);
-    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
-    
-    %X=(X-repmat(krg.norm.moy_tirages,dim_x,1))./repmat(2*krg.norm.std_tirages,dim_x,1)+repmat(0.5,dim_x,1);
-    %tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(2*krg.norm.std_tirages,krg.dim,1)+repmat(0.5,krg.dim,1);
-    %X=X/krg.dive;
-    %tirages=tirages/krg.divt;
+    mat_moyt=repmat(krg.norm.moy_tirages,dim_x,1);
+    mat_stdt=repmat(krg.norm.std_tirages,dim_x,1);
+    X=(X-mat_moyt)./mat_stdt;
+    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./...
+        repmat(krg.norm.std_tirages,krg.dim,1);
 end
 
 %calcul de l'evaluation du metamodele au point considere
@@ -40,7 +40,6 @@ else %sinon
     rr=feval(krg.corr,dist,krg.theta);
 end
 
-
 %matrice de regression aux points d'evaluations
 if grad
     [ff,jf]=feval(krg.reg,X);
@@ -57,13 +56,17 @@ if grad
 end
 
 
-%calcul de la variance de prédiction (MSE) (Lophaven, Nielsen & Sondergaard
+%calcul de la variance de prï¿½diction (MSE) (Lophaven, Nielsen & Sondergaard
 %2004)
 if nargout ==3
     rcrr=krg.rc \ rr;
     u=krg.ft*rcrr-ff';
     mse=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
-    
+    if mse<0
+        mse
+        U(:)'
+        X
+    end
 end
 
 %normalisation

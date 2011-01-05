@@ -45,6 +45,9 @@ if meta.norm
     krg.norm.on=true;
 else
     krg.norm.on=false;
+    evaln=eval;
+    tiragesn=tirages;
+    gradn=grad;
 end
 
 %rangement gradient
@@ -151,20 +154,20 @@ krg.con=size(tirages,2);
 
 
 tps_stop=toc;
-fprintf('Execution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
+fprintf('\nExecution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%Validation crois�e
-%%%%%Calcul des diff�rentes erreurs
+%%%%%Validation croisee
+%%%%%Calcul des differentes erreurs
 if meta.cv
     [krg.cv]=cross_validate_ckrg(krg,tirages,eval);  
     %les tirages et evaluations ne sont pas normalises (elles le seront
     %plus tard lors de la CV)
 
     tps_cv=toc;
-    fprintf('Execution validation croisee CoKrigeage: %6.4d s\n',tps_cv-tps_stop);
+    fprintf('Execution validation croisee CoKrigeage: %6.4d s\n\n',tps_cv-tps_stop);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

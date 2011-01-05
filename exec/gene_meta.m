@@ -63,7 +63,6 @@ if dim_conc==1
     % en dimension 2, les points ou l'on souhaite evaluer le metamodele se
     % presentent sous forme d'un vecteur de matrices
 elseif dim_conc==2
-    disp('la');
     switch meta.type
         case 'CKRG'
             %% Evaluation du metamodèle de CoKrigeage

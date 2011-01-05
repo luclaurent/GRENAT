@@ -1,7 +1,7 @@
 %fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 
-function [Z,GZ,var]=eval_ckrg(X,tirages,krg)
+function [Z,GZ,var]=eval_ckrg(U,tirages,krg)
 
 
 if nargout>=2
@@ -10,6 +10,7 @@ else
     grad=false;
 end
 
+X=U(:)';    %correction (changement type d'element)
 dim_x=size(X,1);
 
 %normalisation
@@ -17,7 +18,8 @@ if krg.norm.on
     mat_moyt=repmat(krg.norm.moy_tirages,dim_x,1);
     mat_stdt=repmat(krg.norm.std_tirages,dim_x,1);
     X=(X-mat_moyt)./mat_stdt;
-    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./repmat(krg.norm.std_tirages,krg.dim,1);
+    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./...
+        repmat(krg.norm.std_tirages,krg.dim,1);
 end
 
 %calcul de l'evaluation du metamodele au point considere

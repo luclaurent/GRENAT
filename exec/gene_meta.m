@@ -31,7 +31,7 @@ switch meta.type
     case 'DACE'
         %% Construction du metamodèle de Krigeage (DACE)
         fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
-        [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corrd,meta.theta);
+        [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
         ret=dace;
 end
 

@@ -4,7 +4,7 @@
 function tirages=gene_doe(doe)
 
 fprintf('===== DOE =====\n');
-%on traite seprement les etudes 1D ou 2D
+%on traite separement les etudes 1D ou 2D
 if size(doe.bornes,2)==1
     xmin=doe.bornes(1);
     xmax=doe.bornes(2);

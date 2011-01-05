@@ -1,15 +1,17 @@
-%%%Etude de l'influence du parametre de la fonction de correlation
-%%%gaussienne sur la qualite du metamodele de Krigeage construit
+%%Etude KRG en 1D
+%%L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
-%%fonction etudiee: fonction cosinus
-%% 21/10/2010
+%effacement du Workspace
+clear all
 
-
-clf;clc;close all; clear all;
-addpath('doe/LHS');addpath('meta/dace');addpath('doe');addpath('fct');addpath('meta');
-addpath('crit');global cofast;
-addpath('matlab2tikz/')
-
+%chargement des rÃ©pertoires de travail
+init_rep;
+%initialisation de l'espace de travail
+init_esp;
+%affichage de la date et de l'heure
+aff_date;
+%initialisation des variables d'affichage
+aff=init_aff();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,7 +201,7 @@ disp(' ')
             fprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',eq1,eq2,eq3);
             fprintf('Likelihood= %6.4d, Log-Likelihood= %6.4d \n\n',li,logli);
             if meta.cv
-                fprintf('\n>>>Validation croisée<<<\n');
+                fprintf('\n>>>Validation croisï¿½e<<<\n');
                 fprintf('Biais moyen=%g\n',krg.cv.bm);
                 fprintf('MSE=%g\n',krg.cv.msep);
                 fprintf('Critere adequation=%g\n',krg.cv.adequ)

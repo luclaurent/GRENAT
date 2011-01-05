@@ -35,9 +35,9 @@ doe.nb_samples=4;
 % Parametrage du metamodele
 deg=0;
 theta=5;
+corr='gauss';
 mod='DACE';
-%meta=init_meta(mod,deg,theta);
-meta=init_meta(mod,'regpoly0',theta,'corrgauss');
+meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -123,7 +123,7 @@ end
 aff.num=save_aff(aff.num,aff.doss);
 
 %calcul et affichage des critères d'erreur
-err=crit_err(K.Z,Z.Z,ckrg.li,ckrg.lilog,ckrg.cv);
+err=crit_err(K.Z,Z.Z,ckrg);
 
 fprintf('=====================================\n');
 fprintf('=====================================\n');

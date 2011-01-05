@@ -7,14 +7,18 @@ meta.type=type;         %type de métamodèle KRG/CKRG/DACE
 meta.deg=deg;           %degre de la regression
 meta.theta=theta;       %longueur de corrélation
 if nargin>=4
-    meta.corr=corr;     %fonction de correlation
+    meta.corr=['corr_' corr];     %fonction de correlation
 else
     meta.corr='corr_gauss';
 end
+fctp='reg_poly';
+meta.regr=[fctp num2str(deg,'%d')];      %fonction de régression
+
 
 if strcmp(type,'DACE')
-    meta.regr=deg;      %fonction de régression
-    meta.corrd=corr;    %fonction de correlation
+    fctp='regpoly';
+    meta.regr=[fctp num2str(deg,'%d')];      %fonction de régression
+    meta.corr=['corr' corr];    %fonction de correlation
 end
 
 %normalisation

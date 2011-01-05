@@ -11,8 +11,8 @@ textf=' =====';
 dim_conc=size(tirages,2);
 dim_ev=size(points);
 
-Z=zeros(dim_ev);
-msep=zeros(dim_ev);
+Z=zeros(dim_ev(1),dim_ev(2));
+msep=zeros(dim_ev(1),dim_ev(2));
 GZ=zeros(dim_ev(2),dim_conc);
 
     
@@ -70,7 +70,8 @@ elseif dim_conc==2
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [Z(jj,kk),G,msep(jj,kk)]=eval_ckrg(points(jj,kk,:),tirages,ckrg);
-                    GZ(jj,kk,:)=G;
+                    GZ(jj,kk,1)=G(1);
+                    GZ(jj,kk,2)=G(2);
                 end
             end
         case 'KRG'
@@ -78,15 +79,17 @@ elseif dim_conc==2
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [Z(jj,kk),G,msep(jj,kk)]=eval_krg(points(jj,kk,:),tirages,krg);
-                    GZ(jj,kk,:)=G;
+                    GZ(jj,kk,1)=G(1);
+                    GZ(jj,kk,2)=G(2);
                 end
             end
         case 'DACE'
             %% Evaluation du metamodèle de Krigeage (DACE)
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
-                    [Z(jj,kk),G,msep(jj,kk)]=predictor(points(jj,kk,:),model);
-                    GZ(jj,kk,:)=G;
+                    [Z(jj,kk),G,msep(jj,kk)]=predictor(points(jj,kk,:),dace.model);
+                    GZ(jj,kk,1)=G(1);
+                    GZ(jj,kk,2)=G(2);
                 end
             end
     end

@@ -22,8 +22,8 @@ if size(doe.bornes,2)==1
     
 elseif size(doe.bornes,2)==2
     xmin=doe.bornes(1,1);
-    xmax=doe.bornes(2,1);
-    ymin=doe.bornes(1,2);
+    xmax=doe.bornes(1,2);
+    ymin=doe.bornes(2,1);
     ymax=doe.bornes(2,2);
     %on prend en compte les tirages differents suivant les variables de
     %conceptions

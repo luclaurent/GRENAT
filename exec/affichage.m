@@ -10,6 +10,13 @@ if size(tirages,2)==1
     esp1d=true;
 elseif size(tirages,2)==2
     esp2d=true;
+    if size(grille,3)>1
+        grille_X=grille(:,:,1);
+        grille_Y=grille(:,:,2);
+    else
+        grille_X=grille(:,1);
+        grille_Y=grille(:,2);
+    end
 else
     error('Mauvaise dimension de l espace de conception');
 end
@@ -29,18 +36,11 @@ if aff.on
     
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %affichage dans une nouvelle fenêtre
-        if aff.newfig
-            figure;
-        else
-            hold on
-        end
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%mise à l'échelle des tracés de gradients
-        if aff.grad||cofast.grad
+        if aff.grad_meta||aff.grad_eval
                 %dimension mini espace de conception
-                dimm=min(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y))));
+                dimm=min(abs(max(max(grille_X))-min(min(grille_X))),...
+                    abs(max(max(grille_Y))-min(min(grille_Y))));
                 %calcul norme gradient
                 ngr=zeros(size(Z.GR1));
                 for ii=1:size(Z.GR1,1)
@@ -69,15 +69,15 @@ if aff.on
             if aff.contour3
                 %affichage unicolor
                 if aff.uni          
-                    surfc(X,Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
+                    surfc(grille_X,grille_Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
                 else
-                    surfc(X,Y,Z.Z)
+                    surfc(grille_X,grille_Y,Z.Z)
                 end
             else
                 if aff.uni          
-                    surf(X,Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
+                    surf(grille_X,grille_Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
                 else
-                    surf(X,Y,Z.Z)
+                    surf(grille_X,grille_Y,Z.Z)
                 end
             end
             %affichage des points d'évaluations
@@ -89,7 +89,7 @@ if aff.on
             end
 
             %Affichage des gradients
-            if aff.grad
+            if aff.grad_eval
                 %détermination des vecteurs de plus grandes pentes (dans le
                 %sens de descente du gradient)
                 for ii=1:size(Z.GR1,1)
@@ -113,12 +113,13 @@ if aff.on
 
                 %hold on
                 %dimension maximale espace de conception
-                dimm=max(abs(max(max(X))-min(min(X))),abs(max(max(Y))-min(min(Y)))); 
+                dimm=max(abs(max(max(grille_X))-min(min(grille_X))),...
+                    abs(max(max(grille_Y))-min(min(grille_Y)))); 
                 %dimension espace de réponse
                 dimr=abs(max(max(Z.Z))-min(min(Z.Z)));
                 %norme maxi du gradient
                 nmax=max(max(vec.N));
-                quiver3(X,Y,Z.Z,ech*vec.X,ech*vec.Y,ech*vec.Z,...
+                quiver3(grille_X,grille_Y,Z.Z,ech*vec.X,ech*vec.Y,ech*vec.Z,...
                     'b','MaxHeadSize',0.1*dimr/nmax,'AutoScale','off')
             end
         end
@@ -130,7 +131,7 @@ if aff.on
         if aff.d2
             %affichage des contours
             if aff.contour2
-                [C,h]=contourf(X,Y,Z.Z);   
+                [C,h]=contourf(grille_X,grille_Y,Z.Z);   
                 text_handle = clabel(C,h);
                 set(text_handle,'BackgroundColor',[1 1 .6],...
                     'Edgecolor',[.7 .7 .7])
@@ -140,9 +141,9 @@ if aff.on
                     hold on;
                     %remise à l'échelle
                     if aff.scale
-                        quiver(X,Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
+                        quiver(grille_X,grille_Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
                     else
-                        quiver(X,Y,Z.GR1,Z.GR2,'AutoScale','off');
+                        quiver(grille_X,grille_Y,Z.GR1,Z.GR2,'AutoScale','off');
                     end
                 end
                 %affichage des points d'évaluation
@@ -207,7 +208,7 @@ if aff.on
                 plot(grille,Z);
             end
         end
-        title(aff.title);
+        title(aff.titre);
         xlabel(aff.xlabel);
         ylabel(aff.ylabel);
     end

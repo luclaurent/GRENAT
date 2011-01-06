@@ -29,7 +29,7 @@ aff.pas=0.25;
 doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=4;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 deg=0;

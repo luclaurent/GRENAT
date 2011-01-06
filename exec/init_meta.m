@@ -27,4 +27,7 @@ meta.recond=false;      %amelioration du conditionnement de la matrice de correl
 meta.cv=true;           %validation croisée
 
 %estimation parametre theta
-meta.para.estim=false;
+meta.para.method='fmincon';
+meta.para.estim=true;
+meta.para.max=20;
+meta.para.min=2;

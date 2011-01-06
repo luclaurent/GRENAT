@@ -24,13 +24,13 @@ if meta.norm
     tiragesn=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     
     %sauvegarde des donnees
-    krg.norm.moy_eval=moy_e;
-    krg.norm.std_eval=std_e;
-    krg.norm.moy_tirages=moy_t;
-    krg.norm.std_tirages=std_t;
-    krg.norm.on=true;
+    nkrg.norm.moy_eval=moy_e;
+    nkrg.norm.std_eval=std_e;
+    nkrg.norm.moy_tirages=moy_t;
+    nkrg.norm.std_tirages=std_t;
+    nkrg.norm.on=true;
 else
-    krg.norm.on=false;
+    nkrg.norm.on=false;
     evaln=eval;
     tiragesn=tirages;
 end
@@ -66,14 +66,39 @@ if meta.para.estim
         case 'simplex'  %methode du simplexe
             
         case 'fmincon'
-            %[x,fval,exitflag,output,lambda] = fmincon()
+            %definition des bornes de l'espace de recherche
+            lb=meta.para.min;ub=meta.para.max;
+            %definition valeur de depart de la variable
+            x0=(meta.para.max+meta.para.min)/2;
+            %decalaration de la fonction à minimiser
+            fun=@(theta)bloc_krg(tiragesn,ns,fc,y,meta,std_e,theta);
+            %declaration des options de la strategie de minimisation
+            options = optimset(...
+               'Display', 'iter',...        %affichage évolution
+               'Algorithm','interior-point');   %choix du type d'algorithme
+
+            %minimisation
+            [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
+            x
+            fval
+            exitflag
+            output
+            lambda
+            meta.theta=x;
         otherwise
             error('Stratégie de minimisation non prise en charge');
     end
-
-else
-    krg=bloc_krg(tiragesn,ns,fc,y,meta);
 end
+
+%construction des blocs de krigeage finaux
+[lilog,krg]=bloc_krg(tiragesn,ns,fc,y,meta,std_e);
+
+
+%sauvegarde informations
+krg=nkrg;
+krg.reg=fct;
+krg.con=tai_conc;
+krg.ter_reg=nb_termes;
 
 tps_stop=toc;
 fprintf('\nExecution construction Krigeage: %6.4d s\n',tps_stop-tps_start);

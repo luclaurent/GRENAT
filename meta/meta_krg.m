@@ -79,11 +79,11 @@ if meta.para.estim
 
             %minimisation
             [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
-            x
-            fval
-            exitflag
-            output
-            lambda
+%             x
+%             fval
+%             exitflag
+%             output
+%             lambda
             meta.theta=x;
         otherwise
             error('Stratégie de minimisation non prise en charge');
@@ -95,7 +95,7 @@ end
 
 
 %sauvegarde informations
-krg=nkrg;
+krg=mergestruct(nkrg,krg);
 krg.reg=fct;
 krg.con=tai_conc;
 krg.ter_reg=nb_termes;

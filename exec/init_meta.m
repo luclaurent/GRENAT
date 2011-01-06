@@ -30,4 +30,4 @@ meta.cv=true;           %validation croisée
 meta.para.method='fmincon';
 meta.para.estim=true;
 meta.para.max=20;
-meta.para.min=2;
+meta.para.min=0.15;

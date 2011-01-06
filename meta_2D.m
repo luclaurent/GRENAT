@@ -26,14 +26,14 @@ fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
 aff.pas=0.25;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
 deg=0;
-theta=2;
+theta=0.5;
 corr='gauss';
 mod='KRG';
 meta=init_meta(mod,deg,theta,corr);

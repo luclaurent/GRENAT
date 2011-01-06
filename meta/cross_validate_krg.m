@@ -1,21 +1,21 @@
-%Fonction assurant le calcul des diverses erreurs par validation croisée
+%Fonction assurant le calcul des diverses erreurs par validation croisï¿½e
 %dans le cas du Krigeage
 %L. LAURENT -- 16/12/2010 -- laurent@lmt.ens-cachan.fr
 
 function [cv]=cross_validate_krg(krg,tirages,eval)
 
-%stockage des évaluations du metamodèle au point enleve
+%stockage des ï¿½valuations du metamodï¿½le au point enleve
 cv_z=zeros(krg.dim,1);
 cv_var=zeros(krg.dim,1);
 cv_gz=zeros(krg.dim,krg.con);
 
 %%On parcourt l'ensemble des tirages
 for tir=1:krg.dim
-   %%On construit le métamodèle de CoKrigeage avec un site en moins
+   %%On construit le mï¿½tamodï¿½le de CoKrigeage avec un site en moins
    %Traitement des matrices et vecteurs en supprimant les lignes et
    %colonnes correspondant 
    
-   %positions des element à retirer
+   %positions des element ï¿½ retirer
    pos=[tir];
    cv_fc=krg.fc;
    cv_fc(pos,:)=[];
@@ -27,7 +27,7 @@ for tir=1:krg.dim
    cv_tirages=tirages;
    cv_tirages(tir,:)=[];
    
-   %passage des paramètres
+   %passage des paramï¿½tres
    krg_cv=krg;
    krg_cv.dim=krg_cv.dim-1;  %retrait d'un site
    krg_cv.rc=cv_rc;
@@ -52,7 +52,7 @@ for tir=1:krg.dim
         krg_cv.sig2=sig2;
     end
 
-   %%Evaluation du métamodèle au point supprime de la construction
+   %%Evaluation du mï¿½tamodï¿½le au point supprime de la construction
    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(tirages(tir,:),cv_tirages,krg_cv);
    
 end
@@ -69,7 +69,6 @@ diffc=diff.^2;
 cv.msep=1/krg.dim*sum(diffc);
 %PRESS
 cv.press=sum(diffc);
-%critère d'adequation
+%critï¿½re d'adequation
 diffa=diffc./cv_var;
 cv.adequ=1/krg.dim*sum(diffa);
-cv_var

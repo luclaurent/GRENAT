@@ -3,7 +3,7 @@
 
 function aff=init_aff()
 
-    aff.scale=false;            %mise à l'echelle (affichage gradients)
+    aff.scale=true;            %mise à l'echelle (affichage gradients)
     aff.tikz=false;             %sauvegarde au format Tikz
     aff.num=0;                  %iterateur numeros figures
 	aff.doss=[];                %dossier de sauvegarde (figures)

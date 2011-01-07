@@ -6,7 +6,6 @@ function [lilog,krg]=bloc_krg(tiragesn,ns,fc,y,meta,std_e,theta)
 
 if nargin==7
     meta.theta=theta;
-    theta
 end
 
 %creation matrice de correlation
@@ -18,17 +17,19 @@ for ii=1:ns
 end
 
 %conditionnement de la matrice de correlation
-if nargin==7    %en phase de minimisation
+if nargin==6    %en phase de minimisation
     krg.cond=cond(rc);
     fprintf('Conditionnement R: %6.5d\n',krg.cond)
 end
 
 %calcul du coefficient beta
 %%approche classique
- ft=fc';
- block1=((ft/rc)*fc);
- block2=((ft/rc)*y);
- krg.beta=block1\block2;
+ft=fc';
+
+block1=((ft/rc)*fc);
+block2=((ft/rc)*y);
+krg.beta=block1\block2;
+
 %approche factorisee
 %attention cette factorisation n'est possible que sous condition
 % %cholesky

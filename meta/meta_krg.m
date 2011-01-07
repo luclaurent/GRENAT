@@ -61,6 +61,7 @@ end
 %%Construction des differents elements avec ou sans estimation des
 %%paramètres
 if meta.para.estim
+    fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
     %minimisation de la log-vraisemblance
     switch meta.para.method
         case 'simplex'  %methode du simplexe
@@ -69,22 +70,20 @@ if meta.para.estim
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %definition valeur de depart de la variable
-            x0=(meta.para.max+meta.para.min)/2;
-            %decalaration de la fonction à minimiser
+            x0=meta.para.min;
+            %declaration de la fonction à minimiser
             fun=@(theta)bloc_krg(tiragesn,ns,fc,y,meta,std_e,theta);
             %declaration des options de la strategie de minimisation
             options = optimset(...
                'Display', 'iter',...        %affichage évolution
-               'Algorithm','interior-point');   %choix du type d'algorithme
-
+               'Algorithm','sqp',... %choix du type d'algorithme
+               'OutputFcn',@stop_estim,...
+               'FunValCheck','off','UseParallel','always');      %fonction assurant l'arrêt de la procedure de minimisation et les traces des iterations de la minimisation
+           
             %minimisation
             [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
-%             x
-%             fval
-%             exitflag
-%             output
-%             lambda
             meta.theta=x;
+            fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         otherwise
             error('Stratégie de minimisation non prise en charge');
     end

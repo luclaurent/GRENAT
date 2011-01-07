@@ -17,19 +17,19 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
+fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
 
-%pas du trace
-aff.pas=0.25;
+%nombre d'element pas dimension (pour le trace)
+aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=7;
 
 % Parametrage du metamodele
 deg=0;
@@ -62,24 +62,26 @@ tirages=gene_doe(doe);
 [eval,grad]=gene_eval(doe.fct,tirages);
 
 %Trace de la fonction de la fonction etudiee et des gradients
-grid_XY=gene_aff(doe,aff);
-[Z.Z,Z.grad]=gene_eval(doe.fct,grid_XY);
+[grid_XY,aff]=gene_aff(doe,aff);
+Z=gene_eval(doe.fct,grid_XY);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Construction et evaluation du metamodele aux points souhaites
-[K.Z,K.GZ,var,krg]=gene_meta(tirages,eval,grad,grid_XY,meta);
+[K,krg]=gene_meta(tirages,eval,grad,grid_XY,meta);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance
-[ic68,ic95,ic99]=const_ic(K.Z,var);
+[ic68,ic95,ic99]=const_ic(K.Z,K.var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
 aff.on='true';
-aff.newfig=true;
+aff.newfig=false;
 aff.ic.on=true;
+figure;
+subplot(3,3,1)
 if aff.ic.on
     aff.rendu=true;
     aff.titre=['Intervalle de confiance IC' aff.ic.type]; 
@@ -91,18 +93,41 @@ if aff.ic.on
         case '99'
             affichage_ic(grid_XY,ic99,aff);
     end
+    subplot(3,3,2)
+    aff.titre='Variance de prediction';
+    aff.d3=true;
+    v.Z=K.var;
+    affichage(grid_XY,v,tirages,eval,grad,aff);
+    camlight; lighting gouraud; 
     aff.titre='';
     aff.rendu=false;
 end
             
 %fonction de reference
-aff.newfig=true;
+aff.newfig=false;
 aff.d3=true;
+aff.contour3=true;
 aff.pts=true;
-aff.color='red';
-affichage(grid_XY,Z,tirages,eval,aff);
-aff.color='green';
-affichage(grid_XY,K,tirages,eval,aff);
+aff.titre='Fonction de reference';
+subplot(3,3,4)
+affichage(grid_XY,Z,tirages,eval,grad,aff);
+aff.titre='Metamodele';
+subplot(3,3,5)
+affichage(grid_XY,K,tirages,eval,grad,aff);
+
+aff.titre='Fonction de reference';
+aff.d3=false;
+aff.d2=true;
+aff.grad_eval=true;
+aff.grad_meta=true;
+aff.contour2=true;
+subplot(3,3,7)
+affichage(grid_XY,Z,tirages,eval,grad,aff);
+aff.titre='Metamodele';
+subplot(3,3,8)
+affichage(grid_XY,K,tirages,eval,grad,aff);
+aff.titre=[];
+
 
 
 

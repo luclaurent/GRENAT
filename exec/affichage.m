@@ -2,7 +2,7 @@
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
 
 
-function status=affichage(grille,Z,tirages,eval,aff)
+function status=affichage(grille,Z,tirages,eval,grad,aff)
 
 %traitement des cas 1D ou 2D
 esp1d=false;esp2d=false;
@@ -43,17 +43,15 @@ if aff.on
                     abs(max(max(grille_Y))-min(min(grille_Y))));
                 %calcul norme gradient
                 ngr=zeros(size(Z.GR1));
-                for ii=1:size(Z.GR1,1)
-                    for jj=1:size(Z.GR1,2)
-                        ngr(ii,jj)=norm([Z.GR1(ii,jj) Z.GR2(ii,jj)],2);
-                    end
+                for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
+                    ngr(ii)=norm([Z.GR1(ii) Z.GR2(ii)],2);
                 end
                 %recherche du maxi de la norme du gradient
                 nm=max(max(ngr));
 
                 %définition de la taille mini de la grille d'affichage
-                tailg=aff.pas;
-
+                tailg=min(aff.pas);
+                
                 %taille de la plus grande flèche
                 para_fl=1.3;
                 tailf=para_fl*tailg;
@@ -92,18 +90,15 @@ if aff.on
             if aff.grad_eval
                 %détermination des vecteurs de plus grandes pentes (dans le
                 %sens de descente du gradient)
-                for ii=1:size(Z.GR1,1)
-                    for jj=1:size(Z.GR1,2)
-                        vec.X(ii,jj)=-Z.GR1(ii,jj);
-                        vec.Y(ii,jj)=-Z.GR2(ii,jj);
-                        vec.Z(ii,jj)=-Z.GR1(ii,jj)^2-Z.GR2(ii,jj)^2;
-                        %normalisation du vecteur de plus grande pente
-                        vec.N(ii,jj)=sqrt(vec.X(ii,jj)^2+vec.Y(ii,jj)^2+vec.Z(ii,jj)^2);
-                        vec.Xn(ii,jj)=vec.X(ii,jj)/vec.N(ii,jj);
-                        vec.Yn(ii,jj)=vec.Y(ii,jj)/vec.N(ii,jj);
-                        vec.Zn(ii,jj)=vec.Z(ii,jj)/vec.N(ii,jj);
-
-                    end
+                for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
+                    vec.X(ii)=-Z.GR1(ii);
+                    vec.Y(ii)=-Z.GR2(ii);
+                    vec.Z(ii)=-Z.GR1(ii)^2-Z.GR2(ii)^2;
+                    %normalisation du vecteur de plus grande pente
+                    vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
+                    vec.Xn(ii)=vec.X(ii)/vec.N(ii);
+                    vec.Yn(ii)=vec.Y(ii)/vec.N(ii);
+                    vec.Zn(ii)=vec.Z(ii)/vec.N(ii);
                 end
                 hold on
 
@@ -137,7 +132,7 @@ if aff.on
                     'Edgecolor',[.7 .7 .7])
                 set(h,'LineWidth',2)
                 %affichage des gradients
-                if aff.grad                
+                if aff.grad_meta                
                     hold on;
                     %remise à l'échelle
                     if aff.scale
@@ -154,16 +149,16 @@ if aff.on
                     'MarkerSize',15)     
                 end
                 %affichage des gradients
-                if cofast.grad
+                if aff.grad_eval
                     hold on;
                     %remise à l'échelle
                     if aff.scale
-                        quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
-                            ech*resultats.grad.gradients(:,1),ech*resultats.grad.gradients(:,2),...
+                        quiver(tirages(:,1),tirages(:,2),...
+                            ech*grad(:,1),ech*grad(:,2),...
                             'LineWidth',2,'AutoScale','off');
                     else
-                        quiver(resultats.tirages(:,1),resultats.tirages(:,2),...
-                            resultats.grad.gradients(:,1),resultats.grad.gradients(:,2),...
+                        quiver(tirages(:,1),tirages(:,2),...
+                            grad(:,1),grad(:,2),...
                             'LineWidth',2,'AutoScale','off');
                     end
 

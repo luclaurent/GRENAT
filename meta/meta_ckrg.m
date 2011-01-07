@@ -38,13 +38,13 @@ if meta.norm
   
     
     %sauvegarde des calculs
-    krg.norm.moy_eval=moy_e;
-    krg.norm.std_eval=std_e;
-    krg.norm.moy_tirages=moy_t;
-    krg.norm.std_tirages=std_t;
-    krg.norm.on=true;
+    nkrg.norm.moy_eval=moy_e;
+    nkrg.norm.std_eval=std_e;
+    nkrg.norm.moy_tirages=moy_t;
+    nkrg.norm.std_tirages=std_t;
+    nkrg.norm.on=true;
 else
-    krg.norm.on=false;
+    nkrg.norm.on=false;
     evaln=eval;
     tiragesn=tirages;
     gradn=grad;
@@ -81,67 +81,43 @@ for ii=1:ns
        p=p+dim;
 end
 
-%%%creation matrice de correlation
-%morceau de la matrice issu du krigeage
-rc=zeros(ns);
-rca=zeros(ns,dim*ns);
-rci=zeros(dim*ns,dim*ns);
-
-for ii=1:ns
-    for jj=1:ns
-        %morceau de la matrice issue du krigeage
-        [ev,dev,ddev]=feval(meta.corr,tiragesn(ii,:)-tiragesn(jj,:),meta.theta);
-       
-        rc(ii,jj)=ev;        
-                
-        %morceau de la matrice provenant du Cokrigeage
-        rca(ii,dim*jj-dim+1:dim*jj)=-dev;
-        
-        %matrice des derivees secondes
-        rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev; 
-       
-   end
+%%Construction des differents elements avec ou sans estimation des
+%%paramètres
+if meta.para.estim
+    fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
+    %minimisation de la log-vraisemblance
+    switch meta.para.method
+        case 'simplex'  %methode du simplexe
+            
+        case 'fmincon'
+            %definition des bornes de l'espace de recherche
+            lb=meta.para.min;ub=meta.para.max;
+            %definition valeur de depart de la variable
+            x0=meta.para.min;
+            %declaration de la fonction à minimiser
+            fun=@(theta)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,theta);
+            %declaration des options de la strategie de minimisation
+            options = optimset(...
+               'Display', 'iter',...        %affichage évolution
+               'Algorithm','interior-point',... %choix du type d'algorithme
+               'OutputFcn',@stop_estim,...
+               'FunValCheck','off','UseParallel','always');      %fonction assurant l'arrêt de la procedure de minimisation et les traces des iterations de la minimisation
+           
+            %minimisation
+            [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
+            meta.theta=x;
+            fprintf('Valeur de la longueur de correlation %6.4f\n',x);
+        otherwise
+            error('Stratégie de minimisation non prise en charge');
+    end
 end
 
-%Nouvelle matrice rc dans le cas du CoKrigeage
-rcc=[rc rca;rca' rci];
-
-%am�lioration du conditionnement de la matrice de corr�lation
-if meta.recond
-    rcc=rcc+10^-4*eye(size(rcc));
-end
-%conditionnement de la matrice de correlation
-krg.cond=cond(rcc);
-fprintf('Conditionnement R: %6.5d\n',krg.cond)
+%construction des blocs de krigeage finaux
+[lilog,krg]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e);
 
 
-
-%calcul de beta
-ft=fc';
-block1=((ft/rcc)*fc);
-block2=((ft/rcc)*y);
-krg.beta=block1\block2;
-
-
-%creation de la matrice des facteurs de correlation
-krg.gamma=rcc\(y-fc*krg.beta);
-
-
-%calcul de la variance de prediction
-sig2=1/size(rcc,1)*((y-fc*krg.beta)'/rcc)*(y-fc*krg.beta);
-if meta.norm
-    krg.sig2=sig2*std_e^2;
-else
-    krg.sig2=sig2;
-end
-
-
-%Maximum de vraisemblance
-[krg.lilog,krg.li]=likelihood(rcc,sig2);
-
-%%sauvegardes de donnees
-krg.rcc=rcc;
-krg.ft=ft;
+%sauvegarde informations
+krg=mergestruct(nkrg,krg);
 krg.fc=fc;
 krg.y=y;
 krg.reg=fct;

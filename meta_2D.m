@@ -17,7 +17,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump
+fct='rosenbrock'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -29,13 +29,13 @@ aff.nbele=30;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=7;
+doe.nb_samples=3;
 
 % Parametrage du metamodele
 deg=0;
 theta=0.5;
 corr='gauss';
-mod='KRG';
+mod='CKRG';
 meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance

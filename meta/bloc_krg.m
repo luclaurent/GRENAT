@@ -66,3 +66,13 @@ end
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rc,sig2);
 lilog=krg.lilog;
+
+%Dans la phase de minimisation de la log vraisemblance
+% if nargin==7
+%     if abs(lilog)==Inf
+%         theta_save=meta.theta;
+%         global theta_save
+%         me.message='valeur log-vraisemblance incompatible';
+%         error(me);
+%     end
+% end

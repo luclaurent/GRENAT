@@ -70,22 +70,58 @@ if meta.para.estim
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %definition valeur de depart de la variable
-            x0=meta.para.min;
+            x0=lb;
             %declaration de la fonction à minimiser
             fun=@(theta)bloc_krg(tiragesn,ns,fc,y,meta,std_e,theta);
             %declaration des options de la strategie de minimisation
             options = optimset(...
-               'Display', 'iter',...        %affichage évolution
-               'Algorithm','sqp',... %choix du type d'algorithme
+               'Display', 'iter',...        %affichage evolution
+               'Algorithm','interior-point',... %choix du type d'algorithme
                'OutputFcn',@stop_estim,...
                'FunValCheck','off','UseParallel','always');      %fonction assurant l'arrêt de la procedure de minimisation et les traces des iterations de la minimisation
            
             %minimisation
-            [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
+            indic=0;
+            warning off all;
+            while indic==0
+                %traitement des erreurs de conditionnements par
+                %redimensionnement de l'esapce de recherche
+                try
+                    [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
+                catch 
+                    s=lasterror;
+                    %disp(s.message(end-11:end))
+%                     if strcmp(s.message(end-11:end),'incompatible')
+%                         global theta_save
+%                         lb=theta_save+10^-1;
+%                         clear theta_save
+%                         x0=lb;
+%                         fprintf('**Correction bornes minimisation\n');
+%                     else
+                        s.message;
+%                     end
+                    %s.message
+                    %if strcmp(s.message(1:5),'perso')
+                    %   lb=str2num(s(7:end));
+                    %   x0=(lb+ub)/2;
+                    %   fprintf('**Correction bornes minimisation');
+                    %else
+                    %    disp(s);
+                    %end
+                    exitflag=-1;
+                end
+                
+                %arret minimisation
+                if exitflag==1||exitflag==0||exitflag==2
+                    indic=1;
+                end
+            end
+            warning on all;
+            
             meta.theta=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         otherwise
-            error('Stratégie de minimisation non prise en charge');
+            error('Strategie de minimisation non prise en charge');
     end
 end
 

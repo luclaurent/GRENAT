@@ -1,10 +1,10 @@
-%%Etude métamodèles en 2D
+%%Etude metamodeles en 2D
 %%L. LAURENT -- 05/01/2011 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace
 clear all
 
-%chargement des répertoires de travail
+%chargement des repertoires de travail
 init_rep;
 %initialisation de l'espace de travail
 init_esp;
@@ -17,7 +17,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump
+fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -29,13 +29,13 @@ aff.nbele=30;
 doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=4;
+doe.nb_samples=9;
 
 % Parametrage du metamodele
 deg=0;
-theta=0.5;
+theta=[0 15];
 corr='gauss';
-mod='CKRG';
+mod='KRG';
 meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance
@@ -44,7 +44,7 @@ aff.ic.type='68'; %('0','68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Création du dossier de travail
+% Creation du dossier de travail
 aff.doss=init_dossier(meta,doe,'_2D');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,7 +136,7 @@ aff.titre=[];
 %sauvegarde image
 aff.num=save_aff(aff.num,aff.doss);
 
-%calcul et affichage des critères d'erreur
+%calcul et affichage des criteres d'erreur
 err=crit_err(K.Z,Z.Z,krg);
 
 fprintf('=====================================\n');

@@ -11,13 +11,9 @@ function stop=stop_estim(x,optimValues,state)
 stop=false;
 switch state
     case 'iter'
-          if abs(optimValues.fval)==Inf
-              stop=true;
-          else
               plot(x,optimValues.fval,'o','MarkerSize',3);
               text(x+.15,optimValues.fval,num2str(optimValues.iteration));
               drawnow
-          end
     case 'interrupt'
           stop=true;
     case 'init'

@@ -1,9 +1,9 @@
 %%fonction permettant le calcul de l'erreur MSE
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
 
-%%Zex: correspond Ã  l'ensemble des valeurs obtenues par Ã©valutions de la
+%%Zex: correspond a  l'ensemble des valeurs obtenues par evalutions de la
 %%fonction objectif
-%%Zap: correspond Ã  l'ensemble des valeurs
+%%Zap: correspond a  l'ensemble des valeurs
 
 function emse=mse_p(Zex,Zap)
 

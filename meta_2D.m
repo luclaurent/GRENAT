@@ -17,7 +17,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
+fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -26,16 +26,16 @@ fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
 aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=9;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 deg=0;
-theta=[0 15];
+theta=[0 20];
 corr='gauss';
-mod='KRG';
+mod='CKRG';
 meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance

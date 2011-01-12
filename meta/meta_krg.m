@@ -70,22 +70,23 @@ if meta.para.estim
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %definition valeur de depart de la variable
-            x0=lb;
+            x0=(lb+ub)/2;
             %declaration de la fonction à minimiser
             fun=@(theta)bloc_krg(tiragesn,ns,fc,y,meta,std_e,theta);
             %declaration des options de la strategie de minimisation
             options = optimset(...
                'Display', 'iter',...        %affichage evolution
                'Algorithm','interior-point',... %choix du type d'algorithme
-               'OutputFcn',@stop_estim,...
-               'FunValCheck','off','UseParallel','always');      %fonction assurant l'arrêt de la procedure de minimisation et les traces des iterations de la minimisation
+               'OutputFcn','',...%@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+               'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
+                'UseParallel','always',...
+                'PlotFcns',{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});      
            
             %minimisation
             indic=0;
             warning off all;
             while indic==0
-                %traitement des erreurs de conditionnements par
-                %redimensionnement de l'esapce de recherche
+                %interception erreur
                 try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
                 catch 

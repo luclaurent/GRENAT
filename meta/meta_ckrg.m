@@ -100,15 +100,33 @@ if meta.para.estim
             options = optimset(...
                'Display', 'iter',...        %affichage évolution
                'Algorithm','interior-point',... %choix du type d'algorithme
-               'OutputFcn',@stop_estim,...
-               'FunValCheck','off','UseParallel','always');      %fonction assurant l'arrêt de la procedure de minimisation et les traces des iterations de la minimisation
+               'OutputFcn','',...           %fonction assurant l'arrêt de la procedure de minimisation et les traces des iterations de la minimisation
+               'FunValCheck','off',...
+               'UseParallel','always',...
+               'PlotFcns',{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});      
            
             %minimisation
-            [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
+            indic=0;
+            warning off all;
+            while indic==0
+                %interception erreur
+                try
+                    [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
+                catch
+                    s=lasterror;
+                    s.message
+                    exitflag=-1;
+                end
+                %arret minimisation
+                if exitflag==1||exitflag==0||exitflag==2
+                    indic=1;
+                end
+            end
+                    
             meta.theta=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         otherwise
-            error('Stratégie de minimisation non prise en charge');
+            error('Strategie de minimisation non prise en charge');
     end
 end
 

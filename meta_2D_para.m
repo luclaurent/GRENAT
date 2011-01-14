@@ -9,6 +9,8 @@ init_rep;
 %initialisation de l'espace de travail
 init_esp;
 %affichage de la date et de l'heure
+
+
 aff_date;
 %initialisation des variables d'affichage
 aff=init_aff();
@@ -28,8 +30,10 @@ aff.nbele=30;
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 doe.type='LHS';
 
+donnees=zeros(7,14);
+for nb=3:10
 %nb d'echantillons
-doe.nb_samples=3;
+doe.nb_samples=nb;
 
 % Parametrage du metamodele
 deg=0;
@@ -45,7 +49,8 @@ aff.ic.type='68'; %('0','68','95','99')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Creation du dossier de travail
-aff.doss=init_dossier(meta,doe,'_2D');
+aff.doss=['results/para_' fct '_' doe.type '_' mod];
+cmd=['mkdir ' aff.doss];unix(cmd);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,6 +83,7 @@ Z=gene_eval(doe.fct,grid_XY);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
 aff.on='true';
+aff.num=aff.num+1;
 aff.newfig=false;
 aff.ic.on=true;
 figure;
@@ -127,7 +133,10 @@ aff.titre='Metamodele';
 subplot(3,3,8)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
-
+aff.grad_eval=false;
+aff.grad_meta=false;
+aff.contour2=false;
+aff.d2=false;
 
 
 
@@ -143,8 +152,24 @@ fprintf('=====================================\n');
 fprintf('=====================================\n');
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Sauvegarde WorkSpace
-save_WS(aff.doss);
+%enregistrement données en vue de leur sauvegarde
+donnees(nb,1)=krg.tps;
+donnees(nb,2)=krg.estim_para.iterations;
+donnees(nb,3)=err.emse;
+donnees(nb,4)=err.r2;
+donnees(nb,5)=err.eraae;
+donnees(nb,6)=err.ermae;
+donnees(nb,7)=err.eq1;
+donnees(nb,8)=err.eq2;
+donnees(nb,9)=err.eq3;
+donnees(nb,10)=krg.cv.bm;
+donnees(nb,11)=krg.cv.msep;
+donnees(nb,12)=krg.cv.adequ;
+donnees(nb,13)=krg.cv.press;
+donnees(nb,14)=krg.estim_para.theta;
+clear krg
 
+end
+
+%extraction des données
+extract_caract(meta,donnees);

@@ -4,18 +4,18 @@
 
 function [cv]=cross_validate_krg(krg,tirages,eval)
 
-%stockage des �valuations du metamod�le au point enleve
+%stockage des evaluations du metamodele au point enleve
 cv_z=zeros(krg.dim,1);
 cv_var=zeros(krg.dim,1);
 cv_gz=zeros(krg.dim,krg.con);
 
 %%On parcourt l'ensemble des tirages
 for tir=1:krg.dim
-   %%On construit le m�tamod�le de CoKrigeage avec un site en moins
+   %%On construit le metamodele de CoKrigeage avec un site en moins
    %Traitement des matrices et vecteurs en supprimant les lignes et
    %colonnes correspondant 
    
-   %positions des element � retirer
+   %positions des element a retirer
    pos=[tir];
    cv_fc=krg.fc;
    cv_fc(pos,:)=[];
@@ -69,6 +69,6 @@ diffc=diff.^2;
 cv.msep=1/krg.dim*sum(diffc);
 %PRESS
 cv.press=sum(diffc);
-%crit�re d'adequation
+%critere d'adequation
 diffa=diffc./cv_var;
 cv.adequ=1/krg.dim*sum(diffa);

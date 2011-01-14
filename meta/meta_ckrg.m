@@ -82,7 +82,7 @@ for ii=1:ns
 end
 
 %%Construction des differents elements avec ou sans estimation des
-%%paramètres
+%%parametres
 if meta.para.estim
     fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
     %minimisation de la log-vraisemblance
@@ -93,17 +93,17 @@ if meta.para.estim
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %definition valeur de depart de la variable
-            x0=meta.para.min;
-            %declaration de la fonction à minimiser
+            x0=(lb+ub)/2;
+            %declaration de la fonction a� minimiser
             fun=@(theta)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,theta);
             %declaration des options de la strategie de minimisation
             options = optimset(...
-               'Display', 'iter',...        %affichage évolution
+               'Display', 'iter',...        %affichage evolution
                'Algorithm','interior-point',... %choix du type d'algorithme
-               'OutputFcn','',...           %fonction assurant l'arrêt de la procedure de minimisation et les traces des iterations de la minimisation
+               'OutputFcn',@stop_estim,...           %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
                'FunValCheck','off',...
                'UseParallel','always',...
-               'PlotFcns',{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});      
+               'PlotFcns','');  %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}    
            
             %minimisation
             indic=0;
@@ -120,6 +120,8 @@ if meta.para.estim
                 %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2
                     indic=1;
+                    nkrg.estim_para=output;
+                    nkrg.estim_para.theta=x;
                 end
             end
                     
@@ -148,6 +150,7 @@ krg.con=size(tirages,2);
 
 
 tps_stop=toc;
+krg.tps=tps_stop-tps_start;
 fprintf('\nExecution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
 
 

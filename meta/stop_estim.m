@@ -12,7 +12,7 @@ stop=false;
 switch state
     case 'iter'
               plot(x,optimValues.fval,'o','MarkerSize',3);
-              text(x+.15,optimValues.fval,num2str(optimValues.iteration));
+              text(x+.05,optimValues.fval,num2str(optimValues.iteration));
               drawnow
     case 'interrupt'
           stop=true;

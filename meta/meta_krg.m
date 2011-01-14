@@ -115,6 +115,8 @@ if meta.para.estim
                 %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2
                     indic=1;
+                    nkrg.estim_para=output;
+                    nkrg.estim_para.theta=x;
                 end
             end
             warning on all;
@@ -137,6 +139,7 @@ krg.con=tai_conc;
 krg.ter_reg=nb_termes;
 
 tps_stop=toc;
+krg.tps=tps_stop-tps_start;
 fprintf('\nExecution construction Krigeage: %6.4d s\n',tps_stop-tps_start);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

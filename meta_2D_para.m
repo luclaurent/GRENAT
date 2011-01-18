@@ -19,7 +19,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='peaks'; %branin,gold,peaks,rosenbrock,sixhump
+fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -28,9 +28,10 @@ fct='peaks'; %branin,gold,peaks,rosenbrock,sixhump
 aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='LHS';
+doe.type='ffact';
 
-donnees=zeros(7,14);
+donnees=zeros(15,8);
+nbb=0;
 for nb=3:10
 %nb d'echantillons
 doe.nb_samples=nb;
@@ -39,7 +40,7 @@ doe.nb_samples=nb;
 deg=0;
 theta=[0 20];
 corr='gauss';
-mod='CKRG';
+mod='KRG';
 meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance
@@ -153,23 +154,25 @@ fprintf('=====================================\n');
 
 
 %enregistrement données en vue de leur sauvegarde
-donnees(nb,1)=krg.tps;
-donnees(nb,2)=krg.estim_para.iterations;
-donnees(nb,3)=err.emse;
-donnees(nb,4)=err.r2;
-donnees(nb,5)=err.eraae;
-donnees(nb,6)=err.ermae;
-donnees(nb,7)=err.eq1;
-donnees(nb,8)=err.eq2;
-donnees(nb,9)=err.eq3;
-donnees(nb,10)=krg.cv.bm;
-donnees(nb,11)=krg.cv.msep;
-donnees(nb,12)=krg.cv.adequ;
-donnees(nb,13)=krg.cv.press;
-donnees(nb,14)=krg.estim_para.theta;
+nbb=nbb+1;
+donnees(1,nbb)=nb^2;
+donnees(2,nbb)=krg.tps;
+donnees(3,nbb)=krg.estim_para.iterations;
+donnees(4,nbb)=err.emse;
+donnees(5,nbb)=err.r2;
+donnees(6,nbb)=err.eraae;
+donnees(7,nbb)=err.ermae;
+donnees(8,nbb)=err.eq1;
+donnees(9,nbb)=err.eq2;
+donnees(10,nbb)=err.eq3;
+donnees(11,nbb)=krg.cv.bm;
+donnees(12,nbb)=krg.cv.msep;
+donnees(13,nbb)=krg.cv.adequ;
+donnees(14,nbb)=krg.cv.press;
+donnees(15,nbb)=krg.estim_para.theta;
 clear krg
 
 end
 
 %extraction des données
-extract_caract(meta,donnees);
+extract_caract(meta,donnees,aff,fct);

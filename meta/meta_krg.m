@@ -77,10 +77,10 @@ if meta.para.estim
             options = optimset(...
                'Display', 'iter',...        %affichage evolution
                'Algorithm','interior-point',... %choix du type d'algorithme
-               'OutputFcn','',...%@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+               'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
                'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
                 'UseParallel','always',...
-                'PlotFcns',{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});      
+                'PlotFcns','');    %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}  
            
             %minimisation
             indic=0;
@@ -99,7 +99,7 @@ if meta.para.estim
 %                         x0=lb;
 %                         fprintf('**Correction bornes minimisation\n');
 %                     else
-                        s.message;
+                        s.message
 %                     end
                     %s.message
                     %if strcmp(s.message(1:5),'perso')

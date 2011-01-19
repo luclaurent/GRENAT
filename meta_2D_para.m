@@ -19,7 +19,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
+fct='peaks'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -40,7 +40,7 @@ doe.nb_samples=nb;
 deg=0;
 theta=[0 20];
 corr='gauss';
-mod='KRG';
+mod='CKRG';
 meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance

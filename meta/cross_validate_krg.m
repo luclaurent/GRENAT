@@ -1,4 +1,4 @@
-%Fonction assurant le calcul des diverses erreurs par validation crois�e
+%Fonction assurant le calcul des diverses erreurs par validation croisee
 %dans le cas du Krigeage
 %L. LAURENT -- 16/12/2010 -- laurent@lmt.ens-cachan.fr
 
@@ -27,7 +27,7 @@ for tir=1:krg.dim
    cv_tirages=tirages;
    cv_tirages(tir,:)=[];
    
-   %passage des param�tres
+   %passage des parametres
    krg_cv=krg;
    krg_cv.dim=krg_cv.dim-1;  %retrait d'un site
    krg_cv.rc=cv_rc;
@@ -52,7 +52,7 @@ for tir=1:krg.dim
         krg_cv.sig2=sig2;
     end
 
-   %%Evaluation du m�tamod�le au point supprime de la construction
+   %%Evaluation du metamodele au point supprime de la construction
    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(tirages(tir,:),cv_tirages,krg_cv);
    
 end

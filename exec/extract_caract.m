@@ -72,15 +72,16 @@ for itconst=1:length(const)
     fichier=[dossp,'/extract_plot_',const{itconst},'_',meta.corr,'_',fct,'.txt'];
     fich=fopen(fichier,'w');
     for ii=2:length(ligne)
-        fichierr=[dossp,'/extract_plot_',const{itconst},'_',meta.corr,'_',fct,'_',name_li{ii},'.tex'];
-        fichh=fopen(fichierr,'w');
-        fprintf(fich,'\n\n\n %s %s\n',char(37),ligne{ii});
-        fprintf(fichh,'\n\n\n %s %s\n',char(37),ligne{ii});
+        fichierr=[dossp,'/extract_plot_',const{itconst},'_',meta.corr,'_',fct,'_',name_li{ii},'.dat'];
+        data=[donnees{itconst}(1,:)',donnees{itconst}(ii,:)'];
+        save(fichierr,'data','-ascii');
+        
+        fprintf(fich,'%s %s\n',char(37),ligne{ii});        
         for jj=1:size(donnees{itconst},2)
             fprintf(fich,'(%d,%d)\n',donnees{itconst}(1,jj),donnees{itconst}(ii,jj));
-            fprintf(fichh,'(%d,%d)\n',donnees{itconst}(1,jj),donnees{itconst}(ii,jj));
+            
         end
-        fclose(fichh);
+        
         
     end
     fclose(fich);

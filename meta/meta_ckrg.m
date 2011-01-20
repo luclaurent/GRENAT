@@ -115,7 +115,7 @@ if meta.para.estim
                 catch
                     s=lasterror;
                     s.message
-                    exitflag=-1;
+                    exitflag=1;
                 end
                 %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2

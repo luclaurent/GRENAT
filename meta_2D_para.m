@@ -19,7 +19,15 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='peaks'; %branin,gold,peaks,rosenbrock,sixhump
+fun{1}='branin'; %branin,gold,peaks,rosenbrock,sixhump
+fun{2}='gold';
+fun{3}='peaks';
+fun{2}='rosenbrock';
+fun{2}='sixhump';
+
+for itfun=1:length(fun)
+    fct=fun{itfun};
+
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -81,7 +89,6 @@ for itconst=1:length(const)
         [grid_XY,aff]=gene_aff(doe,aff);
         Z=gene_eval(doe.fct,grid_XY);
 
-
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Construction et evaluation du metamodele aux points souhaites
@@ -92,6 +99,9 @@ for itconst=1:length(const)
         [ic68,ic95,ic99]=const_ic(K.Z,K.var);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+            
+        end
         %%%affichage
         aff.on='true';
         aff.num=aff.num+1;
@@ -187,3 +197,5 @@ end
 
 %extraction des données
 extract_caract(meta,donnees,fct,const);
+
+end

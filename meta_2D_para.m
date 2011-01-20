@@ -39,7 +39,7 @@ aff.nbele=30;
 doe.type='ffact';
 
 %parametrage balayage nombre de points
-nb_min=3;nb_max=5;
+nb_min=3;nb_max=10;
 
 
 %metamodèles construits
@@ -101,8 +101,7 @@ for itconst=1:length(const)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
             
-        end
-        %%%affichage
+         %%%affichage
         aff.on='true';
         aff.num=aff.num+1;
         aff.newfig=false;

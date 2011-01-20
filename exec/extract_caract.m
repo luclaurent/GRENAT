@@ -3,7 +3,7 @@
 
 %extraction au format LaTeX
 
-function  extract_caract(meta,donnees,aff,fct)
+function  extract_caract(meta,donnees,fct,const)
 
 
 %contenu lignes
@@ -24,33 +24,64 @@ ligne{13}='Critere adequation (CV)';
 ligne{14}='PRESS (CV)';
 ligne{15}=[char(36) '\theta' char(36)];
 
+name_li=ligne; name_li{5}='R2'; name_li{15}='theta';
+name_li{11}='bmcv';name_li{12}='msecv';name_li{13}='cradcv';name_li{14}='presscv';name_li{2}='tpscons';name_li{3}='nbitermin';
 
 
-%ouverture fichier
-fichier=[aff.doss '/extract_tab_' meta.type '_' meta.corr '_' fct '.tex'];
-fich=fopen(fichier,'w');
-fprintf(fich,'%sbegin{tabular}{|%s',char(92),repmat('c|',1,size(donnees,2)+1));
-fprintf(fich,'}');
-fprintf(fich,'\n%shline\n',char(92));
 
-for i=1:length(ligne)
-    fprintf(fich,'%s\t',ligne{i});
-    for j=1:size(donnees,2)
-        fprintf(fich,'%s %d\t',char(38),donnees(i,j));
+dossp='results/cmp_meta';
+unix(['mkdir ' dossp]);
+
+%boucle sur les metamodeles construits
+for itconst=1:length(const)
+    
+    %ouverture fichier
+    fichier=[dossp,'/extract_tab_',const{itconst},'_',meta.corr,'_',fct,'.tex'];
+    fich=fopen(fichier,'w');
+    fprintf(fich,'%sbegin{tabular}{|%s',char(92),repmat('c|',1,size(donnees{itconst},2)+1));
+    fprintf(fich,'}');
+    fprintf(fich,'\n%shline\n',char(92));
+    
+    for i=1:length(ligne)
+        fprintf(fich,'%s\t',ligne{i});
+        for j=1:size(donnees{itconst},2)
+            %comparaison avec autre metamodele etudié pour ceratins critère
+            if ~isempty(find(i==[2:12 14]))
+                if abs(donnees{itconst}(i,j))<abs(donnees{mod(itconst,length(const))+1}(i,j))
+                    fprintf(fich,'%s %scellcolor{lightgray} %stextbf{%snum{%d}}\t',char(38),char(92),char(92),char(92),donnees{itconst}(i,j));
+                else
+                    fprintf(fich,'%s %snum{%d}\t',char(38),char(92),donnees{itconst}(i,j));
+                end
+            elseif i==13
+                if abs(donnees{itconst}(i,j)-1)<abs(donnees{mod(itconst,length(const))+1}(i,j)-1)
+                    fprintf(fich,'%s %scellcolor{lightgray} %stextbf{%snum{%d}}\t',char(38),char(92),char(92),char(92),donnees{itconst}(i,j));
+                else
+                    fprintf(fich,'%s %snum{%d}\t',char(38),char(92),donnees{itconst}(i,j));
+                end
+            else
+                fprintf(fich,'%s %snum{%d}\t',char(38),char(92),donnees{itconst}(i,j));
+            end
+        end
+        fprintf(fich,'%s%s\n%shline\n',char(92),char(92),char(92));
     end
-    fprintf(fich,'%s%s\n%shline\n',char(92),char(92),char(92));
-end
-fprintf(fich,'%send{tabular}',char(92));
-fclose(fich);
-
+    fprintf(fich,'%send{tabular}',char(92));
+    fclose(fich);
+    
+    
+    %ecriture liste de points pour courbes
+    fichier=[dossp,'/extract_plot_',const{itconst},'_',meta.corr,'_',fct,'.txt'];
+    fich=fopen(fichier,'w');
+    for ii=2:length(ligne)
+        fichierr=[dossp,'/extract_plot_',const{itconst},'_',meta.corr,'_',fct,'_',name_li{ii},'.tex'];
+        fichh=fopen(fichierr,'w');
+        fprintf(fich,'\n\n\n %s %s\n',char(37),ligne{ii});
+        fprintf(fichh,'\n\n\n %s %s\n',char(37),ligne{ii});
+        for jj=1:size(donnees{itconst},2)
+            fprintf(fich,'(%d,%d)\n',donnees{itconst}(1,jj),donnees{itconst}(ii,jj));
+            fprintf(fichh,'(%d,%d)\n',donnees{itconst}(1,jj),donnees{itconst}(ii,jj));
+        end
+        fclose(fichh);
         
-fichier=[aff.doss '/extract_plot_' meta.type '_' meta.corr '_' fct '.txt'];
-fich=fopen(fichier,'w');
-for ii=2:length(ligne)
-    fprintf(fich,'\n\n\n %s %s\n',char(37),ligne{ii});
-    for jj=1:size(donnees,2)
-        fprintf(fich,'(%d,%d)\n',donnees(1,jj),donnees(ii,jj));
     end
-        
+    fclose(fich);
 end
-fclose(fich);

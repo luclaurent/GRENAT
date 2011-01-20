@@ -60,7 +60,7 @@ end
 %%Calcul des differentes erreurs
 %differences entre les evaluations vraies et celle obtenues en retranchant
 %le site associe
-diff=cv_z-eval; 
+diff=cv_z-eval;
 %Biais moyen
 cv.bm=1/ckrg.dim*sum(diff);
 %MSE

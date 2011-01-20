@@ -14,7 +14,7 @@ if nargin==1
         case 'gold'
             val=2;xmin=-val;xmax=val;ymin=-val;ymax=val;            
         case 'peaks'
-            val=2;xmin=-val;xmax=val;ymin=-val;ymax=val;
+            val=3;xmin=-val;xmax=val;ymin=-val;ymax=val;
         case 'sixhump'
             xmin=-2;xmax=2;ymin=-1;ymax=1;            
     end

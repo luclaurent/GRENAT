@@ -114,7 +114,7 @@ if meta.para.estim
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
                 catch
                     s=lasterror;
-                    s.message
+                    s
                     exitflag=1;
                 end
                 %arret minimisation

@@ -21,9 +21,9 @@ aff=init_aff();
 %fonction etudiee
 fun{1}='branin'; %branin,gold,peaks,rosenbrock,sixhump
 fun{2}='gold';
-%fun{3}='peaks';
-%fun{4}='rosenbrock';
-%fun{5}='sixhump';
+fun{3}='peaks';
+fun{4}='rosenbrock';
+fun{5}='sixhump';
 
 for itfun=1:length(fun)
     fct=fun{itfun};

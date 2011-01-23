@@ -112,9 +112,9 @@ if meta.para.estim
                 %interception erreur
                 try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
-                catch
-                    s=lasterror;
-                    s
+                catch exception
+                    throw(exception);
+                    
                     exitflag=1;
                 end
                 %arret minimisation

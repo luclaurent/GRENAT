@@ -89,8 +89,8 @@ if meta.para.estim
                 %interception erreur
                 try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
-                catch 
-                    s=lasterror;
+                catch exception
+                    throw(exception)
                     %disp(s.message(end-11:end))
 %                     if strcmp(s.message(end-11:end),'incompatible')
 %                         global theta_save
@@ -99,7 +99,7 @@ if meta.para.estim
 %                         x0=lb;
 %                         fprintf('**Correction bornes minimisation\n');
 %                     else
-                        s.message
+                        
 %                     end
                     %s.message
                     %if strcmp(s.message(1:5),'perso')

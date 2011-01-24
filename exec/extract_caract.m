@@ -31,6 +31,7 @@ name_li{11}='bmcv';name_li{12}='msecv';name_li{13}='cradcv';name_li{14}='presscv
 
 dossp='results/cmp_meta';
 unix(['mkdir ' dossp]);
+unix(['cd ' dossp ' && rm *.dat && rm *.tex']);
 
 %boucle sur les metamodeles construits
 for itconst=1:length(const)

@@ -35,7 +35,7 @@ doe.nb_samples=6;
 deg=0;
 theta=[0 20];
 corr='gauss';
-mod='CKRG';
+mod='KRG';
 meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance

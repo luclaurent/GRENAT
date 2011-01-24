@@ -90,26 +90,8 @@ if meta.para.estim
                 try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
                 catch exception
-                    throw(exception)
-                    %disp(s.message(end-11:end))
-%                     if strcmp(s.message(end-11:end),'incompatible')
-%                         global theta_save
-%                         lb=theta_save+10^-1;
-%                         clear theta_save
-%                         x0=lb;
-%                         fprintf('**Correction bornes minimisation\n');
-%                     else
-                        
-%                     end
-                    %s.message
-                    %if strcmp(s.message(1:5),'perso')
-                    %   lb=str2num(s(7:end));
-                    %   x0=(lb+ub)/2;
-                    %   fprintf('**Correction bornes minimisation');
-                    %else
-                    %    disp(s);
-                    %end
-                    exitflag=-1;
+                   throw(exception)
+                   exitflag=-1;
                 end
                 
                 %arret minimisation

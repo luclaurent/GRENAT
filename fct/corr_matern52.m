@@ -1,7 +1,7 @@
-%%fonction de correlation Matern (3/2)
+%%fonction de correlation Matern (5/2)
 %%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
 
-function [corr,dcorr,ddcorr]=corr_matern32(xx,long)
+function [corr,dcorr,ddcorr]=corr_matern52(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=length(long);
@@ -17,8 +17,8 @@ if lt~=1
 end
 
 %calcul de la valeur de la fonction au point xx
-td=-abs(xx)/long*sqrt(3);
-co=1+sqrt(3)/long*abs(xx);
+td=-abs(xx)/long*sqrt(5);
+co=1+sqrt(5)/long*abs(xx)+5*xx.^2/(3*long^2);
 pc=co.*exp(td);
 ev=prod(pc,2);
 
@@ -27,7 +27,7 @@ if nargout==1
     corr=ev;
 elseif nargout==2
     corr=ev;
-    dco=-3/long^2*xx.*exp(-sqrt(3)/long*abs(xx));
+    dco=-(5/long^2*xx+5*sqrt(5)/(3*long^2)*xx.^2.*sign(xx)).*exp(-sqrt(5)/long*abs(xx));
     %calcul des derivees selon chacune des composantes
     pr=zeros(size(xx));
     for ii=1:nb_comp
@@ -38,7 +38,7 @@ elseif nargout==2
     dcorr=dco.*pr;
 elseif nargout==3
     corr=ev;
-    dco=-3/long^2*xx.*exp(-sqrt(3)/long*abs(xx));
+    dco=-(5/long^2*xx+5*sqrt(5)/(3*long^2)*xx.^2.*sign(xx)).*exp(-sqrt(5)/long*abs(xx));
     %calcul des derivees selon chacune des composantes
     pr=zeros(size(xx));
     for ii=1:nb_comp
@@ -56,7 +56,7 @@ elseif nargout==3
     %les stocke dans une matrice 
     if pt_eval==1
         dm=zeros(nb_comp);
-        ddco=3/long^2*(sqrt(3)/long*abs(xx)-1).*exp(-sqrt(3)/long*abs(xx));
+        ddco=-(5/(3*long^2)+5*sqrt(5)/(3*long^3)*abs(xx)-25*(3*long^4)*xx.^2).*exp(-sqrt(5)/long*abs(xx));
         di=ddco.*pr;
         
         for ll=1:nb_comp
@@ -75,7 +75,7 @@ elseif nargout==3
     else
         dm=zeros(nb_comp,nb_comp,pt_eval);
         ddcorr=dm;
-        ddco=3/long^2*(sqrt(3)/long*abs(xx)-1).*exp(-sqrt(3)/long*abs(xx));
+        ddco=-(5/(3*long^2)+5*sqrt(5)/(3*long^3)*abs(xx)-25*(3*long^4)*xx.^2).*exp(-sqrt(5)/long*abs(xx));
         di=ddco.*pr;
                 
         for ll=1:nb_comp

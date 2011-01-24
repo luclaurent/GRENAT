@@ -90,20 +90,6 @@ elseif nargout==3
             dm(:,:,kk)=dm(:,:,kk)+transpose(dm(:,:,kk));
             ddcorr(:,:,kk)=diag(di(kk,:))+dm(:,:,kk);
         end
-        
-        
-        
-        
-%         ddcorr=zeros(nb_comp,nb_comp,pt_eval);
-%         for ll=1:nb_comp
-%            for mm=1:nb_comp
-%                 if(mm==ll)                    
-%                     ddcorr(mm,ll,:)=4*theta(mm)^2.*xx(:,ll).^2.*ev-2*theta(ll).*ev;
-%                 else
-%                     ddcorr(mm,ll,:)=4*theta(mm)*theta(ll).*xx(:,ll).*xx(:,mm).*ev;
-%                 end
-%            end
-%         end
 
     end
    

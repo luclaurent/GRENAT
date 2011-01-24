@@ -28,7 +28,7 @@ meta.cv=true;           %validation croisee
 
 %estimation parametre theta
 meta.para.method='fmincon';
-meta.para.estim=true;
+meta.para.estim=false;
 if meta.para.estim
     meta.para.max=theta(2);
     meta.para.min=theta(1);

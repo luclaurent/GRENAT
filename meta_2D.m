@@ -17,7 +17,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
+fct='gold'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -29,11 +29,11 @@ aff.nbele=30;
 doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=7;
+doe.nb_samples=4;
 
 % Parametrage du metamodele
 deg=0;
-theta=[0 50];
+theta=[0.1 50];
 corr='matern32';
 mod='CKRG';
 meta=init_meta(mod,deg,theta,corr);

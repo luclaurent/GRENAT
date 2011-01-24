@@ -1,4 +1,4 @@
-%%fonction réalisant l'affichage des surfaces de réponse
+%%fonction realisant l'affichage des surfaces de reponse
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
 
 
@@ -24,7 +24,7 @@ end
 if aff.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %affichage dans une nouvelle fenêtre
+    %affichage dans une nouvelle fenetre
     if aff.newfig
         figure;
     else
@@ -36,7 +36,7 @@ if aff.on
     
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%mise à l'échelle des tracés de gradients
+        %%mise a� l'echelle des traces de gradients
         if aff.grad_meta||aff.grad_eval
                 %dimension mini espace de conception
                 dimm=min(abs(max(max(grille_X))-min(min(grille_X))),...
@@ -49,10 +49,10 @@ if aff.on
                 %recherche du maxi de la norme du gradient
                 nm=max(max(ngr));
 
-                %définition de la taille mini de la grille d'affichage
+                %definition de la taille mini de la grille d'affichage
                 tailg=min(aff.pas);
                 
-                %taille de la plus grande flèche
+                %taille de la plus grande fleche
                 para_fl=1.3;
                 tailf=para_fl*tailg;
 
@@ -78,7 +78,7 @@ if aff.on
                     surf(grille_X,grille_Y,Z.Z)
                 end
             end
-            %affichage des points d'évaluations
+            %affichage des points d'evaluations
             if aff.pts
                 hold on
                 plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
@@ -88,7 +88,7 @@ if aff.on
 
             %Affichage des gradients
             if aff.grad_eval
-                %détermination des vecteurs de plus grandes pentes (dans le
+                %determination des vecteurs de plus grandes pentes (dans le
                 %sens de descente du gradient)
                 for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
                     vec.X(ii)=-Z.GR1(ii);
@@ -110,7 +110,7 @@ if aff.on
                 %dimension maximale espace de conception
                 dimm=max(abs(max(max(grille_X))-min(min(grille_X))),...
                     abs(max(max(grille_Y))-min(min(grille_Y)))); 
-                %dimension espace de réponse
+                %dimension espace de reponse
                 dimr=abs(max(max(Z.Z))-min(min(Z.Z)));
                 %norme maxi du gradient
                 nmax=max(max(vec.N));
@@ -134,14 +134,14 @@ if aff.on
                 %affichage des gradients
                 if aff.grad_meta                
                     hold on;
-                    %remise à l'échelle
+                    %remise à l'echelle
                     if aff.scale
                         quiver(grille_X,grille_Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
                     else
                         quiver(grille_X,grille_Y,Z.GR1,Z.GR2,'AutoScale','off');
                     end
                 end
-                %affichage des points d'évaluation
+                %affichage des points d'evaluation
                 if aff.pts
                     hold on
                     plot(tirages(:,1),tirages(:,2),'.','MarkerEdgeColor','g',...
@@ -151,7 +151,7 @@ if aff.on
                 %affichage des gradients
                 if aff.grad_eval
                     hold on;
-                    %remise à l'échelle
+                    %remise à l'echelle
                     if aff.scale
                         quiver(tirages(:,1),tirages(:,2),...
                             ech*grad(:,1),ech*grad(:,2),...
@@ -171,9 +171,9 @@ if aff.on
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %rendu
         if aff.rendu
-            hlight=light;               % activ. éclairage
+            hlight=light;               % activ. eclairage
             lighting('gouraud')         % type de rendu
-            lightangle(hlight,48,70)    % dir. éclairage
+            lightangle(hlight,48,70)    % dir. eclairage
         end
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,7 +210,7 @@ if aff.on
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %sauvegarde tracés figure
+    %sauvegarde traces figure
     if aff.save
         set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
         nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.eps'];

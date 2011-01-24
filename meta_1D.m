@@ -30,14 +30,15 @@ aff.pas=0.05;
 doe.type='sfill';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=4;
 
 % Parametrage du metamodele
 deg=0;
 theta=5;
-corr='gauss';
-mod='KRG';
+corr='matern52';
+mod='CKRG';
 meta=init_meta(mod,deg,theta,corr);
+
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -66,16 +67,16 @@ tirages=gene_doe(doe);
 X=[xmin:aff.pas:xmax]';
 [Z.Z,Z.grad]=gene_eval(fct,X);
 
-aff.on='true';
+aff.on=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Construction et evaluation du metamodele aux points souhaites
-[K.Z,K.GZ,var,ckrg]=gene_meta(tirages,eval,grad,X,meta);
+[K,ckrg]=gene_meta(tirages,eval,grad,X,meta);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance
-[ic68,ic95,ic99]=const_ic(K.Z,var);
+[ic68,ic95,ic99]=const_ic(K.Z,K.var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
@@ -94,24 +95,24 @@ end
 %fonction de reference
 aff.newfig=false;
 aff.color='red';
-affichage(X,Z.Z,tirages,eval,aff);
+affichage(X,Z.Z,tirages,eval,[],aff);
 aff.newfig=false;
 aff.color='blue';
 aff.opt='--';
-affichage(X,Z.grad,tirages,eval,aff);
+affichage(X,Z.grad,tirages,eval,[],aff);
 aff.color='red';
 aff.opt='rs';
-affichage(tirages,eval,tirages,eval,aff);
+affichage(tirages,eval,tirages,eval,[],aff);
 aff.opt='o';
-affichage(tirages,grad,tirages,eval,aff);
+affichage(tirages,grad,tirages,eval,[],aff);
 aff.opt=[];
 aff.color='green';
-affichage(X,K.Z,tirages,eval,aff);
+affichage(X,K.Z,tirages,eval,[],aff);
 aff.color='blue';
 aff.opt='-.';
-affichage(X,K.GZ,tirages,eval,aff);
+affichage(X,K.GZ,tirages,eval,[],aff);
 aff.color='red';
-affichage(X,var,tirages,eval,aff);
+affichage(X,K.var,tirages,eval,[],aff);
 
 if aff.ic.on
     legend(['IC' aff.ic.type],' ','fct ref','deriv fct ref','Evaluations','derivees','CoKrigeage','Derivee CKRG','MSE');

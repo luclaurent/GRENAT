@@ -5,6 +5,9 @@
 
 function  extract_caract(meta,donnees,fct,const)
 
+dossp='results/cmp_meta';
+unix(['mkdir ' dossp]);
+
 
 %contenu lignes
 ligne=cell(1,15);
@@ -50,9 +53,17 @@ for itconst=1:length(const)
                 end
             elseif i==13
                 if abs(donnees{itconst}(i,j)-1)<abs(donnees{mod(itconst,length(const))+1}(i,j)-1)
-                    fprintf(fich,'%s %scellcolor{lightgray} %stextbf{%snum{%d}}\t',char(38),char(92),char(92),char(92),donnees{itconst}(i,j));
+                    if abs(donnees{itconst}(i,j))==Inf
+                        fprintf(fich,'%s %scellcolor{lightgray} %stextbf{%d}\t',char(38),char(92),char(92),donnees{itconst}(i,j));
+                    else
+                        fprintf(fich,'%s %scellcolor{lightgray} %stextbf{%snum{%d}}\t',char(38),char(92),char(92),char(92),donnees{itconst}(i,j));
+                    end
                 else
-                    fprintf(fich,'%s %snum{%d}\t',char(38),char(92),donnees{itconst}(i,j));
+                    if abs(donnees{itconst}(i,j))==Inf
+                        fprintf(fich,'%s %d\t',char(38),donnees{itconst}(i,j));
+                    else
+                        fprintf(fich,'%s %snum{%d}\t',char(38),char(92),donnees{itconst}(i,j));
+                    end
                 end
             else
                 fprintf(fich,'%s %snum{%d}\t',char(38),char(92),donnees{itconst}(i,j));

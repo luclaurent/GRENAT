@@ -39,7 +39,7 @@ aff.nbele=30;
 doe.type='ffact';
 
 %parametrage balayage nombre de points
-nb_min=2;nb_max=4;
+nb_min=2;nb_max=10;
 
 
 %metamodeles construits
@@ -54,6 +54,8 @@ for itconst=1:length(const)
         close all
         %nb d'echantillons
         doe.nb_samples=nb;
+        
+        sprintf('Nombre de TIRAGES:   %d\n',nb^2)
 
         % Parametrage du metamodele
         deg=0;
@@ -196,9 +198,8 @@ for itconst=1:length(const)
 end
 
 %extraction des donnees
-dossp='results/cmp_meta';
-unix(['mkdir ' dossp]);
-sprintf('Sauvegarde donneses %s \n',fct)
+
+sprintf('Sauvegarde donnees %s \n',fct)
 extract_caract(meta,donnees,fct,const);
 
 end

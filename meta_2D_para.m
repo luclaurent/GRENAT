@@ -175,7 +175,7 @@ for itconst=1:length(const)
         fprintf('=====================================\n');
 
 
-        %enregistrement donn�es en vue de leur sauvegarde
+        %enregistrement donnees en vue de leur sauvegarde
         nbb=nbb+1;
         donnees{itconst}(1,nbb)=nb^2;
         donnees{itconst}(2,nbb)=krg.tps;

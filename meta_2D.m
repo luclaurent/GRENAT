@@ -29,13 +29,13 @@ aff.nbele=30;
 doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=6;
+doe.nb_samples=7;
 
 % Parametrage du metamodele
 deg=0;
-theta=[0 20];
-corr='gauss';
-mod='KRG';
+theta=[0 50];
+corr='matern32';
+mod='CKRG';
 meta=init_meta(mod,deg,theta,corr);
 
 %affichage de l'intervalle de confiance

@@ -27,7 +27,7 @@ if nargout==1
     corr=ev;
 elseif nargout==2
     corr=ev;
-    dco=-(5/long^2*xx+5*sqrt(5)/(3*long^2)*xx.^2.*sign(xx)).*exp(-sqrt(5)/long*abs(xx));
+    dco=-(5/(3*long^2)*xx+5*sqrt(5)/(3*long^3)*xx.^2.*sign(xx)).*exp(-sqrt(5)/long*abs(xx));
     %calcul des derivees selon chacune des composantes
     pr=zeros(size(xx));
     for ii=1:nb_comp
@@ -38,7 +38,7 @@ elseif nargout==2
     dcorr=dco.*pr;
 elseif nargout==3
     corr=ev;
-    dco=-(5/long^2*xx+5*sqrt(5)/(3*long^2)*xx.^2.*sign(xx)).*exp(-sqrt(5)/long*abs(xx));
+    dco=-(5/(3*long^2)*xx+5*sqrt(5)/(3*long^3)*xx.^2.*sign(xx)).*exp(-sqrt(5)/long*abs(xx));
     %calcul des derivees selon chacune des composantes
     pr=zeros(size(xx));
     for ii=1:nb_comp
@@ -56,7 +56,7 @@ elseif nargout==3
     %les stocke dans une matrice 
     if pt_eval==1
         dm=zeros(nb_comp);
-        ddco=-(5/(3*long^2)+5*sqrt(5)/(3*long^3)*abs(xx)-25*(3*long^4)*xx.^2).*exp(-sqrt(5)/long*abs(xx));
+        ddco=-(5/(3*long^2)+5*sqrt(5)/(3*long^3)*abs(xx)-25/(3*long^4)*xx.^2).*exp(-sqrt(5)/long*abs(xx));
         di=ddco.*pr;
         
         for ll=1:nb_comp
@@ -75,7 +75,7 @@ elseif nargout==3
     else
         dm=zeros(nb_comp,nb_comp,pt_eval);
         ddcorr=dm;
-        ddco=-(5/(3*long^2)+5*sqrt(5)/(3*long^3)*abs(xx)-25*(3*long^4)*xx.^2).*exp(-sqrt(5)/long*abs(xx));
+        ddco=-(5/(3*long^2)+5*sqrt(5)/(3*long^3)*abs(xx)-25/(3*long^4)*xx.^2).*exp(-sqrt(5)/long*abs(xx));
         di=ddco.*pr;
                 
         for ll=1:nb_comp

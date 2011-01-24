@@ -35,7 +35,7 @@ doe.nb_samples=4;
 % Parametrage du metamodele
 deg=0;
 theta=5;
-corr='matern52';
+corr='matern32';
 mod='CKRG';
 meta=init_meta(mod,deg,theta,corr);
 

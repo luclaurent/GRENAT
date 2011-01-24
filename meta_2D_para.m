@@ -195,6 +195,7 @@ for itconst=1:length(const)
 end
 
 %extraction des données
+sprintf('Sauvegarde données %s, \n',fct)
 extract_caract(meta,donnees,fct,const);
 
 end

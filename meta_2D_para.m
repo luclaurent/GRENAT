@@ -27,7 +27,7 @@ fun{3}='peaks';
 
 for itfun=1:length(fun)
     fct=fun{itfun};
-
+    
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -51,6 +51,7 @@ for itconst=1:length(const)
     donnees{itconst}=zeros(15,nb_max-nb_min+1);
     nbb=0;
     for nb=nb_min:nb_max
+        close all
         %nb d'echantillons
         doe.nb_samples=nb;
 

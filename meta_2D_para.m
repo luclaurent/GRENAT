@@ -39,10 +39,10 @@ aff.nbele=30;
 doe.type='ffact';
 
 %parametrage balayage nombre de points
-nb_min=2;nb_max=10;
+nb_min=2;nb_max=4;
 
 
-%metamodèles construits
+%metamodeles construits
 const{1}='KRG';const{2}='CKRG';
 
 donnees=cell(1,length(const));
@@ -172,7 +172,7 @@ for itconst=1:length(const)
         fprintf('=====================================\n');
 
 
-        %enregistrement données en vue de leur sauvegarde
+        %enregistrement donnï¿½es en vue de leur sauvegarde
         nbb=nbb+1;
         donnees{itconst}(1,nbb)=nb^2;
         donnees{itconst}(2,nbb)=krg.tps;
@@ -194,8 +194,10 @@ for itconst=1:length(const)
     end
 end
 
-%extraction des données
-sprintf('Sauvegarde données %s, \n',fct)
+%extraction des donnees
+dossp='results/cmp_meta';
+unix(['mkdir ' dossp]);
+sprintf('Sauvegarde donneses %s \n',fct)
 extract_caract(meta,donnees,fct,const);
 
 end

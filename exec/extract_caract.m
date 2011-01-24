@@ -1,4 +1,4 @@
-%% Fichier d'extraction de données pour comparaison qualite KRG/CKRG
+%% Fichier d'extraction de donnï¿½es pour comparaison qualite KRG/CKRG
 %% L. LAURENT -- 14/01/2011 -- laurent@lmt.ens-cachan.fr
 
 %extraction au format LaTeX
@@ -28,11 +28,6 @@ name_li=ligne; name_li{5}='R2'; name_li{15}='theta';
 name_li{11}='bmcv';name_li{12}='msecv';name_li{13}='cradcv';name_li{14}='presscv';name_li{2}='tpscons';name_li{3}='nbitermin';
 
 
-
-dossp='results/cmp_meta';
-unix(['mkdir ' dossp]);
-unix(['cd ' dossp ' && rm *.dat && rm *.tex']);
-
 %boucle sur les metamodeles construits
 for itconst=1:length(const)
     
@@ -46,7 +41,7 @@ for itconst=1:length(const)
     for i=1:length(ligne)
         fprintf(fich,'%s\t',ligne{i});
         for j=1:size(donnees{itconst},2)
-            %comparaison avec autre metamodele etudié pour ceratins critère
+            %comparaison avec autre metamodele etudie pour ceratins critï¿½re
             if ~isempty(find(i==[2:12 14]))
                 if abs(donnees{itconst}(i,j))<abs(donnees{mod(itconst,length(const))+1}(i,j))
                     fprintf(fich,'%s %scellcolor{lightgray} %stextbf{%snum{%d}}\t',char(38),char(92),char(92),char(92),donnees{itconst}(i,j));

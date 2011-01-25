@@ -88,7 +88,24 @@ if meta.para.estim
     %minimisation de la log-vraisemblance
     switch meta.para.method
         case 'simplex'  %methode du simplexe
+        case 'fminbnd'
+            %definition des bornes de l'espace de recherche
+            lb=meta.para.min;ub=meta.para.max;
+            %declaration de la fonction a minimiser
+            fun=@(para)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,para);
+            options = optimset(...
+                'Display', 'iter',...        %affichage evolution
+                'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+                'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
+                'UseParallel','always',...
+                'PlotFcns','');
+            %minimisation
+            warning off all;
+            [x,fval,exitflag,output] = fminbnd(fun,lb,ub,options);
+            warning on all;
             
+            meta.para.val=x;
+            fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         case 'fmincon'
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;

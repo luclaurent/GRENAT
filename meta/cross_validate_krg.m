@@ -33,19 +33,25 @@ for tir=1:krg.dim
    krg_cv.rc=cv_rc;
    
    %calcul de beta
+   warning off all
    cv_ft=cv_fc';
    block1=((cv_ft/cv_rc)*cv_fc);
    block2=((cv_ft/cv_rc)*cv_y);
    krg_cv.beta=block1\block2;
+  
    
    krg_cv.ft=cv_ft;
    
    %creation de la matrice des facteurs de correlation
    krg_cv.gamma=cv_rc\(cv_y-cv_fc*krg_cv.beta);
+    
    
    %calcul de la variance de prediction
+   
     sig2=1/size(cv_rc,1)*((cv_y-cv_fc*krg_cv.beta)'/cv_rc)...
         *(cv_y-cv_fc*krg_cv.beta);
+    warning on all
+    
     if krg.norm.on
         krg_cv.sig2=sig2*krg.norm.std_eval^2;
     else
@@ -56,7 +62,7 @@ for tir=1:krg.dim
    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(tirages(tir,:),cv_tirages,krg_cv);
    
 end
-
+warning on all;
 
 %%Calcul des differentes erreurs
 %differences entre les evaluations vraies et celle obtenues en retranchant

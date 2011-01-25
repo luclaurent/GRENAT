@@ -51,7 +51,7 @@ elseif size(doe.bornes,2)==2
         case 'LHS'
             Xmin=[xmin,ymin];
             Xmax=[xmax,ymax];
-            if nb_s2==0$
+            if nb_s2==0                
                 tirages=lhsu(Xmin,Xmax,nb_s1);
             else
                 tirages=lhsu(Xmin,Xmax,nb_s1*nb_s2);

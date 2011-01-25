@@ -75,10 +75,12 @@ end
 
 %calcul de la variance de prediction (MSE) (Koelher & Owen 1996)
 if nargout ==3
+    warning off all
     rcrr=krg.rcc \ rr;
     u=krg.ft*rcrr-ff';
     var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u)...
         - rr'*rcrr);
+    warning on all
 end
 
 %normalisation

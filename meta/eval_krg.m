@@ -59,9 +59,11 @@ end
 %calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
 %2004)
 if nargout ==3
+     warning off all;
     rcrr=krg.rc \ rr;
-    u=krg.ft*rcrr-ff';
+    u=krg.ft*rcrr-ff';   
     var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
+    warning on all;
 
 end
 

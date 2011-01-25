@@ -33,6 +33,7 @@ for tir=1:ckrg.dim
    ckrg_cv.rcc=cv_rcc;
    
    %calcul de beta
+   warning off all
    cv_ft=cv_fc';
    block1=((cv_ft/cv_rcc)*cv_fc);
    block2=((cv_ft/cv_rcc)*cv_y);
@@ -51,7 +52,7 @@ for tir=1:ckrg.dim
     else
         ckrg_cv.sig2=sig2;
     end
-
+    warning on all
    %%Evaluation du metamodele au point supprime de la construction
    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_ckrg(tirages(tir,:),cv_tirages,ckrg_cv);
    

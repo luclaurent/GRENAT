@@ -59,8 +59,8 @@ for itconst=1:length(const)
 
         % Parametrage du metamodele
         deg=0;
-        theta=[0 20];
-        corr='gauss';
+        theta=[0 25];
+        corr='matern32';
         modm=const{itconst};
         meta=init_meta(modm,deg,theta,corr);
 

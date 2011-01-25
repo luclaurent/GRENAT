@@ -93,9 +93,9 @@ if meta.para.estim
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %definition valeur de depart de la variable
-            x0=(lb+ub)/2;
+            x0=lb;
             %declaration de la fonction a  minimiser
-            fun=@(theta)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,theta);
+            fun=@(para)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,para);
             %declaration des options de la strategie de minimisation
             options = optimset(...
                'Display', 'iter',...        %affichage evolution
@@ -121,11 +121,11 @@ if meta.para.estim
                 if exitflag==1||exitflag==0||exitflag==2
                     indic=1;
                     nkrg.estim_para=output;
-                    nkrg.estim_para.theta=x;
+                    nkrg.estim_para.val=x;
                 end
             end
                     
-            meta.theta=x;
+            meta.para.val=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         otherwise
             error('Strategie de minimisation non prise en charge');
@@ -144,7 +144,7 @@ krg.reg=fct;
 krg.dim=ns;
 krg.corr=meta.corr;    
 krg.deg=meta.deg;
-krg.theta=meta.theta;
+krg.para=meta.para;
 krg.con=size(tirages,2);
 
 

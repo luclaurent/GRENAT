@@ -59,7 +59,7 @@ end
 
 
 %%Construction des differents elements avec ou sans estimation des
-%%paramètres
+%%parametres
 if meta.para.estim
     fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
     %minimisation de la log-vraisemblance
@@ -70,9 +70,9 @@ if meta.para.estim
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %definition valeur de depart de la variable
-            x0=(lb+ub)/2;
-            %declaration de la fonction à minimiser
-            fun=@(theta)bloc_krg(tiragesn,ns,fc,y,meta,std_e,theta);
+            x0=lb;
+            %declaration de la fonction a minimiser
+            fun=@(para)bloc_krg(tiragesn,ns,fc,y,meta,std_e,para);
             %declaration des options de la strategie de minimisation
             options = optimset(...
                'Display', 'iter',...        %affichage evolution
@@ -87,23 +87,23 @@ if meta.para.estim
             warning off all;
             while indic==0
                 %interception erreur
-                try
+             %   try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
-                catch exception
-                   throw(exception)
-                   exitflag=-1;
-                end
+            %    catch exception
+%                   throw(exception)
+            %       exitflag=-1;
+             %   end
                 
                 %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2
                     indic=1;
                     nkrg.estim_para=output;
-                    nkrg.estim_para.theta=x;
+                    nkrg.estim_para.val=x;
                 end
             end
             warning on all;
             
-            meta.theta=x;
+            meta.para.val=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         otherwise
             error('Strategie de minimisation non prise en charge');

@@ -8,14 +8,14 @@ function [logli,li]=likelihood(mat_corr,sig)
 %nombre sites
 nb_t=size(mat_corr,1);
 
-%calcul de la log vraisemblance d'apr�s Jones 1993
-det_corr=det(mat_corr);
+%calcul de la log vraisemblance d'apres Jones 1993
+det_corr=det(mat_corr)
 
 
 logli=nb_t/2*log(2*pi*sig)+1/2*log(det_corr)+nb_t/2;
 
 if nargout==2
-    %calcul de la vraisemblance d'apr�s Jones 1993
+    %calcul de la vraisemblance d'apres Jones 1993
     li=1/((2*pi*sig)^(nb_t/2)*sqrt(det_corr));
 
 elseif nargout >2

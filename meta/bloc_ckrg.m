@@ -1,10 +1,10 @@
 %% Construction des blocs du CoKrigeage
 %%L. LAURENT -- 07/01/2011 -- laurent@lmt.ens-cachan.fr
 
-function [lilog,krg]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,theta)
+function [lilog,krg]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,para)
 
 if nargin==7
-    meta.theta=theta;
+    meta.para.val=para;
 end
 
 %dimension du pb (nb de variables de conception)
@@ -19,7 +19,8 @@ rci=zeros(dim*ns,dim*ns);
 for ii=1:ns
     for jj=1:ns
         %morceau de la matrice issue du krigeage
-        [ev,dev,ddev]=feval(meta.corr,tiragesn(ii,:)-tiragesn(jj,:),meta.theta);
+        
+        [ev,dev,ddev]=feval(meta.corr,tiragesn(ii,:)-tiragesn(jj,:),meta.para.val);
        
         rc(ii,jj)=ev;        
                 
@@ -67,7 +68,7 @@ end
 
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rcc,sig2);
-lilog=krg.lilog;
+lilog=krg.lilog
 
 %sauvegarde des informations
 krg.rcc=rcc;

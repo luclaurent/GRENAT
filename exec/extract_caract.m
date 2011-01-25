@@ -25,7 +25,7 @@ ligne{11}='Biais moyen (CV)';
 ligne{12}='MSE (CV)';
 ligne{13}='Critere adequation (CV)';
 ligne{14}='PRESS (CV)';
-ligne{15}=[char(36) '\theta' char(36)];
+ligne{15}=[char(36) 'l' char(36)];
 
 name_li=ligne; name_li{5}='R2'; name_li{15}='theta';
 name_li{11}='bmcv';name_li{12}='msecv';name_li{13}='cradcv';name_li{14}='presscv';name_li{2}='tpscons';name_li{3}='nbitermin';

@@ -35,9 +35,9 @@ end
 dist=repmat(X,krg.dim,1)-tirages;
 
 if grad  %si calcul des gradients
-    [rr,jr]=feval(krg.corr,dist,krg.theta);
+    [rr,jr]=feval(krg.corr,dist,krg.para.val);
 else %sinon
-    rr=feval(krg.corr,dist,krg.theta);
+    rr=feval(krg.corr,dist,krg.para.val);
 end
 
 %matrice de regression aux points d'evaluations

@@ -2,17 +2,17 @@
 %%L. LAURENT -- 05/01/2011 -- laurent@lmt.ens-cachan.fr
 
 
-function [lilog,krg]=bloc_krg(tiragesn,ns,fc,y,meta,std_e,theta)
+function [lilog,krg]=bloc_krg(tiragesn,ns,fc,y,meta,std_e,para)
 
 if nargin==7
-    meta.theta=theta;
+    meta.para.val=para;
 end
 
 %creation matrice de correlation
 rc=zeros(ns);
 for ii=1:ns
     for jj=1:ns
-       rc(ii,jj)=feval(meta.corr,tiragesn(jj,:)-tiragesn(ii,:),meta.theta);      
+       rc(ii,jj)=feval(meta.corr,tiragesn(jj,:)-tiragesn(ii,:),meta.para.val);      
     end
 end
 
@@ -52,7 +52,7 @@ krg.y=y;
 krg.dim=ns;
 krg.corr=meta.corr;
 krg.deg=meta.deg;
-krg.theta=meta.theta;
+krg.para=meta.para;
 
 %variance de prediction
 sig2=1/size(rc,1)*((y-fc*krg.beta)'/rc)*(y-fc*krg.beta);

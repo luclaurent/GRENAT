@@ -1,4 +1,4 @@
-%% Generation et évaluation du metamodèle
+%% Generation et evaluation du metamodele
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
 
@@ -14,22 +14,22 @@ dim_ev=size(points);
 var=zeros(dim_ev([1,2]));
 Z.Z=zeros(dim_ev([1,2]));
     
-%construction métamodèle
+%construction metamodele
 switch meta.type
     case 'CKRG'
-        %% Construction du metamodèle de CoKrigeage
+        %% Construction du metamodele de CoKrigeage
         fprintf('\n%s\n',[textd 'CoKrigeage' textf]);
         ckrg=meta_ckrg(tirages,eval,grad,meta);
         ret=ckrg;
     case 'KRG'
-        %% Construction du metamodèle de Krigeage
+        %% Construction du metamodele de Krigeage
         fprintf('\n%s\n',[textd 'Krigeage' textf]);
         krg=meta_krg(tirages,eval,meta);
         ret=krg;
     case 'DACE'
-        %% Construction du metamodèle de Krigeage (DACE)
+        %% Construction du metamodele de Krigeage (DACE)
         fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
-        [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.theta);
+        [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.para);
         ret=dace;
 end
 
@@ -39,19 +39,19 @@ if dim_conc==1
     Z.GZ=zeros(dim_ev);
     switch meta.type
         case 'CKRG'
-            %% Evaluation du metamodèle de CoKrigeage
+            %% Evaluation du metamodele de CoKrigeage
             for jj=1:length(points)
                 [Z.Z(jj),G,var(jj)]=eval_ckrg(points(jj),tirages,ckrg);
                 Z.GZ(jj)=G;
             end
         case 'KRG'
-            %% Evaluation du metamodèle de Krigeage
+            %% Evaluation du metamodele de Krigeage
             for jj=1:length(points)
                 [Z.Z(jj),G,var(jj)]=eval_krg(points(jj),tirages,krg);
                 Z.GZ(jj)=G;
             end
         case 'DACE'
-            %% Evaluation du metamodèle de Krigeage (DACE)
+            %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:length(points)
                 [Z.Z(jj),G,var(jj)]=predictor(points(jj),dace.model);
                 Z.GZ(jj)=G;
@@ -65,7 +65,7 @@ elseif dim_conc==2
     Z.GR2=zeros(dim_ev([1,2]));
     switch meta.type
         case 'CKRG'
-            %% Evaluation du metamodèle de CoKrigeage
+            %% Evaluation du metamodele de CoKrigeage
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [Z.Z(jj,kk),G,var(jj,kk)]=eval_ckrg(points(jj,kk,:),tirages,ckrg);
@@ -74,7 +74,7 @@ elseif dim_conc==2
                 end
             end
         case 'KRG'
-            %% Evaluation du metamodèle de Krigeage
+            %% Evaluation du metamodele de Krigeage
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [Z.Z(jj,kk),G,var(jj,kk)]=eval_krg(points(jj,kk,:),tirages,krg);
@@ -83,7 +83,7 @@ elseif dim_conc==2
                 end
             end
         case 'DACE'
-            %% Evaluation du metamodèle de Krigeage (DACE)
+            %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [Z.Z(jj,kk),G,var(jj,kk)]=predictor(points(jj,kk,:),dace.model);

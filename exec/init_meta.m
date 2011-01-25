@@ -1,11 +1,11 @@
 %% Initialisation du metamodele
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
-function meta=init_meta(type,deg,theta,corr)
+function meta=init_meta(type,deg,long,corr)
 
 meta.type=type;         %type de metamodele KRG/CKRG/DACE
 meta.deg=deg;           %degre de la regression
-meta.theta=theta;       %longueur de correlation
+meta.para.val=long;       %longueur de correlation
 if nargin>=4
     meta.corr=['corr_' corr];     %fonction de correlation
 else
@@ -26,10 +26,10 @@ meta.norm=true;         %normalisation
 meta.recond=false;      %amelioration du conditionnement de la matrice de correlation
 meta.cv=true;           %validation croisee
 
-%estimation parametre theta
+%estimation parametre long (longueur de correlation)
 meta.para.method='fmincon';
 meta.para.estim=true;
 if meta.para.estim
-    meta.para.max=theta(2);
-    meta.para.min=theta(1);
+    meta.para.max=long(2);
+    meta.para.min=long(1);
 end

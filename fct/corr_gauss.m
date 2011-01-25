@@ -1,35 +1,34 @@
 %%fonction de correlation gauss (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
-function [corr,dcorr,ddcorr]=corr_gauss(xx,theta)
+function [corr,dcorr,ddcorr]=corr_gauss(xx,long)
 
-%verification de la dimension de theta
-lt=length(theta);
+%verification de la dimension de la longueur de correlation
+lt=length(long);
 %nombre de points a  evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
 
 if lt==1
-    %theta est un reel, alors on en fait une matrice de la dimension de xx
-    theta = repmat(theta,pt_eval,nb_comp);
+    %long est un reel, alors on en fait une matrice de la dimension de xx
+    long = repmat(long,pt_eval,nb_comp);
 elseif lt~=nb_comp
-    error('mauvaise dimension de theta');
+    error('mauvaise dimension de la longueur de correlation');
 end
 
 %calcul de la valeur de la fonction au point xx
-td=-xx.^2.*theta;
+td=-xx.^2./long.^2;
 ev=exp(sum(td,2));
-
 
 if nargout==1
     corr=ev;
 elseif nargout==2
     corr=ev;
-    dcorr=-2*theta.*xx.*repmat(ev,1,nb_comp);
+    dcorr=-2./(long.^2).*xx.*repmat(ev,1,nb_comp);
 elseif nargout==3
     corr=ev;
-    dcorr=-2*theta.*xx.*repmat(ev,1,nb_comp);   
+    dcorr=-2./(long.^2).*xx.*repmat(ev,1,nb_comp);   
     
     %calcul des derivees secondes    
     
@@ -42,9 +41,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddcorr(mm,ll)=4*theta(mm)^2*xx(ll)^2*ev-2*theta(ll)*ev;
+                    ddcorr(mm,ll)=4/long(mm)^4*xx(ll)^2*ev-2/long(ll)^2*ev;
                 else
-                    ddcorr(mm,ll)=4*theta(mm)*theta(ll)*xx(ll)*xx(mm)*ev;
+                    ddcorr(mm,ll)=4/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm)*ev;
                 end
            end
         end
@@ -56,9 +55,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddcorr(mm,ll,:)=4*theta(mm)^2.*xx(:,ll).^2.*ev-2*theta(ll).*ev;
+                    ddcorr(mm,ll,:)=4./long(mm)^4.*xx(:,ll).^2.*ev-2/long(ll).*ev;
                 else
-                    ddcorr(mm,ll,:)=4*theta(mm)*theta(ll).*xx(:,ll).*xx(:,mm).*ev;
+                    ddcorr(mm,ll,:)=4./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm).*ev;
                 end
            end
         end

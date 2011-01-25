@@ -17,7 +17,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump
+fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -29,18 +29,16 @@ aff.nbele=30;
 doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=6;
+doe.nb_samples=3;
 
 % Parametrage du metamodele
 deg=0;
-theta=[0.1 25];
-%theta=12;
-corr='matern52';
-
-
+long=[0.5 40];
+%long=0.7;
+corr='gauss';
 
 mod='CKRG';
-meta=init_meta(mod,deg,theta,corr);
+meta=init_meta(mod,deg,long,corr);
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -81,7 +79,7 @@ Z=gene_eval(doe.fct,grid_XY);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-aff.on='true';
+aff.on=true;
 aff.newfig=false;
 aff.ic.on=true;
 figure;

@@ -3,15 +3,15 @@
 
 %extraction au format LaTeX
 
-function  extract_caract(meta,donnees,fct,const)
+function  extract_caractb(meta,donnees,fct,const)
 
-dossp='results/cmp_meta';
+dossp='results/cmp_meta_const';
 unix(['mkdir ' dossp]);
 
 
 %contenu lignes
 ligne=cell(1,15);
-ligne{1}='Nombre de tirages';
+ligne{1}='Nombre evaluations fonction';
 ligne{2}='Temps de construction (s)';
 ligne{3}='Nombre iterations minimisation';
 ligne{4}='MSE';

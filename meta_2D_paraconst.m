@@ -1,4 +1,4 @@
-%%Etude metamodeles en 2D
+%%Etude metamodeles en 2D (nombre d'evaluation de la fonction constant)
 %%L. LAURENT -- 05/01/2011 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace
@@ -40,7 +40,7 @@ aff.nbele=30;
 doe.type='LHSp';
 
 %parametrage balayage nombre de points
-nb_min=2;nb_max=4;
+nb_min=4;nb_max=40;
 
 
 %metamodeles construits
@@ -51,12 +51,17 @@ donnees=cell(1,length(const));
 for itconst=1:length(const)
     donnees{itconst}=zeros(15,nb_max-nb_min+1);
     nbb=0;
-    for nb=nb_min:nb_max
+    for nb=nb_min:2:nb_max
         close all
         %nb d'echantillons
-        doe.nb_samples=nb;
+        switch const{itconst}
+            case 'KRG'
+                doe.nb_samples=3*nb;
+            case 'CKRG'
+                doe.nb_samples=nb;
+        end
         
-        sprintf('Nombre de TIRAGES:   %d\n',nb^2)
+        sprintf('Nombre de TIRAGES:   %d\n',nb)
 
         % Parametrage du metamodele
         deg=0;
@@ -188,7 +193,7 @@ for itconst=1:length(const)
 
         %enregistrement donnees en vue de leur sauvegarde
         nbb=nbb+1;
-        donnees{itconst}(1,nbb)=nb^2;
+        donnees{itconst}(1,nbb)=3*nb;
         donnees{itconst}(2,nbb)=krg.tps;
         donnees{itconst}(3,nbb)=krg.estim_para.iterations;
         donnees{itconst}(4,nbb)=err.emse;
@@ -211,6 +216,6 @@ end
 %extraction des donnees
 
 sprintf('Sauvegarde donnees %s \n',fct)
-extract_caract(meta,donnees,fct,const);
+extract_caractb(meta,donnees,fct,const);
 
 end

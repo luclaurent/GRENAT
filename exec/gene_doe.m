@@ -32,7 +32,7 @@ elseif size(doe.bornes,2)==2
         nb_s2=doe.nb_samples(2);
     else
         nb_s1=doe.nb_samples;
-        nb_s2=nb_s1;
+        nb_s2=0;
     end
     
     switch doe.type
@@ -51,7 +51,12 @@ elseif size(doe.bornes,2)==2
         case 'LHS'
             Xmin=[xmin,ymin];
             Xmax=[xmax,ymax];
-            tirages=lhsu(Xmin,Xmax,nb_s1*nb_s2);
+            if nb_s2==0$
+                tirages=lhsu(Xmin,Xmax,nb_s1);
+            else
+                tirages=lhsu(Xmin,Xmax,nb_s1*nb_s2);
+            end
+            
         case 'rand'
             tirages=zeros(nb_s1*nb_s2);
             tirages(:,1)=xmin+(xmax-xmin)*rand(nb_s1*nb_s2,1);

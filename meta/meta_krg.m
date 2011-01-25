@@ -70,7 +70,7 @@ if meta.para.estim
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %definition valeur de depart de la variable
-            x0=lb;
+            x0=lb+eps;
             %declaration de la fonction a minimiser
             fun=@(para)bloc_krg(tiragesn,ns,fc,y,meta,std_e,para);
             %declaration des options de la strategie de minimisation

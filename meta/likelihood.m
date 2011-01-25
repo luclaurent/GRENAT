@@ -9,7 +9,7 @@ function [logli,li]=likelihood(mat_corr,sig)
 nb_t=size(mat_corr,1);
 
 %calcul de la log vraisemblance d'apres Jones 1993
-det_corr=det(mat_corr)
+det_corr=det(mat_corr);
 
 
 logli=nb_t/2*log(2*pi*sig)+1/2*log(det_corr)+nb_t/2;

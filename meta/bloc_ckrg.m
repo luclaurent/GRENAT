@@ -68,7 +68,7 @@ end
 
 %Maximum de vraisemblance
 [krg.lilog,krg.li]=likelihood(rcc,sig2);
-lilog=krg.lilog
+lilog=krg.lilog;
 
 %sauvegarde des informations
 krg.rcc=rcc;

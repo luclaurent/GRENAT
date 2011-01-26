@@ -103,7 +103,8 @@ if meta.para.estim
             warning off all;
             [x,fval,exitflag,output] = fminbnd(fun,lb,ub,options);
             warning on all;
-            
+            nkrg.estim_para=output;
+            nkrg.estim_para.val=x;
             meta.para.val=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         case 'fmincon'

@@ -40,7 +40,7 @@ aff.nbele=30;
 doe.type='LHSp';
 
 %parametrage balayage nombre de points
-nb_min=4;nb_max=40;
+nb_min=4;nb_max=6;
 
 
 %metamodeles construits

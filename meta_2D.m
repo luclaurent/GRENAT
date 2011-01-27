@@ -17,7 +17,7 @@ aff=init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
+fct='schwefel'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -26,10 +26,10 @@ fct='branin'; %branin,gold,peaks,rosenbrock,sixhump
 aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=[7 7];
+doe.nb_samples=[10 10];
 
 % Parametrage du metamodele
 deg=0;

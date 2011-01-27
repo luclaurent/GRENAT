@@ -27,7 +27,7 @@ meta.recond=false;      %amelioration du conditionnement de la matrice de correl
 meta.cv=true;           %validation croisee
 
 %estimation parametre long (longueur de correlation)
-meta.para.method='fminbnd';
+meta.para.method='fmincon';
 meta.para.estim=true;
 if meta.para.estim
     meta.para.max=long(2);

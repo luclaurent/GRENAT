@@ -22,9 +22,12 @@ aff=init_aff();
 fun{1}='branin'; %branin,gold,peaks,rosenbrock,sixhump
 fun{2}='gold';
 fun{3}='peaks';
+fun{4}='schwefel';
 %fun{1}='rosenbrock';
 %fun{1}='sixhump';
-
+%longc(1)=5;
+%longc(2)=1.75;
+%longc(3)=0.65;
 
 for itfun=1:length(fun)
     fct=fun{itfun};
@@ -40,7 +43,8 @@ aff.nbele=30;
 doe.type='LHSp';
 
 %parametrage balayage nombre de points
-nb_min=4;nb_max=6;
+nb_min=4;nb_max=40;
+bapas=2;
 
 
 %metamodeles construits
@@ -49,9 +53,10 @@ const{1}='KRG';const{2}='CKRG';
 donnees=cell(1,length(const));
 
 for itconst=1:length(const)
-    donnees{itconst}=zeros(15,nb_max-nb_min+1);
+    esp=nb_min:bapas:nb_max;
+    donnees{itconst}=zeros(15,length(esp));
     nbb=0;
-    for nb=nb_min:2:nb_max
+    for nb=esp
         close all
         %nb d'echantillons
         switch const{itconst}
@@ -65,12 +70,7 @@ for itconst=1:length(const)
 
         % Parametrage du metamodele
         deg=0;
-	switch const{itconst}
-		case 'KRG'
-			long=[0.3 15];
-		case 'CKRG'
-		        long=[0.3 30];
-	end
+        long=[0.3 15];
         corr='gauss';
         modm=const{itconst};
         meta=init_meta(modm,deg,long,corr);
@@ -195,7 +195,7 @@ for itconst=1:length(const)
         nbb=nbb+1;
         donnees{itconst}(1,nbb)=3*nb;
         donnees{itconst}(2,nbb)=krg.tps;
-        donnees{itconst}(3,nbb)=krg.estim_para.iterations;
+        donnees{itconst}(3,nbb)=0;
         donnees{itconst}(4,nbb)=err.emse;
         donnees{itconst}(5,nbb)=err.r2;
         donnees{itconst}(6,nbb)=err.eraae;
@@ -207,7 +207,7 @@ for itconst=1:length(const)
         donnees{itconst}(12,nbb)=krg.cv.msep;
         donnees{itconst}(13,nbb)=krg.cv.adequ;
         donnees{itconst}(14,nbb)=krg.cv.press;
-        donnees{itconst}(15,nbb)=krg.estim_para.val;
+        donnees{itconst}(15,nbb)=krg.para.val;
         clear krg
 
     end

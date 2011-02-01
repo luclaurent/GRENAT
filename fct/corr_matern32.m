@@ -5,6 +5,7 @@ function [corr,dcorr,ddcorr]=corr_matern32(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=length(long);
+
 %nombre de points a  evaluer
 pt_eval=size(xx,1);
 %nombre de composantes

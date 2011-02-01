@@ -26,16 +26,16 @@ fct='schwefel'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=[10 10];
+doe.nb_samples=[5 5];
 
 % Parametrage du metamodele
 deg=0;
-long=[1 50];
+long=[0.3 15];
 %long=3;
-corr='matern32';
+corr='matern52';
 
 mod='CKRG';
 meta=init_meta(mod,deg,long,corr);

@@ -39,6 +39,14 @@ switch meta.type
         fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',dim_conc,dim_pts)
         [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.para);
         ret=dace;
+    case 'PRG'
+        for degre=meta.deg
+            %% Construction du metamodele de Regression polynomiale
+            fprintf('\n%s\n',[textd  'Regression polynomiale' textf]);
+            dd=['-- Degré du polynôme ',num2str(degre)];
+            fprintf(dd);
+            [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
+        end
 end
 
 % en dimension 1, les points ou l'on souhaite evaluer le metamodele se
@@ -63,6 +71,14 @@ if dim_conc==1
             for jj=1:length(points)
                 [Z.Z(jj),G,var(jj)]=predictor(points(jj),dace.model);
                 Z.GZ(jj)=G;
+            end
+        case 'PRG'
+            %% Evaluation du metamodele de Regression
+            for jj=1:length(points)
+                Z.Z(jj)=eval_prg(meta.coef,points(jj,1),points(jj,2),degre);
+                %evaluation des gradients du MT
+                [GRG1,GRG2]=evald_prg(meta.coef,points(jj,1),points(jj,2),degre);
+                Z.GZ(jj)=[GRG1 GRG2];
             end
     end
     

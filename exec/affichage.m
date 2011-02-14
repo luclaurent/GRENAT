@@ -212,9 +212,12 @@ if aff.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %sauvegarde traces figure
     if aff.save
+        global num
+        if isempty(num); num=1; else num=num+1; end
+        
         set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
-        nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.eps'];
-        nomfigm=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.fig'];
+        nomfig=[aff.doss '/fig_' num2str(num,'%04.0f') '.eps'];
+        nomfigm=[aff.doss '/fig_' num2str(num,'%04.0f') '.fig'];
         fprintf('>>Sauvegarde figure: \n fichier %s\n',nomfig)
         saveas(gcf, nomfig,'psc2');
         saveas(gcf, nomfigm,'fig');

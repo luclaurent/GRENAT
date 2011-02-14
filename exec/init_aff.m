@@ -5,8 +5,6 @@ function aff=init_aff()
 
     aff.scale=true;            %mise a  l'echelle (affichage gradients)
     aff.tikz=false;             %sauvegarde au format Tikz
-    aff.num=0;                  %iterateur numeros figures
-	aff.doss=[];                %dossier de sauvegarde (figures)
     aff.on=false;               %affichage actif ou non
     aff.d3=false;               %affichage 3D
     aff.d2=false;               %affichage 2D

@@ -1,7 +1,9 @@
 %% Initialisation des variables d'affichage
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
-function aff=init_aff()
+function init_aff()
+
+global aff
 
     aff.scale=true;            %mise a  l'echelle (affichage gradients)
     aff.tikz=false;             %sauvegarde au format Tikz
@@ -25,3 +27,4 @@ function aff=init_aff()
     aff.titre='';               %titre figure
     aff.rendu=false;            %rendu de l'affichage 3D
     aff.pts=false;              %affichage des points d'evaluation
+    aff.num=0;                  %numérotation affichage

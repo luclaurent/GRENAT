@@ -4,6 +4,8 @@
 %effacement du Workspace
 clear all
 
+global aff
+
 %chargement des répertoires de travail
 init_rep;
 %initialisation de l'espace de travail
@@ -11,7 +13,7 @@ init_esp;
 %affichage de la date et de l'heure
 aff_date;
 %initialisation des variables d'affichage
-aff=init_aff();
+init_aff();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34,10 +36,10 @@ doe.nb_samples=4;
 
 % Parametrage du metamodele
 deg=0;
-theta=5;
+long=[5 15];
 corr='matern32';
 mod='CKRG';
-meta=init_meta(mod,deg,theta,corr);
+meta=init_meta(mod,deg,long,corr);
 
 
 %affichage de l'intervalle de confiance

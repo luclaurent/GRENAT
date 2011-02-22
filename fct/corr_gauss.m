@@ -18,17 +18,17 @@ elseif lt~=nb_comp
 end
 
 %calcul de la valeur de la fonction au point xx
-td=-xx.^2./long.^2;
+td=-xx.^2./(2*long.^2);
 ev=exp(sum(td,2));
 
 if nargout==1
     corr=ev;
 elseif nargout==2
     corr=ev;
-    dcorr=-2./(long.^2).*xx.*repmat(ev,1,nb_comp);
+    dcorr=-xx./(long.^2).*repmat(ev,1,nb_comp);
 elseif nargout==3
     corr=ev;
-    dcorr=-2./(long.^2).*xx.*repmat(ev,1,nb_comp);   
+    dcorr=-xx./(long.^2).*repmat(ev,1,nb_comp);   
     
     %calcul des derivees secondes    
     
@@ -41,9 +41,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddcorr(mm,ll)=4/long(mm)^4*xx(ll)^2*ev-2/long(ll)^2*ev;
+                    ddcorr(mm,ll)=ev/long(mm)^2*(xx(mm)/long(mm)^2-1);
                 else
-                    ddcorr(mm,ll)=4/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm)*ev;
+                    ddcorr(mm,ll)=ev/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm);
                 end
            end
         end
@@ -55,9 +55,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddcorr(mm,ll,:)=4./long(mm)^4.*xx(:,ll).^2.*ev-2/long(ll).*ev;
+                    ddcorr(mm,ll,:)=ev./long(mm)^2.*(xx(:,mm)./long(mm)^2-1);
                 else
-                    ddcorr(mm,ll,:)=4./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm).*ev;
+                    ddcorr(mm,ll,:)=ev./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm);
                 end
            end
         end

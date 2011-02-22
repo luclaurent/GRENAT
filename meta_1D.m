@@ -32,19 +32,19 @@ aff.pas=0.05;
 doe.type='sfill';
 
 %nb d'echantillons
-doe.nb_samples=4;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 deg=0;
-long=[5 15];
-corr='matern32';
+long=[0.5 15];
+corr='matern52';
 mod='CKRG';
 meta=init_meta(mod,deg,long,corr);
 
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
-aff.ic.type='68'; %('0','68','95','99')
+aff.ic.type='95'; %('0','68','95','99')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,9 +117,9 @@ aff.color='red';
 affichage(X,K.var,tirages,eval,[],aff);
 
 if aff.ic.on
-    legend(['IC' aff.ic.type],' ','fct ref','deriv fct ref','Evaluations','derivees','CoKrigeage','Derivee CKRG','MSE');
+    legend(['IC' aff.ic.type],' ','fct ref','deriv fct ref','Evaluations','derivees','Metamodele','Derivee Metamodele','MSE');
 else
-    legend('fct ref','deriv fct ref','Evaluations','derivees','CoKrigeage','Derivee CKRG','MSE');
+    legend('fct ref','deriv fct ref','Evaluations','derivees','Metamodele','Derivee Metamodele','MSE');
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

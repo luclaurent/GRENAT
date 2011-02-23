@@ -36,7 +36,7 @@ doe.nb_samples=5;
 
 % Parametrage du metamodele
 deg=0;
-long=[0.5 15];
+long=[1 100];
 corr='matern52';
 mod='CKRG';
 meta=init_meta(mod,deg,long,corr);
@@ -61,6 +61,7 @@ disp('=====================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
+tirages=[0.5 2 2.5 5 11 14.5];tirages=transpose(tirages);
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(fct,tirages);

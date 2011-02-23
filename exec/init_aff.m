@@ -12,7 +12,7 @@ global aff
     aff.d2=false;               %affichage 2D
     aff.contour3=false;         %affichage contour sur courbes/surfaces 3D
     aff.contour2=false;         %affichage contour en 2D (sur le plan)
-    aff.save=false;             %sauvegarde de ts les traces
+    aff.save=true;             %sauvegarde de ts les traces
     aff.grad_meta=false;        %affichage des gradients du metamodele
     aff.grad_eval=false;        %affichage des gradients evalues
     aff.ic.on=false;            %affichage des IC actif ou non
@@ -21,8 +21,8 @@ global aff
     aff.opt=[];                 %options de traces
     aff.uni=false;              %affichage en couleur uni (2D)
     aff.color=[];               %couleur d'affichage    
-    aff.xlabel='';              %nom abscisse
-    aff.ylabel='';              %nom ordonn*ee
+    aff.xlabel='x_1';              %nom abscisse
+    aff.ylabel='x_2';              %nom ordonn*ee
     aff.zlabel='';              %nom cote
     aff.titre='';               %titre figure
     aff.rendu=false;            %rendu de l'affichage 3D

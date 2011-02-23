@@ -65,5 +65,5 @@ elseif size(doe.bornes,2)==2
             error('le type de tirage nest pas defini');
     end
 else
-    error('Dimension de problème non pris en charge\n');
+    error('Dimension de probleme non pris en charge\n');
 end

@@ -6,7 +6,7 @@ function [fct,dfct]=fct(x)
 %    dfct=-15*sin(x);
 %end
 a=10;
-b=1;
+b=0;
 
 fct=exp(-x/a).*cos(x)+1/a*x+b;
 

@@ -214,7 +214,6 @@ if aff.on
     if aff.save
         global num
         if isempty(num); num=1; else num=num+1; end
-        
         set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
         nomfig=[aff.doss '/fig_' num2str(num,'%04.0f') '.eps'];
         nomfigm=[aff.doss '/fig_' num2str(num,'%04.0f') '.fig'];

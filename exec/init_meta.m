@@ -29,6 +29,7 @@ meta.cv=true;           %validation croisee
 %estimation parametre long (longueur de correlation)
 meta.para.method='fmincon';
 meta.para.estim=true;
+meta.para.aff_likelihood=true;
 if meta.para.estim
     meta.para.max=long(2);
     meta.para.min=long(1);

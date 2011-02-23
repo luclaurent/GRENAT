@@ -57,6 +57,19 @@ for ii=1:ns
     fc(ii,:)=feval(fct,tiragesn(ii,:)); 
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%
+%Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
+if meta.para.estim&&meta.para.aff_likelihood
+   val_para=linspace(meta.para.min,meta.para.max,40);
+   val_lik=zeros(length(val_para),1);
+   for itli=1:length(val_para)
+      val_lik(itli)=bloc_krg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
+   end
+   figure;
+   plot(val_para,val_lik);
+   title('Evolution de la log-vraisemblance');
+end
+%%%%%%%%%%%%%%%%%%%%%%%
 
 %%Construction des differents elements avec ou sans estimation des
 %%parametres

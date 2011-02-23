@@ -3,6 +3,7 @@
 
 %effacement du Workspace
 clear all
+global aff
 
 %chargement des repertoires de travail
 init_rep;
@@ -11,7 +12,7 @@ init_esp;
 %affichage de la date et de l'heure
 aff_date;
 %initialisation des variables d'affichage
-aff=init_aff();
+init_aff();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,15 +27,15 @@ fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHSmanu';
 
 %nb d'echantillons
-doe.nb_samples=[3 3];
+doe.nb_samples=9;
 
 % Parametrage du metamodele
 deg=0;
-%long=[0.3 15];
-long=3;
+long=[1 30];
+%long=3;
 corr='matern52';
 
 mod='CKRG';
@@ -58,7 +59,8 @@ disp('=====================================');
 disp('=====================================');
 
 %realisation des tirages
-tirages=gene_doe(doe);
+%tirages=gene_doe(doe);
+tirages=lhs_manu(doe,fct);
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(doe.fct,tirages);
@@ -80,10 +82,10 @@ Z=gene_eval(doe.fct,grid_XY);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
 aff.on=true;
-aff.newfig=false;
+aff.newfig=true;
 aff.ic.on=true;
 figure;
-subplot(3,3,1)
+%subplot(3,3,1)
 if aff.ic.on
     aff.rendu=true;
     aff.titre=['Intervalle de confiance IC' aff.ic.type]; 
@@ -95,7 +97,7 @@ if aff.ic.on
         case '99'
             affichage_ic(grid_XY,ic99,aff);
     end
-    subplot(3,3,2)
+    %subplot(3,3,2)
     aff.titre='Variance de prediction';
     aff.d3=true;
     v.Z=K.var;
@@ -106,15 +108,15 @@ if aff.ic.on
 end
             
 %fonction de reference
-aff.newfig=false;
+aff.newfig=true;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
 aff.titre='Fonction de reference';
-subplot(3,3,4)
+%subplot(3,3,4)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
 aff.titre='Metamodele';
-subplot(3,3,5)
+%subplot(3,3,5)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 
 aff.titre='Fonction de reference';
@@ -123,10 +125,10 @@ aff.d2=true;
 aff.grad_eval=true;
 aff.grad_meta=true;
 aff.contour2=true;
-subplot(3,3,7)
+%subplot(3,3,7)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
 aff.titre='Metamodele';
-subplot(3,3,8)
+%subplot(3,3,8)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
 

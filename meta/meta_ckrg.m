@@ -11,8 +11,6 @@ ns=size(eval,1);
 %dimension du pb (nb de variables de conception)
 dim=size(tirages,2);
 
-
-
 %Normalisation
 if meta.norm
     %calcul des moyennes et des ecarts type

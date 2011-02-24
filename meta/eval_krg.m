@@ -69,9 +69,9 @@ end
 
 %normalisation
 if krg.norm.on
-    Z=repmat(krg.norm.moy_eval,dim_x,1)+repmat(krg.norm.std_eval,dim_x,1).*Z;
+    Z=repmat(krg.norm.moy_eval,dim_x,1)+krg.norm.std_eval.*Z;
     if grad
-        GZ=repmat(krg.norm.std_eval,dim_x,1).*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
+        GZ=krg.norm.std_eval.*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
         GZ=GZ';
     end
 end

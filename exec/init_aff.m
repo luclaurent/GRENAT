@@ -28,3 +28,4 @@ global aff
     aff.rendu=false;            %rendu de l'affichage 3D
     aff.pts=false;              %affichage des points d'evaluation
     aff.num=0;                  %numérotation affichage
+    

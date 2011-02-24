@@ -41,7 +41,7 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddcorr(mm,ll)=ev/long(mm)^2*(xx(mm)/long(mm)^2-1);
+                    ddcorr(mm,ll)=ev/long(mm)^2*(xx(mm)^2/long(mm)^2-1);
                 else
                     ddcorr(mm,ll)=ev/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm);
                 end
@@ -55,7 +55,7 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddcorr(mm,ll,:)=ev./long(mm)^2.*(xx(:,mm)./long(mm)^2-1);
+                    ddcorr(mm,ll,:)=ev./long(mm)^2.*(xx(:,mm).^2./long(mm)^2-1);
                 else
                     ddcorr(mm,ll,:)=ev./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm);
                 end

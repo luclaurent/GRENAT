@@ -36,7 +36,7 @@ doe.nb_samples=9;
 deg=0;
 long=[1 30];
 %long=3;
-corr='matern52';
+corr='gauss';
 
 mod='CKRG';
 meta=init_meta(mod,deg,long,corr);

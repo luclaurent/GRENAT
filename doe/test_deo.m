@@ -11,12 +11,12 @@ addpath('lhs');
 %Combined Design: CD
 %Quasi Random Design: QRD
 %Random Design: RD
-doe.type='LHSN';  
+doe.type='factorial_design';  
 
 
 %nombre de tirages selon x1, x2 et/ou x3 ou total (LHS)
-doe.nb_x1=5;
-doe.nb_x2=5;
+doe.nb_x1=10;
+doe.nb_x2=10;
 doe.nb_samples=25; %(LHS,BBD)
 %nombre de variables
 doe.nb_var=2; %(LHSN,BBD)

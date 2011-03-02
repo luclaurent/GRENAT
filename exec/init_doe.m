@@ -16,7 +16,7 @@ if nargin==1
         case 'peaks'
             val=3;xmin=-val;xmax=val;ymin=-val;ymax=val;
         case 'sixhump'
-            xmin=-2;xmax=2;ymin=-1;ymax=1; 
+            xmin=-3;xmax=3;ymin=-2;ymax=2; 
         case 'schwefel'
             val=500;xmin=-val;xmax=val;ymin=-val;ymax=val;
     end

@@ -30,15 +30,15 @@ aff.nbele=30;
 doe.type='LHSmanu';
 
 %nb d'echantillons
-doe.nb_samples=9;
+doe.nb_samples=28;
 
 % Parametrage du metamodele
 deg=0;
-long=[1 30];
+long=[0.5 30];
 %long=3;
-corr='gauss';
+corr='matern52';
 
-mod='CKRG';
+mod='KRG';
 meta=init_meta(mod,deg,long,corr);
 
 %affichage de l'intervalle de confiance
@@ -115,7 +115,7 @@ aff.pts=true;
 aff.titre='Fonction de reference';
 %subplot(3,3,4)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
-aff.titre='Metamodele';
+aff.titre='';
 %subplot(3,3,5)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 
@@ -127,7 +127,7 @@ aff.grad_meta=true;
 aff.contour2=true;
 %subplot(3,3,7)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
-aff.titre='Metamodele';
+aff.titre='';
 %subplot(3,3,8)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];

@@ -29,16 +29,17 @@ doe.bornes=[xmin xmax]';
 aff.pas=0.05;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='sfill';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=6;
 
 % Parametrage du metamodele
 deg=0;
-long=[1 100];
+long=[0.1 100];
+%long=1;
 corr='matern52';
-mod='CKRG';
+mod='KRG';
 meta=init_meta(mod,deg,long,corr);
 
 
@@ -73,9 +74,9 @@ X=[xmin:aff.pas:xmax]';
 aff.on=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Construction et evaluation du metamodele aux points souhaites
-[K,ckrg]=gene_meta(tirages,eval,grad,X,meta);
+[K,krg]=gene_meta(tirages,eval,grad,X,meta);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance
@@ -129,7 +130,7 @@ end
 aff.num=save_aff(aff.num,aff.doss);
 
 %calcul et affichage des critères d'erreur
-err=crit_err(K.Z,Z.Z,ckrg);
+err=crit_err(K.Z,Z.Z,krg);
 
 fprintf('=====================================\n');
 fprintf('=====================================\n');

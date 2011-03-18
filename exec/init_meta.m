@@ -24,7 +24,7 @@ end
 %normalisation
 meta.norm=true;         %normalisation
 meta.recond=false;      %amelioration du conditionnement de la matrice de correlation
-meta.cv=true;           %validation croisee
+meta.cv=false;           %validation croisee
 
 %estimation parametre long (longueur de correlation)
 meta.para.method='fmincon';

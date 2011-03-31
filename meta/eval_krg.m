@@ -53,7 +53,7 @@ Z=ff*krg.beta+rr'*krg.gamma;
 
 if grad 
 %%verif en 2D+
-    GZ=jf*krg.beta+jr'*krg.gamma;
+    GZ=jf'*krg.beta+jr'*krg.gamma;
 end
 
 

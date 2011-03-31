@@ -18,7 +18,7 @@ if meta.norm
     std_e=std(eval);
     moy_t=mean(tirages);
     std_t=std(tirages);
-
+    
     %normalisation des valeur de la fonction objectif et des tirages
     evaln=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
     tiragesn=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
@@ -54,20 +54,35 @@ end
 fc=zeros(ns,nb_termes);
 fct=['reg_poly' num2str(meta.deg,1)];
 for ii=1:ns
-    fc(ii,:)=feval(fct,tiragesn(ii,:)); 
+    fc(ii,:)=feval(fct,tiragesn(ii,:));
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 if meta.para.estim&&meta.para.aff_likelihood
-   val_para=linspace(meta.para.min,meta.para.max,100);
-   val_lik=zeros(length(val_para),1);
-   for itli=1:length(val_para)
-      val_lik(itli)=bloc_krg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
-   end
-   figure;
-   plot(val_para,val_lik);
-   title('Evolution de la log-vraisemblance');
+    val_para=linspace(meta.para.min,meta.para.max,40);
+    if meta.para.aniso
+        [val_X,val_Y]=meshgrid(val_para,val_para);
+        val_lik=zeros(size(val_X));
+        for itli=1:size(val_X,1)*size(val_X,2)
+            val_lik(itli)=bloc_krg(tiragesn,ns,fc,y,meta,std_e,[val_X(itli) val_Y(itli)]);
+        end
+        figure;
+        [C,h]=contourf(val_X,val_Y,val_lik);
+        text_handle = clabel(C,h);
+        set(text_handle,'BackgroundColor',[1 1 .6],...
+            'Edgecolor',[.7 .7 .7])
+        set(h,'LineWidth',2)
+        
+    else
+        val_lik=zeros(length(val_para),1);
+        for itli=1:length(val_para)
+            val_lik(itli)=bloc_krg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
+        end
+        figure;
+        plot(val_para,val_lik);
+        title('Evolution de la log-vraisemblance');
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%
 
@@ -101,44 +116,46 @@ if meta.para.estim
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
             
         case 'fmincon'
+            %anisotropie
+            if meta.para.aniso
+                nb_para=tai_conc;
+            else
+                nb_para=1;
+            end
             %definition des bornes de l'espace de recherche
-            lb=meta.para.min;ub=meta.para.max;
+            lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
             %definition valeur de depart de la variable
             x0=lb+eps;
             %declaration de la fonction a minimiser
             fun=@(para)bloc_krg(tiragesn,ns,fc,y,meta,std_e,para);
             %declaration des options de la strategie de minimisation
             options = optimset(...
-               'Display', 'iter',...        %affichage evolution
-               'Algorithm','interior-point',... %choix du type d'algorithme
-               'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
-               'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
+                'Display', 'iter',...        %affichage evolution
+                'Algorithm','interior-point',... %choix du type d'algorithme
+                'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+                'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
                 'UseParallel','always',...
-                'PlotFcns','');    %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}  
-           
+                'PlotFcns','');    %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+            
             %minimisation
             indic=0;
             warning off all;
             while indic==0
-                %interception erreur
-                %   try
                 [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
-                %    catch exception
-                %                   throw(exception)
-                %       exitflag=-1;
-                %   end
                 
-                %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2
                     indic=1;
                     nkrg.estim_para=output;
-                    nkrg.estim_para.val=x;
+                    nkrg.estim_para.val=x';
                 end
             end
             warning on all;
             
             meta.para.val=x;
-            fprintf('Valeur de la longueur de correlation %6.4f\n',x);
+            
+            fprintf('Valeur(s) longueur(s) de correlation');
+            fprintf(' %6.4f',x);
+            fprintf('\n');
         otherwise
             error('Strategie de minimisation non prise en charge');
     end
@@ -163,10 +180,10 @@ fprintf('\nExecution construction Krigeage: %6.4d s\n',tps_stop-tps_start);
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
 if meta.cv
-    [krg.cv]=cross_validate_krg(krg,tirages,eval);  
+    [krg.cv]=cross_validate_krg(krg,tirages,eval);
     %les tirages et evaluations ne sont pas normalises (elles le seront
     %plus tard lors de la CV)
-
+    
     tps_cv=toc;
     fprintf('Execution validation croisee Krigeage: %6.4d s\n\n',tps_cv-tps_stop);
 end

@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
+fct='peaks'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -34,9 +34,9 @@ doe.nb_samples=4;
 
 % Parametrage du metamodele
 deg=0;
-long=[0.5 30];
+long=[0.2 5];
 %long=3;
-corr='matern52';
+corr='gauss';
 
 mod='KRG';
 meta=init_meta(mod,deg,long,corr);

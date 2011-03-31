@@ -30,6 +30,7 @@ meta.cv=false;           %validation croisee
 meta.para.method='fmincon';
 meta.para.estim=true;
 meta.para.aff_likelihood=true;
+meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
 if meta.para.estim
     meta.para.max=long(2);
     meta.para.min=long(1);

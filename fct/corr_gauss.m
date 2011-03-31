@@ -4,18 +4,22 @@
 function [corr,dcorr,ddcorr]=corr_gauss(xx,long)
 
 %verification de la dimension de la longueur de correlation
-lt=length(long);
+lt=size(long);
 %nombre de points a  evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
 
-if lt==1
+if lt(1)*lt(2)==1
     %long est un reel, alors on en fait une matrice de la dimension de xx
     long = repmat(long,pt_eval,nb_comp);
-elseif lt~=nb_comp
+elseif lt(1)*lt(2)==nb_comp
+    long = repmat(long,pt_eval,1);    
+elseif lt(1)*lt(2)~=nb_comp
     error('mauvaise dimension de la longueur de correlation');
 end
+
+
 
 %calcul de la valeur de la fonction au point xx
 td=-xx.^2./(2*long.^2);

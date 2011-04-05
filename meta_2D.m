@@ -18,27 +18,27 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='peaks'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
+fct='mystery'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=40;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=4;
+doe.nb_samples=[4 4];
 
 % Parametrage du metamodele
 deg=0;
-long=[0.4 10];
+long=[1 20];
 %long=3;
-corr='matern52';
+corr='matern32';
 
-mod='KRG';
+mod='CKRG';
 meta=init_meta(mod,deg,long,corr);
 
 %affichage de l'intervalle de confiance
@@ -48,7 +48,7 @@ aff.ic.type='68'; %('0','68','95','99')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Creation du dossier de travail
-aff.doss=init_dossier(meta,doe,'_2D');
+[aff.doss,aff.date]=init_dossier(meta,doe,'_2D');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,7 +103,7 @@ if aff.ic.on
     v.Z=K.var;
     affichage(grid_XY,v,tirages,eval,grad,aff);
     camlight; lighting gouraud; 
-    aff.titre='';
+    aff.titre='Metamodele';
     aff.rendu=false;
 end
             
@@ -115,7 +115,7 @@ aff.pts=true;
 aff.titre='Fonction de reference';
 %subplot(3,3,4)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
-aff.titre='';
+aff.titre='Metamodele';
 %subplot(3,3,5)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 
@@ -127,18 +127,12 @@ aff.grad_meta=true;
 aff.contour2=true;
 %subplot(3,3,7)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
-aff.titre='';
+aff.titre='Metamodele';
 %subplot(3,3,8)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%sauvegarde image
-aff.num=save_aff(aff.num,aff.doss);
 
 %calcul et affichage des criteres d'erreur
 err=crit_err(K.Z,Z.Z,krg);
@@ -146,7 +140,10 @@ err=crit_err(K.Z,Z.Z,krg);
 fprintf('=====================================\n');
 fprintf('=====================================\n');
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sauvegarde des infos dans un fichier tex
+sauv_tex(meta,doe,aff,err,krg);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Sauvegarde WorkSpace

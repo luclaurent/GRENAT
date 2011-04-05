@@ -24,9 +24,15 @@ if isfield(krg,'cv')
     fprintf('MSE=%g\n',krg.cv.msep);
     fprintf('Critere adequation=%g\n',krg.cv.adequ)
     fprintf('PRESS=%g\n',krg.cv.press);
+    err.cv.bm=krg.cv.bm;
+    err.cv.msep=krg.cv.msep;
+    err.cv.adequ=krg.cv.adequ;
+    err.cv.press=krg.cv.press;
 end
 
 if isfield(krg,'li')&isfield(krg,'logli')
     fprintf('\n>>>Vraisemblance<<<\n');
     fprintf('Likelihood= %6.4d, Log-Likelihood= %6.4d \n\n',krg.li,krg.logli);
+    err.li=krg.li;
+    err.logli=krg.logli;
 end

@@ -9,7 +9,7 @@ tps_start=toc;
 %nombre d'evalutions
 ns=size(eval,1);
 %dimension du pb (nb de variables de conception)
-dim=size(tirages,2);
+tai_conc=size(tirages,2);
 
 %Normalisation
 if meta.norm
@@ -49,10 +49,10 @@ else
 end
 
 %rangement gradient
-der=zeros(dim*ns,1);
+der=zeros(tai_conc*ns,1);
 for ii=1:ns
-    for jj=1:dim
-        der(dim*ii-dim+jj)=gradn(ii,jj);        
+    for jj=1:tai_conc
+        der(tai_conc*ii-tai_conc+jj)=gradn(ii,jj);        
     end
 end
 
@@ -66,30 +66,61 @@ if meta.deg==0
 elseif meta.deg==1
     p=dim+1;
 elseif meta.deg==2
-    p=(dim+1)*(dim+2)*1/2;
+    p=(tai_conc+1)*(tai_conc+2)*1/2;
 else
     error('Degre de polynome non encore prise en charge');
 end
     
-fc=zeros((dim+1)*ns,p);
+fc=zeros((tai_conc+1)*ns,p);
 fct=['reg_poly' num2str(meta.deg,1)];
 p=ns;
 for ii=1:ns
-       [fc(ii,:),fc(p+(1:dim),:)]=feval(fct,tiragesn(ii,:));
-       p=p+dim;
+       [fc(ii,:),fc(p+(1:tai_conc),:)]=feval(fct,tiragesn(ii,:));
+       p=p+tai_conc;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 if meta.para.estim&&meta.para.aff_likelihood
-   val_para=linspace(meta.para.min,meta.para.max,40);
-   val_lik=zeros(length(val_para),1);
-   for itli=1:length(val_para)
-       val_lik(itli)=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
-   end
-   figure;
-   plot(val_para,val_lik,'-');
-   title('Evolution de la log-vraisemblance');
+    val_para=linspace(meta.para.min,meta.para.max,30);
+    if meta.para.aniso
+        [val_X,val_Y]=meshgrid(val_para,val_para);
+        val_lik=zeros(size(val_X));
+        val_cond=zeros(size(val_X));
+        for itli=1:size(val_X,1)*size(val_X,2)
+            [val_lik(itli)]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,[val_X(itli) val_Y(itli)]);
+            %val_cond(itli)=kk.cond;
+            
+        end
+        figure;
+        [C,h]=contourf(val_X,val_Y,val_lik);
+        text_handle = clabel(C,h);
+        set(text_handle,'BackgroundColor',[1 1 .6],...
+            'Edgecolor',[.7 .7 .7])
+        set(h,'LineWidth',2)
+        title('Evolution de la log-vraisemblance');
+%         figure;
+%         [C,h]=contourf(val_X,val_Y,val_cond);
+%         text_handle = clabel(C,h);
+%         set(text_handle,'BackgroundColor',[1 1 .6],...
+%             'Edgecolor',[.7 .7 .7])
+%         set(h,'LineWidth',2)
+%         title('Evolution du conditionnement');
+        
+    else
+        val_lik=zeros(length(val_para),1);
+        val_cond=zeros(length(val_para),1);
+        for itli=1:length(val_para)
+            [val_lik(itli)]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
+           % val_cond(itli)=kk.cond;
+        end
+        figure;
+        plot(val_para,val_lik);
+        title('Evolution de la log-vraisemblance');
+%         figure;
+%         plot(val_para,val_cond);
+%         title('Evolution du conditionnement');
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%
 
@@ -120,10 +151,16 @@ if meta.para.estim
             meta.para.val=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
         case 'fmincon'
+            %anisotropie
+            if meta.para.aniso
+                nb_para=tai_conc;
+            else
+                nb_para=1;
+            end
             %definition des bornes de l'espace de recherche
-            lb=meta.para.min;ub=meta.para.max;
+            lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
             %definition valeur de depart de la variable
-            x0=lb+eps;
+            x0=(lb+ub)./2;
             %declaration de la fonction a  minimiser
             fun=@(para)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,para);
             %declaration des options de la strategie de minimisation
@@ -156,7 +193,9 @@ if meta.para.estim
             end
                     
             meta.para.val=x;
-            fprintf('Valeur de la longueur de correlation %6.4f\n',x);
+            fprintf('Valeur(s) longueur(s) de correlation');
+            fprintf(' %6.4f',x);
+            fprintf('\n');
         otherwise
             error('Strategie de minimisation non prise en charge');
     end

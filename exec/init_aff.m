@@ -5,7 +5,7 @@ function init_aff()
 
 global aff
 
-    aff.scale=true;            %mise a  l'echelle (affichage gradients)
+    aff.scale=true;             %mise a  l'echelle (affichage gradients)
     aff.tikz=false;             %sauvegarde au format Tikz
     aff.on=false;               %affichage actif ou non
     aff.d3=false;               %affichage 3D
@@ -21,11 +21,12 @@ global aff
     aff.opt=[];                 %options de traces
     aff.uni=false;              %affichage en couleur uni (2D)
     aff.color=[];               %couleur d'affichage    
-    aff.xlabel='x_1';              %nom abscisse
-    aff.ylabel='x_2';              %nom ordonn*ee
+    aff.xlabel='x_1';           %nom abscisse
+    aff.ylabel='x_2';           %nom ordonn*ee
     aff.zlabel='';              %nom cote
     aff.titre='';               %titre figure
     aff.rendu=false;            %rendu de l'affichage 3D
     aff.pts=false;              %affichage des points d'evaluation
     aff.num=0;                  %numérotation affichage
+    aff.tex=true;               %sauvegarde des données dans le fichier TeX
     

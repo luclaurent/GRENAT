@@ -214,12 +214,13 @@ if aff.on
     if aff.save
         global num
         if isempty(num); num=1; else num=num+1; end
-        set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
-        nomfig=[aff.doss '/fig_' num2str(num,'%04.0f') '.eps'];
-        nomfigm=[aff.doss '/fig_' num2str(num,'%04.0f') '.fig'];
-        fprintf('>>Sauvegarde figure: \n fichier %s\n',nomfig)
-        saveas(gcf, nomfig,'psc2');
-        saveas(gcf, nomfigm,'fig');
+        fich=save_aff(num,aff.doss);
+        if aff.tex
+            fid=fopen([aff.doss '/fig.tex'],'a+');
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,aff.titre,fich);
+            %fprintf(fid,'\\verb{%s}\n',fich);
+            fclose(fid);
+        end
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

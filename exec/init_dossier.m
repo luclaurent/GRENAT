@@ -1,7 +1,7 @@
 %% Creation du dossier de travail (pour sauvegarde figures)
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
-function dossier=init_dossier(meta,doe,ajout,chemin)
+function [dossier,date]=init_dossier(meta,doe,ajout,chemin)
 
 day=clock;
 if length(doe.nb_samples)==2
@@ -29,3 +29,11 @@ end
 
 %creation du repertoire
 unix(['mkdir ' dossier]);
+
+%date
+date.year=day(1);
+date.month=day(2);
+date.day=day(3);
+date.hour=day(4);
+date.minute=day(5);
+date.second=day(6);

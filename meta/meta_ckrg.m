@@ -3,6 +3,9 @@
 
 
 function krg=meta_ckrg(tirages,eval,grad,meta)
+
+global aff
+
 tic;
 tps_start=toc;
 
@@ -33,7 +36,7 @@ if meta.norm
     evaln=(eval-repmat(moy_e,ns,1))./repmat(std_e,ns,1);
     tiragesn=(tirages-repmat(moy_t,ns,1))./repmat(std_t,ns,1);
     gradn=grad.*repmat(std_t,ns,1)/std_e;
-  
+    
     
     %sauvegarde des calculs
     nkrg.norm.moy_eval=moy_e;
@@ -52,7 +55,7 @@ end
 der=zeros(tai_conc*ns,1);
 for ii=1:ns
     for jj=1:tai_conc
-        der(tai_conc*ii-tai_conc+jj)=gradn(ii,jj);        
+        der(tai_conc*ii-tai_conc+jj)=gradn(ii,jj);
     end
 end
 
@@ -70,13 +73,13 @@ elseif meta.deg==2
 else
     error('Degre de polynome non encore prise en charge');
 end
-    
+
 fc=zeros((tai_conc+1)*ns,p);
 fct=['reg_poly' num2str(meta.deg,1)];
 p=ns;
 for ii=1:ns
-       [fc(ii,:),fc(p+(1:tai_conc),:)]=feval(fct,tiragesn(ii,:));
-       p=p+tai_conc;
+    [fc(ii,:),fc(p+(1:tai_conc),:)]=feval(fct,tiragesn(ii,:));
+    p=p+tai_conc;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -99,27 +102,36 @@ if meta.para.estim&&meta.para.aff_likelihood
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         title('Evolution de la log-vraisemblance');
-%         figure;
-%         [C,h]=contourf(val_X,val_Y,val_cond);
-%         text_handle = clabel(C,h);
-%         set(text_handle,'BackgroundColor',[1 1 .6],...
-%             'Edgecolor',[.7 .7 .7])
-%         set(h,'LineWidth',2)
-%         title('Evolution du conditionnement');
+        %         figure;
+        %         [C,h]=contourf(val_X,val_Y,val_cond);
+        %         text_handle = clabel(C,h);
+        %         set(text_handle,'BackgroundColor',[1 1 .6],...
+        %             'Edgecolor',[.7 .7 .7])
+        %         set(h,'LineWidth',2)
+        %         title('Evolution du conditionnement');
         
     else
         val_lik=zeros(length(val_para),1);
         val_cond=zeros(length(val_para),1);
         for itli=1:length(val_para)
             [val_lik(itli)]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
-           % val_cond(itli)=kk.cond;
+            % val_cond(itli)=kk.cond;
         end
         figure;
         plot(val_para,val_lik);
         title('Evolution de la log-vraisemblance');
-%         figure;
-%         plot(val_para,val_cond);
-%         title('Evolution du conditionnement');
+        %         figure;
+        %         plot(val_para,val_cond);
+        %         title('Evolution du conditionnement');
+    end
+    if aff.save
+        fich=save_aff('fig_likelihood',aff.doss);
+        if aff.tex
+            fid=fopen([aff.doss '/fig.tex'],'a+');
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,'Vraisemblance',fich);
+            %fprintf(fid,'\\verb{%s}\n',fich);
+            fclose(fid);
+        end
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -165,13 +177,13 @@ if meta.para.estim
             fun=@(para)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,para);
             %declaration des options de la strategie de minimisation
             options = optimset(...
-               'Display', 'iter',...        %affichage evolution
-               'Algorithm','interior-point',... %choix du type d'algorithme
-               'OutputFcn',@stop_estim,...           %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
-               'FunValCheck','off',...
-               'UseParallel','always',...
-               'PlotFcns','');  %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}    
-           
+                'Display', 'iter',...        %affichage evolution
+                'Algorithm','interior-point',... %choix du type d'algorithme
+                'OutputFcn',@stop_estim,...           %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+                'FunValCheck','off',...
+                'UseParallel','always',...
+                'PlotFcns','');  %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+            
             %minimisation
             indic=0;
             warning off all;
@@ -191,7 +203,7 @@ if meta.para.estim
                     nkrg.estim_para.val=x;
                 end
             end
-                    
+            
             meta.para.val=x;
             fprintf('Valeur(s) longueur(s) de correlation');
             fprintf(' %6.4f',x);
@@ -211,7 +223,7 @@ krg.fc=fc;
 krg.y=y;
 krg.reg=fct;
 krg.dim=ns;
-krg.corr=meta.corr;    
+krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.para=meta.para;
 krg.con=size(tirages,2);
@@ -228,10 +240,10 @@ fprintf('\nExecution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
 if meta.cv
-    [krg.cv]=cross_validate_ckrg(krg,tirages,eval);  
+    [krg.cv]=cross_validate_ckrg(krg,tirages,eval);
     %les tirages et evaluations ne sont pas normalises (elles le seront
     %plus tard lors de la CV)
-
+    
     tps_cv=toc;
     fprintf('Execution validation croisee CoKrigeage: %6.4d s\n\n',tps_cv-tps_stop);
 end

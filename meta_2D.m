@@ -27,10 +27,10 @@ fct='mystery'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 aff.nbele=40;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='LHS';
+doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=[4 4];
+doe.nb_samples=[5 5];
 
 % Parametrage du metamodele
 deg=0;

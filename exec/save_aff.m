@@ -8,13 +8,24 @@ if isempty(num)
     
     aff.num=aff.num+1;
     num=aff.num;
+else
+    if ischar(num)
+       nomfich=num;
+    else
+        nomfich=['fig_' num2str(num,'%04.0f')];
+    end
 end
 
+
 set(gcf,'Renderer','painters')      %pour sauvegarde image en -nodisplay
-nomfig=[dossier '/fig_' num2str(num,'%04.0f') '.eps'];
-nomfigm=[dossier '/fig_' num2str(num,'%04.0f') '.fig'];
+nomfig=[dossier '/' nomfich '.eps'];
+nomfigm=[dossier '/' nomfich '.fig'];
 fprintf('>>Sauvegarde figure: \n fichier %s\n',nomfig)
 saveas(gcf, nomfig,'psc2');
 saveas(gcf, nomfigm,'fig');
 
+
 fich=nomfig;
+end
+
+

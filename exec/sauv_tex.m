@@ -41,7 +41,7 @@ if aff.tex
         end
         fprintf(fid,'\\item Espace de recherche: [%g %g]\n',meta.para.min,meta.para.max);
         fprintf(fid,'\\item Longueur de corrélation:');
-        fprintf(fid,' %s%g%s ',char(36),krg.estim_para.val,char(36));
+        for ii=1:length(krg.estim_para.val);fprintf(fid,' %s%g%s ',char(36),krg.estim_para.val(ii),char(36));end
         fprintf(fid,'\n');
     else
         fprintf(fid,'\\item Longueur de corrélation: %g\n',meta.para.val);

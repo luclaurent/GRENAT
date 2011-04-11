@@ -4,6 +4,9 @@
 
 
 function krg=meta_krg(tirages,eval,meta)
+
+global aff
+
 tic;
 tps_start=toc;
 
@@ -82,6 +85,15 @@ if meta.para.estim&&meta.para.aff_likelihood
         figure;
         plot(val_para,val_lik);
         title('Evolution de la log-vraisemblance');
+    end
+    if aff.save
+        fich=save_aff('fig_likelihood',aff.doss);
+        if aff.tex
+            fid=fopen([aff.doss '/fig.tex'],'a+');
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,'Vraisemblance',fich);
+            %fprintf(fid,'\\verb{%s}\n',fich);
+            fclose(fid);
+        end
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%

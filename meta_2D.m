@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='mystery'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
+fct='schwefel'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct);
@@ -30,11 +30,11 @@ aff.nbele=40;
 doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=[5 5];
+doe.nb_samples=[10 10];
 
 % Parametrage du metamodele
 deg=0;
-long=[1 20];
+long=[0.11 20];
 %long=3;
 corr='matern32';
 
@@ -59,8 +59,7 @@ disp('=====================================');
 disp('=====================================');
 
 %realisation des tirages
-%tirages=gene_doe(doe);
-tirages=lhs_manu(doe,fct);
+tirages=gene_doe(doe);
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(doe.fct,tirages);

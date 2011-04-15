@@ -39,7 +39,7 @@ deg=0;
 long=[0.1 100];
 %long=1;
 corr='matern52';
-mod='KRG';
+mod='CKRG';
 meta=init_meta(mod,deg,long,corr);
 
 

@@ -86,8 +86,10 @@ end
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 if meta.para.estim&&meta.para.aff_likelihood
     val_para=linspace(meta.para.min,meta.para.max,30);
-    if meta.para.aniso
+    
+    if meta.para.aniso&&tai_conc>1
         [val_X,val_Y]=meshgrid(val_para,val_para);
+        
         val_lik=zeros(size(val_X));
         val_cond=zeros(size(val_X));
         for itli=1:size(val_X,1)*size(val_X,2)
@@ -95,6 +97,7 @@ if meta.para.estim&&meta.para.aff_likelihood
             %val_cond(itli)=kk.cond;
             
         end
+        
         figure;
         [C,h]=contourf(val_X,val_Y,val_lik);
         text_handle = clabel(C,h);
@@ -102,6 +105,7 @@ if meta.para.estim&&meta.para.aff_likelihood
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         title('Evolution de la log-vraisemblance');
+        matlab2tikz([aff.doss '/logli.tex'])
         %         figure;
         %         [C,h]=contourf(val_X,val_Y,val_cond);
         %         text_handle = clabel(C,h);
@@ -111,12 +115,13 @@ if meta.para.estim&&meta.para.aff_likelihood
         %         title('Evolution du conditionnement');
         
     else
-        val_lik=zeros(length(val_para),1);
-        val_cond=zeros(length(val_para),1);
+        val_lik=zeros(1,length(val_para));
         for itli=1:length(val_para)
             [val_lik(itli)]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
             % val_cond(itli)=kk.cond;
         end
+        ss=[val_para' val_lik'];
+        save([aff.doss '/logli.dat'],'ss','-ascii');
         figure;
         plot(val_para,val_lik);
         title('Evolution de la log-vraisemblance');
@@ -158,7 +163,7 @@ if meta.para.estim
             warning off all;
             [x,fval,exitflag,output] = fminbnd(fun,lb,ub,options);
             warning on all;
-            nkrg.estim_para=output;
+            nkrg.estim_para=mergestruct(output,nkrg.estim_para);
             nkrg.estim_para.val=x;
             meta.para.val=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
@@ -205,9 +210,16 @@ if meta.para.estim
             end
             
             meta.para.val=x;
+            if meta.norm
+                meta.para.val_denorm=x.*std_t+moy_t;
+                fprintf('Valeur(s) longueur(s) de correlation');
+                fprintf(' %6.4f',meta.para.val_denorm);
+                fprintf('\n');
+            end
             fprintf('Valeur(s) longueur(s) de correlation');
             fprintf(' %6.4f',x);
             fprintf('\n');
+            
         otherwise
             error('Strategie de minimisation non prise en charge');
     end

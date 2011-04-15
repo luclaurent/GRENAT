@@ -63,25 +63,29 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 if meta.para.estim&&meta.para.aff_likelihood
-    val_para=linspace(meta.para.min,meta.para.max,40);
-    if meta.para.aniso
+    val_para=linspace(meta.para.min,meta.para.max,30);
+    if meta.para.aniso&&tai_conc>1
         [val_X,val_Y]=meshgrid(val_para,val_para);
         val_lik=zeros(size(val_X));
         for itli=1:size(val_X,1)*size(val_X,2)
             val_lik(itli)=bloc_krg(tiragesn,ns,fc,y,meta,std_e,[val_X(itli) val_Y(itli)]);
         end
+        
         figure;
         [C,h]=contourf(val_X,val_Y,val_lik);
         text_handle = clabel(C,h);
         set(text_handle,'BackgroundColor',[1 1 .6],...
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
+        matlab2tikz([aff.doss '/logli.tex'])
         
     else
-        val_lik=zeros(length(val_para),1);
+        val_lik=zeros(1,length(val_para));
         for itli=1:length(val_para)
             val_lik(itli)=bloc_krg(tiragesn,ns,fc,y,meta,std_e,val_para(itli));
         end
+        ss=[val_para' val_lik'];
+        save([aff.doss '/logli.dat'],'ss','-ascii');
         figure;
         plot(val_para,val_lik);
         title('Evolution de la log-vraisemblance');
@@ -164,10 +168,16 @@ if meta.para.estim
             warning on all;
             
             meta.para.val=x;
-            
-            fprintf('Valeur(s) longueur(s) de correlation');
+            if meta.norm
+                meta.para.val_denorm=x.*std_t+moy_t;
+                fprintf('Valeur(s) longueur(s) de correlation');
+                fprintf(' %6.4f',meta.para.val_denorm);
+                fprintf('\n');
+            end
+            fprintf('Valeur(s) longueur(s) de correlation (brut');
             fprintf(' %6.4f',x);
             fprintf('\n');
+            
         otherwise
             error('Strategie de minimisation non prise en charge');
     end

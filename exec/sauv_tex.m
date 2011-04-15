@@ -15,13 +15,13 @@ if aff.tex
     fprintf(fid,'\\section{Caractéristiques du tirage}\n');
     
     fprintf(fid,'\\begin{itemize}\n');
-    fprintf(fid,'\\item Type de tirage: %s\n',doe.type);
+    fprintf(fid,'\\item Type de tirage: \\verb!%s!\n',doe.type);
     fprintf(fid,'\\item Echantillons: [%g %g] [%g %g]\n',doe.bornes(1,1),...
         doe.bornes(1,2),doe.bornes(2,1),doe.bornes(2,2));
     
     
     fprintf(fid,'\\section{Caractéristiques du métamodèle}\n');
-    fprintf(fid,'\\item Type de métamodèle: %s\n',meta.type);
+    fprintf(fid,'\\item Type de métamodèle: \\verb!%s!\n',meta.type);
     fprintf(fid,'\\item Fonction de corrélation: \\verb!%s!\n',meta.corr);
     fprintf(fid,'\\item Degré régression: %d\n',meta.deg);
     if meta.norm

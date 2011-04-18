@@ -216,7 +216,7 @@ if meta.para.estim
                 fprintf(' %6.4f',meta.para.val_denorm);
                 fprintf('\n');
             end
-            fprintf('Valeur(s) longueur(s) de correlation');
+            fprintf('Valeur(s) longueur(s) de correlation (brut)');
             fprintf(' %6.4f',x);
             fprintf('\n');
             

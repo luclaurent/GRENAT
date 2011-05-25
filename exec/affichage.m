@@ -4,6 +4,48 @@
 
 function status=affichage(grille,Z,tirages,eval,grad,aff)
 
+%% Parametres d'entree:
+%       - grille: grille de tracé (meshgrid en 2D) sous la forme
+%       grille(:,:,1) et grille(:,:,2) en 2D pour respectivement les
+%       abscisse et ordonnée. En 1D il s'agit juste d'un vecteur de réels
+%       obtenu par exemple avec linspace
+%       - Z: structure des données à tracer
+%           * Z.Z: cotes obtenus au points definis par la grille
+%           * Z.GR1 et Z.GR2: composant des gradients calcules aux points
+%           definis par la gille
+%       - tirages: liste des points tires (par strategie quelconque)
+%       - eval: evaluations/cotes obtenus aux points du tirage
+%       - grad: gradients obtenus aux points de tirage
+%       - aff: structure contenant l'ensemble des options gere par la
+%       fonction
+%           * aff.on: affichage actif ou non (booleen)
+%           * aff.newfig: affichage du trace dans une nouvelle figure
+%           (booleen)
+%           * aff.grad_meta: affichage des gradients calcules aux points de
+%           la grille (issus generalement du metamodele)
+%           * aff.grad_eval: affichage des gradients calcules aux points du
+%           tirages
+%           * aff.d3: affichage graphique 3D (surf quiver3...)
+%           * aff.contour3: affichage des lignes de niveaux sur graphiques
+%           3D
+%           * aff.d2: affichage graphique 2D (plot quiver...)
+%           * aff.contour2: affichage des courbes de niveaux en 2D
+%           * aff.pts: affichage des points d'evaluation
+%           * aff.uni: affichage des surfaces en une couleurs (booleen)
+%           * aff.color: couleur choisie
+%           * aff.rendu: rendu sur graphique 3D
+%           * aff.save: sauvegarde figures en eps et png
+%           * aff.tikz: sauvegarde au format Tikz
+%           * aff.tex: ecriture du fichier TeX associe
+%           * aff.opt: option courbes en 1D
+%           * aff.titre: titre figure
+%           * aff.xlabel: nom axe x
+%           * aff.ylabel: nom axe y
+%           * aff.zlabel: nom axe z
+%           * aff.scale: mise à l'échelle gradients
+%           * aff.doss: dossier de sauvegarde figures
+%           * aff.pas: pas de la grille d'affichage
+
 %traitement des cas 1D ou 2D
 esp1d=false;esp2d=false;
 if size(tirages,2)==1
@@ -21,6 +63,7 @@ else
     error('Mauvaise dimension de l espace de conception');
 end
 
+%Affichage actif
 if aff.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,11 +79,8 @@ if aff.on
     
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%mise a� l'echelle des traces de gradients
+        %%mise a� l'echelle des traces de gradients
         if aff.grad_meta||aff.grad_eval
-                %dimension mini espace de conception
-                dimm=min(abs(max(max(grille_X))-min(min(grille_X))),...
-                    abs(max(max(grille_Y))-min(min(grille_Y))));
                 %calcul norme gradient
                 ngr=zeros(size(Z.GR1));
                 for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
@@ -50,14 +90,19 @@ if aff.on
                 nm=max(max(ngr));
 
                 %definition de la taille mini de la grille d'affichage
-                tailg=min(aff.pas);
-                
+                if length(aff.pas)==2
+                    tailg=aff.pas;
+                else
+                    tailg(1)=aff.pas;tailg(2)=aff.pas;
+                end
+                               
                 %taille de la plus grande fleche
                 para_fl=1.3;
                 tailf=para_fl*tailg;
 
                 %echelle
                 ech=tailf/nm;
+                ech
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -136,7 +181,9 @@ if aff.on
                     hold on;
                     %remise à l'echelle
                     if aff.scale
-                        quiver(grille_X,grille_Y,ech*Z.GR1,ech*Z.GR2,'AutoScale','off');
+                        quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off');
+                        ech(1)*Z.GR1
+                        ech(2)*Z.GR2
                     else
                         quiver(grille_X,grille_Y,Z.GR1,Z.GR2,'AutoScale','off');
                     end
@@ -154,8 +201,9 @@ if aff.on
                     %remise à l'echelle
                     if aff.scale
                         quiver(tirages(:,1),tirages(:,2),...
-                            ech*grad(:,1),ech*grad(:,2),...
+                            ech(1)*grad(:,1),ech(2)*grad(:,2),...
                             'LineWidth',2,'AutoScale','off');
+
                     else
                         quiver(tirages(:,1),tirages(:,2),...
                             grad(:,1),grad(:,2),...
@@ -167,6 +215,7 @@ if aff.on
 
             end
         end
+      
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %rendu

@@ -35,11 +35,11 @@ doe.type='LHS';
 doe.nb_samples=6;
 
 % Parametrage du metamodele
-deg=1;
+deg=0;
 long=[0.1 100];
 %long=1;
 corr='matern52';
-mod='PRG';
+mod='CKRG';
 meta=init_meta(mod,deg,long,corr);
 
 

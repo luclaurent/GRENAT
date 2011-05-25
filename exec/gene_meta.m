@@ -43,9 +43,10 @@ switch meta.type
         for degre=meta.deg
             %% Construction du metamodele de Regression polynomiale
             fprintf('\n%s\n',[textd  'Regression polynomiale' textf]);
-            dd=['-- Degré du polynôme ',num2str(degre)];
+            dd=['-- Degre du polynome \n',num2str(degre)];
             fprintf(dd);
             [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
+            ret=prg;
         end
 end
 
@@ -73,12 +74,14 @@ if dim_conc==1
                 Z.GZ(jj)=G;
             end
         case 'PRG'
-            %% Evaluation du metamodele de Regression
-            for jj=1:length(points)
-                Z.Z(jj)=eval_prg(meta.coef,points(jj,1),points(jj,2),degre);
-                %evaluation des gradients du MT
-                [GRG1,GRG2]=evald_prg(meta.coef,points(jj,1),points(jj,2),degre);
-                Z.GZ(jj)=[GRG1 GRG2];
+            for degre=meta.deg
+                %% Evaluation du metamodele de Regression
+                for jj=1:length(points)
+                    Z.Z(jj)=eval_prg(prg.coef,points(jj,1),points(jj,2),degre);
+                    %evaluation des gradients du MT
+                    [GRG1,GRG2]=evald_prg(prg.coef,points(jj,1),points(jj,2),degre);
+                    Z.GZ(jj)=[GRG1 GRG2];
+                end
             end
     end
     
@@ -113,6 +116,20 @@ elseif dim_conc==2
                     [Z.Z(jj,kk),G,var(jj,kk)]=predictor(points(jj,kk,:),dace.model);
                     Z.GR1(jj,kk)=G(1);
                     Z.GR2(jj,kk)=G(2);
+                end
+            end
+        case 'PRG'
+            points
+            for degre=meta.deg
+                %% Evaluation du metamodele de Regression
+                for jj=1:length(points)
+                    for kk=1:size(points,2)
+                        Z.Z(jj,kk)=eval_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),degre);
+                        %evaluation des gradients du MT
+                        [GRG1,GRG2]=evald_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),degre);
+                        Z.GR1(jj,kk)=GRG1;
+                        Z.GR1(jj,kk)=GRG2;
+                    end
                 end
             end
     end

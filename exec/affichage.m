@@ -87,7 +87,7 @@ if aff.on
                     ngr(ii)=norm([Z.GR1(ii) Z.GR2(ii)],2);
                 end
                 %recherche du maxi de la norme du gradient
-                nm=max(max(ngr));
+                nm=[max(max(Z.GR1)) max(max(Z.GR2))];
 
                 %definition de la taille mini de la grille d'affichage
                 if length(aff.pas)==2
@@ -97,11 +97,13 @@ if aff.on
                 end
                                
                 %taille de la plus grande fleche
-                para_fl=1.3;
+                para_fl=0.5;
                 tailf=para_fl*tailg;
 
                 %echelle
-                ech=tailf/nm;
+                nm
+                tailf
+                ech=tailf./nm;
                 ech
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -181,7 +183,8 @@ if aff.on
                     hold on;
                     %remise à l'echelle
                     if aff.scale
-                        quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off');
+                       quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0.0002);
+                       %ncquiverref(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
                         ech(1)*Z.GR1
                         ech(2)*Z.GR2
                     else

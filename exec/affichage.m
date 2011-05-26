@@ -183,7 +183,9 @@ if aff.on
                     hold on;
                     %remise à l'echelle
                     if aff.scale
-                       quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0.0002);
+                       %quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0.0002);
+                       quiverc(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
+                       axis equal
                        %ncquiverref(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
                         ech(1)*Z.GR1
                         ech(2)*Z.GR2

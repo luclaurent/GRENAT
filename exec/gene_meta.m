@@ -140,7 +140,6 @@ elseif dim_conc==2
                 end
             end
         case 'PRG'
-            points
             for degre=meta.deg
                 %% Evaluation du metamodele de Regression
                 for jj=1:length(points)
@@ -153,6 +152,28 @@ elseif dim_conc==2
                     end
                 end
             end
+        case 'ILIN'
+            %% interpolation par fonction de base linéaire
+            fprintf('\n%s\n',[textd  'Interpolation par fonction de base linéaire' textf]);
+            for jj=1:size(points,1)
+                for kk=1:size(points,2)
+                    [Z.Z(jj,kk),G]=interp_lin(points(jj,kk,:),tirages,eval);
+                    Z.GR1(jj,kk)=G(1);
+                    Z.GR2(jj,kk)=G(2);
+                end
+            end
+            ret=[];
+        case 'ILAG'
+            %% interpolation par fonction polynomiale de Lagrange
+            fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
+            for jj=1:size(points,1)
+                for kk=1:size(points,2)
+                    [Z.Z(jj,kk),G]=interp_lag(points(jj,kk,:),tirages,eval);
+                    Z.GR1(jj,kk)=G(1);
+                    Z.GR2(jj,kk)=G(2);
+                end
+            end
+            ret=[];
     end
 else
     error('dimension non encore prise en charge');

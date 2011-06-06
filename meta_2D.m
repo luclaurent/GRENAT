@@ -27,10 +27,10 @@ fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 aff.nbele=40;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='LHS_manu';
+doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=16;
+doe.nb_samples=[10 10];
 
 % Parametrage du metamodele
 deg=0;
@@ -38,7 +38,7 @@ long=[0.11 20];
 %long=3;
 corr='matern52';
 
-mod='KRG';
+mod='ILAG';
 meta=init_meta(mod,deg,long,corr);
 
 %affichage de l'intervalle de confiance

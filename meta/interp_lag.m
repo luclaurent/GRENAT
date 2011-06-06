@@ -21,26 +21,28 @@ if dim==1
     end 
     
 elseif dim==2
-    tir1=tirages(:,1);
-    tir2=tirages(:,2);
+    tir1=unique(tirages(:,1));
+    tir2=unique(tirages(:,2));
+    evalr=reshape(eval,length(tir1),length(tir2));
     if nargout==1
         %determination des fonctions de base
-        h1=fct_base_inter_lag(x(1),tir1);
-        h2=fct_base_inter_lag(x(2),tir2);
+        h1=fct_base_interp_lag(x(1),tir1);
+        h2=fct_base_interp_lag(x(2),tir2);
         %evaluation de la reponse
-        h=h1'*h2;
-        Z=eval(:)'*h(:);
+        h=h2*h1';
+        Z=evalr(:)'*h(:);
     elseif nargout==2
         %determination des fonctions de base
-        [h1,dd1]=fct_base_inter_lag(x(1),tir1);
-        [h2,dd2]=fct_base_inter_lag(x(2),tir2);
+        [h1,dd1]=fct_base_interp_lag(x(1),tir1);
+        [h2,dd2]=fct_base_interp_lag(x(2),tir2);
         %evaluation de la reponse
-        h=h1'*h2;
-        dh1=dd1'*h2;
-        dh2=dd2'*h1;
-        Z=eval'*h;
-        GZ(1)=eval(:)*dh1(:);
-        GZ(2)=eval(:)*dh2(:);
+        h=h2*h1';
+        dh1=h2*dd1';
+        dh2=dd2*h1';
+        Z=evalr(:)'*h(:);
+        GZ(1)=eval(:)'*dh1(:);
+        GZ(2)=eval(:)'*dh2(:);
+
     end 
     
 else

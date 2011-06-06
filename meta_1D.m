@@ -29,7 +29,7 @@ doe.bornes=[xmin xmax]';
 aff.pas=0.05;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='LHS';
+doe.type='sfill';
 
 %nb d'echantillons
 doe.nb_samples=6;
@@ -39,7 +39,7 @@ deg=0;
 long=[0.1 100];
 %long=1;
 corr='matern52';
-mod='CKRG';
+mod='ILAG';
 meta=init_meta(mod,deg,long,corr);
 
 
@@ -62,7 +62,9 @@ disp('=====================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
-tirages=[0.5 2 2.5 5 11 14.5];tirages=transpose(tirages);
+%tirages=[0.5 2 2.5 5 11 14.5];
+tirages=linspace(0,15,40);
+tirages=transpose(tirages);
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(fct,tirages);

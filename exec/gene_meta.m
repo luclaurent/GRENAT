@@ -48,6 +48,12 @@ switch meta.type
             [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
             ret=prg;
         end
+    case 'ILIN'
+        %% Construction du metamodele d'interpolation lineaire
+        fprintf('\n%s\n',[textd  'Interpolation par fonction de base ' textf]);
+    case 'ILAG'
+        %% interpolation par fonction de base linéaire
+        fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
 end
 
 % en dimension 1, les points ou l'on souhaite evaluer le metamodele se
@@ -83,6 +89,21 @@ if dim_conc==1
                     Z.GZ(jj)=[GRG1 GRG2];
                 end
             end
+        case 'ILIN'
+            %% interpolation par fonction de base linéaire
+            fprintf('\n%s\n',[textd  'Interpolation par fonction de base linéaire' textf]);
+            for jj=1:length(points)
+                [Z.Z(jj),Z.GZ(jj)]=interp_lin(points(jj),tirages,eval);
+            end
+            ret=[];
+        case 'ILAG'
+            %% interpolation par fonction polynomiale de Lagrange
+            fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
+            for jj=1:length(points)
+                [Z.Z(jj),Z.GZ(jj)]=interp_lag(points(jj),tirages,eval);
+            end
+            ret=[];
+            
     end
     
     % en dimension 2, les points ou l'on souhaite evaluer le metamodele se

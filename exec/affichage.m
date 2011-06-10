@@ -87,7 +87,7 @@ if aff.on
                     ngr(ii)=norm([Z.GR1(ii) Z.GR2(ii)],2);
                 end
                 %recherche du maxi de la norme du gradient
-                nm=[max(max(Z.GR1)) max(max(Z.GR2))];
+                nm=[max(max(ngr))];
 
                 %definition de la taille mini de la grille d'affichage
                 if length(aff.pas)==2
@@ -101,8 +101,8 @@ if aff.on
                 tailf=para_fl*tailg;
 
                 %echelle
-                nm
-                tailf
+               % nm
+              %  tailf
                 ech=tailf./nm;
                 ech
         end
@@ -187,8 +187,8 @@ if aff.on
                        quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
                        %axis equal
                        %ncquiverref(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
-                        ech(1)*Z.GR1
-                        ech(2)*Z.GR2
+                      %  ech(1)*Z.GR1
+                       % ech(2)*Z.GR2
                     else
                         quiver(grille_X,grille_Y,Z.GR1,Z.GR2,'AutoScale','off');
                     end

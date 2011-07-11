@@ -10,7 +10,7 @@ if isempty(num)
     num=aff.num;
 else
     if ischar(num)
-       nomfich=num;
+        nomfich=num;
     else
         nomfich=['fig_' num2str(num,'%04.0f')];
     end

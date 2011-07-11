@@ -88,6 +88,9 @@ if aff.on
                 end
                 %recherche du maxi de la norme du gradient
                 nm=[max(max(ngr))];
+                
+                n1=max(max(Z.GR1));
+                n2=max(max(Z.GR2));
 
                 %definition de la taille mini de la grille d'affichage
                 if length(aff.pas)==2
@@ -97,14 +100,14 @@ if aff.on
                 end
                                
                 %taille de la plus grande fleche
-                para_fl=0.5;
+                para_fl=0.7;
                 tailf=para_fl*tailg;
 
                 %echelle
                % nm
               %  tailf
-                ech=tailf./nm;
-                ech
+                ech=tailf./[n1 n2];
+                
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -184,11 +187,11 @@ if aff.on
                     %remise à l'echelle
                     if aff.scale
                        %quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0.0002);
-                       quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
+                       quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0);
                        %axis equal
                        %ncquiverref(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
-                      %  ech(1)*Z.GR1
-                       % ech(2)*Z.GR2
+                        %ech(1)*Z.GR1
+                        %ech(2)*Z.GR2
                     else
                         quiver(grille_X,grille_Y,Z.GR1,Z.GR2,'AutoScale','off');
                     end
@@ -207,7 +210,7 @@ if aff.on
                     if aff.scale
                         quiver(tirages(:,1),tirages(:,2),...
                             ech(1)*grad(:,1),ech(2)*grad(:,2),...
-                            'LineWidth',2,'AutoScale','off');
+                            'LineWidth',2,'AutoScale','off','MaxHeadSize',0);
 
                     else
                         quiver(tirages(:,1),tirages(:,2),...

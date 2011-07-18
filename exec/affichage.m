@@ -5,11 +5,11 @@
 function status=affichage(grille,Z,tirages,eval,grad,aff)
 
 %% Parametres d'entree:
-%       - grille: grille de tracé (meshgrid en 2D) sous la forme
+%       - grille: grille de trace (meshgrid en 2D) sous la forme
 %       grille(:,:,1) et grille(:,:,2) en 2D pour respectivement les
-%       abscisse et ordonnée. En 1D il s'agit juste d'un vecteur de réels
+%       abscisse et ordonnee. En 1D il s'agit juste d'un vecteur de reels
 %       obtenu par exemple avec linspace
-%       - Z: structure des données à tracer
+%       - Z: structure des donnees a� tracer
 %           * Z.Z: cotes obtenus au points definis par la grille
 %           * Z.GR1 et Z.GR2: composant des gradients calcules aux points
 %           definis par la gille
@@ -42,7 +42,7 @@ function status=affichage(grille,Z,tirages,eval,grad,aff)
 %           * aff.xlabel: nom axe x
 %           * aff.ylabel: nom axe y
 %           * aff.zlabel: nom axe z
-%           * aff.scale: mise à l'échelle gradients
+%           * aff.scale: mise a� l'echelle gradients
 %           * aff.doss: dossier de sauvegarde figures
 %           * aff.pas: pas de la grille d'affichage
 
@@ -93,14 +93,16 @@ if aff.on
                 n2=max(max(Z.GR2));
 
                 %definition de la taille mini de la grille d'affichage
-                if length(aff.pas)==2
-                    tailg=aff.pas;
-                else
-                    tailg(1)=aff.pas;tailg(2)=aff.pas;
-                end
-                               
+                gx=grille_X-grille_X(1);
+                ind=find(gx>0);
+                tailg(1)=min(min(gx(ind)));
+                gy=grille_Y-grille_Y(1);
+                ind=find(gy>0);
+                tailg(2)=min(min(gy(ind)));
+                
+                                              
                 %taille de la plus grande fleche
-                para_fl=0.7;
+                para_fl=0.15;
                 tailf=para_fl*tailg;
 
                 %echelle
@@ -131,9 +133,9 @@ if aff.on
             %affichage des points d'evaluations
             if aff.pts
                 hold on
-                plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','g',...
-                    'MarkerFaceColor','g',...
-                    'MarkerSize',1);
+                plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','k',...
+                    'MarkerFaceColor','k',...
+                    'MarkerSize',15);
             end
 
             %Affichage des gradients
@@ -184,7 +186,7 @@ if aff.on
                 %affichage des gradients
                 if aff.grad_meta                
                     hold on;
-                    %remise à l'echelle
+                    %remise a� l'echelle
                     if aff.scale
                        %quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0.0002);
                        quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0);
@@ -199,14 +201,14 @@ if aff.on
                 %affichage des points d'evaluation
                 if aff.pts
                     hold on
-                    plot(tirages(:,1),tirages(:,2),'.','MarkerEdgeColor','g',...
-                    'MarkerFaceColor','g',...
+                    plot(tirages(:,1),tirages(:,2),'.','MarkerEdgeColor','k',...
+                    'MarkerFaceColor','k',...
                     'MarkerSize',15)     
                 end
                 %affichage des gradients
                 if aff.grad_eval
                     hold on;
-                    %remise à l'echelle
+                    %remise a� l'echelle
                     if aff.scale
                         quiver(tirages(:,1),tirages(:,2),...
                             ech(1)*grad(:,1),ech(2)*grad(:,2),...

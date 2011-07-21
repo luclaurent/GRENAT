@@ -102,7 +102,7 @@ if aff.on
                 
                                               
                 %taille de la plus grande fleche
-                para_fl=0.15;
+                para_fl=0.9;
                 tailf=para_fl*tailg;
 
                 %echelle

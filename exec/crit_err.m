@@ -13,7 +13,7 @@ if ~isempty(Zref)
     fprintf('R2= %6.4d\n',err.r2);
     fprintf('RAAE= %6.4d\n',err.eraae);
     fprintf('RMAE= %6.4d\n',err.ermae);
-    fprintf('Q1= %6.4d,  Q2= %6.4d,  Q3= %6.4d\n\n',err.eq1,err.eq2,err.eq3);
+    fprintf('Q1= %6.4d\nQ2= %6.4d\nQ3= %6.4d\n\n',err.eq1,err.eq2,err.eq3);
 else
     err=[];
 end

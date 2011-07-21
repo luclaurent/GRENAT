@@ -27,10 +27,10 @@ fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
 aff.nbele=40;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=[10 10];
+doe.nb_samples=9;
 
 % Parametrage du metamodele
 deg=0;
@@ -38,7 +38,7 @@ long=[0.11 20];
 %long=3;
 corr='matern52';
 
-mod='ILAG';
+mod='CKRG';
 meta=init_meta(mod,deg,long,corr);
 
 %affichage de l'intervalle de confiance
@@ -60,6 +60,9 @@ disp('=====================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
+load('cm2011_27eval.mat')
+tirages=tir_ckrg_9;
+
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(doe.fct,tirages);
@@ -114,7 +117,7 @@ aff.pts=true;
 aff.titre='Fonction de reference';
 %subplot(3,3,4)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
-aff.titre='Metamodele';
+aff.titre='';
 %subplot(3,3,5)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 
@@ -126,7 +129,7 @@ aff.grad_meta=true;
 aff.contour2=true;
 %subplot(3,3,7)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
-aff.titre='Metamodele';
+aff.titre='';
 %subplot(3,3,8)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
@@ -146,5 +149,5 @@ sauv_tex(meta,doe,aff,err,krg);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Sauvegarde WorkSpace
-save_WS(aff.doss);
+save([aff.doss '/WS.mat']);
 

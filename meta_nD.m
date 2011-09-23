@@ -62,8 +62,8 @@ disp('=====================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
-load('cm2011_27eval.mat')
-tirages=tir_ckrg_9;
+%load('cm2011_27eval.mat')
+%tirages=tir_ckrg_9;
 
 
 %evaluations de la fonction aux points

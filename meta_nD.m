@@ -19,9 +19,11 @@ init_aff();
 
 %fonction etudiee
 fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
+% dimension du pb (nb de variables)
+doe.dim_pb=2;
 
 %%Definition de l'espace de conception
-[doe.bornes,doe.fct]=init_doe(fct);
+[doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb);
 
 %nombre d'element pas dimension (pour le trace)
 aff.nbele=40;

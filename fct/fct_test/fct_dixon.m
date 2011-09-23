@@ -1,6 +1,10 @@
 %Fonction Dixon & Price 
 %modif L. LAURENT -- 16/09/2011 -- ajout calcul gradient
 
+
+%Domaine d'etude de la fonction: -10<xi<10
+
+
 function [p,dp] = fct_dixon(xx)
 
 %Nombre de variables

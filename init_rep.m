@@ -9,6 +9,7 @@ addpath('doe/LHS');
 addpath('meta/dace');
 addpath('doe');
 addpath('fct');
+addpath('fct/fct_test');
 addpath('meta');
 addpath('crit');
 addpath('matlab2tikz/');

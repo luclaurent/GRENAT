@@ -30,11 +30,11 @@ aff.nbele=40;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=9;
+doe.nb_samples=50;
 
 % Parametrage du metamodele
 deg=0;
-long=[0.11 20];
+long=[0.0011 20];
 %long=3;
 corr='matern52';
 
@@ -60,8 +60,8 @@ disp('=====================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
-load('cm2011_27eval.mat')
-tirages=tir_ckrg_9;
+%load('cm2011_27eval.mat')
+%tirages=tir_ckrg_9;
 
 
 %evaluations de la fonction aux points

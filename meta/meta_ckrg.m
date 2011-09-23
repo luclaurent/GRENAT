@@ -178,6 +178,8 @@ if meta.para.estim
             lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
             %definition valeur de depart de la variable
             x0=lb+1/5*(ub-lb);%x0=(lb+ub)./2;
+            fprintf('||Fmincon|| Initialisation au point:\n');
+            fprintf('%g ',x0): fprintf('\n');
             %declaration de la fonction a  minimiser
             fun=@(para)bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,para);
             %declaration des options de la strategie de minimisation
@@ -192,14 +194,39 @@ if meta.para.estim
             %minimisation
             indic=0;
             warning off all;
+            desc=true;
+            pas_min=1/50*(ub-lb);
             while indic==0
                 %interception erreur
                 try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
                 catch exception
-                    throw(exception);
+                    text='undefined at initial point';
+                    [tt,ss,ee]=regexp(exception.message,[text],'match','start','end');
                     
-                    exitflag=1;
+                    if ~isempty(tt)
+                        fprintf('Problème initialisation fmincon (fct non définie au point initial)');
+                        if desc&&(x0-pas_min)>lb
+                            x0=x0-pas_min;
+                            fprintf('||Fmincon|| Reinitialisation au point:\n');
+                            fprintf('%g ',x0): fprintf('\n');
+                        elseif desc&&(x0-pas_min)<lb
+                            desc=false;
+                            x0=x0+pas_min;
+                            fprintf('||Fmincon|| Reinitialisation au point:\n');
+                            fprintf('%g ',x0): fprintf('\n');
+                        elseif ~desc&&(x0+pas_min)<ub
+                            x0=x0+pas_min;
+                            fprintf('||Fmincon|| Reinitialisation au point:\n');
+                            fprintf('%g ',x0): fprintf('\n');
+                        elseif ~desc&&(x0+pas_min)>ub
+                            exitflag=1;
+                            fprintf('||Fmincon|| Reinitialisation impossible.\n');
+                        end
+                    else
+                        throw(exception);
+                        exitflag=1;
+                    end
                 end
                 %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2

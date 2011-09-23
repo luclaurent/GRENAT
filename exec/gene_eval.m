@@ -3,37 +3,24 @@
 
 function [eval,grad]=gene_eval(fct,X)
 
-tailX=zeros(1,3);
-tailX(1)=size(X,1);
-tailX(2)=size(X,2);
-tailX(3)=size(X,3);
+%% X matrice de tirages:
+% colonnes: chaque dimension
+% lignes: un jeu de paramètres
+nb_var=size(X,2);
+nb_val=size(X,1);
 
-%pour des vecteurs de dimension 1 et 2
-if tailX(3)==1
-    %en dimension 1
-    if size(X,2)==1
-       [ev,grad]=feval(fct,X);
-    end
-
-    %en dimension 2
-    if tailX(2)==2
-        grad=zeros(size(X));
-        [ev,grad(:,1),grad(:,2)]=feval(fct,X(:,1),X(:,2));
-    end
-% pour des Ã©valuations multiples (matrice de matrices)
-elseif tailX(3)==2
-    [ev,grad.GR1,grad.GR2]=feval(fct,X(:,:,1),X(:,:,2));
+%préparation jeu de données pour evaluation
+X_eval=zeros(1,nb_val,nb_var);
+for ii=1:nb_var
+    X_eval(:,:,ii)=X(:,ii);
 end
 
+%evaluation fonction et gradients aux points x
 if nargout==1
-    eval.Z=ev;
-    if tailX(2)==2&&tailX(3)==1
-        eval.GR1=grad(:,1);
-        eval.GR2=grad(:,1);
-    elseif tailX(3)==2
-        eval.GR1=grad.GR1;
-        eval.GR2=grad.GR2;
-    end
-else
-    eval=ev;
+    [eval]=feval(fct,X_eval);
+elseif nargout==2
+    [eval,grad]=feval(fct,X_eval);
+else 
+    fprintf('Mauvais nombre de paramètres de sortie (cf. gene_eval)');
 end
+

@@ -205,20 +205,23 @@ if meta.para.estim
                     [tt,ss,ee]=regexp(exception.message,[text],'match','start','end');
                     
                     if ~isempty(tt)
-                        fprintf('Problème initialisation fmincon (fct non définie au point initial)');
-                        if desc&&(x0-pas_min)>lb
+                        fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
+                        if desc&(x0-pas_min)>lb
                             x0=x0-pas_min;
                             fprintf('||Fmincon|| Reinitialisation au point:\n');
                             fprintf('%g ',x0): fprintf('\n');
+                            exitflag=-1;
                         elseif desc&&(x0-pas_min)<lb
                             desc=false;
                             x0=x0+pas_min;
                             fprintf('||Fmincon|| Reinitialisation au point:\n');
                             fprintf('%g ',x0): fprintf('\n');
+                            exitflag=-1;
                         elseif ~desc&&(x0+pas_min)<ub
                             x0=x0+pas_min;
                             fprintf('||Fmincon|| Reinitialisation au point:\n');
                             fprintf('%g ',x0): fprintf('\n');
+                            exitflag=-1;
                         elseif ~desc&&(x0+pas_min)>ub
                             exitflag=1;
                             fprintf('||Fmincon|| Reinitialisation impossible.\n');

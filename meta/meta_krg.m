@@ -158,9 +158,12 @@ if meta.para.estim
             %minimisation
             indic=0;
             warning off all;
+            desc=true;
+            pas_min=1/50*(ub-lb);
             while indic==0
                try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
+                    exitflag
                 catch exception
                     text='undefined at initial point';
                     [tt,ss,ee]=regexp(exception.message,[text],'match','start','end');
@@ -192,13 +195,14 @@ if meta.para.estim
                         exitflag=1;
                     end
                 end
-            end
+            
             %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2
                     indic=1;
                     nkrg.estim_para=output;
                     nkrg.estim_para.val=x;
                 end
+            end
             warning on all;
             
             meta.para.val=x;

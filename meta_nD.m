@@ -18,7 +18,10 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='sixhump'; %branin,gold,peaks,rosenbrock,sixhump,schwefel
+fct='sixhump'; 
+%beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
+%dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
+%sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
 doe.dim_pb=2;
 

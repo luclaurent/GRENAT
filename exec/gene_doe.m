@@ -3,6 +3,9 @@
 
 function tirages=gene_doe(doe)
 
+s = RandStream('mt19937ar','Seed','shuffle');
+RandStream.setGlobalStream(s);
+
 fprintf('===== DOE =====\n');
 %on traite separement les etudes 1D ou 2D
 if size(doe.bornes,2)==1

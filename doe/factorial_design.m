@@ -1,18 +1,46 @@
-function s=factorial_design(nb_data_x, nb_data_y, borne_inf_x, borne_sup_x, borne_inf_y, borne_sup_y)
+%% Fonction assurant la génération d'un plan factoriel en dimension n
+% L. LAURENT -- 07/10/2011 -- laurent@lmt.ens-cachan.fr
 
-%---SELECTION NOMBRE NIVEAUX X et Y---
+function tir=factorial_design(nb_tir,esp)
 
-%x_mesure=zeros(1, nb_data_x * nb_data_y);
-%y_mesure=zeros(1, nb_data_x * nb_data_y);
-xy_array=zeros(nb_data_x * nb_data_y,2);
-delta_x=(borne_sup_x - borne_inf_x)/(nb_data_x - 1);
-delta_y=(borne_sup_y - borne_inf_y)/(nb_data_y - 1);
 
-for i=1:nb_data_x
-    for j=1:nb_data_y
-        index=(i-1)*nb_data_y+j;
-        xy_array(index,1)=borne_inf_x+(delta_x*(i-1));
-        xy_array(index,2)=borne_inf_y+(delta_y*(j-1));
-    end
+%nombre de variables prises en considération
+nb_var=size(esp,1);
+
+%reconditionnement
+if length(nb_tir)==1
+    nb_tir=nb_tir*ones(1,nb_var);
+elseif length(nb_tir)~=1&&length(nb_tir)~=nb_var
+    error('mauvaise définition nb de tirages pour plan factoriel (cf. factorial_design.m)');
 end
-s=xy_array;
+
+%initialisation matrice stockage tirages
+nb_tir_tot=prod(nb_tir);
+tir=zeros(nb_tir_tot,nb_var);
+
+%valeurs pour chaques variables
+val_var=cell(nb_var,1);
+for ii=1:nb_var
+    val_var{ii}=linspace(esp(ii,1),esp(ii,2),nb_tir(ii));
+end
+
+% generation de la matrice des tirages
+% parcours des variables
+temp1=[];
+for ii=1:nb_var
+    if ii>1
+        nb_ter_pre=prod(nb_tir(1:ii-1));
+    else
+        nb_ter_pre=1;
+    end
+    %parcours des valeurs par variables
+    for jj=1:length(val_var{ii})
+        temp=repmat(val_var{ii}(jj),nb_ter_pre,1);
+        temp1=[temp1;temp];
+        temp1
+    end
+    temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
+    temp1=[];
+    tir(:,ii)=temp2;
+end
+

@@ -8,7 +8,7 @@ fprintf('===== DOE =====\n');
 %recupération bornes espace de conception
 esp=doe.bornes;
 
-%génération des différents types de tirages
+%geénéeration des différents types de tirages
 
 
 %on traite separement les etudes 1D ou 2D

@@ -3,6 +3,10 @@
 
 function tirages=gene_doe(doe)
 
+% obtenir un "vrai" tirages pseudo aléatoire
+s = RandStream('mt19937ar','Seed','shuffle');
+RandStream.setGlobalStream(s);
+
 fprintf('===== DOE =====\n');
 
 %recupŽration bornes espace de conception

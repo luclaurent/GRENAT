@@ -37,7 +37,6 @@ for ii=1:nb_var
     for jj=1:length(val_var{ii})
         temp=repmat(val_var{ii}(jj),nb_ter_pre,1);
         temp1=[temp1;temp];
-        temp1
     end
     temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
     temp1=[];

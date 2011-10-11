@@ -32,7 +32,7 @@ doe.dim_pb=2;
 aff.nbele=40;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='LHS';
+doe.type='rand';
 
 %nb d'echantillons
 doe.nb_samples=9;

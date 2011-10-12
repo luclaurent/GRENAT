@@ -8,12 +8,14 @@ function [Z,ret]=gene_meta(tirages,eval,grad,points,meta)
 textd='===== METAMODELE de ';
 textf=' =====';
 
-dim_conc=size(tirages,2);
-dim_pts=size(tirages,1);
+%nombre de variables
+nb_var=size(tirages,2);
+%nombre de points
+nb_val=size(tirages,1);
 dim_ev=size(points);
 
-var=zeros(dim_ev([1,2]));
-Z.Z=zeros(dim_ev([1,2]));
+var=zeros(dim_ev([1 2]));
+Z.Z=zeros(dim_ev([1 2]));
 
 
 %construction metamodele
@@ -22,21 +24,21 @@ switch meta.type
         %% Construction du metamodele de CoKrigeage
         fprintf('\n%s\n',[textd 'CoKrigeage' textf]);
         %affichage informations
-        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',dim_conc,dim_pts)
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
         ckrg=meta_ckrg(tirages,eval,grad,meta);
         ret=ckrg;
     case 'KRG'
         %% Construction du metamodele de Krigeage
         fprintf('\n%s\n',[textd 'Krigeage' textf]);
         %affichage informations
-        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',dim_conc,dim_pts)
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
         krg=meta_krg(tirages,eval,meta);
         ret=krg;
     case 'DACE'
         %% Construction du metamodele de Krigeage (DACE)
         fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
         %affichage informations
-        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',dim_conc,dim_pts)
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
         [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.para);
         ret=dace;
     case 'PRG'
@@ -58,7 +60,7 @@ end
 
 % en dimension 1, les points ou l'on souhaite evaluer le metamodele se
 % presentent sous forme d'une matrice
-if dim_conc==1
+if nb_var==1
     Z.GZ=zeros(dim_ev);
     switch meta.type
         case 'CKRG'
@@ -108,7 +110,7 @@ if dim_conc==1
     
     % en dimension 2, les points ou l'on souhaite evaluer le metamodele se
     % presentent sous forme d'un vecteur de matrices
-elseif dim_conc==2
+elseif nb_var==2
     Z.GR1=zeros(dim_ev([1,2]));
     Z.GR2=zeros(dim_ev([1,2]));
     switch meta.type

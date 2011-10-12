@@ -3,7 +3,7 @@
 
 function meta=init_meta(type,deg,long,corr)
 
-meta.type=type;         %type de metamodele KRG/CKRG/DACE
+meta.type=type;         %type de metamodele KRG/CKRG/DACE/RBF
 meta.deg=deg;           %degre de la regression
 meta.para.val=long;       %longueur de correlation
 if nargin>=4
@@ -27,9 +27,9 @@ meta.recond=false;      %amelioration du conditionnement de la matrice de correl
 meta.cv=true;           %validation croisee
 
 %estimation parametre long (longueur de correlation)
-meta.para.method='fmincon';
-meta.para.estim=true;
-meta.para.aff_likelihood=true;
+meta.para.method='fmincon';     % méthode de minimisation de la log-vraisemblance
+meta.para.estim=true;           % recherche de la longueur de corrélation
+meta.para.aff_likelihood=true;  %affichage de la vraisemblance 1 ou 2 paramètres
 meta.para.aniso=false;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
 if meta.para.estim
     meta.para.max=long(2);

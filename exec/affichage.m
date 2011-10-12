@@ -11,7 +11,7 @@ function status=affichage(grille,Z,tirages,eval,grad,aff)
 %       obtenu par exemple avec linspace
 %       - Z: structure des donnees a  tracer
 %           * Z.Z: cotes obtenus au points definis par la grille
-%           * Z.GR1 et Z.GR2: composant des gradients calcules aux points
+%           * GR1 et GR2: composant des gradients calcules aux points
 %           definis par la gille
 %       - tirages: liste des points tires (par strategie quelconque)
 %       - eval: evaluations/cotes obtenus aux points du tirage
@@ -63,6 +63,13 @@ else
     error('Mauvaise dimension de l espace de conception');
 end
 
+%mise en forme des gradients
+if isfield(Z,'GR')
+    GR1=Z.GR(:,:,1);
+    GR2=Z.GR(:,:,2);
+end
+
+
 %Affichage actif
 if aff.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,15 +89,15 @@ if aff.on
         %%mise aï¿½ l'echelle des traces de gradients
         if aff.grad_meta||aff.grad_eval
                 %calcul norme gradient
-                ngr=zeros(size(Z.GR1));
-                for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
-                    ngr(ii)=norm([Z.GR1(ii) Z.GR2(ii)],2);
+                ngr=zeros(size(GR1));
+                for ii=1:size(GR1,1)*size(GR1,2)
+                    ngr(ii)=norm([GR1(ii) GR2(ii)],2);
                 end
                 %recherche du maxi de la norme du gradient
                 nm=[max(max(ngr))];
                 
-                n1=max(max(Z.GR1));
-                n2=max(max(Z.GR2));
+                n1=max(max(GR1));
+                n2=max(max(GR2));
 
                 %definition de la taille mini de la grille d'affichage
                 gx=grille_X-grille_X(1);
@@ -142,10 +149,10 @@ if aff.on
             if aff.grad_eval
                 %determination des vecteurs de plus grandes pentes (dans le
                 %sens de descente du gradient)
-                for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
-                    vec.X(ii)=-Z.GR1(ii);
-                    vec.Y(ii)=-Z.GR2(ii);
-                    vec.Z(ii)=-Z.GR1(ii)^2-Z.GR2(ii)^2;
+                for ii=1:size(GR1,1)*size(GR1,2)
+                    vec.X(ii)=-GR1(ii);
+                    vec.Y(ii)=-GR2(ii);
+                    vec.Z(ii)=-GR1(ii)^2-GR2(ii)^2;
                     %normalisation du vecteur de plus grande pente
                     vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
                     vec.Xn(ii)=vec.X(ii)/vec.N(ii);
@@ -155,7 +162,7 @@ if aff.on
                 hold on
 
                %hcones =coneplot(X,Y,Z.Z,vec.X,vec.Y,vec.Z,0.1,'nointerp');
-               % hcones=coneplot(X,Y,Z.Z,Z.GR1,Z.GR2,-ones(size(Z.GR1)),0.1,'nointerp');
+               % hcones=coneplot(X,Y,Z.Z,GR1,GR2,-ones(size(GR1)),0.1,'nointerp');
                % set(hcones,'FaceColor','red','EdgeColor','none')
 
                 %hold on
@@ -188,14 +195,14 @@ if aff.on
                     hold on;
                     %remise a  l'echelle
                     if aff.scale
-                       %quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0.0002);
-                       quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0);
+                       %quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);
+                       quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0);
                        %axis equal
-                       %ncquiverref(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
-                        %ech(1)*Z.GR1
-                        %ech(2)*Z.GR2
+                       %ncquiverref(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2);
+                        %ech(1)*GR1
+                        %ech(2)*GR2
                     else
-                        quiver(grille_X,grille_Y,Z.GR1,Z.GR2,'AutoScale','off');
+                        quiver(grille_X,grille_Y,GR1,GR2,'AutoScale','off');
                     end
                 end
                 %affichage des points d'evaluation

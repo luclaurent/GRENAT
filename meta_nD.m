@@ -32,7 +32,7 @@ doe.dim_pb=2;
 aff.nbele=40;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='rand';
+doe.type='LHS';
 
 %nb d'echantillons
 doe.nb_samples=9;
@@ -42,8 +42,8 @@ deg=0;
 long=[0.11 20];
 %long=3;
 corr='matern52';
-
 mod='CKRG';
+
 meta=init_meta(mod,deg,long,corr);
 
 %affichage de l'intervalle de confiance
@@ -68,13 +68,12 @@ tirages=gene_doe(doe);
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 
-
 %evaluations de la fonction aux points
-[eval,grad]=gene_eval(doe.fct,tirages);
+[eval,grad]=gene_eval(doe.fct,tirages,'eval');
 
 %Trace de la fonction de la fonction etudiee et des gradients
 [grid_XY,aff]=gene_aff(doe,aff);
-Z=gene_eval(doe.fct,grid_XY);
+[Z.Z,Z.GR]=gene_eval(doe.fct,grid_XY,'aff');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

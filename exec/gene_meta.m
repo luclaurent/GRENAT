@@ -110,7 +110,7 @@ if nb_var==1
     
     % en dimension 2, les points ou l'on souhaite evaluer le metamodele se
     % presentent sous forme d'un vecteur de matrices
-elseif nb_var==2
+elseif nb_var>=2
     Z.GR1=zeros(dim_ev([1,2]));
     Z.GR2=zeros(dim_ev([1,2]));
     switch meta.type

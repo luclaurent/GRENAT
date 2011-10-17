@@ -42,6 +42,7 @@ elseif nargout==2
 elseif nargout==3
     corr=ev;
     dco=-(5./(3*long.^2).*xx+5*sqrt(5)./(3*long.^3).*xx.^2.*sign(xx)).*exp(-sqrt(5)./long.*abs(xx));
+    dco
     %calcul des derivees selon chacune des composantes
     pr=zeros(size(xx));
     for ii=1:nb_comp
@@ -59,18 +60,18 @@ elseif nargout==3
     %les stocke dans une matrice 
     if pt_eval==1
         dm=zeros(nb_comp);
-        ddco=-(5./(3*long.^2)+5*sqrt(5)./(3*long.^3).*abs(xx)-25./(3*long.^4).*xx.^2).*exp(-sqrt(5)./long.*abs(xx));
+        ddco=(-5./(3*long.^2)-5*sqrt(5)./(3*long.^3).*abs(xx)+25./(3*long.^4).*xx.^2).*exp(-sqrt(5)./long.*abs(xx));
         di=ddco.*pr;
         
         for ll=1:nb_comp
-           for mm=ll+1:nb_comp
+           for mm=1:nb_comp
                pcc=pc;
                pcc([ll mm])=[];
                prr=prod(pcc,2);
                dm(mm,ll)=dco(ll)*dco(mm)*prr;
            end
         end
-        dm=dm+transpose(dm);
+        %dm=dm+transpose(dm);
         ddcorr=diag(di)+dm;
        
     %si on demande le calcul des derivees secondes en plusieurs point, on
@@ -82,7 +83,7 @@ elseif nargout==3
         di=ddco.*pr;
                 
         for ll=1:nb_comp
-           for mm=ll+1:nb_comp
+           for mm=1:nb_comp
                pcc=pc;
                pcc(:,[ll mm])=[];
                prr=prod(pcc,2);
@@ -90,7 +91,7 @@ elseif nargout==3
            end
         end
         for kk=1:pt_eval
-            dm(:,:,kk)=dm(:,:,kk)+transpose(dm(:,:,kk));
+        %    dm(:,:,kk)=dm(:,:,kk)+transpose(dm(:,:,kk));
             ddcorr(:,:,kk)=diag(di(kk,:))+dm(:,:,kk);
         end
         

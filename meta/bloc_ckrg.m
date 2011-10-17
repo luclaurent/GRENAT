@@ -26,15 +26,20 @@ for ii=1:ns
         
         %morceau de la matrice provenant du Cokrigeage
         rca(ii,dim*jj-dim+1:dim*jj)=-dev;
+
         
         %matrice des derivees secondes
         rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;
+        tiragesn(ii,:)-tiragesn(jj,:)
+        ddev
+        meta.para.val
         
     end
 end
 
 %Nouvelle matrice rc dans le cas du CoKrigeage
 rcc=[rc rca;rca' rci];
+
 
 
 %amelioration du conditionnement de la matrice de corr�lation

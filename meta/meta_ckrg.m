@@ -13,8 +13,6 @@ tps_start=toc;
 nbs=size(eval,1);
 %dimension du pb (nb de variables de conception)
 nbv=size(tirages,2);
-grad
-
 
 %Normalisation
 if meta.norm
@@ -39,6 +37,9 @@ if meta.norm
     evaln=(eval-repmat(moy_e,nbs,1))./repmat(std_e,nbs,1);
     tiragesn=(tirages-repmat(moy_t,nbs,1))./repmat(std_t,nbs,1);
     gradn=grad.*repmat(std_t,nbs,1)/std_e;
+    
+    tirages
+    tiragesn
     
     
     %sauvegarde des calculs

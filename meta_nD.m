@@ -29,13 +29,13 @@ doe.dim_pb=3;
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=40;
+aff.nbele=10;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=9;
+doe.nb_samples=4;
 
 % Parametrage du metamodele
 deg=0;

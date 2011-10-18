@@ -24,9 +24,19 @@ elseif dim_esp==2
     
 else
     % en nD on utilise la fonction de génération de factoriel complet
-    XY=factorial_design(af.nb_ele,doe.bornes);
+    grid=factorial_design(aff.nbele,doe.bornes);
+    
+    %reorganisation grille
+    XY=zeros(size(grid,1),1,dim_esp);
+    size(XY)
+    size(grid)
+    
+    for ii=1:dim_esp
+        XY(:,:,ii)=grid(:,ii);
+    end
+    
+    
 end
-
 
 %pas de la grille d'affichage selon les deux variables
 aff.pas=abs(doe.bornes(:,2)-doe.bornes(:,1))./aff.nbele;

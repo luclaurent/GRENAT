@@ -6,8 +6,13 @@ function [esp,fun]=init_doe(fct,dim,def)
 %definition automatique
 switch fct
     case 'rosenbrock'
-        xmin=-2;xmax=2;ymin=-1;ymax=3;
-        esp=[xmin xmax;ymin ymax];
+        if dim==2
+            xmin=-2;xmax=2;ymin=-1;ymax=3;
+            esp=[xmin xmax;ymin ymax];
+        else
+            val=30;
+            esp=val*[-ones(dim,1),ones(dim,1)];
+        end
     case 'branin'
         xmin=-5;xmax=10;ymin=0;ymax=15;
         esp=[xmin xmax;ymin ymax];

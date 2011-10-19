@@ -42,7 +42,7 @@ elseif nargout==2
 elseif nargout==3
     corr=ev;
     dco=-(5./(3*long.^2).*xx+5*sqrt(5)./(3*long.^3).*xx.^2.*sign(xx)).*exp(-sqrt(5)./long.*abs(xx));
-    dco
+   % dco
     %calcul des derivees selon chacune des composantes
     pr=zeros(size(xx));
     for ii=1:nb_comp

@@ -30,9 +30,7 @@ for ii=1:ns
         
         %matrice des derivees secondes
         rci(dim*ii-dim+1:dim*ii,dim*jj-dim+1:dim*jj)=-ddev;
-        tiragesn(ii,:)-tiragesn(jj,:)
-        ddev
-        meta.para.val
+
         
     end
 end

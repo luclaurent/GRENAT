@@ -3,19 +3,28 @@
 
 function [out,infos]=norm_denorm(in,infos)
 
+% nombre d'echantillons
+nbs=size(in,1);
 
-%calcul des moyennes et des ecarts type
-    moy_i=mean(in)
-    std_i=std(in)
-
-    
+%normalisation
+if nargin==1
+    %calcul des moyennes et des ecarts type
+    moy_i=mean(in);
+    std_i=std(in);
     %test pour verification ecart type
     ind=find(std_i==0);
     if ~isempty(ind)
         std_i(ind)=1;
     end
     
-    %normalisation
-    evaln=(eval-repmat(moy_e,nbs,1))./repmat(std_e,nbs,1);
-    tiragesn=(tirages-repmat(moy_t,nbs,1))./repmat(std_t,nbs,1);
-    gradn=grad.*repmat(std_t,nbs,1)/std_e;
+    out=(in-repmat(moy_i,nbs,1))./repmat(std_i,nbs,1);
+    if nargout==2
+        infos.moy=moy_i;
+        infos.std=std_i;
+    end
+    %denormalisation
+elseif nargin==2
+    out=repmat(infos.std,nbs,1).*in+repmat(infos.moy,nbs,1);
+else
+    error('Mauvais nombre de parametres d''entrée (cf. norm_denorm.m)')
+end

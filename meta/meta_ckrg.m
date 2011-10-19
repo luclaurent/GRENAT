@@ -16,38 +16,22 @@ nbv=size(tirages,2);
 
 %Normalisation
 if meta.norm
-    %calcul des moyennes et des ecarts type
-    moy_e=mean(eval)
-    std_e=std(eval)
-    moy_t=mean(tirages)
-    std_t=std(tirages)
-    
-    %test pour verification ecart type
-    ind=find(std_e==0);
-    if ~isempty(ind)
-        std_e(ind)=1;
-    end
-    ind=find(std_t==0);
-    if ~isempty(ind)
-        std_t(ind)=1;
-    end
-    
-    %normalisation
-    repmat(moy_t,nbs,1)
-    evaln=(eval-repmat(moy_e,nbs,1))./repmat(std_e,nbs,1);
-    tiragesn=(tirages-repmat(moy_t,nbs,1))./repmat(std_t,nbs,1);
-    gradn=grad.*repmat(std_t,nbs,1)/std_e;
-    
-    tirages
-    tiragesn
-    
+    %normalisation des donnees
+    [evaln,infos_e]=norm_denorm(eval);
+    [tiragesn,infos_t]=norm_denorm(tirages);
+    infos.std_e=infos_e.std;std_e=infos_e.std;
+    infos.moy_e=infos_e.moy;moy_e=infos_e.moy;
+    infos.std_t=infos_t.std;std_t=infos_t.std;
+    infos.moy_t=infos_t.moy;moy_t=infos_t.moy;
+    gradn=norm_denorm_g(grad,'norm',infos); clear infos
     
     %sauvegarde des calculs
-    nkrg.norm.moy_eval=moy_e;
-    nkrg.norm.std_eval=std_e;
-    nkrg.norm.moy_tirages=moy_t;
-    nkrg.norm.std_tirages=std_t;
+    nkrg.norm.moy_eval=infos_e.moy;
+    nkrg.norm.std_eval=infos_e.std;
+    nkrg.norm.moy_tirages=infos_t.moy;
+    nkrg.norm.std_tirages=infos_t.std;
     nkrg.norm.on=true;
+    clear infos_e infos_t
 else
     nkrg.norm.on=false;
     evaln=eval;
@@ -55,6 +39,8 @@ else
     gradn=grad;
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %rangement gradient
 der=zeros(nbv*nbs,1);
 for ii=1:nbs
@@ -62,11 +48,12 @@ for ii=1:nbs
         der(nbv*ii-nbv+jj)=gradn(ii,jj);
     end
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation du vecteur d'evaluation
 y=vertcat(evaln,der) ;
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation matrice de conception
 if meta.deg==0
     p=1;
@@ -85,23 +72,29 @@ for ii=1:nbs
     [fc(ii,:),fc(p+(1:nbv),:)]=feval(fct,tiragesn(ii,:));
     p=p+nbv;
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
+%(si on saouhaite avoir les valeurs de la log-vraisemblance en fonction des
+%paramètres
 if meta.para.estim&&meta.para.aff_likelihood
     val_para=linspace(meta.para.min,meta.para.max,30);
     
-    if meta.para.aniso&&nbv>1
+    %dans le cas ou on considere de l'anisotropie (et si on a 2
+    %variable de conception)
+    if meta.para.aniso&&nbv==21
+        %on genere la grille d'étude
         [val_X,val_Y]=meshgrid(val_para,val_para);
-        
+        %initialisation matrice de stockage des valeurs de la
+        %log-vraisemblance
         val_lik=zeros(size(val_X));
-        val_cond=zeros(size(val_X));
         for itli=1:size(val_X,1)*size(val_X,2)
+            %calcul de la log-vraisemblance et stockage
             [val_lik(itli)]=bloc_ckrg(tiragesn,nbs,fc,y,meta,std_e,[val_X(itli) val_Y(itli)]);
-            %val_cond(itli)=kk.cond;
-            
+            %val_cond(itli)=kk.cond;            
         end
         
+        %trace log-vraisemblance
         figure;
         [C,h]=contourf(val_X,val_Y,val_lik);
         text_handle = clabel(C,h);
@@ -109,50 +102,51 @@ if meta.para.estim&&meta.para.aff_likelihood
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         title('Evolution de la log-vraisemblance');
+        %stockage de la figure au format LaTeX/TikZ
         matlab2tikz([aff.doss '/logli.tex'])
-        %         figure;
-        %         [C,h]=contourf(val_X,val_Y,val_cond);
-        %         text_handle = clabel(C,h);
-        %         set(text_handle,'BackgroundColor',[1 1 .6],...
-        %             'Edgecolor',[.7 .7 .7])
-        %         set(h,'LineWidth',2)
-        %         title('Evolution du conditionnement');
         
+    % en 1D    
     else
+        %initialisation matrice de stockage des valeurs de la
+        %log-vraisemblance
         val_lik=zeros(1,length(val_para));
         for itli=1:length(val_para)
+            %calcul de la log-vraisemblance et stockage
             [val_lik(itli)]=bloc_ckrg(tiragesn,nbs,fc,y,meta,std_e,val_para(itli));
             % val_cond(itli)=kk.cond;
         end
-        ss=[val_para' val_lik'];
+        
+        %stockage log-vraisemblance dans un fichier .dat
+        ss=[val_para' val_lik'];        
         save([aff.doss '/logli.dat'],'ss','-ascii');
+        
+        %trace log-vraisemblance
         figure;
         plot(val_para,val_lik);
         title('Evolution de la log-vraisemblance');
-        %         figure;
-        %         plot(val_para,val_cond);
-        %         title('Evolution du conditionnement');
+        
     end
+    
+    %stocke les courbes (si actif)
     if aff.save
         fich=save_aff('fig_likelihood',aff.doss);
         if aff.tex
             fid=fopen([aff.doss '/fig.tex'],'a+');
             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,'Vraisemblance',fich);
-            %fprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
         end
     end
 end
-%%%%%%%%%%%%%%%%%%%%%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Construction des differents elements avec ou sans estimation des
 %%parametres
 if meta.para.estim
     fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
     %minimisation de la log-vraisemblance
     switch meta.para.method
-        case 'simplex'  %methode du simplexe
-        case 'fminbnd'
+        case 'simplex'  %methode du simplexe       
+        case 'fminbnd'	%utilisation fminbnd 
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;
             %declaration de la fonction a minimiser
@@ -171,7 +165,7 @@ if meta.para.estim
             nkrg.estim_para.val=x;
             meta.para.val=x;
             fprintf('Valeur de la longueur de correlation %6.4f\n',x);
-        case 'fmincon'
+        case 'fmincon'	%utilisation fmincon
             %anisotropie
             if meta.para.aniso
                 nb_para=nbv;
@@ -201,8 +195,7 @@ if meta.para.estim
                 try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
                 catch exception
-                    throw(exception);
-                    
+                    throw(exception);                    
                     exitflag=1;
                 end
                 %arret minimisation
@@ -213,7 +206,9 @@ if meta.para.estim
                 end
             end
             
+            %stockage valeur paramètres obtenue par minimisation
             meta.para.val=x;
+            %affichage des valeurs des longueurs de corrélation
             if meta.norm
                 meta.para.val_denorm=x.*std_t+moy_t;
                 fprintf('Valeur(s) longueur(s) de correlation');
@@ -228,11 +223,13 @@ if meta.para.estim
             error('Strategie de minimisation non prise en charge');
     end
 end
-
-%construction des blocs de krigeage finaux
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%construction des blocs de krigeage finaux tenant compte des longueurs de
+%corrélation obtenues par minimisation
 [lilog,krg]=bloc_ckrg(tiragesn,nbs,fc,y,meta,std_e);
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %sauvegarde informations
 krg=mergestruct(nkrg,krg);
 krg.fc=fc;
@@ -243,9 +240,8 @@ krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.para=meta.para;
 krg.con=size(tirages,2);
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;
 krg.tps=tps_stop-tps_start;
 fprintf('\nExecution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);

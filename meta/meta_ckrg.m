@@ -199,10 +199,6 @@ if meta.para.estim
                 try
                     [x,fval,exitflag,output,lambda] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options);
                 catch exception
-<<<<<<< HEAD
-                    throw(exception);                    
-                    exitflag=1;
-=======
                     text='undefined at initial point';
                     [tt,ss,ee]=regexp(exception.message,[text],'match','start','end');
                     
@@ -232,7 +228,6 @@ if meta.para.estim
                         throw(exception);
                         exitflag=1;
                     end
->>>>>>> master
                 end
                 %arret minimisation
                 if exitflag==1||exitflag==0||exitflag==2

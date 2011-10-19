@@ -35,7 +35,7 @@ aff.nbele=10;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=4;
+doe.nb_samples=30;
 
 % Parametrage du metamodele
 deg=0;
@@ -87,12 +87,19 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
+%valeur par défaut
 aff.on=true;
 aff.newfig=true;
 aff.ic.on=true;
-figure;
+%valeurs chargees
+if doe.dim_pb>2
+    aff.on=false;
+    aff.ic.on=false;
+end
+
 %subplot(3,3,1)
-if aff.ic.on
+if aff.ic.on  
+    figure;
     aff.rendu=true;
     aff.titre=['Intervalle de confiance IC' aff.ic.type]; 
     switch aff.ic.type

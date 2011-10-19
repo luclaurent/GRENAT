@@ -108,19 +108,38 @@ if nb_var==1
             
     end
     
-    % en dimension 2, les points ou l'on souhaite evaluer le metamodele se
+    % en dimension ou plus, les points ou l'on souhaite evaluer le metamodele se
     % presentent sous forme d'un vecteur de matrices
 elseif nb_var>=2
-    Z.GR1=zeros(dim_ev([1,2]));
-    Z.GR2=zeros(dim_ev([1,2]));
+    Z.GR=zeros(dim_ev(1),dim_ev(2),nb_var);
+    if meta.verif
+        Zverif=zeros(nb_val,1);varverif=zeros(nb_val,1);
+        GZverif=zeros(nb_val,nb_var);
+    end
     switch meta.type
         case 'CKRG'
             %% Evaluation du metamodele de CoKrigeage
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [Z.Z(jj,kk),G,var(jj,kk)]=eval_ckrg(points(jj,kk,:),tirages,ckrg);
-                    Z.GR1(jj,kk)=G(1);
-                    Z.GR2(jj,kk)=G(2);
+                    Z.GR(jj,kk,:)=G;
+                end
+            end
+            %% verification interpolation
+            if meta.verif
+                for jj=1:size(tirages,1)
+                    [Zverif(jj),G,varverif(jj)]=eval_ckrg(tirages(jj,:),tirages,ckrg);
+                    GZverif(jj,:)=G;
+                end
+                diffZ=Zverif-eval;
+                diffGZ=GZverif-grad;
+                if ~isempty(find(diffZ>1e-7))
+                    fprintf('pb d''interpolation (eval) CKRG\n')
+                    diffZ
+                end
+                if ~isempty(find(diffGZ>1e-7))
+                    fprintf('pb d''interpolation (grad) CKRG\n')
+                    diffGZ
                 end
             end
         case 'KRG'
@@ -130,6 +149,17 @@ elseif nb_var>=2
                     [Z.Z(jj,kk),G,var(jj,kk)]=eval_krg(points(jj,kk,:),tirages,krg);
                     Z.GR1(jj,kk)=G(1);
                     Z.GR2(jj,kk)=G(2);
+                end
+            end
+            %% verification interpolation
+            if meta.verif
+                for jj=1:size(tirages,1)
+                    [Zverif(jj),G,varverif(jj)]=eval_ckrg(tirages(jj,:),tirages,ckrg);
+                end
+                diffZ=Zverif-eval;
+                if ~isempty(find(diffZ>1e-7))
+                    fprintf('pb d''interpolation (eval) CKRG\n')
+                    diffZ
                 end
             end
         case 'DACE'

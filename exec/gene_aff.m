@@ -28,9 +28,6 @@ else
     
     %reorganisation grille
     XY=zeros(size(grid,1),1,dim_esp);
-    size(XY)
-    size(grid)
-    
     for ii=1:dim_esp
         XY(:,:,ii)=grid(:,ii);
     end

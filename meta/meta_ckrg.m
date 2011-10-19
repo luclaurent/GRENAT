@@ -17,8 +17,8 @@ nbv=size(tirages,2);
 %Normalisation
 if meta.norm
     %normalisation des donnees
-    [evaln,infos_e]=norm_denorm(eval);
-    [tiragesn,infos_t]=norm_denorm(tirages);
+    [evaln,infos_e]=norm_denorm(eval,'norm');
+    [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     infos.std_e=infos_e.std;std_e=infos_e.std;
     infos.moy_e=infos_e.moy;moy_e=infos_e.moy;
     infos.std_t=infos_t.std;std_t=infos_t.std;
@@ -82,7 +82,7 @@ if meta.para.estim&&meta.para.aff_likelihood
     
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
-    if meta.para.aniso&&nbv==21
+    if meta.para.aniso&&nbv==2
         %on genere la grille d'étude
         [val_X,val_Y]=meshgrid(val_para,val_para);
         %initialisation matrice de stockage des valeurs de la
@@ -106,7 +106,7 @@ if meta.para.estim&&meta.para.aff_likelihood
         matlab2tikz([aff.doss '/logli.tex'])
         
     % en 1D    
-    else
+    elseif nbv==1
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_lik=zeros(1,length(val_para));
@@ -128,7 +128,7 @@ if meta.para.estim&&meta.para.aff_likelihood
     end
     
     %stocke les courbes (si actif)
-    if aff.save
+    if aff.save&&(nbv<=2)
         fich=save_aff('fig_likelihood',aff.doss);
         if aff.tex
             fid=fopen([aff.doss '/fig.tex'],'a+');

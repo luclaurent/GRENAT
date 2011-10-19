@@ -60,7 +60,8 @@ elseif size(tirages,2)==2
         grille_Y=grille(:,2);
     end
 else
-    error('Mauvaise dimension de l espace de conception');
+    fprintf('Aucun affichage possible avec ce nombre de variables\n');
+    aff.on=false;
 end
 
 %mise en forme des gradients
@@ -298,6 +299,6 @@ if aff.on
     end
    
 
-    
+    hold off
 end
-hold off
+

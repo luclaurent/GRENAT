@@ -9,19 +9,23 @@ if nargout>=2
 else
     grad=false;
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 X=U(:)';    %correction (changement type d'element)
 dim_x=size(X,1);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
 if krg.norm.on
-    mat_moyt=repmat(krg.norm.moy_tirages,dim_x,1);
-    mat_stdt=repmat(krg.norm.std_tirages,dim_x,1);
-    X=(X-mat_moyt)./mat_stdt;
-    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./...
-        repmat(krg.norm.std_tirages,krg.dim,1);
+    infos.moy=krg.norm.moy_tirages;
+    infos.std=krg.norm.std_tirages;
+    X=norm_denorm(X,'norm',infos);
+    tirages=norm_denorm(tirages,'norm',infos);
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
 %vecteur de correlation aux points d'evaluations et matrice de correlation
 %derivee
@@ -29,7 +33,8 @@ rr=zeros(krg.dim*(krg.con+1),1);
 if grad
     jr=zeros(krg.dim*(krg.con+1),krg.con);
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %distance du point d'evaluation aux sites obtenus par DOE
 dist=repmat(X,krg.dim,1)-tirages;
 
@@ -39,7 +44,7 @@ if grad  %si calcul des gradients
     rr(krg.dim+1:krg.dim*(krg.con+1))=-reshape(dev',1,krg.dim*krg.con);
 
     %derivee du vecteur de correlation aux points d'evaluations
-    jr(1:krg.dim,:)=dev;
+    jr(1:krg.dim,:)=dev;  % a debugger
 
      % derivees secondes     
      mat_der=zeros(krg.con,krg.dim*krg.con);
@@ -56,15 +61,16 @@ else %sinon
     rr(1:krg.dim)=ev;
     rr(krg.dim+1:krg.dim*(krg.con+1))=dev;
 end
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %matrice de regression aux points d'evaluations
 if grad    
     [ff,jf]=feval(krg.reg,X);
 else
     ff=feval(krg.reg,X);
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluation du metamodele au point X
 %a reecrire pour passage au krigeage universel
 Z=krg.beta+rr'*krg.gamma;
@@ -72,7 +78,8 @@ Z=krg.beta+rr'*krg.gamma;
 if grad 
     GZ=jf'.*krg.beta+jr'*krg.gamma;
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (MSE) (Koelher & Owen 1996)
 if nargout ==3
     warning off all
@@ -82,12 +89,17 @@ if nargout ==3
         - rr'*rcrr);
     warning on all
 end
-
-%normalisation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%denormalisation
 if krg.norm.on
-    Z=repmat(krg.norm.moy_eval,dim_x,1)+krg.norm.std_eval.*Z;
+    infos.moy=krg.norm.moy_eval;
+    infos.std=krg.norm.std_eval;    
+    Z=norm_denorm(Z,'denorm',infos);
     if grad
-        GZ=krg.norm.std_eval.*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
+        infos.std_e=krg.norm.std_eval;
+        infos.std_t=krg.norm.std_tirages;
+        GZ=norm_denorm_g(GZ','denorm',infos); clear infos
         GZ=GZ';
     end
 end

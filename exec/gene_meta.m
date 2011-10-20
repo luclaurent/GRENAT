@@ -154,11 +154,11 @@ elseif nb_var>=2
             %% verification interpolation
             if meta.verif
                 for jj=1:size(tirages,1)
-                    [Zverif(jj),G,varverif(jj)]=eval_ckrg(tirages(jj,:),tirages,ckrg);
+                    [Zverif(jj),G,varverif(jj)]=eval_krg(tirages(jj,:),tirages,krg);
                 end
                 diffZ=Zverif-eval;
                 if ~isempty(find(diffZ>1e-7))
-                    fprintf('pb d''interpolation (eval) CKRG\n')
+                    fprintf('pb d''interpolation (eval) KRG\n')
                     diffZ
                 end
             end

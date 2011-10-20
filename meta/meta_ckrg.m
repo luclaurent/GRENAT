@@ -16,6 +16,7 @@ nbv=size(tirages,2);
 
 %Normalisation
 if meta.norm
+    disp('Normalisation');
     %normalisation des donnees
     [evaln,infos_e]=norm_denorm(eval,'norm');
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
@@ -76,7 +77,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 %(si on saouhaite avoir les valeurs de la log-vraisemblance en fonction des
-%paramètres
+%paramètres)
 if meta.para.estim&&meta.para.aff_likelihood
     val_para=linspace(meta.para.min,meta.para.max,30);
     
@@ -106,7 +107,7 @@ if meta.para.estim&&meta.para.aff_likelihood
         matlab2tikz([aff.doss '/logli.tex'])
         
     % en 1D    
-    elseif nbv==1
+    elseif ~meta.para.aniso||nbv==1
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_lik=zeros(1,length(val_para));
@@ -236,6 +237,7 @@ if meta.para.estim
                     nkrg.estim_para.val=x;
                 end
             end
+            warning off all
             
             %stockage valeur paramètres obtenue par minimisation
             meta.para.val=x;

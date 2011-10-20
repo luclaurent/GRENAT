@@ -1,6 +1,7 @@
 %fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
 %modifs le 03/11/2010  (reecriture en vue d'accelerer)
+%modifs le 19/10/2011  (passage nD)
 
 function [Z,GZ,var]=eval_krg(U,tirages,krg)
 
@@ -10,19 +11,21 @@ if nargout>=2
 else
     grad=false;
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  X=U(:)';    %correction (changement type d'element)
  dim_x=size(X,1);
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
 if krg.norm.on
-    mat_moyt=repmat(krg.norm.moy_tirages,dim_x,1);
-    mat_stdt=repmat(krg.norm.std_tirages,dim_x,1);
-    X=(X-mat_moyt)./mat_stdt;
-    tirages=(tirages-repmat(krg.norm.moy_tirages,krg.dim,1))./...
-        repmat(krg.norm.std_tirages,krg.dim,1);
+    infos.moy=krg.norm.moy_tirages;
+    infos.std=krg.norm.std_tirages;
+    X=norm_denorm(X,'norm',infos);
+    tirages=norm_denorm(tirages,'norm',infos);
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
 %vecteur de correlation aux points d'evaluations et vecteur de correlation
 %derive
@@ -30,7 +33,8 @@ rr=zeros(krg.dim,1);
 if grad
     jr=zeros(krg.dim,krg.con);
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %distance du point d'evaluation aux sites obtenus par DOE
 dist=repmat(X,krg.dim,1)-tirages;
 
@@ -39,15 +43,16 @@ if grad  %si calcul des gradients
 else %sinon
     rr=feval(krg.corr,dist,krg.para.val);
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %matrice de regression aux points d'evaluations
 if grad
     [ff,jf]=feval(krg.reg,X);
 else
     ff=feval(krg.reg,X);
 end
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluation du metamodele au point X
 Z=ff*krg.beta+rr'*krg.gamma;
 
@@ -55,8 +60,8 @@ if grad
 %%verif en 2D+
     GZ=jf'*krg.beta+jr'*krg.gamma;
 end
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
 %2004)
 if nargout ==3
@@ -67,12 +72,17 @@ if nargout ==3
     warning on all;
 
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
 if krg.norm.on
-    Z=repmat(krg.norm.moy_eval,dim_x,1)+krg.norm.std_eval.*Z;
+    infos.moy=krg.norm.moy_eval;
+    infos.std=krg.norm.std_eval;    
+    Z=norm_denorm(Z,'denorm',infos);
     if grad
-        GZ=krg.norm.std_eval.*GZ'./repmat(krg.norm.std_tirages,dim_x,1);
+        infos.std_e=krg.norm.std_eval;
+        infos.std_t=krg.norm.std_tirages;
+        GZ=norm_denorm_g(GZ','denorm',infos); clear infos
         GZ=GZ';
     end
 end

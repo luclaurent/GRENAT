@@ -21,6 +21,10 @@ if meta.norm
     %normalisation des donnees
     [evaln,infos_e]=norm_denorm(eval,'norm');
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
+    std_e=infos_e.std;
+    std_t=infos_t.std;
+    moy_e=infos_e.moy;
+    moy_t=infos_t.moy;
     
     %sauvegarde des calculs
     nkrg.norm.moy_eval=infos_e.moy;

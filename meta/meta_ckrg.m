@@ -269,6 +269,7 @@ krg.fc=fc;
 krg.y=y;
 krg.reg=fct;
 krg.dim=nbs;
+krg.lilog=lilog;
 krg.corr=meta.corr;
 krg.deg=meta.deg;
 krg.para=meta.para;

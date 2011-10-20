@@ -1,9 +1,10 @@
 %fonction assurant l'evaluation du metamodele de krigeage
 %L. LAURENT -- 11/05/2010 -- L. LAURENT
+%modifs le 19/10/2011  (passage nD)
 
 function [Z,GZ,var]=eval_ckrg(U,tirages,krg)
 
-
+%calcul ou non des gradients (en fonction du nombre de variables de sortie)
 if nargout>=2
     grad=true;
 else

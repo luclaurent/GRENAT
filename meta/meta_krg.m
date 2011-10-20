@@ -131,7 +131,31 @@ if meta.para.estim
     %minimisation de la log-vraisemblance
     switch meta.para.method
         case 'simplex'  %methode du simplexe
-            
+            %anisotropie
+            if meta.para.aniso
+                nb_para=nbv;
+            else
+                nb_para=1;
+            end
+            %definition des bornes de l'espace de recherche
+            lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
+            %definition valeur de depart de la variable
+            x0=lb+1/5*(ub-lb);
+            fun=@(para)bloc_krg(tiragesn,nbs,fc,y,meta,std_e,para);
+            warning off all
+            [x, fmax, nf] = nmsmax(fun, x0, [], []);
+            warning on all
+            %stockage valeur paramètres obtenue par minimisation
+            meta.para.val=x;
+            if meta.norm
+                meta.para.val_denorm=x.*std_t+moy_t;
+                fprintf('Valeur(s) longueur(s) de correlation');
+                fprintf(' %6.4f',meta.para.val_denorm);
+                fprintf('\n');
+            end
+            fprintf('Valeur(s) longueur(s) de correlation (brut)');
+            fprintf(' %6.4f',x);
+            fprintf('\n');
         case 'fminbnd'
             %definition des bornes de l'espace de recherche
             lb=meta.para.min;ub=meta.para.max;

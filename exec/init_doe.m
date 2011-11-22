@@ -58,6 +58,12 @@ switch fct
     case 'sumsquare'
         val=10;
         esp=val*[-ones(dim,1),ones(dim,1)];
+    case 'null'
+        val=5;
+        esp=val*[-ones(dim,1),ones(dim,1)];
+    case 'cste'
+        val=5;
+        esp=val*[-ones(dim,1),ones(dim,1)];
 end
 
 

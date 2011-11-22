@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='cste'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -29,20 +29,20 @@ doe.dim_pb=2;
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=5;
+aff.nbele=50;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
 doe.nb_samples=10;
 
 % Parametrage du metamodele
 deg=0;
-long=[0.11 20];
+long=[0.1 20];
 %long=3;
 corr='matern52';
-mod='KRG';
+mod='CKRG';
 
 meta=init_meta(mod,deg,long,corr);
 

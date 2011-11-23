@@ -14,21 +14,51 @@ nb_var=size(tirages,2);
 nb_val=size(tirages,1);
 dim_ev=size(points);
 
-var=zeros(dim_ev([1 2]));
-Z.Z=zeros(dim_ev([1 2]));
+%prise en compte gradients ou pas
+if isempty(grad);pec_grad='Non';else;pec_grad='Oui';end
 
+var=zeros(dim_ev([1 2]));
+rep=zeros(dim_ev([1 2]));
+if isempty(grad)
+	GR=zeros(dim_ev(1),dim_ev(2),nb_var);
+end
+
+%%%%%%% Generation de divers metamodeles
+%initialisation stockage
+ret=cell(length(meta.type),1);
+Z=ret;
+% generation des metamodeles
+num_meta=1;
+for type=meta.type
+ret{num_meta}.type=type;
 
 %construction metamodele
-switch meta.type
+switch type
+    %%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
+    case 'SWF'
+    	%% construction du metamodele 'Shepard Weighting Functions'
+    	fprintf('\n%s\n',[textd 'Fonctions Shepard (SWF)' textf]);
+        %affichage informations
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
+        fprintf('Gradients: %s\n\n',pec_grad);
+        swf=meta_swf(tirages,eval,grad,meta);
+        ret{num_meta}=swf;
+    	%%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
+    case 'RBF'
+    	%% construction du metamodele 'RBF/HBRBF' (Radial Basis Functions and Hermite-Birkhoff Radial Basis Functions)
+    	
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     case 'CKRG'
         %% Construction du metamodele de CoKrigeage
         fprintf('\n%s\n',[textd 'CoKrigeage' textf]);
         %affichage informations
-        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
+        fprintf('Gradients: %s\n\n',pec_grad);
         ckrg=meta_ckrg(tirages,eval,grad,meta);
-        ret=ckrg;
+        ret{num_meta}=ckrg;
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'KRG'
@@ -37,69 +67,90 @@ switch meta.type
         %affichage informations
         fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
         krg=meta_krg(tirages,eval,meta);
-        ret=krg;
+        ret{num_meta}=krg;
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'DACE'
         %% Construction du metamodele de Krigeage (DACE)
         fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
         %affichage informations
-        fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
+        fprintf('Gradients: %s\n\n',pec_grad);
         [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.para);
-        ret=dace;
+        ret{num_meta}=dace;
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'PRG'
+    	ite_prg=1;
+    	ret{num_meta}.prg=length(meta.deg);
         for degre=meta.deg
             %% Construction du metamodele de Regression polynomiale
             fprintf('\n%s\n',[textd  'Regression polynomiale' textf]);
+            fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
+        	fprintf('Gradients: %s\n\n',pec_grad);
             dd=['-- Degre du polynome \n',num2str(degre)];
             fprintf(dd);
             [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
-            ret=prg;
+            ret{num_meta}.prg{ite_prg}=prg;
+            ite_prg=ite_prg+1;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'ILIN'
         %% Construction du metamodele d'interpolation lineaire
         fprintf('\n%s\n',[textd  'Interpolation par fonction de base ' textf]);
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
+        fprintf('Gradients: %s\n\n',pec_grad);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'ILAG'
         %% interpolation par fonction de base linéaire
         fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
+        fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
+        fprintf('Gradients: %s\n\n',pec_grad);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
 end
 
 % en dimension 1, les points ou l'on souhaite evaluer le metamodele se
 % presentent sous forme d'une matrice
-if nb_var==1
-    Z.GZ=zeros(dim_ev);
-    switch meta.type
+	if nb_var==1 
+	 
+	switch type
+	 %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
+		case 'SWF'
+		%%	Evaluation du metamodele 'Shepard Weighting Functions'
+		for jj=1:length(points) 
+	            [rep(jj),G,var(jj)]=eval_swf(points(jj),swf);
+            	GR(jj)=G; 
+            end 
+		case 'RBF'
+		%%	Evaluation du metamodele 'RBF/HBRBF'
+		
+         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
-        case 'CKRG'
-            %% Evaluation du metamodele de CoKrigeage
-            for jj=1:length(points)
-                [Z.Z(jj),G,var(jj)]=eval_ckrg(points(jj),tirages,ckrg);
-                Z.GZ(jj)=G;
+	        case 'CKRG'
+            %%     Evaluation du metamodele de CoKrigeage
+	            for jj=1:length(points) 
+	            [rep(jj),G,var(jj)]=eval_ckrg(points(jj),tirages,ckrg);
+            	GR(jj)=G; 
             end
-            %%%%%%%%=================================%%%%%%%%
-            %%%%%%%%=================================%%%%%%%%
-        case 'KRG'
-            %% Evaluation du metamodele de Krigeage
-            for jj=1:length(points)
-                [Z.Z(jj),G,var(jj)]=eval_krg(points(jj),tirages,krg);
-                Z.GZ(jj)=G;
+             %%%%%%%%=================================%%%%%%%%
+        %%%%%%%%=================================%%%%%%%%
+	        case 'KRG'
+            %%     Evaluation du metamodele de Krigeage
+	            for jj=1:length(points) 
+	            [rep(jj),G,var(jj)]=eval_krg(points(jj),tirages,krg);
+            	GR(jj)=G; 
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:length(points)
-                [Z.Z(jj),G,var(jj)]=predictor(points(jj),dace.model);
-                Z.GZ(jj)=G;
+                [rep(jj),G,var(jj)]=predictor(points(jj),dace.model);
+                GR(jj)=G;
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -107,10 +158,10 @@ if nb_var==1
             for degre=meta.deg
                 %% Evaluation du metamodele de Regression
                 for jj=1:length(points)
-                    Z.Z(jj)=eval_prg(prg.coef,points(jj,1),points(jj,2),degre);
+                    rep(jj)=eval_prg(prg.coef,points(jj,1),points(jj,2),degre);
                     %evaluation des gradients du MT
                     [GRG1,GRG2]=evald_prg(prg.coef,points(jj,1),points(jj,2),degre);
-                    Z.GZ(jj)=[GRG1 GRG2];
+                    GR(jj)=[GRG1 GRG2];
                 end
             end
             %%%%%%%%=================================%%%%%%%%
@@ -119,7 +170,7 @@ if nb_var==1
             %% interpolation par fonction de base linéaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction de base linéaire' textf]);
             for jj=1:length(points)
-                [Z.Z(jj),Z.GZ(jj)]=interp_lin(points(jj),tirages,eval);
+                [rep(jj),GR(jj)]=interp_lin(points(jj),tirages,eval);
             end
             ret=[];
             %%%%%%%%=================================%%%%%%%%
@@ -128,7 +179,7 @@ if nb_var==1
             %% interpolation par fonction polynomiale de Lagrange
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
             for jj=1:length(points)
-                [Z.Z(jj),Z.GZ(jj)]=interp_lag(points(jj),tirages,eval);
+                [rep(jj),GR(jj)]=interp_lag(points(jj),tirages,eval);
             end
             ret=[];
             %%%%%%%%=================================%%%%%%%%
@@ -139,7 +190,6 @@ if nb_var==1
     % en dimension ou plus, les points ou l'on souhaite evaluer le metamodele se
     % presentent sous forme d'un vecteur de matrices
 elseif nb_var>=2
-    Z.GR=zeros(dim_ev(1),dim_ev(2),nb_var);
     if meta.verif
         Zverif=zeros(nb_val,1);varverif=zeros(nb_val,1);
         GZverif=zeros(nb_val,nb_var);
@@ -151,8 +201,8 @@ elseif nb_var>=2
             %% Evaluation du metamodele de CoKrigeage
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
-                    [Z.Z(jj,kk),G,var(jj,kk)]=eval_ckrg(points(jj,kk,:),tirages,ckrg);
-                    Z.GR(jj,kk,:)=G;
+                    [rep(jj,kk),G,var(jj,kk)]=eval_ckrg(points(jj,kk,:),tirages,ckrg);
+                    GR(jj,kk,:)=G;
                 end
             end
             %% verification interpolation
@@ -178,8 +228,8 @@ elseif nb_var>=2
             %% Evaluation du metamodele de Krigeage
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
-                    [Z.Z(jj,kk),G,var(jj,kk)]=eval_krg(points(jj,kk,:),tirages,krg);
-                    Z.GR(jj,kk,:)=G;
+                    [rep(jj,kk),G,var(jj,kk)]=eval_krg(points(jj,kk,:),tirages,krg);
+                    GR(jj,kk,:)=G;
                 end
             end
             %% verification interpolation
@@ -199,9 +249,9 @@ elseif nb_var>=2
             %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
-                    [Z.Z(jj,kk),G,var(jj,kk)]=predictor(points(jj,kk,:),dace.model);
-                    Z.GR1(jj,kk)=G(1);
-                    Z.GR2(jj,kk)=G(2);
+                    [rep(jj,kk),G,var(jj,kk)]=predictor(points(jj,kk,:),dace.model);
+                    GR(jj,kk)=G(1);
+                    GR(jj,kk)=G(2);
                 end
             end
             %%%%%%%%=================================%%%%%%%%
@@ -211,11 +261,11 @@ elseif nb_var>=2
                 %% Evaluation du metamodele de Regression
                 for jj=1:length(points)
                     for kk=1:size(points,2)
-                        Z.Z(jj,kk)=eval_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),degre);
+                        rep(jj,kk)=eval_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),degre);
                         %evaluation des gradients du MT
                         [GRG1,GRG2]=evald_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),degre);
-                        Z.GR1(jj,kk)=GRG1;
-                        Z.GR1(jj,kk)=GRG2;
+                        GR(jj,kk)=GRG1;
+                        GR(jj,kk)=GRG2;
                     end
                 end
             end
@@ -226,9 +276,9 @@ elseif nb_var>=2
             fprintf('\n%s\n',[textd  'Interpolation par fonction de base linéaire' textf]);
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
-                    [Z.Z(jj,kk),G]=interp_lin(points(jj,kk,:),tirages,eval);
-                    Z.GR1(jj,kk)=G(1);
-                    Z.GR2(jj,kk)=G(2);
+                    [rep(jj,kk),G]=interp_lin(points(jj,kk,:),tirages,eval);
+                    GR1(jj,kk)=G(1);
+                    GR2(jj,kk)=G(2);
                 end
             end
             ret=[];
@@ -239,15 +289,23 @@ elseif nb_var>=2
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
-                    [Z.Z(jj,kk),G]=interp_lag(points(jj,kk,:),tirages,eval);
-                    Z.GR1(jj,kk)=G(1);
-                    Z.GR2(jj,kk)=G(2);
+                    [rep(jj,kk),G]=interp_lag(points(jj,kk,:),tirages,eval);
+                    GR1(jj,kk)=G(1);
+                    GR2(jj,kk)=G(2);
                 end
             end
             ret=[];
     end
 else
     error('dimension non encore prise en charge');
+end
+
+%Stockage des evaluations
+Z{num_meta}.Z=rep;
+Z{num_meta}.GZ=GR;
+Z{num_meta}.var=var;
+
+num_meta=num_meta+1;
 end
 
 %Variance de prediction

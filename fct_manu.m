@@ -1,4 +1,4 @@
-function [fct,dfct]=fct(x)
+function [fct,dfct]=fct_manu(x)
 
 
 %fct=15*cos(x)+20;

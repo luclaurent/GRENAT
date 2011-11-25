@@ -28,7 +28,30 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Calcul des fonctions de ponderation au point considere
 if grad
-	[W,dW]=fct_swf(X,swf.tirages,swf.para);
+    [W,Wm,dW,dWm]=fct_swf(X,swf.tirages,swf.para);
 else
-	[W]=fct_swf(X,swf.tirages,swf.para);
+    [W,Wm]=fct_swf(X,swf.tirages,swf.para);
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Evaluation du metamodele et des derivees
+Z=Wm'*swf.eval;
+if grad
+    GZ=dWm'*swf.eval;
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%denormalisation
+if swf.norm.on
+    infos.moy=swf.norm.moy_eval;
+    infos.std=swf.norm.std_eval;
+    Z=norm_denorm(Z,'denorm',infos);
+    if grad
+        infos.std_e=swf.norm.std_eval;
+        infos.std_t=swf.norm.std_tirages;
+        GZ=norm_denorm_g(GZ','denorm',infos); clear infos
+        GZ=GZ';
+    end
 end

@@ -42,7 +42,7 @@ dist=repmat(X,krg.dim,1)-tirages;
 if grad  %si calcul des gradients
     [ev,dev,ddev]=feval(krg.corr,dist,krg.para.val);
     rr(1:krg.dim)=ev;  
-    rr(krg.dim+1:krg.dim*(krg.con+1))=-reshape(dev',1,krg.dim*krg.con);
+    rr(krg.dim+1:krg.dim*(krg.con+1))=reshape(dev',1,krg.dim*krg.con);
 
     %derivee du vecteur de correlation aux points d'evaluations
     jr(1:krg.dim,:)=dev;  % a debugger

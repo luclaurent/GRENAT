@@ -16,36 +16,45 @@ nbv=size(tirages,2);
 %Presence des gradients
 pec_grad=~isempty(grad);
 
-%Normalisation 
+%Normalisation
 if meta.norm
-fprintf('Normalisation\n');
-%normalisation des données
-[evaln,infos_e]=norm_denorm(eval,'norm');
+    fprintf('Normalisation\n');
+    %normalisation des données
+    [evaln,infos_e]=norm_denorm(eval,'norm');
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     infos.std_e=infos_e.std;std_e=infos_e.std;
     infos.moy_e=infos_e.moy;moy_e=infos_e.moy;
     infos.std_t=infos_t.std;std_t=infos_t.std;
     infos.moy_t=infos_t.moy;moy_t=infos_t.moy;
     if pec_grad
-    gradn=norm_denorm_g(grad,'norm',infos);
+        gradn=norm_denorm_g(grad,'norm',infos);
     end
+    %sauvegarde des calculs
+    swf.norm.moy_eval=infos_e.moy;
+    swf.norm.std_eval=infos_e.std;
+    swf.norm.moy_tirages=infos_t.moy;
+    swf.norm.std_tirages=infos_t.std;
+    swf.norm.on=true;
+    clear infos_e infos_t
     clear infos
+    swf.norm.on=true;
 else
-	swf.norm.on=false;
-	evaln=eval;
-	tiragesn=tirages;
-	gradn=grad;
+    swf.norm.on=false;
+    evaln=eval;
+    tiragesn=tirages;
+    gradn=grad;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation vecteur des tirages
 swf.tirages=tiragesn;
-    
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%creation vecteur des evaluations
+%creation vecteur des evaluations et de gradients
 swf.eval=evaln;
+swf.grad=gradn;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

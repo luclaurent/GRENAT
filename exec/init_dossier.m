@@ -27,8 +27,13 @@ else
     dossier=['results/' dossier];
 end
 
+if meta.save
 %creation du repertoire
 unix(['mkdir ' dossier]);
+else
+global aff
+aff.save=false; 	% pas de sauvegarde des traces si pas de sauvegarde
+end
 
 %date
 date.year=day(1);

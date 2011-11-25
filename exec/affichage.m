@@ -65,7 +65,7 @@ else
 end
 
 %mise en forme des gradients
-if isfield(Z,'GR')
+if isfield(Z,'GR')&&esp2d
     GR1=Z.GR(:,:,1);
     GR2=Z.GR(:,:,2);
 end
@@ -259,17 +259,24 @@ if aff.on
     elseif esp1d
         if ~isempty(aff.color)
             if ~isempty(aff.opt)
-                plot(grille,Z,aff.opt,'Color',aff.color);
+                plot(grille,Z.Z,aff.opt,'Color',aff.color);
             else
-                plot(grille,Z,'Color',aff.color);
+                plot(grille,Z.Z,'Color',aff.color);
             end
         else
             if ~isempty(aff.opt)
-                plot(grille,Z,aff.opt);
+                plot(grille,Z.Z,aff.opt);
             else
-                plot(grille,Z);
+                plot(grille,Z.Z);
             end
         end
+        %affichage des points d'evaluation
+                if aff.pts
+                    hold on
+                    plot(tirages,eval,'.','MarkerEdgeColor','k',...
+                    'MarkerFaceColor','k',...
+                    'MarkerSize',15)     
+                end
         title(aff.titre);
         xlabel(aff.xlabel);
         ylabel(aff.ylabel);

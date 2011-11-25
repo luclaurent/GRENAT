@@ -30,7 +30,7 @@ aff.nbele=40;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=30;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 deg=0;

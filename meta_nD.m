@@ -18,12 +18,12 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='sixhump'; 
+fct='manu'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 esp=[0 10];
 
 %%Definition de l'espace de conception
@@ -36,7 +36,7 @@ aff.nbele=100;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 para.deg=0;
@@ -44,9 +44,10 @@ para.long=[0.1 20];
 para.swf_para=5;
 %long=3;
 corr='matern52';
-mod='CKRG';
+mode={'SWF'};
+grad=true;
 
-meta=init_meta(mod,para,corr);
+meta=init_meta(mode,para,corr,grad);
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;

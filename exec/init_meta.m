@@ -1,7 +1,9 @@
 %% Initialisation du metamodele
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
-function meta=init_meta(type,para,corr)
+function meta=init_meta(type,para,corr,grad)
+
+meta.grad=grad; %prise en compte des gradients
 
 meta.type=type;         %type de metamodele KRG/CKRG/DACE/RBF
 meta.deg=para.deg;           %degre de la regression

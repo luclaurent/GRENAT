@@ -62,6 +62,23 @@ swf.grad=gradn;
 swf.nbs=nbs;
 swf.nbv=nbv;
 swf.para=meta.swf_para;	%rayon d'influence des fonctions de ponderation
+if pec_grad
+    tt=tirages';
+    stock=zeros(nbs*(nbv+1),1);
+    ind=1:(nbs*(nbv+1));
+    
+    rech=mod(ind,nbv+1);
+    IX=find(rech==1);
+    IXX=find(rech~=1);
+    
+    stock(IX)=tt(:);
+    swf.tir_colon=stock;    %conditionnement des tirages pour construction avec gradients
+    data=stock;
+    data(IX)=evaln;
+    data(IXX)=gradn;
+    swf.F=data;             %conditionnement des évaluations et gradients 
+    
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %fittage des parametres par CV (LOO)
@@ -70,7 +87,7 @@ swf.para=meta.swf_para;	%rayon d'influence des fonctions de ponderation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;
-krg.tps=tps_stop-tps_start;
+swf.tps=tps_stop-tps_start;
 fprintf('\nExecution preparation SWF: %6.4d s\n',tps_stop-tps_start);
 
 end

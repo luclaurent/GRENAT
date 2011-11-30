@@ -51,6 +51,7 @@ Wm=val_influ.^2./(d.^2.*sum(hh.^2));
 
 %% fonctions de ponderation moyennees
 sW=sum(W);
+sWm=sum(Wm);
 %if sW==Inf
 %Wm=zeros(size(W));
 %else
@@ -68,5 +69,5 @@ if nargout>=3
     end
     
     %% derivees fonctions de ponderation moyennees
-    dWm=(dW.*sW-W.*sum(dW,2))./sW^2;
+    dWm=(dW.*sWm-Wm.*sum(dW,2))./sW;
 end

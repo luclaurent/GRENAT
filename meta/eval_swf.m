@@ -35,7 +35,17 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Evaluation du metamodele et des derivees
-Z=Wm'*swf.eval;
+if isempty(swf.grad)
+    Z=Wm'*swf.eval;
+else
+    global swf
+    dist=repmat([1;X(:)],swf.nbs,1)-swf.tir_colon;
+    L=swf.F*dist';
+    size(L)
+    size(Wm)
+    Z=L*Wm;
+end
+    
 if grad
     GZ=dWm'*swf.eval;
 end

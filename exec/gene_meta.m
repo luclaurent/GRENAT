@@ -15,7 +15,7 @@ nb_val=size(tirages,1);
 dim_ev=size(points);
 
 %prise en compte gradients ou pas
-if isempty(grad);pec_grad='Non';else;pec_grad='Oui';end
+if isempty(grad)||meta.grad==false;pec_grad='Non';grad=[];else;pec_grad='Oui';end
 
 var=zeros(dim_ev([1 2]));
 rep=zeros(dim_ev([1 2]));

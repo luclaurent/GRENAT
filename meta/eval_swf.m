@@ -38,14 +38,18 @@ end
 if isempty(swf.grad)
     Z=Wm'*swf.eval;
 else
-    global swf
+    %vecteur distance point courant aux points échantillonnés
     dist=repmat([1;X(:)],swf.nbs,1)-swf.tir_colon;
-    L=swf.F*dist';
-    size(L)
-    size(Wm)
-    Z=L*Wm;
+    %création du vecteur de prise en compte des gradients
+    swf.L=zeros(1,swf.nbs);
+    for iter=1:swf.nbs
+        ind=(iter-1)*(swf.nbv+1)+1:iter*(swf.nbv+1);
+        swf.L(iter)=dist(ind)'*swf.F(ind);
+    end
+    %construction du metamodele basé sur les réponses et dérivées
+    Z=swf.L*Wm;
 end
-    
+
 if grad
     GZ=dWm'*swf.eval;
 end

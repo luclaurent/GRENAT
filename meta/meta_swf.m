@@ -71,7 +71,7 @@ if pec_grad
     IX=find(rech==1);
     IXX=find(rech~=1);
     
-    stock(IX)=tt(:);
+    stock(IXX)=tt(:);
     swf.tir_colon=stock;    %conditionnement des tirages pour construction avec gradients
     data=stock;
     data(IX)=evaln;

@@ -36,12 +36,12 @@ aff.nbele=100;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
 para.deg=0;
 para.long=[0.1 20];
-para.swf_para=5;
+para.swf_para=2
 %long=3;
 corr='matern52';
 mode={'SWF'};

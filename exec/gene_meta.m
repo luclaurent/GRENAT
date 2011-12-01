@@ -192,7 +192,17 @@ for type=meta.type
             Zverif=zeros(nb_val,1);varverif=zeros(nb_val,1);
             GZverif=zeros(nb_val,nb_var);
         end
-        switch meta.type
+        switch type{1}
+            %%%%%%%%=================================%%%%%%%%
+            %%%%%%%%=================================%%%%%%%%
+            case 'SWF'
+                %%	Evaluation du metamodele 'Shepard Weighting Functions'
+                for jj=1:size(points,1)
+                    for kk=1:size(points,2)
+                        [rep(jj,kk),G]=eval_swf(points(jj,kk,:),swf);
+                        GR(jj,kk,:)=G;
+                    end
+                end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
             case 'CKRG'

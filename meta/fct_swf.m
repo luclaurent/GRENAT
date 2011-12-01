@@ -12,8 +12,11 @@ function [W,Wm,dW,dWm]=fct_swf(point,tirages,para)
 type_norm='L2';	%L1,L2,Linf,Lp
 p=1.99; %si 'Lp'
 
+nbv=size(tirages,2);
+nbs=size(tirages,1);
+
 %% calcul de la distance aux tirages
-ecart=point-tirages;
+ecart=repmat(point,nbs,1)-tirages;
 switch type_norm
     case 'L1'
         d=sum(abs(ecart),2);
@@ -30,10 +33,10 @@ end
 %% calcul distance au centre de la zone d'influence
 dist=para-d;
 
-%% extraction valeurs dans la zone d'influence (construction fonctions chapeau)
-[ind]=find(dist>0);
-val_influ=zeros(size(dist));
-val_influ(ind)=dist(ind);
+%% extraction valeurs dans la zone d'influence (construction fonctions positives)
+%[ind]=find(dist>0);
+%val_influ=zeros(size(dist));
+val_influ=0.5*(dist+abs(dist));
 %val_influ=dist;
 
 %% fonctions de ponderation
@@ -65,9 +68,10 @@ sWm=sum(Wm);
 if nargout>=3
     switch type_norm
         case 'L2'
-            dW=-2*W./(para*d.^4).*ecart;
+            deri=-2*W./(para*d.^4);
+            dW=repmat(deri,1,nbv).*ecart;
     end
     
     %% derivees fonctions de ponderation moyennees
-    dWm=(dW.*sWm-Wm.*sum(dW,2))./sW;
+    dWm=(dW.*repmat(sWm,nbs,nbv)-repmat(Wm,1,nbv).*repmat(sum(dW,1),nbs,1))./sW;
 end

@@ -72,7 +72,7 @@ end
 doe.fct=fct;
 
 %definition manuelle
-if nargin==3
+if nargin==3&&~isempty(def)
     esp=def;
 end
 

@@ -23,25 +23,25 @@ fct='manu';
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
-esp=[0 10];
+doe.dim_pb=2;
+esp=[0 10];%esp=[];
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=100;
+aff.nbele=50;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='LHS';
+doe.type='ffact';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 para.deg=0;
 para.long=[0.1 20];
-para.swf_para=2
+para.swf_para=4;
 %long=3;
 corr='matern52';
 mode={'SWF'};
@@ -126,7 +126,7 @@ if aff.ic.on
 end
             
 %fonction de reference
-aff.newfig=false;
+aff.newfig=true;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
@@ -140,8 +140,8 @@ affichage(grid_XY,K{1},tirages,eval,grad,aff);
 aff.titre='Fonction de reference';
 aff.d3=false;
 aff.d2=true;
-aff.grad_eval=true;
-aff.grad_meta=true;
+aff.grad_eval=false;
+aff.grad_meta=false;
 aff.contour2=true;
 %subplot(3,3,7)
 affichage(grid_XY,Z,tirages,eval,grad,aff);

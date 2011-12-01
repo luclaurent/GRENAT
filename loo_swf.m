@@ -10,3 +10,4 @@ for ii=1:length(tirages)
 end
 
 err=norm(eval-rep);
+

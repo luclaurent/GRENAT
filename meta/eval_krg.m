@@ -3,13 +3,19 @@
 %modifs le 03/11/2010  (reecriture en vue d'accelerer)
 %modifs le 19/10/2011  (passage nD)
 
-function [Z,GZ,var]=eval_krg(U,tirages,krg)
+function [Z,GZ,var]=eval_krg(U,krg,tir_part)
 
 %calcul ou non des gradients (en fonction du nombre de variables de sortie)
 if nargout>=2
     grad=true;
 else
     grad=false;
+end
+% points de tirages particuliers
+if nargin==3
+    tirages=tir_part;
+else
+    tirages=krg.tirages;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

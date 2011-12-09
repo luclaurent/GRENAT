@@ -23,7 +23,7 @@ fct='manu';
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 esp=[0 10];%esp=[];
 
 %%Definition de l'espace de conception
@@ -40,11 +40,11 @@ doe.nb_samples=5;
 
 % Parametrage du metamodele
 para.deg=0;
-para.long=[0.1 20];
+para.long=[0.00001 20];
 para.swf_para=4;
 %long=3;
 corr='matern52';
-mode={'SWF'};
+mode={'CKRG'};
 grad=true;
 
 meta=init_meta(mode,para,corr,grad);
@@ -84,7 +84,8 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Construction et evaluation du metamodele aux points souhaites
-[K,approx]=gene_meta(tirages,eval,grad,grid_XY,meta);
+[approx]=const_meta(tirages,eval,grad,meta);
+[K]=eval_meta(grid_XY,approx,meta);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance

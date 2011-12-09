@@ -1,7 +1,7 @@
 %% fonction assurant la construction du metamodele (pas son evaluation)
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [Z,ret]=const_meta(tirages,eval,grad,points,meta)
+function [ret]=const_meta(tirages,eval,grad,meta)
 
 % Generation du metamodele
 textd='===== METAMODELE de ';
@@ -11,14 +11,12 @@ textf=' =====';
 nb_var=size(tirages,2);
 %nombre de points
 nb_val=size(tirages,1);
-dim_ev=size(points);
+
 
 %prise en compte gradients ou pas
 if isempty(grad)||meta.grad==false;pec_grad='Non';grad=[];else;pec_grad='Oui';end
 
-var=zeros(dim_ev([1 2]));
-rep=zeros(dim_ev([1 2]));
-GR=zeros(dim_ev(1),dim_ev(2),nb_var);
+
 
 %%%%%%% Generation de divers metamodeles
 %initialisation stockage
@@ -27,8 +25,6 @@ Z=ret;
 % generation des metamodeles
 num_meta=1;
 for type=meta.type
-    ret{num_meta}.type=type{1};
-
     %construction metamodele
     switch type{1}
         %%%%%%%%=================================%%%%%%%%
@@ -108,5 +104,14 @@ for type=meta.type
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
     end
+    
+    
+    %stockage des informations utiles
+    ret{num_meta}.type=type{1};
+    ret{num_meta}.nb_var=nb_var;
+    ret{num_meta}.nb_val=nb_val;
+    ret{num_meta}.tirages=tirages;
+    ret{num_meta}.eval=eval;
+    ret{num_meta}.grad=grad;
     num_meta=num_meta+1;
 end

@@ -56,7 +56,7 @@ krg.para=meta.para;
 
 %variance de prediction
 sig2=1/size(rc,1)*((y-fc*krg.beta)'/rc)*(y-fc*krg.beta);
-if meta.norm
+if meta.norm&&~isempty(std_e)
     krg.sig2=sig2*std_e^2;
 else
     krg.sig2=sig2;

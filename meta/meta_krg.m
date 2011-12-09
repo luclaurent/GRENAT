@@ -34,6 +34,10 @@ if meta.norm
     nkrg.norm.on=true;
     clear infos_e infos_t
 else
+    std_e=[];
+    std_t=[];
+    moy_e=[];
+    moy_t=[];
     nkrg.norm.on=false;
     evaln=eval;
     tiragesn=tirages;

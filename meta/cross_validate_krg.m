@@ -59,7 +59,7 @@ for tir=1:krg.dim
     end
 
    %%Evaluation du metamodele au point supprime de la construction
-   [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(tirages(tir,:),cv_tirages,krg_cv);
+   [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(tirages(tir,:),krg_cv,cv_tirages);
    
 end
 warning on all;

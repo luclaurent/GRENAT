@@ -3,6 +3,10 @@
 
 function [ret]=const_meta(tirages,eval,grad,meta)
 
+%prise en compte gradients ou pas
+if isempty(grad)||meta.grad==false;pec_grad='Non';grad=[];else;pec_grad='Oui';end
+fprintf('Gradients disponibles: %s\n\n',pec_grad);
+
 % Generation du metamodele
 textd='===== METAMODELE de ';
 textf=' =====';
@@ -13,8 +17,7 @@ nb_var=size(tirages,2);
 nb_val=size(tirages,1);
 
 
-%prise en compte gradients ou pas
-if isempty(grad)||meta.grad==false;pec_grad='Non';grad=[];else;pec_grad='Oui';end
+
 
 
 
@@ -34,7 +37,6 @@ for type=meta.type
             fprintf('\n%s\n',[textd 'Fonctions Shepard (SWF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            fprintf('Gradients: %s\n\n',pec_grad);
             swf=meta_swf(tirages,eval,grad,meta);
             ret{num_meta}=swf;
             %%%%%%%%=================================%%%%%%%%
@@ -49,8 +51,7 @@ for type=meta.type
             fprintf('\n%s\n',[textd 'CoKrigeage' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            fprintf('Gradients: %s\n\n',pec_grad);
-            ckrg=meta_ckrg(tirages,eval,grad,meta);
+            ckrg=meta_krg_ckrg(tirages,eval,grad,meta);
             ret{num_meta}=ckrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -59,7 +60,7 @@ for type=meta.type
             fprintf('\n%s\n',[textd 'Krigeage' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            krg=meta_krg(tirages,eval,meta);
+            krg=meta_krg_ckrg(tirages,eval,[],meta);
             ret{num_meta}=krg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -68,7 +69,6 @@ for type=meta.type
             fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            fprintf('Gradients: %s\n\n',pec_grad);
             [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.para);
             ret{num_meta}=dace;
             %%%%%%%%=================================%%%%%%%%
@@ -79,8 +79,7 @@ for type=meta.type
             for degre=meta.deg
                 %% Construction du metamodele de Regression polynomiale
                 fprintf('\n%s\n',[textd  'Regression polynomiale' textf]);
-                fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-                fprintf('Gradients: %s\n\n',pec_grad);
+                fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)                
                 dd=['-- Degre du polynome \n',num2str(degre)];
                 fprintf(dd);
                 [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
@@ -93,14 +92,12 @@ for type=meta.type
             %% Construction du metamodele d'interpolation lineaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction de base ' textf]);
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            fprintf('Gradients: %s\n\n',pec_grad);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'ILAG'
             %% interpolation par fonction de base linéaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            fprintf('Gradients: %s\n\n',pec_grad);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
     end

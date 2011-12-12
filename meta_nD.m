@@ -40,10 +40,10 @@ doe.nb_samples=5;
 
 % Parametrage du metamodele
 para.deg=0;
-para.long=[0.00001 20];
+para.long=[0.5 20];
 para.swf_para=4;
 %long=3;
-corr='matern52';
+corr='matern32';
 mode={'CKRG'};
 grad=true;
 
@@ -89,14 +89,14 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance
-%[ic68,ic95,ic99]=const_ic(K.Z,K.var);
+[ic68,ic95,ic99]=const_ic(K{1}.Z,K{1}.var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
 %valeur par défaut
 aff.on=true;
 aff.newfig=false;
-aff.ic.on=false;
+aff.ic.on=true;
 %valeurs chargees
 if doe.dim_pb>2
     aff.on=false;
@@ -119,7 +119,7 @@ if aff.ic.on
     %subplot(3,3,2)
     aff.titre='Variance de prediction';
     aff.d3=true;
-    v.Z=K.var;
+    v.Z=K{1}.var;
     affichage(grid_XY,v,tirages,eval,grad,aff);
     camlight; lighting gouraud; 
     aff.titre='Metamodele';

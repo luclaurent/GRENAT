@@ -286,7 +286,7 @@ fprintf('\nExecution construction CoKrigeage: %6.4d s\n',tps_stop-tps_start);
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
 if meta.cv
-    [krg.cv]=cross_validate_ckrg(krg,tirages,eval);
+    [krg.cv]=cross_validate_ckrg(krg,tiragesn,eval);
     %les tirages et evaluations ne sont pas normalises (elles le seront
     %plus tard lors de la CV)
     

@@ -53,8 +53,12 @@ for tir=1:ckrg.dim
         ckrg_cv.sig2=sig2;
     end
     warning on all
+    
+    %chargement tirages-1
+    ckrg_cv.tirages=[];
+    ckrg_cv.tirages=cv_tirages;
     %%Evaluation du metamodele au point supprime de la construction
-    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_ckrg(tirages(tir,:),cv_tirages,ckrg_cv);
+    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_ckrg(tirages(tir,:),ckrg_cv);
     
 end
 

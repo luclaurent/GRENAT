@@ -24,7 +24,8 @@ fct='manu';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
 doe.dim_pb=1;
-esp=[0 10];%esp=[];
+esp=[-5 5];
+%esp=[];
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
@@ -44,8 +45,8 @@ para.long=[0.5 20];
 para.swf_para=4;
 %long=3;
 corr='matern32';
-mode={'CKRG'};
-grad=true;
+mode={'KRG'};
+grad=false;
 
 meta=init_meta(mode,para,corr,grad);
 
@@ -127,7 +128,7 @@ if aff.ic.on
 end
             
 %fonction de reference
-aff.newfig=true;
+aff.newfig=false;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;

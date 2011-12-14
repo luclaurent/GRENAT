@@ -103,10 +103,13 @@ else
     ret.build.sig2=sig2;
 end
 
-
 %Maximum de vraisemblance
-[ret.lilog,ret.li]=likelihood(rc,sig2);
+[ret.lilog,ret.li]=likelihood(ret);
 lilog=ret.lilog;
+
+
+
+
 
 %Dans la phase de minimisation de la log vraisemblance
 % if nargin==7
@@ -118,24 +121,9 @@ lilog=ret.lilog;
 %     end
 % end
 %%%%%%%%%%%%%%%%%%
-function [lilog,krg]=bloc_ckrg(tiragesn,ns,fc,y,meta,std_e,para)
 
 
 
-%calcul de la variance de prediction
-sig2=1/size(rcc,1)*((y-fc*krg.beta)'/rcc)*(y-fc*krg.beta);
-if meta.norm
-    krg.sig2=sig2*std_e^2;
-else
-    krg.sig2=sig2;
-end
 
 
-%Maximum de vraisemblance
-[krg.lilog,krg.li]=likelihood(rcc,sig2);
-lilog=krg.lilog;
-
-%sauvegarde des informations
-krg.rcc=rcc;
-krg.ft=ft;
 

@@ -1,10 +1,16 @@
-%fonction assurant l'evaluation d'une fonction polynomiale de degre 2
-%L.LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
+%fonction assurant l'evaluation d'une fonction polynomiale de degre 3
+%L.LAURENT -- 13/12/2011 -- luc.laurent@ens-cachan.fr
 
-function [ret,dret]=reg_poly2(val)
-
+function [ret,dret]=reg_poly3(val)
 
 d=size(val);
+
+%recupération de la regression polynomiale de degré 2
+[ret2,dret2,tt]=reg_poly2(val);
+
+
+
+
 p=(d(2)+1)*(d(2)+2)*1/2;
 
 t=val;

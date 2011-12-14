@@ -1,14 +1,27 @@
 %fonction assurant l'evaluation d'une fonction polynomiale de degre 1
 %L.LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
+%% IN:
+%   -val: points d'évaluation (ligne: coordonnées d'un point, colonne: les
+%   différents points)
+%   -ret: monome
+%   -dret: derivees
+
 function [ret,dret]=reg_poly1(val)
 
-d=size(val,2);
+d=size(val);
 
 %fonction polynomiale
-ret=[1 val];
+ret=[ones(d(1),1) val];
 %derivee
 if nargout==2
-    dret=[zeros(d,1) eye(d)];   
+    if d(1)==1
+        dret=[zeros(d(2),1) eye(d(2))];
+    else
+        dret=cell(d(1),1);
+        for ii=1:d(1)
+            dret{ii}=[zeros(d(2),1) eye(d(2))];
+        end
+    end
 end
 end

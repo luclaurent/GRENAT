@@ -3,29 +3,39 @@
 
 function [ret]=meta_krg_ckrg(tirages,eval,grad,meta)
 
-
-%%KRG
-
+%chargement variables globales
 global aff
 
+%initialisation tempo
 tic;
 tps_start=toc;
 
+%initialisation des variables
 %nombre d'evalutions
-nbs=size(eval,1);
+nb_val=size(eval,1);
 %dimension du pb (nb de variables de conception)
-nbv=size(tirages,2);
+nb_var=size(tirages,2);
 
+%test présence des gradients
+pres_grad=~isempty(grad);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Normalisation
 if meta.norm
     disp('Normalisation');
     %normalisation des donnees
     [evaln,infos_e]=norm_denorm(eval,'norm');
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
-    std_e=infos_e.std;
-    std_t=infos_t.std;
-    moy_e=infos_e.moy;
-    moy_t=infos_t.moy;
+    std_e=infos_e.std;moy_e=infos_e.moy;
+    std_t=infos_t.std;moy_t=infos_t.moy;   
+    
+    %normalisation des gradients
+    if pres_grad
+        infos.std_e=infos_e.std;infos.moy_e=infos_e.moy;
+        infos.std_t=infos_t.std;infos.moy_t=infos_t.moy;
+        gradn=norm_denorm_g(grad,'norm',infos); clear infos
+    end
     
     %sauvegarde des calculs
     nkrg.norm.moy_eval=infos_e.moy;
@@ -35,6 +45,7 @@ if meta.norm
     nkrg.norm.on=true;
     clear infos_e infos_t
 else
+    nkrg.norm.on=false;
     std_e=[];
     std_t=[];
     moy_e=[];
@@ -42,12 +53,26 @@ else
     nkrg.norm.on=false;
     evaln=eval;
     tiragesn=tirages;
+    if pres_grad
+        gradn=grad;
+    end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%evaluations et gradients aux points échantillonnés
+y=evaln;
+if pres_grad
+    tmp=gradn';
+    der=tmp(:);
+    y=vertcat(y,der);    
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%evaluation aux points de l'espace de conception
-y=evaln;
+%%KRG
+
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation matrice de conception
@@ -65,9 +90,17 @@ end
 
 fc=zeros(nbs,nb_termes);
 fct=['reg_poly' num2str(meta.deg,1)];
-for ii=1:nbs
-    fc(ii,:)=feval(fct,tiragesn(ii,:));
+if pres_grad
+    fc=feval(fct,tiragesn);
+else
+    [reg,dreg]=feval(fct,tiragesn);
+    fc=zeros((nbv+1)*nbs,p);
+    
+    fc(1:nb_val,:)=reg;
+    fc(nb_val+1:end,:)=vertcat(dreg{:});
 end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
@@ -85,7 +118,7 @@ if meta.para.estim&&meta.para.aff_likelihood
         val_lik=zeros(size(val_X));
         for itli=1:size(val_X,1)*size(val_X,2)
             %calcul de la log-vraisemblance et stockage
-            val_lik(itli)=bloc_krg(tiragesn,nbs,fc,y,meta,std_e,[val_X(itli) val_Y(itli)]);
+            val_lik(itli)=bloc_krg_ckrg(tiragesn,nbs,fc,y,meta,std_e,[val_X(itli) val_Y(itli)]);
         end
         %trace log-vraisemblance
         figure;
@@ -315,41 +348,7 @@ end
 %%CKRG
 
 
-global aff
 
-tic;
-tps_start=toc;
-
-%nombre d'evalutions
-nbs=size(eval,1);
-%dimension du pb (nb de variables de conception)
-nbv=size(tirages,2);
-
-%Normalisation
-if meta.norm
-    disp('Normalisation');
-    %normalisation des donnees
-    [evaln,infos_e]=norm_denorm(eval,'norm');
-    [tiragesn,infos_t]=norm_denorm(tirages,'norm');
-    infos.std_e=infos_e.std;std_e=infos_e.std;
-    infos.moy_e=infos_e.moy;moy_e=infos_e.moy;
-    infos.std_t=infos_t.std;std_t=infos_t.std;
-    infos.moy_t=infos_t.moy;moy_t=infos_t.moy;
-    gradn=norm_denorm_g(grad,'norm',infos); clear infos
-    
-    %sauvegarde des calculs
-    nkrg.norm.moy_eval=infos_e.moy;
-    nkrg.norm.std_eval=infos_e.std;
-    nkrg.norm.moy_tirages=infos_t.moy;
-    nkrg.norm.std_tirages=infos_t.std;
-    nkrg.norm.on=true;
-    clear infos_e infos_t
-else
-    nkrg.norm.on=false;
-    evaln=eval;
-    tiragesn=tirages;
-    gradn=grad;
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

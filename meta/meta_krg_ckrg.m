@@ -110,7 +110,7 @@ ret.norm=nkrg.norm;
 ret.build.fc=fc;
 ret.build.fct=fc';
 ret.build.y=y;
-ret.build.fct=fct;
+ret.build.fct_reg=fct;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

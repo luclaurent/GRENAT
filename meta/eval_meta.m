@@ -62,7 +62,7 @@ for num_meta=1:numel(donnees)
         case 'CKRG'
             %% Evaluation du metamodele de CoKrigeage
             for jj=1:nb_ev_pts
-                [rep(jj),G,var(jj)]=eval_krg_krg(ev_pts(jj,:),meta_donnee);
+                [rep(jj),G,var(jj)]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
             end
             

@@ -40,9 +40,9 @@ end
 %calcul de l'evaluation du metamodele au point considere
 %définition des dimensions des matrices/vecteurs selon KRG et CKRG
 if donnees.in.pres_grad
-    tail_matvec=nb_val;
-else
     tail_matvec=nb_val*(nb_var+1);
+else
+    tail_matvec=nb_val;
 end
 
 %vecteur de correlation aux points d'evaluations et vecteur de correlation
@@ -59,17 +59,17 @@ if donnees.in.pres_grad
     if calc_grad  %si calcul des gradients
         [ev,dev,ddev]=feval(donnees.build.corr,dist,donnees.build.para.val);
         rr(1:nb_val)=ev;
+        
         rr(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
         
         %derivee du vecteur de correlation aux points d'evaluations
         jr(1:nb_val,:)=dev;  % a debugger
         
         % derivees secondes
-        mat_der=zeros(nb_var,nb_var*nb_val);        
+        mat_der=zeros(nb_var,nb_var*nb_val);
         for mm=1:nb_val
-            mat_der(:,(mm-1)*nb_val+1:mm*nb_val,:)=ddev(:,:,mm);
+            mat_der(:,(mm-1)*nb_var+1:mm*nb_var)=ddev(:,:,mm);
         end
-        
         jr(nb_val+1:tail_matvec,:)=-mat_der';
         
     else %sinon

@@ -74,11 +74,11 @@ for num_meta=1:numel(donnees)
                 end
                 diffZ=Zverif-eval;
                 diffGZ=GZverif-grad;
-                if ~isempty(find(diffZ>1e-7))
+                if ~isempty(find(diffZ>1e-7, 1))
                     fprintf('pb d''interpolation (eval) CKRG\n')
                     diffZ
                 end
-                if ~isempty(find(diffGZ>1e-7))
+                if ~isempty(find(diffGZ>1e-7, 1))
                     fprintf('pb d''interpolation (grad) CKRG\n')
                     diffGZ
                 end
@@ -94,10 +94,10 @@ for num_meta=1:numel(donnees)
             %% verification interpolation
             if meta.verif
                 for jj=1:size(tirages,1)
-                    [Zverif(jj),G,varverif(jj)]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
+                    [Zverif(jj),~,varverif(jj)]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
                 end
                 diffZ=Zverif-eval;
-                if ~isempty(find(diffZ>1e-7))
+                if ~isempty(find(diffZ>1e-7, 1))
                     fprintf('pb d''interpolation (eval) KRG\n')
                     diffZ
                 end

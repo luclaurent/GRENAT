@@ -18,14 +18,14 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='peaks'; 
+fct='manu'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
-%esp=[-5 5];
-esp=[];
+doe.dim_pb=1;
+esp=[-5 5];
+%esp=[];
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
@@ -34,7 +34,7 @@ esp=[];
 aff.nbele=50;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='ffact';
+doe.type='LHS';
 
 %nb d'echantillons
 doe.nb_samples=5;
@@ -45,7 +45,7 @@ para.long=[0.5 20];
 para.swf_para=4;
 %long=3;
 corr='matern32';
-mode={'KRG'};
+mode={'CKRG'};
 grad=true;
 
 meta=init_meta(mode,para,corr,grad);
@@ -96,7 +96,7 @@ tirages=gene_doe(doe);
 %%%affichage
 %valeur par défaut
 aff.on=true;
-aff.newfig=false;
+aff.newfig=true;
 aff.ic.on=true;
 %valeurs chargees
 if doe.dim_pb>2
@@ -128,7 +128,7 @@ if aff.ic.on
 end
             
 %fonction de reference
-aff.newfig=false;
+aff.newfig=true;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;

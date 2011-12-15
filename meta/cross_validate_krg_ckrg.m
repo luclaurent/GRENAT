@@ -14,7 +14,7 @@ cv_gz=zeros(donnees.in.nb_val,donnees.in.nb_var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%On parcourt l'ensemble des tirages
-for tir=1:krg.dim
+for tir=1:donnees.in.nb_val
     %%On construit le metamodele de CoKrigeage avec un site en moins
     %Traitement des matrices et vecteurs en supprimant les lignes et
     %colonnes correspondant
@@ -45,38 +45,41 @@ for tir=1:krg.dim
     cv_ft=cv_fc';
     block1=((cv_ft/cv_rcc)*cv_fc);
     block2=((cv_ft/cv_rcc)*cv_y);
-    donnees_cv.build.beta=block1\block2;
+    beta=block1\block2;
      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %creation de la matrice des facteurs de correlation
-    donnees_cv.gamma=cv_rc\(cv_y-cv_fc*donnees_cv.build.beta);
+    gamma=cv_rcc\(cv_y-cv_fc*beta);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %calcul de la variance de prediction
-    sig2=1/size(cv_rc,1)*((cv_y-cv_fc*donnees_cv.beta)'/cv_rc)...
-        *(cv_y-cv_fc*donnees_cv.beta);
+    sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'/cv_rcc)...
+        *(cv_y-cv_fc*beta);
     if ~aff_warning; warning on all;end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if donnees.norm.on
-        donnees_cv.sig2=sig2*krg.norm.std_eval^2;
+        donnees_cv.sig2=sig2*donnees.norm.std_eval^2;
     else
         donnees_cv.sig2=sig2;
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %passage des parametres
+    donnees_cv=donnees;
     donnees_cv.in.tirages=cv_tirages;
     donnees_cv.in.tiragesn=cv_tiragesn;
-    donnees_cv.in.nb_val=donnees_cv.in.nb_val-1;  %retrait d'un site
+    donnees_cv.in.nb_val=donnees.in.nb_val-1;  %retrait d'un site
     donnees_cv.build.rcc=cv_rcc;
     donnees_cv.build.fc=cv_fc;
     donnees_cv.build.fct=cv_ft;
+    donnees_cv.build.gamma=gamma;
+    donnees_cv.build.beta=beta;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%Evaluation du metamodele au point supprime de la construction
-    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(donnees.in.tirages(tir,:),donnees_cv);
+    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg_ckrg(donnees.in.tirages(tir,:),donnees_cv);
     
 end
 
@@ -87,14 +90,14 @@ end
 %le site associe
 diff=cv_z-donnees.in.eval;
 %Biais moyen
-cv.bm=1/krg.dim*sum(diff);
+cv.bm=1/donnees.in.nb_val*sum(diff);
 %MSE
 diffc=diff.^2;
-cv.msep=1/krg.dim*sum(diffc);
+cv.msep=1/donnees.in.nb_val*sum(diffc);
 %PRESS
 cv.press=sum(diffc);
 %critere d'adequation
 diffa=diffc./cv_var;
-cv.adequ=1/krg.dim*sum(diffa);
+cv.adequ=1/donnees.in.nb_val*sum(diffa);
 
 

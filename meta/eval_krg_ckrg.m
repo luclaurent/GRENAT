@@ -1,7 +1,7 @@
 %% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage
 % L. LAURENT -- 15/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [Z,GZ,var]=eval_krg_ckrg(U,donnees)
+function [Z,GZ,var]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
 %Déclaration des variables
@@ -20,7 +20,7 @@ end
 if nargin==3
     tirages=tir_part;
 else
-    tirages=krg.tirages;
+    tirages=donnees.in.tiragesn;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,7 +29,7 @@ dim_x=size(X,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if krg.norm.on
+if donnees.norm.on
     infos.moy=donnees.norm.moy_tirages;
     infos.std=donnees.norm.std_tirages;
     X=norm_denorm(X,'norm',infos);
@@ -55,7 +55,7 @@ end
 dist=repmat(X,nb_val,1)-tirages;
 
 %KRG/CKRG
-if pres_grad
+if donnees.in.pres_grad
     if calc_grad  %si calcul des gradients
         [ev,dev,ddev]=feval(donnees.build.corr,dist,donnees.build.para.val);
         rr(1:nb_val)=ev;
@@ -100,7 +100,7 @@ Z=ff*donnees.build.beta+rr'*donnees.build.gamma;
 %Z=krg.beta+rr'*krg.gamma; (pour CKRG???)
 if calc_grad
     %%verif en 2D+
-    GZ=jf'*krg.beta+jr'*krg.gamma;
+    GZ=jf'*donnees.build.beta+jr'*donnees.build.gamma;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,7 +118,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if krg.norm.on
+if donnees.norm.on
     infos.moy=donnees.norm.moy_eval;
     infos.std=donnees.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);

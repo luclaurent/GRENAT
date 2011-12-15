@@ -35,6 +35,8 @@ if meta.norm
         infos.std_e=infos_e.std;infos.moy_e=infos_e.moy;
         infos.std_t=infos_t.std;infos.moy_t=infos_t.moy;
         gradn=norm_denorm_g(grad,'norm',infos); clear infos
+    else
+        gradn=[];
     end
     
     %sauvegarde des calculs
@@ -55,6 +57,8 @@ else
     tiragesn=tirages;
     if pres_grad
         gradn=grad;
+    else
+        gradn=[];
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,16 +92,20 @@ if pres_grad&&meta.deg~=0
    fprintf('Le Cokrigeage Universel n''est pas opérationnel (on construit un Cokrigeage Ordinaire)\n')
 end
 
-fc=zeros(nb_val,nb_termes);
 fct=['reg_poly' num2str(meta.deg,1)];
 if ~pres_grad
     fc=feval(fct,tiragesn);
 else
     [reg,dreg]=feval(fct,tiragesn);
-    fc=zeros((nb_var+1)*nbnb_val,nb_termes);
+    fc=zeros((nb_var+1)*nb_val,nb_termes);
     
     fc(1:nb_val,:)=reg;
-    fc(nb_val+1:end,:)=vertcat(dreg{:});
+    if iscell(dreg)
+        tmp=vertcat(dreg{:});
+    else
+        tmp=dreg;
+    end
+    fc(nb_val+1:end,:)=tmp;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,7 +203,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %sauvegarde informations
-ret=mergestruct(ret,block);
+tmp=mergestruct(ret.build,block.build);
+ret.build=tmp;
 ret.build.lilog=lilog;
 ret.build.para=meta.para;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -210,9 +219,7 @@ fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
 if meta.cv
-    [ret.cv]=cross_validate_krg(ret,tirages,eval);
-    %les tirages et evaluations ne sont pas normalises (elles le seront
-    %plus tard lors de la CV)
+    [ret.cv]=cross_validate_krg_ckrg(ret);
     
     tps_cv=toc;
     fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tps_cv-tps_stop);

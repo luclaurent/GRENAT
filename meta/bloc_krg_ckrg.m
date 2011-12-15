@@ -21,8 +21,8 @@ if donnees.in.pres_grad
     rca=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
     rci=zeros(donnees.in.nb_val*donnees.in.nb_var);
     
-    for ii=1:ns
-        for jj=1:ns
+    for ii=1:donnees.in.nb_val
+        for jj=1:donnees.in.nb_val
             %morceau de la matrice issue du krigeage
             [ev,dev,ddev]=feval(meta.corr,donnees.in.tiragesn(ii,:)-donnees.in.tiragesn(jj,:),...
                 meta.para.val);
@@ -40,9 +40,9 @@ if donnees.in.pres_grad
     rcc=[rc rca;rca' rci];
 else
      %matrice de correlation du Krigeage
-    rcc=zeros(ns);
-    for ii=1:ns
-        for jj=1:ns
+    rcc=zeros(donnees.in.nb_val);
+    for ii=1:donnees.in.nb_val
+        for jj=1:donnees.in.nb_val
             rcc(ii,jj)=feval(meta.corr,donnees.in.tiragesn(jj,:)-donnees.in.tiragesn(ii,:),meta.para.val);
         end
     end
@@ -83,12 +83,11 @@ ret.build.beta=block1\block2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul du coefficient gamma
-ret.gamma=rcc\(donnees.build.y-donnees.build.fc*ret.build.beta);
+ret.build.gamma=rcc\(donnees.build.y-donnees.build.fc*ret.build.beta);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %sauvegarde de donnees
 ret.build.rcc=rcc;
-ret.build.corr=meta.corr;
 ret.build.deg=meta.deg;
 ret.build.para=meta.para;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,8 +96,8 @@ ret.build.para=meta.para;
 sig2=1/size(rcc,1)*...
     ((donnees.build.y-donnees.build.fc*ret.build.beta)'/rcc)*...
     (donnees.build.y-donnees.build.fc*ret.build.beta);
-if meta.norm&&~isempty(donnees.norm.std_e)
-    ret.build.sig2=sig2*donnees.norm.std_e^2;
+if meta.norm&&~isempty(donnees.norm.std_eval)
+    ret.build.sig2=sig2*donnees.norm.std_eval^2;
 else
     ret.build.sig2=sig2;
 end

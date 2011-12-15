@@ -31,7 +31,7 @@ esp=[-5 5];
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=50;
+aff.nbele=500;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 doe.type='LHS';
@@ -44,7 +44,7 @@ para.deg=0;
 para.long=[0.5 20];
 para.swf_para=4;
 %long=3;
-corr='matern52';
+corr='matern32';
 mode={'CKRG'};
 grad=true;
 

@@ -60,7 +60,7 @@ if donnees.in.pres_grad
         [ev,dev,ddev]=feval(donnees.build.corr,dist,donnees.build.para.val);
         rr(1:nb_val)=ev;
         
-        rr(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+        rr(nb_val+1:tail_matvec)=-reshape(dev',1,nb_val*nb_var);
         
         %derivee du vecteur de correlation aux points d'evaluations
         jr(1:nb_val,:)=dev;  % a debugger
@@ -129,7 +129,3 @@ if donnees.norm.on
         GZ=GZ';
     end
 end
-
-
-
-

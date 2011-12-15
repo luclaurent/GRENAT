@@ -115,8 +115,9 @@ switch meta.para.method
                         fprintf('||Fmincon|| Reinitialisation impossible.\n');
                     end
                 else
-                    throw(exception);
                     exitflag=-1;
+                    throw(exception);
+                    
                 end
             end
             

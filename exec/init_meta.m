@@ -24,13 +24,13 @@ if strcmp(type,'DACE')
 end
 
 %normalisation
-meta.norm=false;         %normalisation
+meta.norm=true;         %normalisation
 meta.recond=false;      %amelioration du conditionnement de la matrice de correlation
-meta.cv=false;           %validation croisee
+meta.cv=true;           %validation croisee
 
 %estimation parametre long (longueur de correlation)
 meta.para.method='fmincon';     % méthode de minimisation de la log-vraisemblance
-meta.para.estim=false;           % recherche de la longueur de corrélation
+meta.para.estim=true;           % recherche de la longueur de corrélation
 meta.para.aff_likelihood=false;  %affichage de la vraisemblance 1 ou 2 paramètres
 meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
 if meta.para.estim

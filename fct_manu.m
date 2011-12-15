@@ -11,5 +11,5 @@ b=0;
 fct=exp(-x/a).*cos(x)+1/a*x+b;
 
 if nargout==2
-   dfct=-exp(-x/a).*(sin(x)+x/a.*cos(x))+1/a; 
+   dfct=-exp(-x/a).*(sin(x)+1/a.*cos(x))+1/a; 
 end

@@ -44,7 +44,7 @@ para.deg=0;
 para.long=[0.5 20];
 para.swf_para=4;
 %long=3;
-corr='matern32';
+corr='matern52';
 mode={'CKRG'};
 grad=true;
 

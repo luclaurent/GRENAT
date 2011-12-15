@@ -23,7 +23,7 @@ lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
 x0=lb+1/5*(ub-lb);
 % Définition de la function à minimiser
-fun=@(para)bloc_krg(donnees,meta,para);
+fun=@(para)bloc_krg_ckrg(donnees,meta,para);
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
 options_fmincon = optimset(...
@@ -111,7 +111,7 @@ switch meta.para.method
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
                     elseif ~desc&&(x0+pas_min)>ub
-                        exitflag=1;
+                        exitflag=-2;
                         fprintf('||Fmincon|| Reinitialisation impossible.\n');
                     end
                 else
@@ -126,7 +126,8 @@ switch meta.para.method
                 para_estim.out_algo=output;
                 para_estim.out_algo.fval=fval;
                 para_estim.out_algo.exitflag=exitflag;
-            elseif exitflag==-1
+                indic=1;
+            elseif exitflag==-2
                 fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) paramètre(s) fixé(s) à la valeur d''initialisation\n');
                 x=xinit;
             end
@@ -140,7 +141,7 @@ end
 %stockage valeur paramètres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
-    para_estim.val_denorm=x.*donnees.norm.std_t+donnees.norm.moy_t;
+    para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
     fprintf('Valeur(s) longueur(s) de correlation');
     fprintf(' %6.4f',para_estim.val_denorm);
     fprintf('\n');

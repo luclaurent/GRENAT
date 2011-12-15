@@ -103,8 +103,10 @@ else
     if iscell(dreg)
         tmp=vertcat(dreg{:});
     else
-        tmp=dreg;
+        tmp=dreg';
+        tmp=tmp(:);
     end
+    
     fc(nb_val+1:end,:)=tmp;
 end
 

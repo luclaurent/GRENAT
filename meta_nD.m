@@ -18,26 +18,26 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu'; 
+fct='peaks'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
 doe.dim_pb=1;
-esp=[-5 5];
-%esp=[];
+%esp=[-5 5];
+esp=[];
 
 %%Definition de l'espace de conception
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=500;
+aff.nbele=50;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=15;
 
 % Parametrage du metamodele
 para.deg=0;
@@ -156,7 +156,7 @@ aff.titre=[];
 
 
 %calcul et affichage des criteres d'erreur
-err=crit_err(K{1}.Z,Z.Z,approx);
+err=crit_err(K{1}.Z,Z.Z,approx{1});
 
 fprintf('=====================================\n');
 fprintf('=====================================\n');

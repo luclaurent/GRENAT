@@ -64,6 +64,9 @@ switch fct
     case 'cste'
         val=5;
         esp=val*[-ones(dim,1),ones(dim,1)];
+    case 'pente'
+        val=5;
+        esp=val*[-ones(dim,1),ones(dim,1)];
 end
 
 

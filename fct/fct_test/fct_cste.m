@@ -15,7 +15,7 @@ if nbvar==1
     elseif size(xx,1)==2
         xxx=xx(:,2);
     else
-        error('Mauvais format variable entrée fct Rosenbrock');
+        error('Mauvais format variable entrée fct Constante');
     end
     res=val*ones(size(xxx));
     if nargout==2

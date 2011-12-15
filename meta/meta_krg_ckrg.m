@@ -82,6 +82,12 @@ else
     error('Degre de regression non pris en charge')
 end
 
+%/!\ en le cokrigeage universel n'est pas opérationnel
+if pres_grad&&meta.deg~=0
+   meta.deg=0;nb_termes=1;
+   fprintf('Le Cokrigeage Universel n''est pas opérationnel (on construit un Cokrigeage Ordinaire)\n')
+end
+
 fc=zeros(nb_val,nb_termes);
 fct=['reg_poly' num2str(meta.deg,1)];
 if ~pres_grad
@@ -111,6 +117,7 @@ ret.build.fc=fc;
 ret.build.fct=fc';
 ret.build.y=y;
 ret.build.fct_reg=fct;
+ret.build.corr=meta.corr;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

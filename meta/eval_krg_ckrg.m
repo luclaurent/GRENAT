@@ -2,7 +2,8 @@
 % L. LAURENT -- 15/12/2011 -- laurent@lmt.ens-cachan.fr
 
 function [Z,GZ,var]=eval_krg_ckrg(U,donnees)
-
+% affichages warning ou non
+aff_warning=false;
 %Déclaration des variables
 nb_val=donnees.in.nb_val;
 nb_var=donnees.in.nb_var;
@@ -23,8 +24,8 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- X=U(:)';    %correction (changement type d'element)
- dim_x=size(X,1);
+X=U(:)';    %correction (changement type d'element)
+dim_x=size(X,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
@@ -32,51 +33,73 @@ if krg.norm.on
     infos.moy=donnees.norm.moy_tirages;
     infos.std=donnees.norm.std_tirages;
     X=norm_denorm(X,'norm',infos);
-    end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
+%définition des dimensions des matrices/vecteurs selon KRG et CKRG
+if donnees.in.pres_grad
+    tail_matvec=nb_val;
+else
+    tail_matvec=nb_val*(nb_var+1);
+end
+
 %vecteur de correlation aux points d'evaluations et vecteur de correlation
 %derive
-rr=zeros(krg.dim,1);
+rr=zeros(tail_matvec,1);
 if calc_grad
-    jr=zeros(krg.dim,krg.con);
+    jr=zeros(tail_matvec,nb_var);
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul de l'evaluation du metamodele au point considere
-%vecteur de correlation aux points d'evaluations et matrice de correlation
-%derivee
-rr=zeros(krg.dim*(krg.con+1),1);
-if calc_grad
-    jr=zeros(krg.dim*(krg.con+1),krg.con);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %distance du point d'evaluation aux sites obtenus par DOE
-dist=repmat(X,krg.dim,1)-tirages;
+dist=repmat(X,nb_val,1)-tirages;
 
-if calc_grad  %si calcul des gradients
-    [rr,jr]=feval(krg.corr,dist,krg.para.val);
-else %sinon
-    rr=feval(krg.corr,dist,krg.para.val);
+%KRG/CKRG
+if pres_grad
+    if calc_grad  %si calcul des gradients
+        [ev,dev,ddev]=feval(donnees.build.corr,dist,donnees.build.para.val);
+        rr(1:nb_val)=ev;
+        rr(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+        
+        %derivee du vecteur de correlation aux points d'evaluations
+        jr(1:nb_val,:)=dev;  % a debugger
+        
+        % derivees secondes
+        mat_der=zeros(nb_var,nb_var*nb_val);        
+        for mm=1:nb_val
+            mat_der(:,(mm-1)*nb_val+1:mm*nb_val,:)=ddev(:,:,mm);
+        end
+        
+        jr(nb_val+1:tail_matvec,:)=-mat_der';
+        
+    else %sinon
+        %a reecrire //!!\\
+        [ev,dev]=feval(donnees.build.corr,dist,donnees.build.para.val);
+        rr(1:nb_val)=ev;
+        rr(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+    end
+else
+    if calc_grad  %si calcul des gradients
+        [rr,jr]=feval(donnees.build.corr,dist,donnees.build.para.val);
+    else %sinon
+        rr=feval(donnees.build.corr,dist,donnees.build.para.val);
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %matrice de regression aux points d'evaluations
 if calc_grad
-    [ff,jf]=feval(krg.reg,X);
+    [ff,jf]=feval(donnees.build.fct_reg,X);
 else
-    ff=feval(krg.reg,X);
+    ff=feval(donnees.build.fct_reg,X);
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluation du metamodele au point X
-Z=ff*krg.beta+rr'*krg.gamma;
-
-if calc_grad 
-%%verif en 2D+
+Z=ff*donnees.build.beta+rr'*donnees.build.gamma;
+%Z=krg.beta+rr'*krg.gamma; (pour CKRG???)
+if calc_grad
+    %%verif en 2D+
     GZ=jf'*krg.beta+jr'*krg.gamma;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -84,104 +107,29 @@ end
 %calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
 %2004)
 if nargout ==3
-     warning off all;
-    rcrr=krg.rc \ rr;
-    u=krg.ft*rcrr-ff';   
-    var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rc\krg.ft')) \ u) - rr'*rcrr);
-    warning on all;
-
+    if ~aff_warning;warning off all;end
+    rcrr=donnees.build.rcc \ rr;
+    u=donnees.build.fct*rcrr-ff';
+    var=donnees.build.sig2*(ones(dim_x,1)+u'*...
+        ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
+    if ~aff_warning;warning on all;end
+    
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
 if krg.norm.on
-    infos.moy=krg.norm.moy_eval;
-    infos.std=krg.norm.std_eval;    
+    infos.moy=donnees.norm.moy_eval;
+    infos.std=donnees.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);
     if calc_grad
-        infos.std_e=krg.norm.std_eval;
-        infos.std_t=krg.norm.std_tirages;
+        infos.std_e=donnees.norm.std_eval;
+        infos.std_t=donnees.norm.std_tirages;
         GZ=norm_denorm_g(GZ','denorm',infos); clear infos
         GZ=GZ';
     end
 end
 
-%%CKRG
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%distance du point d'evaluation aux sites obtenus par DOE
-dist=repmat(X,krg.dim,1)-tirages;
-
-if calc_grad  %si calcul des gradients
-    [ev,dev,ddev]=feval(krg.corr,dist,krg.para.val);
-    rr(1:krg.dim)=ev;  
-    rr(krg.dim+1:krg.dim*(krg.con+1))=reshape(dev',1,krg.dim*krg.con);
-
-    %derivee du vecteur de correlation aux points d'evaluations
-    jr(1:krg.dim,:)=dev;  % a debugger
-
-     % derivees secondes     
-     mat_der=zeros(krg.con,krg.dim*krg.con);
-    
-     for mm=1:krg.dim
-        mat_der(:,(mm-1)*krg.con+1:(mm-1)*krg.con+krg.con,:)=ddev(:,:,mm);
-     end
-        
-    jr(krg.dim+1:krg.dim*(1+krg.con),:)=-mat_der';
-   
-else %sinon
-    %a reecrire //!!\\
-    [ev,dev]=feval(krg.corr,dist,krg.para.val);
-    rr(1:krg.dim)=ev;
-    rr(krg.dim+1:krg.dim*(krg.con+1))=dev;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%matrice de regression aux points d'evaluations
-if calc_grad    
-    [ff,jf]=feval(krg.reg,X);
-else
-    ff=feval(krg.reg,X);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%evaluation du metamodele au point X
-%a reecrire pour passage au krigeage universel
-Z=krg.beta+rr'*krg.gamma;
-
-if calc_grad 
-    GZ=jf'.*krg.beta+jr'*krg.gamma;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul de la variance de prediction (MSE) (Koelher & Owen 1996)
-if nargout ==3
-    warning off all
-    rcrr=krg.rcc \ rr;
-    u=krg.ft*rcrr-ff';
-    var=krg.sig2*(ones(dim_x,1)+u'*((krg.ft*(krg.rcc\krg.ft')) \ u)...
-        - rr'*rcrr);
-    warning on all
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%denormalisation
-if krg.norm.on
-    infos.moy=krg.norm.moy_eval;
-    infos.std=krg.norm.std_eval;    
-    Z=norm_denorm(Z,'denorm',infos);
-    if calc_grad
-        infos.std_e=krg.norm.std_eval;
-        infos.std_t=krg.norm.std_tirages;
-        GZ=norm_denorm_g(GZ','denorm',infos); clear infos
-        GZ=GZ';
-    end
-end
 
 
 

@@ -24,7 +24,7 @@ for tir=1:krg.dim
     if donnees.in.pres_grad
         pos=[tir donnees.in.nb_val+(tir-1)*donnees.in.nb_var+(1:donnees.in.nb_var)];
     else
-        pos=[tir];
+        pos=tir;
     end
     cv_fc=donnees.build.fc;
     cv_fc(pos,:)=[];
@@ -41,7 +41,7 @@ for tir=1:krg.dim
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %calcul de beta
-    if a~ff_warning; warning off all;end
+    if ~aff_warning; warning off all;end
     cv_ft=cv_fc';
     block1=((cv_ft/cv_rcc)*cv_fc);
     block2=((cv_ft/cv_rcc)*cv_y);
@@ -56,7 +56,7 @@ for tir=1:krg.dim
     %calcul de la variance de prediction
     sig2=1/size(cv_rc,1)*((cv_y-cv_fc*donnees_cv.beta)'/cv_rc)...
         *(cv_y-cv_fc*donnees_cv.beta);
-    if a~ff_warning; warning on all;end
+    if ~aff_warning; warning on all;end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     if donnees.norm.on
@@ -71,12 +71,12 @@ for tir=1:krg.dim
     donnees_cv.in.tiragesn=cv_tiragesn;
     donnees_cv.in.nb_val=donnees_cv.in.nb_val-1;  %retrait d'un site
     donnees_cv.build.rcc=cv_rcc;
-    donnees_cv.build.fc=cv_fc:
-    donnees_cv.build.fct=cv_ft:
+    donnees_cv.build.fc=cv_fc;
+    donnees_cv.build.fct=cv_ft;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%Evaluation du metamodele au point supprime de la construction
-    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(donnees.in.tirages(tir,:),donnees_cv,cv_tirages);
+    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg(donnees.in.tirages(tir,:),donnees_cv);
     
 end
 

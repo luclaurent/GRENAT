@@ -13,9 +13,10 @@ nbvar=size(xx,3);
 val=10;
 
 if nbvar==1
-
+    
     res=val*xx(:,dir);
     if nargout==2
+        
         dres(:,:,1)=0*res;
         dres(:,:,2)=0*res;
         dres(:,:,dir)=val*ones(size(res));
@@ -24,8 +25,9 @@ if nbvar==1
 else
     res=val*xx(:,:,dir);
     if nargout==2
-        dres(:,:,1)=0*res;
-        dres(:,:,2)=0*res;
+        if nargout==2
+            dres=zeros(size(xx));
+        end
         dres(:,:,dir)=val*ones(size(res));
     end
 end

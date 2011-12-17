@@ -19,15 +19,13 @@ if nbvar==1
     end
     res=val*ones(size(xxx));
     if nargout==2
-        dres(:,:,1)=0*res;
-        dres(:,:,2)=0*res;
+        dres=zeros(size(xx));
     end
-
+    
 else
     res=val*ones(size(xx(:,:,1)));
     if nargout==2
-        dres(:,:,1)=0*res;
-        dres(:,:,2)=0*res;
+        dres=zeros(size(xx));
     end
 end
 end

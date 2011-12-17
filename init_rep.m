@@ -6,6 +6,7 @@ function init_rep
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%
 addpath('doe/LHS');
+addpath('doe/IHS');
 addpath('meta/dace');
 addpath('doe');
 addpath('fct');

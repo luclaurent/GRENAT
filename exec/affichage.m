@@ -99,8 +99,8 @@ if aff.on
                 %recherche du maxi de la norme du gradient
                 nm=[max(max(ngr))];
                 
-                n1=max(max(GR1));
-                n2=max(max(GR2));
+                n1=max(max(abs(GR1)));
+                n2=max(max(abs(GR2)));
 
                 %definition de la taille mini de la grille d'affichage
                 gx=grille_X-grille_X(1);
@@ -115,10 +115,12 @@ if aff.on
                 para_fl=0.9;
                 tailf=para_fl*tailg;
 
+
                 %echelle
                % nm
               %  tailf
                 ech=tailf./[n1 n2];
+
                 
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

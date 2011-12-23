@@ -23,19 +23,19 @@ switch doe.type
     % plan factoriel complet
     case 'ffact'
         tirages=factorial_design(nbs,esp);
-    % Latin Hypercube Sampling (à loi uniforme)
+        % Latin Hypercube Sampling (à loi uniforme)
     case 'LHS'
         Xmin=esp(:,1);
         Xmax=esp(:,2);
         tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
-    % LHS avec stockage des données
-    case 'LHS_manu'     
+        % LHS avec stockage des données
+    case 'LHS_manu'
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('LHS_MANU','dir')~=7
             unix('mkdir LHS_MANU');
         end
-
-       %on verifie si le tirages existe deja (si oui on le charge/si non on le
+        
+        %on verifie si le tirages existe deja (si oui on le charge/si non on le
         %genere et le sauvegarde)
         fi=['LHS_MANU/lhs_man_' doe.fct sprintf('_%d',nbs)];
         fich=[fi '.mat'];
@@ -48,13 +48,31 @@ switch doe.type
             tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
             save(fi,'tirages');
         end
-    % tirages aléatoires
+        % tirages aléatoires
     case 'rand'
         tirages=repmat(esp(:,1)',prod(nbs(:)),1)...
             +repmat(esp(:,2)'-esp(:,1)',prod(nbs(:)),1).*rand(prod(nbs(:)),nbv);
+        %tirages définis manuellement
+    case 'perso'
+        tirages=doe.manu;
+        disp('/!\ Echantillonnage manuel (cf. conf_doe.m)');
     otherwise
         error('le type de tirage nest pas defini');
 end
+
+%Tri des tirages (par rapport à une variable
+if doe.tri>0
+   if doe.tri<=size(tirages,1)
+       [~,ind]=sort(tirages(:,doe.tri));
+       tirages=tirages(ind,:);
+   else
+       fprintf('###############################################################\n');
+       fprintf('## ##mauvais paramètre de tri des tirages (tri désactivé) ## ##\n');
+       fprintf('###############################################################\n');
+   end
+end
+
+toc
 
 %% affichage infos
 fprintf(' >> type de tirages: %s\n',doe.type);

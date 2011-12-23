@@ -65,10 +65,12 @@ else
 end
 
 %mise en forme des gradients
-if isfield(Z,'GR')&&esp2d
-    GR1=Z.GR(:,:,1);
-    GR2=Z.GR(:,:,2);
+
+if isfield(Z,'GZ')&&esp2d
+    GR1=Z.GZ(:,:,1);
+    GR2=Z.GZ(:,:,2);
 end
+%GR1
 
 
 %Affichage actif

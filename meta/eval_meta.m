@@ -5,11 +5,19 @@
 
 function [Z]=eval_meta(points,donnees,meta)
 
+%reconditionneent données construction
+if ~iscell(donnees)
+    donnees_const={donnees};
+    Z=struct;
+else
+    donnees_const=donnees;
+    Z=cell(size(donnees));
+end
 
 %nombre de variables
-nb_var=donnees{1}.nb_var;
+nb_var=donnees_const{1}.nb_var;
 %nombre de points
-nb_val=donnees{1}.nb_val;
+nb_val=donnees_const{1}.nb_val;
 dim_ev=size(points);
 
 %reconditionnement des points d'évaluations
@@ -27,15 +35,14 @@ end
 %variables de stockage
 var=zeros(dim_ev([1 2]));
 rep=zeros(dim_ev([1 2]));
-Z=cell(size(donnees));
 GR=zeros(nb_ev_pts,nb_var);
 
 
 %%%%%%% Evaluation de divers metamodeles
 % generation des metamodeles
-for num_meta=1:numel(donnees)
-    type=donnees{num_meta}.type;
-    meta_donnee=donnees{num_meta};
+for num_meta=1:numel(donnees_const)
+    type=donnees_const{num_meta}.type;
+    meta_donnee=donnees_const{num_meta};
     
     %chargement variables
     tirages=meta_donnee.tirages;
@@ -167,9 +174,14 @@ for num_meta=1:numel(donnees)
     end
     
     %Stockage des evaluations
-    Z{num_meta}.Z=rep;
-    Z{num_meta}.GZ=GZ;
-    Z{num_meta}.var=var;
-    
+    if numel(donnees_const)==1
+        Z.Z=rep;
+        Z.GZ=GZ;
+        Z.var=var;
+    else
+        Z{num_meta}.Z=rep;
+        Z{num_meta}.GZ=GZ;
+        Z{num_meta}.var=var;
+    end
 end
 

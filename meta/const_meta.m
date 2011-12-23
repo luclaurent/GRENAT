@@ -16,7 +16,12 @@ nb_var=size(tirages,2);
 %nombre de points
 nb_val=size(tirages,1);
 
-
+%mise en forme type de metamodele
+if ~iscell(meta.type)
+    metype={meta.type};
+else
+    metype=meta.type;
+end
 
 
 
@@ -27,7 +32,7 @@ ret=cell(length(meta.type),1);
 Z=ret;
 % generation des metamodeles
 num_meta=1;
-for type=meta.type
+for type=metype
     %construction metamodele
     switch type{1}
         %%%%%%%%=================================%%%%%%%%
@@ -38,7 +43,7 @@ for type=meta.type
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             swf=meta_swf(tirages,eval,grad,meta);
-            ret{num_meta}=swf;
+            out_meta=swf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'RBF'
@@ -52,7 +57,7 @@ for type=meta.type
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             ckrg=meta_krg_ckrg(tirages,eval,grad,meta);
-            ret{num_meta}=ckrg;
+            out_meta=ckrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'KRG'
@@ -61,7 +66,7 @@ for type=meta.type
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
             krg=meta_krg_ckrg(tirages,eval,[],meta);
-            ret{num_meta}=krg;
+            out_meta=krg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'DACE'
@@ -70,7 +75,7 @@ for type=meta.type
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.para);
-            ret{num_meta}=dace;
+            out_meta=dace;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'PRG'
@@ -83,7 +88,7 @@ for type=meta.type
                 dd=['-- Degre du polynome \n',num2str(degre)];
                 fprintf(dd);
                 [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
-                ret{num_meta}.prg{ite_prg}=prg;
+                out_meta.prg{ite_prg}=prg;
                 ite_prg=ite_prg+1;
             end
             %%%%%%%%=================================%%%%%%%%
@@ -104,11 +109,16 @@ for type=meta.type
     
     
     %stockage des informations utiles
-    ret{num_meta}.type=type{1};
-    ret{num_meta}.nb_var=nb_var;
-    ret{num_meta}.nb_val=nb_val;
-    ret{num_meta}.tirages=tirages;
-    ret{num_meta}.eval=eval;
-    ret{num_meta}.grad=grad;
+    out_meta.type=type{1};
+    out_meta.nb_var=nb_var;
+    out_meta.nb_val=nb_val;
+    out_meta.tirages=tirages;
+    out_meta.eval=eval;
+    out_meta.grad=grad;
+    if numel(metype)==1
+        ret=out_meta;
+    else
+        ret{num_meta}=out_meta;
+    end
     num_meta=num_meta+1;
 end

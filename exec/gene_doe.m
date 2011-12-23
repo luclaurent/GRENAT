@@ -61,7 +61,7 @@ switch doe.type
 end
 
 %Tri des tirages (par rapport à une variable
-if doe.tri>0
+if isfield(doe,'tri')&&doe.tri>0
    if doe.tri<=size(tirages,1)
        [~,ind]=sort(tirages(:,doe.tri));
        tirages=tirages(ind,:);

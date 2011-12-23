@@ -74,6 +74,9 @@ end
 %sauvegarde nom fonction
 doe.fct=fct;
 
+%tri par rapport à un variable
+doe.tri=1;
+
 %definition manuelle
 if nargin==3&&~isempty(def)
     esp=def;

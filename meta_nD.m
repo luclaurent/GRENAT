@@ -18,12 +18,12 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='pente'; 
+fct='branin'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=3;
+doe.dim_pb=2;
 %esp=[-5 5];
 esp=[];
 
@@ -31,13 +31,13 @@ esp=[];
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=10;
+aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=30;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
 para.deg=0;
@@ -79,7 +79,7 @@ tirages=gene_doe(doe);
 
 %Trace de la fonction de la fonction etudiee et des gradients
 [grid_XY,aff]=gene_aff(doe,aff);
-[Z.Z,Z.GR]=gene_eval(doe.fct,grid_XY,'aff');
+[Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,7 +90,7 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance
-[ic68,ic95,ic99]=const_ic(K{1}.Z,K{1}.var);
+[ic68,ic95,ic99]=const_ic(K.Z,K.var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
@@ -120,7 +120,7 @@ if aff.ic.on
     %subplot(3,3,2)
     aff.titre='Variance de prediction';
     aff.d3=true;
-    v.Z=K{1}.var;
+    v.Z=K.var;
     affichage(grid_XY,v,tirages,eval,grad,aff);
     camlight; lighting gouraud; 
     aff.titre='Metamodele';
@@ -137,26 +137,26 @@ aff.titre='Fonction de reference';
 affichage(grid_XY,Z,tirages,eval,grad,aff);
 aff.titre='';
 %subplot(3,3,5)
-affichage(grid_XY,K{1},tirages,eval,grad,aff);
+affichage(grid_XY,K,tirages,eval,grad,aff);
 
 aff.titre='Fonction de reference';
 aff.d3=false;
 aff.d2=true;
-aff.grad_eval=false;
-aff.grad_meta=false;
+aff.grad_eval=true;
+aff.grad_meta=true;
 aff.contour2=true;
 %subplot(3,3,7)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
 aff.titre='';
 aff.color='r';
 %subplot(3,3,8)
-affichage(grid_XY,K{1},tirages,eval,grad,aff);
+affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
 
 
 
 %calcul et affichage des criteres d'erreur
-err=crit_err(K{1}.Z,Z.Z,approx{1});
+err=crit_err(K.Z,Z.Z,approx);
 
 fprintf('=====================================\n');
 fprintf('=====================================\n');

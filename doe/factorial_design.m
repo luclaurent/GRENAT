@@ -1,17 +1,17 @@
-%% Fonction assurant la génération d'un plan factoriel en dimension n
+%% Fonction assurant la gï¿½nï¿½ration d'un plan factoriel en dimension n
 % L. LAURENT -- 07/10/2011 -- laurent@lmt.ens-cachan.fr
 
 function tir=factorial_design(nb_tir,esp)
 
 
-%nombre de variables prises en considération
+%nombre de variables prises en considï¿½ration
 nb_var=size(esp,1);
 
 %reconditionnement
 if length(nb_tir)==1
     nb_tir=nb_tir*ones(1,nb_var);
 elseif length(nb_tir)~=1&&length(nb_tir)~=nb_var
-    error('mauvaise définition nb de tirages pour plan factoriel (cf. factorial_design.m)');
+    error('mauvaise dï¿½finition nb de tirages pour plan factoriel (cf. factorial_design.m)');
 end
 
 %initialisation matrice stockage tirages

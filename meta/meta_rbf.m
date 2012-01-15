@@ -2,7 +2,7 @@
 %%base radiale
 
 %%L. LAURENT      luc.laurent@ens-cachan.fr
-%% 15/03/2010 modif le 12/04/2010
+%% 15/03/2010 modif le 12/04/2010 puis le 15/01/2012
 
 function w=meta_rbf(tirages,eval,para,fct)
 

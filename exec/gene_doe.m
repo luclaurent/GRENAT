@@ -23,6 +23,16 @@ switch doe.type
     % plan factoriel complet
     case 'ffact'
         tirages=factorial_design(nbs,esp);
+        % Latin Hypercube Sampling avec R (et préenrichissement)
+    case 'LHS_R'
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
+        tirages=lhsu_R(Xmin,Xmax,prod(nbs(:)));
+        % Improved Hypercube Sampling avec R (et préenrichissement)
+    case 'IHS_R'
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
+        tirages=ihs_R(Xmin,Xmax,prod(nbs(:)));
         % Latin Hypercube Sampling (à loi uniforme)
     case 'LHS'
         Xmin=esp(:,1);

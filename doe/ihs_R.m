@@ -1,5 +1,6 @@
 %% Generation de plan d'experience LHS a partir de R (avec prétirage de LHS enrichi)
 % IHS: Improved Hypercube Sampling
+% Ref: Beachkofski, B., Grandhi, R. (2002) Improved Distributed Hypercube Sampling American Institute of Aeronautics and Astronautics Paper 1274.
 % L. LAURENT -- 14/01/2012 -- laurent@lmt.ens-cachan.fr
 
 
@@ -40,9 +41,9 @@ end
 
 %ecriture du script r
 %procédure de création du tirage initial
-text_init=['a<-maximinLHS(' num2str(nbs) ',' num2str(nbv) ',5)\n'];
+text_init=['a<-improvedLHS(' num2str(nbs) ',' num2str(nbv) ',5)\n'];
 %procédure d'enrichissement
-text_enrich=['a<-optAugmentLHS(a,1,1)\n'];
+text_enrich=['a<-augmentLHS(a,1)\n'];
 %chargement librairie LHS
 load_LHS='library(lhs)\n';
 %procédure stockage tirage

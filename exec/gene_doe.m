@@ -2,7 +2,7 @@
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
 function tirages=gene_doe(doe)
-
+tic
 % obtenir un "vrai" tirages pseudo aléatoire
 s = RandStream('mt19937ar','Seed','shuffle');
 RandStream.setGlobalStream(s);

@@ -1,8 +1,9 @@
 %% Generation de plan d'experience LHS a partir de R (avec prétirage de LHS enrichi)
+% IHS: Improved Hypercube Sampling
 % L. LAURENT -- 14/01/2012 -- laurent@lmt.ens-cachan.fr
 
 
-function [tir,new_tir]=lhsu_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
+function [tir,new_tir]=ihs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
 
 %% INPUT: 
 %    - Xmin,Xmax: bornes min et max de l'espace de concpetion
@@ -19,7 +20,7 @@ rep='LHS_R';
 %nombre de plans prétirés
 nb_pretir=300;
 %nom du fichier script r
-nom_script='lhsu_R.r';
+nom_script='ihsu_R.r';
 %nom du fichier de données R
 nom_dataR='dataR.dat';
 
@@ -39,9 +40,9 @@ end
 
 %ecriture du script r
 %procédure de création du tirage initial
-text_init=['a<-randomLHS(' num2str(nbs) ',' num2str(nbv) ')\n'];
+text_init=['a<-maximinLHS(' num2str(nbs) ',' num2str(nbv) ',5)\n'];
 %procédure d'enrichissement
-text_enrich=['a<-augmentLHS(a,1)\n'];
+text_enrich=['a<-optAugmentLHS(a,1,1)\n'];
 %chargement librairie LHS
 load_LHS='library(lhs)\n';
 %procédure stockage tirage
@@ -74,7 +75,7 @@ end
 A=load([rep '/' nom_dataR]);
 
 %tirage obtenu
-tir=A(1:nbs,:).*repmat(Xmax(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
+tir=A(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
 new_tir=[];
 
 %phase d'enrichissement
@@ -88,7 +89,7 @@ A=load([rep '/' nom_dataR]);
 
 %nouveaux tirages
 ind=old_nbs+1:old_nbs+nb_enrich;
-new_tir=A(ind,:).*repmat(Xmax(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
+new_tir=A(ind,:).*repmat(Xmax(:)'-Xmin(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
 %liste de tous les tirages
 tir=[old_tir;new_tir];
 

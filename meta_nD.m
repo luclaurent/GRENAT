@@ -33,7 +33,8 @@ esp=[];
 %nombre d'element pas dimension (pour le trace)
 aff.nbele=30;
 
-%type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
+%type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
+%(sfill)/LHS_R/IHS_R
 doe.type='LHS';
 
 %nb d'echantillons

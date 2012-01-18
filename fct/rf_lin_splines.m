@@ -1,7 +1,7 @@
 %%fonction de base radiale linear splines(RBF)
 %%L. LAURENT -- 17/01/2012 -- laurent@lmt.ens-cachan.fr
 
-function [corr,dcorr,ddcorr]=rf_lin_splines(xx,long)
+function [rf,drf,ddrf]=rf_lin_splines(xx,long)
 
 %Cette fonction est non paramétrique
 
@@ -15,13 +15,13 @@ td=xx.^2;
 ev=sqrt(sum(td,2));
 
 if nargout==1
-    corr=ev;
+    rf=ev;
 elseif nargout==2
-    corr=ev;
-    dcorr=xx./repmat(ev,1,nb_comp);
+    rf=ev;
+    drf=xx./repmat(ev,1,nb_comp);
 elseif nargout==3
-    corr=ev;
-    dcorr=xx./repmat(ev,1,nb_comp);   
+    rf=ev;
+    drf=xx./repmat(ev,1,nb_comp);   
     
     %calcul des derivees secondes    
     
@@ -30,13 +30,13 @@ elseif nargout==3
     %si on ne demande le calcul des derivees secondes en un seul point, on
     %les stocke dans une matrice 
     if pt_eval==1
-        ddcorr=zeros(nb_comp);
+        ddrf=zeros(nb_comp);
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddcorr(mm,ll)=1/ev-xx(mm)^2/ev^3;
+                    ddrf(mm,ll)=1/ev-xx(mm)^2/ev^3;
                 else
-                    ddcorr(mm,ll)=-xx(ll)*xx(mm)/ev^3;
+                    ddrf(mm,ll)=-xx(ll)*xx(mm)/ev^3;
                 end
            end
         end
@@ -44,18 +44,18 @@ elseif nargout==3
     %si on demande le calcul des derivees secondes en plusieurs point, on
     %les stocke dans un vecteur de matrices
     else
-        ddcorr=zeros(nb_comp,nb_comp,pt_eval);
+        ddrf=zeros(nb_comp,nb_comp,pt_eval);
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddcorr(mm,ll,:)=1./ev-xx(:,mm).^2./ev.^3;
+                    ddrf(mm,ll,:)=1./ev-xx(:,mm).^2./ev.^3;
                 else
-                    ddcorr(mm,ll,:)=-xx(:,ll).*xx(:,mm)./ev.^3;
+                    ddrf(mm,ll,:)=-xx(:,ll).*xx(:,mm)./ev.^3;
                 end
            end
         end
         if nb_comp==1
-            ddcorr=vertcat(ddcorr(:));
+            ddrf=vertcat(ddrf(:));
         end
 
     end

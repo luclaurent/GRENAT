@@ -1,12 +1,12 @@
 dim=1;
-fct='rf_thin_plate_splines';
+fct='rf_invmultiqua';
 
 pas=10^-2;
 
 if dim==1
 
 x=-10:pas:10;
-[ev,dev,ddev]=feval(fct,x');
+[ev,dev,ddev]=feval(fct,x',1);
 
 figure
 hold on

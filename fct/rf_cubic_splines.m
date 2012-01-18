@@ -1,7 +1,7 @@
-%%fonction de base radiale inverse multiquadratics (RBF)
+%%fonction de base radiale cubic splines(RBF)
 %%L. LAURENT -- 17/01/2012 -- laurent@lmt.ens-cachan.fr
 
-function [rf,drf,ddrf]=rf_invmultiqua(xx,long)
+function [rf,drf,ddrf]=rf_cubic_splines(xx,long)
 
 %Cette fonction est non paramétrique
 
@@ -12,17 +12,18 @@ nb_comp=size(xx,2);
 
 %calcul de la valeur de la fonction au point xx
 td=xx.^2;
-fd=1+sum(td,2);
-ev=fd.^(-0.5);
+ev=sqrt(sum(td,2)).^3;
+
 
 if nargout==1
     rf=ev;
 elseif nargout==2
     rf=ev;
-    drf=-1/long.*xx./repmat(ev,1,nb_comp).^3;
+    drf=3*xx.*repmat(ev,1,nb_comp);
 elseif nargout==3
     rf=ev;
-    drf=-1/long.*xx./repmat(ev,1,nb_comp).^3;   
+    drf=3*xx.*repmat(ev,1,nb_comp);
+  
     
     %calcul des derivees secondes    
     
@@ -35,9 +36,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddrf(mm,ll)=-1/long*(ev^3-3*xx(mm)^2/long*ev^5);
+                    ddrf(mm,ll)=3*xx(mm)^2/ev+3*ev;
                 else
-                    ddrf(mm,ll)=3*xx(ll)*xx(mm)/long^2*ev^5;
+                    ddrf(mm,ll)=3*xx(ll)*xx(mm)/ev;
                 end
            end
         end
@@ -49,9 +50,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddrf(mm,ll,:)=-1/long.*(ev.^3-3*xx(mm).^2./long.*ev.^5);
+                    ddrf(mm,ll,:)=3*xx(:,mm).^2./ev+3*ev;
                 else
-                    ddrf(mm,ll,:)=3*xx(:,ll).*xx(:,mm)./long.^2.*ev.^5;
+                    ddrf(mm,ll,:)=3*xx(:,ll).*xx(:,mm)./ev;
                 end
            end
         end

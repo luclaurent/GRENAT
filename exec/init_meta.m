@@ -1,26 +1,34 @@
 %% Initialisation du metamodele
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
-function meta=init_meta(type,para,corr,grad)
+function meta=init_meta(in)
 
-meta.grad=grad; %prise en compte des gradients
+meta.grad=in.grad; %prise en compte des gradients
 
-meta.type=type;         %type de metamodele KRG/CKRG/DACE/RBF
-meta.deg=para.deg;           %degre de la regression
-meta.para.val=para.long(1);       %longueur de correlation
+meta.type=in.type;         %type de metamodele KRG/CKRG/DACE/RBF
+meta.deg=in.para.deg;           %degre de la regression
+meta.para.val=in.para.long(1);       %longueur de correlation
 if nargin>=4
-    meta.corr=['corr_' corr];     %fonction de correlation
+    meta.corr=['corr_' in.corr];     %fonction de correlation
 else
     meta.corr='corr_gauss';
 end
 fctp='reg_poly';
-meta.regr=[fctp num2str(para.deg,'%d')];      %fonction de regression
+meta.regr=[fctp num2str(in.para.deg,'%d')];      %fonction de regression
 
-meta.swf_para=para.swf_para;
-if strcmp(type,'DACE')
-    fctp='regpoly';
-    meta.regr=[fctp num2str(para.deg,'%d')];      %fonction de regression
-    meta.corr=['corr' corr];    %fonction de correlation
+%en focntion du type de métamodele
+switch in.type
+    case 'SWF'
+        meta.swf_para=in.para.swf_para;
+    case 'DACE'
+        if strcmp(type,'DACE')
+            fctp='regpoly';
+            meta.regr=[fctp num2str(in.para.deg,'%d')];      %fonction de regression
+            meta.corr=['corr' in.corr];    %fonction de correlation
+        end
+    case 'RBF'
+        meta.fct=['rf_' in.rbf];
+        meta.para.val=in.para.rbf_para;
 end
 
 %normalisation
@@ -34,12 +42,12 @@ meta.para.estim=true;           % recherche de la longueur de corrélation
 meta.para.aff_likelihood=false;  %affichage de la vraisemblance 1 ou 2 paramètres
 meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
 if meta.para.estim
-    meta.para.max=para.long(2);
-    meta.para.min=para.long(1);
+    meta.para.max=in.para.long(2);
+    meta.para.min=in.para.long(1);
 end
 
 
 
-%Verification interpolation 
+%Verification interpolation
 meta.verif=true;
 

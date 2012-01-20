@@ -41,15 +41,17 @@ doe.type='LHS';
 doe.nb_samples=10;
 
 % Parametrage du metamodele
-para.deg=0;
-para.long=[0.5 20];
-para.swf_para=4;
+data.para.deg=0;
+data.para.long=[0.5 20];
+data.para.swf_para=4;
+data.para.rbf_para=1;
 %long=3;
-corr='matern32';
-mode={'CKRG'};
-grad=true;
+data.corr='matern32';
+data.rbf='gauss';
+data.type='RBF';
+data.grad=true;
 
-meta=init_meta(mode,para,corr,grad);
+meta=init_meta(data);
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;

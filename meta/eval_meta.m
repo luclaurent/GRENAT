@@ -66,8 +66,36 @@ for num_meta=1:numel(donnees_const)
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case 'CKRG'
-            %% Evaluation du metamodele de CoKrigeage
+        case {'HBRBF','RBF'}
+            %% Evaluation du metamodele de RBF/HBRBF
+            for jj=1:nb_ev_pts
+                [rep(jj),G]=eval_rbf(ev_pts(jj,:),meta_donnee);
+                GR(jj,:)=G;
+            end
+            %% verification interpolation
+            if meta.verif
+                for jj=1:size(tirages,1)
+                    [Zverif(jj),G]=eval_rbf(tirages(jj,:),meta_donnee);
+                    GZverif(jj,:)=G;
+                end
+                diffZ=Zverif-eval;
+                
+                if ~isempty(find(diffZ>1e-7, 1))
+                    fprintf('pb d''interpolation (eval) CKRG\n')
+                    diffZ
+                end
+                if meta_donnee.in.pres_grad
+                diffGZ=GZverif-grad;
+                if ~isempty(find(diffGZ>1e-7, 1))
+                    fprintf('pb d''interpolation (grad) CKRG\n')
+                    diffGZ
+                end
+                end
+            end
+            %%%%%%%%=================================%%%%%%%%
+            %%%%%%%%=================================%%%%%%%%
+        case {'KRG','CKRG'}
+            %% Evaluation du metamodele de Krigeage/CoKrigeage
             for jj=1:nb_ev_pts
                 [rep(jj),G,var(jj)]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
@@ -80,37 +108,22 @@ for num_meta=1:numel(donnees_const)
                     GZverif(jj,:)=G;
                 end
                 diffZ=Zverif-eval;
-                diffGZ=GZverif-grad;
+                
                 if ~isempty(find(diffZ>1e-7, 1))
                     fprintf('pb d''interpolation (eval) CKRG\n')
                     diffZ
                 end
+                if meta_donnee.in.pres_grad
+                diffGZ=GZverif-grad;
                 if ~isempty(find(diffGZ>1e-7, 1))
                     fprintf('pb d''interpolation (grad) CKRG\n')
                     diffGZ
                 end
-            end
-            %%%%%%%%=================================%%%%%%%%
-            %%%%%%%%=================================%%%%%%%%
-        case 'KRG'
-            %% Evaluation du metamodele de Krigeage
-            for jj=1:nb_ev_pts
-                [rep(jj),G,var(jj)]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
-                GR(jj,:)=G;
-            end
-            %% verification interpolation
-            if meta.verif
-                for jj=1:size(tirages,1)
-                    [Zverif(jj),~,varverif(jj)]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
-                end
-                diffZ=Zverif-eval;
-                if ~isempty(find(diffZ>1e-7, 1))
-                    fprintf('pb d''interpolation (eval) KRG\n')
-                    diffZ
                 end
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
+
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:size(points,1)

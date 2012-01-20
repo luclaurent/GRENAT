@@ -47,8 +47,17 @@ for type=metype
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'RBF'
-            %% construction du metamodele 'RBF/HBRBF' (Radial Basis Functions and Hermite-Birkhoff Radial Basis Functions)
+            %% construction du metamodele 'RBF' (Radial Basis Functions)
             fprintf('\n%s\n',[textd 'Radial Basis Functions (RBF)' textf]);
+            %affichage informations
+            fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
+            rbf=meta_rbf(tirages,eval,[],meta);
+            out_meta=rbf;
+            %%%%%%%%=================================%%%%%%%%
+            %%%%%%%%=================================%%%%%%%%
+        case 'HBRBF'
+            %% construction du metamodele 'HBRBF' (Hermite-Birkhoff Radial Basis Functions)
+            fprintf('\n%s\n',[textd 'Hermite-Birkhoff Radial Basis Functions (HBRBF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             rbf=meta_rbf(tirages,eval,grad,meta);

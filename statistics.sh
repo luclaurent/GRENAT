@@ -13,11 +13,15 @@ echo ">> code_pilotage"
 
 nbfi=`echo "$files_pilot" | wc -l`
 nbcom=`grep -i '^\%' $files_pilot | wc -l`
+nbcomt=`grep -i '%' $files_pilot | wc -l`
 nbtli=`cat $files_pilot |wc -l`
 nbcod=`echo $((nbtli-nbcom))`
+nbcomli=`echo $((nbcomt-nbcom))`
 
 echo "Nombre de fichiers: $nbfi"
 echo "Nombre des lignes de commentaires: $nbcom"
+echo "Nombre de commentaires en ligne: $nbcomli"
+echo "Nombre total de commentaires: $nbcomt"
 echo "Nombre de lignes de code: $nbcod"
 echo "Nombre total de lignes: $nbtli"
 echo "=================="
@@ -27,11 +31,15 @@ echo ">> code_meta"
 
 nbfi=`echo "$files_meta" | wc -l`
 nbcom=`grep -i '^\%' $files_meta | wc -l`
+nbcomt=`grep -i '%' $files_meta | wc -l`
 nbtli=`cat $files_meta |wc -l`
 nbcod=`echo $((nbtli-nbcom))`
+nbcomli=`echo $((nbcomt-nbcom))`
 
 echo "Nombre de fichiers: $nbfi"
 echo "Nombre des lignes de commentaires: $nbcom"
+echo "Nombre de commentaires en ligne: $nbcomli"
+echo "Nombre total de commentaires: $nbcomt"
 echo "Nombre de lignes de code: $nbcod"
 echo "Nombre total de lignes: $nbtli"
 echo "=================="

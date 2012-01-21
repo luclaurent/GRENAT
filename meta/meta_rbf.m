@@ -114,15 +114,15 @@ ret.build.para=meta.para;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;
 ret.tps=tps_stop-tps_start;
-if pres_grad;txt='RBF';else txt='HBRBF';end
+if pres_grad;txt='HBRBF';else txt='RBF';end
 fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
-if meta.cv&false
-    [ret.cv]=cross_validate_rbf_hbrbf(ret);
+if meta.cv
+    [ret.cv]=cross_validate_rbf(ret,meta);
     
     tps_cv=toc;
     fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tps_cv-tps_stop);

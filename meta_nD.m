@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='mystery'; 
+fct='rosenbrock'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -38,7 +38,7 @@ aff.nbele=30;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=30;
 
 % Parametrage du metamodele
 data.para.deg=0;

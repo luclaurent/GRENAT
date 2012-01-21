@@ -22,11 +22,11 @@ if isfield(donnees,'cv')
     fprintf('\n>>>Validation croisee<<<\n');
     fprintf('Biais moyen=%g\n',donnees.cv.bm);
     fprintf('MSE=%g\n',donnees.cv.msep);
-    fprintf('Critere adequation=%g\n',donnees.cv.adequ)
+    %fprintf('Critere adequation=%g\n',donnees.cv.adequ)
     fprintf('PRESS=%g\n',donnees.cv.press);
     err.cv.bm=donnees.cv.bm;
     err.cv.msep=donnees.cv.msep;
-    err.cv.adequ=donnees.cv.adequ;
+    %err.cv.adequ=donnees.cv.adequ;
     err.cv.press=donnees.cv.press;
 end
 

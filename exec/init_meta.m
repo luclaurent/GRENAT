@@ -35,6 +35,7 @@ end
 meta.norm=true;         %normalisation
 meta.recond=false;      %amelioration du conditionnement de la matrice de correlation
 meta.cv=true;           %validation croisee
+meta.cv_aff=true;       %affichage QQ plot CV
 
 %estimation parametre long (longueur de correlation)
 meta.para.method='fmincon';     % méthode de minimisation de la log-vraisemblance

@@ -69,6 +69,7 @@ for num_meta=1:numel(donnees_const)
         case {'HBRBF','RBF'}
             %% Evaluation du metamodele de RBF/HBRBF
             for jj=1:nb_ev_pts
+                
                 [rep(jj),G]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
             end

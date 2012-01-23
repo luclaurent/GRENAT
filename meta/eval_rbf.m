@@ -70,18 +70,16 @@ if donnees.in.pres_grad
         %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
         %conditionnement evaluations
         comp=zeros(nb_val,nb_var);
-        eva=[ev comp];
+        eva=[ev comp]';
         %conditionnement gradients
         comp=zeros(nb_val,1);
-        deva=[comp dev];
+        deva=[comp dev]';
         %création vecteur evaluations/gradients
         P=eva(:)+deva(:); 
         %creation vecteur derivees fonction bae radiale (calcul gradients
         %du metamodele
         dP=[];
         for ii=1:nb_val
-            dev(ii,:)'
-            ddev(:,:,ii)
             dP=horzcat(dP,dev(ii,:)',ddev(:,:,ii));
         end
         
@@ -92,10 +90,10 @@ if donnees.in.pres_grad
         %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
         %conditionnement evaluations
         comp=zeros(nb_val,nb_var);
-        eva=[ev comp];
+        eva=[ev comp]';
         %conditionnement gradients
         comp=zeros(nb_val,1);
-        deva=[comp dev];
+        deva=[comp dev]';
         %création vecteur evaluations/gradients
         P=eva'+deva';        
     end
@@ -111,8 +109,6 @@ end
 %Evaluation du métamodèle au point X
 Z=P'*donnees.build.w;
 if calc_grad
-    size(dP)
-    size(donnees.build.w)
     GZ=dP*donnees.build.w;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

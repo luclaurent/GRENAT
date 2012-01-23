@@ -65,13 +65,7 @@ elseif nargout==3
                 end
            end
         end
-        if nb_comp==1
-            ddrf=vertcat(ddrf(:));
-        end
-
     end
-   
-    
 else
     error('Mauvais argument de sortie de la fonction corr_gauss');
 end

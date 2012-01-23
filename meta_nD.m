@@ -23,22 +23,22 @@ fct='rosenbrock';
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=4;
 %esp=[-5 5];
 esp=[];
 
 %%Definition de l'espace de conception
-[doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
+[doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=10;
+aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -99,7 +99,7 @@ tirages=gene_doe(doe);
 %%%affichage
 %valeur par défaut
 aff.on=true;
-aff.newfig=true;
+aff.newfig=false;
 aff.ic.on=true;
 %valeurs chargees
 if doe.dim_pb>2
@@ -107,9 +107,9 @@ if doe.dim_pb>2
     aff.ic.on=false;
 end
 
-%subplot(3,3,1)
-if aff.ic.on  
-    figure;
+if aff.ic.on 
+    figure
+subplot(1,2,1)
     aff.rendu=true;
     aff.titre=['Intervalle de confiance IC' aff.ic.type]; 
     switch aff.ic.type
@@ -124,6 +124,7 @@ if aff.ic.on
     aff.titre='Variance de prediction';
     aff.d3=true;
     v.Z=K.var;
+    subplot(1,2,2)
     affichage(grid_XY,v,tirages,eval,grad,aff);
     camlight; lighting gouraud; 
     aff.titre='Metamodele';
@@ -131,15 +132,16 @@ if aff.ic.on
 end
             
 %fonction de reference
-aff.newfig=true;
+aff.newfig=false;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
 aff.titre='Fonction de reference';
-%subplot(3,3,4)
+figure
+subplot(2,2,1)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
 aff.titre='';
-%subplot(3,3,5)
+subplot(2,2,2)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 
 aff.titre='Fonction de reference';
@@ -148,11 +150,11 @@ aff.d2=true;
 aff.grad_eval=true;
 aff.grad_meta=true;
 aff.contour2=true;
-%subplot(3,3,7)
+subplot(2,2,3)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
 aff.titre='';
 aff.color='r';
-%subplot(3,3,8)
+subplot(2,2,4)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
 

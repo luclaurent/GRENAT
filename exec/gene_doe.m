@@ -72,17 +72,59 @@ end
 
 %Tri des tirages (par rapport à une variable
 if isfield(doe,'tri')&&doe.tri>0
-   if doe.tri<=size(tirages,1)
-       [~,ind]=sort(tirages(:,doe.tri));
-       tirages=tirages(ind,:);
-   else
-       fprintf('###############################################################\n');
-       fprintf('## ##mauvais paramètre de tri des tirages (tri désactivé) ## ##\n');
-       fprintf('###############################################################\n');
-   end
+    if doe.tri<=size(tirages,1)
+        [~,ind]=sort(tirages(:,doe.tri));
+        tirages=tirages(ind,:);
+    else
+        fprintf('###############################################################\n');
+        fprintf('## ##mauvais paramètre de tri des tirages (tri désactivé) ## ##\n');
+        fprintf('###############################################################\n');
+    end
 end
 
 toc
+
+%affichage tirages
+if doe.aff
+    para=0.1;
+    if nbv==1
+        figure
+        plot(tirages,0.*tirages,'.o')
+        xmin=esp(:,1);
+        xmax=esp(:,2);
+        dep=xmax-xmin;
+        axis([(xmin-para*dep) (xmin+para*dep) -1 1])
+    elseif nbv==2
+        figure
+        xmin=esp(1,1);
+        xmax=esp(1,2);
+        ymin=esp(1,1);
+        ymax=esp(1,2);
+        depx=xmax-xmin;
+        depy=ymax-ymin;
+        plot(tirages(:,1),tirages(:,2),'o','MarkerEdgeColor','b','MarkerFaceColor','b')
+        axis([(xmin-para*depx) (xmax+para*depx) (ymin-para*depy) (ymax+para*depy)])
+        line([xmin;xmin;xmax;xmax;xmax;xmax;xmax;xmin],[ymin;ymax;ymax;ymax;ymax;ymin;ymin;ymin])
+    else
+        figure
+        it=0;
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
+        Depx=Xmax-Xmin;
+        for ii=1:nbv
+            for jj=1:nbv
+                it=it+1;
+                if ii~=jj
+                    subplot(nbv,nbv,it)
+                    plot(tirages(:,ii),tirages(:,jj),'o','MarkerEdgeColor','b','MarkerFaceColor','b')
+                    xmin=Xmin(ii);xmax=Xmax(ii);ymin=Xmin(jj);ymax=Xmax(jj);depx=Depx(ii);depy=Depx(jj);
+                    axis([(xmin-para*depx) (xmax+para*depx) (ymin-para*depy) (ymax+para*depy)])
+                    line([xmin;xmin;xmax;xmax;xmax;xmax;xmax;xmin],[ymin;ymax;ymax;ymax;ymax;ymin;ymin;ymin])
+                end
+            end
+        end
+    end
+end
 
 %% affichage infos
 fprintf(' >> type de tirages: %s\n',doe.type);

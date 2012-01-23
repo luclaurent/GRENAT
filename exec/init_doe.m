@@ -1,7 +1,7 @@
 %% Initialisation bornes de l'espace d'etude
 %% L. LAURENT -- 05/01/2011 -- laurent@lmt.ens-cachan.fr
 
-function [esp,fun]=init_doe(fct,dim,def)
+function [doe]=init_doe(fct,dim,def)
 
 %definition automatique
 switch fct
@@ -69,13 +69,17 @@ switch fct
         esp=val*[-ones(dim,1),ones(dim,1)];
 end
 
-
+doe.bornes=esp;
+doe.dim_pb=dim;
 
 %sauvegarde nom fonction
-doe.fct=fct;
+doe.fct=['fct_' fct];
 
 %tri par rapport à un variable
 doe.tri=1;
+
+%affichage tirages
+doe.aff=true;
 
 %definition manuelle
 if nargin==3&&~isempty(def)

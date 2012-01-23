@@ -26,7 +26,6 @@ for tir=1:donnees.in.nb_val
     else
         pos=tir;
     end
-    pos
     cv_KK=donnees.build.KK;
     cv_KK(pos,:)=[];
     cv_KK(:,pos)=[];

@@ -64,26 +64,40 @@ dist=repmat(X,nb_val,1)-tirages;
 %RBF/HBRBF
 if donnees.in.pres_grad
     if calc_grad  %si calcul des gradients
-%         [ev,dev,ddev]=feval(donnees.build.corr,dist,donnees.build.para.val);
-%         rr(1:nb_val)=ev;
-%         
-%         rr(nb_val+1:tail_matvec)=-reshape(dev',1,nb_val*nb_var);
-%         
-%         %derivee du vecteur de correlation aux points d'evaluations
-%         jr(1:nb_val,:)=dev;  % a debugger
-%         
-%         % derivees secondes
-%         mat_der=zeros(nb_var,nb_var*nb_val);
-%         for mm=1:nb_val
-%             mat_der(:,(mm-1)*nb_var+1:mm*nb_var)=ddev(:,:,mm);
-%         end
-%         jr(nb_val+1:tail_matvec,:)=-mat_der';
+        %evaluation de la fonction de base radiale
+        [ev,dev,ddev]=feval(donnees.build.fct,dist,donnees.build.para.val);
+        %intercallage reponses et gradients
+        %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
+        %conditionnement evaluations
+        comp=zeros(nb_val,nb_var);
+        eva=[ev comp];
+        %conditionnement gradients
+        comp=zeros(nb_val,1);
+        deva=[comp dev];
+        %création vecteur evaluations/gradients
+        P=eva(:)+deva(:); 
+        %creation vecteur derivees fonction bae radiale (calcul gradients
+        %du metamodele
+        dP=[];
+        for ii=1:nb_val
+            dev(ii,:)'
+            ddev(:,:,ii)
+            dP=horzcat(dP,dev(ii,:)',ddev(:,:,ii));
+        end
         
     else %sinon
-        %a reecrire //!!\\
-%         [ev,dev]=feval(donnees.build.corr,dist,donnees.build.para.val);
-%         rr(1:nb_val)=ev;
-%         rr(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+        %evaluation de la fonction de base radiale
+        [ev,dev]=feval(donnees.build.fct,dist,donnees.build.para.val);
+        %intercallage reponses et gradients
+        %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
+        %conditionnement evaluations
+        comp=zeros(nb_val,nb_var);
+        eva=[ev comp];
+        %conditionnement gradients
+        comp=zeros(nb_val,1);
+        deva=[comp dev];
+        %création vecteur evaluations/gradients
+        P=eva'+deva';        
     end
 else
     if calc_grad  %si calcul des gradients
@@ -97,7 +111,9 @@ end
 %Evaluation du métamodèle au point X
 Z=P'*donnees.build.w;
 if calc_grad
-    GZ=dP'*donnees.build.w;
+    size(dP)
+    size(donnees.build.w)
+    GZ=dP*donnees.build.w;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

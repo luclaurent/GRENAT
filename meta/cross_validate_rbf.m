@@ -22,10 +22,11 @@ for tir=1:donnees.in.nb_val
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %positions des element a retirer
     if donnees.in.pres_grad
-        pos=[tir donnees.in.nb_val+(tir-1)*donnees.in.nb_var+(1:donnees.in.nb_var)];
+        pos=(tir-1)*(donnees.in.nb_var+1)+1:tir*(donnees.in.nb_var+1);
     else
         pos=tir;
     end
+    pos
     cv_KK=donnees.build.KK;
     cv_KK(pos,:)=[];
     cv_KK(:,pos)=[];

@@ -80,7 +80,7 @@ if pres_grad
     comp=zeros(nb_val,1);
     grada=[comp gradn];
     %création vecteur réponses/gradients
-    y=vertcat(y,der);
+    y=ya(:)+grada(:);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -95,8 +95,11 @@ if pres_grad
             %construction du bloc
             B=[ev,dev;dev',ddev];
             %remplissage matrice de "Gram"
-            posi=(ii-1)*(nb_var+1)+1:ii*nb_var;
-            posj=(jj-1)*(nb_var+1)+1:jj*nb_var;
+            posi=(ii-1)*(nb_var+1)+1:ii*(nb_var+1);
+            posj=(jj-1)*(nb_var+1)+1:jj*(nb_var+1);
+            size(B)
+            posi
+            posj
             KK(posi,posj)=B;
         end
     end
@@ -111,6 +114,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Détermination des coefficients
+size(KK)
+size(y)
 w=KK\y;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

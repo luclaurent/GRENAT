@@ -31,14 +31,14 @@ esp=[];
 [doe.bornes,doe.fct]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=10;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=30;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='gauss';
-data.type='RBF';
+data.type='HBRBF';
 data.grad=true;
 
 meta=init_meta(data);

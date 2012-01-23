@@ -71,14 +71,35 @@ end
 %evaluations et gradients aux points échantillonnés
 y=evaln;
 if pres_grad
-    tmp=gradn';
-    der=tmp(:);
+    %intercallage reponses et gradients
+    %[y1 dy1/dx1 dy1/dx2 ... dy1/dxp y2 dy2/dx1 dy2/dx2 ...dyn/dxp]
+    %conditionnement réponses
+    comp=zeros(nb_val,nb_var);
+    ya=[y comp];
+    %conditionnement gradients
+    comp=zeros(nb_val,1);
+    grada=[comp gradn];
+    %création vecteur réponses/gradients
     y=vertcat(y,der);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction de la matrice de Gram
 if pres_grad
+    %initialisation matrice
+    KK=zeros(nb_val*(nb_var+1));
+    for ii=1:nb_val
+        for jj=1:nb_val
+            %evaluation de la fonction de base radiale
+            [ev,dev,ddev]=feval(meta.fct,tiragesn(ii,:)-tiragesn(jj,:),meta.para.val);
+            %construction du bloc
+            B=[ev,dev;dev',ddev];
+            %remplissage matrice de "Gram"
+            posi=(ii-1)*(nb_var+1)+1:ii*nb_var;
+            posj=(jj-1)*(nb_var+1)+1:jj*nb_var;
+            KK(posi,posj)=B;
+        end
+    end
 else
     KK=zeros(nb_val);
     for ii=1:nb_val

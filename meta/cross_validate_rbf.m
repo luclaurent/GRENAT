@@ -79,7 +79,17 @@ cv.press=sum(diffc);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Tracé du graph QQ
 if meta.cv_aff
-    qq_plot(donnees.in.eval,cv_z)
+    opt.newfig=false;
+    figure
+    subplot(1,2,1);
+    opt.title='Original data';
+    qq_plot(donnees.in.eval,cv_z,opt)
+    subplot(1,2,2);
+    infos.moy=donnees.norm.moy_eval;
+    infos.std=donnees.norm.std_eval;
+    cv_zn=norm_denorm(cv_z,'norm',infos);
+    opt.title='Standardized data';
+    qq_plot(donnees.in.evaln,cv_zn,opt)
 end
 
 

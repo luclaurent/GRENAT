@@ -100,4 +100,11 @@ cv.press=sum(diffc);
 diffa=diffc./cv_var;
 cv.adequ=1/donnees.in.nb_val*sum(diffa);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Tracé du graph QQ
+if meta.cv_aff
+    qq_plot(donnees.in.eval,cv_z)
+end
+
 

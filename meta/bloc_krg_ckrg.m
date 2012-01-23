@@ -23,10 +23,10 @@ if donnees.in.pres_grad
     
     for ii=1:donnees.in.nb_val
         for jj=1:donnees.in.nb_val
-            %morceau de la matrice issue du krigeage
+            % evaluation de la fonction de correlation
             [ev,dev,ddev]=feval(meta.corr,donnees.in.tiragesn(ii,:)-donnees.in.tiragesn(jj,:),...
                 meta.para.val);
-            
+             %morceau de la matrice issue du krigeage
             rc(ii,jj)=ev;
             %morceau de la matrice provenant du Cokrigeage
             rca(ii,donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-dev;

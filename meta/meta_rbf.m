@@ -84,37 +84,6 @@ if pres_grad
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%construction de la matrice de Gram
-if pres_grad
-    %initialisation matrice
-    KK=zeros(nb_val*(nb_var+1));
-    for ii=1:nb_val
-        for jj=1:nb_val
-            %evaluation de la fonction de base radiale
-            [ev,dev,ddev]=feval(meta.fct,tiragesn(ii,:)-tiragesn(jj,:),meta.para.val);
-            %construction du bloc
-            B=[ev,dev;dev',ddev];
-            %remplissage matrice de "Gram"
-            posi=(ii-1)*(nb_var+1)+1:ii*(nb_var+1);
-            posj=(jj-1)*(nb_var+1)+1:jj*(nb_var+1);
-            KK(posi,posj)=B;
-        end
-    end
-else
-    KK=zeros(nb_val);
-    for ii=1:nb_val
-        for jj=1:nb_val
-            KK(ii,jj)=feval(meta.fct,tiragesn(jj,:)-tiragesn(ii,:),meta.para.val);
-        end
-    end
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Détermination des coefficients
-w=KK\y;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
 ret.in.tirages=tirages;
 ret.in.tiragesn=tiragesn;
@@ -125,29 +94,85 @@ ret.in.grad=grad;
 ret.in.gradn=gradn;
 ret.in.nb_var=nb_var;
 ret.in.nb_val=nb_val;
-ret.norm=rbf.norm;
-ret.build.KK=KK;
-ret.build.w=w;
 ret.build.y=y;
-ret.build.fct=meta.fct;
-ret.build.para=meta.para;
+ret.norm=rbf.norm;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Calcul de MSE par Cross-Validation
+if meta.para.estim&&meta.para.aff_estim
+    val_para=linspace(meta.para.min,meta.para.max,30);
+    %dans le cas ou on considere de l'anisotropie (et si on a 2
+    %variable de conception)
+    if meta.para.aniso&&nb_val==2
+        %on genere la grille d'étude
+        [val_X,val_Y]=meshgrid(val_para,val_para);
+        %initialisation matrice de stockage des valeurs de la
+        %log-vraisemblance
+        val_msep=zeros(size(val_X));
+        for itli=1:numel(val_X)
+            %calcul de la log-vraisemblance et stockage
+            val_msep(itli)=bloc_rbf(ret,meta,[val_X(itli) val_Y(itli)]);
+        end
+        %trace log-vraisemblance
+        figure;
+        [C,h]=contourf(val_X,val_Y,val_msep);
+        text_handle = clabel(C,h);
+        set(text_handle,'BackgroundColor',[1 1 .6],...
+            'Edgecolor',[.7 .7 .7])
+        set(h,'LineWidth',2)
+        %stockage de la figure au format LaTeX/TikZ
+        matlab2tikz([aff.doss '/logli.tex'])
+        
+    elseif ~meta.para.aniso||nbv==1
+        %initialisation matrice de stockage des valeurs de la
+        %log-vraisemblance
+        val_msep=zeros(1,length(val_para));
+        for itli=1:length(val_para)
+            %calcul de la log-vraisemblance et stockage
+            val_msep(itli)=bloc_rbf(ret,meta,val_para(itli));
+        end
+        
+        %stockage log-vraisemblance dans un fichier .dat
+        ss=[val_para' val_msep'];
+        save([aff.doss '/logli.dat'],'ss','-ascii');
+        
+        %trace log-vraisemblance
+        figure;
+        plot(val_para,val_msep);
+        title('Evolution de MSE (CV)');
+    end
+    
+    %stocke les courbes (si actif)
+    if aff.save&&(nbv<=2)
+        fich=save_aff('fig_mse_cv',aff.doss);
+        if aff.tex
+            fid=fopen([aff.doss '/fig.tex'],'a+');
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,'Vraisemblance',fich);
+            %fprintf(fid,'\\verb{%s}\n',fich);
+            fclose(fid);
+        end
+    end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Construction des differents elements avec ou sans estimation des
+%%parametres
+if meta.para.estim
+   para_estim=estim_para_rbf(ret,meta);
+   meta.para.val=para_estim.val;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% construction éléments finaux RBF (matrice, coefficients et CV) en tenant
+% compte des paramètres obtenus par minimisation
+[~,ret.build,cv]=bloc_rbf(ret,meta);
+if ~isempty(cv);ret.cv=cv;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;
 ret.tps=tps_stop-tps_start;
 if pres_grad;txt='HBRBF';else txt='RBF';end
 fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%Validation croisee
-%%%%%Calcul des differentes erreurs
-if meta.cv
-    [ret.cv]=cross_validate_rbf(ret,meta);
-    
-    tps_cv=toc;
-    fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tps_cv-tps_stop);
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

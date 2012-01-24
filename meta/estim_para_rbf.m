@@ -4,6 +4,10 @@
 function para_estim=estim_para_rbf(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
+%arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
+cv_old=meta.cv;
+aff_cv_old=meta.cv_aff;
+meta.cv_aff=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,7 +25,7 @@ end
 %definition des bornes de l'espace de recherche
 lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
-x0=lb+1/5*(ub-lb);
+x0=lb+10^-4*(ub-lb);
 % Définition de la function à minimiser
 fun=@(para)bloc_rbf(donnees,meta,para);
 %Options algo pour chaque fonction de minimisation
@@ -77,6 +81,7 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
     case 'fmincon'
+        
         fprintf('||Fmincon|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
         %minimisation avec traitement de point de départ non défini
@@ -94,30 +99,29 @@ switch meta.para.method
                 
                 if ~isempty(tt)
                     fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
-                    if desc&(x0-pas_min)>lb
+                    if desc&&(x0-pas_min)>lb
                         x0=x0-pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif desc&(x0-pas_min)<lb
+                    elseif desc&&(x0-pas_min)<lb
                         desc=false;
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&(x0+pas_min)<ub
+                    elseif ~desc&&(x0+pas_min)<ub
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&(x0+pas_min)>ub
+                    elseif ~desc&&(x0+pas_min)>ub
                         exitflag=-2;
                         fprintf('||Fmincon|| Reinitialisation impossible.\n');
                     end
                 else
                     exitflag=-1;
-                    throw(exception);
-                    
+                    throw(exception);                    
                 end
             end
             
@@ -138,6 +142,11 @@ switch meta.para.method
     otherwise
         error('Strategie de minimisation non prise en charge');
 end
+
+%reactivation affichage CV si c'était le cas avant la phase d'estimation
+meta.cv_aff=aff_cv_old;
+meta.cv=cv_old;
+
 
 %stockage valeur paramètres obtenue par minimisation
 para_estim.val=x;

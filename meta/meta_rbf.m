@@ -99,11 +99,16 @@ ret.norm=rbf.norm;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de MSE par Cross-Validation
+%arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
+cv_old=meta.cv;
+aff_cv_old=meta.cv_aff;
+meta.cv_aff=false;
+
 if meta.para.estim&&meta.para.aff_estim
     val_para=linspace(meta.para.min,meta.para.max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
-    if meta.para.aniso&&nb_val==2
+    if meta.para.aniso&&nb_var==2
         %on genere la grille d'étude
         [val_X,val_Y]=meshgrid(val_para,val_para);
         %initialisation matrice de stockage des valeurs de la
@@ -123,7 +128,7 @@ if meta.para.estim&&meta.para.aff_estim
         %stockage de la figure au format LaTeX/TikZ
         matlab2tikz([aff.doss '/logli.tex'])
         
-    elseif ~meta.para.aniso||nbv==1
+    elseif ~meta.para.aniso||nb_var==1
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(1,length(val_para));
@@ -132,18 +137,22 @@ if meta.para.estim&&meta.para.aff_estim
             val_msep(itli)=bloc_rbf(ret,meta,val_para(itli));
         end
         
-        %stockage log-vraisemblance dans un fichier .dat
-        ss=[val_para' val_msep'];
-        save([aff.doss '/logli.dat'],'ss','-ascii');
+        %stockage mse dans un fichier .dat
+        if meta.save
+            ss=[val_para' val_msep'];        
+            save([aff.doss '/logli.dat'],'ss','-ascii');
+        end
         
         %trace log-vraisemblance
         figure;
         plot(val_para,val_msep);
         title('Evolution de MSE (CV)');
+        figure
+        disp('ICI')
     end
     
     %stocke les courbes (si actif)
-    if aff.save&&(nbv<=2)
+    if aff.save&&(nb_val<=2)
         fich=save_aff('fig_mse_cv',aff.doss);
         if aff.tex
             fid=fopen([aff.doss '/fig.tex'],'a+');
@@ -153,6 +162,9 @@ if meta.para.estim&&meta.para.aff_estim
         end
     end
 end
+%rechargement config initiale si c'était le cas avant la phase d'estimation
+meta.cv_aff=aff_cv_old;
+meta.cv=cv_old;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Construction des differents elements avec ou sans estimation des

@@ -38,7 +38,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Détermination des coefficients
+warning off all
 w=KK\data.build.y;
+warning on all
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,11 +55,12 @@ data.build.para=meta.para;
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
 if meta.cv
+    %tps_stop=toc;
     [cv]=cross_validate_rbf(data,meta);
+    %tps_cv=toc;
+    %fprintf('Execution validation croisee RBF/HBRBF: %6.4d s\n\n',tps_cv-tps_stop);
 else
     cv=[];
-    tps_cv=toc;
-    fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tps_cv-tps_stop);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

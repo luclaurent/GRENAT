@@ -27,6 +27,9 @@ ind=find(Zap>=Zref);
 [~,ptup]=max(dist(ind));
 ptup=ind(ptup);
 coef=Zap(ptup)-Zref(ptup);
+if isempty(coef)
+    coef=0;
+end
 liup=li+coef;
 
 % points en dessous
@@ -34,6 +37,9 @@ ind=find(Zap<Zref);
 [~,ptdown]=max(dist(ind));
 ptdown=ind(ptdown);
 coef=Zap(ptdown)-Zref(ptdown);
+if isempty(coef)
+    coef=0;
+end
 lidown=li+coef;
 
 

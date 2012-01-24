@@ -42,7 +42,7 @@ doe.nb_samples=10;
 
 % Parametrage du metamodele
 data.para.deg=0;
-data.para.long=[0.5 20];
+data.para.long=[10^-6 10];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;

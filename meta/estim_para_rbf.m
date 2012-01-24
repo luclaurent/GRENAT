@@ -25,7 +25,7 @@ end
 %definition des bornes de l'espace de recherche
 lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
-x0=lb+10^-4*(ub-lb);
+x0=0.5*(ub-lb);
 % Définition de la function à minimiser
 fun=@(para)bloc_rbf(donnees,meta,para);
 %Options algo pour chaque fonction de minimisation

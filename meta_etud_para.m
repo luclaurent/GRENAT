@@ -42,7 +42,7 @@ doe.nb_samples=50;
 
 % Parametrage du metamodele
 data.para.deg=0;
-data.para.long=[0.5 20];
+data.para.long=[0.5 1];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
@@ -52,6 +52,7 @@ data.type='HBRBF';
 data.grad=true;
 
 meta=init_meta(data);
+meta.para.estim=false;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;

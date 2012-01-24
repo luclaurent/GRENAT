@@ -41,7 +41,7 @@ meta.cv_aff=true;       %affichage QQ plot CV
 meta.para.method='fmincon';     % méthode de minimisation de la log-vraisemblance
 meta.para.estim=true;           % recherche de la longueur de corrélation
 meta.para.aff_estim=true;  %affichage de la fonctionnelle à miniser pour obtenir le "meilleur" jeu de parametres
-meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
+meta.para.aniso=false;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
 if meta.para.estim
     meta.para.max=in.para.long(2);
     meta.para.min=in.para.long(1);

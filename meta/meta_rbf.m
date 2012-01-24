@@ -126,7 +126,9 @@ if meta.para.estim&&meta.para.aff_estim
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         %stockage de la figure au format LaTeX/TikZ
-        matlab2tikz([aff.doss '/logli.tex'])
+        if meta.save
+            matlab2tikz([aff.doss '/logli.tex'])
+        end
         
     elseif ~meta.para.aniso||nb_var==1
         %initialisation matrice de stockage des valeurs de la
@@ -139,7 +141,7 @@ if meta.para.estim&&meta.para.aff_estim
         
         %stockage mse dans un fichier .dat
         if meta.save
-            ss=[val_para' val_msep'];        
+            ss=[val_para' val_msep'];
             save([aff.doss '/logli.dat'],'ss','-ascii');
         end
         
@@ -170,8 +172,8 @@ meta.cv=cv_old;
 %%Construction des differents elements avec ou sans estimation des
 %%parametres
 if meta.para.estim
-   para_estim=estim_para_rbf(ret,meta);
-   meta.para.val=para_estim.val;
+    para_estim=estim_para_rbf(ret,meta);
+    meta.para.val=para_estim.val;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -42,7 +42,7 @@ doe.nb_samples=50;
 
 % Parametrage du metamodele
 data.para.deg=0;
-data.para.long=[0.5 1];
+data.para.long=[0.5 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
@@ -90,7 +90,7 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %etude CV 
 paramin=10^-4;
-paramax=5;
+paramax=0.8;
 nbpara=100;
 valpara=linspace(paramin,paramax,nbpara);
 meta.cv_aff=false;

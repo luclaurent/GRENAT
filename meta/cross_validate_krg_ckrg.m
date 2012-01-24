@@ -1,7 +1,7 @@
 %% Fonction assurant le calcul de diverses erreurs par validation croisée dans le cas du Krigeage/CoKrigeage
 %L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function cv=cross_validate_krg_ckrg(donnees)
+function cv=cross_validate_krg_ckrg(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
 
@@ -100,11 +100,22 @@ cv.press=sum(diffc);
 diffa=diffc./cv_var;
 cv.adequ=1/donnees.in.nb_val*sum(diffa);
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Tracé du graph QQ
 if meta.cv_aff
-    qq_plot(donnees.in.eval,cv_z)
+    opt.newfig=false;
+    figure
+    subplot(1,2,1);
+    opt.title='Original data';
+    qq_plot(donnees.in.eval,cv_z,opt)
+    subplot(1,2,2);
+    infos.moy=donnees.norm.moy_eval;
+    infos.std=donnees.norm.std_eval;
+    cv_zn=norm_denorm(cv_z,'norm',infos);
+    opt.title='Standardized data';
+    qq_plot(donnees.in.evaln,cv_zn,opt)
 end
 
 

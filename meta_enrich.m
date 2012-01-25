@@ -38,7 +38,7 @@ aff.nbele=30;
 doe.type='LHS_R';
 
 %nb d'echantillons
-doe.nb_samples=50;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -55,7 +55,7 @@ meta=init_meta(data);
 
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS','CV_MSE'};
-enrich.val_crit={100,10^-2};
+enrich.val_crit={100,10^-4};
 enrich.type='DOE';
 enrich.on=true;
 

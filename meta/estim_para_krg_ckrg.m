@@ -94,23 +94,23 @@ switch meta.para.method
                 
                 if ~isempty(tt)
                     fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
-                    if desc&(x0-pas_min)>lb
+                    if desc&&(x0-pas_min)>lb
                         x0=x0-pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif desc&(x0-pas_min)<lb
+                    elseif desc&&(x0-pas_min)<lb
                         desc=false;
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&(x0+pas_min)<ub
+                    elseif ~desc&&(x0+pas_min)<ub
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&(x0+pas_min)>ub
+                    elseif ~desc&&(x0+pas_min)>ub
                         exitflag=-2;
                         fprintf('||Fmincon|| Reinitialisation impossible.\n');
                     end

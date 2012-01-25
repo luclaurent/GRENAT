@@ -79,7 +79,7 @@ while ~crit_atteint&&enrich.on
                     fprintf(' ====> MSE (CV) ATTEINTE: %0.7f (max: %0.7f) --- + %4.2f%s <====\n',msep,crit{it_type},depass,char(37))
                 else
                     mse_ok=true;
-                    fprintf(' ====> Nb maxi de points OK: %0.7f (max: %0.7f) --- %4.2f%s <====\n',msep,crit{it_type},depass,char(37))
+                    fprintf(' ====> MSE (CV) OK: %0.7f (max: %0.7f) --- %4.2f%s <====\n',msep,crit{it_type},depass,char(37))
                 end
                 
                 %sauvegarde valeur critère

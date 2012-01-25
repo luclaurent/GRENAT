@@ -1,7 +1,7 @@
 %% Procédure assurant l'enrichissement du métamodèle
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
-function [approx,enrich]=enrich_meta(tirages,doe,meta,enrich)
+function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)
 
 %% initialisation des quantité
 new_tirages=tirages;
@@ -59,10 +59,10 @@ while ~crit_atteint&&enrich.on
                 % vérification temps atteint
                 if nb_pts>=crit{it_type}
                     pts_ok=false;
-                    fprintf(' ====> Nb maxi de points ATTEINT: %d (max: %d) --- + %4.2f%s <====\n',nb_pts,crit{it_type},depass,char(37))
+                    fprintf(' ====> Nb maxi de points ATTEINT: %d (max: %d) --- + %4.2f%s <====\n',nb_pts,crit{it_type},depass*100,char(37))
                 else
                     pts_ok=true;
-                    fprintf(' ====> Nb maxi de points OK: %d (max: %d) --- %4.2f%s <====\n',nb_pts,crit{it_type},depass,char(37))
+                    fprintf(' ====> Nb maxi de points OK: %d (max: %d) --- %4.2f%s <====\n',nb_pts,crit{it_type},depass*100,char(37))
                 end
                 
                 %sauvegarde valeur critère
@@ -133,3 +133,9 @@ while ~crit_atteint&&enrich.on
     end
     
 end
+
+
+%Extraction des grandeurs ajoutés
+in.tirages=old_tirages;
+in.eval=old_eval;
+in.grad=old_grad;

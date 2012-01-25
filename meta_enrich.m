@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='peaks'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -38,7 +38,7 @@ aff.nbele=30;
 doe.type='LHS_R';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=3;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -55,7 +55,7 @@ meta=init_meta(data);
 
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS','CV_MSE'};
-enrich.val_crit={100,10^-4};
+enrich.val_crit={100,10^-2};
 enrich.type='DOE';
 enrich.on=true;
 
@@ -89,8 +89,13 @@ tirages=gene_doe(doe);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
 
 %procédure d'enrichissement
-[approx,enrich]=enrich_meta(tirages,doe,meta,enrich);
+meta.cv_aff=false;
+[approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich);
 [K]=eval_meta(grid_XY,approx,meta);
+
+eval=in.eval;
+tirages=in.tirages;
+grad=in.grad;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

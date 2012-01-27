@@ -124,10 +124,21 @@ while ~crit_atteint&&enrich.on
     end
     
     
+    
     %calcul des grandeurs en ce nouveau point et génération du nouveaux
     %metamodele
     if ~isempty(new_tirages)
         [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
+        
+        %stockage debug
+        debug.old_tirages=old_tirages;
+        debug.new_tirages=new_tirages;
+        debug.old_eval=old_eval;
+        debug.new_eval=new_eval;
+        debug.old_grad=old_grad
+        debug.new_grad=new_grad;
+        debug.approx=approx;
+        global debug
         %construction du métamodèle
         [approx]=const_meta([old_tirages;new_tirages],[old_eval;new_eval],[old_grad;new_grad],meta);
     end

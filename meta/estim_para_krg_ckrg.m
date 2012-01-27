@@ -125,12 +125,18 @@ switch meta.para.method
                     end
                 else
                     exitflag=-1;
-                    throw(exception);                    
+                    disp(exception)
+                    exception.stack.file
+                    exception.stack.name
+                    exception.stack.line
+                    x=x0;
+                    break
                 end
             end
             
             %arret minimisation
             if exitflag==1||exitflag==0||exitflag==2
+                disp('Arret')
                 para_estim.out_algo=output;
                 para_estim.out_algo.fval=fval;
                 para_estim.out_algo.exitflag=exitflag;

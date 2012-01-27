@@ -12,6 +12,8 @@ coef=10^8;
 if nargin==3
     meta.para.val=para;
 end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation matrice de correlation
@@ -105,8 +107,6 @@ end
 %Maximum de vraisemblance
 [ret.lilog,ret.li]=likelihood(ret);
 lilog=ret.lilog;
-
-
 
 
 

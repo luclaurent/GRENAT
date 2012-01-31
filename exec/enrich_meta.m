@@ -17,6 +17,7 @@ mse_ok=true;
 old_tirages=[];
 old_eval=[];
 old_grad=[];
+
 enrich.ev_crit=cell(length(enrich.crit_type),1);
 %suivant le critere d'enrichissement (critere multiple)
 %critere TPS_CPU prioritaire si spécifié
@@ -135,7 +136,7 @@ while ~crit_atteint&&enrich.on
         debug.new_tirages=new_tirages;
         debug.old_eval=old_eval;
         debug.new_eval=new_eval;
-        debug.old_grad=old_grad
+        debug.old_grad=old_grad;
         debug.new_grad=new_grad;
         debug.approx=approx;
         global debug

@@ -64,6 +64,7 @@ end
 %differences entre les evaluations vraies et celle obtenues en retranchant
 %le site associe
 diff=cv_z-data.in.eval;
+somm=0.5*(cv_z+data.in.eval);
 %Biais moyen
 cv.bm=1/data.in.nb_val*sum(diff);
 %MSE
@@ -74,6 +75,9 @@ cv.press=sum(diffc);
 %critere d'adequation
 %diffa=diffc./cv_var;
 %cv.adequ=1/donnees.in.nb_val*sum(diffa);
+%critere perso
+cv.errp=1/data.in.nb_val*sum(diff./somm);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

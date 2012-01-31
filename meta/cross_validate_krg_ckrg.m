@@ -96,9 +96,10 @@ diffc=diff.^2;
 cv.msep=1/donnees.in.nb_val*sum(diffc);
 %PRESS
 cv.press=sum(diffc);
-%critere d'adequation
+%critere d'adequation (SCVR Keane 2005/Jones 1998)
 diffa=diffc./cv_var;
 cv.adequ=1/donnees.in.nb_val*sum(diffa);
+%critere perso
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

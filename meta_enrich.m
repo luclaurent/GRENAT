@@ -1,4 +1,4 @@
-%%Etude enrichissement
+%% Enrichissement avec critères
 %%L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace

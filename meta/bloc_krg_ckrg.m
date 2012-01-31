@@ -28,20 +28,20 @@ if donnees.in.pres_grad
             % evaluation de la fonction de correlation
             [ev,dev,ddev]=feval(meta.corr,donnees.in.tiragesn(ii,:)-donnees.in.tiragesn(jj,:),...
                 meta.para.val);
-             %morceau de la matrice issue du krigeage
+            %morceau de la matrice issue du krigeage
             rc(ii,jj)=ev;
             %morceau de la matrice provenant du Cokrigeage
             rca(ii,donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-dev;
             %matrice des derivees secondes
             rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,...
-                donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-ddev;           
+                donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-ddev;
         end
     end
     
     %Matrice de correlation du Cokrigeage
     rcc=[rc rca;rca' rci];
 else
-     %matrice de correlation du Krigeage
+    %matrice de correlation du Krigeage
     rcc=zeros(donnees.in.nb_val);
     for ii=1:donnees.in.nb_val
         for jj=1:donnees.in.nb_val

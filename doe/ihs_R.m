@@ -65,7 +65,7 @@ fprintf(fid,stock_tir);
 fclose(fid);
 %%execution du script R (nécessite d'avoir r installé)
 %test de l'existence de 
-[e,t]=unix('which r');
+[e,t]=unix('which R');
 if e~=0
     error('R non installé (absent du PATH)');
 else

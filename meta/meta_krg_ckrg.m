@@ -134,7 +134,7 @@ ret.build.corr=meta.corr;
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 %(si on saouhaite avoir les valeurs de la log-vraisemblance en fonction des
 %paramètres)
-if meta.para.estim&&meta.para.aff_likelihood
+if meta.para.estim&&meta.para.aff_estim
     val_para=linspace(meta.para.min,meta.para.max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
@@ -156,7 +156,9 @@ if meta.para.estim&&meta.para.aff_likelihood
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         %stockage de la figure au format LaTeX/TikZ
-        matlab2tikz([aff.doss '/logli.tex'])
+        if meta.save
+            matlab2tikz([aff.doss '/logli.tex'])
+        end
         
     elseif ~meta.para.aniso||nbv==1
         %initialisation matrice de stockage des valeurs de la
@@ -168,8 +170,10 @@ if meta.para.estim&&meta.para.aff_likelihood
         end
         
         %stockage log-vraisemblance dans un fichier .dat
-        ss=[val_para' val_lik'];
-        save([aff.doss '/logli.dat'],'ss','-ascii');
+        if meta.save
+            ss=[val_para' val_lik'];
+            save([aff.doss '/logli.dat'],'ss','-ascii');
+        end
         
         %trace log-vraisemblance
         figure;
@@ -221,7 +225,7 @@ fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
 if meta.cv
-    [ret.cv]=cross_validate_krg_ckrg(ret);
+    [ret.cv]=cross_validate_krg_ckrg(ret,meta);
     
     tps_cv=toc;
     fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tps_cv-tps_stop);

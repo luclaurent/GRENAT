@@ -1,31 +1,18 @@
-%% Fichier etude enrichissement LHS
+%% Affichage LHS/IHS issus de R avec enrichissement
 % L. LAURENT -- 14/01/2012 -- laurent@lmt.ens-cachan.fr
 close all
-%dimension
-for ii=[1 2 3 4 5 6 7 8 9 10]
-dim=ii;
-aff=false;
-%bornes
-b_sup=10;
-b_inf=-10;
-%nb echantillons
-for jj=[2 5 10 15 20 30 50]
-nbs_min=jj;
-nbs_max=150;
+%dimension [1 2 3 4 5 6 7 8 9 10] nombre de variables
+dim=2;
+%nb echantillons [2 5 10 15 20 30 50] initiaux (avant enrichissement)
+nbs_min=30;
+%type de tirages 'LHS' ou 'IHS'
+tir_type='IHS';
 
-
-Xmin=repmat(b_inf,1,dim);
-Xmax=repmat(b_sup,1,dim);
-%initilisation plan
-[t,nt]=ihs_R(Xmin,Xmax,nbs_min);
-%generation enrichissement
-[tt,ntt]=ihs_R(Xmin,Xmax,nbs_min,t,nbs_max);
-fich=['IHS_R/' num2str(dim) 'd_' num2str(nbs_min) '.mat'];
+fich=[tir_type '_R/' num2str(dim) 'd_' num2str(nbs_min) '.mat'];
 fprintf('%s\n',fich)
-save(fich)
-end
-end
+load(fich)
 
+aff=true;
 if aff
 if dim==1
     figure;

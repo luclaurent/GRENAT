@@ -89,17 +89,18 @@ if doe.aff
     para=0.1;
     if nbv==1
         figure
-        plot(tirages,0.*tirages,'.o')
+        yy=0.*tirages;
+        plot(tirages,yy,'o','MarkerEdgeColor','b','MarkerFaceColor','b')
         xmin=esp(:,1);
         xmax=esp(:,2);
         dep=xmax-xmin;
-        axis([(xmin-para*dep) (xmin+para*dep) -1 1])
+        axis([(xmin-para*dep) (xmax+para*dep) -1 1])
     elseif nbv==2
         figure
         xmin=esp(1,1);
         xmax=esp(1,2);
-        ymin=esp(1,1);
-        ymax=esp(1,2);
+        ymin=esp(2,1);
+        ymax=esp(2,2);
         depx=xmax-xmin;
         depy=ymax-ymin;
         plot(tirages(:,1),tirages(:,2),'o','MarkerEdgeColor','b','MarkerFaceColor','b')

@@ -69,7 +69,6 @@ switch fct
         esp=val*[-ones(dim,1),ones(dim,1)];
 end
 
-doe.bornes=esp;
 doe.dim_pb=dim;
 
 %sauvegarde nom fonction
@@ -83,7 +82,9 @@ doe.aff=true;
 
 %definition manuelle
 if nargin==3&&~isempty(def)
-    esp=def;
+    doe.bornes=def;
+else
+    doe.bornes=esp;
 end
 
 %nom de la fonction a appeler

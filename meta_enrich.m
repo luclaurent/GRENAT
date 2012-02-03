@@ -1,5 +1,5 @@
-%%Etude metamodeles en nD
-%%L. LAURENT -- 16/09/2011 -- laurent@lmt.ens-cachan.fr
+%%Etude enrichissement
+%%L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace
 clear all
@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='peaks'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -35,23 +35,30 @@ aff.nbele=30;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
-doe.type='LHS';
+doe.type='LHS_R';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=3;
 
 % Parametrage du metamodele
 data.para.deg=0;
-data.para.long=[10^-6 100];
+data.para.long=[0.5 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='gauss';
-data.type='HBRBF';
+data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);
+
+%parametrage enrichissement
+enrich.crit_type={'NB_PTS','CV_MSE'};
+enrich.val_crit={100,10^-2};
+enrich.type='DOE';
+enrich.on=true;
+
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -77,19 +84,19 @@ tirages=gene_doe(doe);
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 
-%evaluations de la fonction aux points
-[eval,grad]=gene_eval(doe.fct,tirages,'eval');
-
 %Trace de la fonction de la fonction etudiee et des gradients
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Construction et evaluation du metamodele aux points souhaites
-[approx]=const_meta(tirages,eval,grad,meta);
+%procédure d'enrichissement
+meta.cv_aff=false;
+[approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich);
 [K]=eval_meta(grid_XY,approx,meta);
+
+eval=in.eval;
+tirages=in.tirages;
+grad=in.grad;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance

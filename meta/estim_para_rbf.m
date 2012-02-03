@@ -1,13 +1,17 @@
-%% Fonction assurant l'estimation des parametres (longueur de correlation)
-% L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
+%% Fonction assurant l'estimation des parametres en RBF
+% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
-function para_estim=estim_para_krg_ckrg(donnees,meta)
+function para_estim=estim_para_rbf(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
+%arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
+cv_old=meta.cv;
+aff_cv_old=meta.cv_aff;
+meta.cv_aff=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
+fprintf('Estimation du parametre RBF par minimisation de MSE (CV)\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Définition des paramètres de minimisation
@@ -21,9 +25,9 @@ end
 %definition des bornes de l'espace de recherche
 lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
-x0=lb+1/5*(ub-lb);
+x0=0.5*(ub-lb);
 % Définition de la function à minimiser
-fun=@(para)bloc_krg_ckrg(donnees,meta,para);
+fun=@(para)bloc_rbf(donnees,meta,para);
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
 options_fmincon = optimset(...
@@ -40,15 +44,6 @@ options_fminbnd = optimset(...
     'UseParallel','always',...
     'PlotFcns','');
 
-%affichage des iterations
-if ~meta.para.aff_iter_graph
-    options_fmincon=optimset(options_fmincon,'OutputFcn',[]);
-    options_fminbnd=optimset(options_fminbnd,'OutputFcn',[]);
-end
-if ~meta.para.aff_iter_cmd
-    options_fmincon=optimset(options_fmincon,'Display', 'notify');
-    options_fminbnd=optimset(options_fminbnd,'Display', 'notify');
-end
 
 %minimisation de la log-vraisemblance suivant l'algorithme choisi
 switch meta.para.method
@@ -71,7 +66,7 @@ switch meta.para.method
         %definition des bornes de l'espace de recherche
         lb=meta.para.min;ub=meta.para.max;
         %declaration de la fonction a minimiser
-        fun=@(para)bloc_krg(tiragesn,nbs,fc,y,meta,std_e,para);
+        fun=@(para)bloc_rbf(donnees,meta,para);
         
         %minimisation
         if ~aff_warning;warning off all;end
@@ -86,13 +81,14 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
     case 'fmincon'
+        
         fprintf('||Fmincon|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
         %minimisation avec traitement de point de départ non défini
         indic=0;
         if ~aff_warning;warning off all;end
         desc=true;
-        pas_min=1/50*(ub-lb);
+        pas_min=ub;
         xinit=x0;
         while indic==0
             try
@@ -103,23 +99,23 @@ switch meta.para.method
                 
                 if ~isempty(tt)
                     fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
-                    if desc&&any((x0-pas_min)>lb)
+                    if desc&&(x0-pas_min)>lb
                         x0=x0-pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif desc&&any((x0-pas_min)<lb)
+                    elseif desc&&(x0-pas_min)<lb
                         desc=false;
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&&any((x0+pas_min)<ub)
+                    elseif ~desc&&(x0+pas_min)<ub
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&&any((x0+pas_min)>ub)
+                    elseif ~desc&&(x0+pas_min)>ub
                         exitflag=-2;
                         fprintf('||Fmincon|| Reinitialisation impossible.\n');
                     end
@@ -147,15 +143,20 @@ switch meta.para.method
         error('Strategie de minimisation non prise en charge');
 end
 
+%reactivation affichage CV si c'était le cas avant la phase d'estimation
+meta.cv_aff=aff_cv_old;
+meta.cv=cv_old;
+
+
 %stockage valeur paramètres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
     para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
-    fprintf('Valeur(s) longueur(s) de correlation');
+    fprintf('Valeur(s) parametre(s) RBF');
     fprintf(' %6.4f',para_estim.val_denorm);
     fprintf('\n');
 end
-fprintf('Valeur(s) longueur(s) de correlation (brut)');
+fprintf('Valeur(s) parametre(s) RBF (brut)');
 fprintf(' %6.4f',x);
 fprintf('\n');
 end

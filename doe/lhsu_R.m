@@ -74,7 +74,7 @@ end
 A=load([rep '/' nom_dataR]);
 
 %tirage obtenu
-tir=A(1:nbs,:).*repmat(Xmax(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
+tir=A(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
 new_tir=[];
 
 %phase d'enrichissement
@@ -88,7 +88,7 @@ A=load([rep '/' nom_dataR]);
 
 %nouveaux tirages
 ind=old_nbs+1:old_nbs+nb_enrich;
-new_tir=A(ind,:).*repmat(Xmax(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
+new_tir=A(ind,:).*repmat(Xmax(:)'-Xmin(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
 %liste de tous les tirages
 tir=[old_tir;new_tir];
 

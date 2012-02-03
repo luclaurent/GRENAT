@@ -40,8 +40,10 @@ meta.cv_aff=true;       %affichage QQ plot CV
 %estimation parametre long (longueur de correlation)
 meta.para.method='fmincon';     % méthode de minimisation de la log-vraisemblance
 meta.para.estim=true;           % recherche de la longueur de corrélation
-meta.para.aff_likelihood=false;  %affichage de la vraisemblance 1 ou 2 paramètres
+meta.para.aff_estim=false;  %affichage de la fonctionnelle à miniser pour obtenir le "meilleur" jeu de parametres
 meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
+meta.para.aff_iter_graph=false; %affichage iteration estimation paramètres sur un graph (1D/2D)
+meta.para.aff_iter_cmd=false;   %affichage iteration dans la console
 if meta.para.estim
     meta.para.max=in.para.long(2);
     meta.para.min=in.para.long(1);

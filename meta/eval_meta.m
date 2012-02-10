@@ -189,6 +189,10 @@ for num_meta=1:numel(donnees_const)
             end
             
     end
+    %%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
     %reconditionnement gradients
     if nb_var>1
         GZ=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
@@ -206,7 +210,15 @@ for num_meta=1:numel(donnees_const)
     
     %Stockage des evaluations
     if numel(donnees_const)==1
-        Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+        if nb_var>1
+            if dim_ev(3)==1
+                Z.Z=rep;
+            else
+                Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+            end                
+        else
+            Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+        end
         Z.GZ=GZ;
         Z.var=var;
     else

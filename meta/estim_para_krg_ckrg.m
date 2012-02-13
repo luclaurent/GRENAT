@@ -3,7 +3,9 @@
 
 function para_estim=estim_para_krg_ckrg(donnees,meta)
 % affichages warning ou non
-aff_warning=false;
+aff_warning=true;
+
+%critère arrêt minimisation
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,7 +34,8 @@ options_fmincon = optimset(...
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','always',...
-    'PlotFcns','');    %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+    'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+    'TolFun',1e-5);    
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation

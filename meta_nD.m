@@ -23,7 +23,7 @@ fct='rosenbrock';
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=4;
 %esp=[-5 5];
 esp=[];
 
@@ -31,14 +31,14 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=5;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=50;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='gauss';
-data.type='HBRBF';
+data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);
@@ -93,14 +93,14 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance
-[ic68,ic95,ic99]=const_ic(K.Z,K.var);
+%[ic68,ic95,ic99]=const_ic(K.Z,K.var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
 %valeur par défaut
 aff.on=true;
 aff.newfig=false;
-aff.ic.on=true;
+aff.ic.on=false;
 %valeurs chargees
 if doe.dim_pb>2
     aff.on=false;
@@ -158,6 +158,10 @@ subplot(2,2,4)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
 
+
+%% affichage des réponses sous forme d'un diagramme bar
+figure;
+bar([Z.Z K.Z])
 
 
 %calcul et affichage des criteres d'erreur

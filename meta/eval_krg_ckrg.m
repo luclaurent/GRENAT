@@ -32,7 +32,9 @@ dim_x=size(X,1);
 if donnees.norm.on
     infos.moy=donnees.norm.moy_tirages;
     infos.std=donnees.norm.std_tirages;
+    
     X=norm_denorm(X,'norm',infos);
+    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -121,7 +123,9 @@ end
 if donnees.norm.on
     infos.moy=donnees.norm.moy_eval;
     infos.std=donnees.norm.std_eval;
+    size(Z)
     Z=norm_denorm(Z,'denorm',infos);
+    Z
     if calc_grad
         infos.std_e=donnees.norm.std_eval;
         infos.std_t=donnees.norm.std_tirages;

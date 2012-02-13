@@ -6,6 +6,8 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
 coef=10^8;
+% type de factorisation de la matrice de corrélation
+fact_rcc='LU' ; %LU %QR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para défini alors on charge cette nouvelle valeur
@@ -65,27 +67,58 @@ if nargin==2   %en phase de construction
     fprintf('Conditionnement R: %6.5d\n',ret.cond)
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul du coefficient beta
-%%approche classique
-block1=((donnees.build.fct/rcc)*donnees.build.fc);
-block2=((donnees.build.fct/rcc)*donnees.build.y);
-ret.build.beta=block1\block2;
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %approche factorisee
 %attention cette factorisation n'est possible que sous condition
-% %cholesky
-% c=chol(rc);
-% fcc=c\fc;
-% %QR
-% [qf,rf]=qr(fcc);
-% yc=c\y;
-% krg.beta=rf\(qf'*yc);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul du coefficient gamma
-ret.build.gamma=rcc\(donnees.build.y-donnees.build.fc*ret.build.beta);
+%QR
+switch fact_rcc
+    case 'QR'
+        [Q,R]=qr(rcc);
+        krg.beta=R\(Q'*yc);
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient beta
+        %%approche classique
+        block1=((donnees.build.fct/rcc)*donnees.build.fc);
+        block2=((donnees.build.fct/rcc)*donnees.build.y);
+        ret.build.beta=block1\block2;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient gamma
+        ret.build.gamma=rcc\(donnees.build.y-donnees.build.fc*ret.build.beta);
+    case 'LU'
+        [L,U]=lu(rcc);
+        donnees.build.yL=L\donnees.build.y;
+        donnees.build.fcL=L\donnees.build.fc;
+        donnees.build.fctU=donnees.build.fct/U;
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient beta
+        %%approche classique
+        block1=donnees.build.fctU*donnees.build.fcL;
+        block2=donnees.build.fctU* donnees.build.yL;
+        ret.build.beta=block1\block2;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient gamma
+        ret.build.gamma=U\(donnees.build.yL-donnees.build.fcL*ret.build.beta);
+    otherwise
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient beta
+        %%approche classique
+        block1=((donnees.build.fct/rcc)*donnees.build.fc);
+        block2=((donnees.build.fct/rcc)*donnees.build.y);
+        ret.build.beta=block1\block2;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient gamma
+        ret.build.gamma=rcc\(donnees.build.y-donnees.build.fc*ret.build.beta);
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %sauvegarde de donnees
@@ -96,8 +129,7 @@ ret.build.para=meta.para;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %variance de prediction
 sig2=1/size(rcc,1)*...
-    ((donnees.build.y-donnees.build.fc*ret.build.beta)'/rcc)*...
-    (donnees.build.y-donnees.build.fc*ret.build.beta);
+    ((donnees.build.y-donnees.build.fc*ret.build.beta)'*ret.build.gamma;
 if meta.norm&&~isempty(donnees.norm.std_eval)
     ret.build.sig2=sig2*donnees.norm.std_eval^2;
 else

@@ -5,9 +5,9 @@
 function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
-coef=10^8;
+coef=10^-6;
 % type de factorisation de la matrice de corrélation
-fact_rcc='LU' ; %LU %QR
+fact_rcc='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para défini alors on charge cette nouvelle valeur
@@ -21,35 +21,42 @@ end
 %creation matrice de correlation
 if donnees.in.pres_grad
     %morceau de la matrice issu du krigeage
-    rc=zeros(donnees.in.nb_val);
-    rca=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
-    rci=zeros(donnees.in.nb_val*donnees.in.nb_var);
+    rc=sparse(donnees.in.nb_val,donnees.in.nb_val);
+    rca=sparse(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
+    rci=sparse(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
     
     for ii=1:donnees.in.nb_val
-        for jj=1:donnees.in.nb_val
-            % evaluation de la fonction de correlation
-            [ev,dev,ddev]=feval(meta.corr,donnees.in.tiragesn(ii,:)-donnees.in.tiragesn(jj,:),...
-                meta.para.val);
-            %morceau de la matrice issue du krigeage
-            rc(ii,jj)=ev;
-            %morceau de la matrice provenant du Cokrigeage
-            rca(ii,donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-dev;
-            %matrice des derivees secondes
-            rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,...
-                donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-ddev;
-        end
+        %distance 1 tirages aux autres (construction par colonne)
+        dist=donnees.in.tiragesn(ii,:)-donnees.in.tiragesn(ii:end,:);
+        % evaluation de la fonction de correlation
+        [ev,dev,ddev]=feval(meta.corr,dist,meta.para.val);
+        %morceau de la matrice issue du krigeage
+        rc(ii:end,ii)=ev;
+        %morceau de la matrice provenant du Cokrigeage
+        rca(ii,donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-dev;
+        %matrice des derivees secondes
+        rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,...
+            donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-ddev;
     end
     
     %Matrice de correlation du Cokrigeage
     rcc=[rc rca;rca' rci];
 else
-    %matrice de correlation du Krigeage
-    rcc=zeros(donnees.in.nb_val);
-    for ii=1:donnees.in.nb_val
-        for jj=1:donnees.in.nb_val
-            rcc(ii,jj)=feval(meta.corr,donnees.in.tiragesn(jj,:)-donnees.in.tiragesn(ii,:),meta.para.val);
-        end
+    %matrice de correlation du Krigeage par matrice triangulaire inférieure
+    %sans diagonale
+    rcc=sparse(donnees.in.nb_val,donnees.in.nb_val);
+    bmax=donnees.in.nb_val-1;
+    for ii=1:bmax
+        ind=ii+1:donnees.in.nb_val;
+        %distance 1 tirages aux autres (construction par colonne)
+        dist=repmat(donnees.in.tiragesn(ii,:),numel(ind),1)-donnees.in.tiragesn(ind,:);
+        % evaluation de la fonction de correlation
+        [ev]=feval(meta.corr,dist,meta.para.val);
+        % matrice de krigeage
+        rcc(ind,ii)=ev;
     end
+    %Construction matrice complète
+    rcc=rcc+rcc'+eye(donnees.in.nb_val);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -77,24 +84,42 @@ end
 switch fact_rcc
     case 'QR'
         [Q,R]=qr(rcc);
-        krg.beta=R\(Q'*yc);
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        donnees.build.yQ=Q'*donnees.build.y;
+        donnees.build.fcQ=Q'*donnees.build.fc;
+        donnees.build.fctR=donnees.build.fct/R;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
-        block1=((donnees.build.fct/rcc)*donnees.build.fc);
-        block2=((donnees.build.fct/rcc)*donnees.build.y);
+        block1=donnees.build.fctR*donnees.build.fcQ;
+        block2=donnees.build.fctR* donnees.build.yQ;
         ret.build.beta=block1\block2;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
-        ret.build.gamma=rcc\(donnees.build.y-donnees.build.fc*ret.build.beta);
+        ret.build.gamma=R\(donnees.build.yQ-donnees.build.fcQ*ret.build.beta);
     case 'LU'
         [L,U]=lu(rcc);
         donnees.build.yL=L\donnees.build.y;
         donnees.build.fcL=L\donnees.build.fc;
         donnees.build.fctU=donnees.build.fct/U;
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient beta
+        %%approche classique
+        block1=donnees.build.fctU*donnees.build.fcL;
+        block2=donnees.build.fctU* donnees.build.yL;
+        ret.build.beta=block1\block2;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul du coefficient gamma
+        ret.build.gamma=U\(donnees.build.yL-donnees.build.fcL*ret.build.beta);
+     case 'LL'
+        R=chol(rcc);
+        donnees.build.yL=L\donnees.build.y;
+        donnees.build.fcL=L\donnees.build.fc;
+        donnees.build.fctU=donnees.build.fct/U;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
@@ -129,7 +154,7 @@ ret.build.para=meta.para;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %variance de prediction
 sig2=1/size(rcc,1)*...
-    ((donnees.build.y-donnees.build.fc*ret.build.beta)'*ret.build.gamma;
+    ((donnees.build.y-donnees.build.fc*ret.build.beta)'*ret.build.gamma);
 if meta.norm&&~isempty(donnees.norm.std_eval)
     ret.build.sig2=sig2*donnees.norm.std_eval^2;
 else

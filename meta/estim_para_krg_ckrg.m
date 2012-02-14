@@ -3,7 +3,7 @@
 
 function para_estim=estim_para_krg_ckrg(donnees,meta)
 % affichages warning ou non
-aff_warning=true;
+aff_warning=false;
 
 %critère arrêt minimisation
 
@@ -112,7 +112,7 @@ switch meta.para.method
                     %calcul du pas de variation
                     pas=(pas_max-pas_min).*(1-exp(-(x0-lb).*pas_max./pente))+pas_min;
                     if pas<pas_min;pas=pas_min;elseif pas>pas_max;pas=pas_max;end
-                     fprintf('Variation: ');fprintf('%d',pas);fprintf('\n');
+                     fprintf('Variation: ');fprintf('%d ',pas);fprintf('\n');
                     fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
                     if desc&&any((x0-pas)>lb)
                         x0=x0-pas;

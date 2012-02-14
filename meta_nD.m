@@ -38,17 +38,17 @@ aff.nbele=30;
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=30;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
 data.para.deg=0;
-data.para.long=[10^-6 100];
+data.para.long=[10^-6 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='gauss';
-data.type='CKRG';
+data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);

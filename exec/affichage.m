@@ -181,6 +181,7 @@ if aff.on
                 quiver3(grille_X,grille_Y,Z.Z,ech*vec.X,ech*vec.Y,ech*vec.Z,...
                     'b','MaxHeadSize',0.1*dimr/nmax,'AutoScale','off')
             end
+            axis([min(grille_X(:)) max(grille_X(:)) min(grille_Y(:)) max(grille_Y(:)) min(Z.Z(:)) max(Z.Z(:))])
         end
 
 

@@ -7,7 +7,7 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de corrélation
-fact_rcc='QR' ; %LU %QR %LL %None
+fact_rcc='LU' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para défini alors on charge cette nouvelle valeur
@@ -21,30 +21,38 @@ end
 %creation matrice de correlation
 if donnees.in.pres_grad
     %morceau de la matrice issu du krigeage
-    rc=sparse(donnees.in.nb_val,donnees.in.nb_val);
-    rca=sparse(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
-    rci=sparse(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
+    rc=zeros(donnees.in.nb_val,donnees.in.nb_val);
+    rca=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
+    rci=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
     
     for ii=1:donnees.in.nb_val
+        ind=ii:donnees.in.nb_val;
+        indd=(ii-1)*donnees.in.nb_var+1:donnees.in.nb_val*donnees.in.nb_var;
+        inddd=donnees.in.nb_val-numel(ind)+1:donnees.in.nb_val;
+        indddd=(ii-1)*donnees.in.nb_var+1:ii*donnees.in.nb_var;
         %distance 1 tirages aux autres (construction par colonne)
-        dist=donnees.in.tiragesn(ii,:)-donnees.in.tiragesn(ii:end,:);
+        dist=repmat(donnees.in.tiragesn(ii,:),numel(ind),1)-donnees.in.tiragesn(ind,:);
         % evaluation de la fonction de correlation
         [ev,dev,ddev]=feval(meta.corr,dist,meta.para.val);
         %morceau de la matrice issue du krigeage
-        rc(ii:end,ii)=ev;
+        rc(ind,ii)=ev;
         %morceau de la matrice provenant du Cokrigeage
-        rca(ii,donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-dev;
-        %matrice des derivees secondes
-        rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,...
-            donnees.in.nb_var*(jj-1)+1:donnees.in.nb_var*jj)=-ddev;
+        rca(ii,indd)=-reshape(dev',1,numel(ind)*donnees.in.nb_var);
+        rca(inddd,indddd)=dev;
+        %matrice des derivees secondes         
+        rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,indd)=...
+             -reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var);
     end
-    
+    %construction matrices complètes
+    rc=rc+rc'-eye(donnees.in.nb_val);
+    diago=[-donnees.in.nb_var+1:donnees.in.nb_var-1];
+    rci=rci+spdiags(zeros(donnees.in.nb_val*donnees.in.nb_var,numel(diago)),diago,rci'); %suppression termes diagonaux pour eviter les doublons
     %Matrice de correlation du Cokrigeage
-    rcc=[rc rca;rca' rci];
+    rcc=[rc rca;rca' rci];    
 else
     %matrice de correlation du Krigeage par matrice triangulaire inférieure
     %sans diagonale
-    rcc=sparse(donnees.in.nb_val,donnees.in.nb_val);
+    rcc=zeros(donnees.in.nb_val,donnees.in.nb_val);
     bmax=donnees.in.nb_val-1;
     for ii=1:bmax
         ind=ii+1:donnees.in.nb_val;
@@ -56,8 +64,10 @@ else
         rcc(ind,ii)=ev;
     end
     %Construction matrice complète
-    rcc=rcc+rcc'+eye(donnees.in.nb_val);
+    rcc=rcc+rcc'+eye(donnees.in.nb_val);    
 end
+%passage en sparse
+rcc=sparse(rcc);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %amelioration du conditionnement de la matrice de corrï¿½lation

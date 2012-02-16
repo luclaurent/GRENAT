@@ -31,14 +31,14 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=20;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=50;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -48,12 +48,15 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='gauss';
-data.type='KRG';
+data.type='CKRG';
 data.grad=true;
 
 meta=init_meta(data);
 meta.para.estim=true;
-meta.para.val=0.8;
+meta.para.val=[];
+meta.para.aff_estim=false;
+meta.para.aff_iter_cmd=true;
+meta.para.aff_iter_graph=true;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -163,7 +166,7 @@ aff.titre=[];
 
 %% affichage des réponses sous forme d'un diagramme bar
 figure;
-bar([Z.Z K.Z])
+bar([Z.Z(:) K.Z(:)])
 
 
 %calcul et affichage des criteres d'erreur

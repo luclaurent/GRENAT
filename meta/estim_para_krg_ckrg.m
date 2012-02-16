@@ -7,6 +7,8 @@ aff_warning=false;
 
 %critère arrêt minimisation
 
+
+figure
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');

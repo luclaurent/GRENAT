@@ -5,7 +5,7 @@ function [corr,dcorr,ddcorr]=corr_gauss(xx,long)
 
 %verification de la dimension de la longueur de correlation
 lt=size(long);
-%nombre de points a  evaluer
+%nombre de points aï¿½ evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);

@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='peaks'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -31,14 +31,14 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=20;
+aff.nbele=50;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
-doe.type='LHS';
+doe.type='IHS_R';
 
 %nb d'echantillons
-doe.nb_samples=50;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -46,17 +46,17 @@ data.para.long=[10^-6 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
+data.corr='gauss';
 data.rbf='gauss';
-data.type='CKRG';
+data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);
 meta.para.estim=true;
-meta.para.val=[];
-meta.para.aff_estim=false;
+meta.para.val=0.5;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
-meta.para.aff_iter_graph=true;
+meta.para.aff_iter_graph=false;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -102,7 +102,7 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-%valeur par défaut
+%valeur par dï¿½faut
 aff.on=true;
 aff.newfig=false;
 aff.ic.on=false;
@@ -164,7 +164,7 @@ affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
 
 
-%% affichage des réponses sous forme d'un diagramme bar
+%% affichage des rï¿½ponses sous forme d'un diagramme bar
 figure;
 bar([Z.Z(:) K.Z(:)])
 

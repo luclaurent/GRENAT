@@ -6,11 +6,11 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
 coef=10^-6;
-% type de factorisation de la matrice de corrélation
+% type de factorisation de la matrice de corrï¿½lation
 fact_rcc='None' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%si para défini alors on charge cette nouvelle valeur
+%si para dï¿½fini alors on charge cette nouvelle valeur
 if nargin==3
     meta.para.val=para;
 end
@@ -23,7 +23,11 @@ if donnees.in.pres_grad
     %morceau de la matrice issu du krigeage
     rc=zeros(donnees.in.nb_val,donnees.in.nb_val);
     rca=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
-    rci=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
+    rci=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);    
+    rct=zeros(donnees.in.nb_val,donnees.in.nb_val);
+    rcat=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
+    rcit=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
+    
     
     for ii=1:donnees.in.nb_val
         ind=ii:donnees.in.nb_val;
@@ -42,15 +46,21 @@ if donnees.in.pres_grad
         %matrice des derivees secondes         
         rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,indd)=...
              -reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var);
+        % reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var)
+
     end
-    %construction matrices complètes
+    %construction matrices completes
     rc=rc+rc'-eye(donnees.in.nb_val);
-    diago=[-donnees.in.nb_var+1:donnees.in.nb_var-1];
-    rci=rci+spdiags(zeros(donnees.in.nb_val*donnees.in.nb_var,numel(diago)),diago,rci'); %suppression termes diagonaux pour eviter les doublons
+    %extraction de la diagonale (procÃ©dure pour eviter les doublons)
+    diago=0;   % //!!\\ corrections envisageables ici
+    val_diag=spdiags(rci,diago);
+    %full(spdiags(val_diag./2,diago,zeros(size(rci))))
+    rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
+    %rci
     %Matrice de correlation du Cokrigeage
     rcc=[rc rca;rca' rci];    
 else
-    %matrice de correlation du Krigeage par matrice triangulaire inférieure
+    %matrice de correlation du Krigeage par matrice triangulaire infï¿½rieure
     %sans diagonale
     rcc=zeros(donnees.in.nb_val,donnees.in.nb_val);
     bmax=donnees.in.nb_val-1;
@@ -63,8 +73,9 @@ else
         % matrice de krigeage
         rcc(ind,ii)=ev;
     end
-    %Construction matrice complète
-    rcc=rcc+rcc'+eye(donnees.in.nb_val);    
+        %Construction matrice complï¿½te
+    rcc=rcc+rcc'+eye(donnees.in.nb_val);   
+    
 end
 %passage en sparse
 rcc=sparse(rcc);

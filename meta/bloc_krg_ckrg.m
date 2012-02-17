@@ -7,7 +7,7 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de corr�lation
-fact_rcc='None' ; %LU %QR %LL %None
+fact_rcc='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para d�fini alors on charge cette nouvelle valeur

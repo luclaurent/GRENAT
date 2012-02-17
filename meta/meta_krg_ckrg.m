@@ -28,7 +28,7 @@ if meta.norm
     [evaln,infos_e]=norm_denorm(eval,'norm');
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     std_e=infos_e.std;moy_e=infos_e.moy;
-    std_t=infos_t.std;moy_t=infos_t.moy;   
+    std_t=infos_t.std;moy_t=infos_t.moy;
     
     %normalisation des gradients
     if pres_grad

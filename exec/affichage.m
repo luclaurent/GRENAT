@@ -60,8 +60,8 @@ elseif size(tirages,2)==2
         grille_Y=grille(:,2);
     end
 else
-    fprintf('Aucun affichage possible avec ce nombre de variables\n');
-    aff.on=false;
+    
+    aff.bar=true;
 end
 
 %mise en forme des gradients
@@ -300,6 +300,24 @@ if aff.on
             %fprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
         end
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %Trace réponse nD
+    if aff.bar
+        Zs=sort(Z.Z(:));
+        nb_eval=numel(Zs);
+        if ~isempty(aff.color)
+            plot(1:nb_eval,Zs,'o','MarkerEdgeColor',aff.color,'MarkerFaceColor',aff.color,'Markersize',5);
+            line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',aff.color,'lineStyle','--')
+        else
+            plot(1:nb_eval,Zs,'o','MarkerEdgeColor','k','MarkerFaceColor','k','Markersize',5);
+            line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',[0. 0. .8],'lineStyle','--')
+        end
+        title(aff.titre);
+        xlabel(aff.xlabel);
+        ylabel(aff.ylabel);
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

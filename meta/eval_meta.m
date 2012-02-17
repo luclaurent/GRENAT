@@ -213,14 +213,16 @@ for num_meta=1:numel(donnees_const)
         if nb_var>1
             if dim_ev(3)==1
                 Z.Z=rep;
+                Z.var=var;
             else
                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+                Z.var=reshape(var,dim_ev(1),dim_ev(2));
             end                
         else
             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+            Z.var=reshape(var,dim_ev(1),dim_ev(2));
         end
         Z.GZ=GZ;
-        Z.var=var;
     else
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;

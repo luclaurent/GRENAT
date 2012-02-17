@@ -5,7 +5,7 @@ function para_estim=estim_para_krg_ckrg(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
 
-%critère arrêt minimisation
+%critï¿½re arrï¿½t minimisation
 
 
 figure
@@ -14,8 +14,8 @@ figure
 fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Définition des paramètres de minimisation
-% Nombre de parametres à estimer
+% Dï¿½finition des paramï¿½tres de minimisation
+% Nombre de parametres ï¿½ estimer
 %anisotropie
 if meta.para.aniso
     nb_para=donnees.in.nb_var;
@@ -26,7 +26,7 @@ end
 lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
 x0=lb+1/5*(ub-lb);
-% Définition de la function à minimiser
+% Dï¿½finition de la function ï¿½ minimiser
 fun=@(para)bloc_krg_ckrg(donnees,meta,para);
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
@@ -37,7 +37,7 @@ options_fmincon = optimset(...
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','always',...
     'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
-    'TolFun',1e-5);    
+    'TolFun',1e-7);    
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
@@ -93,7 +93,7 @@ switch meta.para.method
     case 'fmincon'
         fprintf('||Fmincon|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
-        %minimisation avec traitement de point de départ non défini
+        %minimisation avec traitement de point de dï¿½part non dï¿½fini
         indic=0;
         if ~aff_warning;warning off all;end
         %pas de recherche d'initialisation
@@ -115,7 +115,7 @@ switch meta.para.method
                     pas=(pas_max-pas_min).*(1-exp(-(x0-lb).*pas_max./pente))+pas_min;
                     if pas<pas_min;pas=pas_min;elseif pas>pas_max;pas=pas_max;end
                      fprintf('Variation: ');fprintf('%d ',pas);fprintf('\n');
-                    fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
+                    fprintf('Problï¿½me initialisation fmincon (fct non dï¿½finie au point initial)\n');
                     if desc&&any((x0-pas)>lb)
                         x0=x0-pas;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
@@ -155,7 +155,7 @@ switch meta.para.method
                 para_estim.out_algo.exitflag=exitflag;
                 indic=1;
             elseif exitflag==-2
-                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) paramètre(s) fixé(s) à la valeur d''initialisation\n');
+                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) paramï¿½tre(s) fixï¿½(s) ï¿½ la valeur d''initialisation\n');
                 x=xinit;
                 indic=1;
             end
@@ -166,7 +166,7 @@ switch meta.para.method
         error('Strategie de minimisation non prise en charge');
 end
 
-%stockage valeur paramètres obtenue par minimisation
+%stockage valeur paramï¿½tres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
     para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;

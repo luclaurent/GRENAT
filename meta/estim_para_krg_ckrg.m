@@ -6,7 +6,7 @@ function para_estim=estim_para_krg_ckrg(donnees,meta)
 aff_warning=false;
 
 %crit�re arr�t minimisation
-
+crit_opti=10^-5;
 
 figure
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,7 +37,7 @@ options_fmincon = optimset(...
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','always',...
     'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
-    'TolFun',1e-7);    
+    'TolFun',crit_opti);    
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation

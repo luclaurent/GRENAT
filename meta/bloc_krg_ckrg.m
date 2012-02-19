@@ -83,9 +83,9 @@ rcc=sparse(rcc);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %amelioration du conditionnement de la matrice de corr�lation
 if meta.recond
-    ret.build.cond_orig=cond(rcc);
-    rcc=rcc+coef*eye(size(rcc));
-    ret.build.cond=cond(rcc);
+    ret.build.cond_orig=condest(rcc);
+    rcc=rcc+coef*speye(size(rcc));
+    ret.build.cond=condest(rcc);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,8 +1,8 @@
 close all
-x=linspace(-3,3,30);
-y=linspace(-3,3,30);
+x=linspace(-5,5,30);
+y=linspace(-5,5,30);
 [X,Y]=meshgrid(x,y);
-fct='peaks';
+fct='rastrigin';
 [Z,GZ1,GZ2]=feval(['fct_' fct],X,Y);
 
 figure;surfc(X,Y,Z)

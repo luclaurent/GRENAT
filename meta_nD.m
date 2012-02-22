@@ -18,12 +18,12 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='rastrigin'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=7;
+doe.dim_pb=2;
 %esp=[-5 5];
 esp=[];
 
@@ -31,14 +31,14 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=2;
+aff.nbele=50;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
-doe.type='IHS_R';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=1000;
+doe.nb_samples=100;
 
 % Parametrage du metamodele
 data.para.deg=0;
@@ -46,12 +46,19 @@ data.para.long=[10^-3 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
+data.corr='expg';
 data.rbf='gauss';
-data.type='KRG';
+data.type='DACE';
 data.grad=true;
 
 meta=init_meta(data);
+
+
+
+
+
+
+
 meta.para.estim=true;
 meta.recond=true;
 meta.para.val=0.5;

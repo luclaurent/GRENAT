@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='schwefel'; 
+fct='branin'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -55,16 +55,12 @@ data.grad=true;
 meta=init_meta(data);
 
 
-
-
-
-
-
 meta.para.estim=false;
+meta.cv=true;
 meta.recond=true;
 meta.para.val=0.5;
-meta.para.aniso=true;
-meta.para.aff_estim=false;
+meta.para.aniso=false;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 

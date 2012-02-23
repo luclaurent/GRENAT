@@ -8,7 +8,7 @@
 function [Z,GZ]=eval_rbf(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
-%Déclaration des variables
+%Dï¿½claration des variables
 nb_val=donnees.in.nb_val;
 nb_var=donnees.in.nb_var;
 
@@ -41,7 +41,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
-%définition des dimensions des matrices/vecteurs selon RBF et HBRBF
+%dï¿½finition des dimensions des matrices/vecteurs selon RBF et HBRBF
 if donnees.in.pres_grad
     tail_matvec=nb_val*(nb_var+1);
 else
@@ -74,7 +74,7 @@ if donnees.in.pres_grad
         %conditionnement gradients
         comp=zeros(nb_val,1);
         deva=[comp dev]';
-        %création vecteur evaluations/gradients
+        %crï¿½ation vecteur evaluations/gradients
         P=eva(:)+deva(:); 
         %creation vecteur derivees fonction bae radiale (calcul gradients
         %du metamodele
@@ -94,7 +94,7 @@ if donnees.in.pres_grad
         %conditionnement gradients
         comp=zeros(nb_val,1);
         deva=[comp dev]';
-        %création vecteur evaluations/gradients
+        %crï¿½ation vecteur evaluations/gradients
         P=eva'+deva';        
     end
 else
@@ -106,10 +106,10 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluation du métamodèle au point X
+%Evaluation du mï¿½tamodï¿½le au point X
 Z=P'*donnees.build.w;
 if calc_grad
-    GZ=dP*donnees.build.w;
+   GZ=dP'*donnees.build.w;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

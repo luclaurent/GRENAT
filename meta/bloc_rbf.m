@@ -1,11 +1,11 @@
-%% Procédure de construction de la matrice RBF et de calcul de la validation croisée
+%% Procï¿½dure de construction de la matrice RBF et de calcul de la validation croisï¿½e
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 function [msep,build,cv]=bloc_rbf(data,meta,para)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%si para défini alors on charge cette nouvelle valeur
+%si para dï¿½fini alors on charge cette nouvelle valeur
 if nargin==3
     meta.para.val=para;
 end
@@ -37,7 +37,7 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Détermination des coefficients
+%Dï¿½termination des coefficients
 warning off all
 w=KK\data.build.y;
 warning on all
@@ -59,10 +59,11 @@ if meta.cv
     [cv]=cross_validate_rbf(data,meta);
     %tps_cv=toc;
     %fprintf('Execution validation croisee RBF/HBRBF: %6.4d s\n\n',tps_cv-tps_stop);
+    msep=cv.msep;
 else
     cv=[];
+    msep=[];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 build=data.build;
-msep=cv.msep;

@@ -69,7 +69,7 @@ fclose(fid);
 if e~=0
     error('R non installé (absent du PATH)');
 else
-    [e,t]=unix(['cd ' rep ' && r -f ' nom_script]);
+    [e,t]=unix(['cd ' rep ' && R -f ' nom_script]);
     pause(2)
 end
 %lecture du fichier de données R

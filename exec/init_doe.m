@@ -6,7 +6,7 @@ function [doe]=init_doe(fct,dim,def)
 %definition automatique
 switch fct
     case 'rosenbrock'
-        val=-2.048;
+        val=2.048;
         esp=val*[-ones(dim,1),ones(dim,1)];
     case 'branin'
         xmin=-5;xmax=10;ymin=0;ymax=15;

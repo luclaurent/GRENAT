@@ -306,14 +306,14 @@ if aff.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Trace réponse nD
     if aff.bar
-        Zs=sort(Z.Z(:));
+        Zs=Z.Z(:);
         nb_eval=numel(Zs);
         if ~isempty(aff.color)
             plot(1:nb_eval,Zs,'o','MarkerEdgeColor',aff.color,'MarkerFaceColor',aff.color,'Markersize',5);
-            line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',aff.color,'lineStyle','--')
+            %line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',aff.color,'lineStyle','--')
         else
             plot(1:nb_eval,Zs,'o','MarkerEdgeColor','k','MarkerFaceColor','k','Markersize',5);
-            line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',[0. 0. .8],'lineStyle','--')
+            %line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',[0. 0. .8],'lineStyle','--')
         end
         title(aff.titre);
         xlabel(aff.xlabel);

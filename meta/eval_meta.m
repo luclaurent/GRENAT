@@ -18,24 +18,37 @@ end
 nb_var=donnees_const{1}.nb_var;
 %nombre de points
 nb_val=donnees_const{1}.nb_val;
-dim_ev=size(points);
+dim_ev(1)=size(points,1);
+dim_ev(2)=size(points,2);
+dim_ev(3)=size(points,3);
 
 %reconditionnement des points d'évaluations
-nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'évaluation du métamodèle
 if nb_var>1
-    ev_pts=zeros(nb_ev_pts,dim_ev(3));
-    for ll=1:dim_ev(3)
-        tmp=points(:,:,ll);
-        ev_pts(:,ll)=tmp(:);
+    % si les points d'entrée correspondent à une grille
+    if dim_ev(3)~=1
+        %alors on définit le nombre de points à évaluer
+        nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'évaluation du métamodèle
+        ev_pts=zeros(nb_ev_pts,dim_ev(3));
+        for ll=1:dim_ev(3)
+            tmp=points(:,:,ll);
+            ev_pts(:,ll)=tmp(:);
+        end
+    else
+        %sinon on définit le nombre de points à évaluer
+        nb_ev_pts=dim_ev(1);
+        ev_pts=points;
     end
 else
+    nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'évaluation du métamodèle
     ev_pts=points(:);
 end
 
 %variables de stockage
-var=zeros(dim_ev([1 2]));
-rep=zeros(dim_ev([1 2]));
-GR=zeros(nb_ev_pts,nb_var);
+if nb_var>1
+    var=zeros(size(ev_pts,1),1);
+    rep=zeros(size(ev_pts,1),1);
+    GR=zeros(nb_ev_pts,nb_var);
+end
 
 
 %%%%%%% Evaluation de divers metamodeles
@@ -86,11 +99,11 @@ for num_meta=1:numel(donnees_const)
                     diffZ
                 end
                 if meta_donnee.in.pres_grad
-                diffGZ=GZverif-grad;
-                if ~isempty(find(diffGZ>1e-7, 1))
-                    fprintf('pb d''interpolation (grad) CKRG\n')
-                    diffGZ
-                end
+                    diffGZ=GZverif-grad;
+                    if ~isempty(find(diffGZ>1e-7, 1))
+                        fprintf('pb d''interpolation (grad) CKRG\n')
+                        diffGZ
+                    end
                 end
             end
             %%%%%%%%=================================%%%%%%%%
@@ -115,16 +128,16 @@ for num_meta=1:numel(donnees_const)
                     diffZ
                 end
                 if meta_donnee.in.pres_grad
-                diffGZ=GZverif-grad;
-                if ~isempty(find(diffGZ>1e-7, 1))
-                    fprintf('pb d''interpolation (grad) CKRG\n')
-                    diffGZ
-                end
+                    diffGZ=GZverif-grad;
+                    if ~isempty(find(diffGZ>1e-7, 1))
+                        fprintf('pb d''interpolation (grad) CKRG\n')
+                        diffGZ
+                    end
                 end
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-
+            
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:size(points,1)
@@ -176,12 +189,20 @@ for num_meta=1:numel(donnees_const)
             end
             
     end
+    %%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
+    %%%%%%%%=================================%%%%%%%%
     %reconditionnement gradients
     if nb_var>1
         GZ=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
-        for ll=1:dim_ev(3)
-            tmp=GR(:,ll);
-            GZ(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
+        if dim_ev(3)>1
+            for ll=1:dim_ev(3)
+                tmp=GR(:,ll);
+                GZ(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
+            end
+        else
+            GZ=GR;
         end
     else
         GZ=GR;
@@ -189,9 +210,19 @@ for num_meta=1:numel(donnees_const)
     
     %Stockage des evaluations
     if numel(donnees_const)==1
-        Z.Z=rep;
+        if nb_var>1
+            if dim_ev(3)==1
+                Z.Z=rep;
+                Z.var=var;
+            else
+                Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+                Z.var=reshape(var,dim_ev(1),dim_ev(2));
+            end                
+        else
+            Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+            Z.var=reshape(var,dim_ev(1),dim_ev(2));
+        end
         Z.GZ=GZ;
-        Z.var=var;
     else
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;

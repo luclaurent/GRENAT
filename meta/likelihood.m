@@ -10,7 +10,16 @@ tail_rcc=size(donnees.build.rcc,1);
 
 
 %calcul de la log vraisemblance d'apres Jones 1993 / Leary 2004
-det_corr=det(donnees.build.rcc);
+switch donnees.build.fact_rcc
+    case 'QR'
+        det_corr=abs(prod(diag(donnees.build.Rrcc))); %Q est une matrice unitaire
+    case 'LL'
+        fprintf('Cholesky non codé dans likelihood.m')
+    case 'LU'
+        det_corr=det(donnees.build.Lrcc)*prod(diag(donnees.build.Urcc)); %L est quasi triangulaire (à une permutation près)
+    otherwise
+        det_corr=det(donnees.build.rcc);
+end
 
 
 logli=tail_rcc/2*log(2*pi*donnees.build.sig2)+1/2*log(det_corr)+tail_rcc/2;

@@ -6,13 +6,8 @@ function [doe]=init_doe(fct,dim,def)
 %definition automatique
 switch fct
     case 'rosenbrock'
-        if dim==2
-            xmin=-2;xmax=2;ymin=-1;ymax=3;
-            esp=[xmin xmax;ymin ymax];
-        else
-            val=30;
-            esp=val*[-ones(dim,1),ones(dim,1)];
-        end
+        val=-2.048;
+        esp=val*[-ones(dim,1),ones(dim,1)];
     case 'branin'
         xmin=-5;xmax=10;ymin=0;ymax=15;
         esp=[xmin xmax;ymin ymax];
@@ -31,13 +26,7 @@ switch fct
     case 'mystery'
         val=5;xmin=0;xmax=val;ymin=0;ymax=val;
         esp=[xmin xmax;ymin ymax];
-    case 'bohachevsky1'
-        val=100;
-        esp=[-val,val;-val,val];
-    case 'bohachevsky2'
-        val=100;
-        esp=[-val,val;-val,val];
-    case 'bohachevsky3'
+    case {'bohachevsky1','bohachevsky2','bohachevsky3'}
         val=100;
         esp=[-val,val;-val,val];
     case 'booth'
@@ -46,26 +35,20 @@ switch fct
     case 'colville'
         val=10;
         esp=val*[-1,1;-1,1;-1,1;-1,1];
-    case 'dixon'
+    case {'dixon','sphere','sumsquare'}
         val=10;
         esp=val*[-ones(dim,1),ones(dim,1)];
     case 'michalewicz'
         val=pi;
         esp=val*[zeros(dim,1),ones(dim,1)];
-    case 'sphere'
-        val=10;
-        esp=val*[-ones(dim,1),ones(dim,1)];
-    case 'sumsquare'
-        val=10;
-        esp=val*[-ones(dim,1),ones(dim,1)];
-    case 'null'
+    case {'null','cste','pente'}
         val=5;
         esp=val*[-ones(dim,1),ones(dim,1)];
-    case 'cste'
-        val=5;
+    case {'dejong','AHE','rastrigin'}
+        val=5.12;
         esp=val*[-ones(dim,1),ones(dim,1)];
-    case 'pente'
-        val=5;
+    case 'RHE'
+        val=65.536;
         esp=val*[-ones(dim,1),ones(dim,1)];
 end
 

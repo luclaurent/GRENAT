@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='rastrigin'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -31,27 +31,41 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=50;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=100;
 
 % Parametrage du metamodele
 data.para.deg=0;
-data.para.long=[10^-6 100];
+data.para.long=[10^-3 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
+data.corr='expg';
 data.rbf='gauss';
-data.type='HBRBF';
+data.type='DACE';
 data.grad=true;
 
 meta=init_meta(data);
+
+
+
+
+
+
+
+meta.para.estim=true;
+meta.recond=true;
+meta.para.val=0.5;
+meta.para.aniso=true;
+meta.para.aff_estim=false;
+meta.para.aff_iter_cmd=true;
+meta.para.aff_iter_graph=false;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -97,15 +111,15 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-%valeur par défaut
+%valeur par dï¿½faut
 aff.on=true;
 aff.newfig=false;
-aff.ic.on=true;
+aff.ic.on=false;
 %valeurs chargees
-if doe.dim_pb>2
-    aff.on=false;
-    aff.ic.on=false;
-end
+%if doe.dim_pb>2
+ %   aff.on=false;
+  %  aff.ic.on=false;
+%end
 
 if aff.ic.on 
     figure
@@ -158,6 +172,10 @@ subplot(2,2,4)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
 
+
+%% affichage des rï¿½ponses sous forme d'un diagramme bar
+figure;
+bar([Z.Z(:) K.Z(:)])
 
 
 %calcul et affichage des criteres d'erreur

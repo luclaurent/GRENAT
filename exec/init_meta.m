@@ -8,7 +8,7 @@ meta.grad=in.grad; %prise en compte des gradients
 meta.type=in.type;         %type de metamodele KRG/CKRG/DACE/RBF
 meta.deg=in.para.deg;           %degre de la regression
 meta.para.val=in.para.long(1);       %longueur de correlation
-if nargin>=4
+if isfield(in,'corr')
     meta.corr=['corr_' in.corr];     %fonction de correlation
 else
     meta.corr='corr_gauss';
@@ -16,7 +16,7 @@ end
 fctp='reg_poly';
 meta.regr=[fctp num2str(in.para.deg,'%d')];      %fonction de regression
 
-%en focntion du type de métamodele
+%en focntion du type de mï¿½tamodele
 switch in.type
     case 'SWF'
         meta.swf_para=in.para.swf_para;
@@ -38,11 +38,11 @@ meta.cv=true;           %validation croisee
 meta.cv_aff=true;       %affichage QQ plot CV
 
 %estimation parametre long (longueur de correlation)
-meta.para.method='fmincon';     % méthode de minimisation de la log-vraisemblance
-meta.para.estim=true;           % recherche de la longueur de corrélation
-meta.para.aff_estim=false;  %affichage de la fonctionnelle à miniser pour obtenir le "meilleur" jeu de parametres
-meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corrélation suivant chaque dimension)
-meta.para.aff_iter_graph=false; %affichage iteration estimation paramètres sur un graph (1D/2D)
+meta.para.method='fmincon';     % mï¿½thode de minimisation de la log-vraisemblance
+meta.para.estim=true;           % recherche de la longueur de corrï¿½lation
+meta.para.aff_estim=false;  %affichage de la fonctionnelle ï¿½ miniser pour obtenir le "meilleur" jeu de parametres
+meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corrï¿½lation suivant chaque dimension)
+meta.para.aff_iter_graph=false; %affichage iteration estimation paramï¿½tres sur un graph (1D/2D)
 meta.para.aff_iter_cmd=false;   %affichage iteration dans la console
 if meta.para.estim
     meta.para.max=in.para.long(2);

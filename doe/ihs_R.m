@@ -1,4 +1,4 @@
-%% Generation de plan d'experience LHS a partir de R (avec prétirage de LHS enrichi)
+%% Generation de plan d'experience LHS a partir de R (avec prï¿½tirage de LHS enrichi)
 % IHS: Improved Hypercube Sampling
 % Ref: Beachkofski, B., Grandhi, R. (2002) Improved Distributed Hypercube Sampling American Institute of Aeronautics and Astronautics Paper 1274.
 % L. LAURENT -- 14/01/2012 -- laurent@lmt.ens-cachan.fr
@@ -8,8 +8,8 @@ function [tir,new_tir]=ihs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
 
 %% INPUT: 
 %    - Xmin,Xmax: bornes min et max de l'espace de concpetion
-%    - nb_samples: nombre d'échantillons requis
-%    - nb_enrich: nombre d'échantillons requis pour enrichir
+%    - nb_samples: nombre d'ï¿½chantillons requis
+%    - nb_enrich: nombre d'ï¿½chantillons requis pour enrichir
 %% OUTPUT
 %   - tir: echantillons
 %   - new_tir: nouveaux echantillons en phase d'enrichissement
@@ -18,17 +18,17 @@ function [tir,new_tir]=ihs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
 %%declaration des options
 % repertoire de stockage
 rep='LHS_R';
-%nombre de plans prétirés
+%nombre de plans prï¿½tirï¿½s
 nb_pretir=300;
 %nom du fichier script r
 nom_script='ihsu_R.r';
-%nom du fichier de données R
+%nom du fichier de donnï¿½es R
 nom_dataR='dataR.dat';
 
 %phase de creation des plans
 if nargin==3
 
-% recuperation dimensions (nombre de variables et nombre d'échantillon)
+% recuperation dimensions (nombre de variables et nombre d'ï¿½chantillon)
 nbs=nb_samples;
 nbv=numel(Xmin);
 
@@ -40,39 +40,39 @@ if exist(rep,'dir')~=7
 end
 
 %ecriture du script r
-%procédure de création du tirage initial
+%procï¿½dure de crï¿½ation du tirage initial
 text_init=['a<-improvedLHS(' num2str(nbs) ',' num2str(nbv) ',5)\n'];
-%procédure d'enrichissement
+%procï¿½dure d'enrichissement
 text_enrich=['a<-augmentLHS(a,1)\n'];
 %chargement librairie LHS
 load_LHS='library(lhs)\n';
-%procédure stockage tirage
+%procï¿½dure stockage tirage
 stock_tir='write.table(a,file="dataR.dat",row.names=FALSE,col.names=FALSE)';
 
-%création et ouverture du fichier de script
+%crï¿½ation et ouverture du fichier de script
 fid=fopen([rep '/' nom_script],'w','n','UTF-8');
 %ecriture chargement librairie
 fprintf(fid,load_LHS);
 %ecriture tirage initial
 fprintf(fid,text_init);
-%écriture de l'enrichissement
+%ï¿½criture de l'enrichissement
 for ii=1:nb_pretir
     fprintf(fid,text_enrich);
 end
-%écriture de la procédure de sauvegarde
+%ï¿½criture de la procï¿½dure de sauvegarde
 fprintf(fid,stock_tir);
 %fermeture du fichier
 fclose(fid);
-%%execution du script R (nécessite d'avoir r installé)
+%%execution du script R (nï¿½cessite d'avoir r installï¿½)
 %test de l'existence de 
 [e,t]=unix('which R');
 if e~=0
-    error('R non installé (absent du PATH)');
+    error('R non installï¿½ (absent du PATH)');
 else
     [e,t]=unix(['cd ' rep ' && R -f ' nom_script]);
-    pause(2)
+    pause(1)
 end
-%lecture du fichier de données R
+%lecture du fichier de donnï¿½es R
 A=load([rep '/' nom_dataR]);
 
 %tirage obtenu
@@ -82,7 +82,7 @@ new_tir=[];
 %phase d'enrichissement
 elseif nargin==5
     
-%nombre d'échantillons dans le tirage précédent
+%nombre d'ï¿½chantillons dans le tirage prï¿½cï¿½dent
 old_nbs=size(old_tir,1);
 
 %chargement du fichier de donnees R

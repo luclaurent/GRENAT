@@ -28,7 +28,7 @@ if meta.norm
     [evaln,infos_e]=norm_denorm(eval,'norm');
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     std_e=infos_e.std;moy_e=infos_e.moy;
-    std_t=infos_t.std;moy_t=infos_t.moy;   
+    std_t=infos_t.std;moy_t=infos_t.moy;
     
     %normalisation des gradients
     if pres_grad
@@ -138,7 +138,7 @@ if meta.para.estim&&meta.para.aff_estim
     val_para=linspace(meta.para.min,meta.para.max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
-    if meta.para.aniso&&nbv==2
+    if meta.para.aniso&&nb_var==2
         %on genere la grille d'étude
         [val_X,val_Y]=meshgrid(val_para,val_para);
         %initialisation matrice de stockage des valeurs de la

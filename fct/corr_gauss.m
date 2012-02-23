@@ -5,7 +5,7 @@ function [corr,dcorr,ddcorr]=corr_gauss(xx,long)
 
 %verification de la dimension de la longueur de correlation
 lt=size(long);
-%nombre de points a  evaluer
+%nombre de points aï¿½ evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
@@ -18,7 +18,6 @@ elseif lt(1)*lt(2)==nb_comp
 elseif lt(1)*lt(2)~=nb_comp
     error('mauvaise dimension de la longueur de correlation');
 end
-
 
 
 %calcul de la valeur de la fonction au point xx

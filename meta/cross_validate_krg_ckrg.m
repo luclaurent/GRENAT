@@ -96,9 +96,10 @@ diffc=diff.^2;
 cv.msep=1/donnees.in.nb_val*sum(diffc);
 %PRESS
 cv.press=sum(diffc);
-%critere d'adequation
-diffa=diffc./cv_var;
-cv.adequ=1/donnees.in.nb_val*sum(diffa);
+%critere d'adequation (SCVR Keane 2005/Jones 1998)
+scvr=diff./cv_var;
+cv.adequ=1/donnees.in.nb_val*sum(scvr);
+%critere perso
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -107,15 +108,23 @@ cv.adequ=1/donnees.in.nb_val*sum(diffa);
 if meta.cv_aff
     opt.newfig=false;
     figure
-    subplot(1,2,1);
+    subplot(2,2,1);
     opt.title='Original data';
     qq_plot(donnees.in.eval,cv_z,opt)
-    subplot(1,2,2);
+    subplot(2,2,2);
     infos.moy=donnees.norm.moy_eval;
     infos.std=donnees.norm.std_eval;
     cv_zn=norm_denorm(cv_z,'norm',infos);
     opt.title='Standardized data';
     qq_plot(donnees.in.evaln,cv_zn,opt)
+    subplot(2,2,3);
+    opt.title='SCVR';
+    scvr_plot(cv_zn,scvr,opt)
+    %subplot(2,2,4);
+    %opt.title='SCVR';
+    %opt.xlabel='Predicted' ;
+    %opt.ylabel='SCVR';
+    %qq_plot(cv_zn,cv.adequ,opt)
 end
 
 

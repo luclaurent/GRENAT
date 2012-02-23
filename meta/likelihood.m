@@ -21,8 +21,10 @@ switch donnees.build.fact_rcc
         det_corr=det(donnees.build.rcc);
 end
 
-
 logli=tail_rcc/2*log(2*pi*donnees.build.sig2)+1/2*log(det_corr)+tail_rcc/2;
+if isinf(logli)||isnan(logli)
+    logli=1e16;
+end
 
 if nargout==2
     %calcul de la vraisemblance d'apres Jones 1993 / Leary 2004

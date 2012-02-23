@@ -45,9 +45,13 @@ end
 
 %variables de stockage
 if nb_var>1
-    var=zeros(size(ev_pts,1),1);
+    var_rep=zeros(size(ev_pts,1),1);
     rep=zeros(size(ev_pts,1),1);
     GR=zeros(nb_ev_pts,nb_var);
+else
+    var_rep=[];
+    rep=[];
+    GR=[];
 end
 
 
@@ -111,7 +115,7 @@ for num_meta=1:numel(donnees_const)
         case {'KRG','CKRG'}
             %% Evaluation du metamodele de Krigeage/CoKrigeage
             for jj=1:nb_ev_pts
-                [rep(jj),G,var(jj)]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
+                [rep(jj),G,var_rep(jj)]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
             end
             
@@ -142,7 +146,7 @@ for num_meta=1:numel(donnees_const)
             %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
-                    [rep(jj,kk),G,var(jj,kk)]=predictor(points(jj,kk,:),meta_donnee);
+                    [rep(jj,kk),G,var_rep(jj,kk)]=predictor(points(jj,kk,:),meta_donnee);
                     GR(jj,kk)=G(1);
                     GR(jj,kk)=G(2);
                 end
@@ -213,20 +217,22 @@ for num_meta=1:numel(donnees_const)
         if nb_var>1
             if dim_ev(3)==1
                 Z.Z=rep;
-                Z.var=var;
+                Z.var=var_rep;
             else
                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-                Z.var=reshape(var,dim_ev(1),dim_ev(2));
+                Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));
             end                
         else
             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-            Z.var=reshape(var,dim_ev(1),dim_ev(2));
+            if ~isempty(var_rep)
+                Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));
+            end
         end
         Z.GZ=GZ;
     else
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;
-        Z{num_meta}.var=var;
+        Z{num_meta}.var=var_rep;
     end
 end
 

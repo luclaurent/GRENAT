@@ -22,7 +22,7 @@ end
 
 
 %calcul de la valeur de la fonction au point xx
-td=-xx.^2./long;
+td=-xx.^2./(2*long.^2);
 ev=exp(sum(td,2));
 
 if nargout==1

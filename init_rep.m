@@ -11,6 +11,7 @@ addpath('meta/dace');
 addpath('doe');
 addpath('fct');
 addpath('fct/fct_test');
+addpath('fct/base_monomes');
 addpath('meta');
 addpath('crit');
 addpath('matlab2tikz/');

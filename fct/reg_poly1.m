@@ -22,6 +22,7 @@ if nargout==2
         for ii=1:d(1)
             dret{ii}=[zeros(d(2),1) eye(d(2))];
         end
+        dret=vertcat(dret{:});
     end
 end
 end

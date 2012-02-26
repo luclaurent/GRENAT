@@ -51,6 +51,7 @@ if nargout==2
             
             dret{ll}=[zeros(d(2),1) eye(d(2)) dd];
         end
+        dret=vertcat(dret{:});
     end
 end
 end

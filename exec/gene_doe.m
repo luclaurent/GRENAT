@@ -40,24 +40,73 @@ switch doe.type
         tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
         % LHS avec stockage des données
     case 'LHS_manu'
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
         %on verifie si le dossier de stockage existe (si non on le cree)
-        if exist('LHS_MANU','dir')~=7
-            unix('mkdir LHS_MANU');
+        if exist('TIR_MANU','dir')~=7
+            unix('mkdir TIR_MANU');
         end
         
         %on verifie si le tirages existe deja (si oui on le charge/si non on le
         %genere et le sauvegarde)
-        fi=['LHS_MANU/lhs_man_' doe.fct sprintf('_%d',nbs)];
+        fi=['TIR_MANU/lhsu_man_' num2str(nbv) '_'  num2str(nbs)];
         fich=[fi '.mat'];
         if exist(fich,'file')==2
-            st=load(fich,'tir_save');
-            tirages=st.tir_save;
+            st=load(fich);
+            tirages=st.tirages;
         else
-            Xmin=esp(:,1);
-            Xmax=esp(:,2);
-            tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
+            fprintf('Tirage inexistant >> execution!!\n')
+            tirages=lhsu(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
             save(fi,'tirages');
         end
+        % on corrige le tirage pourobetnir le bon espace
+        tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
+        
+    case 'LHS_R_manu'
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
+        %on verifie si le dossier de stockage existe (si non on le cree)
+        if exist('TIR_MANU','dir')~=7
+            unix('mkdir TIR_MANU');
+        end
+        
+        %on verifie si le tirages existe deja (si oui on le charge/si non on le
+        %genere et le sauvegarde)
+        fi=['TIR_MANU/lhsuR_man_' num2str(nbv) '_'  num2str(nbs)];
+        fich=[fi '.mat'];
+        if exist(fich,'file')==2
+            st=load(fich);
+            tirages=st.tirages;
+        else
+            fprintf('Tirage inexistant >> execution!!\n')
+            tirages=lhsu_R(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
+            save(fi,'tirages');
+        end
+        % on corrige le tirage pourobetnir le bon espace
+        tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
+        
+    case 'IHS_R_manu'
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
+        %on verifie si le dossier de stockage existe (si non on le cree)
+        if exist('TIR_MANU','dir')~=7
+            unix('mkdir TIR_MANU');
+        end
+        
+        %on verifie si le tirages existe deja (si oui on le charge/si non on le
+        %genere et le sauvegarde)
+        fi=['TIR_MANU/ihsR_man_' num2str(nbv) '_'  num2str(nbs)];
+        fich=[fi '.mat'];
+        if exist(fich,'file')==2
+            st=load(fich);
+            tirages=st.tirages;
+        else
+            fprintf('Tirage inexistant >> execution!!\n')
+            tirages=ihs_r(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
+            save(fi,'tirages');
+        end
+        % on corrige le tirage pourobetnir le bon espace
+        tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
         % tirages aléatoires
     case 'rand'
         tirages=repmat(esp(:,1)',prod(nbs(:)),1)...

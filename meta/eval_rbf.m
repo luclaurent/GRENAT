@@ -82,6 +82,7 @@ if donnees.in.pres_grad
         for ii=1:nb_val
             dP=horzcat(dP,dev(ii,:)',ddev(:,:,ii));
         end
+        dP=dP';
         
     else %sinon
         %evaluation de la fonction de base radiale

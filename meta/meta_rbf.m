@@ -105,7 +105,7 @@ aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
 
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,30);
+    val_para=linspace(meta.para.min,meta.para.max,100);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -147,7 +147,7 @@ if meta.para.estim&&meta.para.aff_estim
         
         %trace log-vraisemblance
         figure;
-        plot(val_para,val_msep);
+        semilogy(val_para,val_msep);
         title('Evolution de MSE (CV)');
         figure
         disp('ICI')
@@ -170,10 +170,14 @@ meta.cv=cv_old;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Construction des differents elements avec ou sans estimation des
-%%parametres
+%%parametres sinon on propose une/des valeur(s) des paramètres à partir des
+%%proposition de Hardy/Franke
 if meta.para.estim
     para_estim=estim_para_rbf(ret,meta);
     meta.para.val=para_estim.val;
+else
+    meta.para.val=2*calc_para_rbf(tiragesn,meta);
+     meta.para.val
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

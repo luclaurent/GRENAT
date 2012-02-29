@@ -97,10 +97,13 @@ cv.msep=1/donnees.in.nb_val*sum(diffc);
 %PRESS
 cv.press=sum(diffc);
 %critere d'adequation (SCVR Keane 2005/Jones 1998)
-scvr=diff./cv_var;
-cv.adequ=1/donnees.in.nb_val*sum(scvr);
+cv.scvr=diff./cv_var;
+cv.scvr_min=min(cv.scvr(:));
+cv.scvr_max=max(cv.scvr(:));
+cv.scvr_mean=mean(cv.scvr(:));
 %critere perso
-
+somm=0.5*(cv_z+donnees.in.eval);
+cv.errp=1/donnees.in.nb_val*sum(diff./somm);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,7 +122,7 @@ if meta.cv_aff
     qq_plot(donnees.in.evaln,cv_zn,opt)
     subplot(2,2,3);
     opt.title='SCVR';
-    scvr_plot(cv_zn,scvr,opt)
+    scvr_plot(cv_zn,cv.scvr,opt)
     %subplot(2,2,4);
     %opt.title='SCVR';
     %opt.xlabel='Predicted' ;

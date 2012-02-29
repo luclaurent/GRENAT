@@ -76,7 +76,7 @@ cv.press=sum(diffc);
 %diffa=diffc./cv_var;
 %cv.adequ=1/donnees.in.nb_val*sum(diffa);
 %critere perso
-cv.errp=1/data.in.nb_val*sum(diff./somm);
+cv.errp=1/data.in.nb_val*sum(abs(diff)./somm);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

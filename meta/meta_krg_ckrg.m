@@ -138,6 +138,7 @@ if meta.para.estim&&meta.para.aff_estim
     val_para=linspace(meta.para.min,meta.para.max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
+    nb_var
     if meta.para.aniso&&nb_var==2
         %on genere la grille d'étude
         [val_X,val_Y]=meshgrid(val_para,val_para);
@@ -160,7 +161,7 @@ if meta.para.estim&&meta.para.aff_estim
             matlab2tikz([aff.doss '/logli.tex'])
         end
         
-    elseif ~meta.para.aniso||nbv==1
+    elseif ~meta.para.aniso||nb_var==1
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_lik=zeros(1,length(val_para));

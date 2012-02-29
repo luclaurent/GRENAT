@@ -18,14 +18,14 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; 
+fct='sixhump'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
-%esp=[-5 5];
+doe.dim_pb=1;
+%esp=[0 15];
 esp=[];
 
 %%Definition de l'espace de conception
@@ -59,7 +59,7 @@ meta.para.estim=true;
 meta.cv=true;
 meta.recond=true;
 meta.para.val=0.5;
-meta.para.aniso=false;
+meta.para.aniso=true;
 meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
@@ -191,3 +191,4 @@ sauv_tex(meta,doe,aff,err,approx);
 if meta.save
 save([aff.doss '/WS.mat']);
 end
+%extract_nD

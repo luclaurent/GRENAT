@@ -17,34 +17,21 @@ der=nargout-1;
 %recuperation des coef et puissances des monomes
 fonction=[nom_fct num2str(deg,'%02i') '_' num2str(nbv,'%03i')];
 if der==0
-[pow_mono,nbMono]=...
+[matX,nbMono]=...
     feval(fonction);
 elseif der==1
-    [pow_mono,nbMono,...
+    [matX,nbMono,...
     pow_monoD1,cMonoD1]=...
     feval(fonction);
 elseif der==2
-    [pow_mono,nbMono,...
+    [matX,nbMono,...
     pow_monoD1,cMonoD1,...
     pow_monoD2,cMonoD2]=...
     feval(fonction);
 end
 
-% reordonnancemet puissance monomes
-pow_mono=repmat(pow_mono,nbs,1);
-% calcul termes en puissance
-t_pow=repmat(val,1,nbMono).^pow_mono;
-
-%mise en forme
-t_pow
-t_pow=reshape(t_pow',nbv,nbs*nbMono);
-% calcul monomes
-mono=prod(t_pow);
-mono
-t_pow
-%remise en forme des monomes par points
-mono_pts=reshape(mono',nbMono,nbs)';
-ret=mono_pts;
+%matrice de regression
+ret=matX;
 
 %calcul des dérivées
 if der>=1

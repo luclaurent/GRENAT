@@ -24,7 +24,9 @@ if isfield(donnees,'cv')
     fprintf('\n>>>Validation croisee<<<\n');
     if isfield(donnees.cv,'bm');fprintf('Biais moyen=%g\n',donnees.cv.bm);err.cv.bm=donnees.cv.bm;end
     if isfield(donnees.cv,'msep');fprintf('MSE=%g\n',donnees.cv.msep);err.cv.msep=donnees.cv.msep;end
-    if isfield(donnees.cv,'adequ');fprintf('Critere adequation=%g\n',donnees.cv.adequ);err.cv.adequ=donnees.cv.adequ;end
+    if isfield(donnees.cv,'scvr_mean');fprintf('SCVR (Mean)=%g\n',donnees.cv.scvr_mean);err.cv.scvr_mean=donnees.cv.scvr_mean;end
+    if isfield(donnees.cv,'scvr_min');fprintf('SCVR (Min)=%g\n',donnees.cv.scvr_min);err.cv.scvr_min=donnees.cv.scvr_min;end
+    if isfield(donnees.cv,'scvr_max');fprintf('SCVR (Max)=%g\n',donnees.cv.scvr_max);err.cv.scvr_max=donnees.cv.scvr_max;end
     if isfield(donnees.cv,'press');fprintf('PRESS=%g\n',donnees.cv.press);err.cv.press=donnees.cv.press;end
     if isfield(donnees.cv,'errp');fprintf('Erreur perso=%g\n',donnees.cv.errp);err.cv.errp=donnees.cv.errp;end
 end

@@ -3,9 +3,11 @@
 
 clear all
 % degré
-degre=2;
+deg_min=1;
+deg_max=5;
 % nb variables
-dim=2;
+dim_min=6;
+dim_max=10;
 
 %dossier de stockage
 doss='base_monomes';
@@ -18,14 +20,14 @@ file='mono';
 ext='.m';
 
 %stockage
-mono1=cell(degre,dim);
+mono1=cell(deg_max,dim_max);
 monod1=mono1;
 monod2=mono1;
 cmonod1=mono1;
 cmonod2=mono1;
-%matlabpool(4)
-for deg=1:degre
-    for nbv=1:dim
+matlabpool(8)
+for deg=deg_min:deg_max
+    for nbv=dim_min:dim_max
         fprintf('deg = %i  dim = %i\n',deg,nbv)
         %valeurs pour chaques variables
         val_var=cell(nbv,1);
@@ -63,7 +65,7 @@ for deg=1:degre
         %suppression ligne td sum term>deg
         ind=[];
         
-        for cc=1:size(combinaison,1)
+        parfor cc=1:size(combinaison,1)
             if sum(combinaison(cc,:))>deg
                 ind=[ind cc];
             end
@@ -94,7 +96,6 @@ for deg=1:degre
         clear ind
         %coef derivées secondes et monomes dérivées secondes
         tt=[];
-        
         for hh=1:size(coef_der1,2)
             tt=[tt repmat(coef_der1(:,hh),1,nbv)];
         end
@@ -114,7 +115,7 @@ for deg=1:degre
             end
         end
         %coef_der2=reshape(monomes_der2,,nbv)
-        for cc=1:numel(monomes_der2)
+        parfor cc=1:numel(monomes_der2)
             if monomes_der2(cc)<0
                 monomes_der2(cc)=0;
             end
@@ -135,8 +136,8 @@ end
 
 
 %stockage des monomes
-for ii=1:deg
-    for jj=1:dim
+for ii=deg_min:deg_max
+    for jj=dim_min:dim_max
         fonction=[file '_' num2str(ii,'%02i') '_' num2str(jj,'%03i')];
         fichier=[doss '/' fonction ext];
         fid=fopen(fichier,'w');

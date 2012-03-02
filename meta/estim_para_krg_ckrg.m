@@ -6,7 +6,7 @@ function para_estim=estim_para_krg_ckrg(donnees,meta)
 aff_warning=false;
 
 %crit�re arr�t minimisation
-crit_opti=10^-5;
+crit_opti=10^-9;
 
 figure
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

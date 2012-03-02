@@ -102,7 +102,7 @@ switch doe.type
             tirages=st.tirages;
         else
             fprintf('Tirage inexistant >> execution!!\n')
-            tirages=ihs_r(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
+            tirages=ihs_R(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
             save(fi,'tirages');
         end
         % on corrige le tirage pourobetnir le bon espace

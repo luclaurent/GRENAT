@@ -5,6 +5,8 @@ function [doe]=init_doe(fct,dim,def)
 
 %definition automatique
 switch fct
+    case 'manu'
+        esp=[0 15];
     case 'rosenbrock'
         val=2.048;
         esp=val*[-ones(dim,1),ones(dim,1)];

@@ -24,10 +24,6 @@ if donnees.in.pres_grad
     rc=zeros(donnees.in.nb_val,donnees.in.nb_val);
     rca=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
     rci=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);    
-    rct=zeros(donnees.in.nb_val,donnees.in.nb_val);
-    rcat=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
-    rcit=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
-    
     
     for ii=1:donnees.in.nb_val
         ind=ii:donnees.in.nb_val;
@@ -84,8 +80,13 @@ rcc=sparse(rcc);
 %amelioration du conditionnement de la matrice de corr�lation
 if meta.recond
     ret.build.cond_orig=condest(rcc);
-    rcc=rcc+coef*speye(size(rcc));
-    ret.build.cond=condest(rcc);
+    if ret.build.cond_orig>10^13
+        cond_old=ret.build.cond_orig;
+        rcc=rcc+coef*speye(size(rcc));
+        ret.build.cond=condest(rcc);
+        fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
+            cond_old,ret.build.cond_orig);
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

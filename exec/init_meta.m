@@ -6,17 +6,16 @@ function meta=init_meta(in)
 meta.grad=in.grad; %prise en compte des gradients
 
 meta.type=in.type;         %type de metamodele KRG/CKRG/DACE/RBF
-meta.deg=in.para.deg;           %degre de la regression
+meta.deg=in.deg;           %degre de la regression
 meta.para.val=in.para.long(1);       %longueur de correlation
 if isfield(in,'corr')
     meta.corr=['corr_' in.corr];     %fonction de correlation
 else
     meta.corr='corr_gauss';
 end
-fctp='reg_poly';
-meta.regr=[fctp num2str(in.para.deg,'%d')];      %fonction de regression
 
-%en focntion du type de m�tamodele
+
+%en focntion du type de metamodele
 switch in.type
     case 'SWF'
         meta.swf_para=in.para.swf_para;

@@ -113,17 +113,27 @@ for num_meta=1:numel(donnees_const)
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'KRG','CKRG'}
+            
+            %stockage specifique
+            Z_sto=rep;Z_reg=rep;
+            GR_reg=GR;GR_sto=GR;
+            
             %% Evaluation du metamodele de Krigeage/CoKrigeage
             for jj=1:nb_ev_pts
-                [rep(jj),G,var_rep(jj)]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
+                [rep(jj),G,var_rep(jj),det]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
+                Z_sto(jj)=det.Z_sto;
+                Z_reg(jj)=det.Z_reg;
+                GR_reg(jj,:)=det.GZ_reg;
+                GR_sto(jj,:)=det.GZ_sto;
             end
+            
             
             %% verification interpolation
             if meta.verif
                 for jj=1:size(tirages,1)
                     [Zverif(jj),G,varverif(jj)]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
-                    GZverif(jj,:)=G;
+                    GZverif(jj,:)=G';
                 end
                 diffZ=Zverif-eval;
                 
@@ -199,40 +209,81 @@ for num_meta=1:numel(donnees_const)
     %%%%%%%%=================================%%%%%%%%
     %reconditionnement gradients
     if nb_var>1
+        if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
+            GZ_sto=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+            GZ_reg=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+        end
         GZ=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
         if dim_ev(3)>1
             for ll=1:dim_ev(3)
                 tmp=GR(:,ll);
                 GZ(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
             end
+            if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
+                for ll=1:dim_ev(3)
+                    tmp=GR_sto(:,ll);
+                    tmp1=GR_reg(:,ll);
+                    GZ_sto(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
+                    GZ_reg(:,:,ll)=reshape(tmp1,dim_ev(1),dim_ev(2));
+                end
+            end
         else
             GZ=GR;
+            if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
+                GZ_sto=GR_sto;
+                GZ_reg=GR_reg;
+            end
         end
     else
         GZ=GR;
+        if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
+            GZ_sto=GR_sto;
+            GZ_reg=GR_reg;
+        end
     end
     
     %Stockage des evaluations
     if numel(donnees_const)==1
         if nb_var>1
             if dim_ev(3)==1
+                if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
+                    Z.Z_sto=Z_sto;
+                    Z.Z_reg=Z_reg;
+                end
                 Z.Z=rep;
                 Z.var=var_rep;
             else
+                if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
+                    Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+                    Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+                end
                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
                 Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));
-            end                
+            end
         else
+            if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
+                Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+                Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+            end
             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
             if ~isempty(var_rep)
                 Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));
             end
         end
         Z.GZ=GZ;
+        if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
+            Z.GZ_sto=GZ_sto;Z.GZ_reg=GZ_reg;
+        end
     else
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;
         Z{num_meta}.var=var_rep;
+        if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
+            Z{num_meta}.GZ_sto=GZ_sto;Z{num_meta}.GZ_reg=GZ_reg;
+        end
+        if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
+            Z{num_meta}.Z_sto=Z_sto;Z{num_meta}.Z_reg=Z_reg;
+        end
     end
 end
 

@@ -1,7 +1,7 @@
 %% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage
 % L. LAURENT -- 15/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [Z,GZ,var]=eval_krg_ckrg(U,donnees,tir_part)
+function [Z,GZ,var,details]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
 %Déclaration des variables
@@ -91,24 +91,30 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %matrice de regression aux points d'evaluations
 if calc_grad
-    [ff,jf]=feval(donnees.build.fct_reg,X);
+    [ff,~,jf,~]=feval(donnees.build.fct_reg,X);
+    jf=vertcat(jf{:});
 else
     ff=feval(donnees.build.fct_reg,X);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluation du metamodele au point X
-Z=ff*donnees.build.beta+rr'*donnees.build.gamma;
-%Z=krg.beta+rr'*krg.gamma; (pour CKRG???)
+Z_reg=ff*donnees.build.beta;
+Z_sto=rr'*donnees.build.gamma;
+Z=Z_reg+Z_sto;
 if calc_grad
     %%verif en 2D+
-    GZ=jf'*donnees.build.beta+jr'*donnees.build.gamma;
+    jf
+    donnees.build.beta
+    GZ_reg=jf*donnees.build.beta
+    GZ_sto=jr'*donnees.build.gamma
+    GZ=GZ_reg+GZ_sto;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
 %2004)
-if nargout ==3
+if nargout >=3
     if ~aff_warning;warning off all;end
     rcrr=donnees.build.rcc \ rr;
     u=donnees.build.fct*rcrr-ff';
@@ -124,10 +130,28 @@ if donnees.norm.on
     infos.moy=donnees.norm.moy_eval;
     infos.std=donnees.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);
+    if nargout==4
+        Z_reg=norm_denorm(Z_reg,'denorm',infos);
+        Z_sto=norm_denorm(Z_sto,'denorm',infos);
+    end
     if calc_grad
         infos.std_e=donnees.norm.std_eval;
         infos.std_t=donnees.norm.std_tirages;
-        GZ=norm_denorm_g(GZ','denorm',infos); clear infos
+        GZ=norm_denorm_g(GZ','denorm',infos);
         GZ=GZ';
+        if nargout==4
+            GZ_reg=norm_denorm(GZ_reg','denorm',infos)';
+            GZ_sto=norm_denorm(GZ_sto','denorm',infos)';
+        end
+        clear infos
     end
+end
+
+%extraction détails
+if nargout==4
+    details.Z_reg=Z_reg;
+    details.Z_sto=Z_sto;
+    details.GZ_reg=GZ_reg;
+    details.GZ_sto=GZ_sto;
+end
 end

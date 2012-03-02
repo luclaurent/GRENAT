@@ -75,35 +75,29 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation matrice de conception
 %(regression polynomiale)
-if meta.deg==0
-    nb_termes=1;
-elseif meta.deg==1
-    nb_termes=1+nbv;
-elseif meta.deg==2
-    p=(nbv+1)*(nbv+2)/2;
-    nb_termes=p;
-else
-    error('Degre de regression non pris en charge')
-end
+%autre fonction de calcul des regresseur reg_poly0,1 ou 2
+fct=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
 
 %/!\ en le cokrigeage universel n'est pas opérationnel
-if pres_grad&&meta.deg~=0
-   meta.deg=0;nb_termes=1;
-   fprintf('Le Cokrigeage Universel n''est pas opérationnel (on construit un Cokrigeage Ordinaire)\n')
-end
+%if pres_grad&&meta.deg~=0
+%   meta.deg=0;nb_termes=1;
+%   fprintf('Le Cokrigeage Universel n''est pas opérationnel (on construit un Cokrigeage Ordinaire)\n')
+%end
 
-fct=['reg_poly' num2str(meta.deg,1)];
 if ~pres_grad
     fc=feval(fct,tiragesn);
 else
-    [reg,dreg]=feval(fct,tiragesn);
+    [Reg,nb_termes,DReg,~]=feval(fct,tiragesn);
+    %initialisation matrice des regresseurs
     fc=zeros((nb_var+1)*nb_val,nb_termes);
-    
-    fc(1:nb_val,:)=reg;
-    if iscell(dreg)
-        tmp=vertcat(dreg{:});
+    %chargement regresseur (evaluation de monomes)
+    fc(1:nb_val,:)=Reg;
+    %chargement des dérivées des regresseurs (evaluation des dérivées des monomes)
+    if iscell(DReg)
+        DReg{:}'
+        tmp=vertcat(DReg{:});
     else
-        tmp=dreg';
+        tmp=DReg';
         tmp=tmp(:);
     end
     

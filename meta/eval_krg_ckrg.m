@@ -104,10 +104,8 @@ Z_sto=rr'*donnees.build.gamma;
 Z=Z_reg+Z_sto;
 if calc_grad
     %%verif en 2D+
-    jf
-    donnees.build.beta
-    GZ_reg=jf*donnees.build.beta
-    GZ_sto=jr'*donnees.build.gamma
+    GZ_reg=jf*donnees.build.beta;
+    GZ_sto=jr'*donnees.build.gamma;
     GZ=GZ_reg+GZ_sto;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

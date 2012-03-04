@@ -24,7 +24,7 @@ fct='rosenbrock';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=5;
 %esp=[0 15];
 esp=[];
 
@@ -32,17 +32,17 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=4;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=25;
+doe.nb_samples=50;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 30];
+data.para.long=[10^-3 5];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
@@ -50,17 +50,17 @@ data.corr='matern32';
 data.rbf='gauss';
 data.type='CKRG';
 data.grad=true;
-data.deg=1;
+data.deg=0;
 
 meta=init_meta(data);
 
 
-meta.para.estim=false;
+meta.para.estim=true;
 meta.cv=true;
 meta.recond=true;
 meta.para.val=0.5;
 meta.para.aniso=true;
-meta.para.aff_estim=true;
+meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 

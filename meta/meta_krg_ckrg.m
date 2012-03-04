@@ -94,8 +94,8 @@ else
     fc(1:nb_val,:)=Reg;
     %chargement des dérivées des regresseurs (evaluation des dérivées des monomes)
     if iscell(DReg)
-        DReg{:}'
-        tmp=vertcat(DReg{:});
+        tmp=horzcat(DReg{:})';
+        tmp=reshape(tmp,nb_termes,[])';
     else
         tmp=DReg';
         tmp=tmp(:);
@@ -132,7 +132,6 @@ if meta.para.estim&&meta.para.aff_estim
     val_para=linspace(meta.para.min,meta.para.max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
-    nb_var
     if meta.para.aniso&&nb_var==2
         %on genere la grille d'étude
         [val_X,val_Y]=meshgrid(val_para,val_para);

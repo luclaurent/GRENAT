@@ -115,7 +115,7 @@ switch meta.para.method
                     pas=(pas_max-pas_min).*(1-exp(-(x0-lb).*pas_max./pente))+pas_min;
                     if pas<pas_min;pas=pas_min;elseif pas>pas_max;pas=pas_max;end
                      fprintf('Variation: ');fprintf('%d ',pas);fprintf('\n');
-                    fprintf('Probl�me initialisation fmincon (fct non d�finie au point initial)\n');
+                    fprintf('Probleme initialisation fmincon (fct non definie au point initial)\n');
                     if desc&&any((x0-pas)>lb)
                         x0=x0-pas;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
@@ -138,10 +138,7 @@ switch meta.para.method
                     end
                 else
                     exitflag=-1;
-                    disp(exception)
-                    exception.stack.file
-                    exception.stack.name
-                    exception.stack.line
+                    getReport(exception,'extended')
                     x=x0;
                     break
                 end

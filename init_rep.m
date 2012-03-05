@@ -1,20 +1,24 @@
-%initialisation des différents répertoires
+%initialisation des differents repertoires
 % L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
 
-function init_rep
+function init_rep(doss)
+
+if nargin==0
+    doss='.';
+end
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%
-addpath('doe/LHS');
-addpath('doe/IHS');
-addpath('meta/dace');
-addpath('doe');
-addpath('fct');
-addpath('fct/fct_test');
-addpath('fct/base_monomes');
-addpath('meta');
-addpath('crit');
-addpath('matlab2tikz/');
-addpath('exec');
+addpath([doss '/doe/LHS']);
+addpath([doss '/doe/IHS']);
+addpath([doss '/meta/dace']);
+addpath([doss '/doe']);
+addpath([doss '/fct']);
+addpath([doss '/fct/fct_test']);
+addpath([doss '/fct/base_monomes']);
+addpath([doss '/meta']);
+addpath([doss '/crit']);
+addpath([doss '/matlab2tikz/']);
+addpath([doss '/exec']);
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%

@@ -2,11 +2,11 @@
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
 
-function new_tir=ajout_tir_doe(doe,old_tirages)
+function new_tir=ajout_tir_doe(old_tirages)
 
-
-Xmin=doe.bornes(:,1);
-Xmax=doe.bornes(:,2);
+global doe;
+Xmin=doe.Xmin;
+Xmax=doe.Xmax;
 
 nb_samples=size(old_tirages,1);
 

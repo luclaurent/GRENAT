@@ -8,7 +8,7 @@ aff_warning=false;
 %crit�re arr�t minimisation
 crit_opti=10^-9;
 
-figure
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
@@ -47,8 +47,10 @@ options_fminbnd = optimset(...
 
 %affichage des iterations
 if ~meta.para.aff_iter_graph
-    options_fmincon=optimset(options_fmincon,'OutputFcn',[]);
-    options_fminbnd=optimset(options_fminbnd,'OutputFcn',[]);
+    options_fmincon=optimset(options_fmincon,'OutputFcn','');
+    options_fminbnd=optimset(options_fminbnd,'OutputFcn','');
+else
+    figure
 end
 if ~meta.para.aff_iter_cmd
     options_fmincon=optimset(options_fmincon,'Display', 'notify');

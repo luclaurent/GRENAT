@@ -156,7 +156,7 @@ if meta.para.estim&&meta.para.aff_estim
         end
         
     elseif ~meta.para.aniso||nb_var==1
-        %initialisation matrice de stockage des valeurs de la
+        %initialisation matrice de stockage des "valeurs de la
         %log-vraisemblance
         val_lik=zeros(1,length(val_para));
         for itli=1:length(val_para)

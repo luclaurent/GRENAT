@@ -141,6 +141,7 @@ if meta.para.estim&&meta.para.aff_estim
         for itli=1:numel(val_X)
             %calcul de la log-vraisemblance et stockage
             val_lik(itli)=bloc_krg_ckrg(ret,meta,[val_X(itli) val_Y(itli)]);
+            %aff_avance(itli,numel(val_X));
         end
         %trace log-vraisemblance
         figure;

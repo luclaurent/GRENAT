@@ -32,17 +32,17 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=4;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=20;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=200;
+doe.nb_samples=100;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 5];
+data.para.long=[10^-3 10];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
@@ -60,7 +60,7 @@ meta.cv=true;
 meta.recond=true;
 meta.para.val=0.5;
 meta.para.aniso=true;
-meta.para.aff_estim=false;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 

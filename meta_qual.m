@@ -1,4 +1,4 @@
-%%Etude qualité metamodeles en nD
+%%Etude qualitï¿½ metamodeles en nD
 %%L. LAURENT -- 08/03/2012 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace
@@ -18,13 +18,13 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rastrigin';
+fct='rosenbrock';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=3;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -32,7 +32,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=7;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -40,8 +40,8 @@ doe.type='LHS_manu';
 
 %nb d'echantillons
 doe.nb_samples=30;
-doe.nbs_min=10;
-doe.nbs_max=200;
+doe.nbs_min=5;
+doe.nbs_max=100;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 10];
@@ -52,18 +52,19 @@ data.corr='matern32';
 data.rbf='gauss';
 data.type='CKRG';
 data.grad=false;
-data.deg=0;
+data.deg=2;
 
 meta=init_meta(data);
 
 
 meta.para.estim=true;
-meta.cv=false;
+meta.cv=true;
+meta.cv_aff=false;
 meta.recond=true;
 meta.para.val=0.5;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
-meta.para.aff_iter_cmd=true;
+meta.para.aff_iter_cmd=false;
 meta.para.aff_iter_graph=false;
 
 %affichage de l'intervalle de confiance
@@ -85,7 +86,7 @@ disp('=======Construction metamodele=======');
 disp('=====================================');
 disp('=====================================');
 
-list_nbs=doe.nbs_min:1:doe.nbs_max;
+list_nbs=doe.nbs_min:2:doe.nbs_max;
 
 for ww=1:numel(list_nbs)
     doe.nb_samples=list_nbs(ww);
@@ -187,8 +188,38 @@ for ww=1:numel(list_nbs)
     
     mse(ww)=err.emse;
     rr2(ww)=err.r2;
+    msecv(ww)=err.cv.msep;
+    
+    
+    rmse(ww)=err.rmse;
+    raae(ww)=err.eraae;
+    rmae(ww)=err.ermae;
+    eq1(ww)=err.eq1;
+    eq2(ww)=err.eq2;
+    eq3(ww)=err.eq3;
+    
+    
 end
 
+nom=[fct '_' num2str(meta.deg) '_' meta.type '_' meta.corr '_' num2str(doe.dim_pb) 'D_'];
+data=[list_nbs(:) mse(:)];
+save([nom 'MSE.dat'],'data','-ascii')
+data=[list_nbs(:) rr2(:)];
+save([nom 'R2.dat'],'data','-ascii')
+data=[list_nbs(:) rmse(:)];
+save([nom 'RMSE.dat'],'data','-ascii')
+data=[list_nbs(:) raae(:)];
+save([nom 'RAAE.dat'],'data','-ascii')
+data=[list_nbs(:) rmae(:)];
+save([nom 'RMAE.dat'],'data','-ascii')
+data=[list_nbs(:) eq1(:)];
+save([nom 'Q1.dat'],'data','-ascii')
+data=[list_nbs(:) eq2(:)];
+save([nom 'Q2.dat'],'data','-ascii')
+data=[list_nbs(:) eq3(:)];
+save([nom 'Q3.dat'],'data','-ascii')
+data=[list_nbs(:) msecv(:)];
+save([nom 'MSECV.dat'],'data','-ascii')
 % fprintf('=====================================\n');
 % fprintf('=====================================\n');
 %

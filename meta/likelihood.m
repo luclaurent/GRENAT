@@ -13,12 +13,13 @@ tail_rcc=size(donnees.build.rcc,1);
 %calcul de la log vraisemblance d'apres Jones 1993 / Leary 2004
 switch donnees.build.fact_rcc
     case 'QR'
+        detQrcc=det(donnees.build.Qrcc);
         diagRrcc=diag(donnees.build.Rrcc);
         det_corr=abs(prod(diagRrcc)); %Q est une matrice unitaire        
         log_det_corr=sum(log(abs(diagRrcc)));
         %contrôle positivité
         sumd=sum(diagRrcc<0);
-        if mod(sumd,2)~=0
+        if mod(sumd,2)~=0&&detQrcc>0
            fprintf('<< Matrice de corrélation non positive >>\n'); 
         end
     case 'LL'

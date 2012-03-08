@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='rastrigin'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -39,16 +39,16 @@ aff.nbele=10;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=40;
+doe.nb_samples=200;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 10];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
+data.corr='gauss';
 data.rbf='gauss';
-data.type='CKRG';
+data.type='KRG';
 data.grad=true;
 data.deg=0;
 

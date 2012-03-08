@@ -67,12 +67,12 @@ fclose(fid);
 %test de l'existence de 
 [e,t]=unix('which R');
 if e~=0
-    error('R non install� (absent du PATH)');
+    error('R non installe (absent du PATH)');
 else
     [e,t]=unix(['cd ' rep ' && R -f ' nom_script]);
     pause(1)
 end
-%lecture du fichier de donn�es R
+%lecture du fichier de donnees R
 A=load([rep '/' nom_dataR]);
 
 %tirage obtenu
@@ -93,6 +93,4 @@ ind=old_nbs+1:old_nbs+nb_enrich;
 new_tir=A(ind,:).*repmat(Xmax(:)'-Xmin(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
 %liste de tous les tirages
 tir=[old_tir;new_tir];
-
-    
 end

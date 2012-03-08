@@ -108,6 +108,54 @@ switch doe.type
         % on corrige le tirage pourobetnir le bon espace
         tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
         % tirages aléatoires
+    case 'IHS_R_manu_enrich'
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
+        %on verifie si le dossier de stockage existe (si non on le cree)
+        if exist('TIR_MANU','dir')~=7
+            unix('mkdir TIR_MANU');
+        end
+        
+        %on verifie si le tirages existe deja (si oui on le charge/si non on le
+        %genere et le sauvegarde)
+        fi=['TIR_MANU/ihsR_man_' num2str(nbv) '_'  num2str(doe.nbs_min) '_' num2str(doe.nbs_max)];
+        fich=[fi '.mat'];
+        if exist(fich,'file')==2
+            st=load(fich);
+            tirages=st.tirages;
+        else
+            fprintf('Tirage inexistant >> execution!!\n')
+            t_init=ihs_R(0*Xmin,0*Xmax+1,doe.nbs_min); % on initialise le tirage
+            [tirages,~]=ihs_R(0*Xmin,0*Xmax+1,doe.nbs_min,t_init,doe.nbs_max);
+            save(fi,'tirages');
+        end
+        % on corrige le tirage pourobetnir le bon espace
+        tirages=tirages(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
+        % tirages aléatoires
+    case 'LHS_R_manu_enrich'
+        Xmin=esp(:,1);
+        Xmax=esp(:,2);
+        %on verifie si le dossier de stockage existe (si non on le cree)
+        if exist('TIR_MANU','dir')~=7
+            unix('mkdir TIR_MANU');
+        end
+        
+        %on verifie si le tirages existe deja (si oui on le charge/si non on le
+        %genere et le sauvegarde)
+        fi=['TIR_MANU/lhsuR_man_' num2str(nbv) '_'  doe.nbs_min '_' doe.nbs_max];
+        fich=[fi '.mat'];
+        if exist(fich,'file')==2
+            st=load(fich);
+            tirages=st.tirages;
+        else
+            fprintf('Tirage inexistant >> execution!!\n')
+            t_init=lhsu_R(0*Xmin,0*Xmax+1,doe.nbs_min); % on initialise le tirage
+            [tirages,~]=lhsu_R(0*Xmin,0*Xmax+1,doe.nbs_min,t_init,doe.nbs_max);
+            save(fi,'tirages');            
+        end
+        % on corrige le tirage pourobetnir le bon espace
+        tirages=tirages(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
+        % tirages aléatoires
     case 'rand'
         tirages=repmat(esp(:,1)',prod(nbs(:)),1)...
             +repmat(esp(:,2)'-esp(:,1)',prod(nbs(:)),1).*rand(prod(nbs(:)),nbv);

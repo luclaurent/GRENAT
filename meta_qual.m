@@ -16,9 +16,14 @@ init_aff();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+list_fct={'rosenbrock','sixhump','rastrigin','branin'};
+list_meta={'KRG','CKRG'};
+list_deg=[0 1 2];
+for gg=1:numel(list_fct)
+    for hh=1:numel(list_meta)
+        for pp=1:numel(list_deg)
 %fonction etudiee
-fct='rosenbrock';
+fct=list_fct{gg};
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -32,7 +37,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=50;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -50,9 +55,9 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='gauss';
-data.type='CKRG';
+data.type=list_meta{hh};
 data.grad=false;
-data.deg=2;
+data.deg=list_deg(pp);
 
 meta=init_meta(data);
 
@@ -220,6 +225,9 @@ data=[list_nbs(:) eq3(:)];
 save([nom 'Q3.dat'],'data','-ascii')
 data=[list_nbs(:) msecv(:)];
 save([nom 'MSECV.dat'],'data','-ascii')
+        end
+    end
+end
 % fprintf('=====================================\n');
 % fprintf('=====================================\n');
 %

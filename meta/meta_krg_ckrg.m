@@ -3,6 +3,31 @@
 
 function [ret]=meta_krg_ckrg(tirages,eval,grad,meta)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Affichage des informations de construction
+fprintf(' >> Construction : ');
+if ~isempty(grad);fprintf('CoKrigeage \n');else fprintf('Krigeage \n');end
+fprintf('>> Deg : %i ',meta.deg);
+if meta.deg==0; fprintf('(Ordinaire)\n');else fprintf('(Universel)\n');end;
+fprintf('>> Fonction de correlation: %s\n',meta.corr);
+fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
+
+fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
+if meta.para.estim
+fprintf('>> Algo estimation: %s\n',meta.para.method);
+fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
+fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
+else
+    fprintf('>> Valeur parametre: %d\n',meta.para.val);
+end
+fprintf('\n\n')
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %chargement variables globales
 global aff
 
@@ -23,7 +48,6 @@ pres_grad=~isempty(grad);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Normalisation
 if meta.norm
-    disp('Normalisation');
     %normalisation des donnees
     [evaln,infos_e]=norm_denorm(eval,'norm');
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');

@@ -17,9 +17,10 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %list_fct={'rosenbrock','sixhump','rastrigin','branin'};
-list_fct={'rosenbrock','rastrigin','sixhump','branin'};
+%list_fct={'rosenbrock','rastrigin','sixhump','branin'};
+list_fct={'rosenbrock','rastrigin'};
 list_meta={'KRG','CKRG'};
-list_deg=0;%[0 1 2];
+list_deg=[0 1 2];%[0 1 2];
 for gg=1:numel(list_fct)
     for hh=1:numel(list_meta)
         for pp=1:numel(list_deg)
@@ -30,7 +31,7 @@ fct=list_fct{gg};
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=3;
 %esp=[0 15];
 esp=[];
 
@@ -38,7 +39,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=10;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu

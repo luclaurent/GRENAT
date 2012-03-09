@@ -12,9 +12,10 @@ function [p,dp] = fct_sumsquare(xx)
 nbvar=size(xx,3);
 
 if nbvar==1
-    error('Mauvais format variable entrée fct Sum Square');
+    error('Mauvais format variable entrï¿½e fct Sum Square');
 else
     nu(1,1,:)=1:nbvar;
+    nu=repmat(nu,[size(xx,1),size(xx,2),1]);
     cal=nu.*xx.^2;
     p=sum(cal,3);
     

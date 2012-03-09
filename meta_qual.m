@@ -16,9 +16,10 @@ init_aff();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-list_fct={'rosenbrock','sixhump','rastrigin','branin'};
+%list_fct={'rosenbrock','sixhump','rastrigin','branin'};
+list_fct={'rosenbrock','rastrigin','sixhump','branin'};
 list_meta={'KRG','CKRG'};
-list_deg=[0 1 2];
+list_deg=0;%[0 1 2];
 for gg=1:numel(list_fct)
     for hh=1:numel(list_meta)
         for pp=1:numel(list_deg)
@@ -37,7 +38,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=50;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -46,7 +47,7 @@ doe.type='LHS_manu';
 %nb d'echantillons
 doe.nb_samples=30;
 doe.nbs_min=5;
-doe.nbs_max=100;
+doe.nbs_max=50;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 10];
@@ -58,7 +59,9 @@ data.rbf='gauss';
 data.type=list_meta{hh};
 data.grad=false;
 data.deg=list_deg(pp);
-
+if strcmp(data.type,'CKRG')||strcmp(data.type,'HBRBF')
+    data.grad=true;
+end
 meta=init_meta(data);
 
 
@@ -69,7 +72,7 @@ meta.recond=true;
 meta.para.val=0.5;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
-meta.para.aff_iter_cmd=false;
+meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 
 %affichage de l'intervalle de confiance
@@ -91,7 +94,7 @@ disp('=======Construction metamodele=======');
 disp('=====================================');
 disp('=====================================');
 
-list_nbs=doe.nbs_min:2:doe.nbs_max;
+list_nbs=doe.nbs_min:1:doe.nbs_max;
 
 for ww=1:numel(list_nbs)
     doe.nb_samples=list_nbs(ww);
@@ -203,7 +206,8 @@ for ww=1:numel(list_nbs)
     eq2(ww)=err.eq2;
     eq3(ww)=err.eq3;
     
-    
+    clear approx K Z
+    clear global all
 end
 
 nom=[fct '_' num2str(meta.deg) '_' meta.type '_' meta.corr '_' num2str(doe.dim_pb) 'D_'];

@@ -4,7 +4,11 @@
 function [ret]=const_meta(tirages,eval,grad,meta)
 
 %prise en compte gradients ou pas
-if isempty(grad)||meta.grad==false;pec_grad='Non';grad=[];else;pec_grad='Oui';end
+if isfield(meta,'grad')
+    if isempty(grad)||meta.grad==false;pec_grad='Non';grad=[];else pec_grad='Oui';end
+else
+    if isempty(grad);pec_grad='Non';grad=[];else pec_grad='Oui';end
+end
 fprintf('Gradients disponibles: %s\n\n',pec_grad);
 
 % Generation du metamodele
@@ -113,7 +117,7 @@ for type=metype
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'ILAG'
-            %% interpolation par fonction de base linéaire
+            %% interpolation par fonction de base linï¿½aire
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             %%%%%%%%=================================%%%%%%%%

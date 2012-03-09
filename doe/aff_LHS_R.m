@@ -6,7 +6,7 @@ dim=2;
 %nb echantillons [2 5 10 15 20 30 50] initiaux (avant enrichissement)
 nbs_min=30;
 %type de tirages 'LHS' ou 'IHS'
-tir_type='IHS';
+tir_type='LHS';
 
 fich=[tir_type '_R/' num2str(dim) 'd_' num2str(nbs_min) '.mat'];
 fprintf('%s\n',fich)

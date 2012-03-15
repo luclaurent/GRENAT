@@ -183,8 +183,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % construction éléments finaux RBF (matrice, coefficients et CV) en tenant
 % compte des paramètres obtenus par minimisation
-[~,ret.build,cv]=bloc_rbf(ret,meta);
-if ~isempty(cv);ret.cv=cv;end
+[~,block]=bloc_rbf(ret,meta);
+%sauvegarde informations
+tmp=mergestruct(ret.build,block.build);
+ret.build=tmp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;

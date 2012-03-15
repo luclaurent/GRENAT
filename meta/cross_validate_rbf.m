@@ -1,7 +1,7 @@
 %% Fonction assurant le calcul de diverses erreurs par validation croisée dans le cas RBF/HBFRB
 %L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function cv=cross_validate_rbf(data,meta)
+function cv=cross_validate_rbf(data_block,data,meta)
 
 % affichages warning ou non
 aff_warning=false;
@@ -26,7 +26,7 @@ for tir=1:data.in.nb_val
     else
         pos=tir;
     end
-    cv_KK=data.build.KK;
+    cv_KK=data_block.build.KK;
     cv_KK(pos,:)=[];
     cv_KK(:,pos)=[];
     cv_y=data.build.y;
@@ -46,6 +46,8 @@ for tir=1:data.in.nb_val
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %passage des parametres
     donnees_cv=data;
+    donnees_cv.build.fct=data_block.build.fct;
+    donnees_cv.build.para=data_block.build.para;
     donnees_cv.in.tirages=cv_tirages;
     donnees_cv.in.tiragesn=cv_tiragesn;
     donnees_cv.in.nb_val=data.in.nb_val-1;  %retrait d'un site

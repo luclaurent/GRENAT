@@ -4,7 +4,7 @@
 %effacement du Workspace
 clear all
 global aff
-
+unix('rm -rf TIR_MANU');
 %chargement des repertoires de travail
 init_rep;
 %initialisation de l'espace de travail
@@ -16,12 +16,15 @@ init_aff();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%list_fct={'rosenbrock','sixhump','rastrigin','branin'};
-%list_fct={'rosenbrock','rastrigin','sixhump','branin'};
-list_fct={'rosenbrock','rastrigin'};
+list_fct={'rosenbrock','sixhump','rastrigin','branin'};
 list_meta={'KRG','CKRG'};
+dim_pb{1}=[2 3 4 5];
+dim_pb{2}=[2];
+dim_pb{3}=[2 3 4 5];
+dim_pb{4}=[2];
 list_deg=[0 1 2];%[0 1 2];
 for gg=1:numel(list_fct)
+for tt=1:numel(dim_pb{gg})
     for hh=1:numel(list_meta)
         for pp=1:numel(list_deg)
 %fonction etudiee
@@ -31,7 +34,7 @@ fct=list_fct{gg};
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=3;
+doe.dim_pb=dim_pb{gg}(tt);
 %esp=[0 15];
 esp=[];
 
@@ -39,8 +42,16 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=10;%max([3 floor((30^2)^(1/doe.dim_pb))]);
-
+if dim_pb{gg}(tt)==2
+    aff.nbele=30;
+elseif dim_pb{gg}(tt)==3
+    aff.nbele=10;
+elseif dim_pb{gg}(tt)==4
+    aff.nbele=6;
+elseif dim_pb{gg}(tt)==5
+    aff.nbele=4;
+end
+  
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_manu';
@@ -232,6 +243,7 @@ data=[list_nbs(:) msecv(:)];
 save([nom 'MSECV.dat'],'data','-ascii')
         end
     end
+end
 end
 % fprintf('=====================================\n');
 % fprintf('=====================================\n');

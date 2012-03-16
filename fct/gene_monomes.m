@@ -4,10 +4,10 @@
 clear all
 % degré
 deg_min=1;
-deg_max=5;
+deg_max=4;
 % nb variables
-dim_min=6;
-dim_max=10;
+dim_min=11;
+dim_max=20;
 
 %dossier de stockage
 doss='base_monomes';

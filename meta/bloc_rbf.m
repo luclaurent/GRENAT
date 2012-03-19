@@ -51,7 +51,7 @@ if meta.recond
         KK=KK+coef*speye(size(KK));
         ret.build.cond=condest(KK);
         fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-            cond_old,ret.build.cond_orig);
+            cond_old,ret.build.cond);
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,6 +71,7 @@ switch fact_KK
         [Q,R]=qr(KK);
         ret.build.QKK=Q;
         ret.build.RKK=R;
+        ret.build.iKK=R\Q';
         ret.build.yQ=Q'*data.build.y;
         ret.build.w=R\ret.build.yQ;
     case 'LU'
@@ -111,4 +112,4 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ret.build.cv=cv;
+ret.cv=cv;

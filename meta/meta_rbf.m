@@ -177,7 +177,9 @@ if meta.para.estim
     meta.para.val=para_estim.val;
 else
     meta.para.val=2*calc_para_rbf(tiragesn,meta);
-     meta.para.val
+    fprintf('Définition parametre (%s), val=',meta.para.type);
+    fprintf(' %d',meta.para.val);
+    fprintf('\n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -187,6 +189,7 @@ end
 %sauvegarde informations
 tmp=mergestruct(ret.build,block.build);
 ret.build=tmp;
+ret.cv=block.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;

@@ -4,7 +4,7 @@
 function para=calc_para_rbf(tirages,data)
 
 % choix de la stratégie
-type='Hardy'; %Hardy/Franke
+type=data.para.type; %Hardy/Franke ou manu
 % Aniso ou non
 aniso=data.para.aniso;
 
@@ -52,4 +52,7 @@ switch type
             end
         end
         para=1.25*1/nb_val*D;
+        
+    otherwise
+        para=data.para.val;
 end

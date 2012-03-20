@@ -8,7 +8,7 @@
 %%fonction objectif
 %%Zap: correspond a l'ensemble des valeurs
 
-function [r,radj,r2,r2adj]=r_square(Zex,Zap)
+function [r,radj,r2,r2adj]=fact_corr(Zex,Zap)
 
 Zex=Zex(:);Zap=Zap(:);
 nbs=length(Zex);
@@ -17,7 +17,7 @@ moyZex=mean(Zex);
 moyZap=mean(Zap);
 
 %calcul covariance empirique
-covZexZap=sum(Zex.*Zap);
+covZexZap=sum(Zex.*Zap)-nbs*moyZex*moyZap;
 
 %calcul variances empiriques
 VZex=sum(Zex.^2)-nbs*moyZex^2;

@@ -6,13 +6,16 @@ function err=crit_err(Zap,Zref,donnees)
 if ~isempty(Zref)
     err.emse=mse_p(Zref,Zap);
     err.rmse=rmse_p(Zref,Zap);
-    err.r2=r_square(Zref,Zap);
+    [err.r,err.radj,err.r2,err.r2adj]=fact_corr(Zref,Zap);
     err.eraae=raae(Zref,Zap);
     err.ermae=rmae(Zref,Zap);
     [err.eq1,err.eq2,err.eq3]=qual(Zref,Zap);
     fprintf('\nMSE= %6.4d\n',err.emse);
     fprintf('RMSE= %6.4d\n',err.rmse);
+    fprintf('R= %6.4d\n',err.r);
+    fprintf('R_adj= %6.4d\n',err.radj);
     fprintf('R2= %6.4d\n',err.r2);
+    fprintf('R2_adj= %6.4d\n',err.r2adj);
     fprintf('RAAE= %6.4d\n',err.eraae);
     fprintf('RMAE= %6.4d\n',err.ermae);
     fprintf('Q1= %6.4d\nQ2= %6.4d\nQ3= %6.4d\n\n',err.eq1,err.eq2,err.eq3);

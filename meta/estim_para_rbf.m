@@ -87,9 +87,12 @@ switch meta.para.method
         %minimisation avec traitement de point de départ non défini
         indic=0;
         if ~aff_warning;warning off all;end
+        pas_min=1/500*(ub-lb);
+        pas_max=1/50*(ub-lb);
+        pente=0.2;
         desc=true;
-        pas_min=ub;
         xinit=x0;
+        pas_pres=pas_max;
         while indic==0
             try
                 [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options_fmincon);
@@ -98,30 +101,34 @@ switch meta.para.method
                 [tt,~,~]=regexp(exception.message,text,'match','start','end');
                 
                 if ~isempty(tt)
+                    %calcul du pas de variation
+                    pas=(pas_max-pas_min).*(1-exp(-(x0-lb).*pas_max./pente))+pas_min;
+                    if pas<pas_min;pas=pas_min;elseif pas>pas_max;pas=pas_max;end
+                    fprintf('Variation: ');fprintf('%d ',pas);fprintf('\n');
                     fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
-                    if desc&&(x0-pas_min)>lb
+                    if desc&&any((x0-pas_min)>lb)
                         x0=x0-pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif desc&&(x0-pas_min)<lb
+                    elseif desc&&any((x0-pas_min)<lb)
                         desc=false;
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&&(x0+pas_min)<ub
+                    elseif ~desc&&any((x0+pas_min)<ub)
                         x0=x0+pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
                         fprintf('%g ',x0); fprintf('\n');
                         exitflag=-1;
-                    elseif ~desc&&(x0+pas_min)>ub
+                    elseif ~desc&&any((x0+pas_min)>ub)
                         exitflag=-2;
                         fprintf('||Fmincon|| Reinitialisation impossible.\n');
                     end
                 else
                     exitflag=-1;
-                    throw(exception);                    
+                    throw(exception);
                 end
             end
             

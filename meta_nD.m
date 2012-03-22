@@ -39,10 +39,10 @@ aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 100];
+data.para.long=[10^-3 10];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;

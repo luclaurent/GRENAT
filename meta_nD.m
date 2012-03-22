@@ -47,7 +47,7 @@ data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
-data.rbf='matern32';
+data.rbf='gauss';
 data.type='HBRBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'HBRBF')

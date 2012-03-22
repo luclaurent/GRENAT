@@ -1,11 +1,11 @@
-%%fonction de base radiale gauss (RBF)
-%%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
+%%fonction de correlation exponentielle carrée (KRG)
+%%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
-function [rf,drf,ddrf]=rf_gauss(xx,long)
+function [corr,dcorr,ddcorr]=corr_sexp(xx,long)
 
 %verification de la dimension de la longueur de correlation
 lt=size(long);
-%nombre de points a  evaluer
+%nombre de points aï¿½ evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
@@ -20,19 +20,18 @@ elseif lt(1)*lt(2)~=nb_comp
 end
 
 
-
 %calcul de la valeur de la fonction au point xx
 td=-xx.^2./(2*long.^2);
 ev=exp(sum(td,2));
 
 if nargout==1
-    rf=ev;
+    corr=ev;
 elseif nargout==2
-    rf=ev;
-    drf=-2*xx./long.*repmat(ev,1,nb_comp);
+    corr=ev;
+    dcorr=-xx./(long.^2).*repmat(ev,1,nb_comp);
 elseif nargout==3
-    rf=ev;
-    drf=-2*xx./long.*repmat(ev,1,nb_comp);   
+    corr=ev;
+    dcorr=-xx./(long.^2).*repmat(ev,1,nb_comp);   
     
     %calcul des derivees secondes    
     
@@ -41,13 +40,13 @@ elseif nargout==3
     %si on ne demande le calcul des derivees secondes en un seul point, on
     %les stocke dans une matrice 
     if pt_eval==1
-        ddrf=zeros(nb_comp);
+        ddcorr=zeros(nb_comp);
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddrf(mm,ll)=2*ev/long(mm)*(2*xx(mm)^2/long(mm)-1);
+                    ddcorr(mm,ll)=ev/long(mm)^2*(xx(mm)^2/long(mm)^2-1);
                 else
-                    ddrf(mm,ll)=4*ev/(long(mm)*long(ll))*xx(ll)*xx(mm);
+                    ddcorr(mm,ll)=ev/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm);
                 end
            end
         end
@@ -55,17 +54,20 @@ elseif nargout==3
     %si on demande le calcul des derivees secondes en plusieurs point, on
     %les stocke dans un vecteur de matrices
     else
-        ddrf=zeros(nb_comp,nb_comp,pt_eval);
+        ddcorr=zeros(nb_comp,nb_comp,pt_eval);
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddrf(mm,ll,:)=2*ev./long(mm).*(2*xx(:,mm).^2./long(mm)-1);
+                    ddcorr(mm,ll,:)=ev./long(mm)^2.*(xx(:,mm).^2./long(mm)^2-1);
                 else
-                    ddrf(mm,ll,:)=4*ev./(long(mm)*long(ll)).*xx(:,ll).*xx(:,mm);
+                    ddcorr(mm,ll,:)=ev./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm);
                 end
            end
         end
+
     end
+   
+    
 else
     error('Mauvais argument de sortie de la fonction corr_gauss');
 end

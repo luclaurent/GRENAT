@@ -31,10 +31,10 @@ if nargout==1
     rf=ev;
 elseif nargout==2
     rf=ev;
-    drf=-xx./long^2.*repmat(ev,1,nb_comp);
+    drf=-xx./long.^2.*repmat(ev,1,nb_comp);
 elseif nargout==3
     rf=ev;
-    drf=-xx./long^2.*repmat(ev,1,nb_comp);   
+    drf=-xx./long.^2.*repmat(ev,1,nb_comp);   
     
     %calcul des derivees secondes    
     
@@ -47,9 +47,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddrf(mm,ll)=2*ev/long(mm)*(2*xx(mm)^2/long(mm)-1);
+                    ddrf(mm,ll)=ev/long(mm)^4*(xx(mm)^2-long(mm)^2);
                 else
-                    ddrf(mm,ll)=4*ev/(long(mm)*long(ll))*xx(ll)*xx(mm);
+                    ddrf(mm,ll)=ev/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm);
                 end
            end
         end
@@ -61,9 +61,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddrf(mm,ll,:)=2*ev./long(mm).*(2*xx(:,mm).^2./long(mm)-1);
+                    ddrf(mm,ll,:)=ev./long(mm)^4.*(xx(:,mm).^2-long(mm)^2);
                 else
-                    ddrf(mm,ll,:)=4*ev./(long(mm)*long(ll)).*xx(:,ll).*xx(:,mm);
+                    ddrf(mm,ll,:)=ev./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm);
                 end
            end
         end

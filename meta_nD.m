@@ -47,7 +47,7 @@ data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
-data.rbf='gauss';
+data.rbf='sexp';
 data.type='HBRBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'HBRBF')
@@ -58,7 +58,7 @@ data.deg=0;
 meta=init_meta(data);
 
 
-meta.para.estim=false;
+meta.para.estim=true;
 meta.cv=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy

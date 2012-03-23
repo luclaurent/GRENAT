@@ -53,10 +53,10 @@ if meta.norm
     clear infos_e infos_t
 else
     rbf.norm.on=false;
-    std_e=[];
-    std_t=[];
-    moy_e=[];
-    moy_t=[];
+    rbf.norm.moy_eval=[];
+    rbf.norm.std_eval=[];
+    rbf.norm.moy_tirages=[];
+    rbf.norm.std_tirages=[];
     rbf.norm.on=false;
     evaln=eval;
     tiragesn=tirages;

@@ -1,5 +1,7 @@
-%%fonction de correlation exponentielle carrée (KRG)
+%%fonction de correlation exponentielle carrée ou gaussienne (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
+
+% voir par exemple Rasmussen 2006 ou Roustant 2010
 
 function [corr,dcorr,ddcorr]=corr_sexp(xx,long)
 

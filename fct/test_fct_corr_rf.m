@@ -1,5 +1,5 @@
 dim=2;
-fct='corr_gauss';
+fct='corr_sexp';
 
 pas=0.3;
 

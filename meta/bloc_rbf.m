@@ -1,4 +1,4 @@
-%% Proc�dure de construction de la matrice RBF et de calcul de la validation crois�e
+%% Procedure de construction de la matrice RBF et de calcul de la validation crois�e
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 function [msep,ret]=bloc_rbf(data,meta,para)
@@ -22,7 +22,8 @@ if data.in.pres_grad
     for ii=1:data.in.nb_val
         for jj=1:data.in.nb_val
             %evaluation de la fonction de base radiale
-            [ev,dev,ddev]=feval(meta.fct,data.in.tiragesn(ii,:)-data.in.tiragesn(jj,:),meta.para.val);
+            dist=data.in.tiragesn(ii,:)-data.in.tiragesn(jj,:);
+            [ev,dev,ddev]=feval(meta.fct,dist,meta.para.val);
             %construction du bloc
             B=[ev,dev;dev',ddev];
             %remplissage matrice de "Gram"

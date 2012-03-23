@@ -4,7 +4,7 @@
 function [res,dres]=fct_pente(xx)
 
 %pente dans la direction
-dir=1;
+dir=2;
 
 %Nombre de variables
 nbvar=size(xx,3);

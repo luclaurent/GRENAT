@@ -14,7 +14,7 @@ fact_rcc='QR' ; %LU %QR %LL %None
 if nargin==3
     meta.para.val=para;
 end
-
+meta.para.val
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

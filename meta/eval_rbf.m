@@ -66,24 +66,24 @@ if donnees.in.pres_grad
     if calc_grad  %si calcul des gradients
         %evaluation de la fonction de base radiale
         [ev,dev,ddev]=feval(donnees.build.fct,dist,donnees.build.para.val);
+        %[~,~,ddev]=feval(donnees.build.fct,-dist,donnees.build.para.val);
         %intercallage reponses et gradients
         %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
-        %conditionnement evaluations
+        %conditionneme~nt evaluations
         comp=zeros(nb_val,nb_var);
         eva=[ev comp]';
         %conditionnement gradients
         comp=zeros(nb_val,1);
         deva=[comp dev]';
-        %cr�ation vecteur evaluations/gradients
+        %creation vecteur evaluations/gradients
         P=eva(:)+deva(:); 
-        %creation vecteur derivees fonction bae radiale (calcul gradients
-        %du metamodele
+        %creation vecteur derivees fonction base radiale (calcul gradients
+        %du metamodele)
         dP=[];
         for ii=1:nb_val
-            dP=horzcat(dP,dev(ii,:)',ddev(:,:,ii));
+            dP=vertcat(dP,dev(ii,:),ddev(:,:,ii));
         end
-        dP=dP';
-        
+
     else %sinon
         %evaluation de la fonction de base radiale
         [ev,dev]=feval(donnees.build.fct,dist,donnees.build.para.val);
@@ -95,7 +95,7 @@ if donnees.in.pres_grad
         %conditionnement gradients
         comp=zeros(nb_val,1);
         deva=[comp dev]';
-        %cr�ation vecteur evaluations/gradients
+        %creation vecteur evaluations/gradients
         P=eva'+deva';        
     end
 else

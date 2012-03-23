@@ -69,5 +69,5 @@ elseif nargout==3
         end
     end
 else
-    error('Mauvais argument de sortie de la fonction corr_gauss');
+    error('Mauvais argument de sortie de la fonction rf_sexp');
 end

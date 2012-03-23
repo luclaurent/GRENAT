@@ -101,7 +101,8 @@ for num_meta=1:numel(donnees_const)
                 if ~isempty(find(diffZ>1e-7, 1))
                     fprintf('pb d''interpolation (eval) CKRG\n')
                     diffZ
-                end
+                end 
+                
                 if meta_donnee.in.pres_grad
                     diffGZ=GZverif-grad;
                     if ~isempty(find(diffGZ>1e-7, 1))

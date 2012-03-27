@@ -11,7 +11,7 @@ function status=affichage(grille,Z,tirages,eval,grad,aff)
 %       obtenu par exemple avec linspace
 %       - Z: structure des donnees a  tracer
 %           * Z.Z: cotes obtenus au points definis par la grille
-%           * Z.GR1 et Z.GR2: composant des gradients calcules aux points
+%           * GR1 et GR2: composant des gradients calcules aux points
 %           definis par la gille
 %       - tirages: liste des points tires (par strategie quelconque)
 %       - eval: evaluations/cotes obtenus aux points du tirage
@@ -60,8 +60,18 @@ elseif size(tirages,2)==2
         grille_Y=grille(:,2);
     end
 else
-    error('Mauvaise dimension de l espace de conception');
+    
+    aff.bar=true;
 end
+
+%mise en forme des gradients
+
+if isfield(Z,'GZ')&&esp2d
+    GR1=Z.GZ(:,:,1);
+    GR2=Z.GZ(:,:,2);
+end
+%GR1
+
 
 %Affichage actif
 if aff.on
@@ -82,15 +92,15 @@ if aff.on
         %%mise aï¿½ l'echelle des traces de gradients
         if aff.grad_meta||aff.grad_eval
                 %calcul norme gradient
-                ngr=zeros(size(Z.GR1));
-                for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
-                    ngr(ii)=norm([Z.GR1(ii) Z.GR2(ii)],2);
+                ngr=zeros(size(GR1));
+                for ii=1:size(GR1,1)*size(GR1,2)
+                    ngr(ii)=norm([GR1(ii) GR2(ii)],2);
                 end
                 %recherche du maxi de la norme du gradient
                 nm=[max(max(ngr))];
                 
-                n1=max(max(Z.GR1));
-                n2=max(max(Z.GR2));
+                n1=max(max(abs(GR1)));
+                n2=max(max(abs(GR2)));
 
                 %definition de la taille mini de la grille d'affichage
                 gx=grille_X-grille_X(1);
@@ -105,10 +115,12 @@ if aff.on
                 para_fl=0.9;
                 tailf=para_fl*tailg;
 
+
                 %echelle
                % nm
               %  tailf
                 ech=tailf./[n1 n2];
+
                 
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,10 +154,10 @@ if aff.on
             if aff.grad_eval
                 %determination des vecteurs de plus grandes pentes (dans le
                 %sens de descente du gradient)
-                for ii=1:size(Z.GR1,1)*size(Z.GR1,2)
-                    vec.X(ii)=-Z.GR1(ii);
-                    vec.Y(ii)=-Z.GR2(ii);
-                    vec.Z(ii)=-Z.GR1(ii)^2-Z.GR2(ii)^2;
+                for ii=1:size(GR1,1)*size(GR1,2)
+                    vec.X(ii)=-GR1(ii);
+                    vec.Y(ii)=-GR2(ii);
+                    vec.Z(ii)=-GR1(ii)^2-GR2(ii)^2;
                     %normalisation du vecteur de plus grande pente
                     vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
                     vec.Xn(ii)=vec.X(ii)/vec.N(ii);
@@ -155,7 +167,7 @@ if aff.on
                 hold on
 
                %hcones =coneplot(X,Y,Z.Z,vec.X,vec.Y,vec.Z,0.1,'nointerp');
-               % hcones=coneplot(X,Y,Z.Z,Z.GR1,Z.GR2,-ones(size(Z.GR1)),0.1,'nointerp');
+               % hcones=coneplot(X,Y,Z.Z,GR1,GR2,-ones(size(GR1)),0.1,'nointerp');
                % set(hcones,'FaceColor','red','EdgeColor','none')
 
                 %hold on
@@ -169,6 +181,7 @@ if aff.on
                 quiver3(grille_X,grille_Y,Z.Z,ech*vec.X,ech*vec.Y,ech*vec.Z,...
                     'b','MaxHeadSize',0.1*dimr/nmax,'AutoScale','off')
             end
+            axis([min(grille_X(:)) max(grille_X(:)) min(grille_Y(:)) max(grille_Y(:)) min(Z.Z(:)) max(Z.Z(:))])
         end
 
 
@@ -188,14 +201,14 @@ if aff.on
                     hold on;
                     %remise a  l'echelle
                     if aff.scale
-                       %quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0.0002);
-                       quiver(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2,'AutoScale','off','MaxHeadSize',0);
+                       %quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);
+                       quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0);
                        %axis equal
-                       %ncquiverref(grille_X,grille_Y,ech(1)*Z.GR1,ech(2)*Z.GR2);
-                        %ech(1)*Z.GR1
-                        %ech(2)*Z.GR2
+                       %ncquiverref(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2);
+                        %ech(1)*GR1
+                        %ech(2)*GR2
                     else
-                        quiver(grille_X,grille_Y,Z.GR1,Z.GR2,'AutoScale','off');
+                        quiver(grille_X,grille_Y,GR1,GR2,'AutoScale','off');
                     end
                 end
                 %affichage des points d'evaluation
@@ -251,17 +264,24 @@ if aff.on
     elseif esp1d
         if ~isempty(aff.color)
             if ~isempty(aff.opt)
-                plot(grille,Z,aff.opt,'Color',aff.color);
+                plot(grille,Z.Z,aff.opt,'Color',aff.color);
             else
-                plot(grille,Z,'Color',aff.color);
+                plot(grille,Z.Z,'Color',aff.color);
             end
         else
             if ~isempty(aff.opt)
-                plot(grille,Z,aff.opt);
+                plot(grille,Z.Z,aff.opt);
             else
-                plot(grille,Z);
+                plot(grille,Z.Z);
             end
         end
+        %affichage des points d'evaluation
+                if aff.pts
+                    hold on
+                    plot(tirages,eval,'.','MarkerEdgeColor','k',...
+                    'MarkerFaceColor','k',...
+                    'MarkerSize',15)     
+                end
         title(aff.titre);
         xlabel(aff.xlabel);
         ylabel(aff.ylabel);
@@ -284,6 +304,24 @@ if aff.on
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %Trace réponse nD
+    if aff.bar
+        Zs=Z.Z(:);
+        nb_eval=numel(Zs);
+        if ~isempty(aff.color)
+            plot(1:nb_eval,Zs,'o','MarkerEdgeColor',aff.color,'MarkerFaceColor',aff.color,'Markersize',5);
+            %line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',aff.color,'lineStyle','--')
+        else
+            plot(1:nb_eval,Zs,'o','MarkerEdgeColor','k','MarkerFaceColor','k','Markersize',5);
+            %line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',[0. 0. .8],'lineStyle','--')
+        end
+        title(aff.titre);
+        xlabel(aff.xlabel);
+        ylabel(aff.ylabel);
+    end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %exportation tikz
     if aff.tikz
         nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.tex'];
@@ -291,6 +329,6 @@ if aff.on
     end
    
 
-    
+    hold off
 end
-hold off
+

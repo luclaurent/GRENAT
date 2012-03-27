@@ -17,4 +17,4 @@ q1=max(ecart(:));
 q2=sum(ecart(:));
 
 %calcul du critere 3 (moyenne des ecarts)
-q3=q2/(size(Zex,1)*size(Zex,2));
+q3=q2/numel(Zex);

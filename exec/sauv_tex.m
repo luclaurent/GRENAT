@@ -3,7 +3,7 @@
 
 function sauv_tex(meta,doe,aff,err,krg)
 
-if aff.tex
+if aff.tex&&aff.save
     %création du fichier de sauvegarde des informations
     unix(['touch ' aff.doss '/results.tex']);
     fid=fopen([aff.doss '/results.tex'],'a','n','UTF-8');

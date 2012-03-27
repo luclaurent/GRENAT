@@ -79,7 +79,7 @@ elseif nargout==3
     else
         dm=zeros(nb_comp,nb_comp,pt_eval);
         ddcorr=dm;
-        ddco=-(5./(3*long.^2)+5*sqrt(5)./(3*long.^3).*abs(xx)-25./(3*long.^4).*xx.^2).*exp(-sqrt(5)./long.*abs(xx));
+        ddco=(5./(3*long.^2)-5*sqrt(5)./(3*long.^3).*abs(xx)+25./(3*long.^4).*xx.^2).*exp(-sqrt(5)./long.*abs(xx));
         di=ddco.*pr;
                 
         for ll=1:nb_comp

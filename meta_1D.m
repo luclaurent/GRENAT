@@ -29,7 +29,7 @@ doe.bornes=[xmin xmax]';
 aff.pas=0.05;
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace (sfill)
-doe.type='sfill';
+doe.type='ffact';
 
 %nb d'echantillons
 doe.nb_samples=6;
@@ -39,7 +39,7 @@ deg=0;
 long=[0.1 100];
 %long=1;
 corr='matern52';
-mod='ILAG';
+mod='SWF';
 meta=init_meta(mod,deg,long,corr);
 
 

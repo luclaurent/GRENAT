@@ -1,39 +1,48 @@
 %%Evaluation de la fonction et de ses gradients
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
-function [eval,grad]=gene_eval(fct,X)
+function [eval,grad]=gene_eval(fct,X,type)
 
-tailX=zeros(1,3);
-tailX(1)=size(X,1);
-tailX(2)=size(X,2);
-tailX(3)=size(X,3);
 
-%pour des vecteurs de dimension 1 et 2
-if tailX(3)==1
-    %en dimension 1
-    if size(X,2)==1
-       [ev,grad]=feval(fct,X);
-    end
-
-    %en dimension 2
-    if tailX(2)==2
-        grad=zeros(size(X));
-        [ev,grad(:,1),grad(:,2)]=feval(fct,X(:,1),X(:,2));
-    end
-% pour des Ã©valuations multiples (matrice de matrices)
-elseif tailX(3)==2
-    [ev,grad.GR1,grad.GR2]=feval(fct,X(:,:,1),X(:,:,2));
+% en fonction du type d'évaluation (calcul au points tirés ou calcul pour
+% affichage)
+switch type
+    %evaluations des pts tirées (X est une matrice: 1var par colonne)
+    case 'eval'
+        %% X matrice de tirages:
+        % colonnes: chaque dimension
+        % lignes: un jeu de paramètres
+        nb_var=size(X,2);
+        nb_val=size(X,1);
+        %X
+        
+        %préparation jeu de données pour evaluation
+        X_eval=zeros(nb_val,1,nb_var);
+        
+        for ii=1:nb_var
+            X_eval(:,:,ii)=X(:,ii);
+        end
+        %évaluation pour affichage (X est une matrice de matrice)
+    case 'aff'
+        X_eval=X;
 end
 
+%evaluation fonction et gradients aux points x
 if nargout==1
-    eval.Z=ev;
-    if tailX(2)==2&&tailX(3)==1
-        eval.GR1=grad(:,1);
-        eval.GR2=grad(:,1);
-    elseif tailX(3)==2
-        eval.GR1=grad.GR1;
-        eval.GR2=grad.GR2;
+    [eval]=feval(fct,X_eval);
+elseif nargout==2
+    [eval,gradb]=feval(fct,X_eval);
+    % dans le cas des évaluations aux points tirés on reorganise les
+    % gradients
+    if strcmp(type,'eval')
+        grad=zeros(size(X));
+        for ii=1:nb_var
+           grad(:,ii)=gradb(:,:,ii); 
+        end
+    else
+        grad=gradb;
     end
 else
-    eval=ev;
+    fprintf('Mauvais nombre de paramètres de sortie (cf. gene_eval)');
 end
+

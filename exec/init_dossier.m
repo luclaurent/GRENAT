@@ -7,7 +7,7 @@ day=clock;
 if length(doe.nb_samples)==2
     dossier=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
         '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_'...
-        doe.type '_ns' num2str(doe.nb_samples(1)*doe.nb_samples(2)) '_reg' num2str(meta.deg) '_' meta.corr]; 
+        doe.type '_ns' num2str(prod(doe.nb_samples)) '_reg' num2str(meta.deg) '_' meta.corr]; 
 else
     dossier=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
         '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_'...
@@ -27,8 +27,13 @@ else
     dossier=['results/' dossier];
 end
 
+if meta.save
 %creation du repertoire
 unix(['mkdir ' dossier]);
+else
+global aff
+aff.save=false; 	% pas de sauvegarde des traces si pas de sauvegarde
+end
 
 %date
 date.year=day(1);

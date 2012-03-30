@@ -69,19 +69,28 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluations et gradients aux points échantillonnés
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%evaluations et gradients aux points échantillonnés
 y=evaln;
 if pres_grad
-    %intercallage reponses et gradients
-    %[y1 dy1/dx1 dy1/dx2 ... dy1/dxp y2 dy2/dx1 dy2/dx2 ...dyn/dxp]
-    %conditionnement réponses
-    comp=zeros(nb_val,nb_var);
-    ya=[y comp]';
-    %conditionnement gradients
-    comp=zeros(nb_val,1);
-    grada=[comp gradn]';
-    %création vecteur réponses/gradients
-    y=ya(:)+grada(:);
+    tmp=gradn';
+    der=tmp(:);
+    y=vertcat(y,der);    
 end
+% y=evaln;
+% if pres_grad
+%     %intercallage reponses et gradients
+%     %[y1 dy1/dx1 dy1/dx2 ... dy1/dxp y2 dy2/dx1 dy2/dx2 ...dyn/dxp]
+%     %conditionnement réponses
+%     comp=zeros(nb_val,nb_var);
+%     ya=[y comp]';
+%     %conditionnement gradients
+%     comp=zeros(nb_val,1);
+%     grada=[comp gradn]';
+%     %création vecteur réponses/gradients
+%     y=ya(:)+grada(:);
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs

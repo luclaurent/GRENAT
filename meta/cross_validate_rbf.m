@@ -10,7 +10,7 @@ aff_warning=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des evaluations du metamodele au point enleve
 cv_zn=zeros(data.in.nb_val,1);
-%cv_gz=zeros(data.in.nb_val,data.in.nb_var);
+cv_gzn=zeros(data.in.nb_val,data.in.nb_var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%On parcourt l'ensemble des tirages
@@ -22,13 +22,18 @@ for tir=1:data.in.nb_val
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %positions des element a retirer
     if data.in.pres_grad
-        pos=(tir-1)*(data.in.nb_var+1)+1:tir*(data.in.nb_var+1);
+        pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+        % pos=(tir-1)*(data.in.nb_var+1)+1:tir*(data.in.nb_var+1);
     else
         pos=tir;
     end
     
     %cf. Rippa 1999/Fasshauer 2007
+    %%!!!! a coder: differentes factorisation
     cv_zn(tir)=data.build.y(pos(1))-data_block.build.w(pos(1))/data_block.build.iKK(pos(1),pos(1));
+    if data.in.pres_grad
+        cv_gzn(tir,:)=data.build.y(pos(2:end))-data_block.build.w(pos(2:end))./data_block.build.iKK(pos(2:end),pos(2:end));
+    end
     %
     %
     %     cv_KK=data_block.build.KK;
@@ -74,12 +79,21 @@ infos.moy=data.norm.moy_eval;
 infos.std=data.norm.std_eval;
 cv_z=norm_denorm(cv_zn,'denorm',infos);
 diff=cv_z-data.in.eval;
+if data.in.pres_grad
+    cv_gz=norm_denorm_g(cv_gzn,'denorm',infos);
+    diffg=cv_gz-data.in.grad;
+end
 somm=0.5*(cv_z+data.in.eval);
 %Biais moyen
 cv.bm=1/data.in.nb_val*sum(diff);
 %MSE
 diffc=diff.^2;
 cv.msep=1/data.in.nb_val*sum(diffc);
+if data.in.pres_grad
+    diffgc=diffg.^2;
+    cv.mseg=1/(data.in.nb_val*data.in.nb_var)*sum(diffgc(:));
+    cv.msemix=1/(data.in.nb_val*(data.in.nb_var+1))*(data.in.nb_val*cv.msep+data.in.nb_val*data.in.nb_var*cv.mseg);
+end
 %PRESS
 cv.press=sum(diffc);
 %critere d'adequation

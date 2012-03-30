@@ -89,11 +89,19 @@ end
 %differences entre les evaluations vraies et celle obtenues en retranchant
 %le site associe
 diff=cv_z-donnees.in.eval;
+if data.in.pres_grad
+    diffg=cv_gz-data.in.grad;
+end
 %Biais moyen
 cv.bm=1/donnees.in.nb_val*sum(diff);
 %MSE
 diffc=diff.^2;
 cv.msep=1/donnees.in.nb_val*sum(diffc);
+if data.in.pres_grad
+    diffgc=diffg.^2;
+    cv.mseg=1/(data.in.nb_val*data.in.nb_var)*sum(diffgc(:));
+    cv.msemix=1/(data.in.nb_val*(data.in.nb_var+1))*(data.in.nb_val*cv.msep+data.in.nb_val*data.in.nb_var*cv.mseg);
+end
 %PRESS
 cv.press=sum(diffc);
 %critere d'adequation (SCVR Keane 2005/Jones 1998)

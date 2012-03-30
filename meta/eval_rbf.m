@@ -115,7 +115,7 @@ else
     if calc_grad  %si calcul des gradients
         [P,dP]=feval(donnees.build.fct,dist,donnees.build.para.val);
     else %sinon
-        P=feval(donnees.build.corr,dist,donnees.build.para.val);
+        P=feval(donnees.build.fct,dist,donnees.build.para.val);
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

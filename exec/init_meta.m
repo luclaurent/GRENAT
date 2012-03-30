@@ -37,7 +37,7 @@ meta.cv=true;           %validation croisee
 meta.cv_aff=true;       %affichage QQ plot CV
 
 %estimation parametre long (longueur de correlation)
-meta.para.method='fmincon';     % m�thode de minimisation de la log-vraisemblance
+meta.para.method='ga';     % m�thode de minimisation de la log-vraisemblance
 meta.para.estim=true;           % recherche de la longueur de corr�lation
 meta.para.aff_estim=false;  %affichage de la fonctionnelle � miniser pour obtenir le "meilleur" jeu de parametres
 meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corr�lation suivant chaque dimension)

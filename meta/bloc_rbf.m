@@ -1,8 +1,10 @@
 %% Procedure de construction de la matrice RBF et de calcul de la validation croisï¿½e
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
-function [msep,ret]=bloc_rbf(data,meta,para)
+function [crit_min,ret]=bloc_rbf(data,meta,para)
 
+% fonction a minimiser pour trouver jeu de paramètres
+fct_min='msemix'; %msep/msemix
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de corrï¿½lation
@@ -51,7 +53,7 @@ if data.in.pres_grad
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %rci
     %Matrice de correlation du Cokrigeage
-    KK=[KK KKa;KKa' KKi];    
+    KK=[KK KKa;KKa' KKi];   
 else
     %matrice de correlation du Krigeage par matrice triangulaire infï¿½rieure
     %sans diagonale
@@ -161,10 +163,14 @@ if meta.cv||meta.para.estim
     [cv]=cross_validate_rbf(ret,data,meta);
     %tps_cv=toc;
     %fprintf('Execution validation croisee RBF/HBRBF: %6.4d s\n\n',tps_cv-tps_stop);
-    msep=cv.msep;
+    if isfield(cv,fct_min)
+        crit_min=getfield(cv,fct_min);
+    else
+        crit_min=cv.msep;
+    end
 else
     cv=[];
-    msep=[];
+    crit_min=[];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

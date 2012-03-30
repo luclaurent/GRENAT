@@ -32,8 +32,10 @@ for tir=1:data.in.nb_val
     %%!!!! a coder: differentes factorisation
     cv_zn(tir)=data.build.y(pos(1))-data_block.build.w(pos(1))/data_block.build.iKK(pos(1),pos(1));
     if data.in.pres_grad
-        cv_gzn(tir,:)=data.build.y(pos(2:end))-data_block.build.w(pos(2:end))./data_block.build.iKK(pos(2:end),pos(2:end));
+       cv_gzn(tir,:)=data.build.y(pos(2:end))-...
+           data_block.build.w(pos(2:end))./diag(data_block.build.iKK(pos(2:end),pos(2:end)));
     end
+    
     %
     %
     %     cv_KK=data_block.build.KK;
@@ -80,6 +82,8 @@ infos.std=data.norm.std_eval;
 cv_z=norm_denorm(cv_zn,'denorm',infos);
 diff=cv_z-data.in.eval;
 if data.in.pres_grad
+    infos.std_e=data.norm.std_eval;
+    infos.std_t=data.norm.std_tirages;
     cv_gz=norm_denorm_g(cv_gzn,'denorm',infos);
     diffg=cv_gz-data.in.grad;
 end

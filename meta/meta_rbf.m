@@ -135,7 +135,7 @@ aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
 
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,100);
+    val_para=linspace(meta.para.min,meta.para.max,20);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -144,10 +144,20 @@ if meta.para.estim&&meta.para.aff_estim
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(size(val_X));
+        %si affichage dispo
+        if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:numel(val_X)
             %calcul de la log-vraisemblance et stockage
             val_msep(itli)=bloc_rbf(ret,meta,[val_X(itli) val_Y(itli)]);
+            %affichage barre attente
+            if usejava('desktop')&&exist('h','var')
+                avance=(itli-1)/numel(val_X);
+                aff_av=avance*100;
+                mess=['Eval. en cours ' num2str(aff_av,3) '% ' num2str(itli) '/' num2str(numel(val_X)) ];
+                waitbar(avance,h,mess);
+            end
         end
+        close(h)
         %trace log-vraisemblance
         figure;
         [C,h]=contourf(val_X,val_Y,val_msep);
@@ -164,10 +174,20 @@ if meta.para.estim&&meta.para.aff_estim
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(1,length(val_para));
+        %si affichage dispo
+        if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:length(val_para)
             %calcul de la log-vraisemblance et stockage
             val_msep(itli)=bloc_rbf(ret,meta,val_para(itli));
+            %affichage barre attente
+            if usejava('desktop')&&exist('h','var')
+                avance=(itli-1)/length(val_para);
+                aff_av=avance*100;
+                mess=['Eval. en cours ' num2str(aff_av,3) '% ' num2str(itli) '/' num2str(numel(val_para)) ];
+                waitbar(avance,h,mess);
+            end
         end
+        close(h)
         
         %stockage mse dans un fichier .dat
         if meta.save

@@ -4,16 +4,23 @@
 function [dossier,date]=init_dossier(meta,doe,ajout,chemin)
 
 day=clock;
-if length(doe.nb_samples)==2
-    dossier=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
-        '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_'...
-        doe.type '_ns' num2str(prod(doe.nb_samples)) '_reg' num2str(meta.deg) '_' meta.corr]; 
-else
-    dossier=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
-        '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_'...
-        doe.type '_ns' num2str(doe.nb_samples) '_reg' num2str(meta.deg) '_' meta.corr];
-    
+date=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
+    '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_'];
+%creation nom dossier
+dossier=[date...
+    doe.type...
+    '_' meta.type...
+    '_ns' num2str(prod(doe.nb_samples)) ];
+if isfield(meta,'fct')
+    dossier=[dossier '_' meta.fct];
 end
+if isfield(meta,'corr')
+    dossier=[dossier '_' meta.corr];
+end
+if isfield(meta,'deg')
+    dossier=[dossier '_reg' meta.deg];
+end
+
 
 %ajout de texte dans le nom de fichier
 if nargin>=3
@@ -28,11 +35,11 @@ else
 end
 
 if meta.save
-%creation du repertoire
-unix(['mkdir ' dossier]);
+    %creation du repertoire
+    unix(['mkdir ' dossier]);
 else
-global aff
-aff.save=false; 	% pas de sauvegarde des traces si pas de sauvegarde
+    global aff
+    aff.save=false; 	% pas de sauvegarde des traces si pas de sauvegarde
 end
 
 %date

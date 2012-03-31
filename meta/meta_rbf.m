@@ -7,7 +7,28 @@
 
 function ret=meta_rbf(tirages,eval,grad,meta)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Affichage des informations de construction
+fprintf(' >> Construction : ');
+if ~isempty(grad);fprintf('GRBF \n');else fprintf('RBF \n');end
+fprintf('>> Fonction de base radiale: %s\n',meta.fct);
+fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
 
+fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
+if meta.para.estim
+    fprintf('>> Algo estimation: %s\n',meta.para.method);
+    fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
+    fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
+else
+    fprintf('>> Valeur parametre: %d\n',meta.para.val);
+end
+fprintf('\n\n')
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement variables globales
 global aff
 
@@ -76,7 +97,7 @@ y=evaln;
 if pres_grad
     tmp=gradn';
     der=tmp(:);
-    y=vertcat(y,der);    
+    y=vertcat(y,der);
 end
 % y=evaln;
 % if pres_grad
@@ -185,7 +206,7 @@ if meta.para.estim
     para_estim=estim_para_rbf(ret,meta);
     meta.para.val=para_estim.val;
 else
-    meta.para.val=2*calc_para_rbf(tiragesn,meta);
+    meta.para.val=calc_para_rbf(tiragesn,meta);
     fprintf('Définition parametre (%s), val=',meta.para.type);
     fprintf(' %d',meta.para.val);
     fprintf('\n');

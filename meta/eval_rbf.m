@@ -5,12 +5,12 @@
 %%L. LAURENT      luc.laurent@ens-cachan.fr
 %% 15/03/2010 reprise le 20/01/2012
 
-function [Z,GZ]=eval_rbf(U,donnees,tir_part)
+function [Z,GZ]=eval_rbf(U,data,tir_part)
 % affichages warning ou non
 aff_warning=false;
-%D�claration des variables
-nb_val=donnees.in.nb_val;
-nb_var=donnees.in.nb_var;
+%Declaration des variables
+nb_val=data.in.nb_val;
+nb_var=data.in.nb_var;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -24,7 +24,7 @@ end
 if nargin==3
     tirages=tir_part;
 else
-    tirages=donnees.in.tiragesn;
+    tirages=data.in.tiragesn;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,16 +33,16 @@ dim_x=size(X,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if donnees.norm.on
-    infos.moy=donnees.norm.moy_tirages;
-    infos.std=donnees.norm.std_tirages;
+if data.norm.on
+    infos.moy=data.norm.moy_tirages;
+    infos.std=data.norm.std_tirages;
     X=norm_denorm(X,'norm',infos);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
-%d�finition des dimensions des matrices/vecteurs selon RBF et HBRBF
-if donnees.in.pres_grad
+%definition des dimensions des matrices/vecteurs selon RBF et HBRBF
+if data.in.pres_grad
     tail_matvec=nb_val*(nb_var+1);
 else
     tail_matvec=nb_val;
@@ -62,10 +62,10 @@ dist=repmat(X,nb_val,1)-tirages;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RBF/HBRBF
-if donnees.in.pres_grad
+if data.in.pres_grad
     if calc_grad  %si calcul des gradients
         %evaluation de la fonction de base radiale
-        [ev,dev,ddev]=feval(donnees.build.fct,dist,donnees.build.para.val);
+        [ev,dev,ddev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         dda=dev';
@@ -94,7 +94,7 @@ if donnees.in.pres_grad
         
     else %sinon
         %evaluation de la fonction de base radiale
-        [ev,dev]=feval(donnees.build.fct,dist,donnees.build.para.val);
+        [ev,dev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         dda=dev';
@@ -113,28 +113,28 @@ if donnees.in.pres_grad
     end
 else
     if calc_grad  %si calcul des gradients
-        [P,dP]=feval(donnees.build.fct,dist,donnees.build.para.val);
+        [P,dP]=feval(data.build.fct,dist,data.build.para.val);
     else %sinon
-        P=feval(donnees.build.fct,dist,donnees.build.para.val);
+        P=feval(data.build.fct,dist,data.build.para.val);
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluation du m�tamod�le au point X
-Z=P'*donnees.build.w;
+%Evaluation du metamodele au point X
+Z=P'*data.build.w;
 if calc_grad
-    GZ=dP'*donnees.build.w;
+    GZ=dP'*data.build.w;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if donnees.norm.on
-    infos.moy=donnees.norm.moy_eval;
-    infos.std=donnees.norm.std_eval;
+if data.norm.on
+    infos.moy=data.norm.moy_eval;
+    infos.std=data.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);
     if calc_grad
-        infos.std_e=donnees.norm.std_eval;
-        infos.std_t=donnees.norm.std_tirages;
+        infos.std_e=data.norm.std_eval;
+        infos.std_t=data.norm.std_tirages;
         GZ=norm_denorm_g(GZ','denorm',infos); clear infos
         GZ=GZ';
     end

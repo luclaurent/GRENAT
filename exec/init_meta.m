@@ -5,14 +5,8 @@ function meta=init_meta(in)
 
 meta.grad=in.grad; %prise en compte des gradients
 
-meta.type=in.type;         %type de metamodele KRG/CKRG/DACE/RBF
-meta.deg=in.deg;           %degre de la regression
+meta.type=in.type;         %type de metamodele KRG/CKRG/DACE/RBF/GRBF
 meta.para.val=in.para.long(1);       %longueur de correlation
-if isfield(in,'corr')
-    meta.corr=['corr_' in.corr];     %fonction de correlation
-else
-    meta.corr='corr_gauss';
-end
 
 
 %en focntion du type de metamodele
@@ -25,9 +19,20 @@ switch in.type
             meta.regr=[fctp num2str(in.para.deg,'%d')];      %fonction de regression
             meta.corr=['corr' in.corr];    %fonction de correlation
         end
-    case {'RBF','HBRBF'}
-        meta.fct=['rf_' in.rbf];
+    case {'RBF','GRBF'}
+        if isfield(in,'rbf')
+            meta.fct=['rf_' in.rbf];
+        else
+            meta.fct='rf_sexp';
+        end
         meta.para.val=in.para.rbf_para;
+    case {'KRG','CKRG'}
+        meta.deg=in.deg;           %degre de la regression
+        if isfield(in,'corr')
+            meta.corr=['corr_' in.corr];     %fonction de correlation
+        else
+            meta.corr='corr_sexp';
+        end
 end
 
 %normalisation

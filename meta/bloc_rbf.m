@@ -11,7 +11,7 @@ coef=10^-6;
 fact_KK='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%si para dï¿½fini alors on charge cette nouvelle valeur
+%si para defini alors on charge cette nouvelle valeur
 if nargin==3
     meta.para.val=para;
 end
@@ -19,7 +19,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction de la matrice de Gram
 if data.in.pres_grad
-    %morceau de la matrice issu du krigeage
+    %morceaux de la matrice GRBF
     KK=zeros(data.in.nb_val,data.in.nb_val);
     KKa=zeros(data.in.nb_val,data.in.nb_var*data.in.nb_val);
     KKi=zeros(data.in.nb_val*data.in.nb_var,data.in.nb_val*data.in.nb_var);    
@@ -33,9 +33,9 @@ if data.in.pres_grad
         dist=repmat(data.in.tiragesn(ii,:),numel(ind),1)-data.in.tiragesn(ind,:);
         % evaluation de la fonction de correlation
         [ev,dev,ddev]=feval(meta.fct,dist,meta.para.val);
-        %morceau de la matrice issue du krigeage
+        %morceau de la matrice issue du modèle RBF classique
         KK(ind,ii)=ev;
-        %morceau de la matrice provenant du Cokrigeage
+        %morceau des derivees premiers
         KKa(ii,indd)=reshape(dev',1,numel(ind)*data.in.nb_var);
         KKa(inddd,indddd)=-dev;
         %matrice des derivees secondes         
@@ -46,16 +46,16 @@ if data.in.pres_grad
     end
     %construction matrices completes
     KK=KK+KK'-eye(data.in.nb_val);
-    %extraction de la diagonale (procÃ©dure pour eviter les doublons)
+    %extraction de la diagonale (procedure pour eviter les doublons)
     diago=0;   % //!!\\ corrections envisageables ici
     val_diag=spdiags(KKi,diago);
     %full(spdiags(val_diag./2,diago,zeros(size(rci))))
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %rci
-    %Matrice de correlation du Cokrigeage
+    %Matrice de complete
     KK=[KK KKa;KKa' KKi];   
 else
-    %matrice de correlation du Krigeage par matrice triangulaire infï¿½rieure
+    %matrice de RBF classique par matrice triangulaire inferieure
     %sans diagonale
     KK=zeros(data.in.nb_val,data.in.nb_val);
     bmax=data.in.nb_val-1;
@@ -64,44 +64,21 @@ else
         %distance 1 tirages aux autres (construction par colonne)
         dist=repmat(data.in.tiragesn(ii,:),numel(ind),1)-data.in.tiragesn(ind,:);
         % evaluation de la fonction de correlation
-        [ev]=feval(meta.corr,dist,meta.para.val);
-        % matrice de krigeage
+        [ev]=feval(meta.fct,dist,meta.para.val);
+        % matrice de RBF
         KK(ind,ii)=ev;
     end
-        %Construction matrice complï¿½te
+        %Construction matrice complete
     KK=KK+KK'+eye(data.in.nb_val);   
     
 end
 
-% if data.in.pres_grad
-%     %initialisation matrice
-%     KK=zeros(data.in.nb_val*(data.in.nb_var+1));
-%     for ii=1:data.in.nb_val
-%         for jj=1:data.in.nb_val
-%             %evaluation de la fonction de base radiale
-%             dist=data.in.tiragesn(ii,:)-data.in.tiragesn(jj,:);
-%             [ev,dev,ddev]=feval(meta.fct,dist,meta.para.val);
-%             %construction du bloc
-%             B=[ev,dev;dev',ddev];
-%             %remplissage matrice de "Gram"
-%             posi=(ii-1)*(data.in.nb_var+1)+1:ii*(data.in.nb_var+1);
-%             posj=(jj-1)*(data.in.nb_var+1)+1:jj*(data.in.nb_var+1);
-%             KK(posi,posj)=B;
-%         end
-%     end
-% else
-%     KK=zeros(data.in.nb_val);
-%     for ii=1:data.in.nb_val
-%         for jj=1:data.in.nb_val
-%             KK(ii,jj)=feval(meta.fct,data.in.tiragesn(jj,:)-data.in.tiragesn(ii,:),meta.para.val);
-%         end
-%     end
-% end
+
 %passage en sparse
 KK=sparse(KK);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%amelioration du conditionnement de la matrice de corrï¿½lation
+%amelioration du conditionnement de la matrice de correlation
 if meta.recond
     ret.build.cond_orig=condest(KK);
     if ret.build.cond_orig>10^13

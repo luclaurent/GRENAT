@@ -48,9 +48,9 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='sexp';
-data.type='RBF';
+data.type='GRBF';
 data.grad=false;
-if strcmp(data.type,'CKRG')||strcmp(data.type,'HBRBF')
+if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')
     data.grad=true;
 end
 data.deg=0;
@@ -58,12 +58,12 @@ data.deg=0;
 meta=init_meta(data);
 
 
-meta.para.estim=false;
-meta.cv=false;
-meta.norm=false;
+meta.para.estim=true;
+meta.cv=true;
+meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.val=0.4;
+meta.para.val=1;
 meta.para.aniso=false;
 meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;

@@ -83,7 +83,7 @@ for num_meta=1:numel(donnees_const)
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case {'HBRBF','RBF'}
+        case {'GRBF','RBF'}
             %% Evaluation du metamodele de RBF/HBRBF
             for jj=1:nb_ev_pts
                 

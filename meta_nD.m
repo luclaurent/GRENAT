@@ -32,7 +32,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=100;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -58,12 +58,12 @@ data.deg=0;
 meta=init_meta(data);
 
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=false;
-meta.norm=true;
+meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.val=4;
+meta.para.val=0.4;
 meta.para.aniso=false;
 meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;

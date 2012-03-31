@@ -164,7 +164,7 @@ if meta.cv||meta.para.estim
     %tps_cv=toc;
     %fprintf('Execution validation croisee RBF/HBRBF: %6.4d s\n\n',tps_cv-tps_stop);
     if isfield(cv,fct_min)
-        crit_min=getfield(cv,fct_min);
+        crit_min=cv.(fct_min);
     else
         crit_min=cv.msep;
     end

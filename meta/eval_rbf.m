@@ -124,6 +124,10 @@ end
 Z=P'*data.build.w;
 if calc_grad
     GZ=dP'*data.build.w;
+    dist
+    dP
+    data.build.w
+    pause
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

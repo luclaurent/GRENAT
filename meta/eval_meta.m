@@ -99,15 +99,20 @@ for num_meta=1:numel(donnees_const)
                 diffZ=Zverif-eval;
                 
                 if ~isempty(find(diffZ>1e-7, 1))
-                    fprintf('pb d''interpolation (eval) CKRG\n')
+                    fprintf('pb d''interpolation (eval) GRBF\n')
                     diffZ
                 end 
                 
                 if meta_donnee.in.pres_grad
                     diffGZ=GZverif-grad;
                     if ~isempty(find(diffGZ>1e-7, 1))
-                        fprintf('pb d''interpolation (grad) CKRG\n')
+                        fprintf('pb d''interpolation (grad) GRBF\n')
                         diffGZ
+                    end
+                    diffNG=sqrt(sum(GZverif.^2,2))-sqrt(sum(grad.^2,2));
+                    if ~isempty(find(diffNG>1e-7, 1))
+                        fprintf('pb d''interpolation (grad) GRBF\n')
+                        diffNG
                     end
                 end
             end
@@ -147,6 +152,11 @@ for num_meta=1:numel(donnees_const)
                     if ~isempty(find(diffGZ>1e-7, 1))
                         fprintf('pb d''interpolation (grad) CKRG\n')
                         diffGZ
+                    end
+                    diffNG=sqrt(sum(GZverif.^2,2))-sqrt(sum(grad.^2,2));
+                    if ~isempty(find(diffNG>1e-7, 1))
+                        fprintf('pb d''interpolation (grad) CKRG\n')
+                        diffNG
                     end
                 end
             end

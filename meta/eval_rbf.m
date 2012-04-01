@@ -72,7 +72,8 @@ if data.in.pres_grad
         P=[ev;dda(:)];
         %intercallage dérivées premières et secondes
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
-        dP=vertcat(-dev,reshape(ddev,[],nb_var));
+        dP=horzcat(-dda,reshape(ddev,nb_var,[]));
+       % pause
         
         %         %[~,~,ddev]=feval(donnees.build.fct,-dist,donnees.build.para.val);
         %         %intercallage reponses et gradients
@@ -113,7 +114,7 @@ if data.in.pres_grad
     end
 else
     if calc_grad  %si calcul des gradients
-        [P,dP]=feval(data.build.fct,dist,data.build.para.val);
+        [P,dP]=feval(data.build.fct,dist,data.build.para.val);dP=dP';
     else %sinon
         P=feval(data.build.fct,dist,data.build.para.val);
     end
@@ -123,11 +124,7 @@ end
 %Evaluation du metamodele au point X
 Z=P'*data.build.w;
 if calc_grad
-    GZ=dP'*data.build.w;
-    dist
-    dP
-    data.build.w
-    pause
+    GZ=dP*data.build.w;    
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

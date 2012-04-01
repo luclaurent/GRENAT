@@ -4,7 +4,7 @@
 function [crit_min,ret]=bloc_rbf(data,meta,para)
 
 % fonction a minimiser pour trouver jeu de paramètres
-fct_min='msemix'; %msep/msemix
+fct_min='msep'; %msep/msemix
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de corrï¿½lation
@@ -51,7 +51,6 @@ if data.in.pres_grad
     val_diag=spdiags(KKi,diago);
     %full(spdiags(val_diag./2,diago,zeros(size(rci))))
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
-    %rci
     %Matrice de complete
     KK=[KK KKa;KKa' KKi];   
 else

@@ -86,42 +86,42 @@ if aff.on
     
     %affichage 2D
     if esp2d
-    
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%mise aï¿½ l'echelle des traces de gradients
         if aff.grad_meta||aff.grad_eval
-                %calcul norme gradient
-                ngr=zeros(size(GR1));
-                for ii=1:size(GR1,1)*size(GR1,2)
-                    ngr(ii)=norm([GR1(ii) GR2(ii)],2);
-                end
-                %recherche du maxi de la norme du gradient
-                nm=[max(max(ngr))];
-                
-                n1=max(max(abs(GR1)));
-                n2=max(max(abs(GR2)));
-
-                %definition de la taille mini de la grille d'affichage
-                gx=grille_X-grille_X(1);
-                ind=find(gx>0);
-                tailg(1)=min(min(gx(ind)));
-                gy=grille_Y-grille_Y(1);
-                ind=find(gy>0);
-                tailg(2)=min(min(gy(ind)));
-                
-                                              
-                %taille de la plus grande fleche
-                para_fl=0.9;
-                tailf=para_fl*tailg;
-
-
-                %echelle
-               % nm
-              %  tailf
-                ech=tailf./[n1 n2];
-
-                
+            %calcul norme gradient
+            ngr=zeros(size(GR1));
+            for ii=1:size(GR1,1)*size(GR1,2)
+                ngr(ii)=norm([GR1(ii) GR2(ii)],2);
+            end
+            %recherche du maxi de la norme du gradient
+            nm=[max(max(ngr))];
+            
+            n1=max(max(abs(GR1)));
+            n2=max(max(abs(GR2)));
+            
+            %definition de la taille mini de la grille d'affichage
+            gx=grille_X-grille_X(1);
+            ind=find(gx>0);
+            tailg(1)=min(min(gx(ind)));
+            gy=grille_Y-grille_Y(1);
+            ind=find(gy>0);
+            tailg(2)=min(min(gy(ind)));
+            
+            
+            %taille de la plus grande fleche
+            para_fl=0.9;
+            tailf=para_fl*tailg;
+            
+            
+            %echelle
+            % nm
+            %  tailf
+            ech=tailf./[n1 n2];
+            
+            
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,13 +130,13 @@ if aff.on
             %affichage des contour
             if aff.contour3
                 %affichage unicolor
-                if aff.uni          
+                if aff.uni
                     surfc(grille_X,grille_Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
                 else
                     surfc(grille_X,grille_Y,Z.Z)
                 end
             else
-                if aff.uni          
+                if aff.uni
                     surf(grille_X,grille_Y,Z.Z,'FaceColor',aff.color,'EdgeColor',aff.color)
                 else
                     surf(grille_X,grille_Y,Z.Z)
@@ -149,7 +149,7 @@ if aff.on
                     'MarkerFaceColor','k',...
                     'MarkerSize',15);
             end
-
+            
             %Affichage des gradients
             if aff.grad_eval
                 %determination des vecteurs de plus grandes pentes (dans le
@@ -165,15 +165,15 @@ if aff.on
                     vec.Zn(ii)=vec.Z(ii)/vec.N(ii);
                 end
                 hold on
-
-               %hcones =coneplot(X,Y,Z.Z,vec.X,vec.Y,vec.Z,0.1,'nointerp');
-               % hcones=coneplot(X,Y,Z.Z,GR1,GR2,-ones(size(GR1)),0.1,'nointerp');
-               % set(hcones,'FaceColor','red','EdgeColor','none')
-
+                
+                %hcones =coneplot(X,Y,Z.Z,vec.X,vec.Y,vec.Z,0.1,'nointerp');
+                % hcones=coneplot(X,Y,Z.Z,GR1,GR2,-ones(size(GR1)),0.1,'nointerp');
+                % set(hcones,'FaceColor','red','EdgeColor','none')
+                
                 %hold on
                 %dimension maximale espace de conception
                 dimm=max(abs(max(max(grille_X))-min(min(grille_X))),...
-                    abs(max(max(grille_Y))-min(min(grille_Y)))); 
+                    abs(max(max(grille_Y))-min(min(grille_Y))));
                 %dimension espace de reponse
                 dimr=abs(max(max(Z.Z))-min(min(Z.Z)));
                 %norme maxi du gradient
@@ -183,28 +183,28 @@ if aff.on
             end
             axis([min(grille_X(:)) max(grille_X(:)) min(grille_Y(:)) max(grille_Y(:)) min(Z.Z(:)) max(Z.Z(:))])
         end
-
-
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %affichage des surfaces 2D (contours)
         if aff.d2
             %affichage des contours
             if aff.contour2
-                [C,h]=contourf(grille_X,grille_Y,Z.Z);   
+                [C,h]=contourf(grille_X,grille_Y,Z.Z);
                 text_handle = clabel(C,h);
                 set(text_handle,'BackgroundColor',[1 1 .6],...
                     'Edgecolor',[.7 .7 .7])
                 set(h,'LineWidth',2)
                 %affichage des gradients
-                if aff.grad_meta                
+                if aff.grad_meta
                     hold on;
                     %remise a  l'echelle
                     if aff.scale
-                       %quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);
-                       quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0);
-                       %axis equal
-                       %ncquiverref(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2);
+                        %quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);
+                        quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0);
+                        %axis equal
+                        %ncquiverref(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2);
                         %ech(1)*GR1
                         %ech(2)*GR2
                     else
@@ -215,8 +215,8 @@ if aff.on
                 if aff.pts
                     hold on
                     plot(tirages(:,1),tirages(:,2),'.','MarkerEdgeColor','k',...
-                    'MarkerFaceColor','k',...
-                    'MarkerSize',15)     
+                        'MarkerFaceColor','k',...
+                        'MarkerSize',15)
                 end
                 %affichage des gradients
                 if aff.grad_eval
@@ -226,19 +226,19 @@ if aff.on
                         quiver(tirages(:,1),tirages(:,2),...
                             ech(1)*grad(:,1),ech(2)*grad(:,2),...
                             'LineWidth',2,'AutoScale','off','MaxHeadSize',0);
-
+                        
                     else
                         quiver(tirages(:,1),tirages(:,2),...
                             grad(:,1),grad(:,2),...
                             'LineWidth',2,'AutoScale','off');
                     end
-
+                    
                 end
-
-
+                
+                
             end
         end
-      
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %rendu
@@ -247,7 +247,7 @@ if aff.on
             lighting('gouraud')         % type de rendu
             lightangle(hlight,48,70)    % dir. eclairage
         end
-
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % affichage label
@@ -255,38 +255,60 @@ if aff.on
         xlabel(aff.xlabel);
         ylabel(aff.ylabel);
         if aff.d3
-            zlabel(aff.zlabel);    
+            zlabel(aff.zlabel);
             view(3)
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %affichage 1D
+        %affichage 1D
     elseif esp1d
-        if ~isempty(aff.color)
-            if ~isempty(aff.opt)
-                plot(grille,Z.Z,aff.opt,'Color',aff.color);
+        if aff.grad_meta
+            if ~isempty(aff.color)
+                if ~isempty(aff.opt)
+                    plot(grille,Z.GZ,aff.opt,'Color',aff.color);
+                else
+                    plot(grille,Z.GZ,'Color',aff.color);
+                end
             else
-                plot(grille,Z.Z,'Color',aff.color);
+                if ~isempty(aff.opt)
+                    plot(grille,Z.GZ,aff.opt);
+                else
+                    plot(grille,Z.GZ);
+                end
             end
         else
-            if ~isempty(aff.opt)
-                plot(grille,Z.Z,aff.opt);
+            if ~isempty(aff.color)
+                if ~isempty(aff.opt)
+                    plot(grille,Z.Z,aff.opt,'Color',aff.color);
+                else
+                    plot(grille,Z.Z,'Color',aff.color);
+                end
             else
-                plot(grille,Z.Z);
+                if ~isempty(aff.opt)
+                    plot(grille,Z.Z,aff.opt);
+                else
+                    plot(grille,Z.Z);
+                end
             end
         end
         %affichage des points d'evaluation
-                if aff.pts
-                    hold on
-                    plot(tirages,eval,'.','MarkerEdgeColor','k',...
+        if aff.pts
+            hold on
+            if aff.grad_eval
+                plot(tirages,grad,'.','MarkerEdgeColor','k',...
                     'MarkerFaceColor','k',...
-                    'MarkerSize',15)     
-                end
+                    'MarkerSize',15)
+            else
+                plot(tirages,eval,'.','MarkerEdgeColor','k',...
+                    'MarkerFaceColor','k',...
+                    'MarkerSize',15)
+            end
+        end
         title(aff.titre);
         xlabel(aff.xlabel);
         ylabel(aff.ylabel);
     end
-
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %sauvegarde traces figure
@@ -327,8 +349,8 @@ if aff.on
         nomfig=[aff.doss '/fig_' num2str(aff.num,'%04.0f') '.tex'];
         matlab2tikz(nomfig);
     end
-   
-
+    
+    
     hold off
 end
 

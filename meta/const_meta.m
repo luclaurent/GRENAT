@@ -59,9 +59,9 @@ for type=metype
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case 'HBRBF'
-            %% construction du metamodele 'HBRBF' (Hermite-Birkhoff Radial Basis Functions)
-            fprintf('\n%s\n',[textd 'Hermite-Birkhoff Radial Basis Functions (HBRBF)' textf]);
+        case 'GRBF'
+            %% construction du metamodele 'GRBF' (Hermite-Birkhoff Radial Basis Functions)
+            fprintf('\n%s\n',[textd 'Gradient-based Radial Basis Functions (GRBF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             rbf=meta_rbf(tirages,eval,grad,meta);

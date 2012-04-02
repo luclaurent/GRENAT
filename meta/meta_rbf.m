@@ -7,7 +7,28 @@
 
 function ret=meta_rbf(tirages,eval,grad,meta)
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Affichage des informations de construction
+fprintf(' >> Construction : ');
+if ~isempty(grad);fprintf('GRBF \n');else fprintf('RBF \n');end
+fprintf('>> Fonction de base radiale: %s\n',meta.fct);
+fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
 
+fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
+if meta.para.estim
+    fprintf('>> Algo estimation: %s\n',meta.para.method);
+    fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
+    fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
+else
+    fprintf('>> Valeur parametre: %d\n',meta.para.val);
+end
+fprintf('\n\n')
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement variables globales
 global aff
 
@@ -69,19 +90,28 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluations et gradients aux points échantillonnés
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%evaluations et gradients aux points échantillonnés
 y=evaln;
 if pres_grad
-    %intercallage reponses et gradients
-    %[y1 dy1/dx1 dy1/dx2 ... dy1/dxp y2 dy2/dx1 dy2/dx2 ...dyn/dxp]
-    %conditionnement réponses
-    comp=zeros(nb_val,nb_var);
-    ya=[y comp]';
-    %conditionnement gradients
-    comp=zeros(nb_val,1);
-    grada=[comp gradn]';
-    %création vecteur réponses/gradients
-    y=ya(:)+grada(:);
+    tmp=gradn';
+    der=tmp(:);
+    y=vertcat(y,der);
 end
+% y=evaln;
+% if pres_grad
+%     %intercallage reponses et gradients
+%     %[y1 dy1/dx1 dy1/dx2 ... dy1/dxp y2 dy2/dx1 dy2/dx2 ...dyn/dxp]
+%     %conditionnement réponses
+%     comp=zeros(nb_val,nb_var);
+%     ya=[y comp]';
+%     %conditionnement gradients
+%     comp=zeros(nb_val,1);
+%     grada=[comp gradn]';
+%     %création vecteur réponses/gradients
+%     y=ya(:)+grada(:);
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
@@ -105,7 +135,7 @@ aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
 
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,100);
+    val_para=linspace(meta.para.min,meta.para.max,20);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -114,10 +144,20 @@ if meta.para.estim&&meta.para.aff_estim
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(size(val_X));
+        %si affichage dispo
+        if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:numel(val_X)
             %calcul de la log-vraisemblance et stockage
             val_msep(itli)=bloc_rbf(ret,meta,[val_X(itli) val_Y(itli)]);
+            %affichage barre attente
+            if usejava('desktop')&&exist('h','var')
+                avance=(itli-1)/numel(val_X);
+                aff_av=avance*100;
+                mess=['Eval. en cours ' num2str(aff_av,3) '% ' num2str(itli) '/' num2str(numel(val_X)) ];
+                waitbar(avance,h,mess);
+            end
         end
+        close(h)
         %trace log-vraisemblance
         figure;
         [C,h]=contourf(val_X,val_Y,val_msep);
@@ -134,10 +174,20 @@ if meta.para.estim&&meta.para.aff_estim
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(1,length(val_para));
+        %si affichage dispo
+        if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:length(val_para)
             %calcul de la log-vraisemblance et stockage
             val_msep(itli)=bloc_rbf(ret,meta,val_para(itli));
+            %affichage barre attente
+            if usejava('desktop')&&exist('h','var')
+                avance=(itli-1)/length(val_para);
+                aff_av=avance*100;
+                mess=['Eval. en cours ' num2str(aff_av,3) '% ' num2str(itli) '/' num2str(numel(val_para)) ];
+                waitbar(avance,h,mess);
+            end
         end
+        close(h)
         
         %stockage mse dans un fichier .dat
         if meta.save
@@ -176,7 +226,7 @@ if meta.para.estim
     para_estim=estim_para_rbf(ret,meta);
     meta.para.val=para_estim.val;
 else
-    meta.para.val=2*calc_para_rbf(tiragesn,meta);
+    meta.para.val=calc_para_rbf(tiragesn,meta);
     fprintf('Définition parametre (%s), val=',meta.para.type);
     fprintf(' %d',meta.para.val);
     fprintf('\n');

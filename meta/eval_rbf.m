@@ -124,7 +124,7 @@ end
 %Evaluation du metamodele au point X
 Z=P'*data.build.w;
 if calc_grad
-    GZ=dP*data.build.w;    
+    GZ=dP*data.build.w; 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -140,6 +140,7 @@ if data.norm.on
         GZ=GZ';
     end
 end
+
 
 
 end

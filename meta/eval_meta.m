@@ -89,6 +89,7 @@ for num_meta=1:numel(donnees_const)
                 
                 [rep(jj),G]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
+
             end
             %% verification interpolation
             if meta.verif

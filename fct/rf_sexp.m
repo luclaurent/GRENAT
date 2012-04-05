@@ -1,4 +1,4 @@
-%%fonction de base radiale exponentielle carrée (RBF)
+%%fonction de base radiale exponentielle carrï¿½e (RBF)
 %%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
 
 %Rasmussen 2006 p. 83
@@ -7,7 +7,7 @@ function [rf,drf,ddrf]=rf_sexp(xx,long)
 
 %verification de la dimension de la longueur de correlation
 lt=size(long);
-%nombre de points a  evaluer
+%nombre de points aï¿½ evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
@@ -20,7 +20,6 @@ elseif lt(1)*lt(2)==nb_comp
 elseif lt(1)*lt(2)~=nb_comp
     error('mauvaise dimension de la longueur de correlation');
 end
-
 
 
 %calcul de la valeur de la fonction au point xx
@@ -47,9 +46,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddrf(mm,ll)=ev/long(mm)^4*(xx(mm)^2-long(mm)^2);
+                    ddrf(mm,ll)=ev/long(1,mm)^4*(xx(mm)^2-long(1,mm)^2);
                 else
-                    ddrf(mm,ll)=ev/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm);
+                    ddrf(mm,ll)=ev/(long(1,mm)^2*long(1,ll)^2)*xx(ll)*xx(mm);
                 end
            end
         end
@@ -61,9 +60,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddrf(mm,ll,:)=ev./long(mm)^4.*(xx(:,mm).^2-long(mm)^2);
+                    ddrf(mm,ll,:)=ev./long(1,mm)^4.*(xx(:,mm).^2-long(1,mm)^2);
                 else
-                    ddrf(mm,ll,:)=ev./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm);
+                    ddrf(mm,ll,:)=ev./(long(1,mm)^2*long(1,ll)^2).*xx(:,ll).*xx(:,mm);
                 end
            end
         end

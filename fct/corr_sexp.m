@@ -1,4 +1,4 @@
-%%fonction de correlation exponentielle carrée ou gaussienne (KRG)
+%%fonction de correlation exponentielle carrï¿½e ou gaussienne (KRG)
 %%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
 
 % voir par exemple Rasmussen 2006 ou Roustant 2010
@@ -21,7 +21,7 @@ elseif lt(1)*lt(2)~=nb_comp
     error('mauvaise dimension de la longueur de correlation');
 end
 
-
+long
 %calcul de la valeur de la fonction au point xx
 td=-xx.^2./(2*long.^2);
 ev=exp(sum(td,2));
@@ -46,9 +46,9 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)
-                    ddcorr(mm,ll)=ev/long(mm)^4*(xx(mm)^2-long(mm)^2);
+                    ddcorr(mm,ll)=ev/long(1,mm)^4*(xx(mm)^2-long(1,mm)^2);
                 else
-                    ddcorr(mm,ll)=ev/(long(mm)^2*long(ll)^2)*xx(ll)*xx(mm);
+                    ddcorr(mm,ll)=ev/(long(1,mm)^2*long(1,ll)^2)*xx(ll)*xx(mm);
                 end
            end
         end
@@ -60,15 +60,13 @@ elseif nargout==3
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    
-                    ddcorr(mm,ll,:)=ev./long(mm)^4.*(xx(:,mm).^2-long(mm)^2);
+                    ddcorr(mm,ll,:)=ev./long(1,mm)^4.*(xx(:,mm).^2-long(1,mm)^2);
                 else
-                    ddcorr(mm,ll,:)=ev./(long(mm)^2*long(ll)^2).*xx(:,ll).*xx(:,mm);
+                    ddcorr(mm,ll,:)=ev./(long(1,mm)^2*long(1,ll)^2).*xx(:,ll).*xx(:,mm);
                 end
            end
         end
-
-    end
-   
+    end 
     
 else
     error('Mauvais argument de sortie de la fonction corr_gauss');

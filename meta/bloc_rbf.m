@@ -4,7 +4,7 @@
 function [crit_min,ret]=bloc_rbf(data,meta,para)
 
 % fonction a minimiser pour trouver jeu de parametres
-fct_min='msep'; %msep/msemix
+fct_min='msemix'; %msep/msemix
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de correlation

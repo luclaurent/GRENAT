@@ -3,11 +3,11 @@
 
 function [crit_min,ret]=bloc_rbf(data,meta,para)
 
-% fonction a minimiser pour trouver jeu de paramètres
+% fonction a minimiser pour trouver jeu de parametres
 fct_min='msep'; %msep/msemix
 %coefficient de reconditionnement
 coef=10^-6;
-% type de factorisation de la matrice de corrï¿½lation
+% type de factorisation de la matrice de correlation
 fact_KK='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,7 +33,7 @@ if data.in.pres_grad
         dist=repmat(data.in.tiragesn(ii,:),numel(ind),1)-data.in.tiragesn(ind,:);
         % evaluation de la fonction de correlation
         [ev,dev,ddev]=feval(meta.fct,dist,meta.para.val);
-        %morceau de la matrice issue du modèle RBF classique
+        %morceau de la matrice issue du modele RBF classique
         KK(ind,ii)=ev;
         %morceau des derivees premiers
         KKa(ii,indd)=reshape(dev',1,numel(ind)*data.in.nb_var);
@@ -110,7 +110,7 @@ switch fact_KK
         ret.build.w=R\ret.build.yQ;
     case 'LU'
         [L,U]=lu(KK);
-        % a écrire
+        % a ï¿½crire
      case 'LL'
          %%% A coder
         L=chol(KK,'lower');
@@ -132,7 +132,7 @@ ret.build.para=meta.para;
 ret.build.KK=KK;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%Validation croisee (obligatoire pour affinage paramètre
+%%%%%Validation croisee (obligatoire pour affinage parametre)
 %%%%%Calcul des differentes erreurs
 if meta.cv||meta.para.estim
     %tps_stop=toc;
@@ -151,3 +151,4 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ret.cv=cv;
+

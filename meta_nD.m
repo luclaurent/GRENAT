@@ -32,14 +32,14 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=100;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=50;
+doe.nb_samples=100;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 10];
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='sexp';
-data.type='GRBF';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')
     data.grad=true;

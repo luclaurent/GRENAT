@@ -1,4 +1,4 @@
-%%fonction permettant de construire un metamodele Ã  l'aide de fonctions a 
+%%fonction permettant de construire un metamodele Ã  l'aide de fonctions a
 %base radiale
 % RBF: sans gradient
 % HBRBF: avec gradients
@@ -13,6 +13,7 @@ function ret=meta_rbf(tirages,eval,grad,meta)
 fprintf(' >> Construction : ');
 if ~isempty(grad);fprintf('GRBF \n');else fprintf('RBF \n');end
 fprintf('>> Fonction de base radiale: %s\n',meta.fct);
+fprintf('>>> Normalisation: ');if meta.norm; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
 
@@ -42,8 +43,9 @@ nb_val=size(eval,1);
 %dimension du pb (nb de variables de conception)
 nb_var=size(tirages,2);
 
-%test présence des gradients
+%test presence des gradients
 pres_grad=~isempty(grad);
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,29 +91,13 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%evaluations et gradients aux points échantillonnés
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%evaluations et gradients aux points échantillonnés
+%evaluations et gradients aux points echantillonnes
 y=evaln;
 if pres_grad
     tmp=gradn';
     der=tmp(:);
     y=vertcat(y,der);
 end
-% y=evaln;
-% if pres_grad
-%     %intercallage reponses et gradients
-%     %[y1 dy1/dx1 dy1/dx2 ... dy1/dxp y2 dy2/dx1 dy2/dx2 ...dyn/dxp]
-%     %conditionnement réponses
-%     comp=zeros(nb_val,nb_var);
-%     ya=[y comp]';
-%     %conditionnement gradients
-%     comp=zeros(nb_val,1);
-%     grada=[comp gradn]';
-%     %création vecteur réponses/gradients
-%     y=ya(:)+grada(:);
-% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
@@ -129,7 +115,7 @@ ret.norm=rbf.norm;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de MSE par Cross-Validation
-%arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
+%arret affichage CV si c'est le cas et activation CV si ca n'est pas le cas
 cv_old=meta.cv;
 aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
@@ -139,7 +125,7 @@ if meta.para.estim&&meta.para.aff_estim
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
-        %on genere la grille d'étude
+        %on genere la grille d'etude
         [val_X,val_Y]=meshgrid(val_para,val_para);
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
@@ -214,27 +200,27 @@ if meta.para.estim&&meta.para.aff_estim
         end
     end
 end
-%rechargement config initiale si c'était le cas avant la phase d'estimation
+%rechargement config initiale si c'etait le cas avant la phase d'estimation
 meta.cv_aff=aff_cv_old;
 meta.cv=cv_old;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Construction des differents elements avec ou sans estimation des
-%%parametres sinon on propose une/des valeur(s) des paramètres à partir des
+%%parametres sinon on propose une/des valeur(s) des parametres a partir des
 %%proposition de Hardy/Franke
 if meta.para.estim
     para_estim=estim_para_rbf(ret,meta);
     meta.para.val=para_estim.val;
 else
     meta.para.val=calc_para_rbf(tiragesn,meta);
-    fprintf('Définition parametre (%s), val=',meta.para.type);
+    fprintf('Definition parametre (%s), val=',meta.para.type);
     fprintf(' %d',meta.para.val);
     fprintf('\n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% construction éléments finaux RBF (matrice, coefficients et CV) en tenant
-% compte des paramètres obtenus par minimisation
+% construction elements finaux RBF (matrice, coefficients et CV) en tenant
+% compte des parametres obtenus par minimisation
 [~,block]=bloc_rbf(ret,meta);
 %sauvegarde informations
 tmp=mergestruct(ret.build,block.build);

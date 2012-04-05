@@ -1,4 +1,4 @@
-%% Fonction assurant le calcul de diverses erreurs par validation croisée dans le cas RBF/HBFRB
+%% Fonction assurant le calcul de diverses erreurs par validation croisï¿½e dans le cas RBF/HBFRB
 %L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
 
 function cv=cross_validate_rbf(data_block,data,meta)
@@ -81,10 +81,15 @@ infos.moy=data.norm.moy_eval;
 infos.std=data.norm.std_eval;
 cv_z=norm_denorm(cv_zn,'denorm',infos);
 diff=cv_z-data.in.eval;
+
 if data.in.pres_grad
-    infos.std_e=data.norm.std_eval;
-    infos.std_t=data.norm.std_tirages;
-    cv_gz=norm_denorm_g(cv_gzn,'denorm',infos);
+    if meta.norm
+        infos.std_e=data.norm.std_eval;
+        infos.std_t=data.norm.std_tirages;
+        cv_gz=norm_denorm_g(cv_gzn,'denorm',infos);
+    else
+        cv_gz=cv_gzn;
+    end
     diffg=cv_gz-data.in.grad;
 end
 somm=0.5*(cv_z+data.in.eval);
@@ -109,7 +114,7 @@ cv.errp=1/data.in.nb_val*sum(abs(diff)./somm);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Tracé du graph QQ
+%%Tracï¿½ du graph QQ
 if meta.cv_aff
     opt.newfig=false;
     figure

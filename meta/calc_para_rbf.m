@@ -1,10 +1,14 @@
-%% procédure de calcul automatique du paramètre RBF
+%% procedure de calcul automatique du paramï¿½tre RBF
 % L. LAURENT -- 23/02/2012 -- laurent@lmt.ens-cachan.fr
 
 function para=calc_para_rbf(tirages,data)
 
-% choix de la stratégie
-type=data.para.type; %Hardy/Franke ou manu
+% choix de la stratï¿½gie
+if isfield(data.para,'type')
+    type=data.para.type; %Hardy/Franke ou manu
+else
+    type='Manu';
+end
 % Aniso ou non
 aniso=data.para.aniso;
 
@@ -12,7 +16,7 @@ aniso=data.para.aniso;
 nb_var=size(tirages,2);
 nb_val=size(tirages,1);
 
-%suivant la stratégie choisie
+%suivant la stratï¿½gie choisie
 switch type
     case 'Hardy' %c=0.815d avec d=1/N*sum di ou di la distance entre un point i et son plus proche voisin
         if aniso

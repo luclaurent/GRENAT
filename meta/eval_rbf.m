@@ -70,7 +70,7 @@ if data.in.pres_grad
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         dda=dev';
         P=[ev;dda(:)];
-        %intercallage dérivées premières et secondes
+        %intercallage derivees premieres et secondes
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
         dP=horzcat(-dda,reshape(ddev,nb_var,[]));
        % pause

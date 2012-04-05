@@ -1,4 +1,4 @@
-%% Fonction assurant le calcul de diverses erreurs par validation croisée dans le cas du Krigeage/CoKrigeage
+%% Fonction assurant le calcul de diverses erreurs par validation croisee dans le cas du Krigeage/CoKrigeage
 %L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
 
 function cv=cross_validate_krg_ckrg(data,meta)
@@ -92,6 +92,7 @@ diff=cv_z-data.in.eval;
 if data.in.pres_grad
     diffg=cv_gz-data.in.grad;
 end
+
 %Biais moyen
 cv.bm=1/data.in.nb_val*sum(diff);
 %MSE
@@ -115,7 +116,7 @@ cv.errp=1/data.in.nb_val*sum(diff./somm);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Tracé du graph QQ
+%%Trace du graph QQ
 if meta.cv_aff
     opt.newfig=false;
     figure

@@ -5,7 +5,7 @@
 
 function [Z]=eval_meta(points,donnees,meta)
 
-%reconditionneent données construction
+%reconditionnement donnees construction
 if ~iscell(donnees)
     donnees_const={donnees};
     Z=struct;
@@ -22,24 +22,24 @@ dim_ev(1)=size(points,1);
 dim_ev(2)=size(points,2);
 dim_ev(3)=size(points,3);
 
-%reconditionnement des points d'évaluations
+%reconditionnement des points d'evaluations
 if nb_var>1
-    % si les points d'entrée correspondent à une grille
+    % si les points d'entree correspondent a une grille
     if dim_ev(3)~=1
-        %alors on définit le nombre de points à évaluer
-        nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'évaluation du métamodèle
+        %alors on definit le nombre de points a evaluer
+        nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'evaluation du metamodele
         ev_pts=zeros(nb_ev_pts,dim_ev(3));
         for ll=1:dim_ev(3)
             tmp=points(:,:,ll);
             ev_pts(:,ll)=tmp(:);
         end
     else
-        %sinon on définit le nombre de points à évaluer
+        %sinon on definit le nombre de points a evaluer
         nb_ev_pts=dim_ev(1);
         ev_pts=points;
     end
 else
-    nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'évaluation du métamodèle
+    nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'evaluation du metamodele
     ev_pts=points(:);
 end
 
@@ -66,7 +66,7 @@ for num_meta=1:numel(donnees_const)
     eval=meta_donnee.eval;
     grad=meta_donnee.grad;
     
-    %si l'on souhaite vérifier le metamodele à l'évaluation (vérification
+    %si l'on souhaite verifier le metamodele a l'evaluation (verification
     %de l'interpolation)
     if meta.verif
         Zverif=zeros(nb_val,1);varverif=zeros(nb_val,1);
@@ -89,6 +89,7 @@ for num_meta=1:numel(donnees_const)
                 
                 [rep(jj),G]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
+
             end
             %% verification interpolation
             if meta.verif
@@ -190,8 +191,8 @@ for num_meta=1:numel(donnees_const)
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'ILIN'
-            %% interpolation par fonction de base linéaire
-            fprintf('\n%s\n',[textd  'Interpolation par fonction de base linéaire' textf]);
+            %% interpolation par fonction de base lineaire
+            fprintf('\n%s\n',[textd  'Interpolation par fonction de base linï¿½aire' textf]);
             for jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [rep(jj,kk),G]=interp_lin(points(jj,kk,:),meta_donnee);

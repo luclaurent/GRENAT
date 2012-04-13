@@ -23,3 +23,9 @@ save([doss_extract '1D_' meta.type exten],'data','-ASCII');
 
 data=[grid_XY(:) K.GZ(:)];
 save([doss_extract '1D_G_' meta.type exten],'data','-ASCII');
+
+data=[tirages eval];
+save([doss_extract '1D_eval' exten],'data','-ASCII');
+
+data=[tirages grad];
+save([doss_extract '1D_grad' exten],'data','-ASCII');

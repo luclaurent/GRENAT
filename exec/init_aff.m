@@ -29,4 +29,5 @@ global aff
     aff.pts=false;              %affichage des points d'evaluation
     aff.num=0;                  %numérotation affichage
     aff.tex=true;               %sauvegarde des données dans le fichier TeX
+    aff.bar=false;              %affichage des réponses sous forme de barre
     

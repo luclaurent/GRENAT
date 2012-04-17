@@ -1,12 +1,14 @@
 %%fonction permettant le calcul de l'erreur RAAE
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
 
-%%Zex: correspond a  l'ensemble des valeurs obtenues par evalutions de la
+% Jin 2000 "Comparative Studies Of Metamodeling Techniques under Multiple Modeling Criteria"
+
+%%Zex: correspond a l'ensemble des valeurs obtenues par evalutions de la
 %%fonction objectif
-%%Zap: correspond a  l'ensemble des valeurs
+%%Zap: correspond a l'ensemble des valeurs
 function raae=raae(Zex,Zap)
 
-STD=std(Zex(:));
+STD=std(Zap(:));
 vec=abs(Zex-Zap);
 ECA=sum(vec(:));
 

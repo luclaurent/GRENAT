@@ -23,11 +23,15 @@ switch state
     case 'interrupt'
         %stop=true;
     case 'init'
-        figure;
-        title('Iterations algorithme de minimisation')
-        hold on
+        if size(x,2)<3
+            figure;
+            title('Iterations algorithme de minimisation')
+            hold on
+        end
     case 'done'
-        hold off
+        if size(x,2)<3
+            hold off
+        end
         
     otherwise
 end

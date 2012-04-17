@@ -6,13 +6,13 @@ function [corr,dcorr,ddcorr]=corr_matern32(xx,long)
 %verification de la dimension de lalongueur de correlations
 lt=size(long);
 
-%nombre de points a  evaluer
+%nombre de points aï¿½ evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
 
 
-%La longueur de correlation est définie pour toutes les composantes de xx
+%La longueur de correlation est dï¿½finie pour toutes les composantes de xx
 if lt(1)*lt(2)==1
     long = repmat(long,pt_eval,nb_comp);
 elseif lt(1)*lt(2)==nb_comp
@@ -100,5 +100,5 @@ elseif nargout==3
     
     
 else
-    error('Mauvais argument de sortie de la fonction corr_gauss');
+    error('Mauvais argument de sortie de la fonction corr_matern32');
 end

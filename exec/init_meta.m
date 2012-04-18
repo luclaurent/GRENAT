@@ -26,7 +26,7 @@ switch in.type
             meta.fct='rf_sexp';
         end
         meta.para.val=in.para.rbf_para;
-    case {'KRG','CKRG'}
+    case {'KRG','CKRG','InKRG'}
         meta.deg=in.deg;           %degre de la regression
         if isfield(in,'corr')
             meta.corr=['corr_' in.corr];     %fonction de correlation

@@ -68,7 +68,7 @@ for type=metype
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-            case 'InKRG'
+       case 'InKRG'
             %% Construction du metamodele de Krigeage Indirect
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations

@@ -119,7 +119,7 @@ for num_meta=1:numel(donnees_const)
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case {'KRG','CKRG'}
+        case {'KRG','CKRG','InKRG'}
             
             %stockage specifique
             Z_sto=rep;Z_reg=rep;

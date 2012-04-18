@@ -64,7 +64,7 @@ eval_new=sum(tmp_ev,2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Construction Krigeage a partir de ces donnees
-fprintf('>>> Nombre de points pris en compte: %d  \n',size(tirages,1));
+fprintf('>>> Nombre de points pris en compte: %d  \n',numel(eval_new));
 ret=meta_krg_ckrg(tirages_new,eval_new,[],meta);
 %% extraction informations
 ret.in.tirages_init=tirages;

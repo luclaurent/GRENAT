@@ -68,6 +68,15 @@ for type=metype
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
+       case 'InKRG'
+            %% Construction du metamodele de Krigeage Indirect
+            fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
+            %affichage informations
+            fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
+            inkrg=meta_inkrg(tirages,eval,grad,meta);
+            out_meta=inkrg;
+            %%%%%%%%=================================%%%%%%%%
+            %%%%%%%%=================================%%%%%%%%
         case 'CKRG'
             %% Construction du metamodele de CoKrigeage
             fprintf('\n%s\n',[textd 'CoKrigeage' textf]);

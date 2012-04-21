@@ -18,13 +18,13 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu'; 
+fct='rosenbrock'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -32,14 +32,14 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=200;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=16;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 10];
@@ -48,9 +48,9 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='GRBF';
+data.type='CKRG';
 data.grad=false;
-if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')
+if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')
     data.grad=true;
 end
 data.deg=0;
@@ -63,6 +63,7 @@ meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
+meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;

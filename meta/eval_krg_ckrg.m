@@ -169,17 +169,18 @@ if donnees.enrich.on
     else
         explor=0;
     end
-    diff_ei
-    variance
-    u
-    explor
+    
     %exploitation (fonction repartition loi normale centree reduite)
     if variance~=0
         exploit=diff_ei*0.5*(1+erf(u));
     else
         exploit=0;
     end
-    
+    diff_ei
+    variance
+    u
+    explor
+    exploit
     %critere Weigthed Expected Improvement (Sobester 2005)
     wei=donnees.enrich.para_wei*exploit+(1-donnees.enrich.para_wei)*explor;
     %critere Expected Improvement (Schonlau 1997)

@@ -32,7 +32,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=20;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=200;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='CKRG';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')
     data.grad=true;
@@ -92,7 +92,7 @@ disp('=====================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
-%tirages=[0.25;2;2.25;5;11;14];
+%tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 

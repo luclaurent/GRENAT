@@ -147,6 +147,7 @@ for type=metype
     out_meta.tirages=tirages;
     out_meta.eval=eval;
     out_meta.grad=grad_in;
+    out_meta.enrich=meta.enrich;
     if numel(metype)==1
         ret=out_meta;
     else

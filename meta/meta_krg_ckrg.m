@@ -24,6 +24,15 @@ fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fpri
 else
     fprintf('>> Valeur parametre: %d\n',meta.para.val);
 end
+fprintf('>> Critère enrichissement actif:');
+if meta.enrich.on;
+    fprintf('%s\n','Oui');
+    fprintf('>> Ponderation WEI: %d\n',meta.enrich.para_wei);
+    fprintf('>> Ponderation LCB: %d\n',meta.enrich.para_lcb);
+else
+    fprintf('%s\n','non');
+end
+    
 fprintf('\n\n')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

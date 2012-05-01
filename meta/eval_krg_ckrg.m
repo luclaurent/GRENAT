@@ -1,7 +1,7 @@
 %% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage
 % L. LAURENT -- 15/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [Z,GZ,var,details]=eval_krg_ckrg(U,donnees,tir_part)
+function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
 %Déclaration des variables
@@ -116,7 +116,7 @@ if nargout >=3
     if ~aff_warning;warning off all;end
     rcrr=donnees.build.rcc \ rr;
     u=donnees.build.fct*rcrr-ff';
-    var=donnees.build.sig2*(ones(dim_x,1)+u'*...
+    variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
         ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
     if ~aff_warning;warning on all;end
     
@@ -156,22 +156,25 @@ if donnees.enrich.on
     %reponse mini
     eval_min=min(donnees.in.eval);
     diff_ei=(eval_min-Z);
-    if var~=0
-        u=diff_ei/var^2;
-    else
-        u=[];
+    if variance~=0
+        u=diff_ei/variance^2;
     end
     %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
     %2011/Sobester 2005...)
     %exploration (densite probabilite)
-    if ~isempty(u)
-        explor=var*1/sqrt(2*pi)*exp(-0.5*u^2);
+    if variance~=0
+        explor=variance*1/sqrt(2*pi)*exp(-0.5*u^2);
+        explor
+        exp(-0.5*u^2)
     else
         explor=0;
     end
-    
+    diff_ei
+    variance
+    u
+    explor
     %exploitation (fonction repartition loi normale centree reduite)
-    if ~isempty(u)
+    if variance~=0
         exploit=diff_ei*0.5*(1+erf(u));
     else
         exploit=0;
@@ -182,7 +185,7 @@ if donnees.enrich.on
     %critere Expected Improvement (Schonlau 1997)
     ei=exploit+explor;
     %critere Lower Confidence Bound (Cox et John 1997)
-    lcb=Z-donnees.enrich.para_lcb*var;
+    lcb=Z-donnees.enrich.para_lcb*variance;
 end
 
 %extraction détails

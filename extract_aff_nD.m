@@ -31,7 +31,31 @@ if doe.dim_pb==1&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     plot(tirages,grad,'ok')
     plot(grid_XY,Z.GZ,'k')
     legend('G approx','G STO','G REG','sample grad','grad')
+   
+    if isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')
+    figure
+    subplot(3,1,1)
+    plot(grid_XY,K.Z,'r')
+    hold on
+    plot(tirages,eval,'ok')
+    plot(grid_XY,Z.Z,'k')
+    legend('approx','eval','sample resp.')
     hold off
+    subplot(3,1,2)
+    plot(grid_XY,K.var,'b')
+    hold on
+    plot(grid_XY,K.lcb,'--k')
+    legend('var','LCB')
+    hold off
+       subplot(3,1,3)
+    plot(grid_XY,K.wei,'b')
+    hold on
+    plot(grid_XY,K.ei,'r')
+    plot(grid_XY,K.explor,'--r')
+    plot(grid_XY,K.exploit,'--b')
+    hold off
+    legend('WEI','EI','Explor','Exploit')
+    end
 elseif doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     %%
     figure

@@ -145,11 +145,55 @@ if donnees.norm.on
     end
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%calcul critère enrichissement
+explor=[];
+exploit=[];
+wei=[];
+ei=[];
+if donnees.enrich.on
+    %reponse mini
+    eval_min=min(donnees.in.eval);
+    diff_ei=(eval_min-Z);
+    if var~=0
+        u=diff_ei/var^2;
+    else
+        u=[];
+    end
+    %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
+    %2011...)
+    %exploration (densite probabilite)
+    if ~isempty(u)
+        explor=var*1/sqrt(2*pi)*exp(-0.5*u^2);
+    else
+        explor=0;
+    end
+    
+    %exploitation (fonction repartition loi normale centree reduite)
+    if ~isempty(u)
+        exploit=diff_ei*0.5*(1+erf(u));
+    else
+        exploit=0;
+    end
+    
+    switch donnees.enrich.type
+        case 'WEI'
+            wei=donnees.enrich.para_wei*exploit+(1-donnees.enrich.para_wei)*explor;
+        case 'EI'
+            ei=exploit+explor;
+    end
+end
+
 %extraction détails
 if nargout==4
     details.Z_reg=Z_reg;
     details.Z_sto=Z_sto;
     details.GZ_reg=GZ_reg;
     details.GZ_sto=GZ_sto;
+    if ~isempty(explor);details.explor=explor;end
+    if ~isempty(exploit);details.exploit=exploit;end
+    if ~isempty(ei);details.ei=ei;end
+    if ~isempty(wei);details.wei=wei;end
 end
 end

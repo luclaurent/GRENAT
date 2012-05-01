@@ -162,7 +162,7 @@ if donnees.enrich.on
         u=[];
     end
     %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
-    %2011...)
+    %2011/Sobester 2005...)
     %exploration (densite probabilite)
     if ~isempty(u)
         explor=var*1/sqrt(2*pi)*exp(-0.5*u^2);
@@ -177,12 +177,12 @@ if donnees.enrich.on
         exploit=0;
     end
     
-    switch donnees.enrich.type
-        case 'WEI'
-            wei=donnees.enrich.para_wei*exploit+(1-donnees.enrich.para_wei)*explor;
-        case 'EI'
-            ei=exploit+explor;
-    end
+    %critere Weigthed Expected Improvement (Sobester 2005)
+    wei=donnees.enrich.para_wei*exploit+(1-donnees.enrich.para_wei)*explor;
+    %critere Expected Improvement (Schonlau 1997)
+    ei=exploit+explor;
+    %critere Lower Confidence Bound (Cox et John 1997)
+    lcb=Z-donnees.enrich.para_lcb*var;
 end
 
 %extraction détails
@@ -195,5 +195,6 @@ if nargout==4
     if ~isempty(exploit);details.exploit=exploit;end
     if ~isempty(ei);details.ei=ei;end
     if ~isempty(wei);details.wei=wei;end
+    if ~isempty(lcb);details.lcb=lcb;end
 end
 end

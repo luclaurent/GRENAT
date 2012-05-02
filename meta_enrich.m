@@ -58,6 +58,9 @@ enrich.crit_type={'NB_PTS','CV_MSE'};
 enrich.val_crit={100,10^-2};
 enrich.type='DOE';
 enrich.on=true;
+enrich.algo='ga';
+enrich.aff_iter_graph=true;
+enrich.aff_iter_cmd=true;
 
 
 %affichage de l'intervalle de confiance

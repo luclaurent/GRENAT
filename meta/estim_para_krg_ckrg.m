@@ -44,10 +44,10 @@ options_fminbnd = optimset(...
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','always',...
     'PlotFcns','');
-options_ga = optimset(...
+options_ga = gaoptimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
-    'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
+    'PopInitRange',[lb(:)';ub(:)'],...  %zone de définition de la population initiale
     'UseParallel','always',...
     'PlotFcns','');
 
@@ -55,14 +55,14 @@ options_ga = optimset(...
 if ~meta.para.aff_iter_graph
     options_fmincon=optimset(options_fmincon,'OutputFcn','');
     options_fminbnd=optimset(options_fminbnd,'OutputFcn','');
-    options_ga=optimset(options_ga,'OutputFcn','');
+    options_ga=gaoptimset(options_ga,'OutputFcn','');
 else
     figure
 end
 if ~meta.para.aff_iter_cmd
     options_fmincon=optimset(options_fmincon,'Display', 'notify');
     options_fminbnd=optimset(options_fminbnd,'Display', 'notify');
-    options_ga=optimset(options_ga,'Display', 'off');
+    options_ga=gaoptimset(options_ga,'Display', 'final');
 end
 
 %minimisation de la log-vraisemblance suivant l'algorithme choisi

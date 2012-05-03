@@ -26,22 +26,25 @@ lb=doe.Xmin;ub=doe.Xmax;
 %nombre parametres
 nb_var=numel(doe.Xmin);
 
+
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
-options_ga = optimset(...
+options_ga = gaoptimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
-    'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','always',...
+    'PopInitRange',[lb(:)';ub(:)'],...    %zone de définition de la population initiale
     'PlotFcns','');
+%{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,@gaplotexpectation,...
+%@gaplotmaxconstr,@gaplotrange,@gaplotselection,@gaplotscorediversity,@gaplotscores,@gaplotstopping});
 %affichage des iterations
 if ~enrich.aff_iter_graph
-    options_ga=optimset(options_ga,'OutputFcn','');
+    options_ga=gaoptimset(options_ga,'OutputFcn','');
 else
     figure
 end
 if ~enrich.aff_iter_cmd
-    options_ga=optimset(options_ga,'Display', 'off');
+    options_ga=gaoptimset(options_ga,'Display', 'off');
 end
     %% Minimisation par algo genetique
 switch enrich.algo

@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='KRG';
+data.type='GRBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')
     data.grad=true;
@@ -65,7 +65,7 @@ meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
-meta.para.aff_estim=false;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.enrich.para_wei=0.5;

@@ -56,11 +56,11 @@ meta=init_meta(data);
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS'};%,'CV_MSE'};
 enrich.val_crit={10};%,10^-4};
-enrich.type='VAR';
+enrich.type='EI';
 enrich.on=true;
 enrich.algo='ga';
 enrich.aff_iter_graph=false;
-enrich.aff_iter_cmd=true;
+enrich.aff_iter_cmd=false;
 
 
 %affichage de l'intervalle de confiance

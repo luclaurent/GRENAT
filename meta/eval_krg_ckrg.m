@@ -157,15 +157,13 @@ if donnees.enrich.on
     eval_min=min(donnees.in.eval);
     diff_ei=(eval_min-Z);
     if variance~=0
-        u=diff_ei/variance^2;
+        u=diff_ei/variance;
     end
     %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
     %2011/Sobester 2005...)
     %exploration (densite probabilite)
     if variance~=0
         explor=variance*1/sqrt(2*pi)*exp(-0.5*u^2);
-        explor
-        exp(-0.5*u^2)
     else
         explor=0;
     end
@@ -176,11 +174,6 @@ if donnees.enrich.on
     else
         exploit=0;
     end
-    diff_ei
-    variance
-    u
-    explor
-    exploit
     %critere Weigthed Expected Improvement (Sobester 2005)
     wei=donnees.enrich.para_wei*exploit+(1-donnees.enrich.para_wei)*explor;
     %critere Expected Improvement (Schonlau 1997)

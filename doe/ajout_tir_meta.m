@@ -41,7 +41,7 @@ else
     figure
 end
 if ~enrich.aff_iter_cmd
-    options_ga=optimset(options_ga,'Display', 'notify');
+    options_ga=optimset(options_ga,'Display', 'off');
 end
     %% Minimisation par algo genetique
 switch enrich.algo

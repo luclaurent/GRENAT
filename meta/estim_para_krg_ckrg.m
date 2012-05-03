@@ -62,6 +62,7 @@ end
 if ~meta.para.aff_iter_cmd
     options_fmincon=optimset(options_fmincon,'Display', 'notify');
     options_fminbnd=optimset(options_fminbnd,'Display', 'notify');
+    options_ga=optimset(options_ga,'Display', 'off');
 end
 
 %minimisation de la log-vraisemblance suivant l'algorithme choisi

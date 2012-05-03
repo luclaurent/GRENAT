@@ -3,7 +3,7 @@
 
 %effacement du Workspace
 clear all
-global aff
+global aff doe
 
 %chargement des repertoires de travail
 init_rep;
@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='peaks'; 
+fct='manu'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -41,25 +41,25 @@ doe.type='LHS_R';
 doe.nb_samples=3;
 
 % Parametrage du metamodele
-data.para.deg=0;
+data.deg=0;
 data.para.long=[0.5 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
-data.rbf='gauss';
+data.rbf='matern32';
 data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);
 
 %parametrage enrichissement
-enrich.crit_type={'NB_PTS','CV_MSE'};
-enrich.val_crit={100,10^-2};
-enrich.type='DOE';
+enrich.crit_type={'NB_PTS'};%,'CV_MSE'};
+enrich.val_crit={10};%,10^-4};
+enrich.type='VAR';
 enrich.on=true;
 enrich.algo='ga';
-enrich.aff_iter_graph=true;
+enrich.aff_iter_graph=false;
 enrich.aff_iter_cmd=true;
 
 
@@ -186,3 +186,5 @@ sauv_tex(meta,doe,aff,err,approx);
 if meta.save
 save([aff.doss '/WS.mat']);
 end
+
+extract_aff_nD

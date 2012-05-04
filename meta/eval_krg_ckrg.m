@@ -155,31 +155,8 @@ ei=[];
 if donnees.enrich.on
     %reponse mini
     eval_min=min(donnees.in.eval);
-    diff_ei=(eval_min-Z);
-    if variance~=0
-        u=diff_ei/variance;
-    end
-    %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
-    %2011/Sobester 2005...)
-    %exploration (densite probabilite)
-    if variance~=0
-        explor=variance*1/sqrt(2*pi)*exp(-0.5*u^2);
-    else
-        explor=0;
-    end
-    
-    %exploitation (fonction repartition loi normale centree reduite)
-    if variance~=0
-        exploit=diff_ei*0.5*(1+erf(u));
-    else
-        exploit=0;
-    end
-    %critere Weigthed Expected Improvement (Sobester 2005)
-    wei=donnees.enrich.para_wei*exploit+(1-donnees.enrich.para_wei)*explor;
-    %critere Expected Improvement (Schonlau 1997)
-    ei=exploit+explor;
-    %critere Lower Confidence Bound (Cox et John 1997)
-    lcb=Z-donnees.enrich.para_lcb*variance;
+    %calcul critères enrichissement
+    [ei,wei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
 end
 
 %extraction détails

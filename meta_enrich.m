@@ -41,7 +41,7 @@ doe.type='LHS_R';
 doe.nb_samples=3;
 
 % Parametrage du metamodele
-data.deg=0;
+data.deg=2;
 data.para.long=[0.5 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
@@ -55,7 +55,7 @@ meta=init_meta(data);
 
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS'};%,'CV_MSE'};
-enrich.val_crit={10};%,10^-4};
+enrich.val_crit={2};%,10^-4};
 enrich.type='EI';
 enrich.on=true;
 enrich.algo='ga';

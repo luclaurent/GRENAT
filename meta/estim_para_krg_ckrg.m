@@ -60,8 +60,8 @@ else
     figure
 end
 if ~meta.para.aff_iter_cmd
-    options_fmincon=optimset(options_fmincon,'Display', 'notify');
-    options_fminbnd=optimset(options_fminbnd,'Display', 'notify');
+    options_fmincon=optimset(options_fmincon,'Display', 'final');
+    options_fminbnd=optimset(options_fminbnd,'Display', 'final');
     options_ga=gaoptimset(options_ga,'Display', 'final');
 end
 
@@ -169,72 +169,19 @@ switch meta.para.method
         end
         if ~aff_warning;warning on all;end
     case 'ga'
-        fprintf('||Fmincon|| Initialisation au point:\n');
-        fprintf('%g ',x0); fprintf('\n');
-        %minimisation avec traitement de point de d�part non d�fini
-        indic=0;
+        fprintf('||Ga|| Initialisation par tirages LHS:\n');
         if ~aff_warning;warning off all;end
-        %pas de recherche d'initialisation
-        pas_min=1/500*(ub-lb);
-        pas_max=1/50*(ub-lb);
-        pente=0.2;
-        desc=true;
-        xinit=x0;
-        pas_pres=pas_max;
-        while indic==0
-            try
-                [x,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
-            catch exception
-                text='undefined at initial point';
-                [tt,~,~]=regexp(exception.message,text,'match','start','end');
-                
-                if ~isempty(tt)
-                    %calcul du pas de variation
-                    pas=(pas_max-pas_min).*(1-exp(-(x0-lb).*pas_max./pente))+pas_min;
-                    if pas<pas_min;pas=pas_min;elseif pas>pas_max;pas=pas_max;end
-                    fprintf('Variation: ');fprintf('%d ',pas);fprintf('\n');
-                    fprintf('Probleme initialisation fmincon (fct non definie au point initial)\n');
-                    if desc&&any((x0-pas)>lb)
-                        x0=x0-pas;
-                        fprintf('||Fmincon|| Reinitialisation au point:\n');
-                        fprintf('%g ',x0); fprintf('\n');
-                        exitflag=-1;
-                    elseif desc&&any((x0-pas)<lb)
-                        desc=false;
-                        x0=xinit;
-                        fprintf('||Fmincon|| Reinitialisation au point:\n');
-                        fprintf('%g ',x0); fprintf('\n');
-                        exitflag=-1;
-                    elseif ~desc&&any((x0+pas)<ub)
-                        x0=x0+pas;
-                        fprintf('||Fmincon|| Reinitialisation au point:\n');
-                        fprintf('%g ',x0); fprintf('\n');
-                        exitflag=-1;
-                    elseif ~desc&&any((x0+pas)>ub)
-                        exitflag=-2;
-                        fprintf('||Fmincon|| Reinitialisation impossible.\n');
-                    end
-                else
-                    exitflag=-1;
-                    getReport(exception,'extended')
-                    x=x0;
-                    break
-                end
-            end
-            
-            %arret minimisation
-            if exitflag==1||exitflag==0||exitflag==2
-                disp('Arret')
-                para_estim.out_algo=output;
-                para_estim.out_algo.fval=fval;
-                para_estim.out_algo.exitflag=exitflag;
-                indic=1;
-            elseif exitflag==-2
-                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) param�tre(s) fix�(s) � la valeur d''initialisation\n');
-                x=xinit;
-                indic=1;
-            end
+        [x,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
+        %arret minimisation
+        if exitflag==1||exitflag==0||exitflag==2
+            disp('Arret')
+            para_estim.out_algo=output;
+            para_estim.out_algo.fval=fval;
+            para_estim.out_algo.exitflag=exitflag;
+        elseif exitflag==-2
+            fprintf('Bug arret Ga\n');
         end
+        
         if ~aff_warning;warning on all;end
         
     otherwise

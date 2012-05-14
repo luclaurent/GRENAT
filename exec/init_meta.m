@@ -33,6 +33,8 @@ switch in.type
         else
             meta.corr='corr_sexp';
         end
+    otherwise
+        
 end
 
 %normalisation

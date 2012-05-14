@@ -24,8 +24,8 @@ switch fct
         xmin=-2;xmax=2;ymin=-1;ymax=1;
         esp=[xmin xmax;ymin ymax];
     case 'schwefel'
-        val=500;xmin=-val;xmax=val;ymin=-val;ymax=val;
-        esp=[xmin xmax;ymin ymax];
+        val=500;
+        esp=val*[-ones(dim,1),ones(dim,1)];
     case 'mystery'
         val=5;xmin=0;xmax=val;ymin=0;ymax=val;
         esp=[xmin xmax;ymin ymax];
@@ -66,6 +66,7 @@ doe.tri=1;
 %affichage tirages
 doe.aff=true;
 
+
 %definition manuelle
 if nargin==3&&~isempty(def)
     doe.Xmin=def(:,1);
@@ -74,6 +75,7 @@ else
     doe.Xmin=esp(:,1);
     doe.Xmax=esp(:,2);
 end
+doe.bornes=[doe.Xmin,doe.Xmax];
 
 %nom de la fonction a appeler
 fun=['fct_' fct];

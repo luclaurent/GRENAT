@@ -100,11 +100,11 @@ while ~crit_atteint&&enrich.on
         %en fonction du type d'enrichissement
         switch enrich.type
             % en se basant sur l'Expected Improvement
-            case {'EI_KRG','VAR_KRG'}
-                new_tirages=ajout_tir_meta(old_tirages,old_eval,old_grad,old_meta,approx,enrich);
+            case {'EI','VAR','WEI','LCB'}
+                new_tirages=ajout_tir_meta(meta,approx,enrich);
                 %en ajoutant des points dans le tirages
             case {'DOE'}
-                new_tirages=ajout_tir_doe(doe,old_tirages);
+                new_tirages=ajout_tir_doe(old_tirages);
             otherwise
                 fprintf(' >> Mode d''enrichissement non défini <<\n');
         end

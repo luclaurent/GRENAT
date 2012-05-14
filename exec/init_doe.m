@@ -7,6 +7,7 @@ function [doe]=init_doe(fct,dim,def)
 switch fct
     case 'manu'
         esp=[0 15];
+        dim=1;
     case 'rosenbrock'
         val=2.048;
         esp=val*[-ones(dim,1),ones(dim,1)];
@@ -67,9 +68,11 @@ doe.aff=true;
 
 %definition manuelle
 if nargin==3&&~isempty(def)
-    doe.bornes=def;
+    doe.Xmin=def(:,1);
+    doe.Xmax=def(:,2);
 else
-    doe.bornes=esp;
+    doe.Xmin=esp(:,1);
+    doe.Xmax=esp(:,2);
 end
 
 %nom de la fonction a appeler

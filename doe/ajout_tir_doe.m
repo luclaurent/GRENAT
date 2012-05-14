@@ -1,10 +1,11 @@
-%% Fonction assurant l'enrichissemsnt de la base de points echantillonnes 
+%% Fonction assurant l'enrichissement de la base de points echantillonnes 
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
 
 function new_tir=ajout_tir_doe(old_tirages)
 
-global doe;
+global doe
+doe
 Xmin=doe.Xmin;
 Xmax=doe.Xmax;
 

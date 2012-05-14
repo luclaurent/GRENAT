@@ -1,7 +1,7 @@
 %% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage
 % L. LAURENT -- 15/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [Z,GZ,var,details]=eval_krg_ckrg(U,donnees,tir_part)
+function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
 %Déclaration des variables
@@ -116,7 +116,7 @@ if nargout >=3
     if ~aff_warning;warning off all;end
     rcrr=donnees.build.rcc \ rr;
     u=donnees.build.fct*rcrr-ff';
-    var=donnees.build.sig2*(ones(dim_x,1)+u'*...
+    variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
         ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
     if ~aff_warning;warning on all;end
     
@@ -145,11 +145,30 @@ if donnees.norm.on
     end
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%calcul critère enrichissement
+explor=[];
+exploit=[];
+wei=[];
+ei=[];
+if donnees.enrich.on
+    %reponse mini
+    eval_min=min(donnees.in.eval);
+    %calcul critères enrichissement
+    [ei,wei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
+end
+
 %extraction détails
 if nargout==4
     details.Z_reg=Z_reg;
     details.Z_sto=Z_sto;
     details.GZ_reg=GZ_reg;
     details.GZ_sto=GZ_sto;
+    if ~isempty(explor);details.explor=explor;end
+    if ~isempty(exploit);details.exploit=exploit;end
+    if ~isempty(ei);details.ei=ei;end
+    if ~isempty(wei);details.wei=wei;end
+    if ~isempty(lcb);details.lcb=lcb;end
 end
 end

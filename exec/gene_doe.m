@@ -10,10 +10,16 @@ RandStream.setGlobalStream(s);
 fprintf('===== DOE =====\n');
 
 %recupŽration bornes espace de conception
-esp=doe.bornes;
+if isfield(doe,'Xmin')&&isfield(doe,'Xmax')
+    Xmin=doe.Xmin;
+    Xmax=doe.Xmax;
+elseif isfield(doe,'bornes')
+    Xmin=doe.bornes(:,1);
+    Xmax=doe.bornes(:,2);
+end
 
 %nombre de variables
-nbv=size(esp,1);
+nbv=numel(Xmin);
 
 %recuperation nombre d'échantillons souhaités
 nbs=doe.nb_samples;
@@ -25,23 +31,15 @@ switch doe.type
         tirages=factorial_design(nbs,esp);
         % Latin Hypercube Sampling avec R (et préenrichissement)
     case 'LHS_R'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         tirages=lhsu_R(Xmin,Xmax,prod(nbs(:)));
         % Improved Hypercube Sampling avec R (et préenrichissement)
     case 'IHS_R'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         tirages=ihs_R(Xmin,Xmax,prod(nbs(:)));
         % Latin Hypercube Sampling (à loi uniforme)
     case 'LHS'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
         % LHS avec stockage des données
     case 'LHS_manu'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
             unix('mkdir TIR_MANU');
@@ -63,8 +61,6 @@ switch doe.type
         tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
         
     case 'LHS_R_manu'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
             unix('mkdir TIR_MANU');
@@ -86,8 +82,6 @@ switch doe.type
         tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
         
     case 'IHS_R_manu'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
             unix('mkdir TIR_MANU');
@@ -109,8 +103,6 @@ switch doe.type
         tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
         % tirages aléatoires
     case 'IHS_R_manu_enrich'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
             unix('mkdir TIR_MANU');
@@ -133,8 +125,6 @@ switch doe.type
         tirages=tirages(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
         % tirages aléatoires
     case 'LHS_R_manu_enrich'
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
             unix('mkdir TIR_MANU');
@@ -151,7 +141,7 @@ switch doe.type
             fprintf('Tirage inexistant >> execution!!\n')
             t_init=lhsu_R(0*Xmin,0*Xmax+1,doe.nbs_min); % on initialise le tirage
             [tirages,~]=lhsu_R(0*Xmin,0*Xmax+1,doe.nbs_min,t_init,doe.nbs_max);
-            save(fi,'tirages');            
+            save(fi,'tirages');
         end
         % on corrige le tirage pourobetnir le bon espace
         tirages=tirages(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);

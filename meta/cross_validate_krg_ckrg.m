@@ -76,6 +76,7 @@ for tir=1:data.in.nb_val
     donnees_cv.build.fct=cv_ft;
     donnees_cv.build.gamma=gamma;
     donnees_cv.build.beta=beta;
+    donnees_cv.enrich.on=false;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%Evaluation du metamodele au point supprime de la construction

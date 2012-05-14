@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='peaks'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -39,7 +39,7 @@ aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=15;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 10];
@@ -65,9 +65,11 @@ meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
-meta.para.aff_estim=false;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
+meta.enrich.para_wei=0.5;
+meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -90,7 +92,7 @@ disp('=====================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
-%tirages=[0.25;2;2.25;5;11;14];
+%tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 

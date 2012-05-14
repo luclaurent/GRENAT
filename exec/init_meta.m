@@ -33,6 +33,8 @@ switch in.type
         else
             meta.corr='corr_sexp';
         end
+    otherwise
+        
 end
 
 %normalisation
@@ -53,7 +55,10 @@ if meta.para.estim
     meta.para.min=in.para.long(1);
 end
 
-
+%enrichissement (evaluation critere)
+meta.enrich.on=true;
+meta.enrich.para_wei=0.5;
+meta.enrich.para_lcb=0.5;
 
 %Verification interpolation
 meta.verif=true;

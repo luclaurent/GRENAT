@@ -5,7 +5,7 @@
 %%L. LAURENT      luc.laurent@ens-cachan.fr
 %% 15/03/2010 reprise le 20/01/2012
 
-function [Z,GZ]=eval_rbf(U,data,tir_part)
+function [Z,GZ,variance]=eval_rbf(U,data,tir_part)
 % affichages warning ou non
 aff_warning=false;
 %Declaration des variables
@@ -125,6 +125,14 @@ end
 Z=P'*data.build.w;
 if calc_grad
     GZ=dP*data.build.w; 
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%calcul de la variance de prediction (Bompard 2011,Sobester 2005, Gibbs 1997)
+if nargout >=3
+    if ~aff_warning;warning off all;end
+        variance=1-P'*(data.build.KK\P);
+    if ~aff_warning;warning on all;end    
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -5,13 +5,15 @@ function para_estim=estim_para_krg_ckrg(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
 
-%crit�re arr�t minimisation
+%critere arret minimisation
 crit_opti=10^-6;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+fprintf('++ Estimation parametres\n');
+[tMesu,tInit]=mesu_time;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % D�finition des param�tres de minimisation
@@ -187,16 +189,17 @@ switch meta.para.method
     otherwise
         error('Strategie de minimisation non prise en charge');
 end
-
+mesu_time(tMesu,tInit);
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
 %stockage valeur param�tres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
     para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
-    fprintf('Valeur(s) longueur(s) de correlation');
+    fprintf('\nValeur(s) longueur(s) de correlation');
     fprintf(' %6.4f',para_estim.val_denorm);
     fprintf('\n');
 end
 fprintf('Valeur(s) longueur(s) de correlation (brut)');
 fprintf(' %6.4f',x);
-fprintf('\n');
+fprintf('\n\n');
 end

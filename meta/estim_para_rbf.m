@@ -11,7 +11,9 @@ meta.cv_aff=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('Estimation du parametre RBF par minimisation de MSE (CV)\n');
+fprintf('- - - - - - - - - - - - - - - - -\n');
+fprintf('++ Estimation parametres\n');
+[tMesu,tInit]=mesu_time;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Définition des paramètres de minimisation
@@ -197,16 +199,17 @@ end
 meta.cv_aff=aff_cv_old;
 meta.cv=cv_old;
 
-
+mesu_time(tMesu,tInit);
+fprintf('- - - - - - - - - - - - - - - - -\n');
 %stockage valeur paramètres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
     para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
-    fprintf('Valeur(s) parametre(s) RBF');
+    fprintf('\nValeur(s) parametre(s) RBF');
     fprintf(' %6.4f',para_estim.val_denorm);
     fprintf('\n');
 end
 fprintf('Valeur(s) parametre(s) RBF (brut)');
 fprintf(' %6.4f',x);
-fprintf('\n');
+fprintf('\n\n');
 end

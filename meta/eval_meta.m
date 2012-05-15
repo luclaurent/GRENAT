@@ -5,6 +5,10 @@
 
 function [Z]=eval_meta(points,donnees,meta)
 
+fprintf('#########################################\n');
+fprintf('  >>> EVALUATION METAMODELE <<<\n');
+[tMesu,tInit]=mesu_time;
+
 %reconditionnement donnees construction
 if ~iscell(donnees)
     donnees_const={donnees};
@@ -321,4 +325,6 @@ for num_meta=1:numel(donnees_const)
         end
     end
 end
-
+fprintf('++ Evaluation en %i points\n',nb_ev_pts);
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');

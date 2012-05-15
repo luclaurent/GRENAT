@@ -176,7 +176,6 @@ if isfield(doe,'tri')&&doe.tri>0
     end
 end
 
-toc
 
 %affichage tirages
 aff_doe(tirages,doe)

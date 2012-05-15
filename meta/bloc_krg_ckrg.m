@@ -110,6 +110,7 @@ switch fact_rcc
         ret.build.yQ=Q'*donnees.build.y;
         ret.build.fcQ=Q'*donnees.build.fc;
         ret.build.fctR=donnees.build.fct/R;
+        ret.build.fctCfc=(donnees.build.fc\Q)*(R/donnees.build.fct);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta

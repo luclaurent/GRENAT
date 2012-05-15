@@ -114,12 +114,26 @@ end
 %2004)
 if nargout >=3
     if ~aff_warning;warning off all;end
-    rcrr=donnees.build.rcc \ rr;
-    u=donnees.build.fct*rcrr-ff';
-    variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
-        ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
+    %en fonction de la factorisation
+    switch donnees.build.fact_rcc
+        case 'QR'
+            size(donnees.build.Qrcc)
+            size(rr)
+            Qrr=donnees.build.Qrcc'*rr';
+            u=donnees.build.fctR*Qrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)+(rr\donnees.build.Rrcc)*Qrr+...
+                u'*donnees.build.fctCfc*u);
+                
+        case 'LU'
+        case 'LL'
+        otherwise
+            rcrr=donnees.build.rcc \ rr;
+            u=donnees.build.fct*rcrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
+                ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) + rr'*rcrr);
+    end
     if ~aff_warning;warning on all;end
-    
+   
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

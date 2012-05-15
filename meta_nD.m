@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='GRBF';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')
     data.grad=true;

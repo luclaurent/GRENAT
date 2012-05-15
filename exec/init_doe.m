@@ -3,6 +3,11 @@
 
 function [doe]=init_doe(fct,dim,def)
 
+
+fprintf('=========================================\n')
+fprintf('      >>> INITIALISATION DOE <<<\n');
+[tMesu,tInit]=mesu_time;
+
 %definition automatique
 switch fct
     case 'manu'
@@ -80,3 +85,15 @@ doe.bornes=[doe.Xmin,doe.Xmax];
 %nom de la fonction a appeler
 fun=['fct_' fct];
 
+fprintf('++ Fonction prise en compte: %s (%iD)\n',fct,dim);
+fprintf('++ Espace etude:\n');
+fprintf('   Min  |');
+fprintf('%+4.2f|',doe.Xmin);fprintf('\n');
+fprintf('   Max  |');
+fprintf('%+4.2f|',doe.Xmax);fprintf('\n');
+fprintf('++ Tri variable par rapport à la %i variable\n',doe.tri);
+fprintf('++ Affichage tirages: ');
+if doe.aff; fprintf('Oui\n');else fprintf('Non\n');end
+
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

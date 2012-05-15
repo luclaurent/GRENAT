@@ -3,17 +3,21 @@
 
 function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)
 
+fprintf('#########################################\n');
+fprintf('  >>> CONSTRUCTION METAMODELE <<<\n');
+[tMesu,tInit]=mesu_time;
+
 %prise en compte gradients ou pas
 if isfield(meta,'grad')
     if isempty(grad_in)||meta.grad==false;pec_grad='Non';grad_in=[];else pec_grad='Oui';end
 else
     if isempty(grad_in);pec_grad='Non';grad_in=[];else pec_grad='Oui';end
 end
-fprintf('Gradients disponibles: %s\n\n',pec_grad);
+fprintf('\n++ Gradients disponibles: %s\n',pec_grad);
 
 % Generation du metamodele
-textd='===== METAMODELE de ';
-textf=' =====';
+textd='++ Type: ';
+textf='';
 
 %nombre de variables
 nb_var=size(tirages,2);
@@ -155,3 +159,6 @@ for type=metype
     end
     num_meta=num_meta+1;
 end
+
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');

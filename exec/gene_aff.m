@@ -3,6 +3,9 @@
 
 function [XY,aff]=gene_aff(doe,aff)
 
+fprintf('=========================================\n')
+fprintf('     >>> GENERATION AFFICHAGE <<<\n');
+[tMesu,tInit]=mesu_time;
 %dimension de l'espace
 dim_esp=numel(doe.Xmin);
 
@@ -37,3 +40,9 @@ end
 
 %pas de la grille d'affichage selon les deux variables
 aff.pas=abs(doe.Xmax-doe.Xmin)./aff.nbele;
+
+fprintf('++ Nombre de points de la grille %i (%i',aff.nbele^dim_esp,aff.nbele);
+fprintf('x%i',aff.nbele*ones(1,dim_esp-1));fprintf(')\n');
+
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

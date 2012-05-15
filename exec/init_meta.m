@@ -3,6 +3,10 @@
 
 function meta=init_meta(in)
 
+fprintf('=========================================\n')
+fprintf('     >>> INITIALISATION META <<<\n');
+[tMesu,tInit]=mesu_time;
+
 meta.grad=in.grad; %prise en compte des gradients
 
 meta.type=in.type;         %type de metamodele KRG/CKRG/DACE/RBF/GRBF
@@ -63,3 +67,5 @@ meta.enrich.para_lcb=0.5;
 %Verification interpolation
 meta.verif=true;
 
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

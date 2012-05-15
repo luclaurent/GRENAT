@@ -2,7 +2,12 @@
 %% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
 
 function tirages=gene_doe(doe)
-tic
+
+
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+fprintf('    >>> GENERATION TIRAGES <<<\n');
+[tMesu,tInit]=mesu_time;
+
 % obtenir un "vrai" tirages pseudo aléatoire
 s = RandStream('mt19937ar','Seed','shuffle');
 RandStream.setGlobalStream(s);
@@ -24,11 +29,13 @@ nbv=numel(Xmin);
 %recuperation nombre d'échantillons souhaités
 nbs=doe.nb_samples;
 
+
+
 %geŽnŽeration des diffŽerents types de tirages
 switch doe.type
     % plan factoriel complet
     case 'ffact'
-        tirages=factorial_design(nbs,esp);
+        tirages=factorial_design(nbs,doe.bornes);
         % Latin Hypercube Sampling avec R (et préenrichissement)
     case 'LHS_R'
         tirages=lhsu_R(Xmin,Xmax,prod(nbs(:)));
@@ -176,4 +183,7 @@ aff_doe(tirages,doe)
 
 %% affichage infos
 fprintf(' >> type de tirages: %s\n',doe.type);
+
+mesu_time(tMesu,tInit);
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 end

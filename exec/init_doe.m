@@ -13,7 +13,7 @@ switch fct
     case 'manu'
         esp=[0 15];
         dim=1;
-    case 'rosenbrock'
+    case {'rosenbrock','rosenbrockM'}
         val=2.048;
         esp=val*[-ones(dim,1),ones(dim,1)];
     case 'branin'

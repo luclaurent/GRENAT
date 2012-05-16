@@ -14,75 +14,77 @@ cv_gz=zeros(data.in.nb_val,data.in.nb_var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%On parcourt l'ensemble des tirages
-for tir=1:data.in.nb_val
-    %%On construit le metamodele de CoKrigeage avec un site en moins
-    %Traitement des matrices et vecteurs en supprimant les lignes et
-    %colonnes correspondant
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %positions des element a retirer
-    if data.in.pres_grad
-        pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
-    else
-        pos=tir;
-    end
-    cv_fc=data.build.fc;
-    cv_fc(pos,:)=[];
-    cv_rcc=data.build.rcc;
-    cv_rcc(pos,:)=[];
-    cv_rcc(:,pos)=[];
-    cv_y=data.build.y;
-    cv_y(pos)=[];
-    cv_tirages=data.in.tirages;
-    cv_tirages(tir,:)=[];
-    cv_tiragesn=data.in.tiragesn;
-    cv_tiragesn(tir,:)=[];
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %calcul de beta
-    if ~aff_warning; warning off all;end
-    cv_ft=cv_fc';
-    block1=((cv_ft/cv_rcc)*cv_fc);
-    block2=((cv_ft/cv_rcc)*cv_y);
-    beta=block1\block2;
-     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %creation de la matrice des facteurs de correlation
-    gamma=cv_rcc\(cv_y-cv_fc*beta);
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    %calcul de la variance de prediction
-    sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'/cv_rcc)...
-        *(cv_y-cv_fc*beta);
-    if ~aff_warning; warning on all;end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if data.norm.on
-        donnees_cv.sig2=sig2*data.norm.std_eval^2;
-    else
-        donnees_cv.sig2=sig2;
-    end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %passage des parametres
-    donnees_cv=data;
-    donnees_cv.in.tirages=cv_tirages;
-    donnees_cv.in.tiragesn=cv_tiragesn;
-    donnees_cv.in.nb_val=data.in.nb_val-1;  %retrait d'un site
-    donnees_cv.build.rcc=cv_rcc;
-    donnees_cv.build.fc=cv_fc;
-    donnees_cv.build.fct=cv_ft;
-    donnees_cv.build.gamma=gamma;
-    donnees_cv.build.beta=beta;
-    donnees_cv.enrich.on=false;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%Evaluation du metamodele au point supprime de la construction
-    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg_ckrg(data.in.tirages(tir,:),donnees_cv);
-    
-end
+% for tir=1:data.in.nb_val
+%     %%On construit le metamodele de CoKrigeage avec un site en moins
+%     %Traitement des matrices et vecteurs en supprimant les lignes et
+%     %colonnes correspondant
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %positions des element a retirer
+%     if data.in.pres_grad
+%         pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+%     else
+%         pos=tir;
+%     end
+%     cv_fc=data.build.fc;
+%     cv_fc(pos,:)=[];
+%     cv_rcc=data.build.rcc;
+%     cv_rcc(pos,:)=[];
+%     cv_rcc(:,pos)=[];
+%     cv_y=data.build.y;
+%     cv_y(pos)=[];
+%     cv_tirages=data.in.tirages;
+%     cv_tirages(tir,:)=[];
+%     cv_tiragesn=data.in.tiragesn;
+%     cv_tiragesn(tir,:)=[];
+%     
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %calcul de beta
+%     if ~aff_warning; warning off all;end
+%     cv_ft=cv_fc';
+%     block1=((cv_ft/cv_rcc)*cv_fc);
+%     block2=((cv_ft/cv_rcc)*cv_y);
+%     beta=block1\block2;
+%      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %creation de la matrice des facteurs de correlation
+%     gamma=cv_rcc\(cv_y-cv_fc*beta);
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     
+%     %calcul de la variance de prediction
+%     sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'/cv_rcc)...
+%         *(cv_y-cv_fc*beta);
+%     if ~aff_warning; warning on all;end
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     if data.norm.on
+%         donnees_cv.sig2=sig2*data.norm.std_eval^2;
+%     else
+%         donnees_cv.sig2=sig2;
+%     end
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %passage des parametres
+%     donnees_cv=data;
+%     donnees_cv.in.tirages=cv_tirages;
+%     donnees_cv.in.tiragesn=cv_tiragesn;
+%     donnees_cv.in.nb_val=data.in.nb_val-1;  %retrait d'un site
+%     donnees_cv.build.rcc=cv_rcc;
+%     donnees_cv.build.fc=cv_fc;
+%     donnees_cv.build.fct=cv_ft;
+%     donnees_cv.build.gamma=gamma;
+%     donnees_cv.build.beta=beta;
+%     donnees_cv.enrich.on=false;
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %%Evaluation du metamodele au point supprime de la construction
+%     [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg_ckrg(data.in.tirages(tir,:),donnees_cv);
+%     
+% end
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

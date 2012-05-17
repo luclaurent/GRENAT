@@ -13,6 +13,9 @@ switch fct
     case 'manu'
         esp=[0 15];
         dim=1;
+    case 'ackley'
+        val=1.5;
+        esp=val*[-ones(dim,1),ones(dim,1)];
     case {'rosenbrock','rosenbrockM'}
         val=2.048;
         esp=val*[-ones(dim,1),ones(dim,1)];

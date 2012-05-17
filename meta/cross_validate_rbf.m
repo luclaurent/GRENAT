@@ -3,6 +3,10 @@
 
 function cv=cross_validate_rbf(data_block,data,meta)
 
+%norme employee dans le calcul de l'erreur LOO
+%MSE: norme-L2
+LOO_norm='L2';
+
 % affichages warning ou non
 aff_warning=false;
 
@@ -16,7 +20,27 @@ cv_var=zeros(data.in.nb_val,1);
 cv_gz=zeros(data.in.nb_val,data.in.nb_var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%On parcourt l'ensemble des tirages
+%% Soit on parcours l'ensemble des tirages
+%% Soit on utilise la méthode de Rippa (Rippa 1999/Fasshauer 2007/Bompard 2011)
+
+%vecteur des ecarts aux echantillons retires
+esn=abs(data_block.build.w./diag(data_block.build.iKK));
+infos.moy=data.norm.moy_eval;
+infos.std=data.norm.std_eval;
+es=norm_denorm(esn,'denorm',infos);
+
+switch LOO_norm
+    case 'L1'
+        eloo=1/size(data_block.build.KK,1)*sum(abs(es));
+    case 'L2' %MSE
+        eloo=1/size(data_block.build.KK,1)*(es'*es);
+    case 'Linf'
+        eloo=1/size(data_block.build.KK,1)*max(es(:));
+end
+
+
+
+
 for tir=1:data.in.nb_val
     %%On construit le metamodele RBF/HBRBF avec un site en moins
     %Traitement des matrices et vecteurs en supprimant les lignes et
@@ -30,14 +54,7 @@ for tir=1:data.in.nb_val
     else
         pos=tir;
     end
-    
-    %cf. Rippa 1999/Fasshauer 2007
-    %%!!!! a coder: differentes factorisation
-%     cv_zn(tir)=data.build.y(pos(1))-data_block.build.w(pos(1))/data_block.build.iKK(pos(1),pos(1));
-%     if data.in.pres_grad
-%        cv_gzn(tir,:)=data.build.y(pos(2:end))-...
-%            data_block.build.w(pos(2:end))./diag(data_block.build.iKK(pos(2:end),pos(2:end)));
-%     end
+    pos
     
     
     
@@ -101,6 +118,16 @@ cv.bm=1/data.in.nb_val*sum(diff);
 %MSE
 diffc=diff.^2;
 cv.msep=1/data.in.nb_val*sum(diffc);
+cv.msep
+eloo
+diff
+es
+figure
+
+plot(1:numel(diff),diff,'r')
+hold on
+plot(1:numel(es),es,'b')
+hold off
 if data.in.pres_grad
     diffgc=diffg.^2;
     cv.mseg=1/(data.in.nb_val*data.in.nb_var)*sum(diffgc(:));

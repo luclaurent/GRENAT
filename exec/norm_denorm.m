@@ -29,6 +29,9 @@ if (nargin==3&&~isempty(infos.moy))||nargin==2
         %denormalisation
     elseif strcmp(type,'denorm')
         out=repmat(infos.std,nbs,1).*in+repmat(infos.moy,nbs,1);
+        %denormalisation d'une difference de valeurs normalisees
+    elseif strcmp(type,'denorm_diff')
+        out=repmat(infos.std,nbs,1).*in;
     else
         error('Mauvais nombre de parametres d''entrée (cf. norm_denorm.m)')
     end

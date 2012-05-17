@@ -120,7 +120,8 @@ switch fact_KK
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
-        ret.build.w=KK\data.build.y;
+        ret.build.iKK=inv(KK);
+        ret.build.w=ret.build.iKK*data.build.y;
         
 end
 

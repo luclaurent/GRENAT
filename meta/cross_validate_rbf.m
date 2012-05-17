@@ -38,6 +38,51 @@ switch LOO_norm
         eloo=1/size(data_block.build.KK,1)*max(es(:));
 end
 
+for tir=1:data.in.nb_val
+    %%On construit le metamodele RBF/HBRBF avec un site en moins
+    %Traitement des matrices et vecteurs en supprimant les lignes et
+    %colonnes correspondant
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %positions des element a retirer
+    if data.in.pres_grad
+        pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+        % pos=(tir-1)*(data.in.nb_var+1)+1:tir*(data.in.nb_var+1);
+    else
+        pos=tir;
+    end
+    cv_KK=data_block.build.KK; cv_KK(pos,:)=[];
+    cv_KK(:,pos)=[];
+    cv_y=data.build.y;
+    cv_y(pos)=[];
+    cv_tirages=data.in.tirages;
+    cv_tirages(tir,:)=[];
+    cv_tiragesn=data.in.tiragesn;
+    cv_tiragesn(tir,:)=[];
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %calcul des coefficients
+    if ~aff_warning; warning off all;end
+    cv_w=cv_KK\cv_y;
+    if ~aff_warning; warning on all;end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %passage des parametres
+    donnees_cv=data;
+    donnees_cv.build.fct=data_block.build.fct;
+    donnees_cv.build.para=data_block.build.para;
+    donnees_cv.in.tirages=cv_tirages;
+    donnees_cv.in.tiragesn=cv_tiragesn;
+    donnees_cv.in.nb_val=data.in.nb_val-1;  %retrait d'un site
+    donnees_cv.build.KK=cv_KK;
+    donnees_cv.build.w=cv_w;
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%Evaluation du metamodele au point supprime de la construction
+    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_rbf(data.in.tirages(tir,:),donnees_cv);
+    
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Calcul des differentes erreurs
@@ -64,7 +109,6 @@ cv.bm=1/data.in.nb_val*sum(diff);
 %MSE
 diffc=diff.^2;
 cv.loo=eloo;
-hold off
 if data.in.pres_grad
     diffgc=diffg.^2;
     cv.mseg=1/(data.in.nb_val*data.in.nb_var)*sum(diffgc(:));
@@ -95,7 +139,7 @@ if meta.cv_aff
     qq_plot(data.in.eval,cv_z,opt)
     subplot(2,2,2);
     infos.moy=data.norm.moy_eval;
-    infos.std=data.norm.std_eval;    
+    infos.std=data.norm.std_eval;
     cv_zn=norm_denorm(cv_z,'norm',infos);
     opt.title='Standardized data';
     qq_plot(data.in.evaln,cv_zn,opt)

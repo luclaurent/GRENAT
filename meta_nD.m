@@ -18,13 +18,13 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu'; 
+fct='rosenbrock'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -39,10 +39,10 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=50;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 10];
+data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
@@ -65,7 +65,7 @@ meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
-meta.para.aff_estim=false;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.enrich.para_wei=0.5;

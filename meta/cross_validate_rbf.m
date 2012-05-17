@@ -24,10 +24,10 @@ cv_gz=zeros(data.in.nb_val,data.in.nb_var);
 %% Soit on utilise la méthode de Rippa (Rippa 1999/Fasshauer 2007/Bompard 2011)
 
 %vecteur des ecarts aux echantillons retires
-esn=abs(data_block.build.w./diag(data_block.build.iKK));
+esn=data_block.build.w./diag(data_block.build.iKK);
 infos.moy=data.norm.moy_eval;
 infos.std=data.norm.std_eval;
-es=norm_denorm(esn,'denorm',infos);
+es=norm_denorm(esn,'denorm_diff',infos);
 
 switch LOO_norm
     case 'L1'
@@ -36,60 +36,6 @@ switch LOO_norm
         eloo=1/size(data_block.build.KK,1)*(es'*es);
     case 'Linf'
         eloo=1/size(data_block.build.KK,1)*max(es(:));
-end
-
-
-
-
-for tir=1:data.in.nb_val
-    %%On construit le metamodele RBF/HBRBF avec un site en moins
-    %Traitement des matrices et vecteurs en supprimant les lignes et
-    %colonnes correspondant
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %positions des element a retirer
-    if data.in.pres_grad
-        pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
-        % pos=(tir-1)*(data.in.nb_var+1)+1:tir*(data.in.nb_var+1);
-    else
-        pos=tir;
-    end
-    pos
-    
-    
-    
-        cv_KK=data_block.build.KK;
-        cv_KK(pos,:)=[];
-        cv_KK(:,pos)=[];
-        cv_y=data.build.y;
-        cv_y(pos)=[];
-        cv_tirages=data.in.tirages;
-        cv_tirages(tir,:)=[];
-        cv_tiragesn=data.in.tiragesn;
-        cv_tiragesn(tir,:)=[];
-    
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul des coefficients
-        if ~aff_warning; warning off all;end
-        cv_w=cv_KK\cv_y;
-        if ~aff_warning; warning on all;end
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %passage des parametres
-        donnees_cv=data;
-        donnees_cv.build.fct=data_block.build.fct;
-        donnees_cv.build.para=data_block.build.para;
-        donnees_cv.in.tirages=cv_tirages;
-        donnees_cv.in.tiragesn=cv_tiragesn;
-        donnees_cv.in.nb_val=data.in.nb_val-1;  %retrait d'un site
-        donnees_cv.build.KK=cv_KK;
-        donnees_cv.build.w=cv_w;
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%Evaluation du metamodele au point supprime de la construction
-        [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_rbf(data.in.tirages(tir,:),donnees_cv);
-    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -117,16 +63,7 @@ somm=0.5*(cv_z+data.in.eval);
 cv.bm=1/data.in.nb_val*sum(diff);
 %MSE
 diffc=diff.^2;
-cv.msep=1/data.in.nb_val*sum(diffc);
-cv.msep
-eloo
-diff
-es
-figure
-
-plot(1:numel(diff),diff,'r')
-hold on
-plot(1:numel(es),es,'b')
+cv.loo=eloo;
 hold off
 if data.in.pres_grad
     diffgc=diffg.^2;

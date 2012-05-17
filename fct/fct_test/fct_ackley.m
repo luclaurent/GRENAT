@@ -25,7 +25,7 @@ if nbvar==1
     else
         error('Mauvais format variable entrée fct Rastrigin');
     end
-    norme=srqt(xxx.^2+yyy.^2);
+    norme=sqrt(xxx.^2+yyy.^2);
     ex1=exp(-b*norme/sqrt(2));
     ex2=exp(1/2*(cos(c*xxx)+cos(c*yyy)));
     p=-a*ex1-ex2+a+exp(1);%+d
@@ -35,13 +35,16 @@ if nbvar==1
     end
     
 else
-    norme=srqt(sum(xx.^2,3));
+    norme=sqrt(sum(xx.^2,3));
     ex1=exp(-b*norme/sqrt(nbvar));
     sco=sum(cos(c*xx),3);
     ex2=exp(1/nbvar*sco);
     p=-a*ex1-ex2+a+exp(1);%+d 
     if nargout==2
-        dp=a*b*1/sqrt(nbvar)*xx./norme.*ex1+c/nbvar*sin(c*xx).*ex2;
+        dp=zeros(size(xx));
+        for ii=1:nbvar
+            dp(:,:,ii)=a*b*1/sqrt(nbvar)*xx(:,:,ii)./norme.*ex1+c/nbvar*sin(c*xx(:,:,ii)).*ex2;
+        end
     end
     
 end

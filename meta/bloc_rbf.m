@@ -8,7 +8,7 @@ fct_min='loot'; %msep/msemix
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de correlation
-fact_KK='QR' ; %LU %QR %LL %None
+fact_KK='None' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para defini alors on charge cette nouvelle valeur

@@ -14,7 +14,7 @@ switch type
     case 'denorm_concat'  %gradients concatenes en un vecteur colonne
         correct=infos.std_e./infos.std_t;
         nbv=numel(infos.std_t);
-        out=in.*repmat(correct(:),nbs/nbv,[]);
+        out=in.*repmat(correct(:),nbs/nbv,1);
     otherwise
         error('Mauvais type de normalisation/denormalisation (cf. norm_denorm_g.m)')
         

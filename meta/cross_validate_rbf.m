@@ -107,6 +107,8 @@ for tir=1:data.in.nb_val
     
 end
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Calcul des differentes erreurs
@@ -127,6 +129,13 @@ if data.in.pres_grad
     end
     diffg=cv_gz-data.in.grad;
 end
+figure;
+
+plot(1:numel(es),es,'b')
+hold on
+plot(1:numel(diff),diff,'r')
+plot(1:numel(diff),abs(es+diff),'k')
+
 somm=0.5*(cv_z+data.in.eval);
 %Biais moyen
 cv.bm=1/data.in.nb_val*sum(diff);
@@ -140,11 +149,20 @@ if data.in.pres_grad
     cv.msemix=1/(data.in.nb_val*(data.in.nb_var+1))*(data.in.nb_val*cv.msep+data.in.nb_val*data.in.nb_var*cv.mseg);
     cv.loor=eloor;
     cv.loog=eloog;
+    
 end
-cv.loot
-cv.msemix
-%cv.loog
-%cv.mseg
+% if abs(cv.loor-cv.msep)>10e-10
+%     cv.loor
+%     cv.msep
+%     cv.loog
+%     cv.loot
+%     cv.mseg
+%     cv.msemix
+%     
+%     cv.loor-cv.msep
+%     pause
+% end
+
 %PRESS
 cv.press=sum(diffc);
 %critere d'adequation (SCVR Keane 2005/Jones 1998)

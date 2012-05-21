@@ -26,16 +26,40 @@ cv_gz=zeros(data.in.nb_val,data.in.nb_var);
 %vecteur des ecarts aux echantillons retires
 esn=data_block.build.w./diag(data_block.build.iKK);
 infos.moy=data.norm.moy_eval;
-infos.std=data.norm.std_eval;
-es=norm_denorm(esn,'denorm_diff',infos);
+infos.std=data.norm.std_eval;infos.std_e=infos.std;
+infos.std_t=data.norm.std_tirages;
+%denormalisation
+if data.in.pres_grad
+    %denormalisation difference reponses
+    esr=norm_denorm(esn(1:data.in.nb_val),'denorm_diff',infos);
+    %denormalisation difference gradients
+    esg=norm_denorm_g(esn(data.in.nb_val+1:end),'denorm_concat',infos);
+    es=[esr;esg];
+else
+    es=norm_denorm(esn,'denorm_diff',infos);
+end
+
+
 
 switch LOO_norm
     case 'L1'
-        eloo=1/size(data_block.build.KK,1)*sum(abs(es));
+        eloot=1/size(data_block.build.KK,1)*sum(abs(es));
+        if data.in.pres_grad
+           eloor=1/data.in.nb_val*sum(abs(esr));
+           eloog=1/(data.in.nb_val*data.in.nb_var)*sum(abs(esg));
+        end
     case 'L2' %MSE
-        eloo=1/size(data_block.build.KK,1)*(es'*es);
+        eloot=1/size(data_block.build.KK,1)*(es'*es);
+        if data.in.pres_grad
+           eloor=1/data.in.nb_val*(esr'*esr);
+           eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
+        end
     case 'Linf'
-        eloo=1/size(data_block.build.KK,1)*max(es(:));
+        eloot=1/size(data_block.build.KK,1)*max(es(:));
+        if data.in.pres_grad
+           eloor=1/data.in.nb_val*max(esr(:));
+           eloog=1/(data.in.nb_val*data.in.nb_var)*max(esg(:));
+        end
 end
 
 for tir=1:data.in.nb_val
@@ -108,12 +132,19 @@ somm=0.5*(cv_z+data.in.eval);
 cv.bm=1/data.in.nb_val*sum(diff);
 %MSE
 diffc=diff.^2;
-cv.loo=eloo;
+cv.msep=1/data.in.nb_val*sum(diffc);
+cv.loot=eloot;
 if data.in.pres_grad
     diffgc=diffg.^2;
     cv.mseg=1/(data.in.nb_val*data.in.nb_var)*sum(diffgc(:));
     cv.msemix=1/(data.in.nb_val*(data.in.nb_var+1))*(data.in.nb_val*cv.msep+data.in.nb_val*data.in.nb_var*cv.mseg);
+    cv.loor=eloor;
+    cv.loog=eloog;
 end
+cv.loot
+cv.msemix
+cv.loog
+cv.mseg
 %PRESS
 cv.press=sum(diffc);
 %critere d'adequation (SCVR Keane 2005/Jones 1998)

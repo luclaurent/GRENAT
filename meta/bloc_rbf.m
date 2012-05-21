@@ -4,7 +4,7 @@
 function [crit_min,ret]=bloc_rbf(data,meta,para)
 
 % fonction a minimiser pour trouver jeu de parametres
-fct_min='loo'; %msep/msemix
+fct_min='loot'; %msep/msemix
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de correlation
@@ -143,7 +143,7 @@ if meta.cv||meta.para.estim
     if isfield(cv,fct_min)
         crit_min=cv.(fct_min);
     else
-        crit_min=cv.loo;
+        crit_min=cv.loot;
     end
 else
     cv=[];

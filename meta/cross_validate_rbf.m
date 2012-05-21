@@ -143,8 +143,8 @@ if data.in.pres_grad
 end
 cv.loot
 cv.msemix
-cv.loog
-cv.mseg
+%cv.loog
+%cv.mseg
 %PRESS
 cv.press=sum(diffc);
 %critere d'adequation (SCVR Keane 2005/Jones 1998)

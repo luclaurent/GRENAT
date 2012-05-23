@@ -43,22 +43,28 @@ end
 
 switch LOO_norm
     case 'L1'
-        eloot=1/size(data_block.build.KK,1)*sum(abs(es));
         if data.in.pres_grad
-           eloor=1/data.in.nb_val*sum(abs(esr));
-           eloog=1/(data.in.nb_val*data.in.nb_var)*sum(abs(esg));
+            eloor=1/data.in.nb_val*sum(abs(esr));
+            eloog=1/(data.in.nb_val*data.in.nb_var)*sum(abs(esg));
+            eloot=1/(data.in.nb_val*(data.in.nb_var+1))*sum(abs(es));
+        else
+            eloot=1/data.in.nb_val*sum(abs(es));
         end
     case 'L2' %MSE
-        eloot=1/size(data_block.build.KK,1)*(es'*es);
         if data.in.pres_grad
-           eloor=1/data.in.nb_val*(esr'*esr);
-           eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
+            eloor=1/data.in.nb_val*(esr'*esr);
+            eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
+            eloot=1/(data.in.nb_val*(data.in.nb_var+1))*(es'*es);
+        else
+            eloot=1/data.in.nb_val*(es'*es);
         end
     case 'Linf'
-        eloot=1/size(data_block.build.KK,1)*max(es(:));
         if data.in.pres_grad
-           eloor=1/data.in.nb_val*max(esr(:));
-           eloog=1/(data.in.nb_val*data.in.nb_var)*max(esg(:));
+            eloor=1/data.in.nb_val*max(esr(:));
+            eloog=1/(data.in.nb_val*data.in.nb_var)*max(esg(:));
+            eloot=1/(data.in.nb_val*(data.in.nb_var+1))*max(es(:));
+        else
+            eloot=1/data.in.nb_val*max(es(:));
         end
 end
 
@@ -75,7 +81,8 @@ for tir=1:data.in.nb_val
     else
         pos=tir;
     end
-    cv_KK=data_block.build.KK; cv_KK(pos,:)=[];
+    cv_KK=data_block.build.KK;
+    cv_KK(pos,:)=[];
     cv_KK(:,pos)=[];
     cv_y=data.build.y;
     cv_y(pos)=[];
@@ -129,12 +136,7 @@ if data.in.pres_grad
     end
     diffg=cv_gz-data.in.grad;
 end
-figure;
 
-plot(1:numel(es),es,'b')
-hold on
-plot(1:numel(diff),diff,'r')
-plot(1:numel(diff),abs(es+diff),'k')
 
 somm=0.5*(cv_z+data.in.eval);
 %Biais moyen
@@ -151,6 +153,19 @@ if data.in.pres_grad
     cv.loog=eloog;
     
 end
+if abs(cv.loot-cv.msep)>10e-10
+    cv.loot
+    cv.msep
+    abs(cv.loot-cv.msep)
+    figure;
+    condest(data_block.build.KK)
+    data_block.build.para.val
+    
+    plot(1:numel(es),es.^2,'b')
+    hold on
+    plot(1:numel(diff),diffc,'r')
+    plot(1:numel(diff),abs(es.^2-diffc),'k')
+end
 % if abs(cv.loor-cv.msep)>10e-10
 %     cv.loor
 %     cv.msep
@@ -158,7 +173,7 @@ end
 %     cv.loot
 %     cv.mseg
 %     cv.msemix
-%     
+%
 %     cv.loor-cv.msep
 %     pause
 % end

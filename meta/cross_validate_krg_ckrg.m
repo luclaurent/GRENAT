@@ -126,6 +126,7 @@ if meta.cv_aff
     subplot(2,2,1);
     opt.title='Original data';
     qq_plot(data.in.eval,cv_z,opt)
+    if data.norm.on
     subplot(2,2,2);
     infos.moy=data.norm.moy_eval;
     infos.std=data.norm.std_eval;
@@ -135,6 +136,7 @@ if meta.cv_aff
     subplot(2,2,3);
     opt.title='SCVR';
     scvr_plot(cv_zn,cv.scvr,opt)
+    end
     %subplot(2,2,4);
     %opt.title='SCVR';
     %opt.xlabel='Predicted' ;

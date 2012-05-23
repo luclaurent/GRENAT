@@ -39,8 +39,8 @@ if data.in.pres_grad
         KKa(ii,indd)=reshape(dev',1,numel(ind)*data.in.nb_var);
         KKa(inddd,indddd)=-dev;
         %matrice des derivees secondes         
-        KKi(data.in.nb_var*(ii-1)+1:data.in.nb_var*ii,indd)=...
-             reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
+        KKi(indddd,indd)=...
+            reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
         % reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var)
 
     end
@@ -74,7 +74,7 @@ end
 
 
 %passage en sparse
-KK=sparse(KK);
+%KK=sparse(KK);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %amelioration du conditionnement de la matrice de correlation

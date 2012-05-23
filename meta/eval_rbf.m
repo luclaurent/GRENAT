@@ -69,10 +69,23 @@ if data.in.pres_grad
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         dda=dev';
-        P=[ev;dda(:)];
+        P(1:nb_val)=ev;
+        
+        P(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+        
+        %P=[ev;dda(:)];
         %intercallage derivees premieres et secondes
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
-        dP=horzcat(-dda,reshape(ddev,nb_var,[]));
+        %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
+        %derivee du vecteur de correlation aux points d'evaluations
+        dP(1:nb_val,:)=-dev;  % a debugger
+        
+        % derivees secondes
+        mat_der=zeros(nb_var,nb_var*nb_val);
+        for mm=1:nb_val
+            mat_der(:,(mm-1)*nb_var+1:mm*nb_var)=ddev(:,:,mm);
+        end
+        dP(nb_val+1:tail_matvec,:)=-mat_der';
        % pause
         
         %         %[~,~,ddev]=feval(donnees.build.fct,-dist,donnees.build.para.val);
@@ -124,7 +137,7 @@ end
 %Evaluation du metamodele au point X
 Z=P'*data.build.w;
 if calc_grad
-    GZ=dP*data.build.w; 
+    GZ=dP'*data.build.w; 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

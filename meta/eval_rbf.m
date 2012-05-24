@@ -68,83 +68,42 @@ if data.in.pres_grad
         [ev,dev,ddev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        dda=dev';
-        P(1:nb_val)=ev;
-        
-        P(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+        P=[ev' reshape(dev',1,nb_val*nb_var)];
         
         %P=[ev;dda(:)];
         %intercallage derivees premieres et secondes
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
         %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
-        %derivee du vecteur de correlation aux points d'evaluations
-        dP(1:nb_val,:)=-dev;  % a debugger
-        
-        % derivees secondes
-        mat_der=zeros(nb_var,nb_var*nb_val);
-        for mm=1:nb_val
-            mat_der(:,(mm-1)*nb_var+1:mm*nb_var)=ddev(:,:,mm);
-        end
-        dP(nb_val+1:tail_matvec,:)=-mat_der';
-       % pause
-        
-        %         %[~,~,ddev]=feval(donnees.build.fct,-dist,donnees.build.para.val);
-        %         %intercallage reponses et gradients
-        %         %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
-        %         %conditionneme~nt evaluations
-        %         comp=zeros(nb_val,nb_var);
-        %         eva=[ev comp]';
-        %         %conditionnement gradients
-        %         comp=zeros(nb_val,1);
-        %         deva=[comp dev]';
-        %         %creation vecteur evaluations/gradients
-        %         P=eva(:)+deva(:);
-        %         %creation vecteur derivees fonction base radiale (calcul gradients
-        %         %du metamodele)
-        %         dP=[];
-        %         for ii=1:nb_val
-        %             dP=vertcat(dP,dev(ii,:),ddev(:,:,ii));
-        %         end
-        
+        %derivee du vecteur de correlation aux points d'evaluations        
+        dP=[-dev' reshape(ddev,nb_var,[])];
+                
     else %sinon
         %evaluation de la fonction de base radiale
         [ev,dev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        dda=dev';
-        P=[ev;dda(:)];
-        
-        %        %intercallage reponses et gradients
-        %         %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
-        %         %conditionnement evaluations
-        %         comp=zeros(nb_val,nb_var);
-        %         eva=[ev comp]';
-        %         %conditionnement gradients
-        %         comp=zeros(nb_val,1);
-        %         deva=[comp dev]';
-        %         %creation vecteur evaluations/gradients
-        %         P=eva'+deva';
+        P=[ev' reshape(dev',1,nb_val*nb_var)];
     end
 else
     if calc_grad  %si calcul des gradients
-        [P,dP]=feval(data.build.fct,dist,data.build.para.val);dP=dP';
+        [P,dP]=feval(data.build.fct,dist,data.build.para.val);P=P';
     else %sinon
-        P=feval(data.build.fct,dist,data.build.para.val);
+        P=feval(data.build.fct,dist,data.build.para.val);P=P';
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluation du metamodele au point X
-Z=P'*data.build.w;
+Z=P*data.build.w;
 if calc_grad
-    GZ=dP'*data.build.w; 
+    GZ=dP*data.build.w; 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (Bompard 2011,Sobester 2005, Gibbs 1997)
 if nargout >=3
     if ~aff_warning;warning off all;end
-        variance=1-P'*(data.build.KK\P);
+        variance=1-P*(data.build.KK\P');
     if ~aff_warning;warning on all;end    
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

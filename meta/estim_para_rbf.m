@@ -4,6 +4,11 @@
 function para_estim=estim_para_rbf(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
+
+%Definition manuelle de la population initiale par LHS (Ga)
+popInitManu=true;
+nbPopInit=50;
+
 %arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
 cv_old=meta.cv;
 aff_cv_old=meta.cv_aff;
@@ -50,7 +55,8 @@ options_ga = gaoptimset(...
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'UseParallel','always',...
     'PopInitRange',[lb(:)';ub(:)'],...  %zone de définition de la population initiale
-    'PlotFcns','');
+    'PlotFcns','',...
+    'TolFun',10^-1);
 
 %affichage des iterations
 if ~meta.para.aff_iter_graph
@@ -67,6 +73,13 @@ if ~meta.para.aff_iter_cmd
     options_ga=gaoptimset(options_ga,'Display','final');
 end
 
+%specification manuelle de la population initiale (Ga)
+if popInitManu
+    tir_pop=lhsu(lb,ub,nbPopInit);
+    options_ga=gaoptimset(options_ga,'InitialPopulation',tir_pop);
+end
+
+options_ga
 
 %minimisation de la log-vraisemblance suivant l'algorithme choisi
 switch meta.para.method

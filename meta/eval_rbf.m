@@ -86,7 +86,7 @@ if data.in.pres_grad
     end
 else
     if calc_grad  %si calcul des gradients
-        [P,dP]=feval(data.build.fct,dist,data.build.para.val);P=P';
+        [P,dP]=feval(data.build.fct,dist,data.build.para.val);P=P';dP=dP';
     else %sinon
         P=feval(data.build.fct,dist,data.build.para.val);P=P';
     end

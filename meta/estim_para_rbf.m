@@ -8,6 +8,8 @@ aff_warning=false;
 %Definition manuelle de la population initiale par LHS (Ga)
 popInitManu=true;
 nbPopInit=50;
+%critere arret minimisation
+crit_opti=10^-6;
 
 %arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
 cv_old=meta.cv;
@@ -43,7 +45,8 @@ options_fmincon = optimset(...
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','always',...
-    'PlotFcns','');    %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+    'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+    'TolFun',crit_opti);
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
@@ -56,7 +59,8 @@ options_ga = gaoptimset(...
     'UseParallel','always',...
     'PopInitRange',[lb(:)';ub(:)'],...  %zone de définition de la population initiale
     'PlotFcns','',...
-    'TolFun',10^-1);
+    'TolFun',crit_opti,...
+    'StallGenLimit',20);
 
 %affichage des iterations
 if ~meta.para.aff_iter_graph
@@ -78,8 +82,6 @@ if popInitManu
     tir_pop=lhsu(lb,ub,nbPopInit);
     options_ga=gaoptimset(options_ga,'InitialPopulation',tir_pop);
 end
-
-options_ga
 
 %minimisation de la log-vraisemblance suivant l'algorithme choisi
 switch meta.para.method

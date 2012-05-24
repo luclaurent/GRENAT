@@ -5,9 +5,12 @@ function para_estim=estim_para_krg_ckrg(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
 
+%Definition manuelle de la population initiale par LHS (Ga)
+popInitManu=true;
+nbPopInit=50;
+
 %critere arret minimisation
 crit_opti=10^-6;
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -51,7 +54,9 @@ options_ga = gaoptimset(...
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'PopInitRange',[lb(:)';ub(:)'],...  %zone de définition de la population initiale
     'UseParallel','always',...
-    'PlotFcns','');
+    'PlotFcns','',...
+    'TolFun',crit_opti,...
+    'StallGenLimit',20);
 
 %affichage des iterations
 if ~meta.para.aff_iter_graph
@@ -66,6 +71,13 @@ if ~meta.para.aff_iter_cmd
     options_fminbnd=optimset(options_fminbnd,'Display', 'final');
     options_ga=gaoptimset(options_ga,'Display', 'final');
 end
+
+%specification manuelle de la population initiale (Ga)
+if popInitManu
+    tir_pop=lhsu(lb,ub,nbPopInit);
+    options_ga=gaoptimset(options_ga,'InitialPopulation',tir_pop);
+end
+
 
 %minimisation de la log-vraisemblance suivant l'algorithme choisi
 switch meta.para.method

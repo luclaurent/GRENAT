@@ -46,9 +46,9 @@ data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='sexp';
-data.rbf='sexp';
-data.type='GRBF';
+data.corr='matern32';
+data.rbf='matern32';
+data.type='InKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')
     data.grad=true;

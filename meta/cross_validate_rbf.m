@@ -78,7 +78,7 @@ for tir=1:data.in.nb_val
 end
 fprintf('variance\n')
 [cv_var' var']
-pause
+
 
 
 cv_Z=cv_Z';

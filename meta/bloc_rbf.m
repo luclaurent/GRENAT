@@ -71,7 +71,7 @@ else
     end
         %Construction matrice complete
     KK=KK+KK'+eye(data.in.nb_val);   
-    
+    KK
 end
 
 

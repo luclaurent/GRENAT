@@ -23,7 +23,7 @@ switch in.type
             meta.regr=[fctp num2str(in.para.deg,'%d')];      %fonction de regression
             meta.corr=['corr' in.corr];    %fonction de correlation
         end
-    case {'RBF','GRBF'}
+    case {'RBF','GRBF','InRBF'}
         if isfield(in,'rbf')
             meta.fct=['rf_' in.rbf];
         else

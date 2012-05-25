@@ -78,13 +78,22 @@ for type=metype
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-       case 'InKRG'
+        case 'InKRG'
             %% Construction du metamodele de Krigeage Indirect
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
             inkrg=meta_inkrg(tirages,eval,grad,meta); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
             out_meta=inkrg;
+            %%%%%%%%=================================%%%%%%%%
+            %%%%%%%%=================================%%%%%%%%
+        case 'InRBF'
+            %% Construction du metamodele de Krigeage Indirect
+            fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
+            %affichage informations
+            fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
+            inrbf=meta_inrbf(tirages,eval,grad,meta); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
+            out_meta=inrbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'CKRG'
@@ -120,7 +129,7 @@ for type=metype
             for degre=meta.deg
                 %% Construction du metamodele de Regression polynomiale
                 fprintf('\n%s\n',[textd  'Regression polynomiale' textf]);
-                fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)                
+                fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
                 dd=['-- Degre du polynome \n',num2str(degre)];
                 fprintf(dd);
                 [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
@@ -136,7 +145,7 @@ for type=metype
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'ILAG'
-            %% interpolation par fonction de base linï¿½aire
+            %% interpolation par fonction de base lineaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             %%%%%%%%=================================%%%%%%%%

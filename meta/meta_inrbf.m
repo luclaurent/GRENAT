@@ -90,7 +90,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Construction Krigeage a partir de ces donnees
+%%% Construction RBF a partir de ces donnees
 fprintf('>>> Nombre de points pris en compte: %d  \n',numel(eval_new));
 ret=meta_rbf(tirages_new,eval_new,[],meta);
 %% extraction informations

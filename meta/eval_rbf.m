@@ -68,14 +68,14 @@ if data.in.pres_grad
         [ev,dev,ddev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        P=[ev' reshape(dev',1,nb_val*nb_var)];
-        
+        P=[ev' -reshape(dev',1,nb_val*nb_var)];
+               
         %P=[ev;dda(:)];
         %intercallage derivees premieres et secondes
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
         %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
         %derivee du vecteur de correlation aux points d'evaluations        
-        dP=[-dev' reshape(ddev,nb_var,[])];
+        dP=[dev' -reshape(ddev,nb_var,[])];
                 
     else %sinon
         %evaluation de la fonction de base radiale

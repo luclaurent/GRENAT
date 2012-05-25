@@ -1,7 +1,7 @@
-dim=2;
+dim=1;
 fct='corr_sexp';
 
-pas=0.3;
+pas=0.01;
 
 if dim==1
 
@@ -12,8 +12,8 @@ figure
 hold on
 plot(x,ev,'b')
 plot(x,dev,'r')
-plot(x,ddev,'k')
-axis([-10 10 -500 500]);
+plot(x,ddev(:),'k')
+%axis([-10 10 -500 500]);
 elseif dim ==2
     x=-10:pas:10;
     [X,Y]=meshgrid(x);

@@ -100,18 +100,18 @@ else
 end
 
 
-% class_eloot
-% eloot
-% if data.in.pres_grad
-%     sum(diffc(:))+sum(diffgc(:))
-%     es'*es
-%     [diff,esr]
-%     class_eloor
-%     eloor
-%     class_eloog
-%     eloog
-% end
-% pause
+class_eloot
+eloot
+if data.in.pres_grad
+    sum(diffc(:))+sum(diffgc(:))
+    es'*es
+    [diff,esr]
+    class_eloor
+    eloor
+    class_eloog
+    eloog
+end
+%pause
 
 
 cv.loot=class_eloot;

@@ -135,7 +135,7 @@ if meta.cv_aff
     qq_plot(data.in.evaln,cv_zn,opt)
     subplot(2,2,3);
     opt.title='SCVR';
-    scvr_plot(cv_zn,cv.scvr,opt)
+%    scvr_plot(cv_zn,cv.scvr,opt)
     end
     %subplot(2,2,4);
     %opt.title='SCVR';

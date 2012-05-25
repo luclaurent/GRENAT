@@ -22,7 +22,7 @@ if data.in.pres_grad
     %morceaux de la matrice GRBF
     KK=zeros(data.in.nb_val,data.in.nb_val);
     KKa=zeros(data.in.nb_val,data.in.nb_var*data.in.nb_val);
-    KKi=zeros(data.in.nb_val*data.in.nb_var,data.in.nb_val*data.in.nb_var);    
+    KKi=zeros(data.in.nb_val*data.in.nb_var,data.in.nb_val*data.in.nb_var);
     
     for ii=1:data.in.nb_val
         ind=ii:data.in.nb_val;
@@ -30,20 +30,18 @@ if data.in.pres_grad
         inddd=data.in.nb_val-numel(ind)+1:data.in.nb_val;
         indddd=(ii-1)*data.in.nb_var+1:ii*data.in.nb_var;
         %distance 1 tirages aux autres (construction par colonne)
-        dist=data.in.tiragesn(ind,:)-repmat(data.in.tiragesn(ii,:),numel(ind),1);
+        dist=repmat(data.in.tiragesn(ii,:),numel(ind),1)-data.in.tiragesn(ind,:);
         % evaluation de la fonction de correlation
         [ev,dev,ddev]=feval(meta.fct,dist,meta.para.val);
         %morceau de la matrice issue du modele RBF classique
         KK(ind,ii)=ev;
-        %morceau des derivees premiers       
+        %morceau des derivees premiers
         KKa(inddd,indddd)=dev;
         KKa(ii,indd)=-reshape(dev',1,numel(ind)*data.in.nb_var);
-
-        %matrice des derivees secondes         
+        
+        %matrice des derivees secondes
         KKi(indddd,indd)=...
-            reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
-        % reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var)
-
+            -reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
     end
     %construction matrices completes
     KK=KK+KK'-eye(data.in.nb_val);
@@ -53,7 +51,7 @@ if data.in.pres_grad
     %full(spdiags(val_diag./2,diago,zeros(size(rci))))
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %Matrice de complete
-    KK=[KK KKa;KKa' KKi];  
+    KK=[KK KKa;KKa' KKi];
     
 else
     %matrice de RBF classique par matrice triangulaire inferieure
@@ -69,9 +67,8 @@ else
         % matrice de RBF
         KK(ind,ii)=ev;
     end
-        %Construction matrice complete
-    KK=KK+KK'+eye(data.in.nb_val);   
-    KK
+    %Construction matrice complete
+    KK=KK+KK'+eye(data.in.nb_val);
 end
 
 
@@ -113,8 +110,8 @@ switch fact_KK
     case 'LU'
         [L,U]=lu(KK);
         % a �crire
-     case 'LL'
-         %%% A coder
+    case 'LL'
+        %%% A coder
         L=chol(KK,'lower');
         % a ecrire
     otherwise

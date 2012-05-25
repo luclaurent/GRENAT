@@ -46,9 +46,9 @@ data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
-data.rbf='matern32';
-data.type='InRBF';
+data.corr='sexp';
+data.rbf='sexp';
+data.type='GRBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -57,12 +57,13 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=true;
 meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.val=0.5;
+meta.para.method='ga';
+meta.para.val=2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
@@ -111,9 +112,9 @@ if isfield(K,'var');[ic68,ic95,ic99]=const_ic(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
 %valeur par d�faut
-aff.on=true;
+aff.on=false;
 aff.newfig=false;
-aff.ic.on=true;
+aff.ic.on=false;
 %valeurs chargees
 %if doe.dim_pb>2
  %   aff.on=false;
@@ -150,6 +151,7 @@ aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
 aff.titre='Fonction de reference';
+if aff.on 
 figure
 subplot(2,2,1)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
@@ -170,11 +172,34 @@ aff.color='r';
 subplot(2,2,4)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
-
+end
 
 %% affichage des r�ponses sous forme d'un diagramme bar
-figure;
-bar([Z.Z(:) K.Z(:)])
+%figure;
+%bar([Z.Z(:) K.Z(:)])
+
+figure
+subplot(1,3,1)
+plot(grid_XY,Z.Z(:),'r','LineWidth',2)
+hold on
+plot(grid_XY,K.Z(:),'b','LineWidth',2)
+plot(tirages,eval,'ok')
+legend('Ref','Approx','Eval');
+subplot(1,3,2)
+plot(grid_XY,Z.GZ(:),'r','LineWidth',2)
+hold on
+plot(grid_XY,K.GZ(:),'b','LineWidth',2)
+plot(tirages,grad,'ok')
+legend('Ref','Approx','Eval');
+subplot(1,3,3)
+plot(grid_XY,Z.Z(:),'r','LineWidth',2)
+hold on
+plot(grid_XY,K.Z(:),'b','LineWidth',2)
+plot(tirages,eval,'ok')
+plot(grid_XY,Z.GZ(:),'--r','LineWidth',2)
+plot(grid_XY,K.GZ(:),'--b','LineWidth',2)
+plot(tirages,grad,'ok')
+legend('Ref','Approx','Eval','dRef','dApprox','dEval');
 
 
 %calcul et affichage des criteres d'erreur
@@ -195,6 +220,6 @@ save([aff.doss '/WS.mat']);
 end
 %extract_nD
 
-extract_aff_nD
+%extract_aff_nD
 
 

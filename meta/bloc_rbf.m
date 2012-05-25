@@ -30,18 +30,26 @@ if data.in.pres_grad
         inddd=data.in.nb_val-numel(ind)+1:data.in.nb_val;
         indddd=(ii-1)*data.in.nb_var+1:ii*data.in.nb_var;
         %distance 1 tirages aux autres (construction par colonne)
-        dist=repmat(data.in.tiragesn(ii,:),numel(ind),1)-data.in.tiragesn(ind,:);
+        dist=data.in.tiragesn(ind,:)-repmat(data.in.tiragesn(ii,:),numel(ind),1);
         % evaluation de la fonction de correlation
         [ev,dev,ddev]=feval(meta.fct,dist,meta.para.val);
         %morceau de la matrice issue du modele RBF classique
         KK(ind,ii)=ev;
         %morceau des derivees premiers
-        KKa(inddd,indddd)=dev;
-        KKa(ii,indd)=-reshape(dev',1,numel(ind)*data.in.nb_var);
+        KKa(inddd,indddd)=-dev;
+        KKa(ii,indd)=reshape(dev',1,numel(ind)*data.in.nb_var);
         
         %matrice des derivees secondes
         KKi(indddd,indd)=...
-            -reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
+            reshape(-ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
+%         indddd,indd
+%         KKi
+%         KKa
+%         ev
+%         dev
+%         ddev
+%         dist
+%         pause
     end
     %construction matrices completes
     KK=KK+KK'-eye(data.in.nb_val);

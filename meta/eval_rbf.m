@@ -94,7 +94,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluation du metamodele au point X
-Z=P*data.build.w;
+Z=data.build.w'*P';
+
 if calc_grad
     GZ=dP*data.build.w; 
 end

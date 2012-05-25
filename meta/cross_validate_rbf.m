@@ -105,7 +105,7 @@ eloot
 if data.in.pres_grad
     sum(diffc(:))+sum(diffgc(:))
     es'*es
-    [diff,esr]
+    [diffc,esr.^2]
     class_eloor
     eloor
     class_eloog

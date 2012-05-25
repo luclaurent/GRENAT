@@ -1,12 +1,12 @@
 dim=1;
-fct='corr_sexp';
+fct='rf_matern32';
 
 pas=0.01;
 
 if dim==1
 
 x=-10:pas:10;
-[ev,dev,ddev]=feval(fct,x',1);
+[ev,dev,ddev]=feval(fct,x',2);
 
 figure
 hold on

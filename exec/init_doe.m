@@ -11,7 +11,7 @@ fprintf('      >>> INITIALISATION DOE <<<\n');
 %definition automatique
 switch fct
     case 'manu'
-        esp=[0 15];
+        esp=[-1 15];
         dim=1;
     case 'ackley'
         val=1.5;

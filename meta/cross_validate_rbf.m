@@ -6,8 +6,9 @@ function [cv]=cross_validate_rbf(data_block,data,meta)
 %%% Methode de Rippa
 es=data_block.build.w./diag(data_block.build.iKK);
 diag(data_block.build.iKK)
-%es
+es
 data_block.build.w
+pause
 if data.in.pres_grad
     esr=es(1:data.in.nb_val);
     esg=es((data.in.nb_val+1):end);
@@ -18,6 +19,76 @@ else
     eloot=1/(data.in.nb_val)*(es'*es);
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if data.in.pres_grad
+    Zev_cv=zeros(data.in.nb_val,1);
+    GZev_cv=zeros(data.in.nb_val*data.in.nb_var,1);
+else
+    Zev_cv=zeros(1,data.in.nb_val);
+end
+    
+iteZ=1;
+iteGZ=1;
+%%% Methode classique (construction de nb_val metamodeles en retirant
+%%% reponses et gradients
+for tir=1:data.in.nb_val
+    if data.in.pres_grad
+        pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+    else
+        pos=tir;
+    end
+    
+    for retir=1:numel(pos)
+    %retrait
+    cv_y=data.build.y;
+    cv_KK=data_block.build.KK;
+    cv_y(pos(retir),:)=[];
+    P=cv_KK(pos(retir),:);
+    P(pos(retir))=[];
+    cv_KK(:,pos(retir))=[];
+    cv_KK(pos(retir),:)=[];
+    
+    cv_w=inv(cv_KK)*cv_y;
+    
+    if retir>1
+        GZev_cv(iteGZ)=P*cv_w;
+        iteGZ=iteGZ+1;
+    else
+        Zev_cv(iteZ)=P*cv_w;
+        iteZ=iteZ+1;
+    end
+    Zev_cv 
+%     cv_tirages=data.in.tirages;
+%     cv_tirages(tir,:)=[];
+%     
+% %     donnees_cv=data;
+% %     donnees_cv.build.fct=data_block.build.fct;
+% %     donnees_cv.build.para=data_block.build.para;
+% %     donnees_cv.build.w=cv_w;
+% %     donnees_cv.build.KK=cv_KK;
+% %     donnees_cv.in.nb_val=data.in.nb_val-1;
+% %     
+% %     donnees_cv.in.tiragesn=cv_tirages;
+% %     
+% %     [Z,GZ,variance]=eval_rbf(data.in.tirages(tir,:),donnees_cv);
+% %     cv_Z(tir)=Z;
+% %     cv_GZ(tir,:)=GZ;
+% %     cv_var(tir)=variance;
+%     cv_y
+%     cv_KK
+%     cv_w
+%     Z
+%     GZ
+    pause
+    end
+    
+end
+[es ([data.in.eval;data.in.grad]- [Zev_cv;GZev_cv])]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%% Methode classique (construction de nb_val metamodeles en retirant
@@ -33,15 +104,11 @@ for tir=1:data.in.nb_val
     cv_y=data.build.y;
     cv_KK=data_block.build.KK;
     cv_y(pos,:)=[];
-    cv_KK(pos,:)=[];
+
     cv_KK(:,pos)=[];
-%     pos
-%     cv_y
-%     data.in.eval
-%     data.in.grad
-    cv_w=inv(cv_KK)*cv_y;
-%     cv_w
-%     data_block.build.w
+    cv_KK(pos,:)=[];
+    
+    cv_w=inv(cv_KK)*cv_y;     
     cv_tirages=data.in.tirages;
     cv_tirages(tir,:)=[];
     
@@ -58,9 +125,25 @@ for tir=1:data.in.nb_val
     cv_Z(tir)=Z;
     cv_GZ(tir,:)=GZ;
     cv_var(tir)=variance;
+    cv_y
+    cv_KK
+    cv_w
+    Z
+    GZ
+    pause
+    
     
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+cv_Z'
+data.in.eval
+diff=abs(cv_Z'-data.in.eval)
+cv_GZ=cv_GZ
+diffg=cv_GZ-data.in.grad
+pause
 %%calcul de la variance
 for tir=1:data.in.nb_val
         if data.in.pres_grad

@@ -39,7 +39,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=3;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
@@ -63,7 +63,7 @@ meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
-meta.para.val=2;
+meta.para.val=1/sqrt(2);%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
@@ -88,6 +88,7 @@ meta.save=false;
 %realisation des tirages
 tirages=gene_doe(doe);
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
+tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 

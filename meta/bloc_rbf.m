@@ -36,20 +36,13 @@ if data.in.pres_grad
         %morceau de la matrice issue du modele RBF classique
         KK(ind,ii)=ev;
         %morceau des derivees premiers
-        KKa(inddd,indddd)=-dev;
-        KKa(ii,indd)=reshape(dev',1,numel(ind)*data.in.nb_var);
+        KKa(inddd,indddd)=dev;
+        KKa(ii,indd)=-reshape(dev',1,numel(ind)*data.in.nb_var);
         
         %matrice des derivees secondes
         KKi(indddd,indd)=...
-            reshape(-ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
-%         indddd,indd
-%         KKi
-%         KKa
-%         ev
-%         dev
-%         ddev
-%         dist
-%         pause
+            reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
+
     end
     %construction matrices completes
     KK=KK+KK'-eye(data.in.nb_val);
@@ -59,7 +52,8 @@ if data.in.pres_grad
     %full(spdiags(val_diag./2,diago,zeros(size(rci))))
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %Matrice de complete
-    KK=[KK KKa;KKa' KKi];
+    KK=[KK KKa;KKa KKi];
+    
     
 else
     %matrice de RBF classique par matrice triangulaire inferieure

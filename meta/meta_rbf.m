@@ -121,7 +121,7 @@ aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
 
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,gene_nbele(nb_var));
+    val_para=linspace(meta.para.min,meta.para.max,600);%gene_nbele(nb_var));
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -164,7 +164,9 @@ if meta.para.estim&&meta.para.aff_estim
         if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:length(val_para)
             %calcul de la log-vraisemblance et stockage
-            val_msep(itli)=bloc_rbf(ret,meta,val_para(itli));
+            [~,build_rbf]=bloc_rbf(ret,meta,val_para(itli));
+            rippa_bomp(itli)=build_rbf.cv.rippa;
+            cv_moi(itli)=build_rbf.cv.perso;
             %affichage barre attente
             if usejava('desktop')&&exist('h','var')
                 avance=(itli-1)/length(val_para);
@@ -183,10 +185,15 @@ if meta.para.estim&&meta.para.aff_estim
         
         %trace log-vraisemblance
         figure;
-        semilogy(val_para,val_msep);
-        title('Evolution de MSE (CV)');
-        figure
-        disp('ICI')
+        semilogy(val_para,rippa_bomp);
+        hold on
+        semilogy(val_para,cv_moi);
+        legend('Rippa (Bompard)','Moi');
+         title('CV');
+pause
+%         semilogy(val_para,val_msep);
+%         title('Evolution de MSE (CV)');
+        
     end
     
     %stocke les courbes (si actif)

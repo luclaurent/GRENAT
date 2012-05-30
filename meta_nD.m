@@ -39,7 +39,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=3;
+doe.nb_samples=4;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
@@ -57,7 +57,7 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=false;
+meta.para.estim=true;
 meta.cv=true;
 meta.norm=false;
 meta.recond=false;
@@ -66,9 +66,9 @@ meta.para.method='ga';
 meta.para.val=1/sqrt(2);%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
-meta.para.aff_estim=false;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
-meta.para.aff_iter_graph=false;
+meta.para.aff_iter_graph=true;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_lcb=0.5;
 

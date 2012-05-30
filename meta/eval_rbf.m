@@ -33,7 +33,7 @@ dim_x=size(X,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if data.norm.on
+if data.norm.on&&~isempty(data.norm.moy_tirages)
     infos.moy=data.norm.moy_tirages;
     infos.std=data.norm.std_tirages;
     X=norm_denorm(X,'norm',infos);
@@ -110,7 +110,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if data.norm.on
+if data.norm.on&&~isempty(data.norm.moy_tirages)
     infos.moy=data.norm.moy_eval;
     infos.std=data.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);

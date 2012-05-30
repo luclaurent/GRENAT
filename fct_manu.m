@@ -1,5 +1,5 @@
 function [fct,dfct]=fct_manu(x)
-v=2;
+v=3;
 
 if v==1
     fct=15*cos(x)+20;

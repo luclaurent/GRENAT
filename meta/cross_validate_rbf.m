@@ -4,7 +4,33 @@ function [cv]=cross_validate_rbf(data_block,data,meta)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Methode de Rippa
-es=data_block.build.w./diag(data_block.build.iKK);
+esn=data_block.build.w./diag(data_block.build.iKK);
+
+infos.moy=data.norm.moy_eval;
+infos.std=data.norm.std_eval;infos.std_e=infos.std;
+infos.std_t=data.norm.std_tirages;
+%denormalisation
+if data.in.pres_grad    
+    if data.norm.on
+        %denormalisation difference reponses
+        esr=norm_denorm(esn(1:data.in.nb_val),'denorm_diff',infos);
+        all(esr==esn(1:data.in.nb_val))
+        %denormalisation difference gradients
+        esg=norm_denorm_g(esn(data.in.nb_val+1:end),'denorm_concat',infos);
+        all(esg==esn(data.in.nb_val+1:end))
+        es=[esr;esg];
+    else
+        esr=esn(1:data.in.nb_val);
+        esg=esn(data.in.nb_val+1:end);
+        es=esn;
+    end
+else
+    if data.norm.on
+    es=norm_denorm(esn,'denorm_diff',infos);
+    else
+        es=esn;
+    end
+end
 if data.in.pres_grad
     esr=es(1:data.in.nb_val);
     esg=es((data.in.nb_val+1):end);
@@ -14,7 +40,6 @@ if data.in.pres_grad
 else
     eloot=1/(data.in.nb_val)*(es'*es);
 end
-
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -104,9 +129,11 @@ for tir=1:data.in.nb_val
     cv_KK(:,pos)=[];
     cv_KK(pos,:)=[];
     
-    cv_w=inv(cv_KK)*cv_y;     
+    cv_w=inv(cv_KK)*cv_y;
     cv_tirages=data.in.tirages;
     cv_tirages(tir,:)=[];
+    cv_tiragesn=data.in.tiragesn;
+    cv_tiragesn(tir,:)=[];
     
     donnees_cv=data;
     donnees_cv.build.fct=data_block.build.fct;
@@ -114,19 +141,19 @@ for tir=1:data.in.nb_val
     donnees_cv.build.w=cv_w;
     donnees_cv.build.KK=cv_KK;
     donnees_cv.in.nb_val=data.in.nb_val-1;
-    
-    donnees_cv.in.tiragesn=cv_tirages;
+    donnees_cv.in.tirages=cv_tirages;
+    donnees_cv.in.tiragesn=cv_tiragesn;
     
     [Z,GZ,variance]=eval_rbf(data.in.tirages(tir,:),donnees_cv);
-    cv_Z(tir)=Z;
-    cv_GZ(tir,:)=GZ;
-    cv_var(tir)=variance;
-    cv_y
-    cv_KK
-    cv_w
-    Z
-    GZ
-    
+     cv_Z(tir)=Z;
+     cv_GZ(tir,:)=GZ;
+     cv_var(tir)=variance;
+%     cv_y
+%     cv_KK
+%     cv_w
+%     Z
+%     GZ
+%     
     
     
 end
@@ -134,11 +161,11 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cv_Z'
-data.in.eval
-diff=abs(cv_Z'-data.in.eval)
-cv_GZ=cv_GZ
-diffg=cv_GZ-data.in.grad
+% cv_Z'
+% data.in.eval
+% diff=abs(cv_Z'-data.in.eval)
+% cv_GZ=cv_GZ
+% diffg=cv_GZ-data.in.grad
 
 %%calcul de la variance
 for tir=1:data.in.nb_val
@@ -155,8 +182,8 @@ for tir=1:data.in.nb_val
     var(tir)=1-PP'*inv(ret_KK)*PP;
     
 end
-fprintf('variance\n')
-[cv_var' var']
+% fprintf('variance\n')
+% [cv_var' var']
 
 
 
@@ -179,17 +206,17 @@ else
 end
 
 
-class_eloot
-eloot
-if data.in.pres_grad
-    sum(diffc(:))+sum(diffgc(:))
-    es'*es
-    [diffc,esr.^2]
-    class_eloor
-    eloor
-    class_eloog
-    eloog
-end
+% class_eloot
+% eloot
+% if data.in.pres_grad
+%     sum(diffc(:))+sum(diffgc(:))
+%     es'*es
+%     [diffc,esr.^2]
+% %     class_eloor
+%     eloor
+%     class_eloog
+%     eloog
+%end
 %pause
 
 

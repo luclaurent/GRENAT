@@ -185,9 +185,9 @@ if meta.para.estim&&meta.para.aff_estim
         
         %trace log-vraisemblance
         figure;
-        semilogy(val_para,rippa_bomp);
+        semilogy(val_para,rippa_bomp,'r');
         hold on
-        semilogy(val_para,cv_moi);
+        semilogy(val_para,cv_moi,'k');
         legend('Rippa (Bompard)','Moi');
          title('CV');
 pause

@@ -45,7 +45,7 @@ options_fmincon = optimset(...
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','always',...
-    'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+    'PlotFcns','',...   
     'TolFun',crit_opti);
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
@@ -75,6 +75,17 @@ if ~meta.para.aff_iter_cmd
     options_fmincon=optimset(options_fmincon,'Display','final');
     options_fminbnd=optimset(options_fminbnd,'Display','final');
     options_ga=gaoptimset(options_ga,'Display','final');
+end
+
+%affichage informations interations algo (sous forme de plot
+if meta.para.aff_plot_algo
+    options_fmincon=optimset(options_fmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
+        @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+    options_fminbnd=optimset(options_fminbnd,'PlotFcns',{@optimplotx,@optimplotfunccount,...
+        @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+    options_ga=gaoptimset(options_ga,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
+        @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
+        @gaplotscorediversity,@gaplotscores,@gaplotstopping});
 end
 
 %specification manuelle de la population initiale (Ga)

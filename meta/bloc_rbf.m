@@ -1,10 +1,10 @@
 %% Procedure de construction de la matrice RBF et de calcul de la validation crois�e
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
-function [crit_min,ret]=bloc_rbf(data,meta,para)
+function [crit_min,ret]=bloc_rbf(data,meta,para,type)
 
 % fonction a minimiser pour trouver jeu de parametres
-fct_min='loot'; %msep/msemix
+fct_min='eloot'; %eloot/eloor/eloog
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de correlation
@@ -12,9 +12,15 @@ fact_KK='None' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para defini alors on charge cette nouvelle valeur
-if nargin==3
+if nargin>=3
     meta.para.val=para;
+    %dans ce cas, on ne calcul que le critere a minimiser (phase
+    %estimation)
+    type_CV='estim';
+else
+    type_CV='final';
 end
+if strcmp(type,'etud')&&nargin==4;type_CV=type;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction de la matrice de Gram
@@ -138,13 +144,13 @@ ret.build.KK=KK;
 %%%%%Calcul des differentes erreurs
 if meta.cv||meta.para.estim
     %tps_stop=toc;
-    [cv]=cross_validate_rbf(ret,data,meta);
+    [cv]=cross_validate_rbf(ret,data,meta,type_CV);
     %tps_cv=toc;
     %fprintf('Execution validation croisee RBF/HBRBF: %6.4d s\n\n',tps_cv-tps_stop);
     if isfield(cv,fct_min)
         crit_min=cv.(fct_min);
     else
-        crit_min=cv.loot;
+        crit_min=cv.eloot;
     end
 else
     cv=[];

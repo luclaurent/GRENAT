@@ -14,23 +14,22 @@ denorm_cv=true;
 if denorm_cv;denorm_cv=data.norm.on;end
 
 %differents cas de figure
-mod_debug=false;mod_debug=false;mod_final=false;
-switch type
-    case 'debug' %mode debug (grandeurs affichees)
-        fprintf('+++ CV RBF en mode DEBUG\n');
-        mod_debug=true;
-    case 'etud'  %mode etude (calcul des critères par les deux méthodes
-        mod_etud=true;
-        % case 'nominal'  %mode nominal (calcul des criteres par la methode de Rippa)
-    case 'final'    %mode final (calcul des variances)
-        mod_final=true;
+mod_debug=false;mod_etud=false;mod_final=false;
+if nargin==4
+    switch type
+        case 'debug' %mode debug (grandeurs affichees)
+            fprintf('+++ CV RBF en mode DEBUG\n');
+            mod_debug=true;
+        case 'etud'  %mode etude (calcul des critères par les deux méthodes
+            mod_etud=true;
+            % case 'nominal'  %mode nominal (calcul des criteres par la methode de Rippa)
+        case 'final'    %mode final (calcul des variances)
+            mod_final=true;
+    end
+else
+    mod_final=true;
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%stockage des evaluations du metamodele au point enleve
-cv_z=zeros(data.in.nb_val,1);
-cv_var=zeros(data.in.nb_val,1);
-cv_gz=zeros(data.in.nb_val,data.in.nb_var);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Methode de Rippa (Rippa 1999/Fasshauer 2007/Bompard 2011)
@@ -64,6 +63,7 @@ else
     else
         es=esn;
     end
+    esr=es;
 end
 
 %calcul des erreurs en reponses et en gradients (differentes normes
@@ -118,7 +118,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if mod_etud||mod_debug
-    %parcours des echtillons
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %stockage des evaluations du metamodele au point enleve
+    cv_z=zeros(data.in.nb_val,1);
+    cv_var=zeros(data.in.nb_val,1);
+    cv_gz=zeros(data.in.nb_val,data.in.nb_var);
+    %parcours des echantillons
     for tir=1:data.in.nb_val
         %determination des position des grandeurs a supprimer
         if data.in.pres_grad
@@ -137,7 +143,7 @@ if mod_etud||mod_debug
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients
         if ~aff_warning; warning off all;end
-        cv_w=inv(cv_KK)*cv_y;
+        cv_w=cv_KK\cv_y;
         if ~aff_warning; warning on all;end
         cv_tirages=data.in.tirages;
         cv_tirages(tir,:)=[];
@@ -160,6 +166,7 @@ if mod_etud||mod_debug
         cv_gz(tir,:)=GZ;
         cv_var(tir)=variance;
     end
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Calcul des erreurs
@@ -196,22 +203,22 @@ if mod_etud||mod_debug
                 diffgc=max(diffg);
         end
         %moyenne ecart reponses, gradients et mixte au carres
-        cv.perso.loor=1/data.in.nb_val*sum(diffc);
-        cv.perso.loog=1/(data.in.nb_val*data.in.nb_var)*sum(diffgc(:));
-        cv.perso.loot=1/(data.in.nb_val*(1+data.in.nb_var))*(sum(diffc)+sum(diffgc(:));
+        cv.perso.eloor=1/data.in.nb_val*sum(diffc);
+        cv.perso.eloog=1/(data.in.nb_val*data.in.nb_var)*sum(diffgc(:));
+        cv.perso.eloot=1/(data.in.nb_val*(1+data.in.nb_var))*(sum(diffc)+sum(diffgc(:)));
     else
         %moyenne ecart reponses
-        cv.perso.loor=1/data.in.nb_val*sum(diffc);
-        cv.perso.loot=cv.perso.loor;
+        cv.perso.eloor=1/data.in.nb_val*sum(diffc);
+        cv.perso.eloot=cv.perso.eloor;
     end
     %critere d'adequation (SCVR Keane 2005/Jones 1998)
     cv.perso.scvr=diff./cv_var;
-    cv.perso.scvr_min=min(cv.scvr(:));
-    cv.perso.scvr_max=max(cv.scvr(:));
-    cv.perso.scvr_mean=mean(cv.scvr(:));
+    cv.perso.scvr_min=min(cv.perso.scvr(:));
+    cv.perso.scvr_max=max(cv.perso.scvr(:));
+    cv.perso.scvr_mean=mean(cv.perso.scvr(:));
     %critere d'adequation (ATTENTION: a la norme!!!>> diff au carre)
     diffa=diffc./cv_var;
-    cv.perso.adequ=1/donnees.in.nb_val*sum(diffa);
+    cv.perso.adequ=1/data.in.nb_val*sum(diffa);
     %affichage qques infos
     if mod_debug
         fprintf('=== CV-LOO par methode retrait reponses et gradients\n');
@@ -234,58 +241,59 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Calcul de la variance de prediction aux points echantillonnes (pour CV)
 if mod_final
+    cv_varR=zeros(1:data.in.nb_eval);
+    cv_zRn=zeros(1:data.in.nb_eval);
     for tir=1:data.in.nb_val
-           pos=tir;
-        
+        %retrait des reponses seules
+        pos=tir;
+        %extraction vecteur et calcul de la variance
         PP=data_block.build.KK(:,tir);
         ret_KK=data_block.build.KK;
+        ret_y=data_block.build.y;
         ret_KK(pos,:)=[];
         ret_KK(:,pos)=[];
+        ret_y(pos)=[];
         PP(pos)=[];
-        (tir)=1-PP'*inv(ret_KK)*PP;
-        
+        cv_varR(tir)=1-PP'*ret_KK\PP;
+        %calcul de la réponse
+        cv_zRn(tir)=PP'*ret_KK\ret_y;
     end
+    %denormalisation
+    cv_zR=norm_denorm(cv_zRn,'denorm',infos);
     %critere d'adequation (SCVR Keane 2005/Jones 1998)
     cv.scvr=diff./cv_var;
     cv.scvr_min=min(cv.scvr(:));
     cv.scvr_max=max(cv.scvr(:));
     cv.scvr_mean=mean(cv.scvr(:));
     %critere d'adequation
-    %diffa=diffc./cv_var;
-    %cv.adequ=1/donnees.in.nb_val*sum(diffa);
+    diffa=esr.^2./cv_var;
+    cv.adequ=1/donnees.in.nb_val*sum(diffa);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Tracï¿½ du graph QQ
-if meta.cv_aff
+%%Trace du graph QQ
+if meta.cv_aff&&mod_final
     opt.newfig=false;
     figure
     subplot(2,2,1);
     opt.title='Original data';
-    qq_plot(data.in.eval,cv_z,opt)
+    qq_plot(data.in.eval,cv_zR,opt)
     subplot(2,2,2);
-    infos.moy=data.norm.moy_eval;
-    infos.std=data.norm.std_eval;
-    cv_zn=norm_denorm(cv_z,'norm',infos);
     opt.title='Standardized data';
-    qq_plot(data.in.evaln,cv_zn,opt)
+    qq_plot(data.in.evaln,cv_zRn,opt)
     subplot(2,2,3);
     opt.title='SCVR';
-    scvr_plot(cv_zn,cv.scvr,opt)
-    %subplot(2,2,4);
-    %opt.title='SCVR';
-    %opt.xlabel='Predicted' ;
-    %opt.ylabel='SCVR';
-    %qq_plot(cv_zn,cv.adequ,opt)
+    scvr_plot(cv_zRn,cv.scvr,opt)
+    subplot(2,2,4);
+    opt.title='SCVR';
+    opt.xlabel='Predicted' ;
+    opt.ylabel='SCVR';
+    qq_plot(cv_zRn,cv.adequ,opt)
 end
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-cv.loot=class_eloot;
-cv.rippa=eloot;
-cv.perso=class_eloot;
+end

@@ -133,6 +133,7 @@ if meta.para.estim&&meta.para.aff_estim
         %si affichage dispo
         if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:numel(val_X)
+            
             %calcul de la log-vraisemblance et stockage
             val_msep(itli)=bloc_rbf(ret,meta,[val_X(itli) val_Y(itli)]);
             %affichage barre attente
@@ -160,13 +161,15 @@ if meta.para.estim&&meta.para.aff_estim
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(1,length(val_para));
+        rippa_bomp=val_msep;
+        cv_moi=val_msep;
         %si affichage dispo
         if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:length(val_para)
             %calcul de la log-vraisemblance et stockage
-            [~,build_rbf]=bloc_rbf(ret,meta,val_para(itli));
-            rippa_bomp(itli)=build_rbf.cv.rippa;
-            cv_moi(itli)=build_rbf.cv.perso;
+            [~,build_rbf]=bloc_rbf(ret,meta,val_para(itli),'etud');
+            rippa_bomp(itli)=build_rbf.cv.eloot;
+            cv_moi(itli)=build_rbf.cv.perso.eloot;
             %affichage barre attente
             if usejava('desktop')&&exist('h','var')
                 avance=(itli-1)/length(val_para);
@@ -189,10 +192,10 @@ if meta.para.estim&&meta.para.aff_estim
         hold on
         semilogy(val_para,cv_moi,'k');
         legend('Rippa (Bompard)','Moi');
-         title('CV');
-pause
-%         semilogy(val_para,val_msep);
-%         title('Evolution de MSE (CV)');
+        title('CV');
+        pause
+        %         semilogy(val_para,val_msep);
+        %         title('Evolution de MSE (CV)');
         
     end
     

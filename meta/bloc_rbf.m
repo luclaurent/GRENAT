@@ -32,6 +32,7 @@ if data.in.pres_grad
     %morceaux de la matrice GRBF
     KK=zeros(data.in.nb_val,data.in.nb_val);
     KKa=zeros(data.in.nb_val,data.in.nb_var*data.in.nb_val);
+    KKat=KKa';
     KKi=zeros(data.in.nb_val*data.in.nb_var,data.in.nb_val*data.in.nb_var);
     
     for ii=1:data.in.nb_val
@@ -48,7 +49,8 @@ if data.in.pres_grad
         %morceau des derivees premiers
         KKa(inddd,indddd)=dev;
         KKa(ii,indd)=-reshape(dev',1,numel(ind)*data.in.nb_var);
-        
+        KKat(indddd,inddd)=dev';
+        KKat(indd,ii)=-reshape(dev,numel(ind)*data.in.nb_var,1);
         %matrice des derivees secondes
         KKi(indddd,indd)=...
             reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
@@ -62,7 +64,7 @@ if data.in.pres_grad
     %full(spdiags(val_diag./2,diago,zeros(size(rci))))
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %Matrice de complete
-    KK=[KK KKa;KKa KKi];
+    KK=[KK KKa;KKat KKi];
     
     
 else

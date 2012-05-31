@@ -18,13 +18,13 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu'; 
+fct='peaks'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -39,7 +39,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=7;
+doe.nb_samples=15;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
@@ -57,18 +57,18 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=true;
-meta.norm=false;
+meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
 meta.para.val=3.4736;%1/sqrt(2);%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
-meta.para.aff_estim=true;
+meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
-meta.para.aff_iter_graph=true;
+meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_lcb=0.5;
@@ -114,9 +114,9 @@ if isfield(K,'var');[ic68,ic95,ic99]=const_ic(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
 %valeur par d�faut
-aff.on=false;
+aff.on=true;
 aff.newfig=false;
-aff.ic.on=false;
+aff.ic.on=true;
 %valeurs chargees
 %if doe.dim_pb>2
  %   aff.on=false;
@@ -180,6 +180,7 @@ end
 %figure;
 %bar([Z.Z(:) K.Z(:)])
 
+if doe.dim_pb==1
 figure
 subplot(1,3,1)
 plot(grid_XY,Z.Z(:),'r','LineWidth',2)
@@ -202,7 +203,7 @@ plot(grid_XY,Z.GZ(:),'--r','LineWidth',2)
 plot(grid_XY,K.GZ(:),'--b','LineWidth',2)
 plot(tirages,grad,'ok')
 legend('Ref','Approx','Eval','dRef','dApprox','dEval');
-
+end
 
 %calcul et affichage des criteres d'erreur
 err=crit_err(K.Z,Z.Z,approx);

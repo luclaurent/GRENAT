@@ -39,7 +39,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=8;
+doe.nb_samples=7;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
@@ -69,7 +69,7 @@ meta.para.aniso=true;
 meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=true;
-meta.para.aff_plot_algo=true;
+meta.para.aff_plot_algo=false;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_lcb=0.5;
 

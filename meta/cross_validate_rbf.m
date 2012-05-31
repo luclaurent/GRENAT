@@ -122,7 +122,7 @@ end
 %%% chaque echantillon)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if mod_etud||mod_debug
+if mod_etud||mod_debug||mod_final
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %stockage des evaluations du metamodele au point enleve
@@ -163,7 +163,6 @@ if mod_etud||mod_debug
         donnees_cv.in.nb_val=data.in.nb_val-1; %retrait d'un site
         donnees_cv.in.tirages=cv_tirages;
         donnees_cv.in.tiragesn=cv_tiragesn;
-        if ~denorm_cv;donnees_cv.norm.on=false;end
         %evaluation de la reponse, des derivees et de la variance au site
         %retire
         [Z,GZ,variance]=eval_rbf(data.in.tirages(tir,:),donnees_cv);
@@ -171,7 +170,7 @@ if mod_etud||mod_debug
         cv_gz(tir,:)=GZ;
         cv_var(tir)=variance;
     end
-    
+   
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Calcul des erreurs
@@ -262,7 +261,12 @@ if mod_final
         if ~aff_warning; warning off all;end
         cv_varR(tir)=1-PP'*(ret_KK\PP);
         %calcul de la réponse
+        ret_KK\ret_y
+        ret_KK
+        ret_y
+        PP
         cv_zRn(tir)=PP'*(ret_KK\ret_y);
+        cv_zRn
         if ~aff_warning; warning on all;end
     end
     %denormalisation
@@ -282,15 +286,23 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Trace du graph QQ
 if meta.cv_aff&&mod_final
+        %normalisation 
+    cv_zn=norm_denorm(cv_z,'norm',infos);
     opt.newfig=false;
     figure
-    subplot(2,2,1);
-    opt.title='Original data';
+    subplot(3,2,1);
+    opt.title='Original data (CV R)';
     qq_plot(data.in.eval,cv_zR,opt)
-    subplot(2,2,2);
-    opt.title='Standardized data';
+    subplot(3,2,2);
+    opt.title='Standardized data (CV R)';
     qq_plot(data.in.evaln,cv_zRn,opt)
-    subplot(2,2,3);
+    subplot(3,2,3);
+    opt.title='Standardized data (CV F)';
+    qq_plot(data.in.evaln,cv_z,opt)
+    subplot(3,2,4);
+    opt.title='Standardized data (CV F)';
+    qq_plot(data.in.evaln,cv_zn,opt)
+    subplot(3,2,5);
     opt.title='SCVR';
     opt.xlabel='Predicted' ;
     opt.ylabel='SCVR';

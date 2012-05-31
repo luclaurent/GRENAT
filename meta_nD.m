@@ -39,7 +39,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=8;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
@@ -47,8 +47,8 @@ data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='sexp';
-data.rbf='matern32';
-data.type='RBF';
+data.rbf='sexp';
+data.type='GRBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -62,14 +62,14 @@ meta.cv=true;
 meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.method='fmincon';
+meta.para.method='ga';
 meta.para.val=3.4736;%1/sqrt(2);%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=true;
-meta.para.aff_plot_algo=false;
+meta.para.aff_plot_algo=true;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_lcb=0.5;
 

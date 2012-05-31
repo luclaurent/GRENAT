@@ -30,6 +30,13 @@ else
     mod_final=true;
 end
 
+if mod_debug||mod_etud
+    condKK=condest(data_block.build.KK);
+    if condKK>1e12
+        fprintf('+++ //!\\ Mauvais conditionnement (%4.2e)\n',condKK);
+    end
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Methode de Rippa (Rippa 1999/Fasshauer 2007/Bompard 2011)
@@ -47,10 +54,8 @@ if data.in.pres_grad
     if data.norm.on&&denorm_cv
         %denormalisation difference reponses
         esr=norm_denorm(esn(1:data.in.nb_val),'denorm_diff',infos);
-        all(esr==esn(1:data.in.nb_val))
         %denormalisation difference gradients
         esg=norm_denorm_g(esn(data.in.nb_val+1:end),'denorm_concat',infos);
-        all(esg==esn(data.in.nb_val+1:end))
         es=[esr;esg];
     else
         esr=esn(1:data.in.nb_val);
@@ -82,7 +87,7 @@ switch LOO_norm
     case 'L2' %MSE
         if data.in.pres_grad
             cv.press=esr'*esr;
-            cv.eloor=1/data.in.nb_val*(press);
+            cv.eloor=1/data.in.nb_val*(cv.press);
             cv.eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
             cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*(es'*es);
         else
@@ -241,33 +246,36 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Calcul de la variance de prediction aux points echantillonnes (pour CV)
 if mod_final
-    cv_varR=zeros(1:data.in.nb_eval);
-    cv_zRn=zeros(1:data.in.nb_eval);
+    cv_varR=zeros(data.in.nb_val,1);
+    cv_zRn=zeros(data.in.nb_val,1);
     for tir=1:data.in.nb_val
         %retrait des reponses seules
         pos=tir;
         %extraction vecteur et calcul de la variance
         PP=data_block.build.KK(:,tir);
         ret_KK=data_block.build.KK;
-        ret_y=data_block.build.y;
+        ret_y=data.build.y;
         ret_KK(pos,:)=[];
         ret_KK(:,pos)=[];
         ret_y(pos)=[];
         PP(pos)=[];
-        cv_varR(tir)=1-PP'*ret_KK\PP;
+        if ~aff_warning; warning off all;end
+        cv_varR(tir)=1-PP'*(ret_KK\PP);
         %calcul de la réponse
-        cv_zRn(tir)=PP'*ret_KK\ret_y;
+        cv_zRn(tir)=PP'*(ret_KK\ret_y);
+        if ~aff_warning; warning on all;end
     end
     %denormalisation
     cv_zR=norm_denorm(cv_zRn,'denorm',infos);
+    diffR=cv_zR-data.in.eval;
     %critere d'adequation (SCVR Keane 2005/Jones 1998)
-    cv.scvr=diff./cv_var;
+    cv.scvr=diffR./cv_varR;
     cv.scvr_min=min(cv.scvr(:));
     cv.scvr_max=max(cv.scvr(:));
     cv.scvr_mean=mean(cv.scvr(:));
     %critere d'adequation
-    diffa=esr.^2./cv_var;
-    cv.adequ=1/donnees.in.nb_val*sum(diffa);
+    diffa=esr.^2./cv_varR;
+    cv.adequ=1/data.in.nb_val*sum(diffa);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -284,12 +292,9 @@ if meta.cv_aff&&mod_final
     qq_plot(data.in.evaln,cv_zRn,opt)
     subplot(2,2,3);
     opt.title='SCVR';
-    scvr_plot(cv_zRn,cv.scvr,opt)
-    subplot(2,2,4);
-    opt.title='SCVR';
     opt.xlabel='Predicted' ;
     opt.ylabel='SCVR';
-    qq_plot(cv_zRn,cv.adequ,opt)
+    scvr_plot(cv_zRn,cv.scvr,opt)
 end
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

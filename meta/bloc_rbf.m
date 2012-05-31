@@ -3,6 +3,8 @@
 
 function [crit_min,ret]=bloc_rbf(data,meta,para,type)
 
+% affichages warning ou non
+aff_warning=false;
 % fonction a minimiser pour trouver jeu de parametres
 fct_min='eloot'; %eloot/eloor/eloog
 %coefficient de reconditionnement
@@ -20,7 +22,9 @@ if nargin>=3
 else
     type_CV='final';
 end
-if strcmp(type,'etud')&&nargin==4;type_CV=type;end
+if nargin==4
+    if strcmp(type,'etud');type_CV=type;end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction de la matrice de Gram
@@ -48,7 +52,7 @@ if data.in.pres_grad
         %matrice des derivees secondes
         KKi(indddd,indd)=...
             reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
-
+        
     end
     %construction matrices completes
     KK=KK+KK'-eye(data.in.nb_val);
@@ -117,7 +121,7 @@ switch fact_KK
         ret.build.w=R\ret.build.yQ;
     case 'LU'
         [L,U]=lu(KK);
-        % a �crire
+        % a ecrire
     case 'LL'
         %%% A coder
         L=chol(KK,'lower');
@@ -127,7 +131,9 @@ switch fact_KK
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
+        if ~aff_warning; warning off all;end
         ret.build.iKK=inv(KK);
+        if ~aff_warning; warning on all;end
         ret.build.w=ret.build.iKK*data.build.y;
         
 end

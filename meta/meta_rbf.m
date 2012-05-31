@@ -121,7 +121,7 @@ aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
 
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,600);%gene_nbele(nb_var));
+    val_para=linspace(meta.para.min,meta.para.max,gene_nbele(nb_var));
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -193,7 +193,7 @@ if meta.para.estim&&meta.para.aff_estim
         semilogy(val_para,cv_moi,'k');
         legend('Rippa (Bompard)','Moi');
         title('CV');
-        pause
+        
         %         semilogy(val_para,val_msep);
         %         title('Evolution de MSE (CV)');
         

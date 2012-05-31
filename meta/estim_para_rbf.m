@@ -36,7 +36,7 @@ lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
 x0=0.1*(ub-lb);
 % Définition de la function à minimiser
-fun=@(para)bloc_rbf(donnees,meta,para);
+fun=@(para)bloc_rbf(donnees,meta,para,'estim');
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
 options_fmincon = optimset(...

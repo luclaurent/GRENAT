@@ -10,7 +10,7 @@ fct_min='eloot'; %eloot/eloor/eloog
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de correlation
-fact_KK='None' ; %LU %QR %LL %None
+fact_KK='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para defini alors on charge cette nouvelle valeur
@@ -22,8 +22,10 @@ if nargin>=3
 else
     type_CV='final';
 end
+mod_estim=false;
 if nargin==4
     if strcmp(type,'etud');type_CV=type;end
+    if strcmp(type,'estim');type_CV=type;mod_estim=true;;end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,8 +51,9 @@ if data.in.pres_grad
         %morceau des derivees premiers
         KKa(inddd,indddd)=dev;
         KKa(ii,indd)=-reshape(dev',1,numel(ind)*data.in.nb_var);
-        KKat(indddd,inddd)=dev';
-        KKat(indd,ii)=-reshape(dev,numel(ind)*data.in.nb_var,1);
+        KKat(indddd,inddd)=-dev';
+        KKat(indd,ii)=reshape(dev',numel(ind)*data.in.nb_var,1);
+        
         %matrice des derivees secondes
         KKi(indddd,indd)=...
             reshape(ddev,data.in.nb_var,numel(ind)*data.in.nb_var);
@@ -65,7 +68,6 @@ if data.in.pres_grad
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %Matrice de complete
     KK=[KK KKa;KKat KKi];
-    
     
 else
     %matrice de RBF classique par matrice triangulaire inferieure
@@ -96,9 +98,11 @@ if meta.recond
     if ret.build.cond_orig>10^13
         cond_old=ret.build.cond_orig;
         KK=KK+coef*speye(size(KK));
-        ret.build.cond=condest(KK);
-        fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-            cond_old,ret.build.cond);
+        if ~mod_estim
+            ret.build.cond=condest(KK);
+            fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
+                cond_old,ret.build.cond);
+        end
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

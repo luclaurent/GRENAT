@@ -261,12 +261,7 @@ if mod_final
         if ~aff_warning; warning off all;end
         cv_varR(tir)=1-PP'*(ret_KK\PP);
         %calcul de la réponse
-        ret_KK\ret_y
-        ret_KK
-        ret_y
-        PP
         cv_zRn(tir)=PP'*(ret_KK\ret_y);
-        cv_zRn
         if ~aff_warning; warning on all;end
     end
     %denormalisation

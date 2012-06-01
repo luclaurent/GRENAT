@@ -1,4 +1,4 @@
-%procédure de calcul CV pour debug
+%procedure de calcul CV pour debug
 
 function [cv]=cross_validate_rbf(data_block,data,meta,type)
 

@@ -33,7 +33,7 @@ elseif size(X,1)==2
         lightangle(hlight,48,70)    % dir. éclairage
     end
 else
-    nbs=size(X,2)
+    nbs=size(X,2);
     plot(1:nbs,ic.sup,'o','MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',6)
     hold on
     plot(1:nbs,ic.inf,'o','MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',6)

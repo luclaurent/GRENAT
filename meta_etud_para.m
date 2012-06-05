@@ -1,6 +1,5 @@
 %%Etude parametres metamodele nD
 %%L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
-
 %effacement du Workspace
 clear all
 global aff
@@ -18,41 +17,60 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='manu'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
-%sixhump(2),schwefel(n),sphere(n),sumsquare(n)
+%sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
+%rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
-%esp=[-5 5];
+doe.dim_pb=1;
+%esp=[0 15];
 esp=[];
 
 %%Definition de l'espace de conception
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
-%(sfill)/LHS_R/IHS_R
-doe.type='LHS';
+%(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
+doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=50;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
-data.para.deg=0;
-data.para.long=[0.5 20];
+data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
-data.rbf='gauss';
-data.type='HBRBF';
-data.grad=true;
+data.corr='sexp';
+data.rbf='matern32';
+data.type='GRBF';
+data.grad=false;
+if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
+    data.grad=true;
+end
+data.deg=0;
 
 meta=init_meta(data);
+
 meta.para.estim=false;
+meta.cv=true;
+meta.norm=true;
+meta.recond=false;
+meta.para.type='Manu'; %Franke/Hardy
+meta.para.method='fmincon';
+meta.para.val=3.4736;%1/sqrt(2);%2;
+meta.para.pas_tayl=10^-2;
+meta.para.aniso=true;
+meta.para.aff_estim=true;
+meta.para.aff_iter_cmd=true;
+meta.para.aff_iter_graph=true;
+meta.para.aff_plot_algo=false;
+meta.enrich.para_wei=0.5;
+meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -67,14 +85,10 @@ meta.save=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp('=====================================');
-disp('=====================================');
-disp('=======Construction metamodele=======');
-disp('=====================================');
-disp('=====================================');
-
 %realisation des tirages
 tirages=gene_doe(doe);
+%tirages=[0.25;1.5;3.5;5;5.5;14.5];
+%tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 
@@ -90,7 +104,7 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %etude CV 
 paramin=10^-4;
-paramax=0.8;
+paramax=5;
 nbpara=100;
 valpara=linspace(paramin,paramax,nbpara);
 meta.cv_aff=false;
@@ -99,18 +113,28 @@ for ii=1:nbpara
 fprintf('%4.2f ',ii/nbpara*100)
 meta.para.val=valpara(ii);
 [approx]=const_meta(tirages,eval,grad,meta);
-
-bm(ii)=approx.cv.bm;
-msep(ii)=approx.cv.msep;
-press(ii)=approx.cv.press;
+[K]=eval_meta(grid_XY,approx,meta);
+rippa(ii)=approx.cv.rippa;
+perso(ii)=approx.cv.perso;
+%calcul et affichage des criteres d'erreur
+err=crit_err(K.Z,Z.Z,approx);
+emse(ii)=err.emse;
+rmse(ii)=err.rmse;
+eq3(ii)=err.eq3;
+r2(ii)=err.r2;
+r2adj(ii)=err.r2adj;
 end
 figure
-subplot(1,3,1)
-plot(valpara,bm)
-subplot(1,3,2)
-plot(valpara,msep);
-subplot(1,3,3)
-plot(valpara,press);
+semilogy(valpara,rippa,'r')
+hold on
+semilogy(valpara,perso,'b')
+semilogy(valpara,emse,'g')
+semilogy(valpara,rmse,'k')
+semilogy(valpara,eq3,'m')
+semilogy(valpara,r2,'-.r')
+semilogy(valpara,r2adj,'-.k')
+legend('Rippa/Bomp (CV)','Moi (CV)','MSE','RMSE','eq3','r2','R2adj');
+
 
 
 

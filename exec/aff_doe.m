@@ -4,11 +4,17 @@
 
 function aff_doe(tirages,doe)
 
-%recupération bornes espace de conception
-esp=doe.bornes;
+%recupeération bornes espace de conception
+if isfield(doe,'Xmin')&&isfield(doe,'Xmax')
+    Xmin=doe.Xmin;
+    Xmax=doe.Xmax;
+elseif isfield(doe,'bornes')
+    Xmin=doe.bornes(:,1);
+    Xmax=doe.bornes(:,2);
+end
 
 %nombre de variables
-nbv=size(esp,1);
+nbv=numel(Xmin);
 
 if doe.aff
     para=0.1;
@@ -16,16 +22,16 @@ if doe.aff
         figure
         yy=0.*tirages;
         plot(tirages,yy,'o','MarkerEdgeColor','b','MarkerFaceColor','b')
-        xmin=esp(:,1);
-        xmax=esp(:,2);
+        xmin=Xmin;
+        xmax=Xmax;
         dep=xmax-xmin;
         axis([(xmin-para*dep) (xmax+para*dep) -1 1])
     elseif nbv==2
         figure
-        xmin=esp(1,1);
-        xmax=esp(1,2);
-        ymin=esp(2,1);
-        ymax=esp(2,2);
+        xmin=Xmin(1);
+        xmax=Xmax(1);
+        ymin=Xmin(2);
+        ymax=Xmax(2);
         depx=xmax-xmin;
         depy=ymax-ymin;
         plot(tirages(:,1),tirages(:,2),'o','MarkerEdgeColor','b','MarkerFaceColor','b')
@@ -34,8 +40,6 @@ if doe.aff
     else
         figure
         it=0;
-        Xmin=esp(:,1);
-        Xmax=esp(:,2);
         Depx=Xmax-Xmin;
         for ii=1:nbv
             for jj=1:nbv

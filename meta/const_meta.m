@@ -1,19 +1,23 @@
 %% fonction assurant la construction du metamodele (pas son evaluation)
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [ret]=const_meta(tirages,eval,grad,meta)
+function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)
+
+fprintf('#########################################\n');
+fprintf('  >>> CONSTRUCTION METAMODELE <<<\n');
+[tMesu,tInit]=mesu_time;
 
 %prise en compte gradients ou pas
 if isfield(meta,'grad')
-    if isempty(grad)||meta.grad==false;pec_grad='Non';grad=[];else pec_grad='Oui';end
+    if isempty(grad_in)||meta.grad==false;pec_grad='Non';grad_in=[];else pec_grad='Oui';end
 else
-    if isempty(grad);pec_grad='Non';grad=[];else pec_grad='Oui';end
+    if isempty(grad_in);pec_grad='Non';grad_in=[];else pec_grad='Oui';end
 end
-fprintf('Gradients disponibles: %s\n\n',pec_grad);
+fprintf('\n++ Gradients disponibles: %s\n',pec_grad);
 
 % Generation du metamodele
-textd='===== METAMODELE de ';
-textf=' =====';
+textd='++ Type: ';
+textf='';
 
 %nombre de variables
 nb_var=size(tirages,2);
@@ -27,7 +31,13 @@ else
     metype=meta.type;
 end
 
-
+%conditionnement pour InKRG (prise en compte donnees sous forme struct)
+if nargin==5&&isstruct(grad_in)
+    grad.eval=grad_in.eval{num_fct};
+    grad.tirages=grad_in.tirages{num_fct};
+else
+    grad=grad_in;
+end
 
 
 %%%%%%% Generation de divers metamodeles
@@ -46,7 +56,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Fonctions Shepard (SWF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            swf=meta_swf(tirages,eval,grad,meta);
+            swf=meta_swf(tirages,eval,grad_in,meta);
             out_meta=swf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -64,8 +74,26 @@ for type=metype
             fprintf('\n%s\n',[textd 'Gradient-based Radial Basis Functions (GRBF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            rbf=meta_rbf(tirages,eval,grad,meta);
+            rbf=meta_rbf(tirages,eval,grad_in,meta);
             out_meta=rbf;
+            %%%%%%%%=================================%%%%%%%%
+            %%%%%%%%=================================%%%%%%%%
+        case 'InKRG'
+            %% Construction du metamodele de Krigeage Indirect
+            fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
+            %affichage informations
+            fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
+            inkrg=meta_inkrg(tirages,eval,grad,meta); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
+            out_meta=inkrg;
+            %%%%%%%%=================================%%%%%%%%
+            %%%%%%%%=================================%%%%%%%%
+        case 'InRBF'
+            %% Construction du metamodele de Krigeage Indirect
+            fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
+            %affichage informations
+            fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
+            inrbf=meta_inrbf(tirages,eval,grad,meta); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
+            out_meta=inrbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'CKRG'
@@ -73,7 +101,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'CoKrigeage' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            ckrg=meta_krg_ckrg(tirages,eval,grad,meta);
+            ckrg=meta_krg_ckrg(tirages,eval,grad_in,meta);
             out_meta=ckrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -101,7 +129,7 @@ for type=metype
             for degre=meta.deg
                 %% Construction du metamodele de Regression polynomiale
                 fprintf('\n%s\n',[textd  'Regression polynomiale' textf]);
-                fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)                
+                fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
                 dd=['-- Degre du polynome \n',num2str(degre)];
                 fprintf(dd);
                 [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
@@ -117,7 +145,7 @@ for type=metype
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'ILAG'
-            %% interpolation par fonction de base linï¿½aire
+            %% interpolation par fonction de base lineaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
             %%%%%%%%=================================%%%%%%%%
@@ -131,7 +159,8 @@ for type=metype
     out_meta.nb_val=nb_val;
     out_meta.tirages=tirages;
     out_meta.eval=eval;
-    out_meta.grad=grad;
+    out_meta.grad=grad_in;
+    out_meta.enrich=meta.enrich;
     if numel(metype)==1
         ret=out_meta;
     else
@@ -139,3 +168,6 @@ for type=metype
     end
     num_meta=num_meta+1;
 end
+
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');

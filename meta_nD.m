@@ -32,41 +32,46 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=200;%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS_manu';
+doe.type='IHS_R_manu';
 
 %nb d'echantillons
-doe.nb_samples=16;
+doe.nb_samples=3;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 10];
+data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
+data.corr='sexp';
 data.rbf='matern32';
-data.type='GRBF';
+data.type='CKRG';
 data.grad=false;
-if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')
+if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
 data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=true;
-meta.norm=true;
+meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.val=0.5;
+meta.para.method='ga';
+meta.para.val=1/sqrt(2);%2;
+meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
+meta.para.aff_plot_algo=true;
+meta.enrich.para_wei=0.5;
+meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;
@@ -81,15 +86,10 @@ meta.save=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp('=====================================');
-disp('=====================================');
-disp('=======Construction metamodele=======');
-disp('=====================================');
-disp('=====================================');
-
 %realisation des tirages
 tirages=gene_doe(doe);
-%tirages=[0.25;2;2.25;5;11;14];
+%tirages=[0.25;1.5;3.5;5;5.5;14.5];
+tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 
@@ -116,7 +116,7 @@ if isfield(K,'var');[ic68,ic95,ic99]=const_ic(K.Z,K.var);end
 %valeur par d�faut
 aff.on=true;
 aff.newfig=false;
-aff.ic.on=false;
+aff.ic.on=true;
 %valeurs chargees
 %if doe.dim_pb>2
  %   aff.on=false;
@@ -153,6 +153,7 @@ aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
 aff.titre='Fonction de reference';
+if aff.on 
 figure
 subplot(2,2,1)
 affichage(grid_XY,Z,tirages,eval,grad,aff);
@@ -173,12 +174,36 @@ aff.color='r';
 subplot(2,2,4)
 affichage(grid_XY,K,tirages,eval,grad,aff);
 aff.titre=[];
-
+end
 
 %% affichage des r�ponses sous forme d'un diagramme bar
-figure;
-bar([Z.Z(:) K.Z(:)])
+%figure;
+%bar([Z.Z(:) K.Z(:)])
 
+if doe.dim_pb==1
+figure
+subplot(1,3,1)
+plot(grid_XY,Z.Z(:),'r','LineWidth',2)
+hold on
+plot(grid_XY,K.Z(:),'b','LineWidth',2)
+plot(tirages,eval,'ok')
+legend('Ref','Approx','Eval');
+subplot(1,3,2)
+plot(grid_XY,Z.GZ(:),'r','LineWidth',2)
+hold on
+plot(grid_XY,K.GZ(:),'b','LineWidth',2)
+plot(tirages,grad,'ok')
+legend('Ref','Approx','Eval');
+subplot(1,3,3)
+plot(grid_XY,Z.Z(:),'r','LineWidth',2)
+hold on
+plot(grid_XY,K.Z(:),'b','LineWidth',2)
+plot(tirages,eval,'ok')
+plot(grid_XY,Z.GZ(:),'--r','LineWidth',2)
+plot(grid_XY,K.GZ(:),'--b','LineWidth',2)
+plot(tirages,grad,'ok')
+legend('Ref','Approx','Eval','dRef','dApprox','dEval');
+end
 
 %calcul et affichage des criteres d'erreur
 err=crit_err(K.Z,Z.Z,approx);
@@ -198,6 +223,6 @@ save([aff.doss '/WS.mat']);
 end
 %extract_nD
 
-extract_aff_nD
+%extract_aff_nD
 
 

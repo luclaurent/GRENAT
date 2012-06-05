@@ -3,6 +3,10 @@
 
 function meta=init_meta(in)
 
+fprintf('=========================================\n')
+fprintf('     >>> INITIALISATION META <<<\n');
+[tMesu,tInit]=mesu_time;
+
 meta.grad=in.grad; %prise en compte des gradients
 
 meta.type=in.type;         %type de metamodele KRG/CKRG/DACE/RBF/GRBF
@@ -19,20 +23,22 @@ switch in.type
             meta.regr=[fctp num2str(in.para.deg,'%d')];      %fonction de regression
             meta.corr=['corr' in.corr];    %fonction de correlation
         end
-    case {'RBF','GRBF'}
+    case {'RBF','GRBF','InRBF'}
         if isfield(in,'rbf')
             meta.fct=['rf_' in.rbf];
         else
             meta.fct='rf_sexp';
         end
         meta.para.val=in.para.rbf_para;
-    case {'KRG','CKRG'}
+    case {'KRG','CKRG','InKRG'}
         meta.deg=in.deg;           %degre de la regression
         if isfield(in,'corr')
             meta.corr=['corr_' in.corr];     %fonction de correlation
         else
             meta.corr='corr_sexp';
         end
+    otherwise
+        
 end
 
 %normalisation
@@ -53,8 +59,13 @@ if meta.para.estim
     meta.para.min=in.para.long(1);
 end
 
-
+%enrichissement (evaluation critere)
+meta.enrich.on=true;
+meta.enrich.para_wei=0.5;
+meta.enrich.para_lcb=0.5;
 
 %Verification interpolation
 meta.verif=true;
 
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

@@ -3,6 +3,10 @@
 
 function err=crit_err(Zap,Zref,donnees)
 
+fprintf('#########################################\n');
+fprintf('   >>> CALCUL CRITERES ERREUR <<<\n');
+[tMesu,tInit]=mesu_time;
+
 if ~isempty(Zref)
     err.emse=mse_p(Zref,Zap);
     err.rmse=rmse_p(Zref,Zap);
@@ -42,3 +46,6 @@ if isfield(donnees,'li')&&isfield(donnees,'logli')
     err.li=donnees.li;
     err.logli=donnees.logli;
 end
+
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');

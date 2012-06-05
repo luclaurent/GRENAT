@@ -5,6 +5,10 @@
 
 function [Z]=eval_meta(points,donnees,meta)
 
+fprintf('#########################################\n');
+fprintf('  >>> EVALUATION METAMODELE <<<\n');
+[tMesu,tInit]=mesu_time;
+
 %reconditionnement donnees construction
 if ~iscell(donnees)
     donnees_const={donnees};
@@ -83,13 +87,13 @@ for num_meta=1:numel(donnees_const)
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case {'GRBF','RBF'}
+        case {'GRBF','RBF','InRBF'}
             %% Evaluation du metamodele de RBF/HBRBF
             for jj=1:nb_ev_pts
                 
-                [rep(jj),G]=eval_rbf(ev_pts(jj,:),meta_donnee);
+                [rep(jj),G,var_rep(jj)]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
-
+                
             end
             %% verification interpolation
             if meta.verif
@@ -102,7 +106,7 @@ for num_meta=1:numel(donnees_const)
                 if ~isempty(find(diffZ>1e-7, 1))
                     fprintf('pb d''interpolation (eval) GRBF\n')
                     diffZ
-                end 
+                end
                 
                 if meta_donnee.in.pres_grad
                     diffGZ=GZverif-grad;
@@ -119,7 +123,7 @@ for num_meta=1:numel(donnees_const)
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case {'KRG','CKRG'}
+        case {'KRG','CKRG','InKRG'}
             
             %stockage specifique
             Z_sto=rep;Z_reg=rep;
@@ -133,6 +137,11 @@ for num_meta=1:numel(donnees_const)
                 Z_reg(jj)=det.Z_reg;
                 GR_reg(jj,:)=det.GZ_reg;
                 GR_sto(jj,:)=det.GZ_sto;
+                if isfield(det,'wei');wei(jj)=det.wei;end
+                if isfield(det,'ei');ei(jj)=det.ei;end
+                if isfield(det,'lcb');lcb(jj)=det.lcb;end
+                if isfield(det,'exploit');exploit(jj)=det.exploit;end
+                if isfield(det,'explor');explor(jj)=det.explor;end
             end
             
             
@@ -263,14 +272,24 @@ for num_meta=1:numel(donnees_const)
                     Z.Z_reg=Z_reg;
                 end
                 Z.Z=rep;
-                Z.var=var_rep;
+                if ~isempty(var_rep)Z.var=var_rep;end
+                if exist('wei','var');Z.wei=wei;end
+                if exist('ei','var');Z.ei=ei;end
+                if exist('lcb','var');Z.lcb=lcb;end
+                if exist('explor','var');Z.explor=explor;end
+                if exist('exploit','var');Z.exploit=exploit;end
             else
                 if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
                     Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
                     Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
                 end
                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-                Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));
+                if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
+                if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+                if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
+                if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
+                if exist('explor','var');Z.explor=reshape(explor,dim_ev(1),dim_ev(2));end
+                if exist('exploit','var');Z.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
             end
         else
             if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
@@ -278,9 +297,12 @@ for num_meta=1:numel(donnees_const)
                 Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
             end
             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-            if ~isempty(var_rep)
-                Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));
-            end
+            if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
+            if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+            if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
+            if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
+            if exist('explor','var');Z.explor=reshape(explor,dim_ev(1),dim_ev(2));end
+            if exist('exploit','var');Z.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
         end
         Z.GZ=GZ;
         if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
@@ -289,7 +311,12 @@ for num_meta=1:numel(donnees_const)
     else
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;
-        Z{num_meta}.var=var_rep;
+        if ~isempty('var_rep');Z{num_meta}.var=var_rep;end
+        if exist('wei','var');Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+        if exist('ei','var');Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end
+        if exist('lcb','var');Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
+        if exist('explor','var');Z{num_meta}.explor=reshape(explor,dim_ev(1),dim_ev(2));end
+        if exist('exploit','var');Z{num_meta}.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
         if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
             Z{num_meta}.GZ_sto=GZ_sto;Z{num_meta}.GZ_reg=GZ_reg;
         end
@@ -298,4 +325,6 @@ for num_meta=1:numel(donnees_const)
         end
     end
 end
-
+fprintf('++ Evaluation en %i points\n',nb_ev_pts);
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');

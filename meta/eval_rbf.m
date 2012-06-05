@@ -5,7 +5,7 @@
 %%L. LAURENT      luc.laurent@ens-cachan.fr
 %% 15/03/2010 reprise le 20/01/2012
 
-function [Z,GZ]=eval_rbf(U,data,tir_part)
+function [Z,GZ,variance]=eval_rbf(U,data,tir_part)
 % affichages warning ou non
 aff_warning=false;
 %Declaration des variables
@@ -33,7 +33,7 @@ dim_x=size(X,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if data.norm.on
+if data.norm.on&&~isempty(data.norm.moy_tirages)
     infos.moy=data.norm.moy_tirages;
     infos.std=data.norm.std_tirages;
     X=norm_denorm(X,'norm',infos);
@@ -68,68 +68,49 @@ if data.in.pres_grad
         [ev,dev,ddev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        dda=dev';
-        P=[ev;dda(:)];
+        P=[ev' reshape(dev',1,nb_val*nb_var)];
+               
+        %P=[ev;dda(:)];
         %intercallage derivees premieres et secondes
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
-        dP=horzcat(-dda,reshape(ddev,nb_var,[]));
-       % pause
-        
-        %         %[~,~,ddev]=feval(donnees.build.fct,-dist,donnees.build.para.val);
-        %         %intercallage reponses et gradients
-        %         %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
-        %         %conditionneme~nt evaluations
-        %         comp=zeros(nb_val,nb_var);
-        %         eva=[ev comp]';
-        %         %conditionnement gradients
-        %         comp=zeros(nb_val,1);
-        %         deva=[comp dev]';
-        %         %creation vecteur evaluations/gradients
-        %         P=eva(:)+deva(:);
-        %         %creation vecteur derivees fonction base radiale (calcul gradients
-        %         %du metamodele)
-        %         dP=[];
-        %         for ii=1:nb_val
-        %             dP=vertcat(dP,dev(ii,:),ddev(:,:,ii));
-        %         end
-        
+        %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
+        %derivee du vecteur de correlation aux points d'evaluations        
+        dP=[dev' reshape(ddev,nb_var,[])];
+                
     else %sinon
         %evaluation de la fonction de base radiale
         [ev,dev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        dda=dev';
-        P=[ev;dda(:)];
-        
-        %        %intercallage reponses et gradients
-        %         %[P1 dP1/dx1 dP1/dx2 ... dP1/dxp P2 dP2/dx1 dP2/dx2 ...dPn/dxp]
-        %         %conditionnement evaluations
-        %         comp=zeros(nb_val,nb_var);
-        %         eva=[ev comp]';
-        %         %conditionnement gradients
-        %         comp=zeros(nb_val,1);
-        %         deva=[comp dev]';
-        %         %creation vecteur evaluations/gradients
-        %         P=eva'+deva';
+        P=[ev' reshape(dev',1,nb_val*nb_var)];
     end
 else
     if calc_grad  %si calcul des gradients
-        [P,dP]=feval(data.build.fct,dist,data.build.para.val);dP=dP';
+        [P,dP]=feval(data.build.fct,dist,data.build.para.val);P=P';dP=dP';
     else %sinon
-        P=feval(data.build.fct,dist,data.build.para.val);
+        P=feval(data.build.fct,dist,data.build.para.val);P=P';
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluation du metamodele au point X
-Z=P'*data.build.w;
+Z=data.build.w'*P';
+
 if calc_grad
     GZ=dP*data.build.w; 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%calcul de la variance de prediction (Bompard 2011,Sobester 2005, Gibbs 1997)
+if nargout >=3
+    if ~aff_warning;warning off all;end
+        variance=1-P*(data.build.KK\P');
+    if ~aff_warning;warning on all;end    
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if data.norm.on
+if data.norm.on&&~isempty(data.norm.moy_tirages)
     infos.moy=data.norm.moy_eval;
     infos.std=data.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);

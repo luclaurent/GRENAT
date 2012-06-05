@@ -53,7 +53,7 @@ if donnees.in.pres_grad
     rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
     %rci
     %Matrice de correlation du Cokrigeage
-    rcc=[rc rca;rca' rci];    
+    rcc=[rc rca;rca' rci]; 
 else
     %matrice de correlation du Krigeage par matrice triangulaire inf�rieure
     %sans diagonale
@@ -110,6 +110,7 @@ switch fact_rcc
         ret.build.yQ=Q'*donnees.build.y;
         ret.build.fcQ=Q'*donnees.build.fc;
         ret.build.fctR=donnees.build.fct/R;
+        ret.build.fctCfc=(donnees.build.fc\Q)*(R/donnees.build.fct);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta

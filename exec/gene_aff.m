@@ -3,19 +3,22 @@
 
 function [XY,aff]=gene_aff(doe,aff)
 
+fprintf('=========================================\n')
+fprintf('     >>> GENERATION AFFICHAGE <<<\n');
+[tMesu,tInit]=mesu_time;
 %dimension de l'espace
-dim_esp=size(doe.bornes,1);
+dim_esp=numel(doe.Xmin);
 
 % on genere la grille d'étude du métamodèle en fonction du nb de variables
 % prises en compte.
 
 if dim_esp==1
-    XY=linspace(doe.bornes(1),doe.bornes(2),aff.nbele);
+    XY=linspace(doe.Xmin,doe.Xmax,aff.nbele);
     
     % en 2D on définit une grille à partir de meshgrid
 elseif dim_esp==2
-    x=linspace(doe.bornes(1,1),doe.bornes(1,2),aff.nbele);
-    y=linspace(doe.bornes(2,1),doe.bornes(2,2),aff.nbele);
+    x=linspace(doe.Xmin(1),doe.Xmax(1),aff.nbele);
+    y=linspace(doe.Xmin(2),doe.Xmax(2),aff.nbele);
     [grid_X,grid_Y]=meshgrid(x,y);
     
     XY=zeros(size(grid_X,1),size(grid_X,2),2);
@@ -36,4 +39,10 @@ else
 end
 
 %pas de la grille d'affichage selon les deux variables
-aff.pas=abs(doe.bornes(:,2)-doe.bornes(:,1))./aff.nbele;
+aff.pas=abs(doe.Xmax-doe.Xmin)./aff.nbele;
+
+fprintf('++ Nombre de points de la grille %i (%i',aff.nbele^dim_esp,aff.nbele);
+fprintf('x%i',aff.nbele*ones(1,dim_esp-1));fprintf(')\n');
+
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

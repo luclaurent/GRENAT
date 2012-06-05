@@ -3,6 +3,10 @@
 
 function [dossier,date_doss]=init_dossier(meta,doe,ajout,chemin)
 
+fprintf('=========================================\n')
+fprintf('    >>> INITIALISATION DOSSIER <<<\n');
+[tMesu,tInit]=mesu_time;
+
 day=clock;
 date_doss=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_'];
@@ -49,3 +53,9 @@ date.day=day(3);
 date.hour=day(4);
 date.minute=day(5);
 date.second=day(6);
+
+fprintf('++ Sauvegarde dans un dossier: ');
+if meta.save;fprintf('Oui\n++ Dossier: %s\n',dossier);else fprintf('Non\n');end
+
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

@@ -3,11 +3,20 @@
 
 function [doe]=init_doe(fct,dim,def)
 
+
+fprintf('=========================================\n')
+fprintf('      >>> INITIALISATION DOE <<<\n');
+[tMesu,tInit]=mesu_time;
+
 %definition automatique
 switch fct
     case 'manu'
-        esp=[0 15];
-    case 'rosenbrock'
+        esp=[-1 15];
+        dim=1;
+    case 'ackley'
+        val=1.5;
+        esp=val*[-ones(dim,1),ones(dim,1)];
+    case {'rosenbrock','rosenbrockM'}
         val=2.048;
         esp=val*[-ones(dim,1),ones(dim,1)];
     case 'branin'
@@ -23,8 +32,8 @@ switch fct
         xmin=-2;xmax=2;ymin=-1;ymax=1;
         esp=[xmin xmax;ymin ymax];
     case 'schwefel'
-        val=500;xmin=-val;xmax=val;ymin=-val;ymax=val;
-        esp=[xmin xmax;ymin ymax];
+        val=500;
+        esp=val*[-ones(dim,1),ones(dim,1)];
     case 'mystery'
         val=5;xmin=0;xmax=val;ymin=0;ymax=val;
         esp=[xmin xmax;ymin ymax];
@@ -65,13 +74,29 @@ doe.tri=1;
 %affichage tirages
 doe.aff=true;
 
+
 %definition manuelle
 if nargin==3&&~isempty(def)
-    doe.bornes=def;
+    doe.Xmin=def(:,1);
+    doe.Xmax=def(:,2);
 else
-    doe.bornes=esp;
+    doe.Xmin=esp(:,1);
+    doe.Xmax=esp(:,2);
 end
+doe.bornes=[doe.Xmin,doe.Xmax];
 
 %nom de la fonction a appeler
 fun=['fct_' fct];
 
+fprintf('++ Fonction prise en compte: %s (%iD)\n',fct,dim);
+fprintf('++ Espace etude:\n');
+fprintf('   Min  |');
+fprintf('%+4.2f|',doe.Xmin);fprintf('\n');
+fprintf('   Max  |');
+fprintf('%+4.2f|',doe.Xmax);fprintf('\n');
+fprintf('++ Tri variable par rapport à la %i variable\n',doe.tri);
+fprintf('++ Affichage tirages: ');
+if doe.aff; fprintf('Oui\n');else fprintf('Non\n');end
+
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

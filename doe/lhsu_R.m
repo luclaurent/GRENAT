@@ -68,7 +68,7 @@ if e~=0
     error('R non installe (absent du PATH)');
 else
     [~,t]=unix(['cd ' rep ' && R -f ' nom_script]);
-    pause(2)
+    pause(0.5)
 end
 %lecture du fichier de donn�es R
 A=load([rep '/' nom_dataR]);

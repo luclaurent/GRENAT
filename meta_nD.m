@@ -18,13 +18,13 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='peaks'; 
+fct='manu'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 %esp=[0 15];
 esp=[];
 
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='sexp';
 data.rbf='matern32';
-data.type='GRBF';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -59,11 +59,11 @@ meta=init_meta(data);
 
 meta.para.estim=false;
 meta.cv=true;
-meta.norm=true;
+meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
-meta.para.val=3.4736;%1/sqrt(2);%2;
+meta.para.val=1/sqrt(2);%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
@@ -89,7 +89,7 @@ meta.save=false;
 %realisation des tirages
 tirages=gene_doe(doe);
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
-%tirages=[-0.5;0;1.5];
+tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 

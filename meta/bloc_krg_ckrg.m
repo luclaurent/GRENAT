@@ -53,7 +53,7 @@ if donnees.in.pres_grad
     rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
     %rci
     %Matrice de correlation du Cokrigeage
-    rcc=[rc rca;rca' rci];    
+    rcc=[rc rca;rca' rci]; 
 else
     %matrice de correlation du Krigeage par matrice triangulaire inf�rieure
     %sans diagonale

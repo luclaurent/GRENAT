@@ -29,15 +29,15 @@ end
 
 if isfield(donnees,'cv')
     fprintf('\n>>>Validation croisee<<<\n');
-    if isfield(donnees.cv,'bm');fprintf('Biais moyen=%g\n',donnees.cv.bm);err.cv.bm=donnees.cv.bm;end
-    if isfield(donnees.cv,'msep');fprintf('MSE (eval)=%g\n',donnees.cv.msep);err.cv.msep=donnees.cv.msep;end
-    if isfield(donnees.cv,'mseg');fprintf('MSE (grad)=%g\n',donnees.cv.mseg);err.cv.mseg=donnees.cv.mseg;end
-    if isfield(donnees.cv,'msemix');fprintf('MSE (mix)=%g\n',donnees.cv.msemix);err.cv.msemix=donnees.cv.msemix;end
+    if isfield(donnees.cv.perso,'bm');fprintf('Biais moyen=%g\n',donnees.cv.perso.bm);err.cv.bm=donnees.cv.perso.bm;end
+    if isfield(donnees.cv,'eloor');fprintf('MSE (eval)=%g\n',donnees.cv.eloor);err.cv.msep=donnees.cv.eloor;end
+    if isfield(donnees.cv,'eloog');fprintf('MSE (grad)=%g\n',donnees.cv.eloog);err.cv.mseg=donnees.cv.eloog;end
+    if isfield(donnees.cv,'eloot');fprintf('MSE (mix)=%g\n',donnees.cv.eloot);err.cv.msemix=donnees.cv.eloot;end
     if isfield(donnees.cv,'scvr_mean');fprintf('SCVR (Mean)=%g\n',donnees.cv.scvr_mean);err.cv.scvr_mean=donnees.cv.scvr_mean;end
     if isfield(donnees.cv,'scvr_min');fprintf('SCVR (Min)=%g\n',donnees.cv.scvr_min);err.cv.scvr_min=donnees.cv.scvr_min;end
     if isfield(donnees.cv,'scvr_max');fprintf('SCVR (Max)=%g\n',donnees.cv.scvr_max);err.cv.scvr_max=donnees.cv.scvr_max;end
-    if isfield(donnees.cv,'press');fprintf('PRESS=%g\n',donnees.cv.press);err.cv.press=donnees.cv.press;end
-    if isfield(donnees.cv,'errp');fprintf('Erreur perso=%g\n',donnees.cv.errp);err.cv.errp=donnees.cv.errp;end
+    if isfield(donnees.cv.perso,'press');fprintf('PRESS=%g\n',donnees.cv.perso.press);err.cv.press=donnees.cv.perso.press;end
+    if isfield(donnees.cv.perso,'errp');fprintf('Erreur perso=%g\n',donnees.cv.perso.errp);err.cv.errp=donnees.cv.perso.errp;end
 end
 
 if isfield(donnees,'li')&&isfield(donnees,'logli')

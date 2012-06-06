@@ -22,7 +22,7 @@ if donnees.in.pres_grad
     %morceau de la matrice issu du krigeage
     rc=zeros(donnees.in.nb_val,donnees.in.nb_val);
     rca=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
-    rci=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);    
+    rci=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
     
     for ii=1:donnees.in.nb_val
         ind=ii:donnees.in.nb_val;
@@ -38,11 +38,11 @@ if donnees.in.pres_grad
         %morceau de la matrice provenant du Cokrigeage
         rca(ii,indd)=-reshape(dev',1,numel(ind)*donnees.in.nb_var);
         rca(inddd,indddd)=dev;
-        %matrice des derivees secondes         
+        %matrice des derivees secondes
         rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,indd)=...
-             -reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var);
+            -reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var);
         % reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var)
-
+        
     end
     %construction matrices completes
     rc=rc+rc'-eye(donnees.in.nb_val);
@@ -53,7 +53,7 @@ if donnees.in.pres_grad
     rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
     %rci
     %Matrice de correlation du Cokrigeage
-    rcc=[rc rca;rca' rci]; 
+    rcc=[rc rca;rca' rci];
 else
     %matrice de correlation du Krigeage par matrice triangulaire inf�rieure
     %sans diagonale
@@ -68,8 +68,8 @@ else
         % matrice de krigeage
         rcc(ind,ii)=ev;
     end
-        %Construction matrice compl�te
-    rcc=rcc+rcc'+eye(donnees.in.nb_val);   
+    %Construction matrice compl�te
+    rcc=rcc+rcc'+eye(donnees.in.nb_val);
     
 end
 %passage en sparse
@@ -129,6 +129,7 @@ switch fact_rcc
         ret.build.yL=L\donnees.build.y;
         ret.build.fcL=L\donnees.build.fc;
         ret.build.fctU=donnees.build.fct/U;
+        ret.build.fctCfc=(donnees.build.fc\L)*(U/donnees.build.fct);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
@@ -140,23 +141,25 @@ switch fact_rcc
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
         ret.build.gamma=U\(ret.build.yL-ret.build.fcL*ret.build.beta);
-     case 'LL'
-         %%% A coder
+    case 'LL'
+        %%% A debugguer
         L=chol(rcc,'lower');
         ret.build.Lrcc=L;
         ret.build.yL=L\donnees.build.y;
         ret.build.fcL=L\donnees.build.fc;
+        ret.build.fctL=donnees.build.fct/L;
+        ret.build.fctCfc=(donnees.build.fc\L)*(L/donnees.build.fct);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
-        block1=ret.build.fctU*ret.build.fcL;
-        block2=ret.build.fctU*ret.build.yL;
+        block1=ret.build.fctL*ret.build.fcL;
+        block2=ret.build.fctL*ret.build.yL;
         ret.build.beta=block1\block2;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
-        ret.build.gamma=U\(ret.build.yL-ret.build.fcL*ret.build.beta);
+        ret.build.gamma=L\(ret.build.yL-ret.build.fcL*ret.build.beta);
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -30,9 +30,9 @@ end
 if isfield(donnees,'cv')
     fprintf('\n>>>Validation croisee<<<\n');
     if isfield(donnees.cv.perso,'bm');fprintf('Biais moyen=%g\n',donnees.cv.perso.bm);err.cv.bm=donnees.cv.perso.bm;end
-    if isfield(donnees.cv,'eloor');fprintf('MSE (eval)=%g\n',donnees.cv.eloor);err.cv.msep=donnees.cv.eloor;end
-    if isfield(donnees.cv,'eloog');fprintf('MSE (grad)=%g\n',donnees.cv.eloog);err.cv.mseg=donnees.cv.eloog;end
-    if isfield(donnees.cv,'eloot');fprintf('MSE (mix)=%g\n',donnees.cv.eloot);err.cv.msemix=donnees.cv.eloot;end
+    if isfield(donnees.cv,'eloor');fprintf('MSE (eval)=%g\n',donnees.cv.eloor);err.cv.eloor=donnees.cv.eloor;end
+    if isfield(donnees.cv,'eloog');fprintf('MSE (grad)=%g\n',donnees.cv.eloog);err.cv.eloog=donnees.cv.eloog;end
+    if isfield(donnees.cv,'eloot');fprintf('MSE (mix)=%g\n',donnees.cv.eloot);err.cv.eloot=donnees.cv.eloot;end
     if isfield(donnees.cv,'scvr_mean');fprintf('SCVR (Mean)=%g\n',donnees.cv.scvr_mean);err.cv.scvr_mean=donnees.cv.scvr_mean;end
     if isfield(donnees.cv,'scvr_min');fprintf('SCVR (Min)=%g\n',donnees.cv.scvr_min);err.cv.scvr_min=donnees.cv.scvr_min;end
     if isfield(donnees.cv,'scvr_max');fprintf('SCVR (Max)=%g\n',donnees.cv.scvr_max);err.cv.scvr_max=donnees.cv.scvr_max;end

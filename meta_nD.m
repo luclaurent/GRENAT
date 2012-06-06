@@ -89,7 +89,7 @@ meta.save=false;
 %realisation des tirages
 tirages=gene_doe(doe);
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
-tirages=[-0.5;0;1.5];
+%tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;
 

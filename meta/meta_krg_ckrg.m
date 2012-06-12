@@ -16,11 +16,11 @@ fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\
 
 fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
 if meta.para.estim
-fprintf('>> Algo estimation: %s\n',meta.para.method);
-fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
-fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
-fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
-fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Algo estimation: %s\n',meta.para.method);
+    fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
+    fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
 else
     fprintf('>> Valeur parametre: %d\n',meta.para.val);
 end
@@ -32,7 +32,7 @@ if meta.enrich.on;
 else
     fprintf('%s\n','non');
 end
-    
+
 fprintf('\n\n')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,8 +57,8 @@ pres_grad=~isempty(grad);
 manq_eval=false;
 manq_grad=false;
 if nargin==5
-    manq_eval=manq.manq_eval.on;
-    manq_grad=manq.manq_grad.on;
+    manq_eval=manq.eval.on;
+    manq_grad=manq.grad.on;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,12 +70,7 @@ if meta.norm
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     std_e=infos_e.std;moy_e=infos_e.moy;
     std_t=infos_t.std;moy_t=infos_t.moy;
-    pause
-    std_e
-    std_t
-    moy_e
-    moy_t
-    pause
+    
     %normalisation des gradients
     if pres_grad
         infos.std_e=infos_e.std;infos.moy_e=infos_e.moy;
@@ -111,10 +106,19 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluations et gradients aux points échantillonnés
 y=evaln;
+%suppression reponse(s) manquantes
+if manq_eval
+    y=y(manq.eval.ix_dispo);
+end
+
 if pres_grad
+    %supression gradient(s) manquant(s)
     tmp=gradn';
     der=tmp(:);
-    y=vertcat(y,der);    
+    if manq_grad
+        der=der(manq.grad.ixt_dispo_line);
+    end
+    y=vertcat(y,der);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,10 +138,23 @@ if ~pres_grad
     fc=feval(fct,tiragesn);
 else
     [Reg,nb_termes,DReg,~]=feval(fct,tiragesn);
-    %initialisation matrice des regresseurs
-    fc=zeros((nb_var+1)*nb_val,nb_termes);
+    if manq_eval||manq_grad
+        taille_ev=nb_val-manq.eval.nb;
+        taille_gr=nb_val*nb_var-manq.grad.nb;
+        taille_tot=taille_ev+taille_gr;
+    else
+        taille_ev=nb_val;
+        taille_gr=nb_val*nb_var;
+        taille_tot=taille_ev+taille_gr;
+    end
+    if manq_eval
+        %suppression valeur(s) aux site à reponse(s) manquante(s)
+        Reg=Reg(manq.eval.ix_dispo,:);
+        %initialisation matrice des regresseurs
+        fc=zeros(taille_tot,nb_termes);
+    end
     %chargement regresseur (evaluation de monomes)
-    fc(1:nb_val,:)=Reg;
+    fc(1:taille_ev,:)=Reg;
     %chargement des dérivées des regresseurs (evaluation des dérivées des monomes)
     if iscell(DReg)
         tmp=horzcat(DReg{:})';
@@ -147,7 +164,12 @@ else
         tmp=tmp(:);
     end
     
-    fc(nb_val+1:end,:)=tmp;
+    if manq_grad
+        %suppression valeur(s) aux sites à gradient(s) manquant(s)
+        tmp=tmp(manq.grad.ixt_dispo_line,:);
+    end
+    %chargement derrivees regresseur
+    fc(taille_ev+1:end,:)=tmp;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -238,8 +260,8 @@ end
 %%Construction des differents elements avec ou sans estimation des
 %%parametres
 if meta.para.estim
-   para_estim=estim_para_krg_ckrg(ret,meta);
-   meta.para.val=para_estim.val;
+    para_estim=estim_para_krg_ckrg(ret,meta);
+    meta.para.val=para_estim.val;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

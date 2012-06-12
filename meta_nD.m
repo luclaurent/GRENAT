@@ -53,7 +53,7 @@ data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=0;
+data.deg=2;
 
 meta=init_meta(data);
 

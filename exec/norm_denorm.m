@@ -14,9 +14,9 @@ if nargin==3
         if ~isempty(infos.moy)
             norm_data=true;
         end
-    elseif isfield(infos,'manq_eval')
-        norm_manq=infos.manq_eval.on;
-    elseif isfield(infos,'moy')&&isfield(infos,'manq_eval')
+    elseif isfield(infos,'eval')
+        norm_manq=infos.eval.on;
+    elseif isfield(infos,'moy')&&isfield(infos,'eval')
         norm_data=true;
     end
 end
@@ -37,8 +37,8 @@ switch type
     case 'norm'
         %dans le cas de données manquantes, on retire les données à NaN
         if norm_manq
-            inm=in(infos.manq_eval.ix_dispo);
-                    else
+            inm=in(infos.eval.ix_dispo);
+        else
             inm=in;
         end
         calc_para_norm=true;
@@ -57,10 +57,10 @@ switch type
                 std_i(ind)=1;
             end
             if norm_manq
-                outm=(inm-repmat(moy_i,infos.manq_eval.nb,1))./...
-                    repmat(std_i,infos.manq_eval.nb,1);
+                outm=(inm-repmat(moy_i,infos.eval.nb,1))./...
+                    repmat(std_i,infos.eval.nb,1);
                 out=NaN*zeros(size(in));
-                out(infos.manq_eval.ix_dispo)=outm;
+                out(infos.eval.ix_dispo)=outm;
             else
                 out=(inm-repmat(moy_i,nbs,1))./repmat(std_i,nbs,1);
             end

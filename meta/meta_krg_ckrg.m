@@ -59,6 +59,7 @@ manq_grad=false;
 if nargin==5
     manq_eval=manq.eval.on;
     manq_grad=manq.grad.on;
+    pres_grad=~manq.grad.all;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,7 +191,9 @@ ret.build.fct=fc';
 ret.build.y=y;
 ret.build.fct_reg=fct;
 ret.build.corr=meta.corr;
-
+if nargin==5
+    ret.manq=manq;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres

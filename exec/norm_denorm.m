@@ -5,37 +5,88 @@ function [out,infos]=norm_denorm(in,type,infos)
 
 % nombre d'echantillons
 nbs=size(in,1);
-if (nargin==3&&~isempty(infos.moy))||nargin==2
-    %normalisation
-    switch type
-        case 'norm'
-            if nargin==3
-                out=(in-repmat(infos.moy,nbs,1))./repmat(infos.std,nbs,1);
-            else
-                %calcul des moyennes et des ecarts type
-                moy_i=mean(in);
-                std_i=std(in);
-                %test pour verification ecart type
-                ind=find(std_i==0);
-                if ~isempty(ind)
-                    std_i(ind)=1;
-                end
-                
-                out=(in-repmat(moy_i,nbs,1))./repmat(std_i,nbs,1);
-                if nargout==2
-                    infos.moy=moy_i;
-                    infos.std=std_i;
-                end
-            end
-            %denormalisation
-        case 'denorm'
-            out=repmat(infos.std,nbs,1).*in+repmat(infos.moy,nbs,1);
-            %denormalisation d'une difference de valeurs normalisees
-        case 'denorm_diff'
-            out=repmat(infos.std,nbs,1).*in;
-        otherwise
-            error('Mauvais nombre de parametres d''entrée (cf. norm_denorm.m)')
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%traitement de tous le cas de figure
+norm_data=false;norm_manq=false;
+if nargin==3
+    if isfield(infos,'moy')
+        if ~isempty(infos.moy)
+            norm_data=true;
+        end
+    elseif isfield(infos,'manq_eval')
+        norm_manq=infos.manq_eval.on;
+    elseif isfield(infos,'moy')&&isfield(infos,'manq_eval')
+        norm_data=true;
     end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if nargout==2
+    extr_infos=true;
 else
-    out=in;
+    extr_infos=false;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%normalisation//denormalisation
+switch type
+    case 'norm'
+        %dans le cas de données manquantes, on retire les données à NaN
+        if norm_manq
+            inm=in(infos.manq_eval.ix_dispo);
+                    else
+            inm=in;
+        end
+        calc_para_norm=true;
+        if norm_data
+            out=(in-repmat(infos.moy,nbs,1))./repmat(infos.std,nbs,1);
+            calc_para_norm=false;
+        end
+        
+        if calc_para_norm
+            %calcul des moyennes et des ecarts type
+            moy_i=mean(inm);
+            std_i=std(inm);
+            %test pour verification ecart type
+            ind=find(std_i==0);
+            if ~isempty(ind)
+                std_i(ind)=1;
+            end
+            if norm_manq
+                outm=(inm-repmat(moy_i,infos.manq_eval.nb,1))./...
+                    repmat(std_i,infos.manq_eval.nb,1);
+                out=NaN*zeros(size(in));
+                out(infos.manq_eval.ix_dispo)=outm;
+            else
+                out=(inm-repmat(moy_i,nbs,1))./repmat(std_i,nbs,1);
+            end
+            
+            if extr_infos
+                infos.moy=moy_i;
+                infos.std=std_i;
+            end
+            
+        end
+        
+        %denormalisation
+    case 'denorm'
+        if norm_data
+            out=repmat(infos.std,nbs,1).*in+repmat(infos.moy,nbs,1);
+        else
+            out=in;
+        end
+        
+        %denormalisation d'une difference de valeurs normalisees
+    case 'denorm_diff'
+        if norm_data
+            out=repmat(infos.std,nbs,1).*in;
+        else
+            out=in;
+        end
+    otherwise
+        error('Mauvais nombre de parametres d''entrée (cf. norm_denorm.m)')
 end

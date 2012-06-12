@@ -1,7 +1,7 @@
 %% fonction de construction des métamodèles de Krigeage et de Cokrigeage
 %% L. LAURENT -- 12/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [ret]=meta_krg_ckrg(tirages,eval,grad,meta)
+function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,16 +53,29 @@ nb_var=size(tirages,2);
 %test présence des gradients
 pres_grad=~isempty(grad);
 
+%test données manquantes
+manq_eval=false;
+manq_grad=false;
+if nargin==5
+    manq_eval=manq.manq_eval.on;
+    manq_grad=manq.manq_grad.on;
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Normalisation
 if meta.norm
     %normalisation des donnees
-    [evaln,infos_e]=norm_denorm(eval,'norm');
+    [evaln,infos_e]=norm_denorm(eval,'norm',manq);
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     std_e=infos_e.std;moy_e=infos_e.moy;
     std_t=infos_t.std;moy_t=infos_t.moy;
-    
+    pause
+    std_e
+    std_t
+    moy_e
+    moy_t
+    pause
     %normalisation des gradients
     if pres_grad
         infos.std_e=infos_e.std;infos.moy_e=infos_e.moy;

@@ -54,22 +54,20 @@ if donnees.in.pres_grad
     %rci
     %Matrice de correlation du Cokrigeage
     rcc=[rc rca;rca' rci];
-    rcc
+    
     %si donnees manquantes
     if donnees.manq.eval.on
         rcc(donnees.manq.eval.ix_manq,:)=[];
         rcc(:,donnees.manq.eval.ix_manq)=[];
     end
-    rcc
-    pause
-        %si donnees manquantes
+    
+    %si donnees manquantes
     if donnees.manq.grad.on
-        rep_ev=donnees.in.nb_val-donnees.mand.eval.nb;
+        rep_ev=donnees.in.nb_val-donnees.manq.eval.nb;
         rcc(rep_ev+donnees.manq.grad.ixt_manq_line,:)=[];
         rcc(:,rep_ev+donnees.manq.grad.ixt_manq_line)=[];
     end
-    rcc
-    pause
+    
 else
     %matrice de correlation du Krigeage par matrice triangulaire inf�rieure
     %sans diagonale

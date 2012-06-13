@@ -107,6 +107,11 @@ else
     else %sinon
         rr=feval(donnees.build.corr,dist,donnees.build.para.val);
     end
+    %si donnees manquantes
+    if donnees.manq.eval.on
+        rr(donnees.manq.eval.ix_manq)=[];
+        jr(donnees.manq.eval.ix_manq,:)=[];
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -132,7 +137,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
-%2004)
+%2004 / Marcelet 2008 / Chauvet 1999)
 if nargout >=3
     if ~aff_warning;warning off all;end
     %en fonction de la factorisation
@@ -140,29 +145,25 @@ if nargout >=3
         case 'QR'
             Qrr=donnees.build.Qrcc'*rr;
             u=donnees.build.fctR*Qrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+(rr\donnees.build.Rrcc)*Qrr+...
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Rrcc)*Qrr+...
                 u'*donnees.build.fctCfc*u);
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctU*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+(rr\donnees.build.Urcc)*Lrr+...
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Urcc)*Lrr+...
                 u'*donnees.build.fctCfc*u);
         case 'LL'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctL*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+(rr\donnees.build.Lrcc)*Lrr+...
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Lrcc)*Lrr+...
                 u'*donnees.build.fctCfc*u);
         otherwise
             rcrr=donnees.build.rcc \ rr;
             u=donnees.build.fct*rcrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
-                ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) + rr'*rcrr);
+                ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
     end
-    %     if ~aff_warning;warning on all;end
-    %     rcrr=donnees.build.rcc \ rr;
-    %     u=donnees.build.fct*rcrr-ff';
-    %     variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
-    %         ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
+    if ~aff_warning;warning on all;end
     
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

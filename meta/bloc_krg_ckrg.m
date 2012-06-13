@@ -54,7 +54,6 @@ if donnees.in.pres_grad
     %rci
     %Matrice de correlation du Cokrigeage
     rcc=[rc rca;rca' rci];
-    
     %si donnees manquantes
     if donnees.manq.eval.on
         rcc(donnees.manq.eval.ix_manq,:)=[];
@@ -84,7 +83,11 @@ else
     end
     %Construction matrice complete
     rcc=rcc+rcc'+eye(donnees.in.nb_val);
-    
+    %si donnees manquantes
+    if donnees.manq.eval.on
+        rcc(donnees.manq.eval.ix_manq,:)=[];
+        rcc(:,donnees.manq.eval.ix_manq)=[];
+    end
 end
 %passage en sparse
 rcc=sparse(rcc);
@@ -119,7 +122,7 @@ end
 switch fact_rcc
     case 'QR'
         [Q,R]=qr(rcc);
-        ret.build.Qrcc=Q;
+         ret.build.Qrcc=Q;
         ret.build.Rrcc=R;
         ret.build.yQ=Q'*donnees.build.y;
         ret.build.fcQ=Q'*donnees.build.fc;

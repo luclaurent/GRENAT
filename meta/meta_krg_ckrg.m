@@ -59,7 +59,7 @@ manq_grad=false;
 if nargin==5
     manq_eval=manq.eval.on;
     manq_grad=manq.grad.on;
-    pres_grad=~manq.grad.all;
+    pres_grad=~manq.grad.all&&manq.grad.on;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -137,6 +137,10 @@ fct=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
 
 if ~pres_grad
     fc=feval(fct,tiragesn);
+    if manq_eval
+        %suppression valeur(s) aux site à reponse(s) manquante(s)
+        fc=fc(manq.eval.ix_dispo,:);
+    end
 else
     [Reg,nb_termes,DReg,~]=feval(fct,tiragesn);
     if manq_eval||manq_grad
@@ -148,11 +152,11 @@ else
         taille_gr=nb_val*nb_var;
         taille_tot=taille_ev+taille_gr;
     end
+    %initialisation matrice des regresseurs
+    fc=zeros(taille_tot,nb_termes);
     if manq_eval
         %suppression valeur(s) aux site à reponse(s) manquante(s)
         Reg=Reg(manq.eval.ix_dispo,:);
-        %initialisation matrice des regresseurs
-        fc=zeros(taille_tot,nb_termes);
     end
     %chargement regresseur (evaluation de monomes)
     fc(1:taille_ev,:)=Reg;

@@ -91,6 +91,7 @@ if any(manq_eval)
 else
     ret.eval.on=false;
     ret.eval.nb=0;
+    ret.eval.all=false;
 end
 
 if any(manq_grad)
@@ -109,4 +110,5 @@ if any(manq_grad)
 else
     ret.grad.on=false;
     ret.grad.nb=0;
+    ret.grad.all=false;
 end

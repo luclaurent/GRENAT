@@ -119,7 +119,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            krg=meta_krg_ckrg(tirages,eval,[],meta);
+            krg=meta_krg_ckrg(tirages,eval,[],meta,bilan_manq);
             out_meta=krg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%

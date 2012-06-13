@@ -97,8 +97,8 @@ if isfield(aff,'bilan_manq')
     if aff.bilan_manq.eval.on|| aff.bilan_manq.grad.on
         liste_both_manq=intersect(liste_eval_manq,liste_grad_manq);
         for ii=1:numel(liste_both_manq)
-            ix=find(list_eval_manq==liste_both_manq(ii));
-            list_eval_manq(ix)=[];
+            ix=find(liste_eval_manq==liste_both_manq(ii));
+            liste_eval_manq(ix)=[];
             ix=find(liste_grad_manq==liste_both_manq(ii));
             liste_grad_manq(ix)=[];
         end

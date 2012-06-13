@@ -18,13 +18,13 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock';
+fct='manu';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 %esp=[0 15];
 esp=[];
 
@@ -57,8 +57,8 @@ data.deg=1;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
-meta.cv=false;
+meta.para.estim=false;
+meta.cv=true;
 meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
@@ -100,17 +100,22 @@ tirages=gene_doe(doe);
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
 
-%grad(2)=NaN;
-%grad(6)=NaN;
-%grad(3)=NaN;
-%eval(5)=NaN;
-%grad(5)=NaN;
-%grad(4)=NaN;
+grad(2)=NaN;
+grad(6)=NaN;
+grad(3)=NaN;
+eval(1)=NaN;
+eval(2)=NaN;
+eval(3)=NaN;
+eval(5)=NaN;
+grad(5)=NaN;
+grad(4)=NaN;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Construction et evaluation du metamodele aux points souhaites
 [approx]=const_meta(tirages,eval,grad,meta);
 [K]=eval_meta(grid_XY,approx,meta);
+aff_doe(tirages,doe,approx.bilan_manq)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%generation des differents intervalles de confiance

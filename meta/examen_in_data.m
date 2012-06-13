@@ -94,8 +94,8 @@ else
     ret.eval.all=false;
 end
 
-if any(manq_grad)
-    ret.grad.on=any(manq_grad);
+if any(manq_grad(:))
+    ret.grad.on=any(manq_grad(:));
     ret.grad.masque=manq_grad;
     ret.grad.nb=nb_manq_grad;
     ret.grad.ix_manq=ix_manq_grad;

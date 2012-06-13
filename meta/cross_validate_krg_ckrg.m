@@ -14,8 +14,6 @@ cv_gz=zeros(data.in.nb_val,data.in.nb_var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%On parcourt l'ensemble des tirages
-data.manq.eval
-data.manq.grad
 parcours_ev=1;
 parcours_gr=1;
 for tir=1:data.in.nb_val
@@ -34,63 +32,20 @@ for tir=1:data.in.nb_val
         if data.manq.eval.on
             if data.manq.eval.masque(tir)
                 pos=[];
-                donnees_cv.manq.eval.nb=data.manq.eval.nb-1;
             else
                 pos=parcours_ev;
                 parcours_ev=parcours_ev+1;
-                donnees_cv.manq.eval.nb=data.manq.eval.nb;
             end
-            tir
-            donnees_cv.manq.eval.ix_manq=data.manq.eval.ix_manq;
-            donnees_cv.manq.eval.ix_dispo
-            ixf=find(data.manq.eval.ix_manq==tir);
-            donnees_cv.manq.eval.ix_dispo(ixf)=[];
-            ixf=find(data.manq.eval.ix_dispo==tir);
-            donnees_cv.manq.eval.ix_dispo(ixf)=[];
-            donnees_cv.manq.eval.ix_manq=[donnees_cv.manq.eval.ix_manq(1:parcours_ev-1) donnees_cv.manq.eval.ix_manq(parcours_ev:end)-1];
-            donnees_cv.manq.eval.ix_dispo=[donnees_cv.manq.eval.ix_dispo(1:parcours_ev-1) donnees_cv.manq.eval.ix_dispo(parcours_ev:end)-1];;
-            donnees_cv.manq.eval.ix_dispo
-            pause
-            
-            donnees_cv.manq.eval.ix_dispo=donnees_cv.manq.eval.ix_dispo(parcours_ev:end)-1;
-            donnees_cv.manq.eval.ix_manq
-            pause
-            donnees_cv.manq.eval.ix_dispo
-            donnees_cv.manq.eval.masque=data.manq.eval.masque;
-            donnees_cv.manq.eval.masque(tir)=[];
-            donnees_cv.manq.eval.on=any(donnees_cv.manq.eval.masque);
-            
         end
         if data.manq.grad.on&&data.in.pres_grad
             nb_manq_grad=sum(data.manq.grad.masque(tir,:));
             if nb_manq_grad==data.in.nb_var
                 pos=pos;
-                donnees_cv.manq.grad.ix_manq_line=data.manq.grad.ix_manq_line;
             else
                 pos=[pos data.in.nb_val-data.manq.eval.nb+(parcours_gr:(parcours_gr+data.in.nb_var-nb_manq_grad-1))];
                 parcours_gr=parcours_gr+data.in.nb_var;
-                donnees_cv.manq.grad.ix_manq_line=data.manq.grad.ix_manq_line;
             end
             
-            donnees_cv.manq.grad.ixt_manq_line=data.manq.grad.ixt_manq_line;
-            donnees_cv.manq.grad.ix_dispo_line=data.manq.grad.ix_dispo_line;
-            donnees_cv.manq.grad.ixt_dispo_line=data.manq.grad.ixt_dispo_line;
-            donnees_cv.manq.grad.ixt_manq=data.manq.grad.ixt_manq;
-            ixf=find(data.manq.grad.ixt_manq(1,:)==tir);
-            donnees_cv.manq.grad.ixt_manq(:,ixf)=[];
-            donnees_cv.manq.grad.ixt_dispo=data.manq.grad.ixt_dispo;
-            ixf=find(data.manq.grad.ixt_dispo(1,:)==tir);
-            donnees_cv.manq.grad.ixt_dispo(:,ixf)=[];
-            donnees_cv.manq.grad.ix_dispo=data.manq.grad.ix_dispo;
-            ixf=find(data.manq.grad.ix_dispo(:,1)==tir);
-            donnees_cv.manq.grad.ix_dispo(:,ixf)=[];
-            donnees_cv.manq.grad.ix_manq=data.manq.grad.ix_manq;
-            ixf=find(data.manq.grad.ix_manq(:,1)==tir);
-            donnees_cv.manq.grad.ix_manq(:,ixf)=[];
-            donnees_cv.manq.grad.masque=data.manq.eval.masque;
-            donnees_cv.manq.grad.masque(tir,:)=[];
-            donnees_cv.manq.grad.on=any(donnees_cv.manq.grad.masque);
-            donnees_cv.manq.grad.nb=data.manq.eval.nb-nb_manq_grad;
         end
     else
         if data.in.pres_grad
@@ -99,8 +54,6 @@ for tir=1:data.in.nb_val
             pos=tir;
         end
     end
-
-
     
     cv_fc=data.build.fc;
     cv_fc(pos,:)=[];
@@ -111,6 +64,18 @@ for tir=1:data.in.nb_val
     cv_tirages(tir,:)=[];
     cv_tiragesn=data.in.tiragesn;
     cv_tiragesn(tir,:)=[];
+    cv_eval=data.in.eval;
+    if data.manq.eval.on||data.manq.grad.on
+        cv_eval(tir)=[];
+        if data.in.pres_grad
+            cv_grad=data.in.grad;
+            cv_grad(tir,:)=[];
+        else
+            cv_grad=[];
+        end
+        ret_manq=examen_in_data(cv_tirages,cv_eval,cv_grad);
+        donnees_cv.manq=ret_manq;
+    end
     %si factorisation
     if ~aff_warning; warning off all;end
     switch data.build.fact_rcc

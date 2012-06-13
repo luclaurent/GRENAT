@@ -100,15 +100,11 @@ tirages=gene_doe(doe);
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
 
-grad(2)=NaN;
-grad(6)=NaN;
-grad(3)=NaN;
-eval(1)=NaN;
-eval(2)=NaN;
-eval(3)=NaN;
-eval(5)=NaN;
-grad(5)=NaN;
-grad(4)=NaN;
+%grad(2)=NaN;
+%%grad(6)=NaN;
+%grad(3)=NaN;
+%eval(1)=NaN;
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

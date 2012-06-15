@@ -1,7 +1,7 @@
 %% fonction assurant la construction du Krigeage à gradients indirect
 %% L. LAURENT -- 18/04/2012 -- laurent@lmt.ens-cachan.fr
 
-function ret=meta_inkrg(tirages,eval,grad,meta)
+function ret=meta_inkrg(tirages,eval,grad,meta,manq)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -59,7 +59,7 @@ manq_grad=false;
 if nargin==5
     manq_eval=manq.eval.on;
     manq_grad=manq.grad.on;
-    pres_grad=~manq.grad.all&&manq.grad.on;
+    pres_grad=(~manq.grad.all&&manq.grad.on)||(pres_grad&&~manq.grad.on);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,10 +112,10 @@ if manq_eval
     y=y(manq.eval.ix_dispo);
 end
 
-if pres_grad
-    %supression gradient(s) manquant(s)
+if pres_grad    
     tmp=gradn';
     der=tmp(:);
+    %supression gradient(s) manquant(s)
     if manq_grad
         der=der(manq.grad.ixt_dispo_line);
     end

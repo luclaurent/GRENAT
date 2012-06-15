@@ -18,37 +18,37 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu';
+fct='schwefel';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
 %%Definition de l'espace de conception
-[doe]=init_doe(fct,doe.dim_pb,esp);
+[doe]=init_doe(fct,doe.dim_pb,esp); 
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=50;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS';
+doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=15;
+doe.nb_samples=25;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 30];
+data.para.long=[10^-3 50];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
-data.rbf='matern32';
-data.type='CKRG';
+data.rbf='sexp';
+data.type='GRBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -57,10 +57,10 @@ data.deg=1;
 
 meta=init_meta(data);
 
-meta.para.estim=false;
+meta.para.estim=true;
 meta.cv=true;
-meta.norm=false;
-meta.recond=false;
+meta.norm=true;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
 meta.para.val=1/sqrt(2);%2;
@@ -69,7 +69,7 @@ meta.para.aniso=true;
 meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
-meta.para.aff_plot_algo=true;
+meta.para.aff_plot_algo=false;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_lcb=0.5;
 
@@ -154,7 +154,7 @@ if aff.ic.on
 end
 
 %fonction de reference
-aff.newfig=false;
+aff.newfig=true;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
@@ -162,11 +162,11 @@ aff.pts=true;
     aff.grad_meta=false;
 aff.titre='Fonction de reference';
 if aff.on
-    figure
-    subplot(2,2,1)
+    %figure
+    %subplot(2,2,1)
     affichage(grid_XY,Z,tirages,eval,grad,aff);
     aff.titre='';
-    subplot(2,2,2)
+    %subplot(2,2,2)
     affichage(grid_XY,K,tirages,eval,grad,aff);
     
     aff.titre='Fonction de reference';
@@ -175,11 +175,11 @@ if aff.on
     aff.grad_eval=true;
     aff.grad_meta=true;
     aff.contour2=true;
-    subplot(2,2,3)
+    %subplot(2,2,3)
     affichage(grid_XY,Z,tirages,eval,grad,aff);
     aff.titre='';
     aff.color='r';
-    subplot(2,2,4)
+    %subplot(2,2,4)
     affichage(grid_XY,K,tirages,eval,grad,aff);
     aff.titre=[];
 end

@@ -9,6 +9,7 @@ if nargin==0
 end
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%
+addpath([doss '/lightspeed']); %%debug possible
 addpath([doss '/doe/LHS']);
 addpath([doss '/doe/IHS']);
 addpath([doss '/meta/dace']);

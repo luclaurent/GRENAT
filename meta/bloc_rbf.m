@@ -25,7 +25,7 @@ end
 mod_estim=false;
 if nargin==4
     if strcmp(type,'etud');type_CV=type;end
-    if strcmp(type,'estim');type_CV=type;mod_estim=true;;end
+    if strcmp(type,'estim');type_CV=type;mod_estim=true;end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,8 +109,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %conditionnement de la matrice de correlation
 if nargin==2   %en phase de construction
-    ret.cond=condest(KK);
-    fprintf('Conditionnement R: %4.2e\n',ret.cond)
+    ret.build.cond=condest(KK);
+    fprintf('Conditionnement R: %4.2e\n',ret.build.cond)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

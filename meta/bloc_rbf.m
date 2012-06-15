@@ -68,6 +68,18 @@ if data.in.pres_grad
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %Matrice de complete
     KK=[KK KKa;KKat KKi];
+    %si donnees manquantes
+    if data.manq.eval.on
+        KK(data.manq.eval.ix_manq,:)=[];
+        KK(:,data.manq.eval.ix_manq)=[];
+    end
+    
+    %si donnees manquantes
+    if data.manq.grad.on
+        rep_ev=data.in.nb_val-data.manq.eval.nb;
+        KK(rep_ev+data.manq.grad.ixt_manq_line,:)=[];
+        KK(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
+    end
     
 else
     %matrice de RBF classique par matrice triangulaire inferieure
@@ -85,6 +97,11 @@ else
     end
     %Construction matrice complete
     KK=KK+KK'+eye(data.in.nb_val);
+    %si donnees manquantes
+    if data.manq.eval.on
+        KK(data.manq.eval.ix_manq,:)=[];
+        KK(:,data.manq.eval.ix_manq)=[];
+    end
 end
 
 

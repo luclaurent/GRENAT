@@ -5,7 +5,7 @@
 %%L. LAURENT      luc.laurent@ens-cachan.fr
 %% 15/03/2010 modif le 12/04/2010 puis le 15/01/2012
 
-function ret=meta_rbf(tirages,eval,grad,meta)
+function ret=meta_rbf(tirages,eval,grad,meta,manq)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -45,7 +45,14 @@ nb_var=size(tirages,2);
 
 %test presence des gradients
 pres_grad=~isempty(grad);
-
+%test données manquantes
+manq_eval=false;
+manq_grad=false;
+if nargin==5
+    manq_eval=manq.eval.on;
+    manq_grad=manq.grad.on;
+    pres_grad=(~manq.grad.all&&manq.grad.on)||(pres_grad&&~manq.grad.on);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +60,7 @@ pres_grad=~isempty(grad);
 if meta.norm
     disp('Normalisation');
     %normalisation des donnees
-    [evaln,infos_e]=norm_denorm(eval,'norm');
+    [evaln,infos_e]=norm_denorm(eval,'norm',manq);
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     std_e=infos_e.std;moy_e=infos_e.moy;
     std_t=infos_t.std;moy_t=infos_t.moy;
@@ -93,11 +100,20 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluations et gradients aux points echantillonnes
 y=evaln;
+%suppression reponse(s) manquantes
+if manq_eval
+    y=y(manq.eval.ix_dispo);
+end
 if pres_grad
     tmp=gradn';
     der=tmp(:);
+    %supression gradient(s) manquant(s)
+    if manq_grad
+        der=der(manq.grad.ixt_dispo_line);
+    end
     y=vertcat(y,der);
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
@@ -112,6 +128,9 @@ ret.in.nb_var=nb_var;
 ret.in.nb_val=nb_val;
 ret.build.y=y;
 ret.norm=rbf.norm;
+if nargin==5
+    ret.manq=manq;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de MSE par Cross-Validation

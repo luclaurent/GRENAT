@@ -74,7 +74,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Radial Basis Functions (RBF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            rbf=meta_rbf(tirages,eval,[],meta);
+            rbf=meta_rbf(tirages,eval,[],meta,bilan_manq);
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -83,7 +83,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Gradient-based Radial Basis Functions (GRBF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            rbf=meta_rbf(tirages,eval,grad_in,meta);
+            rbf=meta_rbf(tirages,eval,grad_in,meta,bilan_manq);
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -92,7 +92,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            inkrg=meta_inkrg(tirages,eval,grad,meta); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
+            inkrg=meta_inkrg(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
             out_meta=inkrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%

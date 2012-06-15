@@ -39,7 +39,7 @@ aff.nbele=50;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=25;
+doe.nb_samples=4;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -57,7 +57,7 @@ data.deg=1;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=true;
 meta.norm=true;
 meta.recond=true;
@@ -103,7 +103,7 @@ tirages=gene_doe(doe);
 %grad(2)=NaN;
 %%grad(6)=NaN;
 %grad(3)=NaN;
-%eval(1)=NaN;
+eval(1)=NaN;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

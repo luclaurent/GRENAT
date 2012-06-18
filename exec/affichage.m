@@ -246,8 +246,8 @@ if aff.on
                 [C,h]=contourf(grille_X,grille_Y,Z.Z);
                 text_handle = clabel(C,h);
                 set(text_handle,'BackgroundColor',[1 1 .6],...
-                    'Edgecolor',[.7 .7 .7])
-                set(h,'LineWidth',2)
+                    'Edgecolor',[.7 .7 .7]);
+                set(h,'LineWidth',2);
                 %affichage des gradients
                 if aff.grad_meta
                     hold on;
@@ -367,7 +367,6 @@ if aff.on
             hold on
             if aff.grad_eval;val_trac=grad;else val_trac=eval;end
             %affichage points ou toutes les infos sont connues
-            val_trac(liste_grad_manq)
             plot(tirages(liste_pts_ok),val_trac(liste_pts_ok),...
                 '.','MarkerEdgeColor','k',...
                 'MarkerFaceColor','k',...

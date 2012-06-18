@@ -29,7 +29,7 @@ doe.dim_pb=2;
 esp=[];
 
 %%Definition de l'espace de conception
-[doe]=init_doe(fct,doe.dim_pb,esp); 
+[doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
 aff.nbele=50;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
@@ -158,8 +158,8 @@ aff.newfig=true;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
-    aff.grad_eval=false;
-    aff.grad_meta=false;
+aff.grad_eval=false;
+aff.grad_meta=false;
 aff.titre='Fonction de reference';
 if aff.on
     %figure
@@ -215,7 +215,6 @@ end
 
 %calcul et affichage des criteres d'erreur
 err=crit_err(K.Z,Z.Z,approx);
-
 fprintf('=====================================\n');
 fprintf('=====================================\n');
 

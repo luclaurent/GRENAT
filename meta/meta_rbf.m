@@ -52,6 +52,11 @@ if nargin==5
     manq_eval=manq.eval.on;
     manq_grad=manq.grad.on;
     pres_grad=(~manq.grad.all&&manq.grad.on)||(pres_grad&&~manq.grad.on);
+else
+    manq.eval.on=false;
+    manq.grad.on=false;
+    manq_eval=manq.eval.on;
+    manq_grad=manq.grad.on;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,9 +133,8 @@ ret.in.nb_var=nb_var;
 ret.in.nb_val=nb_val;
 ret.build.y=y;
 ret.norm=rbf.norm;
-if nargin==5
-    ret.manq=manq;
-end
+ret.manq=manq;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de MSE par Cross-Validation

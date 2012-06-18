@@ -13,6 +13,11 @@ nb_var=size(tirages,2);
 %nombre de points initiaux
 nb_val_init=size(tirages,1);
 
+if ~nargin==5
+    manq.eval.on=false;
+    manq.grad.on=false;
+end  
+
 %en fonction du type de donnees en entree
 if ~isstruct(grad)
     fprintf('>> Valeur pas developpement de Taylor (manu):')

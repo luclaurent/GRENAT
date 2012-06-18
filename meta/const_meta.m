@@ -101,7 +101,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            inrbf=meta_inrbf(tirages,eval,grad,meta); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
+            inrbf=meta_inrbf(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
             out_meta=inrbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%

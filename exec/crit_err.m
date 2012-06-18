@@ -27,7 +27,7 @@ else
     err=[];
 end
 
-if isfield(donnees,'cv')
+if isfield(donnees,'cv')&&~isempty(donnees.cv)
     fprintf('\n>>>Validation croisee<<<\n');
     if isfield(donnees.cv.perso,'bm');fprintf('Biais moyen=%g\n',donnees.cv.perso.bm);err.cv.bm=donnees.cv.perso.bm;end
     if isfield(donnees.cv,'eloor');fprintf('MSE (eval)=%g\n',donnees.cv.eloor);err.cv.eloor=donnees.cv.eloor;end

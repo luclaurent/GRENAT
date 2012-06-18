@@ -54,6 +54,19 @@ if donnees.in.pres_grad
     %rci
     %Matrice de correlation du Cokrigeage
     rcc=[rc rca;rca' rci];
+    %si donnees manquantes
+    if donnees.manq.eval.on
+        rcc(donnees.manq.eval.ix_manq,:)=[];
+        rcc(:,donnees.manq.eval.ix_manq)=[];
+    end
+    
+    %si donnees manquantes
+    if donnees.manq.grad.on
+        rep_ev=donnees.in.nb_val-donnees.manq.eval.nb;
+        rcc(rep_ev+donnees.manq.grad.ixt_manq_line,:)=[];
+        rcc(:,rep_ev+donnees.manq.grad.ixt_manq_line)=[];
+    end
+    
 else
     %matrice de correlation du Krigeage par matrice triangulaire inf�rieure
     %sans diagonale
@@ -68,9 +81,13 @@ else
         % matrice de krigeage
         rcc(ind,ii)=ev;
     end
-    %Construction matrice compl�te
+    %Construction matrice complete
     rcc=rcc+rcc'+eye(donnees.in.nb_val);
-    
+    %si donnees manquantes
+    if donnees.manq.eval.on
+        rcc(donnees.manq.eval.ix_manq,:)=[];
+        rcc(:,donnees.manq.eval.ix_manq)=[];
+    end
 end
 %passage en sparse
 rcc=sparse(rcc);
@@ -105,7 +122,7 @@ end
 switch fact_rcc
     case 'QR'
         [Q,R]=qr(rcc);
-        ret.build.Qrcc=Q;
+         ret.build.Qrcc=Q;
         ret.build.Rrcc=R;
         ret.build.yQ=Q'*donnees.build.y;
         ret.build.fcQ=Q'*donnees.build.fc;

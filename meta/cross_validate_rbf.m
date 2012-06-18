@@ -131,11 +131,37 @@ if mod_etud||mod_debug||mod_final
     cv_gz=zeros(data.in.nb_val,data.in.nb_var);
     %parcours des echantillons
     for tir=1:data.in.nb_val
-        %determination des position des grandeurs a supprimer
-        if data.in.pres_grad
-            pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+        %chargement des donnees
+        donnees_cv=data;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %positions des element a retirer
+        %on retire ce qui est disponible
+        if data.manq.eval.on||data.manq.grad.on
+            if data.manq.eval.on
+                if data.manq.eval.masque(tir)
+                    pos=[];
+                else
+                    pos=parcours_ev;
+                    parcours_ev=parcours_ev+1;
+                end
+            end
+            if data.manq.grad.on&&data.in.pres_grad
+                nb_manq_grad=sum(data.manq.grad.masque(tir,:));
+                if nb_manq_grad==data.in.nb_var
+                    pos=pos;
+                else
+                    pos=[pos data.in.nb_val-data.manq.eval.nb+(parcours_gr:(parcours_gr+data.in.nb_var-nb_manq_grad-1))];
+                    parcours_gr=parcours_gr+data.in.nb_var;
+                end
+                
+            end
         else
-            pos=tir;
+            if data.in.pres_grad
+                pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+            else
+                pos=tir;
+            end
         end
         
         %retrait des grandeurs
@@ -154,8 +180,19 @@ if mod_etud||mod_debug||mod_final
         cv_tirages(tir,:)=[];
         cv_tiragesn=data.in.tiragesn;
         cv_tiragesn(tir,:)=[];
-        %chargement des donnees
-        donnees_cv=data;
+        cv_eval=data.in.eval;
+        if data.manq.eval.on||data.manq.grad.on
+            cv_eval(tir)=[];
+            if data.in.pres_grad
+                cv_grad=data.in.grad;
+                cv_grad(tir,:)=[];
+            else
+                cv_grad=[];
+            end
+            ret_manq=examen_in_data(cv_tirages,cv_eval,cv_grad);
+            donnees_cv.manq=ret_manq;
+        end
+        
         donnees_cv.build.fct=data_block.build.fct;
         donnees_cv.build.para=data_block.build.para;
         donnees_cv.build.w=cv_w;
@@ -170,7 +207,7 @@ if mod_etud||mod_debug||mod_final
         cv_gz(tir,:)=GZ;
         cv_var(tir)=variance;
     end
-   
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Calcul des erreurs
@@ -281,7 +318,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Trace du graph QQ
 if meta.cv_aff&&mod_final
-        %normalisation 
+    %normalisation
     cv_zn=norm_denorm(cv_z,'norm',infos);
     opt.newfig=false;
     figure

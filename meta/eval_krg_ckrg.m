@@ -62,7 +62,7 @@ if donnees.in.pres_grad
         [ev,dev,ddev]=feval(donnees.build.corr,dist,donnees.build.para.val);
         rr(1:nb_val)=ev;
         rr(nb_val+1:tail_matvec)=-reshape(dev',1,nb_val*nb_var);
-
+        
         %derivee du vecteur de correlation aux points d'evaluations
         jr(1:nb_val,:)=dev;  % a debugger
         
@@ -73,17 +73,44 @@ if donnees.in.pres_grad
         end
         jr(nb_val+1:tail_matvec,:)=-mat_der';
         
+        %si donnees manquantes
+        if donnees.manq.eval.on
+            rr(donnees.manq.eval.ix_manq)=[];
+            jr(donnees.manq.eval.ix_manq,:)=[];
+        end
+        
+        %si donnees manquantes
+        if donnees.manq.grad.on
+            rep_ev=donnees.in.nb_val-donnees.manq.eval.nb;
+            rr(rep_ev+donnees.manq.grad.ixt_manq_line)=[];
+            jr(rep_ev+donnees.manq.grad.ixt_manq_line,:)=[];
+        end
+        
     else %sinon
         %a reecrire //!!\\
         [ev,dev]=feval(donnees.build.corr,dist,donnees.build.para.val);
         rr(1:nb_val)=ev;
-        rr(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+        rr(nb_val+1:tail_matvec)=-reshape(dev',1,nb_val*nb_var);
+        %si donnees manquantes
+        if donnees.manq.eval.on
+            rr(donnees.manq.eval.ix_manq)=[];
+            %si donnees manquantes
+            if donnees.manq.grad.on
+                rep_ev=donnees.in.nb_val-donnees.manq.eval.nb;
+                rr(rep_ev+donnees.manq.grad.ixt_manq_line)=[];
+            end
+        end
     end
 else
     if calc_grad  %si calcul des gradients
         [rr,jr]=feval(donnees.build.corr,dist,donnees.build.para.val);
     else %sinon
         rr=feval(donnees.build.corr,dist,donnees.build.para.val);
+    end
+    %si donnees manquantes
+    if donnees.manq.eval.on
+        rr(donnees.manq.eval.ix_manq)=[];
+        jr(donnees.manq.eval.ix_manq,:)=[];
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,7 +137,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
-%2004)
+%2004 / Marcelet 2008 / Chauvet 1999)
 if nargout >=3
     if ~aff_warning;warning off all;end
     %en fonction de la factorisation
@@ -118,29 +145,25 @@ if nargout >=3
         case 'QR'
             Qrr=donnees.build.Qrcc'*rr;
             u=donnees.build.fctR*Qrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+(rr\donnees.build.Rrcc)*Qrr+...
-                u'*donnees.build.fctCfc*u);            
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Rrcc)*Qrr+...
+                u'*donnees.build.fctCfc*u);
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctU*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+(rr\donnees.build.Urcc)*Lrr+...
-                u'*donnees.build.fctCfc*u);  
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Urcc)*Lrr+...
+                u'*donnees.build.fctCfc*u);
         case 'LL'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctL*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+(rr\donnees.build.Lrcc)*Lrr+...
-                u'*donnees.build.fctCfc*u);  
-        otherwise            
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Lrcc)*Lrr+...
+                u'*donnees.build.fctCfc*u);
+        otherwise
             rcrr=donnees.build.rcc \ rr;
             u=donnees.build.fct*rcrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
-                ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) + rr'*rcrr);
+                ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
     end
-%     if ~aff_warning;warning on all;end
-%     rcrr=donnees.build.rcc \ rr;
-%     u=donnees.build.fct*rcrr-ff';
-%     variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
-%         ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
+    if ~aff_warning;warning on all;end
     
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

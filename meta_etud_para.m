@@ -38,7 +38,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
@@ -46,7 +46,7 @@ data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='sexp';
-data.rbf='matern32';
+data.rbf='sexp';
 data.type='GRBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
@@ -58,7 +58,7 @@ meta=init_meta(data);
 
 meta.para.estim=false;
 meta.cv=true;
-meta.norm=true;
+meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='fmincon';
@@ -104,8 +104,8 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %etude CV 
 paramin=10^-4;
-paramax=5;
-nbpara=100;
+paramax=30;
+nbpara=500;
 valpara=linspace(paramin,paramax,nbpara);
 meta.cv_aff=false;
 for ii=1:nbpara
@@ -114,8 +114,9 @@ fprintf('%4.2f ',ii/nbpara*100)
 meta.para.val=valpara(ii);
 [approx]=const_meta(tirages,eval,grad,meta);
 [K]=eval_meta(grid_XY,approx,meta);
-rippa(ii)=approx.cv.rippa;
-perso(ii)=approx.cv.perso;
+cond_mat(ii)=approx.build.cond;
+rippa(ii)=approx.cv.eloot;
+perso(ii)=approx.cv.perso.eloot;
 %calcul et affichage des criteres d'erreur
 err=crit_err(K.Z,Z.Z,approx);
 emse(ii)=err.emse;
@@ -135,6 +136,18 @@ semilogy(valpara,r2,'-.r')
 semilogy(valpara,r2adj,'-.k')
 legend('Rippa/Bomp (CV)','Moi (CV)','MSE','RMSE','eq3','r2','R2adj');
 
+PP=[valpara' cond_mat'];
+save('1D_para_cond.dat','PP','-ascii')
+PP=[valpara' rippa'];
+save('1D_para_rippa.dat','PP','-ascii')
+PP=[valpara' perso'];
+save('1D_para_perso.dat','PP','-ascii')
+PP=[valpara' rmse'];
+save('1D_para_rmse.dat','PP','-ascii')
+PP=[valpara' eq3'];
+save('1D_para_eq3.dat','PP','-ascii')
+PP=[valpara' r2'];
+save('1D_para_r2.dat','PP','-ascii')
 
 
 

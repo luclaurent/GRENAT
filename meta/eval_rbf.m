@@ -69,20 +69,35 @@ if data.in.pres_grad
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         P=[ev' reshape(dev',1,nb_val*nb_var)];
-               
+        
         %P=[ev;dda(:)];
         %intercallage derivees premieres et secondes
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
         %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
-        %derivee du vecteur de correlation aux points d'evaluations        
+        %derivee du vecteur de correlation aux points d'evaluations
         dP=[dev' reshape(ddev,nb_var,[])];
-                
+        %si donnees manquantes
+        if data.manq.eval.on
+            P(data.manq.eval.ix_manq)=[];
+            dP(:,data.manq.eval.ix_manq)=[];
+        end
+        
+        %si donnees manquantes
+        if data.manq.grad.on
+            rep_ev=data.in.nb_val-data.manq.eval.nb;
+            P(rep_ev+data.manq.grad.ixt_manq_line)=[];
+            dP(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
+        end
     else %sinon
         %evaluation de la fonction de base radiale
         [ev,dev]=feval(data.build.fct,dist,data.build.para.val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         P=[ev' reshape(dev',1,nb_val*nb_var)];
+        %si donnees manquantes
+        if data.manq.eval.on
+            P(data.manq.eval.ix_manq)=[];
+        end
     end
 else
     if calc_grad  %si calcul des gradients
@@ -97,15 +112,15 @@ end
 Z=data.build.w'*P';
 
 if calc_grad
-    GZ=dP*data.build.w; 
+    GZ=dP*data.build.w;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (Bompard 2011,Sobester 2005, Gibbs 1997)
 if nargout >=3
     if ~aff_warning;warning off all;end
-        variance=1-P*(data.build.KK\P');
-    if ~aff_warning;warning on all;end    
+    variance=1-P*(data.build.KK\P');
+    if ~aff_warning;warning on all;end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

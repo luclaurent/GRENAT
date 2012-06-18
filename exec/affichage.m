@@ -2,7 +2,7 @@
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
 
 
-function status=affichage(grille,Z,tirages,eval,grad,aff)
+function affichage(grille,Z,tirages,eval,grad,aff)
 
 %% Parametres d'entree:
 %       - grille: grille de trace (meshgrid en 2D) sous la forme
@@ -45,6 +45,8 @@ function status=affichage(grille,Z,tirages,eval,grad,aff)
 %           * aff.scale: mise a  l'echelle gradients
 %           * aff.doss: dossier de sauvegarde figures
 %           * aff.pas: pas de la grille d'affichage
+%           * aff.bilan_manq: définition données manquantes pour tracé
+%           ajusté
 
 %traitement des cas 1D ou 2D
 esp1d=false;esp2d=false;
@@ -70,8 +72,38 @@ if isfield(Z,'GZ')&&esp2d
     GR1=Z.GZ(:,:,1);
     GR2=Z.GZ(:,:,2);
 end
-%GR1
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%recherche et tri des manques d'information
+liste_pts_ok=1:size(tirages,1);
+liste_eval_manq=[];
+liste_grad_manq=[];
+liste_both_manq=[];
+if isfield(aff,'bilan_manq')
+    if aff.bilan_manq.eval.on
+        liste_eval_manq=unique(aff.bilan_manq.eval.ix_manq(:));
+        for ii=1:numel(liste_eval_manq)
+            ix=find(liste_pts_ok==liste_eval_manq(ii));
+            liste_pts_ok(ix)=[];
+        end
+    end
+    if aff.bilan_manq.grad.on
+        liste_grad_manq=unique(aff.bilan_manq.grad.ix_manq(:,1));
+        for ii=1:numel(liste_grad_manq)
+            ix=find(liste_pts_ok==liste_grad_manq(ii));
+            liste_pts_ok(ix)=[];
+        end
+    end
+    if aff.bilan_manq.eval.on|| aff.bilan_manq.grad.on
+        liste_both_manq=intersect(liste_eval_manq,liste_grad_manq);
+        for ii=1:numel(liste_both_manq)
+            ix=find(liste_eval_manq==liste_both_manq(ii));
+            liste_eval_manq(ix)=[];
+            ix=find(liste_grad_manq==liste_both_manq(ii));
+            liste_grad_manq(ix)=[];
+        end
+    end
+end
 
 %Affichage actif
 if aff.on
@@ -97,7 +129,7 @@ if aff.on
                 ngr(ii)=norm([GR1(ii) GR2(ii)],2);
             end
             %recherche du maxi de la norme du gradient
-            nm=[max(max(ngr))];
+            nm=max(max(ngr));
             
             n1=max(max(abs(GR1)));
             n2=max(max(abs(GR2)));
@@ -142,11 +174,31 @@ if aff.on
                     surf(grille_X,grille_Y,Z.Z)
                 end
             end
-            %affichage des points d'evaluations
+            
             if aff.pts
                 hold on
-                plot3(tirages(:,1),tirages(:,2),eval,'.','MarkerEdgeColor','k',...
+                
+                %affichage des points d'evaluations
+                %affichage points ou toutes les infos sont connues
+                plot3(tirages(liste_pts_ok,1),tirages(liste_pts_ok,2),eval(liste_pts_ok),...
+                    '.','MarkerEdgeColor','k',...
                     'MarkerFaceColor','k',...
+                    'MarkerSize',15);
+                %affichage points il manque une/des reponse(s)
+                plot3(tirages(liste_eval_manq,1),tirages(liste_eval_manq,2),eval(liste_eval_manq),...
+                    'rs','MarkerEdgeColor','r',...
+                    'MarkerFaceColor','r',...
+                    'MarkerSize',7);
+                %affichage points il manque un/des gradient(s)
+                plot3(tirages(liste_grad_manq,1),tirages(liste_grad_manq,2),eval(liste_grad_manq),...
+                    'v','MarkerEdgeColor','g',...
+                    'MarkerFaceColor','g',...
+                    'MarkerSize',15);
+                %affichage points il manque un/des gradient(s) et un/des
+                %reponse(s) au même point
+                plot3(tirages(liste_both_manq,1),tirages(liste_both_manq,2),eval(liste_both_manq),...
+                    'd','MarkerEdgeColor','r',...
+                    'MarkerFaceColor','r',...
                     'MarkerSize',15);
             end
             
@@ -202,21 +254,40 @@ if aff.on
                     %remise a  l'echelle
                     if aff.scale
                         %quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);
-                        quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0);
+                        quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'Color','b','AutoScale','off','MaxHeadSize',0);
                         %axis equal
                         %ncquiverref(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2);
                         %ech(1)*GR1
                         %ech(2)*GR2
                     else
-                        quiver(grille_X,grille_Y,GR1,GR2,'AutoScale','off');
+                        quiver(grille_X,grille_Y,GR1,GR2,'Color','b','AutoScale','off');
                     end
                 end
                 %affichage des points d'evaluation
                 if aff.pts
                     hold on
-                    plot(tirages(:,1),tirages(:,2),'.','MarkerEdgeColor','k',...
+                    %affichage points ou toutes les infos sont connues
+                    plot(tirages(liste_pts_ok,1),tirages(liste_pts_ok,2),...
+                        '.','MarkerEdgeColor','k',...
                         'MarkerFaceColor','k',...
-                        'MarkerSize',15)
+                        'MarkerSize',15);
+                    %affichage points il manque une/des reponse(s)
+                    plot(tirages(liste_eval_manq,1),tirages(liste_eval_manq,2),...
+                        'rs','MarkerEdgeColor','r',...
+                        'MarkerFaceColor','r',...
+                        'MarkerSize',7);
+                    %affichage points il manque un/des gradient(s)
+                    plot(tirages(liste_grad_manq,1),tirages(liste_grad_manq,2),...
+                        'v','MarkerEdgeColor','r',...
+                        'MarkerFaceColor','r',...
+                        'MarkerSize',15);
+                    %affichage points il manque un/des gradient(s) et un/des
+                    %reponse(s) au même point
+                    plot(tirages(liste_both_manq,1),tirages(liste_both_manq,2),...
+                        'd','MarkerEdgeColor','r',...
+                        'MarkerFaceColor','r',...
+                        'MarkerSize',15);
+                    
                 end
                 %affichage des gradients
                 if aff.grad_eval
@@ -225,12 +296,12 @@ if aff.on
                     if aff.scale
                         quiver(tirages(:,1),tirages(:,2),...
                             ech(1)*grad(:,1),ech(2)*grad(:,2),...
-                            'LineWidth',2,'AutoScale','off','MaxHeadSize',0);
+                            'Color','g','LineWidth',2,'AutoScale','off','MaxHeadSize',0);
                         
                     else
                         quiver(tirages(:,1),tirages(:,2),...
                             grad(:,1),grad(:,2),...
-                            'LineWidth',2,'AutoScale','off');
+                            'Color','g','LineWidth',2,'AutoScale','off');
                     end
                     
                 end
@@ -294,15 +365,29 @@ if aff.on
         %affichage des points d'evaluation
         if aff.pts
             hold on
-            if aff.grad_eval
-                plot(tirages,grad,'.','MarkerEdgeColor','k',...
-                    'MarkerFaceColor','k',...
-                    'MarkerSize',15)
-            else
-                plot(tirages,eval,'.','MarkerEdgeColor','k',...
-                    'MarkerFaceColor','k',...
-                    'MarkerSize',15)
-            end
+            if aff.grad_eval;val_trac=grad;else val_trac=eval;end
+            %affichage points ou toutes les infos sont connues
+            val_trac(liste_grad_manq)
+            plot(tirages(liste_pts_ok),val_trac(liste_pts_ok),...
+                '.','MarkerEdgeColor','k',...
+                'MarkerFaceColor','k',...
+                'MarkerSize',15);
+            %affichage points il manque une/des reponse(s)
+            plot(tirages(liste_eval_manq),val_trac(liste_eval_manq),...
+                'rs','MarkerEdgeColor','r',...
+                'MarkerFaceColor','r',...
+                'MarkerSize',7);
+            %affichage points il manque un/des gradient(s)
+            plot(tirages(liste_grad_manq),val_trac(liste_grad_manq),...
+                'v','MarkerEdgeColor','r',...
+                'MarkerFaceColor','r',...
+                'MarkerSize',7);
+            %affichage points il manque un/des gradient(s) et un/des
+            %reponse(s) au même point
+            plot(tirages(liste_both_manq),val_trac(liste_both_manq),...
+                'd','MarkerEdgeColor','r',...
+                'MarkerFaceColor','r',...
+                'MarkerSize',7);
         end
         title(aff.titre);
         xlabel(aff.xlabel);

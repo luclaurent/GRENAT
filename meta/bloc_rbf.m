@@ -25,7 +25,7 @@ end
 mod_estim=false;
 if nargin==4
     if strcmp(type,'etud');type_CV=type;end
-    if strcmp(type,'estim');type_CV=type;mod_estim=true;;end
+    if strcmp(type,'estim');type_CV=type;mod_estim=true;end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,6 +68,18 @@ if data.in.pres_grad
     KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
     %Matrice de complete
     KK=[KK KKa;KKat KKi];
+    %si donnees manquantes
+    if data.manq.eval.on
+        KK(data.manq.eval.ix_manq,:)=[];
+        KK(:,data.manq.eval.ix_manq)=[];
+    end
+    
+    %si donnees manquantes
+    if data.manq.grad.on
+        rep_ev=data.in.nb_val-data.manq.eval.nb;
+        KK(rep_ev+data.manq.grad.ixt_manq_line,:)=[];
+        KK(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
+    end
     
 else
     %matrice de RBF classique par matrice triangulaire inferieure
@@ -85,6 +97,11 @@ else
     end
     %Construction matrice complete
     KK=KK+KK'+eye(data.in.nb_val);
+    %si donnees manquantes
+    if data.manq.eval.on
+        KK(data.manq.eval.ix_manq,:)=[];
+        KK(:,data.manq.eval.ix_manq)=[];
+    end
 end
 
 
@@ -109,8 +126,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %conditionnement de la matrice de correlation
 if nargin==2   %en phase de construction
-    ret.cond=condest(KK);
-    fprintf('Conditionnement R: %4.2e\n',ret.cond)
+    ret.build.cond=condest(KK);
+    fprintf('Conditionnement R: %4.2e\n',ret.build.cond)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

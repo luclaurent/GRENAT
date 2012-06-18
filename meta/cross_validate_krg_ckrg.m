@@ -14,6 +14,8 @@ cv_gz=zeros(data.in.nb_val,data.in.nb_var);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%On parcourt l'ensemble des tirages
+parcours_ev=1;
+parcours_gr=1;
 for tir=1:data.in.nb_val
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,11 +27,34 @@ for tir=1:data.in.nb_val
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %positions des element a retirer
-    if data.in.pres_grad
-        pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+    %on retire ce qui est disponible
+    if data.manq.eval.on||data.manq.grad.on
+        if data.manq.eval.on
+            if data.manq.eval.masque(tir)
+                pos=[];
+            else
+                pos=parcours_ev;
+                parcours_ev=parcours_ev+1;
+            end
+        end
+        if data.manq.grad.on&&data.in.pres_grad
+            nb_manq_grad=sum(data.manq.grad.masque(tir,:));
+            if nb_manq_grad==data.in.nb_var
+                pos=pos;
+            else
+                pos=[pos data.in.nb_val-data.manq.eval.nb+(parcours_gr:(parcours_gr+data.in.nb_var-nb_manq_grad-1))];
+                parcours_gr=parcours_gr+data.in.nb_var;
+            end
+            
+        end
     else
-        pos=tir;
+        if data.in.pres_grad
+            pos=[tir data.in.nb_val+(tir-1)*data.in.nb_var+(1:data.in.nb_var)];
+        else
+            pos=tir;
+        end
     end
+    
     cv_fc=data.build.fc;
     cv_fc(pos,:)=[];
     cv_fct=cv_fc';
@@ -39,6 +64,18 @@ for tir=1:data.in.nb_val
     cv_tirages(tir,:)=[];
     cv_tiragesn=data.in.tiragesn;
     cv_tiragesn(tir,:)=[];
+    cv_eval=data.in.eval;
+    if data.manq.eval.on||data.manq.grad.on
+        cv_eval(tir)=[];
+        if data.in.pres_grad
+            cv_grad=data.in.grad;
+            cv_grad(tir,:)=[];
+        else
+            cv_grad=[];
+        end
+        ret_manq=examen_in_data(cv_tirages,cv_eval,cv_grad);
+        donnees_cv.manq=ret_manq;
+    end
     %si factorisation
     if ~aff_warning; warning off all;end
     switch data.build.fact_rcc
@@ -64,13 +101,13 @@ for tir=1:data.in.nb_val
             donnees_cv.build.beta=block1\block2;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %calcul du coefficient gamma            
+            %calcul du coefficient gamma
             donnees_cv.build.gamma=Rr\(donnees_cv.build.yQ-donnees_cv.build.fcQ*donnees_cv.build.beta);
             %calcul de la variance de prediction
             sig2=1/size(Qr,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/Rr*Qr')...
                 *(cv_y-cv_fc*donnees_cv.build.beta);
-       % case 'LU'
-       % case 'LL'
+            % case 'LU'
+            % case 'LL'
         otherwise
             donnees_cv.build.fact_rcc='None';
             cv_rcc=data.build.rcc;

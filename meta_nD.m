@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='sexp';
-data.type='InRBF';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -71,6 +71,7 @@ meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
 meta.enrich.para_wei=0.5;
+meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance
@@ -187,7 +188,7 @@ end
 %% affichage des r�ponses sous forme d'un diagramme bar
 %figure;
 %bar([Z.Z(:) K.Z(:)])
-
+disp('ici')
 if doe.dim_pb==1
     figure
     subplot(1,3,1)
@@ -231,6 +232,6 @@ if meta.save
 end
 %extract_nD
 
-%extract_aff_nD
+extract_aff_nD
 
 

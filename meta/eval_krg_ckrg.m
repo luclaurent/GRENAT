@@ -201,7 +201,7 @@ if donnees.enrich.on
     %reponse mini
     eval_min=min(donnees.in.eval);
     %calcul critères enrichissement
-    [ei,wei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
+    [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
 end
 
 %extraction détails
@@ -210,10 +210,11 @@ if nargout==4
     details.Z_sto=Z_sto;
     details.GZ_reg=GZ_reg;
     details.GZ_sto=GZ_sto;
-    if ~isempty(explor);details.explor=explor;end
-    if ~isempty(exploit);details.exploit=exploit;end
-    if ~isempty(ei);details.ei=ei;end
-    if ~isempty(wei);details.wei=wei;end
-    if ~isempty(lcb);details.lcb=lcb;end
+    if ~isempty(explor);details.enrich.explor=explor;end
+    if ~isempty(exploit);details.enrich.exploit=exploit;end
+    if ~isempty(ei);details.enrich.ei=ei;end
+    if ~isempty(wei);details.enrich.wei=wei;end
+    if ~isempty(gei);details.enrich.gei=gei;end
+    if ~isempty(lcb);details.enrich.lcb=lcb;end
 end
 end

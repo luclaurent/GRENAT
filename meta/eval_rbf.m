@@ -5,7 +5,7 @@
 %%L. LAURENT      luc.laurent@ens-cachan.fr
 %% 15/03/2010 reprise le 20/01/2012
 
-function [Z,GZ,variance]=eval_rbf(U,data,tir_part)
+function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)
 % affichages warning ou non
 aff_warning=false;
 %Declaration des variables
@@ -29,7 +29,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 X=U(:)';    %correction (changement type d'element)
-dim_x=size(X,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
@@ -51,7 +50,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %vecteur de correlation aux points d'evaluations et vecteur de correlation
 %derive
-P=zeros(tail_matvec,1);
 if calc_grad
     dP=zeros(tail_matvec,nb_var);
 end
@@ -137,6 +135,27 @@ if data.norm.on&&~isempty(data.norm.moy_tirages)
     end
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%calcul critère enrichissement
+explor=[];
+exploit=[];
+wei=[];
+ei=[];
+if data.enrich.on
+    %reponse mini
+    eval_min=min(data.in.eval);
+    %calcul critères enrichissement
+    [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,data.enrich);
+end
 
-
+%extraction détails
+if nargout==4
+    if ~isempty(explor);details.enrich.explor=explor;end
+    if ~isempty(exploit);details.enrich.exploit=exploit;end
+    if ~isempty(ei);details.enrich.ei=ei;end
+    if ~isempty(wei);details.enrich.wei=wei;end
+    if ~isempty(gei);details.enrich.gei=gei;end
+    if ~isempty(lcb);details.enrich.lcb=lcb;end
+end
 end

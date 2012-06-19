@@ -91,9 +91,15 @@ for num_meta=1:numel(donnees_const)
             %% Evaluation du metamodele de RBF/HBRBF
             for jj=1:nb_ev_pts
                 
-                [rep(jj),G,var_rep(jj)]=eval_rbf(ev_pts(jj,:),meta_donnee);
+                [rep(jj),G,var_rep(jj),det]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
-                
+                if isfield(det,'enrich')
+                    if isfield(det.enrich,'wei');wei(jj)=det.enrich.wei;end
+                    if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
+                    if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end
+                    if isfield(det.enrich,'exploit');exploit(jj)=det.enrich.exploit;end
+                    if isfield(det.enrich,'explor');explor(jj)=det.enrich.explor;end
+                end
             end
             %% verification interpolation
             if meta.verif
@@ -137,11 +143,13 @@ for num_meta=1:numel(donnees_const)
                 Z_reg(jj)=det.Z_reg;
                 GR_reg(jj,:)=det.GZ_reg;
                 GR_sto(jj,:)=det.GZ_sto;
-                if isfield(det,'wei');wei(jj)=det.wei;end
-                if isfield(det,'ei');ei(jj)=det.ei;end
-                if isfield(det,'lcb');lcb(jj)=det.lcb;end
-                if isfield(det,'exploit');exploit(jj)=det.exploit;end
-                if isfield(det,'explor');explor(jj)=det.explor;end
+                if isfield(det,'enrich')
+                    if isfield(det.enrich,'wei');wei(jj)=det.enrich.wei;end
+                    if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
+                    if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end
+                    if isfield(det.enrich,'exploit');exploit(jj)=det.enrich.exploit;end
+                    if isfield(det.enrich,'explor');explor(jj)=det.enrich.explor;end
+                end
             end
             
             
@@ -313,6 +321,7 @@ for num_meta=1:numel(donnees_const)
         Z{num_meta}.GZ=GZ;
         if ~isempty('var_rep');Z{num_meta}.var=var_rep;end
         if exist('wei','var');Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+        if exist('gei','var');Z{num_meta}.gei=reshape(gei,dim_ev(1),dim_ev(2));end
         if exist('ei','var');Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end
         if exist('lcb','var');Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
         if exist('explor','var');Z{num_meta}.explor=reshape(explor,dim_ev(1),dim_ev(2));end

@@ -1,5 +1,4 @@
 close all
-
 clear all
 save_pdf=false;
 nb_pts=80;
@@ -86,4 +85,3 @@ ylabel('x_2')
 zlabel('GZ2')
 %colorbar
 if save_pdf;print(gcf, '-dpdf', '-r300', ['fig/dfct_' fct '2_mesh.pdf']);end
-

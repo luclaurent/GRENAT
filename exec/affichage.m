@@ -246,8 +246,8 @@ if aff.on
                 [C,h]=contourf(grille_X,grille_Y,Z.Z);
                 text_handle = clabel(C,h);
                 set(text_handle,'BackgroundColor',[1 1 .6],...
-                    'Edgecolor',[.7 .7 .7])
-                set(h,'LineWidth',2)
+                    'Edgecolor',[.7 .7 .7]);
+                set(h,'LineWidth',2);
                 %affichage des gradients
                 if aff.grad_meta
                     hold on;

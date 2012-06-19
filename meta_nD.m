@@ -104,8 +104,8 @@ tirages=gene_doe(doe);
 %grad(2)=NaN;
 %%grad(6)=NaN;
 %grad(3)=NaN;
-eval(1)=NaN;
-grad(3)=NaN;
+%eval(1)=NaN;
+%grad(3)=NaN;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -155,7 +155,7 @@ if aff.ic.on
 end
 
 %fonction de reference
-aff.newfig=true;
+aff.newfig=false;
 aff.d3=true;
 aff.contour3=true;
 aff.pts=true;
@@ -163,11 +163,11 @@ aff.grad_eval=false;
 aff.grad_meta=false;
 aff.titre='Fonction de reference';
 if aff.on
-    %figure
-    %subplot(2,2,1)
+    figure
+    subplot(2,2,1)
     affichage(grid_XY,Z,tirages,eval,grad,aff);
     aff.titre='';
-    %subplot(2,2,2)
+    subplot(2,2,2)
     affichage(grid_XY,K,tirages,eval,grad,aff);
     
     aff.titre='Fonction de reference';
@@ -176,11 +176,11 @@ if aff.on
     aff.grad_eval=true;
     aff.grad_meta=true;
     aff.contour2=true;
-    %subplot(2,2,3)
+    subplot(2,2,3)
     affichage(grid_XY,Z,tirages,eval,grad,aff);
     aff.titre='';
     aff.color='r';
-    %subplot(2,2,4)
+    subplot(2,2,4)
     affichage(grid_XY,K,tirages,eval,grad,aff);
     aff.titre=[];
 end
@@ -231,6 +231,6 @@ if meta.save
 end
 %extract_nD
 
-extract_aff_nD
+%extract_aff_nD
 
 

@@ -11,16 +11,16 @@ end
 %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
 %2011/Sobester 2005...)
 %exploration (densite probabilite)
-densprob=1/sqrt(2*pi)*exp(-0.5*u^2); %normcdf
 if variance~=0
+    densprob=1/sqrt(2*pi)*exp(-0.5*u^2); %normcdf
     explor=variance*densprob;
 else
     explor=0;
 end
 
 %exploitation (fonction repartition loi normale centree reduite)
-fctrep=0.5*(1+erf(u/sqrt(2))); %cdf
 if variance~=0
+    fctrep=0.5*(1+erf(u/sqrt(2))); %cdf
     exploit=diff_ei*fctrep;
 else
     exploit=0;

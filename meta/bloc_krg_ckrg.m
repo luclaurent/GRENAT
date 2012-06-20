@@ -185,6 +185,7 @@ switch fact_rcc
         block1=((donnees.build.fct/rcc)*donnees.build.fc);
         block2=((donnees.build.fct/rcc)*donnees.build.y);
         ret.build.beta=block1\block2;
+        ret.build.fctCfc=(donnees.build.fc\rcc)/donnees.build.fct;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma

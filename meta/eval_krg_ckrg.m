@@ -145,23 +145,22 @@ if nargout >=3
         case 'QR'
             Qrr=donnees.build.Qrcc'*rr;
             u=donnees.build.fctR*Qrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Rrcc)*Qrr+...
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
                 u'*donnees.build.fctCfc*u);
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctU*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Urcc)*Lrr+...
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
                 u'*donnees.build.fctCfc*u);
         case 'LL'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctL*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)-(rr\donnees.build.Lrcc)*Lrr+...
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Lrcc)*Lrr+...
                 u'*donnees.build.fctCfc*u);
         otherwise
             rcrr=donnees.build.rcc \ rr;
             u=donnees.build.fct*rcrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
-                ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
+            variance=donnees.build.sig2*(ones(dim_x,1)+u'*donnees.build.fctCfc*u - rr'*rcrr);
     end
     if ~aff_warning;warning on all;end
     

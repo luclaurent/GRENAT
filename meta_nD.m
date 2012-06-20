@@ -188,8 +188,8 @@ end
 %% affichage des r�ponses sous forme d'un diagramme bar
 %figure;
 %bar([Z.Z(:) K.Z(:)])
-disp('ici')
-if doe.dim_pb==1
+aff_act=false;
+if doe.dim_pb==1&&aff_act
     figure
     subplot(1,3,1)
     plot(grid_XY,Z.Z(:),'r','LineWidth',2)
@@ -231,6 +231,6 @@ if meta.save
 end
 %extract_nD
 
-%extract_aff_nD
+extract_aff_nD
 
 

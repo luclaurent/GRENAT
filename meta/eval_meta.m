@@ -135,7 +135,12 @@ for num_meta=1:numel(donnees_const)
             %stockage specifique
             Z_sto=rep;Z_reg=rep;
             GR_reg=GR;GR_sto=GR;
-            
+            wei=rep;
+            ei=rep;
+            gei=zeros(nb_ev_pts,max(meta.enrich.para_gei)+1);
+            lcb=rep;
+            exploit=rep;
+            explor=rep;
             %% Evaluation du metamodele de Krigeage/CoKrigeage
             for jj=1:nb_ev_pts
                 [rep(jj),G,var_rep(jj),det]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
@@ -147,7 +152,10 @@ for num_meta=1:numel(donnees_const)
                 if isfield(det,'enrich')
                     if isfield(det.enrich,'wei');wei(jj)=det.enrich.wei;end
                     if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
-                    if isfield(det.enrich,'gei');gei(jj)=det.enrich.gei;end
+                    size(gei)
+                    gei(jj,:)
+                    det.enrich.gei
+                    if isfield(det.enrich,'gei');gei(jj,:)=det.enrich.gei;end
                     if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end
                     if isfield(det.enrich,'exploit');exploit(jj)=det.enrich.exploit;end
                     if isfield(det.enrich,'explor');explor(jj)=det.enrich.explor;end

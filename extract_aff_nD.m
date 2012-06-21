@@ -31,35 +31,36 @@ if doe.dim_pb==1&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'InKRG')||strcmp(me
     plot(tirages,grad,'ok')
     plot(grid_XY,Z.GZ,'k')
     legend('G approx','G STO','G REG','sample grad','grad')
-   
+    
     if isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K,'gei')
-    figure
-    subplot(5,1,1)
-    plot(grid_XY,K.Z,'r')
-    hold on
-    plot(tirages,eval,'ok')
-    plot(grid_XY,Z.Z,'k')
-    legend('approx','sample resp.','eval')
-    hold off
-    subplot(5,1,2)
-    plot(grid_XY,K.var,'b')
-    hold on
-    plot(grid_XY,K.lcb,'--k')
-    legend('var','LCB')
-    hold off
-       subplot(5,1,3)
-    plot(grid_XY,K.ei,'r')
-    hold on
-    plot(grid_XY,K.explor,'--r')
-    plot(grid_XY,K.exploit,'--b')
-    hold off
-    legend('EI','Explor','Exploit')
-    subplot(5,1,4)
-    plot(grid_XY,K.wei,'b')
-     legend('WEI')
-     subplot(5,1,5)
-    plot(grid_XY,K.gei,'b')
-     legend('GEI')
+        figure
+        subplot(5,1,1)
+        plot(grid_XY,K.Z,'r')
+        hold on
+        plot(tirages,eval,'ok')
+        plot(grid_XY,Z.Z,'k')
+        legend('approx','sample resp.','eval')
+        hold off
+        subplot(5,1,2)
+        [~,H1,H2]=plotyy(grid_XY,K.var,grid_XY,K.lcb);
+        set(H1,'Color','b')
+        set(H2,'LineStyle','--','Color','k')
+        legend('var','LCB')
+        hold off
+        subplot(5,1,3)                
+        plot(grid_XY,K.explor,'--r')
+        hold on
+        plot(grid_XY,K.exploit,'--b')
+        hold off
+        legend('Explor','Exploit')
+        subplot(5,1,4)
+        [~,H1,H2]=plotyy(grid_XY,K.wei,grid_XY,K.ei);
+        set(H1,'Color','b')
+        set(H2,'LineStyle','--','Color','k')
+        legend('EI','WEI')
+        subplot(5,1,5)
+        plot(grid_XY,K.gei,'b')
+        legend('GEI')
     end
 elseif doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     %%

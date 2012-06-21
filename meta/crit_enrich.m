@@ -32,13 +32,14 @@ EI=exploit+explor;
 %critere Lower Confidence Bound (Cox et John 1997)
 LCB=Z-enrich.para_lcb*variance;
 %critère Generalized Expected Improvement (Schonlau 1997)
-g=enrich.para_gei;
+g=max(enrich.para_gei);
 t=zeros(1,g);
+GEI=zeros(1,g+1);
 if variance~=0
     if g>=0
         t(1)=densprob;
     end
-    if g>=1
+    if g>=1 
         t(2)=-fctrep;
     end
     if g>=2
@@ -47,13 +48,15 @@ if variance~=0
         end
     end
     %calcul des differents termes du calcul de GEI
-    k_ite=0:g;
-    coef=(-1).^k_ite;
-    varg=variance^g;
-    comb=factorial(g)./(factorial(k_ite).*factorial(g-k_ite)); %plus rapide que nchoosek (10 fois plus rapide)
-    ueg=u.^(k_ite);
-    %calcul de la valeur du critere GEI
-    GEI=varg*sum(coef.*comb.*ueg.*t);
-else
-    GEI.val=0;
+    for cg=0:g
+        k_ite=0:cg;
+        coef=(-1).^k_ite;
+        varg=variance^cg;
+        comb=factorial(cg)./(factorial(k_ite).*factorial(cg-k_ite)); %plus rapide que nchoosek (10 fois plus rapide)
+        ueg=u.^(k_ite);
+        %calcul de la valeur du critere GEI
+        GEI(cg+1)=varg*sum(coef.*comb.*ueg.*t([1:cg+1]));
+        GEI
+    end    
 end
+

@@ -39,7 +39,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=3;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='sexp';
-data.type='KRG';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;

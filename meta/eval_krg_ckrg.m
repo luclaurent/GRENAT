@@ -4,7 +4,7 @@
 function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
-%Déclaration des variables
+%Dï¿½claration des variables
 nb_val=donnees.in.nb_val;
 nb_var=donnees.in.nb_var;
 
@@ -40,7 +40,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
-%définition des dimensions des matrices/vecteurs selon KRG et CKRG
+%dï¿½finition des dimensions des matrices/vecteurs selon KRG et CKRG
 if donnees.in.pres_grad
     tail_matvec=nb_val*(nb_var+1);
 else
@@ -191,19 +191,19 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul critère enrichissement
+%calcul critere enrichissement
 explor=[];
 exploit=[];
 wei=[];
 ei=[];
-if donnees.enrich.on
+if donnees.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(donnees.in.eval);
-    %calcul critères enrichissement
+    %calcul critï¿½res enrichissement
     [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
 end
 
-%extraction détails
+%extraction dï¿½tails
 if nargout==4
     details.Z_reg=Z_reg;
     details.Z_sto=Z_sto;

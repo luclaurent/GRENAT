@@ -21,7 +21,7 @@ if doe.dim_pb==1&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'InKRG')||strcmp(me
     plot(grid_XY,K.Z_reg,'--b')
     plot(tirages,eval,'ok')
     plot(grid_XY,Z.Z,'k')
-    legend('approx','STO','REG','sample responses','eval')
+    legend('approx','STO','REG','sample responses','eval','Location','EastOutside')
     hold off
     figure
     plot(grid_XY,K.GZ,'r')
@@ -30,39 +30,55 @@ if doe.dim_pb==1&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'InKRG')||strcmp(me
     plot(grid_XY,K.GZ_reg,'--b')
     plot(tirages,grad,'ok')
     plot(grid_XY,Z.GZ,'k')
-    legend('G approx','G STO','G REG','sample grad','grad')
-    
-    if isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K,'gei')
-        figure
-        subplot(5,1,1)
-        plot(grid_XY,K.Z,'r')
+    legend('G approx','G STO','G REG','sample grad','grad','Location','EastOutside')
+end
+if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K,'gei')
+    figure
+    subplot(5,1,1)
+    plot(grid_XY,K.Z,'r')
+    hold on
+    plot(tirages,eval,'ok')
+    plot(grid_XY,Z.Z,'k')
+    legend('approx','sample resp.','eval','Location','EastOutside')
+    hold off
+    subplot(5,1,2)
+    [~,H1,H2]=plotyy(grid_XY,K.var,grid_XY,K.lcb);
+    set(H1,'Color','b')
+    set(H2,'LineStyle','--','Color','k')
+    legend('var','LCB','Location','EastOutside')
+    hold off
+    subplot(5,1,3)
+    plot(grid_XY,K.explor,'r')
+    hold on
+    plot(grid_XY,K.exploit,'b')
+    hold off
+    legend('Explor','Exploit','Location','EastOutside')
+    subplot(5,1,4)
+    [~,H1,H2]=plotyy(grid_XY,K.wei,grid_XY,K.ei);
+    set(H1,'Color','b')
+    set(H2,'LineStyle','--','Color','k')
+    legend('EI','WEI','Location','EastOutside')
+    subplot(5,1,5)
+    clear txt_legend
+    txt_legend{1}='GEI 0';
+    type={'b','r','k','--b','--r','--k','.b','.r','.k'};
+    for ii=1:size(K.gei,3)
+        data=K.gei(:,:,ii);
+        Dmax=max(data(:));
+        Dmin=min(data(:));
+        a=1/(Dmax-Dmin);
+        b=-Dmin*a;
+        plot(grid_XY,a*data+b,type{ii})
+        if ii>1
+            txt_legend={txt_legend{1:end},['GEI ' num2str(ii-1)]};
+        end
         hold on
-        plot(tirages,eval,'ok')
-        plot(grid_XY,Z.Z,'k')
-        legend('approx','sample resp.','eval')
-        hold off
-        subplot(5,1,2)
-        [~,H1,H2]=plotyy(grid_XY,K.var,grid_XY,K.lcb);
-        set(H1,'Color','b')
-        set(H2,'LineStyle','--','Color','k')
-        legend('var','LCB')
-        hold off
-        subplot(5,1,3)                
-        plot(grid_XY,K.explor,'--r')
-        hold on
-        plot(grid_XY,K.exploit,'--b')
-        hold off
-        legend('Explor','Exploit')
-        subplot(5,1,4)
-        [~,H1,H2]=plotyy(grid_XY,K.wei,grid_XY,K.ei);
-        set(H1,'Color','b')
-        set(H2,'LineStyle','--','Color','k')
-        legend('EI','WEI')
-        subplot(5,1,5)
-        plot(grid_XY,K.gei,'b')
-        legend('GEI')
     end
-elseif doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
+    legend(txt_legend,'Location','EastOutside')
+    title('Données normalisées')
+    hold off
+end
+if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     %%
     figure
     surf(grid_XY(:,:,1),grid_XY(:,:,2),K.var*10^20)

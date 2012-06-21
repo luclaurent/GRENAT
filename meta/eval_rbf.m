@@ -137,19 +137,19 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul critère enrichissement
+%calcul critï¿½re enrichissement
 explor=[];
 exploit=[];
 wei=[];
 ei=[];
-if data.enrich.on
+if data.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(data.in.eval);
-    %calcul critères enrichissement
+    %calcul critï¿½res enrichissement
     [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,data.enrich);
 end
 
-%extraction détails
+%extraction dï¿½tails
 if nargout==4
     if ~isempty(explor);details.enrich.explor=explor;end
     if ~isempty(exploit);details.enrich.exploit=exploit;end

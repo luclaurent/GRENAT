@@ -5,8 +5,7 @@
 
 function [Z]=eval_meta(points,donnees,meta)
 
-fprintf('#########################################\n');
-fprintf('  >>> EVALUATION METAMODELE <<<\n');
+
 [tMesu,tInit]=mesu_time;
 
 %reconditionnement donnees construction
@@ -57,7 +56,10 @@ else
     rep=[];
     GR=[];
 end
-
+if nb_ev_pts>1
+    fprintf('#########################################\n');
+    fprintf('  >>> EVALUATION METAMODELE <<<\n');
+end
 
 %%%%%%% Evaluation de divers metamodeles
 % generation des metamodeles
@@ -88,7 +90,7 @@ for num_meta=1:numel(donnees_const)
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'GRBF','RBF','InRBF'}
-            wei=rep;
+            wei=zeros(nb_ev_pts,numel(meta.enrich.para_wei));
             ei=rep;
             gei=zeros(nb_ev_pts,max(meta.enrich.para_gei)+1);
             lcb=rep;
@@ -141,7 +143,7 @@ for num_meta=1:numel(donnees_const)
             %stockage specifique
             Z_sto=rep;Z_reg=rep;
             GR_reg=GR;GR_sto=GR;
-            wei=rep;
+            wei=zeros(nb_ev_pts,numel(meta.enrich.para_wei));
             ei=rep;
             gei=zeros(nb_ev_pts,max(meta.enrich.para_gei)+1);
             lcb=rep;
@@ -156,7 +158,7 @@ for num_meta=1:numel(donnees_const)
                 GR_reg(jj,:)=det.GZ_reg;
                 GR_sto(jj,:)=det.GZ_sto;
                 if isfield(det,'enrich')
-                    if isfield(det.enrich,'wei');wei(jj)=det.enrich.wei;end
+                    if isfield(det.enrich,'wei');wei(jj,:)=det.enrich.wei;end
                     if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
                     if isfield(det.enrich,'gei');gei(jj,:)=det.enrich.gei;end
                     if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end
@@ -307,7 +309,7 @@ for num_meta=1:numel(donnees_const)
                 end
                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
                 if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
-                if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+                if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
                 if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
                 if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
                 if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
@@ -321,7 +323,7 @@ for num_meta=1:numel(donnees_const)
             end
             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
             if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
-            if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+            if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
             if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
             if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
             if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
@@ -336,8 +338,8 @@ for num_meta=1:numel(donnees_const)
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;
         if ~isempty('var_rep');Z{num_meta}.var=var_rep;end
-        if exist('wei','var');Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2));end
-        if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
+        if exist('wei','var');Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
+        if exist('gei','var');Z{num_meta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
         if exist('ei','var');Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end
         if exist('lcb','var');Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
         if exist('explor','var');Z{num_meta}.explor=reshape(explor,dim_ev(1),dim_ev(2));end
@@ -350,6 +352,9 @@ for num_meta=1:numel(donnees_const)
         end
     end
 end
-fprintf('++ Evaluation en %i points\n',nb_ev_pts);
-mesu_time(tMesu,tInit);
-fprintf('#########################################\n');
+
+if nb_ev_pts>1
+    fprintf('++ Evaluation en %i points\n',nb_ev_pts);
+    mesu_time(tMesu,tInit);
+    fprintf('#########################################\n');
+end

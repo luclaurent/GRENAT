@@ -62,6 +62,7 @@ end
 %enrichissement (evaluation critere)
 meta.enrich.on=true;
 meta.enrich.para_wei=0.5;
+meta.enrich.para_gei=1;
 meta.enrich.para_lcb=0.5;
 
 %Verification interpolation

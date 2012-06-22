@@ -14,6 +14,9 @@ switch enrich.type
         %Weighted Expected Improvement (Krigeage/RBF)
     case 'WEI'
         fun=@(point)ret_WEI(point,approx,meta);
+        %Generalized Expected Improvement (Krigeage/RBF)
+    case 'GEI'
+        fun=@(point)ret_GEI(point,approx,meta);
         %Lower Confidence Bound (Krigeage/RBF)
     case 'LCB'
         fun=@(point)ret_LCB(point,approx,meta);
@@ -46,7 +49,7 @@ end
 if ~enrich.aff_iter_cmd
     options_ga=gaoptimset(options_ga,'Display', 'off');
 end
-    %% Minimisation par algo genetique
+%% Minimisation par algo genetique
 switch enrich.algo
     case 'ga'
         [pts,fval,exitflag,output] = ga(fun,nb_var,[],[],[],[],lb,ub,[],options_ga);
@@ -72,6 +75,12 @@ end
 function WEI=ret_WEI(X,approx,meta)
 ZZ=eval_meta(X,approx,meta);
 WEI=-ZZ.wei;
+end
+
+%fonction extraction GEI
+function GEI=ret_GEI(X,approx,meta)
+ZZ=eval_meta(X,approx,meta);
+GEI=-ZZ.gei(:,:,meta.enrich.para_gei);
 end
 
 %fonction extraction LCB

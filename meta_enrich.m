@@ -31,7 +31,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=gene_nbele(doe.dim_pb);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
@@ -55,10 +55,13 @@ meta=init_meta(data);
 
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS'};%,'CV_MSE'};
-enrich.val_crit={2};%,10^-4};
-enrich.type='EI';
+enrich.val_crit={8};%,10^-4};
+enrich.type='GEI';
 enrich.on=true;
 enrich.algo='ga';
+meta.enrich.para_wei=0.5;
+meta.enrich.para_gei=5;
+meta.enrich.para_lcb=0.5;
 enrich.aff_iter_graph=false;
 enrich.aff_iter_cmd=false;
 

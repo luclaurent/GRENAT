@@ -100,7 +100,7 @@ while ~crit_atteint&&enrich.on
         %en fonction du type d'enrichissement
         switch enrich.type
             % en se basant sur l'Expected Improvement
-            case {'EI','VAR','WEI','LCB'}
+            case {'EI','GEI','VAR','WEI','LCB'}
                 new_tirages=ajout_tir_meta(meta,approx,enrich);
                 %en ajoutant des points dans le tirages
             case {'DOE'}

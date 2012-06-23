@@ -59,6 +59,7 @@ enrich.val_crit={8};%,10^-4};
 enrich.type='GEI';
 enrich.on=true;
 enrich.algo='ga';
+enrich.aff_iter_cmd=true;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;

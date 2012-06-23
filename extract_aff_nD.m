@@ -46,11 +46,11 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
     legend('approx','sample resp.','eval','Location','EastOutside')
     hold off
     subplot(5,1,2)
-    [~,H1,H2]=plotyy(grid_XY,K.var,grid_XY,K.lcb);
+    [AX,H1,H2]=plotyy(grid_XY,K.var,grid_XY,K.lcb);
     set(H1,'Color','b')
     set(H2,'LineStyle','--','Color','k')
     legend('var','LCB','Location','EastOutside')
-xlim([xmin xmax])
+      set(AX,'xlim',[xmin xmax])
     hold off
     subplot(5,1,3)
     plot(grid_XY,K.explor,'r')

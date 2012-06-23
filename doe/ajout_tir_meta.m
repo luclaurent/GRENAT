@@ -5,6 +5,9 @@
 function [pts,ret_tir_meta]=ajout_tir_meta(meta,approx,enrich)
 
 global doe
+%Definition manuelle de la population initiale par LHS (Ga)
+popInitManu=true;
+nbPopInit=50;
 
 %en fonction du type de nouveau point reclamé
 switch enrich.type
@@ -49,6 +52,12 @@ end
 if ~enrich.aff_iter_cmd
     options_ga=gaoptimset(options_ga,'Display', 'off');
 end
+%specification manuelle de la population initiale (Ga)
+if popInitManu
+    tir_pop=lhsu(lb,ub,nbPopInit);
+    options_ga=gaoptimset(options_ga,'InitialPopulation',tir_pop);
+end
+
 %% Minimisation par algo genetique
 switch enrich.algo
     case 'ga'

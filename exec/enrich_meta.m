@@ -82,9 +82,51 @@ while ~crit_atteint&&enrich.on
                     mse_ok=true;
                     fprintf(' ====> MSE (CV) OK: %0.7f (max: %0.7f) --- %4.2f%s <====\n',msep,crit{it_type},depass,char(37))
                 end
-                
                 %sauvegarde valeur critère
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} msep];
+                % controle en convergence de réponse et/ou de localisation
+            case {'CONV_REP','CONV_LOC'}
+                %recherche du minimum de la fonction approchée
+                [Zap_min,X]=rech_min_meta();
+                %valeur cible
+                Z_cible=enrich.Zmin;
+                X_cible=enrich.Xmin;
+                switch type{it_type}
+                    case 'CONV_REP'
+                        %Calcul du critère
+                        if Z_cible~=0
+                            conv_rep=abs((Zap_min-Z_cible)/Z_cible);
+                        else
+                            conv_rep=abs(Zap_min-Z_cible);
+                        end
+                        depass=(conv_rep-crit{it_type})/crit{it_type};
+                        % vérification convergence
+                        if conv_rep<=crit{it_type}
+                            conv_rep_ok=false;
+                            fprintf(' ====> Convergence vers le minimum (REP): %0.7f (max: %0.7f) --- + %4.2f%s <====\n',conv_rep,crit{it_type},depass,char(37))
+                        else
+                            conv_rep_ok=true;
+                            fprintf(' ====> Convergence vers le minimum (REP) OK: %0.7f (max: %0.7f) --- %4.2f%s <====\n',conv_rep,crit{it_type},depass,char(37))
+                        end
+                        %sauvegarde valeur critère
+                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_rep];
+                    case 'CONV_LOC'
+                        %Calcul du critère
+                        ec=(X-X_cible).^2;
+                        dist=sum(ec(:));
+                        conv_loc=dist;
+                        depass=(conv_loc-crit{it_type})/crit{it_type};
+                        % vérification convergence
+                        if conv_loc<=crit{it_type}
+                            conv_rep_ok=false;
+                            fprintf(' ====> Convergence vers le minimum (LOC): %0.7f (max: %0.7f) --- + %4.2f%s <====\n',conv_loc,crit{it_type},depass,char(37))
+                        else
+                            conv_rep_ok=true;
+                            fprintf(' ====> Convergence vers le minimum (LOC) OK: %0.7f (max: %0.7f) --- %4.2f%s <====\n',conv_loc,crit{it_type},depass,char(37))
+                        end
+                        %sauvegarde valeur critère
+                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_loc];
+                end
             otherwise
                 fprintf('_______________________________\n')
                 fprintf('>>>> Pas d''enrichissement <<<<\n')
@@ -94,16 +136,18 @@ while ~crit_atteint&&enrich.on
     
     %test: si un des crtières est atteint si c'est pas le cas alors on génère
     %un nouveau point de calcul
-    crit_atteint=mse_ok&&pts_ok;crit_atteint=~crit_atteint;
+    crit_atteint=conv_rep_ok&&conv_loc_ok&&mse_ok&&pts_ok;crit_atteint=~crit_atteint;
     
     if ~crit_atteint
         %en fonction du type d'enrichissement
         switch enrich.type
             % en se basant sur l'Expected Improvement
             case {'EI','GEI','VAR','WEI','LCB'}
+                fprintf(' >> Enrichissement par metamodele, critere: %s\n',enrich.type)
                 new_tirages=ajout_tir_meta(meta,approx,enrich);
                 %en ajoutant des points dans le tirages
             case {'DOE'}
+                fprintf(' >> Enrichissement du tirage\n')
                 new_tirages=ajout_tir_doe(old_tirages);
             otherwise
                 fprintf(' >> Mode d''enrichissement non défini <<\n');

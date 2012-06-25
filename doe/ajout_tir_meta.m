@@ -8,6 +8,8 @@ global doe
 %Definition manuelle de la population initiale par LHS (Ga)
 popInitManu=true;
 nbPopInit=50;
+%critere arret minimisation
+crit_opti=10^-6;
 
 %en fonction du type de nouveau point reclamé
 switch enrich.type
@@ -32,15 +34,17 @@ lb=doe.Xmin;ub=doe.Xmax;
 %nombre parametres
 nb_var=numel(doe.Xmin);
 
-
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
 options_ga = gaoptimset(...
     'Display', 'iter',...        %affichage evolution
-    'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+    'OutputFcn','',...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'UseParallel','always',...
     'PopInitRange',[lb(:)';ub(:)'],...    %zone de définition de la population initiale
-    'PlotFcns','');
+    'PlotFcns','',...
+    'TolFun',crit_opti,...
+    'StallGenLimit',20);
+
 %{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,@gaplotexpectation,...
 %@gaplotmaxconstr,@gaplotrange,@gaplotselection,@gaplotscorediversity,@gaplotscores,@gaplotstopping});
 %affichage des iterations
@@ -50,12 +54,20 @@ else
     figure
 end
 if ~enrich.aff_iter_cmd
-    options_ga=gaoptimset(options_ga,'Display', 'off');
+    options_ga=gaoptimset(options_ga,'Display', 'final');
 end
+
+%affichage informations interations algo (sous forme de plot
+if enrich.aff_plot_algo
+    options_ga=gaoptimset(options_ga,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
+        @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
+        @gaplotscorediversity,@gaplotscores,@gaplotstopping});
+end
+
 %specification manuelle de la population initiale (Ga)
 if popInitManu
     tir_pop=lhsu(lb,ub,nbPopInit);
-    options_ga=gaoptimset(options_ga,'InitialPopulation',tir_pop);
+    options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
 end
 
 %% Minimisation par algo genetique

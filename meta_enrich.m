@@ -54,8 +54,8 @@ data.grad=true;
 meta=init_meta(data);
 
 %parametrage enrichissement
-enrich.crit_type={'NB_PTS'};%,'CV_MSE'};
-enrich.val_crit={8};%,10^-4};
+enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE'};% CV_MSE CONV_REP CONV_LOC
+enrich.val_crit={8,10^6,10^6,10^4};%,10^-4};
 enrich.type='GEI';
 enrich.on=true;
 enrich.algo='ga';
@@ -64,7 +64,8 @@ meta.enrich.para_wei=0.5;
 meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;
 enrich.aff_iter_graph=false;
-enrich.aff_iter_cmd=false;
+enrich.aff_iter_cmd=true;
+enrich.aff_plot_algo=false;
 
 
 %affichage de l'intervalle de confiance

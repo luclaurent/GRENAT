@@ -75,7 +75,7 @@ end
 %specification manuelle de la population initiale (Ga)
 if popInitManu
     tir_pop=lhsu(lb,ub,nbPopInit);
-    options_ga=gaoptimset(options_ga,'InitialPopulation',tir_pop);
+    options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
 end
 
 

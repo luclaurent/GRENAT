@@ -7,7 +7,7 @@
 
 function [p,dp,infos]=fct_AHE(xx,dim)
 
-% pour démonstration
+% pour dï¿½monstration
 dem=false;
 if nargin==0
     pas=50;
@@ -47,6 +47,8 @@ else
     if nargin==2
         nbvar=dim;
     end
+    p=[];
+    dp=[];
 end
 %sortie informations sur la fonction
 if nargout==3
@@ -56,7 +58,7 @@ if nargout==3
     infos.min_loc.X=zeros(1,nbvar);
 end
 
-%démonstration
+%dï¿½monstration
 if nargin==0
     figure
     subplot(1,3,1)

@@ -4,7 +4,7 @@
 %nombruex minimums locaux
 %1 minimum global: x=(0,0,...,0) >> f(x)=0
 
-%domaine d'étude -2<xi<2 (recherche large -15<xi<30)
+%domaine d'ï¿½tude -2<xi<2 (recherche large -15<xi<30)
 
 function [p,dp,infos]=fct_ackley(xx,dim)
 
@@ -13,7 +13,7 @@ b=0.2;
 c=2*pi;
 d=5.7;
 
-% pour démonstration
+% pour demonstration
 dem=false;
 if nargin==0
     pas=50;
@@ -31,7 +31,7 @@ if ~isempty(xx)
         elseif size(xx,1)==2
             xxx=xx(:,2);yyy=xx(:,1);
         else
-            error('Mauvais format variable entrée fct Rastrigin');
+            error('Mauvais format variable entrï¿½e fct Rastrigin');
         end
         norme=sqrt(xxx.^2+yyy.^2);
         ex1=exp(-b*norme/sqrt(2));
@@ -71,7 +71,7 @@ if nargout==3
     infos.min_loc.X=NaN;
 end
 
-%démonstration
+%demonstration
 if nargin==0
     figure
     subplot(1,3,1)

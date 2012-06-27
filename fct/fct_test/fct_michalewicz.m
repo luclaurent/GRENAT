@@ -3,7 +3,7 @@
 
 %minimum global: dependent du nb de variables
 
-%Domaine d'etude de la fonction: 0<xi<pi 
+%Domaine d'etude de la fonction: 0<xi<pi
 
 
 function [p,dp,infos] = fct_michalewicz(xx,dim)
@@ -18,26 +18,26 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-if nbvar==1
-    error('Mauvais format variable entr�e fct Michalewicz');
-else
-    p=0;
-    for iter=1:nbvar
-        p=p+sin(xx(:,:,iter)).*sin(iter*xx(:,:,iter).^2/pi).^20;
-    end
-    p=-p;
-    if nargout==2||dem
-        dp=zeros(size(xx));
+    %Nombre de variables
+    nbvar=size(xx,3);
+    
+    if nbvar==1
+        error('Mauvais format variable entr�e fct Michalewicz');
+    else
+        p=0;
         for iter=1:nbvar
-            dp(:,:,iter)=cos(xx(:,:,iter)).*sin(iter*xx(:,:,iter).^2/pi).^20+...
-                40*iter/pi*xx(:,:,iter).*sin(xx(:,:,iter)).*cos(iter*xx(:,:,iter).^2/pi).^19;            
+            p=p+sin(xx(:,:,iter)).*sin(iter*xx(:,:,iter).^2/pi).^20;
         end
+        p=-p;
+        if nargout==2||dem
+            dp=zeros(size(xx));
+            for iter=1:nbvar
+                dp(:,:,iter)=cos(xx(:,:,iter)).*sin(iter*xx(:,:,iter).^2/pi).^20+...
+                    40*iter/pi*xx(:,:,iter).*sin(xx(:,:,iter)).*cos(iter*xx(:,:,iter).^2/pi).^19;
+            end
+        end
+        dp=-dp;
     end
-    dp=-dp;
-end
 else
     if nargin==2
         nbvar=dim;

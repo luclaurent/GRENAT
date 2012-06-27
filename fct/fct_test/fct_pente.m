@@ -18,29 +18,29 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-%valeur constant
-val=10;
-
-if nbvar==1
+    %Nombre de variables
+    nbvar=size(xx,3);
     
-    p=val*xx(:,dir);
-    if nargout==2
+    %valeur constant
+    val=10;
+    
+    if nbvar==1
         
-        dp(:,:,1)=0*p;
-        dp(:,:,2)=0*p;
-        dp(:,:,dir)=val*ones(size(p));
+        p=val*xx(:,dir);
+        if nargout==2
+            
+            dp(:,:,1)=0*p;
+            dp(:,:,2)=0*p;
+            dp(:,:,dir)=val*ones(size(p));
+        end
+        
+    else
+        p=val*xx(:,:,dir);
+        if nargout==2||dem
+            dp=zeros(size(xx));
+            dp(:,:,dir)=val*ones(size(p));
+        end
     end
-    
-else
-    p=val*xx(:,:,dir);
-    if nargout==2||dem
-        dp=zeros(size(xx));
-        dp(:,:,dir)=val*ones(size(p));
-    end
-end
 else
     nbvar=dim;
     p=[];

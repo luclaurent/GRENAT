@@ -1,4 +1,4 @@
-%Fonction "Mystery" (Sasena 2002) 
+%Fonction "Mystery" (Sasena 2002)
 %L. LAURENT -- 01/04/2011 -- laurent@lmt.ens-cachan.fr
 %modif le 16/09/2011 -- modif �criture input pour passage code � n
 %variables
@@ -29,29 +29,29 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-if size(xx,3)>2
-    error('La fonction Mystery est une fonction de deux variables');
-elseif size(xx,3)==1
-    if size(xx,2)==2
-        xxx=xx(:,1);yyy=xx(:,2);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);yyy=xx(:,1);
+    if size(xx,3)>2
+        error('La fonction Mystery est une fonction de deux variables');
+    elseif size(xx,3)==1
+        if size(xx,2)==2
+            xxx=xx(:,1);yyy=xx(:,2);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);yyy=xx(:,1);
+        else
+            error('Mauvais format variable entree fct Mystery');
+        end
+        
     else
-        error('Mauvais format variable entree fct Mystery');
+        xxx=xx(:,:,1);yyy=xx(:,:,2);
     end
     
-else
-    xxx=xx(:,:,1);yyy=xx(:,:,2);
-end
-
-myst=a+b*(yyy-xxx.^2).^2+(1-xxx).^2+c*(d-yyy).^2+e*sin(f*xxx).*sin(g*xxx.*yyy);
-p=myst;
-if nargout==2||dem
-   dmyst(:,:,1)=-b*4*(yyy-xxx.^2)-2*(1-xxx)+...
-       e*f*cos(f*xxx).*sin(g*xxx.*yyy)+e*g*yyy.*sin(f*xxx).*cos(g*xxx.*yyy);
-   dmyst(:,:,2)=2*b*(yyy-xxx.^2)-4*(d-yyy)+e*g*xxx.*sin(f*xxx).*cos(g*xxx.*yyy);
-end
-dp=dmyst;
+    myst=a+b*(yyy-xxx.^2).^2+(1-xxx).^2+c*(d-yyy).^2+e*sin(f*xxx).*sin(g*xxx.*yyy);
+    p=myst;
+    if nargout==2||dem
+        dmyst(:,:,1)=-b*4*(yyy-xxx.^2)-2*(1-xxx)+...
+            e*f*cos(f*xxx).*sin(g*xxx.*yyy)+e*g*yyy.*sin(f*xxx).*cos(g*xxx.*yyy);
+        dmyst(:,:,2)=2*b*(yyy-xxx.^2)-4*(d-yyy)+e*g*xxx.*sin(f*xxx).*cos(g*xxx.*yyy);
+    end
+    dp=dmyst;
 else
     nbvar=dim;
     p=[];

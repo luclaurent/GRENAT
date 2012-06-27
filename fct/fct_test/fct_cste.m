@@ -14,31 +14,31 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-%valeur constant
-val=10;
-
-if nbvar==1
-    if size(xx,2)==2
-        xxx=xx(:,1);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);
-    else
-        error('Mauvais format variable entr�e fct Constante');
-    end
-    p=val*ones(size(xxx));
-    if nargout==2
-        dp=zeros(size(xx));
-    end
+    %Nombre de variables
+    nbvar=size(xx,3);
     
-else
-    p=val*ones(size(xx(:,:,1)));
-    if nargout==2
-        dp=zeros(size(xx));
+    %valeur constant
+    val=10;
+    
+    if nbvar==1
+        if size(xx,2)==2
+            xxx=xx(:,1);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);
+        else
+            error('Mauvais format variable entr�e fct Constante');
+        end
+        p=val*ones(size(xxx));
+        if nargout==2
+            dp=zeros(size(xx));
+        end
+        
+    else
+        p=val*ones(size(xx(:,:,1)));
+        if nargout==2
+            dp=zeros(size(xx));
+        end
     end
-end
 else
     if nargin==2
         nbvar=dim;
@@ -50,7 +50,7 @@ end
 if nargout==3
     pts=NaN;
     infos.min_glob.X=pts;
-    infos.min_glob.Z=NaN;  
+    infos.min_glob.Z=NaN;
     infos.min_loc.Z=infos.min_glob.Z;
     infos.min_loc.X=pts;
 end

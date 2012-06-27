@@ -1,4 +1,4 @@
-%Fonction de Rosenbrock 
+%Fonction de Rosenbrock
 %modif L. LAURENT -- 12/05/2010 -- ajout calcul gradient
 %modif le 16/09/2011 -- modif ecriture input pour passage code � n
 %variables
@@ -16,44 +16,44 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-if nbvar==1
-    if size(xx,2)==2
-        xxx=xx(:,1);yyy=xx(:,2);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);yyy=xx(:,1);
-    else
-        error('Mauvais format variable entr�e fct Rosenbrock');
-    end
-    p=100.*(yyy-xxx.^2).^2 + (1 - xxx).^2;
-    if nargout==2||dem
-        dp(:,:,1)=-400.*xxx.*(yyy-xxx.^2)-2*(1-xxx);
-        dp(:,:,2)=200*(yyy-xxx.^2);
-    end
-
-else
-    p=0;
-    for iter=1:nbvar-1
-       p=p+100*(xx(:,:,iter).^2-xx(:,:,iter+1)).^2+(xx(:,:,iter)-1).^2;
-    end
+    %Nombre de variables
+    nbvar=size(xx,3);
     
-    if nargout==2||dem
-        for iter=1:nbvar
-            if iter==1
-                dp(:,:,iter)=400*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1);
-            elseif iter==nbvar
-                dp(:,:,iter)=200*(xx(:,:,iter)- xx(:,:,iter-1).^2)+2*(xx(:,:,iter)-1);
-            else
-                dp(:,:,iter)=200*(xx(:,:,iter)-xx(:,:,iter-1).^2)+...
-                    400*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1);
-                
-            end                
+    if nbvar==1
+        if size(xx,2)==2
+            xxx=xx(:,1);yyy=xx(:,2);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);yyy=xx(:,1);
+        else
+            error('Mauvais format variable entr�e fct Rosenbrock');
         end
+        p=100.*(yyy-xxx.^2).^2 + (1 - xxx).^2;
+        if nargout==2||dem
+            dp(:,:,1)=-400.*xxx.*(yyy-xxx.^2)-2*(1-xxx);
+            dp(:,:,2)=200*(yyy-xxx.^2);
+        end
+        
+    else
+        p=0;
+        for iter=1:nbvar-1
+            p=p+100*(xx(:,:,iter).^2-xx(:,:,iter+1)).^2+(xx(:,:,iter)-1).^2;
+        end
+        
+        if nargout==2||dem
+            for iter=1:nbvar
+                if iter==1
+                    dp(:,:,iter)=400*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1);
+                elseif iter==nbvar
+                    dp(:,:,iter)=200*(xx(:,:,iter)- xx(:,:,iter-1).^2)+2*(xx(:,:,iter)-1);
+                else
+                    dp(:,:,iter)=200*(xx(:,:,iter)-xx(:,:,iter-1).^2)+...
+                        400*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1);
+                    
+                end
+            end
+        end
+        
     end
-
-end
 else
     nbvar=dim;
     p=[];

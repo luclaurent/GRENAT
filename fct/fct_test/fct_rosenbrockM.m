@@ -1,4 +1,4 @@
-%Fonction de Rosenbrock Modifiee (Sobester 2005) 
+%Fonction de Rosenbrock Modifiee (Sobester 2005)
 % L. LAURENT -- 16/05/2012 -- ajout calcul gradient
 
 
@@ -15,51 +15,51 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-%coefficients
-a=100;
-c=75;
-d=5;
-
-if nbvar==1
-    if size(xx,2)==2
-        xxx=xx(:,1);yyy=xx(:,2);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);yyy=xx(:,1);
-    else
-        error('Mauvais format variable entr�e fct Rosenbrock');
-    end
-    p=a.*(yyy-xxx.^2).^2 + (1 - xxx).^2 + c * (sin(d*(1-xxx)) + sin(d*(1-yyy)));
-    if nargout==2||dem
-        dp(:,:,1)=-4*a.*xxx.*(yyy-xxx.^2)-2*(1-xxx)-c*d*cos(d(1-xxx));
-        dp(:,:,2)=2*a*(yyy-xxx.^2)-c*d*cos(d(1-yyy));
-    end
-
-else
-    p=0;
-    for iter=1:nbvar-1
-       p=p+a*(xx(:,:,iter).^2-xx(:,:,iter+1)).^2+(xx(:,:,iter)-1).^2+c*sin(d*(1-xx(:,:,iter)));
-    end
+    %Nombre de variables
+    nbvar=size(xx,3);
     
-    if nargout==2||dem
-        for iter=1:nbvar
-            if iter==1
-                dp(:,:,iter)=4*a*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1)+...
-                    c*d*cos(d*(1-xx(:,:,iter)));
-            elseif iter==nbvar
-                dp(:,:,iter)=2*a*(xx(:,:,iter)-xx(:,:,iter-1).^2)+2*(xx(:,:,iter)-1)+...
-                    c*d*cos(d*(1-xx(:,:,iter)));
-            else
-                dp(:,:,iter)=2*a*(xx(:,:,iter)-xx(:,:,iter-1).^2)+...
-                    4*a*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1)+c*d*cos(d*(1-xx(:,:,iter)));
-                
-            end                
+    %coefficients
+    a=100;
+    c=75;
+    d=5;
+    
+    if nbvar==1
+        if size(xx,2)==2
+            xxx=xx(:,1);yyy=xx(:,2);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);yyy=xx(:,1);
+        else
+            error('Mauvais format variable entr�e fct Rosenbrock');
         end
+        p=a.*(yyy-xxx.^2).^2 + (1 - xxx).^2 + c * (sin(d*(1-xxx)) + sin(d*(1-yyy)));
+        if nargout==2||dem
+            dp(:,:,1)=-4*a.*xxx.*(yyy-xxx.^2)-2*(1-xxx)-c*d*cos(d(1-xxx));
+            dp(:,:,2)=2*a*(yyy-xxx.^2)-c*d*cos(d(1-yyy));
+        end
+        
+    else
+        p=0;
+        for iter=1:nbvar-1
+            p=p+a*(xx(:,:,iter).^2-xx(:,:,iter+1)).^2+(xx(:,:,iter)-1).^2+c*sin(d*(1-xx(:,:,iter)));
+        end
+        
+        if nargout==2||dem
+            for iter=1:nbvar
+                if iter==1
+                    dp(:,:,iter)=4*a*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1)+...
+                        c*d*cos(d*(1-xx(:,:,iter)));
+                elseif iter==nbvar
+                    dp(:,:,iter)=2*a*(xx(:,:,iter)-xx(:,:,iter-1).^2)+2*(xx(:,:,iter)-1)+...
+                        c*d*cos(d*(1-xx(:,:,iter)));
+                else
+                    dp(:,:,iter)=2*a*(xx(:,:,iter)-xx(:,:,iter-1).^2)+...
+                        4*a*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1)+c*d*cos(d*(1-xx(:,:,iter)));
+                    
+                end
+            end
+        end
+        
     end
-
-end
 else
     nbvar=dim;
     p=[];

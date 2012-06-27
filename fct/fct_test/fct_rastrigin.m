@@ -23,33 +23,33 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-if nbvar==1
+    %Nombre de variables
+    nbvar=size(xx,3);
     
-    if size(xx,2)==2
-        xxx=xx(:,1);yyy=xx(:,2);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);yyy=xx(:,1);
+    if nbvar==1
+        
+        if size(xx,2)==2
+            xxx=xx(:,1);yyy=xx(:,2);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);yyy=xx(:,1);
+        else
+            error('Mauvais format variable entree fct Rastrigin');
+        end
+        p=coef*2+xxx.^2-coef*cos(2*pi*xxx)+yyy.^2-coef*cos(2*pi*yyy);
+        if nargout==2||dem
+            dp(:,:,1)=2*xxx+2*coef*pi*sin(2*pi*xxx);
+            dp(:,:,2)=2*yyy+2*coef*pi*sin(2*pi*yyy);
+        end
+        
     else
-        error('Mauvais format variable entree fct Rastrigin');
+        cal=xx.^2-coef*cos(2*pi*xx);
+        p=coef*nbvar+sum(cal,3);
+        
+        if nargout==2||dem
+            dp=2*xx+2*coef*pi*sin(2*pi*xx);
+        end
+        
     end
-    p=coef*2+xxx.^2-coef*cos(2*pi*xxx)+yyy.^2-coef*cos(2*pi*yyy);
-    if nargout==2||dem
-        dp(:,:,1)=2*xxx+2*coef*pi*sin(2*pi*xxx);
-        dp(:,:,2)=2*yyy+2*coef*pi*sin(2*pi*yyy);
-    end
-    
-else
-    cal=xx.^2-coef*cos(2*pi*xx);
-    p=coef*nbvar+sum(cal,3);
-    
-    if nargout==2||dem
-        dp=2*xx+2*coef*pi*sin(2*pi*xx);
-    end
-    
-end
 else
     nbvar=dim;
     p=[];

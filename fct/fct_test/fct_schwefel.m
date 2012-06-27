@@ -22,36 +22,36 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-if nbvar==1
-    if nargout==2
+    %Nombre de variables
+    nbvar=size(xx,3);
+    
+    if nbvar==1
+        if nargout==2
+            
+            if size(xx,2)==2
+                xxx=xx(:,1);yyy=xx(:,2);
+            elseif size(xx,1)==2
+                xxx=xx(:,2);yyy=xx(:,1);
+            else
+                error('Mauvais format variable entr�e fct Schwefel');
+            end
+            cal=xxx.*sin(sqrt(abs(xxx)))+yyy.*sin(sqrt(abs(yyy)));
+            p=coef*nbvar-cal;
+            if nargout==2||dem
+                dp(:,:,1)=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
+                dp(:,:,2)=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
+            end
+        end
         
-        if size(xx,2)==2
-            xxx=xx(:,1);yyy=xx(:,2);
-        elseif size(xx,1)==2
-            xxx=xx(:,2);yyy=xx(:,1);
-        else
-            error('Mauvais format variable entr�e fct Schwefel');
-        end
-        cal=xxx.*sin(sqrt(abs(xxx)))+yyy.*sin(sqrt(abs(yyy)));
-        p=coef*nbvar-cal;
+    else
+        cal=xx.*sin(sqrt(abs(xx)));
+        p=coef*nbvar-sum(cal,3);
+        
         if nargout==2||dem
-            dp(:,:,1)=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
-            dp(:,:,2)=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
+            dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
         end
+        
     end
-    
-else
-    cal=xx.*sin(sqrt(abs(xx)));
-    p=coef*nbvar-sum(cal,3);
-    
-    if nargout==2||dem
-        dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
-    end
-    
-end
 else
     nbvar=dim;
     p=[];

@@ -25,28 +25,28 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-if size(xx,3)>2
-    error('La fonction SixHump est une fonction de deux variables');
-elseif size(xx,3)==1
-    if size(xx,2)==2
-        xxx=xx(:,1);yyy=xx(:,2);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);yyy=xx(:,1);
+    if size(xx,3)>2
+        error('La fonction SixHump est une fonction de deux variables');
+    elseif size(xx,3)==1
+        if size(xx,2)==2
+            xxx=xx(:,1);yyy=xx(:,2);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);yyy=xx(:,1);
+        else
+            error('Mauvais format variable entr�e fct SixHump');
+        end
+        
     else
-        error('Mauvais format variable entr�e fct SixHump');
+        xxx=xx(:,:,1);yyy=xx(:,:,2);
     end
     
-else
-    xxx=xx(:,:,1);yyy=xx(:,:,2);
-end
-
-p=(4-2.1*xxx.^2+xxx.^4/3).*xxx.^2+xxx.*yyy+4*(-1+yyy.^2).*yyy.^2;
-
-
-if nargout==2||dem
-    dp(:,:,1)=2*xxx.*(4-2.1*xxx.^2+xxx.^4/3)+xxx.^2.*(-4.2*xxx+4*xxx.^3/3)+yyy;
-    dp(:,:,2)=xxx+8*yyy.*(-1+yyy.^2)+8*yyy.^3;
-end
+    p=(4-2.1*xxx.^2+xxx.^4/3).*xxx.^2+xxx.*yyy+4*(-1+yyy.^2).*yyy.^2;
+    
+    
+    if nargout==2||dem
+        dp(:,:,1)=2*xxx.*(4-2.1*xxx.^2+xxx.^4/3)+xxx.^2.*(-4.2*xxx+4*xxx.^3/3)+yyy;
+        dp(:,:,2)=xxx+8*yyy.*(-1+yyy.^2)+8*yyy.^3;
+    end
 else
     nbvar=dim;
     p=[];

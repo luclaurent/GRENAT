@@ -1,4 +1,4 @@
-%fonction Branin rcos 
+%fonction Branin rcos
 %L. LAURENT -- 13/12/2010 -- luc.laurent@ens-cachan.fr
 %modif le 16/09/2011 -- modif �criture input pour passage code � n
 %variables
@@ -24,28 +24,28 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-if size(xx,3)>2
-    error('La fonction Branin est une fonction de deux variables');
-elseif size(xx,3)==1
-    if size(xx,2)==2
-        xxx=xx(:,1);yyy=xx(:,2);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);yyy=xx(:,1);
+    if size(xx,3)>2
+        error('La fonction Branin est une fonction de deux variables');
+    elseif size(xx,3)==1
+        if size(xx,2)==2
+            xxx=xx(:,1);yyy=xx(:,2);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);yyy=xx(:,1);
+        else
+            error('Mauvais format variable entr�e fct Branin');
+        end
+        
     else
-        error('Mauvais format variable entr�e fct Branin');
+        xxx=xx(:,:,1);yyy=xx(:,:,2);
     end
     
-else
-    xxx=xx(:,:,1);yyy=xx(:,:,2);
-end
-
-
-p = a*(yyy-b*xxx.^2+c*xxx-d).^2+e*(1-f)*cos(xxx)+e;
-
-if nargout==2||dem
-   dp(:,:,1)=2*a*(yyy-b*xxx.^2+c*xxx-d).*(c-2*b*xxx)-e*(1-f)*sin(xxx);
-   dp(:,:,2)=2*a*(yyy-b*xxx.^2+c*xxx-d);
-end
+    
+    p = a*(yyy-b*xxx.^2+c*xxx-d).^2+e*(1-f)*cos(xxx)+e;
+    
+    if nargout==2||dem
+        dp(:,:,1)=2*a*(yyy-b*xxx.^2+c*xxx-d).*(c-2*b*xxx)-e*(1-f)*sin(xxx);
+        dp(:,:,2)=2*a*(yyy-b*xxx.^2+c*xxx-d);
+    end
 else
     if nargin==2
         nbvar=dim;

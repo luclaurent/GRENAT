@@ -13,30 +13,30 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-%Nombre de variables
-nbvar=size(xx,3);
-
-if nbvar==1
-    if size(xx,2)==2
-        xxx=xx(:,1);yyy=xx(:,2);
-    elseif size(xx,1)==2
-        xxx=xx(:,2);yyy=xx(:,1);
+    %Nombre de variables
+    nbvar=size(xx,3);
+    
+    if nbvar==1
+        if size(xx,2)==2
+            xxx=xx(:,1);yyy=xx(:,2);
+        elseif size(xx,1)==2
+            xxx=xx(:,2);yyy=xx(:,1);
+        else
+            error('Mauvais format variable entr�e fct Rosenbrock');
+        end
+        p=zeros(size(xxx));
+        if nargout==2
+            dp(:,:,1)=p;
+            dp(:,:,2)=p;
+        end
+        
     else
-        error('Mauvais format variable entr�e fct Rosenbrock');
+        p=zeros(size(xx(:,:,1)));
+        if nargout==2||dem
+            dp(:,:,1)=p;
+            dp(:,:,2)=p;
+        end
     end
-    p=zeros(size(xxx));
-    if nargout==2
-        dp(:,:,1)=p;
-        dp(:,:,2)=p;
-    end
-
-else
-    p=zeros(size(xx(:,:,1)));
-    if nargout==2||dem
-        dp(:,:,1)=p;
-        dp(:,:,2)=p;
-    end
-end
 else
     nbvar=dim;
     p=[];

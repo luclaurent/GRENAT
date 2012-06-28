@@ -68,6 +68,9 @@ doe.dim_pb=dim;
 %sauvegarde nom fonction
 doe.fct=['fct_' fct];
 
+%recuperation informations fonction (minima locaux et globaux)
+[~,~,doe.infos]=feval(doe.fct,[],dim);
+
 %tri par rapport à un variable
 doe.tri=1;
 

@@ -39,9 +39,14 @@ switch doe.type
         % Latin Hypercube Sampling avec R (et préenrichissement)
     case 'LHS_R'
         tirages=lhsu_R(Xmin,Xmax,prod(nbs(:)));
+        % Improved Hypercube Sampling
+    case 'IHS'
+        tirages=ihs(nbv,nbs,5,17);
+        tirages=tirages./nbs;
         % Improved Hypercube Sampling avec R (et préenrichissement)
     case 'IHS_R'
-        tirages=ihs_R(Xmin,Xmax,prod(nbs(:)));
+        tir=ihs_R(Xmin,Xmax,prod(nbs(:)));
+        tirages=tir(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
         % Latin Hypercube Sampling (à loi uniforme)
     case 'LHS'
         tirages=lhsu(Xmin,Xmax,prod(nbs(:)));

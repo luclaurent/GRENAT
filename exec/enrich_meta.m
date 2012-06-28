@@ -87,10 +87,10 @@ while ~crit_atteint&&enrich.on
                 % controle en convergence de réponse et/ou de localisation
             case {'CONV_REP','CONV_LOC'}
                 %recherche du minimum de la fonction approchée
-                [Zap_min,X]=rech_min_meta();
+                [Zap_min,X]=rech_min_meta(meta,approx,enrich.optim);
                 %valeur cible
-                Z_cible=enrich.Zmin;
-                X_cible=enrich.Xmin;
+                Z_cible=enrich.min_glob.Z;
+                X_cible=enrich.min_glob.X;
                 switch type{it_type}
                     case 'CONV_REP'
                         %Calcul du critère

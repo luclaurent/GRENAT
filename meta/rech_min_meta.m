@@ -67,7 +67,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % declaration de la fonction a minimiser
-fun=@(point)eval_meta(point,approx,meta);
+fun=@(point)ext_rep(point,approx,meta);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %minimisation
@@ -86,3 +86,10 @@ end
 mesu_time(tMesu,tInit);
 fprintf('      ++++++++++++++++++++++++++++++++++++\n');
 end
+
+%fonction extraction reponse metamodele
+function REP=ext_rep(X,approx,meta)
+ZZ=eval_meta(X,approx,meta);
+REP=ZZ.Z;
+end
+

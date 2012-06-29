@@ -55,7 +55,7 @@ meta=init_meta(data);
 
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE'};% CV_MSE CONV_REP CONV_LOC
-enrich.val_crit={8,10^-6,10^-6,10^-4};%,10^-4};
+enrich.val_crit={30,10^-6,10^-6,10^-4};%,10^-4};
 enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
 enrich.type='GEI';
@@ -66,12 +66,12 @@ meta.enrich.para_wei=0.5;
 meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;
 enrich.aff_iter_graph=false;
-enrich.aff_iter_cmd=true;
+enrich.aff_iter_cmd=false;
 enrich.aff_plot_algo=false;
 enrich.optim.algo='ga';
 enrich.optim.popInitManu=false;
 enrich.optim.aff_iter_graph=false;
-enrich.optim.aff_iter_cmd=true;
+enrich.optim.aff_iter_cmd=false;
 enrich.optim.aff_plot_algo=false;
 enrich.optim.crit_opti=10^-6;
 

@@ -1,4 +1,4 @@
-%% Enrichissement avec critères
+%% Enrichissement avec critï¿½res
 %%L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace
@@ -52,6 +52,7 @@ data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);
+meta.para.estim=false;
 
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE'};% CV_MSE CONV_REP CONV_LOC
@@ -62,6 +63,7 @@ enrich.type='GEI';
 enrich.on=true;
 enrich.algo='ga';
 enrich.aff_iter_cmd=true;
+enrich.aff_evol=true;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;
@@ -103,7 +105,7 @@ tirages=gene_doe(doe);
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
 
-%procédure d'enrichissement
+%procï¿½dure d'enrichissement
 meta.cv_aff=false;
 [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich);
 [K]=eval_meta(grid_XY,approx,meta);
@@ -119,7 +121,7 @@ grad=in.grad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-%valeur par défaut
+%valeur par dï¿½faut
 aff.on=true;
 aff.newfig=false;
 aff.ic.on=true;

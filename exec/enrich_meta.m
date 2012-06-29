@@ -1,14 +1,14 @@
-%% Procédure assurant l'enrichissement du métamodèle
+%% Procï¿½dure assurant l'enrichissement du mï¿½tamodï¿½le
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)
 
-%% initialisation des quantité
+%% initialisation des quantitï¿½
 new_tirages=tirages;
 %evaluations de la fonction aux points
 [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
 
-%construction initiale du métamodèle
+%construction initiale du metamodele
 [approx]=const_meta(new_tirages,new_eval,new_grad,meta);
 crit_atteint=false;
 pts_ok=true;
@@ -22,7 +22,7 @@ old_grad=[];
 
 enrich.ev_crit=cell(length(enrich.crit_type),1);
 %suivant le critere d'enrichissement (critere multiple)
-%critere TPS_CPU prioritaire si spécifié
+%critere TPS_CPU prioritaire si specifie
 
 %correction rangement type
 if ~iscell(enrich.crit_type)
@@ -39,15 +39,22 @@ else
 end
 
 fprintf('\n >>><<< Enrichissement >>><<<\n')
-%tant que le critère retenu n'est pas atteint
+%tant que le critere retenu n'est pas atteint
 while ~crit_atteint&&enrich.on
-    %basculement des anciens résultats
+    %basculement des anciens resultats
     old_tirages=[old_tirages;new_tirages];
     old_eval=[old_eval;new_eval];
     old_grad=[old_grad;new_grad];
     new_tirages=[];new_eval=[];new_grad=[];
-    
-    
+    %numero iteration enrichissement
+    it_enrich=1;
+    if enrich.aff_evol
+        figure
+        nb_col=2;
+        nb_lign=2;
+        num_sub=1;
+        opt_plot.bornes=[1 30];
+    end
     
     %parcours des types d'enrichissement
     for  it_type=1:length(type)
@@ -57,12 +64,12 @@ while ~crit_atteint&&enrich.on
         switch type{it_type}
             % controle en nombre de points
             case 'NB_PTS'
-                fprintf(' >> Vérification nombre de points echantillons <<\n ')
+                fprintf(' >> Verification nombre de points echantillons <<\n ')
                 % Extraction temps CPU
                 tir=old_tirages;
                 nb_pts=size(tir,1);
                 depass=(nb_pts-crit{it_type})/crit{it_type};
-                % vérification temps atteint
+                % vï¿½rification temps atteint
                 if nb_pts>=crit{it_type}
                     pts_ok=false;
                     fprintf(' ====> Nb maxi de points ATTEINT: %d (max: %d) --- + %4.2e%s <====\n',nb_pts,crit{it_type},depass*100,char(37))
@@ -71,15 +78,26 @@ while ~crit_atteint&&enrich.on
                     fprintf(' ====> Nb maxi de points OK: %d (max: %d) --- %4.2e%s <====\n',nb_pts,crit{it_type},depass*100,char(37))
                 end
                 
-                %sauvegarde valeur critère
+                %sauvegarde valeur critï¿½re
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} nb_pts];
                 
+                %trace de l'evolution
+                if enrich.aff_evol
+                    subplot(nb_col,nb_lign,num_sub)
+                    opt_plot.tag='NB_PTS';
+                    opt_plot.title='Evolution nombre de points';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='Nombre de points';
+                    opt_plot.type='';                 
+                    opt_plot.cible=crit{it_type};
+                    aff_evol(nb_pts(end),nb_pts(end),opt_plot,it_enrich);
+                end
                 % controle en MSE (CV)
             case 'CV_MSE'
                 % Extraction MSE (CV)
                 msep=approx.cv.eloot;
                 depass=(msep-crit{it_type})/crit{it_type};
-                % vérification temps atteint
+                % vï¿½rification temps atteint
                 if msep<=crit{it_type}
                     mse_ok=false;
                     fprintf(' ====> MSE (CV) ATTEINTE: %4.2e (max: %4.2e) --- + %4.2e%s <====\n',msep,crit{it_type},depass,char(37))
@@ -87,14 +105,14 @@ while ~crit_atteint&&enrich.on
                     mse_ok=true;
                     fprintf(' ====> MSE (CV) OK: %4.2e (max: %4.2e) --- %4.2e%s <====\n',msep,crit{it_type},depass,char(37))
                 end
-                %sauvegarde valeur critère
+                %sauvegarde valeur critï¿½re
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} msep];
-                % controle en convergence de réponse et/ou de localisation
+                % controle en convergence de rï¿½ponse et/ou de localisation
             case {'CONV_REP','CONV_LOC'}
                 %valeur cible
                 Z_cible=enrich.min_glob.Z;
                 X_cible=enrich.min_glob.X;
-                %recherche du minimum de la fonction approchée
+                %recherche du minimum de la fonction approchï¿½e
                 if ~done_min
                     [Zap_min,X_min]=rech_min_meta(meta,approx,enrich.optim);
                     fprintf(' >> Minimum sur metamodele: %4.2e (cible: %4.2e )\n',Zap_min,Z_cible)
@@ -107,14 +125,14 @@ while ~crit_atteint&&enrich.on
                 
                 switch type{it_type}
                     case 'CONV_REP'
-                        %Calcul du critère
+                        %Calcul du critï¿½re
                         if Z_cible~=0
                             conv_rep=abs((Zap_min-Z_cible)/Z_cible);
                         else
                             conv_rep=abs(Zap_min-Z_cible);
                         end
                         depass=(conv_rep-crit{it_type})/crit{it_type};
-                        % vérification convergence
+                        % vï¿½rification convergence
                         if conv_rep<=crit{it_type}
                             conv_glob_ok=false;
                             fprintf(' ====> Convergence vers le minimum (REP):')
@@ -128,17 +146,17 @@ while ~crit_atteint&&enrich.on
                             fprintf('(min: %4.2e) --- ',crit{it_type})
                             fprintf('%4.2e%s <====\n',depass,char(37));
                         end
-                        %sauvegarde valeur critère
+                        %sauvegarde valeur critï¿½re
                         enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_rep];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end
                     case 'CONV_LOC'
-                        %Calcul du critère
+                        %Calcul du critï¿½re
                         ec=(X_min-X_cible).^2;
                         dist=sum(ec(:));
                         conv_loc=dist;
                         depass=(conv_loc-crit{it_type})/crit{it_type};
-                        % vérification convergence
+                        % vï¿½rification convergence
                         if conv_loc<=crit{it_type}
                             conv_loc_ok=false;
                             fprintf(' ====> Convergence vers le minimum (LOC): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit{it_type},depass,char(37))
@@ -146,7 +164,7 @@ while ~crit_atteint&&enrich.on
                             conv_loc_ok=true;
                             fprintf(' ====> Convergence vers le minimum (LOC) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit{it_type},depass,char(37))
                         end
-                        %sauvegarde valeur critère
+                        %sauvegarde valeur critï¿½re
                         enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_loc];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end
@@ -158,7 +176,7 @@ while ~crit_atteint&&enrich.on
         end
     end
     
-    %test: si un des crtières est atteint si c'est pas le cas alors on génère
+    %test: si un des crtiï¿½res est atteint si c'est pas le cas alors on gï¿½nï¿½re
     %un nouveau point de calcul
     crit_atteint=conv_glob_ok&&conv_loc_ok&&mse_ok&&pts_ok;crit_atteint=~crit_atteint;
     
@@ -174,7 +192,7 @@ while ~crit_atteint&&enrich.on
                 fprintf(' >> Enrichissement du tirage\n')
                 new_tirages=ajout_tir_doe(old_tirages);
             otherwise
-                fprintf(' >> Mode d''enrichissement non défini <<\n');
+                fprintf(' >> Mode d''enrichissement non dï¿½fini <<\n');
         end
         
     else
@@ -194,7 +212,7 @@ while ~crit_atteint&&enrich.on
     
     
     
-    %calcul des grandeurs en ce nouveau point et génération du nouveaux
+    %calcul des grandeurs en ce nouveau point et gï¿½nï¿½ration du nouveaux
     %metamodele
     if ~isempty(new_tirages)
         [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
@@ -208,14 +226,14 @@ while ~crit_atteint&&enrich.on
         debug.new_grad=new_grad;
         debug.approx=approx;
         global debug
-        %construction du métamodèle
+        %construction du mï¿½tamodï¿½le
         [approx]=const_meta([old_tirages;new_tirages],[old_eval;new_eval],[old_grad;new_grad],meta);
     end
     
 end
 
 
-%Extraction des grandeurs ajoutés
+%Extraction des grandeurs ajoutï¿½s
 in.tirages=old_tirages;
 in.eval=old_eval;
 in.grad=old_grad;

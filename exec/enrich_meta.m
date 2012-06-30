@@ -19,6 +19,7 @@ done_min=false;
 old_tirages=[];
 old_eval=[];
 old_grad=[];
+id_plot=[];
 
 enrich.ev_crit=cell(length(enrich.crit_type),1);
 %suivant le critere d'enrichissement (critere multiple)
@@ -38,6 +39,9 @@ else
     crit=enrich.val_crit;
 end
 
+%numero iteration enrichissement
+it_enrich=0;
+
 fprintf('\n >>><<< Enrichissement >>><<<\n')
 %tant que le critere retenu n'est pas atteint
 while ~crit_atteint&&enrich.on
@@ -46,9 +50,10 @@ while ~crit_atteint&&enrich.on
     old_eval=[old_eval;new_eval];
     old_grad=[old_grad;new_grad];
     new_tirages=[];new_eval=[];new_grad=[];
-    %numero iteration enrichissement
-    it_enrich=1;
-    if enrich.aff_evol
+    %increment numero iteration
+    it_enrich=it_enrich+1;
+    
+    if enrich.aff_evol&&it_enrich==1
         figure
         nb_col=2;
         nb_lign=2;
@@ -69,7 +74,7 @@ while ~crit_atteint&&enrich.on
                 tir=old_tirages;
                 nb_pts=size(tir,1);
                 depass=(nb_pts-crit{it_type})/crit{it_type};
-                % v�rification temps atteint
+                % verification temps atteint
                 if nb_pts>=crit{it_type}
                     pts_ok=false;
                     fprintf(' ====> Nb maxi de points ATTEINT: %d (max: %d) --- + %4.2e%s <====\n',nb_pts,crit{it_type},depass*100,char(37))
@@ -83,21 +88,22 @@ while ~crit_atteint&&enrich.on
                 
                 %trace de l'evolution
                 if enrich.aff_evol
-                    subplot(nb_col,nb_lign,num_sub)
+                    if it_enrich==1;id_sub(num_sub)=subplot(nb_col,nb_lign,num_sub);end
                     opt_plot.tag='NB_PTS';
                     opt_plot.title='Evolution nombre de points';
                     opt_plot.xlabel='Nombre de points';
                     opt_plot.ylabel='Nombre de points';
-                    opt_plot.type='';                 
+                    opt_plot.type='';
                     opt_plot.cible=crit{it_type};
-                    aff_evol(nb_pts(end),nb_pts(end),opt_plot,it_enrich);
+                    if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    aff_evol(nb_pts,nb_pts,opt_plot,id_plotloc);
                 end
                 % controle en MSE (CV)
             case 'CV_MSE'
                 % Extraction MSE (CV)
                 msep=approx.cv.eloot;
                 depass=(msep-crit{it_type})/crit{it_type};
-                % v�rification temps atteint
+                % verification temps atteint
                 if msep<=crit{it_type}
                     mse_ok=false;
                     fprintf(' ====> MSE (CV) ATTEINTE: %4.2e (max: %4.2e) --- + %4.2e%s <====\n',msep,crit{it_type},depass,char(37))
@@ -105,14 +111,14 @@ while ~crit_atteint&&enrich.on
                     mse_ok=true;
                     fprintf(' ====> MSE (CV) OK: %4.2e (max: %4.2e) --- %4.2e%s <====\n',msep,crit{it_type},depass,char(37))
                 end
-                %sauvegarde valeur crit�re
+                %sauvegarde valeur critere
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} msep];
                 % controle en convergence de r�ponse et/ou de localisation
             case {'CONV_REP','CONV_LOC'}
                 %valeur cible
                 Z_cible=enrich.min_glob.Z;
                 X_cible=enrich.min_glob.X;
-                %recherche du minimum de la fonction approch�e
+                %recherche du minimum de la fonction approchee
                 if ~done_min
                     [Zap_min,X_min]=rech_min_meta(meta,approx,enrich.optim);
                     fprintf(' >> Minimum sur metamodele: %4.2e (cible: %4.2e )\n',Zap_min,Z_cible)
@@ -120,19 +126,19 @@ while ~crit_atteint&&enrich.on
                     fprintf('%4.2e ',X_min);
                     fprintf(' (cible: [ ');
                     fprintf('%4.2e ',X_cible);
-                    fprintf('])\n')                   
+                    fprintf('])\n')
                 end
                 
                 switch type{it_type}
                     case 'CONV_REP'
-                        %Calcul du crit�re
+                        %Calcul du critere
                         if Z_cible~=0
                             conv_rep=abs((Zap_min-Z_cible)/Z_cible);
                         else
                             conv_rep=abs(Zap_min-Z_cible);
                         end
                         depass=(conv_rep-crit{it_type})/crit{it_type};
-                        % v�rification convergence
+                        % verification convergence
                         if conv_rep<=crit{it_type}
                             conv_glob_ok=false;
                             fprintf(' ====> Convergence vers le minimum (REP):')
@@ -146,7 +152,7 @@ while ~crit_atteint&&enrich.on
                             fprintf('(min: %4.2e) --- ',crit{it_type})
                             fprintf('%4.2e%s <====\n',depass,char(37));
                         end
-                        %sauvegarde valeur crit�re
+                        %sauvegarde valeur critere
                         enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_rep];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end
@@ -156,7 +162,7 @@ while ~crit_atteint&&enrich.on
                         dist=sum(ec(:));
                         conv_loc=dist;
                         depass=(conv_loc-crit{it_type})/crit{it_type};
-                        % v�rification convergence
+                        % verification convergence
                         if conv_loc<=crit{it_type}
                             conv_loc_ok=false;
                             fprintf(' ====> Convergence vers le minimum (LOC): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit{it_type},depass,char(37))
@@ -164,7 +170,7 @@ while ~crit_atteint&&enrich.on
                             conv_loc_ok=true;
                             fprintf(' ====> Convergence vers le minimum (LOC) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit{it_type},depass,char(37))
                         end
-                        %sauvegarde valeur crit�re
+                        %sauvegarde valeur critere
                         enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_loc];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end

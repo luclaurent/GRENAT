@@ -35,7 +35,7 @@ aff.nbele=gene_nbele(doe.dim_pb);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
-doe.type='LHS_R';
+doe.type='LHS';
 
 %nb d'echantillons
 doe.nb_samples=3;
@@ -75,7 +75,7 @@ enrich.optim.popInitManu=false;
 enrich.optim.aff_iter_graph=false;
 enrich.optim.aff_iter_cmd=false;
 enrich.optim.aff_plot_algo=false;
-enrich.optim.crit_opti=10^-6;
+enrich.optim.crit_opti=10^-2;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;

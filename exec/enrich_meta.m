@@ -19,7 +19,6 @@ done_min=false;
 old_tirages=[];
 old_eval=[];
 old_grad=[];
-id_plot=[];
 
 enrich.ev_crit=cell(length(enrich.crit_type),1);
 %suivant le critere d'enrichissement (critere multiple)
@@ -52,12 +51,25 @@ while ~crit_atteint&&enrich.on
     new_tirages=[];new_eval=[];new_grad=[];
     %increment numero iteration
     it_enrich=it_enrich+1;
+    num_sub=1;
     
     if enrich.aff_evol&&it_enrich==1
         figure
-        nb_col=2;
+        num_fig=0;
+        for  it_type=1:length(type)
+            switch type{it_type}
+                case 'NB_PTS'
+                    num_fig=num_fig+1;
+                case 'CV_MSE'
+                    num_fig=num_fig+1;
+                case 'CONV_REP'
+                    num_fig=num_fig+2;
+                case 'CONV_LOC'
+                    num_fig=num_fig+2;
+            end
+        end
         nb_lign=2;
-        num_sub=1;
+        nb_col=floor(num_fig/nb_lign)+1;
         opt_plot.bornes=[1 30];
     end
     
@@ -88,15 +100,16 @@ while ~crit_atteint&&enrich.on
                 
                 %trace de l'evolution
                 if enrich.aff_evol
-                    if it_enrich==1;id_sub(num_sub)=subplot(nb_col,nb_lign,num_sub);end
+                    if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
                     opt_plot.tag='NB_PTS';
-                    opt_plot.title='Evolution nombre de points';
+                    opt_plot.title='Evol. nombre de points';
                     opt_plot.xlabel='Nombre de points';
                     opt_plot.ylabel='Nombre de points';
-                    opt_plot.type='';
+                    opt_plot.type='stairs';
                     opt_plot.cible=crit{it_type};
                     if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     aff_evol(nb_pts,nb_pts,opt_plot,id_plotloc);
+                    num_sub=num_sub+1;
                 end
                 % controle en MSE (CV)
             case 'CV_MSE'
@@ -113,6 +126,19 @@ while ~crit_atteint&&enrich.on
                 end
                 %sauvegarde valeur critere
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} msep];
+                %trace de l'evolution
+                if enrich.aff_evol
+                    if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                    opt_plot.tag='CV_MSE';
+                    opt_plot.title='MSE (LOO/CV)';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='MSE (LOO/CV)';
+                    opt_plot.type='stairs';
+                    opt_plot.cible=crit{it_type};
+                    if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    aff_evol(nb_pts,msep,opt_plot,id_plotloc);
+                    num_sub=num_sub+1;
+                end
                 % controle en convergence de r�ponse et/ou de localisation
             case {'CONV_REP','CONV_LOC'}
                 %valeur cible
@@ -127,6 +153,32 @@ while ~crit_atteint&&enrich.on
                     fprintf(' (cible: [ ');
                     fprintf('%4.2e ',X_cible);
                     fprintf('])\n')
+                    %distance au vrai minimum
+                    ec=(X_min-X_cible).^2;
+                    dist=sum(ec(:));
+                    %trace de l'evolution
+                    if enrich.aff_evol
+                        if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                        opt_plot.tag='Min_meta';
+                        opt_plot.title='Minimum Metamodele';
+                        opt_plot.xlabel='Nombre de points';
+                        opt_plot.ylabel='Minimum Metamodele';
+                        opt_plot.type='stairs';
+                        opt_plot.cible=Z_cible;
+                        if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                        aff_evol(nb_pts,Zap_min,opt_plot,id_plotloc);
+                        num_sub=num_sub+1;
+                        if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                        opt_plot.tag='Min_meta';
+                        opt_plot.title='Ecart reel/metamodele';
+                        opt_plot.xlabel='Nombre de points';
+                        opt_plot.ylabel='Ecart reel/metamodele';
+                        opt_plot.type='stairs';
+                        opt_plot.cible=Z_cible;
+                        if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                        aff_evol(nb_pts,dist,opt_plot,id_plotloc);
+                        num_sub=num_sub+1;
+                    end
                 end
                 
                 switch type{it_type}
@@ -156,10 +208,21 @@ while ~crit_atteint&&enrich.on
                         enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_rep];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end
+                        %trace de l'evolution
+                        if enrich.aff_evol
+                            if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                            opt_plot.tag='CONV_REP';
+                            opt_plot.title='Critere conv. Minimum';
+                            opt_plot.xlabel='Nombre de points';
+                            opt_plot.ylabel='Critere conv. Minimum';
+                            opt_plot.type='stairs';
+                            opt_plot.cible=crit{it_type};
+                            if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                            aff_evol(nb_pts,conv_rep,opt_plot,id_plotloc);
+                            num_sub=num_sub+1;
+                        end
                     case 'CONV_LOC'
-                        %Calcul du crit�re
-                        ec=(X_min-X_cible).^2;
-                        dist=sum(ec(:));
+                        %Calcul du critere
                         conv_loc=dist;
                         depass=(conv_loc-crit{it_type})/crit{it_type};
                         % verification convergence
@@ -174,6 +237,19 @@ while ~crit_atteint&&enrich.on
                         enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_loc];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end
+                        %trace de l'evolution
+                        if enrich.aff_evol
+                            if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                            opt_plot.tag='CONV_LOC';
+                            opt_plot.title='Critere conv. Localisation';
+                            opt_plot.xlabel='Nombre de points';
+                            opt_plot.ylabel='Critere conv. Localisation';
+                            opt_plot.type='stairs';
+                            opt_plot.cible=crit{it_type};
+                            if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                            aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
+                            num_sub=num_sub+1;
+                        end
                 end
             otherwise
                 fprintf('_______________________________\n')

@@ -3,6 +3,8 @@
 
 function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)
 
+[tMesu,tInit]=mesu_time;
+
 %% initialisation des quantit�
 new_tirages=tirages;
 %evaluations de la fonction aux points
@@ -105,6 +107,7 @@ while ~crit_atteint&&enrich.on
                     opt_plot.title='Evol. nombre de points';
                     opt_plot.xlabel='Nombre de points';
                     opt_plot.ylabel='Nombre de points';
+                    opt_plot.ech_log=false;
                     opt_plot.type='stairs';
                     opt_plot.cible=crit{it_type};
                     if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
@@ -133,6 +136,7 @@ while ~crit_atteint&&enrich.on
                     opt_plot.title='MSE (LOO/CV)';
                     opt_plot.xlabel='Nombre de points';
                     opt_plot.ylabel='MSE (LOO/CV)';
+                    opt_plot.ech_log=true;
                     opt_plot.type='stairs';
                     opt_plot.cible=crit{it_type};
                     if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
@@ -163,6 +167,7 @@ while ~crit_atteint&&enrich.on
                         opt_plot.title='Minimum Metamodele';
                         opt_plot.xlabel='Nombre de points';
                         opt_plot.ylabel='Minimum Metamodele';
+                        opt_plot.ech_log=false;
                         opt_plot.type='stairs';
                         opt_plot.cible=Z_cible;
                         if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
@@ -170,11 +175,12 @@ while ~crit_atteint&&enrich.on
                         num_sub=num_sub+1;
                         if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
                         opt_plot.tag='Min_meta';
-                        opt_plot.title='Ecart reel/metamodele';
+                        opt_plot.title='Ecart minimum reel/metamodele';
                         opt_plot.xlabel='Nombre de points';
-                        opt_plot.ylabel='Ecart reel/metamodele';
+                        opt_plot.ylabel='Ecart minimum reel/metamodele';
+                        opt_plot.ech_log=true;
                         opt_plot.type='stairs';
-                        opt_plot.cible=Z_cible;
+                        opt_plot.cible=10^-7;
                         if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         aff_evol(nb_pts,dist,opt_plot,id_plotloc);
                         num_sub=num_sub+1;
@@ -215,6 +221,7 @@ while ~crit_atteint&&enrich.on
                             opt_plot.title='Critere conv. Minimum';
                             opt_plot.xlabel='Nombre de points';
                             opt_plot.ylabel='Critere conv. Minimum';
+                            opt_plot.ech_log=true;
                             opt_plot.type='stairs';
                             opt_plot.cible=crit{it_type};
                             if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
@@ -244,6 +251,7 @@ while ~crit_atteint&&enrich.on
                             opt_plot.title='Critere conv. Localisation';
                             opt_plot.xlabel='Nombre de points';
                             opt_plot.ylabel='Critere conv. Localisation';
+                            opt_plot.ech_log=true;
                             opt_plot.type='stairs';
                             opt_plot.cible=crit{it_type};
                             if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
@@ -319,3 +327,6 @@ end
 in.tirages=old_tirages;
 in.eval=old_eval;
 in.grad=old_grad;
+
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');

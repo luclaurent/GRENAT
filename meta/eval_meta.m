@@ -295,10 +295,10 @@ for num_meta=1:numel(donnees_const)
                     Z.Z_reg=Z_reg;
                 end
                 Z.Z=rep;
-                if ~isempty(var_rep)Z.var=var_rep;end
+                if ~isempty(var_rep);Z.var=var_rep;end
                 if exist('wei','var');Z.wei=wei;end
                 if exist('ei','var');Z.ei=ei;end
-                if exist('gei','var');Z.gei=gei;end
+                if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),1,size(gei,2));end
                 if exist('lcb','var');Z.lcb=lcb;end
                 if exist('explor','var');Z.explor=explor;end
                 if exist('exploit','var');Z.exploit=exploit;end

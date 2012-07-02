@@ -27,7 +27,12 @@ end
 fprintf('>> Critère enrichissement actif:');
 if meta.enrich.on;
     fprintf('%s\n','Oui');
-    fprintf('>> Ponderation WEI: %d\n',meta.enrich.para_wei);
+    fprintf('>> Ponderation WEI: ')
+    fprintf('%d ',meta.enrich.para_wei);
+    fprintf('\n')
+    fprintf('>> Ponderation GEI: ')
+    fprintf('%d ',meta.enrich.para_gei);
+    fprintf('\n')
     fprintf('>> Ponderation LCB: %d\n',meta.enrich.para_lcb);
 else
     fprintf('%s\n','non');

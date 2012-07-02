@@ -18,12 +18,12 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu'; 
+fct='peaks'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[-5 5];
 esp=[];
 
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='KRG';
+data.type='CKRG';
 data.grad=true;
 
 meta=init_meta(data);
@@ -75,7 +75,7 @@ enrich.optim.popInitManu=false;
 enrich.optim.aff_iter_graph=false;
 enrich.optim.aff_iter_cmd=false;
 enrich.optim.aff_plot_algo=false;
-enrich.optim.crit_opti=10^-2;
+enrich.optim.crit_opti=10^-6;
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;

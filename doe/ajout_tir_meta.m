@@ -4,6 +4,8 @@
 
 function [pts,ret_tir_meta]=ajout_tir_meta(meta,approx,enrich)
 
+[tMesu,tInit]=mesu_time;
+
 global doe
 %Definition manuelle de la population initiale par LHS (Ga)
 popInitManu=false;
@@ -82,6 +84,9 @@ end
 ret_tir_meta.out_algo=output;
 ret_tir_meta.out_algo.fval=fval;
 ret_tir_meta.out_algo.exitflag=exitflag;
+%%
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

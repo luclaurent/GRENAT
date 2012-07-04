@@ -43,6 +43,7 @@ switch doe.type
     case 'IHS'
         tirages=ihs(nbv,nbs,5,17);
         tirages=tirages./nbs;
+        tirages=tirages';
         % Improved Hypercube Sampling avec R (et préenrichissement)
     case 'IHS_R'
         tir=ihs_R(Xmin,Xmax,prod(nbs(:)));

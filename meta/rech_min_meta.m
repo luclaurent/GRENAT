@@ -10,6 +10,9 @@ fprintf('      >>> RECHERCHE MINIMUM METAMODELE <<<\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % definition de la strategie d'optimisation et de ses parametres
 
+%critere arret minimisation
+crit_opti=optim.crit_opti;
+
 % en fonction du type d'algo souhaite
 switch optim.algo
     %pour une recherche locale
@@ -17,6 +20,10 @@ switch optim.algo
         
     case 'ga'
         global doe
+        %Definition manuelle de la population initiale par LHS (Ga)
+        popInitManu=optim.popManu;
+        nbPopInit=optim.popInit;
+        
         %definition des bornes de l'espace de recherche
         lb=doe.Xmin;ub=doe.Xmax;
         %nombre parametres
@@ -50,11 +57,10 @@ switch optim.algo
         end
         
         %specification manuelle de la population initiale (Ga)
-        if optim.popInitManu
-            doeb=doe;
-            doeb.nb_samples=nbPopInit;
-            tir_pop=geen_doe(doet);
-            options_ga=gaoptimset(options_ga,'PopulationSize',optim.nbPopInit,'InitialPopulation',tir_pop);
+        if ~isempty(popInitManu)
+            doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
+            tir_pop=gene_doe(doePop);
+            options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
         end
         
     case 'ANT'

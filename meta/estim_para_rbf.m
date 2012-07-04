@@ -6,10 +6,11 @@ function para_estim=estim_para_rbf(donnees,meta)
 aff_warning=false;
 
 %Definition manuelle de la population initiale par LHS (Ga)
-popInitManu=true;
-nbPopInit=50;
+popInitManu=meta.para.popManu;
+nbPopInit=meta.para.popInit;
+
 %critere arret minimisation
-crit_opti=10^-6;
+crit_opti=meta.para.crit_opti;
 
 %arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
 cv_old=meta.cv;
@@ -89,8 +90,9 @@ if meta.para.aff_plot_algo
 end
 
 %specification manuelle de la population initiale (Ga)
-if popInitManu
-    tir_pop=lhsu(lb,ub,nbPopInit);
+if ~isempty(popInitManu)
+    doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
+    tir_pop=gene_doe(doePop);
     options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
 end
 

@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='peaks'; 
+fct='schwefel'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -38,7 +38,7 @@ aff.nbele=gene_nbele(doe.dim_pb);
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=3;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
 data.deg=2;
@@ -52,7 +52,7 @@ data.type='CKRG';
 data.grad=true;
 
 meta=init_meta(data);
-meta.para.estim=false;
+meta.para.estim=true;
 
 %parametrage enrichissement
 enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE'};% CV_MSE CONV_REP CONV_LOC
@@ -75,7 +75,10 @@ enrich.optim.popInitManu=false;
 enrich.optim.aff_iter_graph=false;
 enrich.optim.aff_iter_cmd=false;
 enrich.optim.aff_plot_algo=false;
-enrich.optim.crit_opti=10^-6;
+enrich.optim.popManu='IHS';     %strategie tirage population initiale algo GA '', 'LHS','IHS'...
+enrich.optim.popInit=20;       %population initiale algo GA
+enrich.optim.crit_opti=10^-6;  %critere arret algo optimisation
+
 
 %affichage de l'intervalle de confiance
 aff.ic.on=true;

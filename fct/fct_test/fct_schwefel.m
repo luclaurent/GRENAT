@@ -61,7 +61,8 @@ end
 if nargout==3
     pts=ones(1,nbvar);
     infos.min_glob.X=pts;
-    infos.min_glob.Z=0;
+    cal=pts(:,1).*sin(sqrt(abs(pts(:,1))))+pts(:,2).*sin(sqrt(abs(pts(:,2))));
+    infos.min_glob.Z=coef*nbvar-cal;
     infos.min_loc.Z=NaN;
     infos.min_loc.X=NaN;
 end

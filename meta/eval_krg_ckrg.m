@@ -196,6 +196,8 @@ explor=[];
 exploit=[];
 wei=[];
 ei=[];
+gei=[];
+lcb=[];
 if donnees.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(donnees.in.eval);

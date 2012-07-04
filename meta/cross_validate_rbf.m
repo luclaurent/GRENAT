@@ -200,6 +200,7 @@ if mod_etud||mod_debug||mod_final
         donnees_cv.in.nb_val=data.in.nb_val-1; %retrait d'un site
         donnees_cv.in.tirages=cv_tirages;
         donnees_cv.in.tiragesn=cv_tiragesn;
+        donnees_cv.enrich.on=false;
         %evaluation de la reponse, des derivees et de la variance au site
         %retire
         [Z,GZ,variance]=eval_rbf(data.in.tirages(tir,:),donnees_cv);

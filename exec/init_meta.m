@@ -49,6 +49,9 @@ meta.cv_aff=true;       %affichage QQ plot CV
 
 %estimation parametre long (longueur de correlation)
 meta.para.method='ga';     % m�thode de minimisation de la log-vraisemblance
+meta.para.popManu='IHS';     %strategie tirage population initiale algo GA '', 'LHS','IHS'...
+meta.para.popInit=20;       %population initiale algo GA
+meta.para.crit_opti=10^-6;  %critere arret algo optimisation
 meta.para.estim=true;           % recherche de la longueur de corr�lation
 meta.para.aff_estim=false;  %affichage de la fonctionnelle � miniser pour obtenir le "meilleur" jeu de parametres
 meta.para.aniso=true;   %prise en compte de l'anisotropie (longueur de corr�lation suivant chaque dimension)

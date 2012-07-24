@@ -12,10 +12,11 @@ fprintf(' >>> CREATION METAMODELE ET ENRICH. <<<\n');
 new_tirages=tirages;
 %evaluations de la fonction aux points
 if enrich.cofast    
-    resultats=exec_eval(tirages,[]);
-    new_eval=resultats.eval(:,meta.num_fct);
-    new_grad=resultats.grad.gradients{meta.num_fct};
-    enrich.cofast{1}=resultats;
+    start_cofast([])
+    res=run_cofast(tirages);
+    new_eval=res.eval(:,meta.num_fct);
+    new_grad=res.grad.gradients{meta.num_fct};
+    enrich.cofast{1}=res;
 else
     [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
 end
@@ -276,7 +277,7 @@ while ~crit_atteint&&enrich.on
         end
     end
     
-    %test: si un des crti�res est atteint si c'est pas le cas alors on g�n�re
+    %test: si un des crtieres est atteint si c'est pas le cas alors on genere
     %un nouveau point de calcul
     crit_atteint=conv_glob_ok&&conv_loc_ok&&mse_ok&&pts_ok;crit_atteint=~crit_atteint;
     
@@ -316,10 +317,10 @@ while ~crit_atteint&&enrich.on
     %metamodele
     if ~isempty(new_tirages)
         if enrich.cofast
-            resultats=exec_eval(tirages,[]);
-            new_eval=resultats.eval(:,meta.num_fct);
-            new_grad=resultats.grad.gradients{meta.num_fct};
-            enrich.cofast{it_enrich+1}=resultats;
+            res=run_cofast(new_tirages);
+            new_eval=res.eval(:,meta.num_fct);
+            new_grad=res.grad.gradients{meta.num_fct};
+            enrich.cofast{it_enrich+1}=res;
         else
             [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
         end
@@ -338,7 +339,10 @@ while ~crit_atteint&&enrich.on
         
     end
 end
-
+%arret cofast si enrichissement avec appels Cofast
+if enrich.cofast
+    enrich.data_cofast=stop_cofast;
+end
 %si la recherche du minimum a ete realisee on stocke les resultats
 min_ok=false;
 if exist('Zap_min','var')&&exist('X_min','var')
@@ -355,7 +359,7 @@ if ~min_ok
     approx.min.X_min=X_min;
 end
 
-%Extraction des grandeurs ajout�s
+%Extraction des grandeurs ajoutes
 in.tirages=old_tirages;
 in.eval=old_eval;
 in.grad=old_grad;

@@ -1,25 +1,14 @@
-%% Procedure assurant l'enrichissement du metamodele
+%% Proc�dure assurant l'enrichissement du m�tamod�le
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)
 
-fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-fprintf(' >>> CREATION METAMODELE ET ENRICH. <<<\n');
 [tMesu,tInit]=mesu_time;
 
-
-%% initialisation des quantite
+%% initialisation des quantit�
 new_tirages=tirages;
 %evaluations de la fonction aux points
-if enrich.cofast    
-    start_cofast([])
-    res=run_cofast(tirages);
-    new_eval=res.eval(:,meta.num_fct);
-    new_grad=res.grad.gradients{meta.num_fct};
-    enrich.cofast{1}=res;
-else
-    [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
-end
+[new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
 
 %construction initiale du metamodele
 [approx]=const_meta(new_tirages,new_eval,new_grad,meta);
@@ -277,7 +266,7 @@ while ~crit_atteint&&enrich.on
         end
     end
     
-    %test: si un des crtieres est atteint si c'est pas le cas alors on genere
+    %test: si un des crti�res est atteint si c'est pas le cas alors on g�n�re
     %un nouveau point de calcul
     crit_atteint=conv_glob_ok&&conv_loc_ok&&mse_ok&&pts_ok;crit_atteint=~crit_atteint;
     
@@ -316,14 +305,7 @@ while ~crit_atteint&&enrich.on
     %calcul des grandeurs en ce nouveau point et generation du nouveaux
     %metamodele
     if ~isempty(new_tirages)
-        if enrich.cofast
-            res=run_cofast(new_tirages);
-            new_eval=res.eval(:,meta.num_fct);
-            new_grad=res.grad.gradients{meta.num_fct};
-            enrich.cofast{it_enrich+1}=res;
-        else
-            [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
-        end
+        [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
         
         %stockage debug
         debug.old_tirages=old_tirages;
@@ -336,30 +318,12 @@ while ~crit_atteint&&enrich.on
         global debug
         %construction du metamodele
         [approx]=const_meta([old_tirages;new_tirages],[old_eval;new_eval],[old_grad;new_grad],meta);
-        
     end
-end
-%arret cofast si enrichissement avec appels Cofast
-if enrich.cofast
-    enrich.data_cofast=stop_cofast;
-end
-%si la recherche du minimum a ete realisee on stocke les resultats
-min_ok=false;
-if exist('Zap_min','var')&&exist('X_min','var')
-    if ~isempty(Zap_min)&&~isempty(X_min)
-        approx.min.Zap_min=Zap_min;
-        approx.min.X_min=X_min;
-        min_ok=true;
-    end
-end
-%si elle n'a pas ete realise on la realise
-if ~min_ok
-    [Zap_min,X_min]=rech_min_meta(meta,approx,enrich.optim);
-    approx.min.Zap_min=Zap_min;
-    approx.min.X_min=X_min;
+    
 end
 
-%Extraction des grandeurs ajoutes
+
+%Extraction des grandeurs ajout�s
 in.tirages=old_tirages;
 in.eval=old_eval;
 in.grad=old_grad;

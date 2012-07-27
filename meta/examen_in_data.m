@@ -1,4 +1,4 @@
-%% fonction assurant l'examen des données entrante (en cas de données manquantes)
+%% fonction assurant l'examen des donnï¿½es entrante (en cas de donnï¿½es manquantes)
 %% L. LAURENT -- 12/06/2012 -- laurent@lmt.ens-cachan.fr
 
 function [ret]=examen_in_data(tirages,eval,grad)
@@ -6,7 +6,7 @@ function [ret]=examen_in_data(tirages,eval,grad)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Affichage des informations de construction
-fprintf(' >> Examen des données entrantes \n');
+fprintf(' >> Examen des donnees entrantes \n');
 
 %nombre de variables
 nb_var=size(tirages,2);
@@ -14,14 +14,14 @@ nb_var=size(tirages,2);
 nb_val=size(tirages,1);
 emptygrad=isempty(grad);
 
-%données manquante dans les évaluations
+%donnï¿½es manquante dans les ï¿½valuations
 manq_eval=isnan(eval);
 nb_manq_eval=sum(manq_eval);
 ix_manq_eval=find(manq_eval==1);
 ix_dispo_eval=find(manq_eval==0);
 if nb_manq_eval==nb_val;manq_eval_all=true;else manq_eval_all=false;end
 
-%données manquantes dans les gradients
+%donnï¿½es manquantes dans les gradients
 if ~emptygrad
     %positionnement classique gradients (dy1/dx1,dy2/dx1...)
     manq_grad=isnan(grad);
@@ -53,11 +53,11 @@ end
 
 %affichage des infos
 if nb_manq_eval==0&&nb_manq_grad==0
-    fprintf('>>> Aucune donnée manquante\n');
+    fprintf('>>> Aucune donnee manquante\n');
 end
 
 if nb_manq_eval~=0
-    fprintf('>>> Réponse(s) manquante(s) au(x) point(x):\n')
+    fprintf('>>> Reponse(s) manquante(s) au(x) point(x):\n')
     for ii=1:nb_manq_eval
         num_tir=ix_manq_eval(ii);
         fprintf(' n%s %i (%4.2f',char(176),num_tir,tirages(num_tir,1));

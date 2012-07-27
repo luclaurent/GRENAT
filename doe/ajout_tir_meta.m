@@ -1,19 +1,19 @@
-%% Fonction assurant la création d'un nouveau point d'echantillonnage basé sur un metamodele
+%% Fonction assurant la crï¿½ation d'un nouveau point d'echantillonnage basï¿½ sur un metamodele
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
 
 function [pts,ret_tir_meta]=ajout_tir_meta(meta,approx,enrich)
 
 [tMesu,tInit]=mesu_time;
-
 global doe
-%Definition manuelle de la population initiale par LHS (Ga)
-popInitManu=false;
-nbPopInit=50;
-%critere arret minimisation
-crit_opti=10^-2;
 
-%en fonction du type de nouveau point reclamé
+%%%Definition manuelle de la population initiale par LHS (Ga)
+popInitManu=enrich.popInitManu;
+nbPopInit=enrich.nbPopInit;
+%critere arret minimisation
+crit_opti=enrich.crit_opti;
+
+%en fonction du type de nouveau point reclamï¿½
 switch enrich.type
     %Expected Improvement (Krigeage/RBF)
     case 'EI'
@@ -42,7 +42,7 @@ options_ga = gaoptimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn','',...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'UseParallel','always',...
-    'PopInitRange',[lb(:)';ub(:)'],...    %zone de définition de la population initiale
+    'PopInitRange',[lb(:)';ub(:)'],...    %zone de dï¿½finition de la population initiale
     'PlotFcns','',...
     'TolFun',crit_opti,...
     'StallGenLimit',20);
@@ -68,7 +68,8 @@ end
 
 %specification manuelle de la population initiale (Ga)
 if popInitManu
-    tir_pop=lhsu(lb,ub,nbPopInit);
+    doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=popInitManu;
+    tir_pop=gene_doe(doePop);
     options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
 end
 

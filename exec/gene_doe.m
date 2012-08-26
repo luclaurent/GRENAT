@@ -8,13 +8,13 @@ fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('    >>> GENERATION TIRAGES <<<\n');
 [tMesu,tInit]=mesu_time;
 
-% obtenir un "vrai" tirages pseudo aléatoire
+% obtenir un "vrai" tirages pseudo alï¿½atoire
 s = RandStream('mt19937ar','Seed','shuffle');
 RandStream.setGlobalStream(s);
 
 fprintf('===== DOE =====\n');
 
-%recupŽration bornes espace de conception
+%recupï¿½ration bornes espace de conception
 if isfield(doe,'Xmin')&&isfield(doe,'Xmax')
     Xmin=doe.Xmin;
     Xmax=doe.Xmax;
@@ -26,17 +26,17 @@ end
 %nombre de variables
 nbv=numel(Xmin);
 
-%recuperation nombre d'échantillons souhaités
+%recuperation nombre d'ï¿½chantillons souhaitï¿½s
 nbs=doe.nb_samples;
 
 
 
-%geŽnŽeration des diffŽerents types de tirages
+%geï¿½nï¿½eration des diffï¿½erents types de tirages
 switch doe.type
     % plan factoriel complet
     case 'ffact'
         tirages=factorial_design(nbs,doe.bornes);
-        % Latin Hypercube Sampling avec R (et préenrichissement)
+        % Latin Hypercube Sampling avec R (et prï¿½enrichissement)
     case 'LHS_R'
         tirages=lhsu_R(Xmin,Xmax,prod(nbs(:)));
         % Improved Hypercube Sampling
@@ -44,14 +44,15 @@ switch doe.type
         tirages=ihs(nbv,nbs,5,17);
         tirages=tirages./nbs;
         tirages=tirages';
-        % Improved Hypercube Sampling avec R (et préenrichissement)
+        tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
+        % Improved Hypercube Sampling avec R (et prï¿½enrichissement)
     case 'IHS_R'
         tir=ihs_R(Xmin,Xmax,prod(nbs(:)));
         tirages=tir(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
-        % Latin Hypercube Sampling (à loi uniforme)
+        % Latin Hypercube Sampling (ï¿½ loi uniforme)
     case 'LHS'
         tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
-        % LHS avec stockage des données
+        % LHS avec stockage des donnï¿½es
     case 'LHS_manu'
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
@@ -67,7 +68,7 @@ switch doe.type
             tirages=st.tirages;
         else
             fprintf('Tirage inexistant >> execution!!\n')
-            tirages=lhsu(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
+            tirages=lhsu(0*Xmin,0*Xmax+1,prod(nbs(:))); % on gï¿½nï¿½re un tirage dans l'espace [0 1]
             save(fi,'tirages');
         end
         % on corrige le tirage pourobetnir le bon espace
@@ -88,7 +89,7 @@ switch doe.type
             tirages=st.tirages;
         else
             fprintf('Tirage inexistant >> execution!!\n')
-            tirages=lhsu_R(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
+            tirages=lhsu_R(0*Xmin,0*Xmax+1,prod(nbs(:))); % on gï¿½nï¿½re un tirage dans l'espace [0 1]
             save(fi,'tirages');
         end
         % on corrige le tirage pourobetnir le bon espace
@@ -109,12 +110,12 @@ switch doe.type
             tirages=st.tirages;
         else
             fprintf('Tirage inexistant >> execution!!\n')
-            tirages=ihs_R(0*Xmin,0*Xmax+1,prod(nbs(:))); % on génére un tirage dans l'espace [0 1]
+            tirages=ihs_R(0*Xmin,0*Xmax+1,prod(nbs(:))); % on gï¿½nï¿½re un tirage dans l'espace [0 1]
             save(fi,'tirages');
         end
         % on corrige le tirage pourobetnir le bon espace
         tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
-        % tirages aléatoires
+        % tirages alï¿½atoires
     case 'IHS_R_manu_enrich'
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
@@ -136,7 +137,7 @@ switch doe.type
         end
         % on corrige le tirage pourobetnir le bon espace
         tirages=tirages(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
-        % tirages aléatoires
+        % tirages alï¿½atoires
     case 'LHS_R_manu_enrich'
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7
@@ -158,11 +159,11 @@ switch doe.type
         end
         % on corrige le tirage pourobetnir le bon espace
         tirages=tirages(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
-        % tirages aléatoires
+        % tirages alï¿½atoires
     case 'rand'
         tirages=repmat(esp(:,1)',prod(nbs(:)),1)...
             +repmat(esp(:,2)'-esp(:,1)',prod(nbs(:)),1).*rand(prod(nbs(:)),nbv);
-        %tirages définis manuellement
+        %tirages dï¿½finis manuellement
     case 'perso'
         tirages=doe.manu;
         disp('/!\ Echantillonnage manuel (cf. conf_doe.m)');
@@ -170,14 +171,14 @@ switch doe.type
         error('le type de tirage nest pas defini');
 end
 
-%Tri des tirages (par rapport à une variable
+%Tri des tirages (par rapport ï¿½ une variable
 if isfield(doe,'tri')&&doe.tri>0
     if doe.tri<=size(tirages,1)
         [~,ind]=sort(tirages(:,doe.tri));
         tirages=tirages(ind,:);
     else
         fprintf('###############################################################\n');
-        fprintf('## ##mauvais paramètre de tri des tirages (tri désactivé) ## ##\n');
+        fprintf('## ##mauvais paramï¿½tre de tri des tirages (tri dï¿½sactivï¿½) ## ##\n');
         fprintf('###############################################################\n');
     end
 end

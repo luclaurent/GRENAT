@@ -1,4 +1,4 @@
-function [fct,dfct,infos]=fct_manu(x,~)
+function [fct,dfct,infos,ddfct]=fct_manu(x,~)
 v=2;
 
 
@@ -15,7 +15,7 @@ if v==1
         dfct=-15*sin(x);
     end
     %sortie informations sur la fonction
-    if nargout==3
+    if nargout>=3
         %sur [-1,15]
         pts=[1;3]*pi;
         infos.min_loc.X=pts;
@@ -30,9 +30,12 @@ elseif v==2
     if nargout>=2||dem
         dfct=-exp(-x/a).*(sin(x)+1/a.*cos(x))+1/a;
     end
+    if nargout==4
+        ddfct=exp(-x/a).*(-cos(x)+2.*sin(x)./a+1/a^2.*cos(x));
+    end
     %sortie informations sur la fonction
     %sortie informations sur la fonction
-    if nargout==3
+    if nargout>=3
         %sur [-1,15]
         infos.min_glob.Z=-0.436559;
         infos.min_glob.X=2.9844;
@@ -45,7 +48,7 @@ elseif v==3
         dfct=-4*sin(4*x);
     end
     %sortie informations sur la fonction
-    if nargout==3
+    if nargout>=3
         %sur [-1,15]
         pts=[1;3;5;7;9;11;13;15;17;19]*pi/4;
         infos.min_glob.Z=cos(4*pts);

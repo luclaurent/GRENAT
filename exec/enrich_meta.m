@@ -1,4 +1,4 @@
-%% Proc�dure assurant l'enrichissement du m�tamod�le
+%% Proc�dure assurant l'enrichissement du metamodele
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)
@@ -88,16 +88,17 @@ while ~crit_atteint&&enrich.on
                 tir=old_tirages;
                 nb_pts=size(tir,1);
                 depass=(nb_pts-crit{it_type})/crit{it_type};
+                %affichage info
+                fprintf(' ==>> Nombre de points atteint: %d (max: %d) <<==\n',nb_pts,crit{it_type});
                 % verification temps atteint
                 if nb_pts>=crit{it_type}
                     pts_ok=false;
-                    fprintf(' ====> Nb maxi de points ATTEINT: %d (max: %d) --- + %4.2e%s <====\n',nb_pts,crit{it_type},depass*100,char(37))
+                    fprintf(' ====> LIMITE Nombre de points ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
                 else
                     pts_ok=true;
-                    fprintf(' ====> Nb maxi de points OK: %d (max: %d) --- %4.2e%s <====\n',nb_pts,crit{it_type},depass*100,char(37))
-                end
-                
-                %sauvegarde valeur crit�re
+                    fprintf(' ====> LIMITE Nombre de points NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                end                
+                %sauvegarde valeur critere
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} nb_pts];
                 
                 %trace de l'evolution
@@ -119,13 +120,15 @@ while ~crit_atteint&&enrich.on
                 % Extraction MSE (CV)
                 msep=approx.cv.eloot;
                 depass=(msep-crit{it_type})/crit{it_type};
+                 %affichage info
+                fprintf(' ==>> MSE (CV) atteint: %d (max: %d) <<==\n',msep,crit{it_type});
                 % verification temps atteint
                 if msep<=crit{it_type}
                     mse_ok=false;
-                    fprintf(' ====> MSE (CV) ATTEINTE: %4.2e (max: %4.2e) --- + %4.2e%s <====\n',msep,crit{it_type},depass,char(37))
+                    fprintf(' ====> LIMITE MSE (CV) ATTEINTE --- + %4.2e%s <====\n',depass,char(37))
                 else
                     mse_ok=true;
-                    fprintf(' ====> MSE (CV) OK: %4.2e (max: %4.2e) --- %4.2e%s <====\n',msep,crit{it_type},depass,char(37))
+                    fprintf(' ====> LIMITE MSE (CV) NON ATTEINTE --- %4.2e%s <====\n',depass,char(37))
                 end
                 %sauvegarde valeur critere
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} msep];
@@ -143,7 +146,7 @@ while ~crit_atteint&&enrich.on
                     aff_evol(nb_pts,msep,opt_plot,id_plotloc);
                     num_sub=num_sub+1;
                 end
-                % controle en convergence de r�ponse et/ou de localisation
+                % controle en convergence de reponse et/ou de localisation
             case {'CONV_REP','CONV_LOC'}
                 %valeur cible
                 Z_cible=enrich.min_glob.Z;

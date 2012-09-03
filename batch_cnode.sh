@@ -6,11 +6,11 @@
 
 ## déclaration variables
 # noms dossiers
-ORIGIN="/nutmp/node48/laurent/"
-meta="code_meta"
-nom="laurent"
-NOM_TMP="cluster"
-RESULTS="resultats_cluster"
+DOSSIER_BASE="/data1/laurent/"
+META="code_meta"
+NOM="laurent"
+DOSSIER_RESULTS="resultats_cluster"
+DOSSIER_DATA_EXEC="exec_cluster"
 DOSSIER_PID="./"
 # commande execution MATLAB
 OPT_MATLAB="-nodesktop -nosplash -nodisplay -r"
@@ -30,7 +30,7 @@ echo '-------------------------------------------'
 day=`date +%Y%m%d`
 heure=`date +%H%M%S`
 
-#test extension nom de dossier 
+#test extension nom de dossier (variable passée par -v avec qsub)
 if [ -z ${EXT_DOSS} ]
 then
 	EXT_DOSS_T=''
@@ -41,29 +41,27 @@ fi
 # récupération nom du fichier MatLab à récupérer
 echo "Fichier: $FICHIER_MATLAB"
 BASE_MATLAB=`basename $FICHIER_MATLAB .m`
-DOSSIER_SOURCE=${ORIGIN}
+DOSSIER_SOURCE=${DOSSIER_BASE}
 DOSSIER_RACINE=$DOSSIER_SOURCE
 DOSSIER_META=${DOSSIER_RACINE}/${meta}
-DOSSIER_TRAVAIL=${day}'_'${heure}'_'${BASE_MATLAB}${EXT_DOSS_T}
-DOSSIER_TMP=${DOSSIER_RACINE}/${NOM_TMP}
-DOSSIER_TRAVAIL_TMP=${DOSSIER_TMP}/${DOSSIER_TRAVAIL}
-DOSSIER_RESULTATS=${DOSSIER_TMP}/${RESULTS}
-
+DOSSIER_DONNEES_RESULTATS=${DOSSIER_RACINE}/${DOSSIER_DATA_EXEC}
+DOSSIER_RESULTATS=${DOSSIER_DONNEES_RESULTATS}/${DOSSIER_RESULTS}
+DOSSIER_BASE_TRAVAIL=${day}'_'${heure}'_'${BASE_MATLAB}${EXT_DOSS_T}
+DOSSIER_TRAVAIL=${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}
 
 echo '  >> Préparation des fichiers de calcul'
 echo "Dossier source: $DOSSIER_SOURCE"
 echo "Dossier code metamodèle: $DOSSIER_META"
-echo "Dossier de travail: $DOSSIER_TRAVAIL_TMP"
-echo "Dossier temporaire: $DOSSIER_TMP"
+echo "Dossier de travail: $DOSSIER_TRAVAIL"
 echo "Dossier resultats: $DOSSIER_RESULTATS"
 #Verification existence dossier temporaire
-echo '  >> Vérification existence dossier temporaire'
-if [ -d $DOSSIER_TMP ]
+echo '  >> Vérification existence dossier travail'
+if [ -d $DOSSIER_TRAVAIL ]
 then
         echo "Dossier temporaire existant"
 else
 	echo "Dossier temporaire inexistant -- Création"
-	mkdir $DOSSIER_TMP
+	mkdir $DOSSIER_TRAVAIL
 fi
 
 #Verification existence dossier temporaire

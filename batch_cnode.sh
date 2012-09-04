@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#Execution script qsub -l nodes=01:ppn=1,pmem=30gb,walltime=100:00:00 -v FICHIER_MATLAB=<fichier.m>,EXT_DOSS=<extension_nom_dossier>  batch_cnode.sh
+#Execution script qsub -l nodes=01:ppn=1:TCP,pmem=30gb,walltime=100:00:00 -v FICHIER_MATLAB=<fichier.m>,EXT_DOSS=<extension_nom_dossier>  batch_cnode.sh
 #Execution sur node 0/1 (mémoire 64gb) ajouter -q bigmem
 #Variable $EXT_DOSS optionnelle
 
 ## déclaration variables
 # noms dossiers
-DOSSIER_BASE="/data1/laurent/"
+DOSSIER_BASE="/data1/laurent"
 META="code_meta"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"
@@ -43,9 +43,9 @@ echo "Fichier: $FICHIER_MATLAB"
 BASE_MATLAB=`basename $FICHIER_MATLAB .m`
 DOSSIER_SOURCE=${DOSSIER_BASE}
 DOSSIER_RACINE=$DOSSIER_SOURCE
-DOSSIER_META=${DOSSIER_RACINE}/${meta}
+DOSSIER_META=${DOSSIER_RACINE}/${META}
 DOSSIER_DONNEES_EXECUTIONS=${DOSSIER_RACINE}/${DOSSIER_DATA_EXEC}
-DOSSIER_RESULTATS=${DOSSIER_DONNEES_RESULTATS}/${DOSSIER_RESULTS}
+DOSSIER_RESULTATS=${DOSSIER_RACINE}/${DOSSIER_RESULTS}
 DOSSIER_BASE_TRAVAIL=${day}'_'${heure}'_'${BASE_MATLAB}${EXT_DOSS_T}
 DOSSIER_TRAVAIL=${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
 

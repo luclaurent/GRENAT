@@ -169,7 +169,7 @@ then
 	ite=0
 	while ! $test_exist
 	do
-		doss_test=`echo "$DOSSIER_TRAVAIL_$ite"`
+		doss_test=`echo "${DOSSIER_TRAVAIL}_${ite}"`
 		if [ -d $doss_test ]
 		then
 			ite=$(($ite+1))
@@ -178,7 +178,7 @@ then
 			mkdir $doss_test
 			test_exist=true
 			echo "Le dossier de travail: $DOSSIER_TRAVAIL"
-			DOSSIER_TRAVAIL=`echo "$DOSSIER_TRAVAIL_$ite"`
+			DOSSIER_TRAVAIL=`echo "${DOSSIER_TRAVAIL}_${ite}"`
 			echo "devient: $DOSSIER_TRAVAIL"
 		fi
 	done

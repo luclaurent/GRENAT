@@ -12,11 +12,12 @@
 
 ## déclaration variables
 # noms dossiers
-ORIGIN="/nutmp/node48/laurent/"
-meta="code_meta"
-nom="laurent"
-NOM_TMP="cluster"
-RESULTS="resultats_cluster"
+DOSSIER_BASE="/data1/laurent/"
+META="code_meta"
+NOM="laurent"
+DOSSIER_RESULTS="resultats_cluster"
+DOSSIER_DATA_EXEC="exec_cluster"
+DOSSIER_PID="./"
 # commande execution MATLAB
 OPT_MATLAB="-nodesktop -nosplash -nodisplay -r"
 LOG_MATLAB="-logfile"
@@ -55,17 +56,16 @@ heure=`date +%H%M%S`
 
 
 # récupération nom du fichier MatLab à récupérer
-echo "Fichier: $FICHIER_MATLAB"
 DOSSIER_SOURCE=${ORIGIN}
 DOSSIER_RACINE=$DOSSIER_SOURCE
 DOSSIER_META=${DOSSIER_RACINE}/${meta}
-DOSSIER_TMP=${DOSSIER_RACINE}/${NOM_TMP}
+DOSSIER_DONNEES_EXECUTIONS=${DOSSIER_RACINE}/${DOSSIER_DATA_EXEC}
+DOSSIER_RESULTATS=${DOSSIER_DONNEES_RESULTATS}/${DOSSIER_RESULTS}
 
 echo '  >> Préparation des fichiers de calcul'
 echo "Dossier source: $DOSSIER_SOURCE"
 echo "Dossier code metamodèle: $DOSSIER_META"
-echo "Dossier de travail: $DOSSIER_TRAVAIL_TMP"
-echo "Dossier temporaire: $DOSSIER_TMP"
+echo "Dossier de données d'execution: $DOSSIER_DONNEES_EXECUTIONS"
 echo "Dossier resultats: $DOSSIER_RESULTATS"
 
 
@@ -126,23 +126,42 @@ echo '-------------------------------------------'
 echo ' INITIALISATION CALCUL'
 echo '-------------------------------------------'
 # initialisation dossier de stockage
-DOSSIER_TRAVAIL=${day}'_'${heure}'_'${FICHIER_MATLAB}'_'${num_job}
-DOSSIER_TRAVAIL_TMP=${DOSSIER_TMP}/${DOSSIER_TRAVAIL}
-DOSSIER_RESULTATS=${DOSSIER_TMP}/${RESULTS}
+DOSSIER_BASE_TRAVAIL=${day}'_'${heure}'_'${FICHIER_MATLAB}'_'${num_job}
+DOSSIER_TRAVAIL=${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
 
-#Verification existence dossier temporaire
-echo '  >> Vérification existence dossier temporaire'
-if [ -d $DOSSIER_TMP ]
+echo "Dossier de travail: $DOSSIER_TRAVAIL"
+
+#Verification existence dossier de travail 
+echo '  >> Vérification existence dossier de travail'
+if [ -d $DOSSIER_TRAVAIL ]
 then
-	echo "Dossier temporaire existant"
+        echo "Dossier de travail existant"
 else
-	echo "Dossier temporaire inexistant -- Création"
-	mkdir $DOSSIER_TMP
+	echo "Dossier de travail inexistant -- Création"
+	mkdir $DOSSIER_TRAVAIL
+fi
+#Verification existence dossier de données d'execution
+echo "  >> Vérification existence dossier de données d'execution"
+if [ -d $DOSSIER_DONNEES_EXECUTIONS ]
+then
+        echo "Dossier de données d'execution existant"
+else
+	echo "Dossier de données d'execution inexistant -- Création"
+	mkdir $DOSSIER_DONNEES_EXECUTIONS
+fi
+#Verification existence dossier de résultats
+echo "  >> Vérification existence dossier de résultats"
+if [ -d $DOSSIER_RESULTATS ]
+then
+        echo "Dossier de résultats existant"
+else
+	echo "Dossier de résultats inexistant -- Création"
+	mkdir $DOSSIER_RESULTATS
 fi
 
 #Verification existence dossier temporaire
-echo '  >> Vérification existence dossier temporaire de travail'
-if [ -d $DOSSIER_TRAVAIL_TMP ]
+echo "  >> Vérification existence dossier de données d'execution"
+if [ -d $DOSSIER_TRAVAIL ]
 then
 	echo "Dossier temporaire existant"
 	echo "Création d'un dossier différent"
@@ -150,7 +169,7 @@ then
 	ite=0
 	while ! $test_exist
 	do
-		doss_test=`echo "$DOSSIER_TRAVAIL_TMP_$ite"`
+		doss_test=`echo "$DOSSIER_TRAVAIL_$ite"`
 		if [ -d $doss_test ]
 		then
 			ite=$(($ite+1))
@@ -161,25 +180,15 @@ then
 			echo "Le dossier de travail: $DOSSIER_TRAVAIL"
 			DOSSIER_TRAVAIL=`echo "$DOSSIER_TRAVAIL_$ite"`
 			echo "devient: $DOSSIER_TRAVAIL"
-			DOSSIER_TRAVAIL_TMP=$doss_test
 		fi
 	done
 else
 	echo "Dossier temporaire inexistant -- Création"
-	mkdir $DOSSIER_TRAVAIL_TMP
-fi
-
-echo '  >> Vérification existence dossier temporaire de resultats'
-if [ -d $DOSSIER_RESULTATS ]
-then
-echo "Dossier temporaire resultats existant"
-else
-echo "Dossier temporaire resultats inexistant -- Création"
-mkdir $DOSSIER_RESULTATS
+	mkdir $DOSSIER_TRAVAIL
 fi
 
 echo '  >> Copie des fichiers dans le dossier temporaire'
-rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META} ${DOSSIER_TRAVAIL_TMP}/.
+rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META} ${DOSSIER_TRAVAIL}/.
 
 
 echo '-------------------------------------------'
@@ -245,7 +254,7 @@ do
    fi
    
 # verif et/ou creation dossier $DOSSIER_TRAVAIL dans /usrtmp/laurent/$DOSSIER_TRAVAIL sur chaque noeud alloué
-   DIR=$(rsh $node "ls /usrtmp/$NUID | grep $DOSSIER_TRAVAIL" )
+   DIR=$(rsh $node "ls /usrtmp/$NUID | grep $DOSSIER_BASE_TRAVAIL" )
    EXITSTATUS=$?
    if [ $EXITSTATUS != 0 ]
    then
@@ -256,19 +265,19 @@ do
 
    if [ "X$DIR" == "X" ]
    then
-     echo "Pas de repertoire $DOSSIER_TRAVAIL dans /usrtmp/$NUID de $node"
+     echo "Pas de repertoire $DOSSIER_BASE_TRAVAIL dans /usrtmp/$NUID de $node"
      echo "On le cree"
 
-     ssh $node "mkdir -p /usrtmp/$NUID/$DOSSIER_TRAVAIL && chown $NUID:$NGID /usrtmp/$NUID/$DOSSIER_TRAVAIL "
+     ssh $node "mkdir -p /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL && chown $NUID:$NGID /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL "
      EXITSTATUS=$?
      if [ $EXITSTATUS != 0 ]
      then
        echo " exitstatus : $EXITSTATUS"
-       echo " PB de creation de /usrtmp/$NUID/$DOSSIER_TRAVAIL sur $node"
+       echo " PB de creation de /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL sur $node"
        exit 1
      fi
    else
-     echo " /usrtmp/$NUID/$DOSSIER_TRAVAIL EXISTE sur $node"
+     echo " /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL EXISTE sur $node"
    fi
 
 done
@@ -277,7 +286,7 @@ echo '-------------------------------------------'
 echo ' COPIE DES FICHIERS PAR RSYNC -Z'
 echo '-------------------------------------------'
 #copie fichiers sur nutmp
-rsync -auz --exclude '.git' $DOSSIER_TRAVAIL_TMP/* /usrtmp/$NUID/$DOSSIER_TRAVAIL/. 
+rsync -auz --exclude '.git' $DOSSIER_TRAVAIL/* /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL/. 
 
 echo '-------------------------------------------'
 echo ' RECHERCHE COMMANDE COMPLETE EXECUTABLE MATLAB'
@@ -303,14 +312,16 @@ echo '-------------------------------------------'
 echo ' EXECUTION ET RAPATRIEMENT DES FICHIERS PAR RSYNC -Z'
 echo '-------------------------------------------'
 # commande d'execution
-cmd_matlab=${exec}' '${OPT_MATLAB}' '${FICHIER_MATLAB}' '${LOG_MATLAB}' '${FICHIER_MATLAB}'_'${num_job}.log
+FICH_LOG=" echo ${FICHIER_MATLAB}_${num_job}.log"
+echo "Fichier log Matlab: $FICH_LOG"
+cmd_matlab=${exec}' '${OPT_MATLAB}' '${FICHIER_MATLAB}' '${LOG_MATLAB}' '${FICH_LOG}
 echo "Commande execution MatLab $cmd_matlab"
 # pour lancer le calcul
 #rsh $PREMIERNODE  " cd /usrtmp/$NUID/$DOSSIER_TRAVAIL/$pilotage && ${cmd_matlab} ;
 #rsync -auz /usrtmp/$NUID/$DOSSIER_TRAVAIL/${pilotage}/results/* $DOSSIER_RESULTATS/."
 # execution matlab
-cd /usrtmp/$NUID/$DOSSIER_TRAVAIL/$meta && ${cmd_matlab} 
-rsync -auz /usrtmp/$NUID/$DOSSIER_TRAVAIL $DOSSIER_RESULTATS/.
+cd /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL/$meta && ${cmd_matlab} 
+rsync -auz /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL $DOSSIER_RESULTATS/.
  
 echo "Stockage des résultats dans $DOSSIER_RESULTATS"
 
@@ -318,22 +329,22 @@ echo '-------------------------------------------'
 echo ' COMPRESSION DES DONNEES (SOURCE ET CLUSTER)'
 echo '-------------------------------------------' 
 # sur source
-tar -cjf ${DOSSIER_TMP}/${DOSSIER_TRAVAIL}.tar.bz2 ${DOSSIER_TMP}/${DOSSIER_TRAVAIL}
-rm -rf ${DOSSIER_TMP}/${DOSSIER_TRAVAIL}
+tar -cjf ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}.tar.bz2 ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}
+rm -rf ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}
 
 #sur cluster
-tar -cjf /usrtmp/$NUID/$DOSSIER_TRAVAIL.tar.bz2 /usrtmp/$NUID/$DOSSIER_TRAVAIL && rm -rf /usrtmp/$NUID/$DOSSIER_TRAVAIL 
+tar -cjf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL.tar.bz2 /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL && rm -rf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL 
 
 echo '-------------------------------------------'
 echo ' ARRET PROCESSUS SI PLANTAGE'
 echo '-------------------------------------------' 
-rsh $PREMIERNODE " cd /usrtmp/$NUID/$DOSSIER_TRAVAIL/$DOSSIER_PID && for i in `ls -d pid*`; do echo $i ; processus=${i:4}; echo 'Arret processus:';echo $processus; kill -9 $processus; rm -f $i; done "
+rsh $PREMIERNODE " cd /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL/$DOSSIER_PID && for i in `ls -d pid*`; do echo $i ; processus=${i:4}; echo 'Arret processus:';echo $processus; kill -9 $processus; rm -f $i; done "
 
 
 echo '-------------------------------------------'
 echo ' ENVOI MAIL FIN DE CALCUL '
 echo '-------------------------------------------'
 sub=`echo "Fin calcul sur $PREMIERNODE"`
-mutt -s "$sub" $adr < ${DOSSIER_RESULTATS}/${DOSSIER_TRAVAIL}.log
+mutt -s "$sub" $adr < ${DOSSIER_RESULTATS}/${FICH_LOG}
 
 fi

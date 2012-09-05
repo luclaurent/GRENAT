@@ -7,7 +7,7 @@
 ## déclaration variables
 # noms dossiers
 DOSSIER_BASE="/data1/laurent"
-META="code_meta"
+META="code_meta_cluster"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"
 DOSSIER_DATA_EXEC="exec_cluster"
@@ -56,15 +56,6 @@ echo "Dossier de travail: $DOSSIER_TRAVAIL"
 echo "Dossier de données d'execution: $DOSSIER_DONNEES_EXECUTIONS"
 echo "Dossier resultats: $DOSSIER_RESULTATS"
 
-#Verification existence dossier de travail 
-echo '  >> Vérification existence dossier de travail'
-if [ -d $DOSSIER_TRAVAIL ]
-then
-        echo "Dossier de travail existant"
-else
-	echo "Dossier de travail inexistant -- Création"
-	mkdir $DOSSIER_TRAVAIL
-fi
 #Verification existence dossier de données d'execution
 echo "  >> Vérification existence dossier de données d'execution"
 if [ -d $DOSSIER_DONNEES_EXECUTIONS ]
@@ -114,7 +105,7 @@ fi
 
 
 echo '  >> Copie des fichiers dans le dossier de travail'
-rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META} ${DOSSIER_TRAVAIL}/.
+rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
 
 
 echo '-------------------------------------------'
@@ -238,7 +229,7 @@ echo '-------------------------------------------'
 echo ' EXECUTION ET RAPATRIEMENT DES FICHIERS PAR RSYNC -Z'
 echo '-------------------------------------------'
 # commande d'execution
-FICH_LOG=" echo ${BASE_MATLAB}.log"
+FICH_LOG=`echo "${BASE_MATLAB}.log"`
 echo "Fichier log Matlab: $FICH_LOG"
 cmd_matlab=${exec}' '${OPT_MATLAB}' '${BASE_MATLAB}' '${LOG_MATLAB}' '${FICH_LOG}
 echo "Commande execution MatLab $cmd_matlab"
@@ -258,8 +249,8 @@ echo '-------------------------------------------'
 echo ' COMPRESSION DES DONNEES (SOURCE ET CLUSTER)'
 echo '-------------------------------------------' 
 # sur source
-tar -cjf ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}.tar.bz2 ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}
-rm -rf ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}
+tar -cjf ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}.tar.bz2 ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
+rm -rf ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
 
 #sur cluster
 tar -cjf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL.tar.bz2 /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL && rm -rf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Execution script qsub -l nodes=01:ppn=1,pmem=30gb,walltime=100:00:00 -t <nb_job> -v FICH_SCRIPT=<nom_fichier>  batch_lot_cnode.sh
+#Execution script qsub -l nodes=01:ppn=1:TCP,pmem=30gb,walltime=100:00:00 -t <nb_job> -v FICH_SCRIPT=<nom_fichier>  batch_lot_cnode.sh
 #Execution sur node 0/1 (mémoire 64gb) ajouter -q bigmem
 
 # execution possible sans qsub pour lancement jobs sans tableau
@@ -13,7 +13,7 @@
 ## déclaration variables
 # noms dossiers
 DOSSIER_BASE="/data1/laurent/"
-META="code_meta"
+META="code_meta_cluster"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"
 DOSSIER_DATA_EXEC="exec_cluster"
@@ -95,7 +95,7 @@ echo "Fichier de donnees ${liste_script_abs}"
 		echo "+++++ NOM JOB: $NOM_JOB_MANU"
 
 		#commande d'execution cluster
-		CMD_CLUSTER=`echo "qsub -l nodes=${NB_NODES}:ppn=${NB_PROC},pmem=${MEM_PAR_PROC}mb,walltime=${CPU_TIME} -N ${NUM_JOB}_${NOM_JOB_MANU} -v FICHIER_MATLAB=${SCRIPT_MATLAB}.m,EXT_DOSS=${NUM_JOB} ${SCRIPT_LANCE_JOB}"`
+		CMD_CLUSTER=`echo "qsub -l nodes=${NB_NODES}:ppn=${NB_PROC}:TCP,pmem=${MEM_PAR_PROC}mb,walltime=${CPU_TIME} -N ${NUM_JOB}_${NOM_JOB_MANU} -v FICHIER_MATLAB=${SCRIPT_MATLAB}.m,EXT_DOSS=${NUM_JOB} ${SCRIPT_LANCE_JOB}"`
 		echo "+++++ Commande execution calcul"
 		echo "$CMD_CLUSTER"
 		${CMD_CLUSTER}
@@ -131,15 +131,6 @@ DOSSIER_TRAVAIL=${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
 
 echo "Dossier de travail: $DOSSIER_TRAVAIL"
 
-#Verification existence dossier de travail 
-echo '  >> Vérification existence dossier de travail'
-if [ -d $DOSSIER_TRAVAIL ]
-then
-        echo "Dossier de travail existant"
-else
-	echo "Dossier de travail inexistant -- Création"
-	mkdir $DOSSIER_TRAVAIL
-fi
 #Verification existence dossier de données d'execution
 echo "  >> Vérification existence dossier de données d'execution"
 if [ -d $DOSSIER_DONNEES_EXECUTIONS ]
@@ -188,7 +179,7 @@ else
 fi
 
 echo '  >> Copie des fichiers dans le dossier temporaire'
-rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META} ${DOSSIER_TRAVAIL}/.
+rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
 
 
 echo '-------------------------------------------'
@@ -312,7 +303,7 @@ echo '-------------------------------------------'
 echo ' EXECUTION ET RAPATRIEMENT DES FICHIERS PAR RSYNC -Z'
 echo '-------------------------------------------'
 # commande d'execution
-FICH_LOG=" echo ${FICHIER_MATLAB}_${num_job}.log"
+FICH_LOG=`echo "${FICHIER_MATLAB}_${num_job}.log"`
 echo "Fichier log Matlab: $FICH_LOG"
 cmd_matlab=${exec}' '${OPT_MATLAB}' '${FICHIER_MATLAB}' '${LOG_MATLAB}' '${FICH_LOG}
 echo "Commande execution MatLab $cmd_matlab"
@@ -329,8 +320,8 @@ echo '-------------------------------------------'
 echo ' COMPRESSION DES DONNEES (SOURCE ET CLUSTER)'
 echo '-------------------------------------------' 
 # sur source
-tar -cjf ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}.tar.bz2 ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}
-rm -rf ${DOSSIER_TMP}/${DOSSIER_BASE_TRAVAIL}
+tar -cjf ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}.tar.bz2 ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
+rm -rf ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
 
 #sur cluster
 tar -cjf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL.tar.bz2 /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL && rm -rf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL 

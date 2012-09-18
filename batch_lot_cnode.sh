@@ -1,7 +1,8 @@
 #!/bin/bash
 
-#Execution script qsub -l nodes=01:ppn=1:TCP,pmem=30gb,walltime=100:00:00 -t <nb_job> -v FICH_SCRIPT=<nom_fichier>  batch_lot_cnode.sh
+#Execution script qsub -l nodes=01:ppn=1,pmem=30gb,walltime=100:00:00 -t <nb_job> -v FICH_SCRIPT=<nom_fichier>  batch_lot_cnode.sh
 #Execution sur node 0/1 (mémoire 64gb) ajouter -q bigmem
+
 
 # execution possible sans qsub pour lancement jobs sans tableau
 
@@ -95,7 +96,7 @@ echo "Fichier de donnees ${liste_script_abs}"
 		echo "+++++ NOM JOB: $NOM_JOB_MANU"
 
 		#commande d'execution cluster
-		CMD_CLUSTER=`echo "qsub -l nodes=${NB_NODES}:ppn=${NB_PROC}:TCP,pmem=${MEM_PAR_PROC}mb,walltime=${CPU_TIME} -N ${NUM_JOB}_${NOM_JOB_MANU} -v FICHIER_MATLAB=${SCRIPT_MATLAB}.m,EXT_DOSS=${NUM_JOB} ${SCRIPT_LANCE_JOB}"`
+		CMD_CLUSTER=`echo "qsub -l nodes=${NB_NODES}:ppn=${NB_PROC},pmem=${MEM_PAR_PROC}mb,walltime=${CPU_TIME} -N ${NUM_JOB}_${NOM_JOB_MANU} -v FICHIER_MATLAB=${SCRIPT_MATLAB}.m,EXT_DOSS=${NUM_JOB} ${SCRIPT_LANCE_JOB}"`
 		echo "+++++ Commande execution calcul"
 		echo "$CMD_CLUSTER"
 		${CMD_CLUSTER}

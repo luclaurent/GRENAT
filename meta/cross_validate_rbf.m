@@ -73,37 +73,39 @@ end
 
 %calcul des erreurs en reponses et en gradients (differentes normes
 %employees)
-switch LOO_norm
-    case 'L1'
-        if data.in.pres_grad
-            cv.press=esr'*esr;
-            cv.eloor=1/data.in.nb_val*sum(abs(esr));
-            cv.eloog=1/(data.in.nb_val*data.in.nb_var)*sum(abs(esg));
-            cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*sum(abs(es));
-        else
-            cv.press=es'*es;
-            cv.eloot=1/data.in.nb_val*sum(abs(es));
-        end
-    case 'L2' %MSE
-        if data.in.pres_grad
-            cv.press=esr'*esr;
-            cv.eloor=1/data.in.nb_val*(cv.press);
-            cv.eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
-            cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*(es'*es);
-        else
-            cv.press=es'*es;
-            cv.eloot=1/data.in.nb_val*(cv.press);
-        end
-    case 'Linf'
-        if data.in.pres_grad
-            cv.press=esr'*esr;
-            cv.eloor=1/data.in.nb_val*max(esr(:));
-            cv.eloog=1/(data.in.nb_val*data.in.nb_var)*max(esg(:));
-            cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*max(es(:));
-        else
-            cv.press=es'*es;
-            cv.eloot=1/data.in.nb_val*max(es(:));
-        end
+spmd
+    switch LOO_norm
+        case 'L1'
+            if data.in.pres_grad
+                cv.press=esr'*esr;
+                cv.eloor=1/data.in.nb_val*sum(abs(esr));
+                cv.eloog=1/(data.in.nb_val*data.in.nb_var)*sum(abs(esg));
+                cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*sum(abs(es));
+            else
+                cv.press=es'*es;
+                cv.eloot=1/data.in.nb_val*sum(abs(es));
+            end
+        case 'L2' %MSE
+            if data.in.pres_grad
+                cv.press=esr'*esr;
+                cv.eloor=1/data.in.nb_val*(cv.press);
+                cv.eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
+                cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*(es'*es);
+            else
+                cv.press=es'*es;
+                cv.eloot=1/data.in.nb_val*(cv.press);
+            end
+        case 'Linf'
+            if data.in.pres_grad
+                cv.press=esr'*esr;
+                cv.eloor=1/data.in.nb_val*max(esr(:));
+                cv.eloog=1/(data.in.nb_val*data.in.nb_var)*max(esg(:));
+                cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*max(es(:));
+            else
+                cv.press=es'*es;
+                cv.eloot=1/data.in.nb_val*max(es(:));
+            end
+    end
 end
 %affichage qques infos
 if mod_debug

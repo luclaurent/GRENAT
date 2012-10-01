@@ -136,29 +136,38 @@ end
 %QR
 switch fact_KK
     case 'QR'
-        [Q,R]=qr(KK);
-        ret.build.QKK=Q;
-        ret.build.RKK=R;
-        ret.build.iKK=R\Q';
-        ret.build.yQ=Q'*data.build.y;
-        ret.build.w=R\ret.build.yQ;
+        spmd
+            [Q,R]=qr(KK);
+            ret.build.QKK=Q;
+            ret.build.RKK=R;
+            ret.build.iKK=R\Q';
+            ret.build.yQ=Q'*data.build.y;
+            ret.build.w=R\ret.build.yQ;
+        end
     case 'LU'
-        [L,U]=lu(KK);
-        % a ecrire
+        spmd
+            [L,U]=lu(KK);
+            % a ecrire
+        end
     case 'LL'
-        %%% A coder
-        L=chol(KK,'lower');
-        % a ecrire
+        spmd
+            %%% A coder
+            L=chol(KK,'lower');
+            % a ecrire
+        end
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
         if ~aff_warning; warning off all;end
-        ret.build.iKK=inv(KK);
+        spmd
+            ret.build.iKK=inv(KK);
+        end
         if ~aff_warning; warning on all;end
-        ret.build.w=ret.build.iKK*data.build.y;
-        
+        spmd
+            ret.build.w=ret.build.iKK*data.build.y;
+        end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

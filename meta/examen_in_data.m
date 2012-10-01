@@ -21,7 +21,7 @@ ix_manq_eval=find(manq_eval==1);
 ix_dispo_eval=find(manq_eval==0);
 if nb_manq_eval==nb_val;manq_eval_all=true;else manq_eval_all=false;end
 
-%donn�es manquantes dans les gradients
+%donnees manquantes dans les gradients
 if ~emptygrad
     %positionnement classique gradients (dy1/dx1,dy2/dx1...)
     manq_grad=isnan(grad);

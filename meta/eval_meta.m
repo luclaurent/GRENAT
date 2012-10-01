@@ -112,7 +112,7 @@ for num_meta=1:numel(donnees_const)
             end
             %% verification interpolation
             if meta.verif
-                for jj=1:size(tirages,1)
+                parfor jj=1:size(tirages,1)
                     [Zverif(jj),G]=eval_rbf(tirages(jj,:),meta_donnee);
                     GZverif(jj,:)=G;
                 end
@@ -170,7 +170,7 @@ for num_meta=1:numel(donnees_const)
             
             %% verification interpolation
             if meta.verif
-                for jj=1:size(tirages,1)
+                parfor jj=1:size(tirages,1)
                     [Zverif(jj),G,varverif(jj)]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
                     GZverif(jj,:)=G';
                 end
@@ -198,7 +198,7 @@ for num_meta=1:numel(donnees_const)
             
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
-            for jj=1:size(points,1)
+            parfor jj=1:size(points,1)
                 for kk=1:size(points,2)
                     [rep(jj,kk),G,var_rep(jj,kk)]=predictor(points(jj,kk,:),meta_donnee);
                     GR(jj,kk)=G(1);
@@ -210,7 +210,7 @@ for num_meta=1:numel(donnees_const)
         case 'PRG'
             for degre=meta.deg
                 %% Evaluation du metamodele de Regression
-                for jj=1:length(points)
+                parfor jj=1:length(points)
                     for kk=1:size(points,2)
                         rep(jj,kk)=eval_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),meta_donnee);
                         %evaluation des gradients du MT
@@ -304,10 +304,14 @@ for num_meta=1:numel(donnees_const)
                 if exist('exploit','var');Z.exploit=exploit;end
             else
                 if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-                    Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
-                    Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+                    spmd
+                        Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+                        Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+                    end
                 end
-                Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+                spmd
+                    Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+                end
                 if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
                 if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
                 if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
@@ -318,10 +322,14 @@ for num_meta=1:numel(donnees_const)
             end
         else
             if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-                Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
-                Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+                spmd
+                    Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+                    Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+                end
             end
-            Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+            spmd
+                Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+            end
             if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
             if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
             if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end

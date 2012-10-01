@@ -5,14 +5,6 @@
 clear all
 global aff
 
-fprintf('=========================================\n')
-fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
-[tMesu,tInit]=mesu_time;
-
-%execution parallele (option et lancement des workers)
-parallel.on=true;
-parallel.workers='auto';
-exec_parallel('start',parallel);
 
 %chargement des repertoires de travail
 init_rep;
@@ -22,6 +14,15 @@ init_esp;
 aff_date;
 %initialisation des variables d'affichage
 init_aff();
+
+fprintf('=========================================\n')
+fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
+[tMesu,tInit]=mesu_time;
+
+%execution parallele (option et lancement des workers)
+parallel.on=true;
+parallel.workers='auto';
+exec_parallel('start',parallel);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

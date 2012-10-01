@@ -34,6 +34,7 @@ switch statut
         end
         %%Si parallelisme reclame
         if options.on
+            %si parallelisme actif
             fprintf(' >>> Lancement workers MatLab Parallel <<<\n');
             % chargement config par defaut
             def_parallel=findResource;
@@ -54,6 +55,7 @@ switch statut
             fprintf(' >> Nombre de workers: %i\n',options.num_workers);
             %execution demande et lancement workers
             matlabpool('open',options.num_workers);
+            
         end
         
     case 'stop'

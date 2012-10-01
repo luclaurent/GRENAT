@@ -70,7 +70,7 @@ meta.verif=true;
 %sauvegarde des 
 
 
-%% chargement configuration paraticuliere
+%% chargement configuration particuliere
 if nargin==1
     %prise en compte des gradients
     if isfield(in,'grad');meta.grad=in.grad;end

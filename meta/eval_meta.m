@@ -97,7 +97,7 @@ for num_meta=1:numel(donnees_const)
             exploit=rep;
             explor=rep;
             %% Evaluation du metamodele de RBF/HBRBF
-            for jj=1:nb_ev_pts
+            parfor jj=1:nb_ev_pts
                 
                 [rep(jj),G,var_rep(jj),det]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
@@ -150,7 +150,7 @@ for num_meta=1:numel(donnees_const)
             exploit=rep;
             explor=rep;
             %% Evaluation du metamodele de Krigeage/CoKrigeage
-            for jj=1:nb_ev_pts
+            parfor jj=1:nb_ev_pts
                 [rep(jj),G,var_rep(jj),det]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
                 Z_sto(jj)=det.Z_sto;

@@ -22,7 +22,7 @@ switch type
         %préparation jeu de données pour evaluation
         X_eval=zeros(nb_val,1,nb_var);
         
-        for ii=1:nb_var
+        parfor ii=1:nb_var
             X_eval(:,:,ii)=X(:,ii);
         end
         %évaluation pour affichage (X est une matrice de matrice)
@@ -41,7 +41,7 @@ elseif nargout==2
     % gradients
     if strcmp(type,'eval')
         grad=zeros(size(X));
-        for ii=1:nb_var
+        parfor ii=1:nb_var
            grad(:,ii)=gradb(:,:,ii); 
         end
     else

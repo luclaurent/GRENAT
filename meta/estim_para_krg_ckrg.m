@@ -19,8 +19,8 @@ fprintf('++ Estimation parametres\n');
 [tMesu,tInit]=mesu_time;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% D�finition des param�tres de minimisation
-% Nombre de parametres � estimer
+% D�finition des parametres de minimisation
+% Nombre de parametres a estimer
 %anisotropie
 if meta.para.aniso
     nb_para=donnees.in.nb_var;
@@ -31,7 +31,7 @@ end
 lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
 x0=lb+1/5*(ub-lb);
-% D�finition de la function � minimiser
+% Definition de la function a minimiser
 fun=@(para)bloc_krg_ckrg(donnees,meta,para);
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
@@ -204,7 +204,7 @@ switch meta.para.method
 end
 mesu_time(tMesu,tInit);
 fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
-%stockage valeur param�tres obtenue par minimisation
+%stockage valeur parametres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
     para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;

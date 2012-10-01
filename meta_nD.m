@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='schwefel';
+fct='rosenbrock';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -39,7 +39,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=3;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -48,7 +48,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='sexp';
-data.type='CKRG';
+data.type='RBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -57,10 +57,10 @@ data.deg=1;
 
 meta=init_meta(data);
 
-meta.para.estim=false;
-meta.cv=false;
+meta.para.estim=true;
+meta.cv=true;
 meta.norm=true;
-meta.recond=true;
+meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
 meta.para.val=1/sqrt(2);%2;

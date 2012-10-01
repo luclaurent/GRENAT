@@ -102,7 +102,7 @@ for num_meta=1:numel(donnees_const)
                 [rep(jj),G,var_rep(jj),det]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
                 if isfield(det,'enrich')
-                    if isfield(det.enrich,'wei');wei(jj)=det.enrich.wei;end
+                    if isfield(det.enrich,'wei');wei(jj,:)=det.enrich.wei;end
                     if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
                     if isfield(det.enrich,'gei');gei(jj,:)=det.enrich.gei;end
                     if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end

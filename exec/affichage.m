@@ -333,7 +333,7 @@ if aff.on
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %affichage 1D
     elseif esp1d
-        if aff.grad_meta
+        if aff.grad_meta&&isfield(Z,'GZ')
             if ~isempty(aff.color)
                 if ~isempty(aff.opt)
                     plot(grille,Z.GZ,aff.opt,'Color',aff.color);

@@ -6,11 +6,11 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
 coef=10^-6;
-% type de factorisation de la matrice de corr�lation
+% type de factorisation de la matrice de correlation
 fact_rcc='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%si para d�fini alors on charge cette nouvelle valeur
+%si para defini alors on charge cette nouvelle valeur
 if nargin==3
     meta.para.val=para;
 end
@@ -46,7 +46,7 @@ if donnees.in.pres_grad
     end
     %construction matrices completes
     rc=rc+rc'-eye(donnees.in.nb_val);
-    %extraction de la diagonale (procédure pour eviter les doublons)
+    %extraction de la diagonale (procedure pour eviter les doublons)
     diago=0;   % //!!\\ corrections envisageables ici
     val_diag=spdiags(rci,diago);
     %full(spdiags(val_diag./2,diago,zeros(size(rci))))

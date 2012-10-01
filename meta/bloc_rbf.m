@@ -91,7 +91,7 @@ else
         %distance 1 tirages aux autres (construction par colonne)
         dist=repmat(data.in.tiragesn(ii,:),numel(ind),1)-data.in.tiragesn(ind,:);
         % evaluation de la fonction de correlation
-        [ev]=feval(meta.fct,dist,meta.para.val);
+        [ev]=feval(meta.rbf,dist,meta.para.val);
         % matrice de RBF
         KK(ind,ii)=ev;
     end
@@ -164,7 +164,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
-ret.build.fct=meta.fct;
+ret.build.fct=meta.rbf;
 ret.build.para=meta.para;
 ret.build.KK=KK;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

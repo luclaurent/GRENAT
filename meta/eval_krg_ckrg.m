@@ -4,7 +4,7 @@
 function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
-%Déclaration des variables
+%Dï¿½claration des variables
 nb_val=donnees.in.nb_val;
 nb_var=donnees.in.nb_var;
 
@@ -40,7 +40,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
-%définition des dimensions des matrices/vecteurs selon KRG et CKRG
+%dï¿½finition des dimensions des matrices/vecteurs selon KRG et CKRG
 if donnees.in.pres_grad
     tail_matvec=nb_val*(nb_var+1);
 else
@@ -61,7 +61,6 @@ if donnees.in.pres_grad
     if calc_grad  %si calcul des gradients
         [ev,dev,ddev]=feval(donnees.build.corr,dist,donnees.build.para.val);
         rr(1:nb_val)=ev;
-        
         rr(nb_val+1:tail_matvec)=-reshape(dev',1,nb_val*nb_var);
         
         %derivee du vecteur de correlation aux points d'evaluations
@@ -74,17 +73,44 @@ if donnees.in.pres_grad
         end
         jr(nb_val+1:tail_matvec,:)=-mat_der';
         
+        %si donnees manquantes
+        if donnees.manq.eval.on
+            rr(donnees.manq.eval.ix_manq)=[];
+            jr(donnees.manq.eval.ix_manq,:)=[];
+        end
+        
+        %si donnees manquantes
+        if donnees.manq.grad.on
+            rep_ev=donnees.in.nb_val-donnees.manq.eval.nb;
+            rr(rep_ev+donnees.manq.grad.ixt_manq_line)=[];
+            jr(rep_ev+donnees.manq.grad.ixt_manq_line,:)=[];
+        end
+        
     else %sinon
         %a reecrire //!!\\
         [ev,dev]=feval(donnees.build.corr,dist,donnees.build.para.val);
         rr(1:nb_val)=ev;
-        rr(nb_val+1:tail_matvec)=reshape(dev',1,nb_val*nb_var);
+        rr(nb_val+1:tail_matvec)=-reshape(dev',1,nb_val*nb_var);
+        %si donnees manquantes
+        if donnees.manq.eval.on
+            rr(donnees.manq.eval.ix_manq)=[];
+            %si donnees manquantes
+            if donnees.manq.grad.on
+                rep_ev=donnees.in.nb_val-donnees.manq.eval.nb;
+                rr(rep_ev+donnees.manq.grad.ixt_manq_line)=[];
+            end
+        end
     end
 else
     if calc_grad  %si calcul des gradients
         [rr,jr]=feval(donnees.build.corr,dist,donnees.build.para.val);
     else %sinon
         rr=feval(donnees.build.corr,dist,donnees.build.para.val);
+    end
+    %si donnees manquantes
+    if donnees.manq.eval.on
+        rr(donnees.manq.eval.ix_manq)=[];
+        jr(donnees.manq.eval.ix_manq,:)=[];
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -111,13 +137,31 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de la variance de prediction (MSE) (Lophaven, Nielsen & Sondergaard
-%2004)
+%2004 / Marcelet 2008 / Chauvet 1999)
 if nargout >=3
     if ~aff_warning;warning off all;end
-    rcrr=donnees.build.rcc \ rr;
-    u=donnees.build.fct*rcrr-ff';
-    variance=donnees.build.sig2*(ones(dim_x,1)+u'*...
-        ((donnees.build.fct*(donnees.build.rcc\donnees.build.fc)) \ u) - rr'*rcrr);
+    %en fonction de la factorisation
+    switch donnees.build.fact_rcc
+        case 'QR'
+            Qrr=donnees.build.Qrcc'*rr;
+            u=donnees.build.fctR*Qrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
+                u'*donnees.build.fctCfc*u);
+        case 'LU'
+            Lrr=donnees.build.Lrcc\rr;
+            u=donnees.build.fctU*Lrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
+                u'*donnees.build.fctCfc*u);
+        case 'LL'
+            Lrr=donnees.build.Lrcc\rr;
+            u=donnees.build.fctL*Lrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Lrcc)*Lrr+...
+                u'*donnees.build.fctCfc*u);
+        otherwise
+            rcrr=donnees.build.rcc \ rr;
+            u=donnees.build.fct*rcrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)+u'*donnees.build.fctCfc*u - rr'*rcrr);
+    end
     if ~aff_warning;warning on all;end
     
 end
@@ -147,28 +191,31 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul critère enrichissement
+%calcul critere enrichissement
 explor=[];
 exploit=[];
 wei=[];
 ei=[];
-if donnees.enrich.on
+gei=[];
+lcb=[];
+if donnees.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(donnees.in.eval);
-    %calcul critères enrichissement
-    [ei,wei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
+    %calcul critï¿½res enrichissement
+    [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
 end
 
-%extraction détails
+%extraction dï¿½tails
 if nargout==4
     details.Z_reg=Z_reg;
     details.Z_sto=Z_sto;
     details.GZ_reg=GZ_reg;
     details.GZ_sto=GZ_sto;
-    if ~isempty(explor);details.explor=explor;end
-    if ~isempty(exploit);details.exploit=exploit;end
-    if ~isempty(ei);details.ei=ei;end
-    if ~isempty(wei);details.wei=wei;end
-    if ~isempty(lcb);details.lcb=lcb;end
+    if ~isempty(explor);details.enrich.explor=explor;end
+    if ~isempty(exploit);details.enrich.exploit=exploit;end
+    if ~isempty(ei);details.enrich.ei=ei;end
+    if ~isempty(wei);details.enrich.wei=wei;end
+    if ~isempty(gei);details.enrich.gei=gei;end
+    if ~isempty(lcb);details.enrich.lcb=lcb;end
 end
 end

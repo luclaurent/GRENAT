@@ -1,4 +1,4 @@
-%% Enrichissement avec critères
+%% Enrichissement avec critï¿½res
 %%L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace
@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu'; 
+fct='schwefel'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -31,14 +31,14 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=30;
+aff.nbele=gene_nbele(doe.dim_pb);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
-doe.type='LHS_R';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=3;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
 data.deg=2;
@@ -48,19 +48,36 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='KRG';
+data.type='CKRG';
 data.grad=true;
 
 meta=init_meta(data);
+meta.para.estim=true;
 
 %parametrage enrichissement
-enrich.crit_type={'NB_PTS'};%,'CV_MSE'};
-enrich.val_crit={2};%,10^-4};
-enrich.type='EI';
+enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE'};% CV_MSE CONV_REP CONV_LOC
+enrich.val_crit={30,10^-6,10^-6,10^-4};%,10^-4};
+enrich.min_glob=doe.infos.min_glob;
+enrich.min_loc=doe.infos.min_loc;
+enrich.type='GEI';
 enrich.on=true;
 enrich.algo='ga';
+enrich.aff_iter_cmd=true;
+enrich.aff_evol=true;
+meta.enrich.para_wei=0.5;
+meta.enrich.para_gei=5;
+meta.enrich.para_lcb=0.5;
 enrich.aff_iter_graph=false;
 enrich.aff_iter_cmd=false;
+enrich.aff_plot_algo=false;
+enrich.optim.algo='ga';
+enrich.optim.popInitManu=false;
+enrich.optim.aff_iter_graph=false;
+enrich.optim.aff_iter_cmd=false;
+enrich.optim.aff_plot_algo=false;
+enrich.optim.popManu='IHS';     %strategie tirage population initiale algo GA '', 'LHS','IHS'...
+enrich.optim.popInit=20;       %population initiale algo GA
+enrich.optim.crit_opti=10^-6;  %critere arret algo optimisation
 
 
 %affichage de l'intervalle de confiance
@@ -91,7 +108,7 @@ tirages=gene_doe(doe);
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
 
-%procédure d'enrichissement
+%procï¿½dure d'enrichissement
 meta.cv_aff=false;
 [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich);
 [K]=eval_meta(grid_XY,approx,meta);
@@ -107,7 +124,7 @@ grad=in.grad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-%valeur par défaut
+%valeur par dï¿½faut
 aff.on=true;
 aff.newfig=false;
 aff.ic.on=true;

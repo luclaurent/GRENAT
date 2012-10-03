@@ -5,17 +5,22 @@ function para_estim=estim_para_krg_ckrg(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
 
-%critï¿½re arrï¿½t minimisation
-crit_opti=10^-6;
+%Definition manuelle de la population initiale par LHS (Ga)
+popInitManu=meta.para.popManu;
+nbPopInit=meta.para.popInit;
 
+%critere arret minimisation
+crit_opti=meta.para.crit_opti;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf('Estimation de la longueur de Correlation par minimisation de la log-vraisemblance\n');
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+fprintf('++ Estimation parametres\n');
+[tMesu,tInit]=mesu_time;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Dï¿½finition des paramï¿½tres de minimisation
-% Nombre de parametres ï¿½ estimer
+% Dï¿½finition des parametres de minimisation
+% Nombre de parametres a estimer
 %anisotropie
 if meta.para.aniso
     nb_para=donnees.in.nb_var;
@@ -26,7 +31,7 @@ end
 lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
 x0=lb+1/5*(ub-lb);
-% Dï¿½finition de la function ï¿½ minimiser
+% Definition de la function a minimiser
 fun=@(para)bloc_krg_ckrg(donnees,meta,para);
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
@@ -35,21 +40,23 @@ options_fmincon = optimset(...
     'Algorithm','interior-point',... %choix du type d'algorithme
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
-    'UseParallel','always',...
+    'UseParallel','never',...
     'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
     'TolFun',crit_opti);
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
-    'UseParallel','always',...
+    'UseParallel','never',...
     'PlotFcns','');
 options_ga = gaoptimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
-    'PopInitRange',[lb(:)';ub(:)'],...  %zone de définition de la population initiale
-    'UseParallel','always',...
-    'PlotFcns','');
+    'PopInitRange',[lb(:)';ub(:)'],...  %zone de dï¿½finition de la population initiale
+    'UseParallel','never',...
+    'PlotFcns','',...
+    'TolFun',crit_opti,...
+    'StallGenLimit',20);
 
 %affichage des iterations
 if ~meta.para.aff_iter_graph
@@ -64,6 +71,23 @@ if ~meta.para.aff_iter_cmd
     options_fminbnd=optimset(options_fminbnd,'Display', 'final');
     options_ga=gaoptimset(options_ga,'Display', 'final');
 end
+
+%affichage informations interations algo (sous forme de plot
+if meta.para.aff_plot_algo
+    options_fmincon=optimset(options_fmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
+        @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+    options_ga=gaoptimset(options_ga,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
+        @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
+        @gaplotscorediversity,@gaplotscores,@gaplotstopping});
+end
+
+%specification manuelle de la population initiale (Ga)
+if ~isempty(popInitManu)
+    doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
+    tir_pop=gene_doe(doePop);
+    options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
+end
+
 
 %minimisation de la log-vraisemblance suivant l'algorithme choisi
 switch meta.para.method
@@ -169,7 +193,7 @@ switch meta.para.method
         end
         if ~aff_warning;warning on all;end
     case 'ga'
-        fprintf('||Ga|| Initialisation par tirages LHS:\n');
+        fprintf('||Ga|| Initialisation par tirages %s:\n',popInitManu);
         if ~aff_warning;warning off all;end
         [x,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
         %arret minimisation
@@ -187,16 +211,17 @@ switch meta.para.method
     otherwise
         error('Strategie de minimisation non prise en charge');
 end
-
-%stockage valeur paramï¿½tres obtenue par minimisation
+mesu_time(tMesu,tInit);
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+%stockage valeur parametres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
     para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
-    fprintf('Valeur(s) longueur(s) de correlation');
+    fprintf('\nValeur(s) longueur(s) de correlation');
     fprintf(' %6.4f',para_estim.val_denorm);
     fprintf('\n');
 end
 fprintf('Valeur(s) longueur(s) de correlation (brut)');
 fprintf(' %6.4f',x);
-fprintf('\n');
+fprintf('\n\n');
 end

@@ -11,6 +11,7 @@ aff.contour2=false;
 affichage(grid_XY,K,tirages,eval,grad,aff);
 
 if doe.dim_pb==1&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'InKRG')||strcmp(meta.type,'CKRG'))
+    
     figure
     plot(grid_XY,K.var,'r')
     legend('variance');
@@ -21,7 +22,7 @@ if doe.dim_pb==1&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'InKRG')||strcmp(me
     plot(grid_XY,K.Z_reg,'--b')
     plot(tirages,eval,'ok')
     plot(grid_XY,Z.Z,'k')
-    legend('approx','STO','REG','sample responses','eval')
+    legend('approx','STO','REG','sample responses','eval','Location','EastOutside')
     hold off
     figure
     plot(grid_XY,K.GZ,'r')
@@ -30,35 +31,79 @@ if doe.dim_pb==1&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'InKRG')||strcmp(me
     plot(grid_XY,K.GZ_reg,'--b')
     plot(tirages,grad,'ok')
     plot(grid_XY,Z.GZ,'k')
-    legend('G approx','G STO','G REG','sample grad','grad')
-   
-    if isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')
+    legend('G approx','G STO','G REG','sample grad','grad','Location','EastOutside')
+end
+if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K,'gei')
+    xmin=min(grid_XY(:));
+    xmax=max(grid_XY(:));
     figure
-    subplot(4,1,1)
+    subplot(5,1,1)
     plot(grid_XY,K.Z,'r')
     hold on
     plot(tirages,eval,'ok')
     plot(grid_XY,Z.Z,'k')
-    legend('approx','sample resp.','eval')
+    xlim([xmin xmax])
+    legend('approx','sample resp.','eval','Location','EastOutside')
     hold off
-    subplot(4,1,2)
-    plot(grid_XY,K.var,'b')
+    subplot(5,1,2)
+    [AX,H1,H2]=plotyy(grid_XY,K.var,grid_XY,K.lcb);
+    set(H1,'Color','b')
+    set(H2,'LineStyle','--','Color','k')
+    legend('var','LCB','Location','EastOutside')
+      set(AX,'xlim',[xmin xmax])
+    hold off
+    subplot(5,1,3)
+    plot(grid_XY,K.explor,'r')
     hold on
-    plot(grid_XY,K.lcb,'--k')
-    legend('var','LCB')
+    plot(grid_XY,K.exploit,'b')
     hold off
-       subplot(4,1,3)
-    plot(grid_XY,K.ei,'r')
-    hold on
-    plot(grid_XY,K.explor,'--r')
-    plot(grid_XY,K.exploit,'--b')
-    hold off
-    legend('EI','Explor','Exploit')
-    subplot(4,1,4)
-    plot(grid_XY,K.wei,'b')
-     legend('WEI')
+xlim([xmin xmax])
+    legend('Explor','Exploit','Location','EastOutside')
+    subplot(5,1,4)
+    clear txt_legend
+    txt_legend{1}=['WEI ' num2str(meta.enrich.para_wei(1),'%4.2f')];
+    type={'b','r','k','--b','--r','--k','-.b','-.r','-.k','--g','--m'};
+    for ii=1:size(K.wei,3)
+        data=K.wei(:,:,ii);
+       % Dmax=max(data(:));
+       % Dmin=min(data(:));
+       % a=1/(Dmax-Dmin);
+       % b=-Dmin*a;
+        plot(grid_XY,data,type{ii})
+        if ii>1
+            txt_legend={txt_legend{1:end},['WEI ' num2str(meta.enrich.para_wei(ii),'%4.2f')]};
+        end
+        hold on
     end
-elseif doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
+    xlim([xmin xmax])
+    legend(txt_legend,'Location','EastOutside')
+    
+    %[~,H1,H2]=plotyy(grid_XY,K.wei,grid_XY,K.ei);
+    %set(H1,'Color','b')
+    %set(H2,'LineStyle','--','Color','k')
+    %legend('EI','WEI','Location','EastOutside')
+    subplot(5,1,5)
+    clear txt_legend
+    txt_legend{1}='GEI 0';
+    type={'b','r','k','--b','--r','--k','-.b','-.r','.k'};
+    for ii=1:size(K.gei,3)
+        data=K.gei(:,:,ii);
+        Dmax=max(data(:));
+        Dmin=min(data(:));
+        a=1/(Dmax-Dmin);
+        b=-Dmin*a;
+        plot(grid_XY,a*data+b,type{ii})
+        if ii>1
+            txt_legend={txt_legend{1:end},['GEI ' num2str(ii-1)]};
+        end
+        hold on
+    end
+    xlim([xmin xmax])
+    legend(txt_legend,'Location','EastOutside')
+    title('Donnees normalisees')
+    hold off
+end
+if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     %%
     figure
     surf(grid_XY(:,:,1),grid_XY(:,:,2),K.var*10^20)

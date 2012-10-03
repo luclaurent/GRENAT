@@ -5,6 +5,9 @@
 
 function [Z]=eval_meta(points,donnees,meta)
 
+
+[tMesu,tInit]=mesu_time;
+
 %reconditionnement donnees construction
 if ~iscell(donnees)
     donnees_const={donnees};
@@ -53,7 +56,10 @@ else
     rep=[];
     GR=[];
 end
-
+if nb_ev_pts>1
+    fprintf('#########################################\n');
+    fprintf('  >>> EVALUATION METAMODELE <<<\n');
+end
 
 %%%%%%% Evaluation de divers metamodeles
 % generation des metamodeles
@@ -83,37 +89,59 @@ for num_meta=1:numel(donnees_const)
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case {'GRBF','RBF'}
+        case {'GRBF','RBF','InRBF'}
+            wei=zeros(nb_ev_pts,numel(meta.enrich.para_wei));
+            ei=rep;
+            gei=zeros(nb_ev_pts,max(meta.enrich.para_gei)+1);
+            lcb=rep;
+            exploit=rep;
+            explor=rep;
             %% Evaluation du metamodele de RBF/HBRBF
-            for jj=1:nb_ev_pts
+            parfor jj=1:nb_ev_pts
                 
-                [rep(jj),G]=eval_rbf(ev_pts(jj,:),meta_donnee);
+                [rep(jj),G,var_rep(jj),det]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
-                
+                if isfield(det,'enrich')
+                    if isfield(det.enrich,'wei');wei(jj,:)=det.enrich.wei;end
+                    if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
+                    if isfield(det.enrich,'gei');gei(jj,:)=det.enrich.gei;end
+                    if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end
+                    if isfield(det.enrich,'exploit');exploit(jj)=det.enrich.exploit;end
+                    if isfield(det.enrich,'explor');explor(jj)=det.enrich.explor;end
+                end
             end
             %% verification interpolation
             if meta.verif
-                for jj=1:size(tirages,1)
+                parfor jj=1:size(tirages,1)
                     [Zverif(jj),G]=eval_rbf(tirages(jj,:),meta_donnee);
-                    GZverif(jj,:)=G;
+                    GZverif(jj,:)=G;                    
                 end
-                diffZ=Zverif-eval;
                 
-                if ~isempty(find(diffZ>1e-7, 1))
-                    fprintf('pb d''interpolation (eval) GRBF\n')
-                    diffZ
+                diffZ=Zverif-eval;
+                if ~isempty(find(diffZ>1e-7,1))
+                    fprintf('Pb d''interpolation (eval) GRBF\n')
+                    fprintf('DiffZ \t\t||Eval\t\t||Zverif\n');
+                    conc=vertcat(diffZ',eval',Zverif');
+                    fprintf('%4.2e\t\||%4.2e\t\||%4.2e\n',conc(:))
                 end
                 
                 if meta_donnee.in.pres_grad
                     diffGZ=GZverif-grad;
                     if ~isempty(find(diffGZ>1e-7, 1))
-                        fprintf('pb d''interpolation (grad) GRBF\n')
-                        diffGZ
+                        fprintf('Pb d''interpolation (grad) GRBF\n')
+                        tt=repmat('\t\t',1,nb_var);
+                        fprintf(['DiffGZ' tt '||Grad' tt '||GZverif\n']);
+                        conc=vertcat(diffGZ',grad',GZverif');
+                        tt=repmat('%4.2e\t',1,nb_var);
+                        tt=[tt '||' tt '||' tt '\n'];
+                        fprintf(tt,conc(:))
+                        
                     end
                     diffNG=sqrt(sum(GZverif.^2,2))-sqrt(sum(grad.^2,2));
                     if ~isempty(find(diffNG>1e-7, 1))
-                        fprintf('pb d''interpolation (grad) GRBF\n')
-                        diffNG
+                        fprintf('Pb d''interpolation (grad) GRBF\n')
+                        fprintf('DiffNG\n')
+                        fprintf('%4.2e\n',diffNG)
                     end
                 end
             end
@@ -124,26 +152,34 @@ for num_meta=1:numel(donnees_const)
             %stockage specifique
             Z_sto=rep;Z_reg=rep;
             GR_reg=GR;GR_sto=GR;
-            
+            wei=zeros(nb_ev_pts,numel(meta.enrich.para_wei));
+            ei=rep;
+            gei=zeros(nb_ev_pts,max(meta.enrich.para_gei)+1);
+            lcb=rep;
+            exploit=rep;
+            explor=rep;
             %% Evaluation du metamodele de Krigeage/CoKrigeage
-            for jj=1:nb_ev_pts
+            parfor jj=1:nb_ev_pts
                 [rep(jj),G,var_rep(jj),det]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
                 Z_sto(jj)=det.Z_sto;
                 Z_reg(jj)=det.Z_reg;
                 GR_reg(jj,:)=det.GZ_reg;
                 GR_sto(jj,:)=det.GZ_sto;
-                if isfield(det,'wei');wei(jj)=det.wei;end
-                if isfield(det,'ei');ei(jj)=det.ei;end
-                if isfield(det,'lcb');lcb(jj)=det.lcb;end
-                if isfield(det,'exploit');exploit(jj)=det.exploit;end
-                if isfield(det,'explor');explor(jj)=det.explor;end
+                if isfield(det,'enrich')
+                    if isfield(det.enrich,'wei');wei(jj,:)=det.enrich.wei;end
+                    if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
+                    if isfield(det.enrich,'gei');gei(jj,:)=det.enrich.gei;end
+                    if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end
+                    if isfield(det.enrich,'exploit');exploit(jj)=det.enrich.exploit;end
+                    if isfield(det.enrich,'explor');explor(jj)=det.enrich.explor;end
+                end
             end
             
             
             %% verification interpolation
             if meta.verif
-                for jj=1:size(tirages,1)
+                parfor jj=1:size(tirages,1)
                     [Zverif(jj),G,varverif(jj)]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
                     GZverif(jj,:)=G';
                 end
@@ -171,26 +207,20 @@ for num_meta=1:numel(donnees_const)
             
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
-            for jj=1:size(points,1)
-                for kk=1:size(points,2)
-                    [rep(jj,kk),G,var_rep(jj,kk)]=predictor(points(jj,kk,:),meta_donnee);
-                    GR(jj,kk)=G(1);
-                    GR(jj,kk)=G(2);
-                end
+            for jj=1:nb_ev_pts
+                [rep(jj),G,var_rep(jj)]=predictor(ev_pts(jj,:),meta_donnee);
+                GR(jj,:)=G;
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'PRG'
             for degre=meta.deg
                 %% Evaluation du metamodele de Regression
-                for jj=1:length(points)
-                    for kk=1:size(points,2)
-                        rep(jj,kk)=eval_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),meta_donnee);
-                        %evaluation des gradients du MT
-                        [GRG1,GRG2]=evald_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),meta_donnee);
-                        GR(jj,kk)=GRG1;
-                        GR(jj,kk)=GRG2;
-                    end
+                parfor jj=1:nb_ev_pts
+                    rep(jj)=eval_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+                    %evaluation des gradients du MT
+                    [GRG1,GRG2]=evald_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+                    GR(jj,:)=[GRG1,GRG2];
                 end
             end
             %%%%%%%%=================================%%%%%%%%
@@ -198,12 +228,10 @@ for num_meta=1:numel(donnees_const)
         case 'ILIN'
             %% interpolation par fonction de base lineaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction de base lin�aire' textf]);
-            for jj=1:size(points,1)
-                for kk=1:size(points,2)
-                    [rep(jj,kk),G]=interp_lin(points(jj,kk,:),meta_donnee);
-                    GR1(jj,kk)=G(1);
-                    GR2(jj,kk)=G(2);
-                end
+            parfor jj=1:nb_ev_pts
+                [rep(jj),G]=interp_lin(ev_pts(jj,:),meta_donnee);
+                GR1(jj,:)=G;
+                
             end
             
             %%%%%%%%=================================%%%%%%%%
@@ -211,12 +239,10 @@ for num_meta=1:numel(donnees_const)
         case 'ILAG'
             %% interpolation par fonction polynomiale de Lagrange
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
-            for jj=1:size(points,1)
-                for kk=1:size(points,2)
-                    [rep(jj,kk),G]=interp_lag(points(jj,kk,:),meta_donnee);
-                    GR1(jj,kk)=G(1);
-                    GR2(jj,kk)=G(2);
-                end
+            parfor jj=1:nb_ev_pts
+                [rep(jj),G]=interp_lag(ev_pts(jj,:),meta_donnee);
+                GR1(jj,:)=G;
+                
             end
             
     end
@@ -268,9 +294,10 @@ for num_meta=1:numel(donnees_const)
                     Z.Z_reg=Z_reg;
                 end
                 Z.Z=rep;
-                if ~isempty(var_rep)Z.var=var_rep;end
+                if ~isempty(var_rep);Z.var=var_rep;end
                 if exist('wei','var');Z.wei=wei;end
                 if exist('ei','var');Z.ei=ei;end
+                if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),1,size(gei,2));end
                 if exist('lcb','var');Z.lcb=lcb;end
                 if exist('explor','var');Z.explor=explor;end
                 if exist('exploit','var');Z.exploit=exploit;end
@@ -281,8 +308,9 @@ for num_meta=1:numel(donnees_const)
                 end
                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
                 if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
-                if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+                if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
                 if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
+                if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
                 if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
                 if exist('explor','var');Z.explor=reshape(explor,dim_ev(1),dim_ev(2));end
                 if exist('exploit','var');Z.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
@@ -294,8 +322,9 @@ for num_meta=1:numel(donnees_const)
             end
             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
             if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
-            if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+            if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
             if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
+            if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
             if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
             if exist('explor','var');Z.explor=reshape(explor,dim_ev(1),dim_ev(2));end
             if exist('exploit','var');Z.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
@@ -308,7 +337,8 @@ for num_meta=1:numel(donnees_const)
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;
         if ~isempty('var_rep');Z{num_meta}.var=var_rep;end
-        if exist('wei','var');Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2));end
+        if exist('wei','var');Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
+        if exist('gei','var');Z{num_meta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
         if exist('ei','var');Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end
         if exist('lcb','var');Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
         if exist('explor','var');Z{num_meta}.explor=reshape(explor,dim_ev(1),dim_ev(2));end
@@ -322,3 +352,8 @@ for num_meta=1:numel(donnees_const)
     end
 end
 
+if nb_ev_pts>1
+    fprintf('++ Evaluation en %i points\n',nb_ev_pts);
+    mesu_time(tMesu,tInit);
+    fprintf('#########################################\n');
+end

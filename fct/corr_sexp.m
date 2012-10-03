@@ -21,7 +21,6 @@ elseif lt(1)*lt(2)~=nb_comp
     error('mauvaise dimension de la longueur de correlation');
 end
 
-long
 %calcul de la valeur de la fonction au point xx
 td=-xx.^2./(2*long.^2);
 ev=exp(sum(td,2));

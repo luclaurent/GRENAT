@@ -1,23 +1,28 @@
-%% fonction assurant la construction du Krigeage à gradients indirect
+%% fonction assurant la construction du Krigeage a gradients indirect
 %% L. LAURENT -- 18/04/2012 -- laurent@lmt.ens-cachan.fr
 
-function ret=meta_inkrg(tirages,eval,grad,meta)
+function ret=meta_inkrg(tirages,eval,grad,meta,manq)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Affichage des informations de construction
-fprintf('>>> Préparation donnees Krigeage à gradient indirect (appel Krigeage)  \n');
+fprintf('>>> Preparation donnees Krigeage a gradient indirect (appel Krigeage)  \n');
 
-%dimension du problème (nombre de variables)
+%dimension du probleme (nombre de variables)
 nb_var=size(tirages,2);
 %nombre de points initiaux
 nb_val_init=size(tirages,1);
+
+if ~nargin==5
+    manq.eval.on=false;
+    manq.grad.on=false;
+end  
 
 %en fonction du type de donnees en entree
 if ~isstruct(grad)
     fprintf('>> Valeur pas developpement de Taylor (manu):')
     fprintf(' %d',meta.para.pas_tayl);
-    fprintf('\n\n')
+    fprintf('\n')
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,22 +37,49 @@ if ~isstruct(grad)
     %Reordonnancement tirages et duplication
     reord_tir=reshape(tirages',1,[]);
     dup_tir=repmat(reord_tir,nb_var+1,[]);
-    %creation décalage par direction
+    %creation decalage par direction
     mat_pas=diag(pas_tayl);
     mat_pas_dup=[zeros(1,nb_var*nb_val_init);repmat(mat_pas,1,nb_val_init)];
     badord_tir=dup_tir+mat_pas_dup;
     tirages_new=zeros((nb_var+1)*nb_val_init,nb_var);
-    
+        
     %nouveaux points
     for ii=1:nb_var
-        li=ii:nb_var:(nb_var*nb_val_init);
+        li=ii:nb_var:(nb_var*nb_val_init);            
         tirages_new(:,ii)=reshape(badord_tir(:,li),(nb_var+1)*nb_val_init,[]);
     end
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%% Nettoyage si donnees manquantes (attention en cas de reponse
+    %%% manquante, on retire egalement le gradient car impossible d'estimer
+    %%% la valeur de la reponse aux points proches sans la valeur de cette
+    %%% reponse)
+    pos_ev=[];
+    if manq.eval.on
+        pos_tmp=manq.eval.ix_manq;
+        fprintf(' >>> Supression informations (rï¿½ponse(s) manquante(s)) a(aux) point(s):');
+        fprintf(' %i',pos_ev);
+        fprintf('\n');
+        %renumerotation pour extraction bonnes valeurs
+        pos_tmp=(pos_tmp-1)*(nb_var+1)+1;
+        for ii=1:numel(pos_tmp)
+            pos_ev=[pos_ev pos_tmp(ii):pos_tmp(ii)+nb_var+1];
+        end
+    end
+
+    pos_gr=[];
+    if manq.grad.on
+        pos_tmp=manq.grad.ix_manq;
+        pos_gr=(pos_tmp(:,1)-1)*(nb_var+1)+1+pos_tmp(:,2);
+    end
+  
+    %position des elements manquants
+    pos_manq=unique([pos_ev,pos_gr]);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%% Creation des nouvelles réponses (aux points ajoutés)
+    %%% Creation des nouvelles reponses (aux points ajoutes)
     
     %Reordonnancement reponses
     tmp_ev=[eval zeros(nb_val_init,nb_var-1)];
@@ -56,7 +88,13 @@ if ~isstruct(grad)
     %Reordonnancement gradients
     reord_grad=reshape(grad',1,[]);
     dup_grad=repmat(reord_grad,nb_var+1,[]);
-    badord_ev=dup_ev+mat_pas_dup.*dup_grad;
+    tmp=mat_pas_dup.*dup_grad;
+    %si donnees manquantes, traitement specifiques pour eviter les NaN    
+    if manq.grad.on||manq.eval.on
+             IX=find(isnan(tmp(:)));
+             tmp(IX)=0;
+    end
+        badord_ev=dup_ev+tmp;
     %nouvelles reponses
     tmp_ev=zeros((nb_var+1)*nb_val_init,nb_var);
     for ii=1:nb_var
@@ -65,12 +103,20 @@ if ~isstruct(grad)
     end
     eval_new=sum(tmp_ev,2);
     
+    %supression des donnees manquantes
+    if ~isempty(pos_manq)
+        tirages_new(pos_manq,:)=[];
+        eval_new(pos_manq)=[];
+    end
+
 else
+    %%Attention donnees manquante non prises en compte dans cette approche
+    %%(a coder)
     %calcul des pas de Taylor dans chaque direction
     pas_tayl_d=grad.tirages{1}-repmat(tirages(1,:),nb_var,1);
     pas_tayl=abs(sum(pas_tayl_d,2));
     
-    %Nouveaux tirages et réponses
+    %Nouveaux tirages et reponses
     tirages_new=zeros((nb_var+1)*nb_val_init,nb_var);
     eval_new=zeros((nb_var+1)*nb_val_init,1);
     for ii=1:nb_val_init
@@ -84,10 +130,10 @@ else
     
     fprintf('>> Valeur pas developpement de Taylor (auto):')
     fprintf(' %d',pas_tayl);
-    fprintf('\n\n')
+    fprintf('\n')
     
 end
-
+ fprintf('\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Construction Krigeage a partir de ces donnees

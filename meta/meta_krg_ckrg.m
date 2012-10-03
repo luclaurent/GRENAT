@@ -1,7 +1,7 @@
 %% fonction de construction des métamodèles de Krigeage et de Cokrigeage
 %% L. LAURENT -- 12/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [ret]=meta_krg_ckrg(tirages,eval,grad,meta)
+function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,23 +16,28 @@ fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\
 
 fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
 if meta.para.estim
-fprintf('>> Algo estimation: %s\n',meta.para.method);
-fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
-fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
-fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
-fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Algo estimation: %s\n',meta.para.method);
+    fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
+    fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
 else
     fprintf('>> Valeur parametre: %d\n',meta.para.val);
 end
 fprintf('>> Critère enrichissement actif:');
 if meta.enrich.on;
     fprintf('%s\n','Oui');
-    fprintf('>> Ponderation WEI: %d\n',meta.enrich.para_wei);
+    fprintf('>> Ponderation WEI: ')
+    fprintf('%d ',meta.enrich.para_wei);
+    fprintf('\n')
+    fprintf('>> Ponderation GEI: ')
+    fprintf('%d ',meta.enrich.para_gei);
+    fprintf('\n')
     fprintf('>> Ponderation LCB: %d\n',meta.enrich.para_lcb);
 else
     fprintf('%s\n','non');
 end
-    
+
 fprintf('\n\n')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,12 +58,25 @@ nb_var=size(tirages,2);
 %test présence des gradients
 pres_grad=~isempty(grad);
 
+%test données manquantes
+manq_eval=false;
+manq_grad=false;
+if nargin==5
+    manq_eval=manq.eval.on;
+    manq_grad=manq.grad.on;
+    pres_grad=(~manq.grad.all&&manq.grad.on)||(pres_grad&&~manq.grad.on);
+else
+    manq=[];
+    manq.eval.on=false;
+    manq.grad.on=false;
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Normalisation
 if meta.norm
     %normalisation des donnees
-    [evaln,infos_e]=norm_denorm(eval,'norm');
+    [evaln,infos_e]=norm_denorm(eval,'norm',manq);
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     std_e=infos_e.std;moy_e=infos_e.moy;
     std_t=infos_t.std;moy_t=infos_t.moy;
@@ -98,10 +116,19 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluations et gradients aux points échantillonnés
 y=evaln;
-if pres_grad
+%suppression reponse(s) manquantes
+if manq_eval
+    y=y(manq.eval.ix_dispo);
+end
+
+if pres_grad    
     tmp=gradn';
     der=tmp(:);
-    y=vertcat(y,der);    
+    %supression gradient(s) manquant(s)
+    if manq_grad
+        der=der(manq.grad.ixt_dispo_line);
+    end
+    y=vertcat(y,der);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,12 +146,29 @@ fct=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
 
 if ~pres_grad
     fc=feval(fct,tiragesn);
+    if manq_eval
+        %suppression valeur(s) aux site à reponse(s) manquante(s)
+        fc=fc(manq.eval.ix_dispo,:);
+    end
 else
     [Reg,nb_termes,DReg,~]=feval(fct,tiragesn);
+    if manq_eval||manq_grad
+        taille_ev=nb_val-manq.eval.nb;
+        taille_gr=nb_val*nb_var-manq.grad.nb;
+        taille_tot=taille_ev+taille_gr;
+    else
+        taille_ev=nb_val;
+        taille_gr=nb_val*nb_var;
+        taille_tot=taille_ev+taille_gr;
+    end
     %initialisation matrice des regresseurs
-    fc=zeros((nb_var+1)*nb_val,nb_termes);
+    fc=zeros(taille_tot,nb_termes);
+    if manq_eval
+        %suppression valeur(s) aux site à reponse(s) manquante(s)
+        Reg=Reg(manq.eval.ix_dispo,:);
+    end
     %chargement regresseur (evaluation de monomes)
-    fc(1:nb_val,:)=Reg;
+    fc(1:taille_ev,:)=Reg;
     %chargement des dérivées des regresseurs (evaluation des dérivées des monomes)
     if iscell(DReg)
         tmp=horzcat(DReg{:})';
@@ -134,7 +178,12 @@ else
         tmp=tmp(:);
     end
     
-    fc(nb_val+1:end,:)=tmp;
+    if manq_grad
+        %suppression valeur(s) aux sites à gradient(s) manquant(s)
+        tmp=tmp(manq.grad.ixt_dispo_line,:);
+    end
+    %chargement derrivees regresseur
+    fc(taille_ev+1:end,:)=tmp;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -155,6 +204,7 @@ ret.build.fct=fc';
 ret.build.y=y;
 ret.build.fct_reg=fct;
 ret.build.corr=meta.corr;
+ret.manq=manq;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -225,8 +275,8 @@ end
 %%Construction des differents elements avec ou sans estimation des
 %%parametres
 if meta.para.estim
-   para_estim=estim_para_krg_ckrg(ret,meta);
-   meta.para.val=para_estim.val;
+    para_estim=estim_para_krg_ckrg(ret,meta);
+    meta.para.val=para_estim.val;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

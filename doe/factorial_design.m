@@ -11,7 +11,7 @@ nb_var=size(esp,1);
 if length(nb_tir)==1
     nb_tir=nb_tir*ones(1,nb_var);
 elseif length(nb_tir)~=1&&length(nb_tir)~=nb_var
-    error('mauvaise d�finition nb de tirages pour plan factoriel (cf. factorial_design.m)');
+    error('mauvaise definition nb de tirages pour plan factoriel (cf. factorial_design.m)');
 end
 
 %initialisation matrice stockage tirages

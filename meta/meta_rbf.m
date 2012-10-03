@@ -5,14 +5,14 @@
 %%L. LAURENT      luc.laurent@ens-cachan.fr
 %% 15/03/2010 modif le 12/04/2010 puis le 15/01/2012
 
-function ret=meta_rbf(tirages,eval,grad,meta)
+function ret=meta_rbf(tirages,eval,grad,meta,manq)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Affichage des informations de construction
 fprintf(' >> Construction : ');
 if ~isempty(grad);fprintf('GRBF \n');else fprintf('RBF \n');end
-fprintf('>> Fonction de base radiale: %s\n',meta.fct);
+fprintf('>> Fonction de base radiale: %s\n',meta.rbf);
 fprintf('>>> Normalisation: ');if meta.norm; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
@@ -45,7 +45,17 @@ nb_var=size(tirages,2);
 
 %test presence des gradients
 pres_grad=~isempty(grad);
-
+%test donnees manquantes
+if nargin==5
+    manq_eval=manq.eval.on;
+    manq_grad=manq.grad.on;
+    pres_grad=(~manq.grad.all&&manq.grad.on)||(pres_grad&&~manq.grad.on);
+else
+    manq.eval.on=false;
+    manq.grad.on=false;
+    manq_eval=manq.eval.on;
+    manq_grad=manq.grad.on;
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +63,7 @@ pres_grad=~isempty(grad);
 if meta.norm
     disp('Normalisation');
     %normalisation des donnees
-    [evaln,infos_e]=norm_denorm(eval,'norm');
+    [evaln,infos_e]=norm_denorm(eval,'norm',manq);
     [tiragesn,infos_t]=norm_denorm(tirages,'norm');
     std_e=infos_e.std;moy_e=infos_e.moy;
     std_t=infos_t.std;moy_t=infos_t.moy;
@@ -93,11 +103,20 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluations et gradients aux points echantillonnes
 y=evaln;
+%suppression reponse(s) manquantes
+if manq_eval
+    y=y(manq.eval.ix_dispo);
+end
 if pres_grad
     tmp=gradn';
     der=tmp(:);
+    %supression gradient(s) manquant(s)
+    if manq_grad
+        der=der(manq.grad.ixt_dispo_line);
+    end
     y=vertcat(y,der);
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
@@ -112,6 +131,8 @@ ret.in.nb_var=nb_var;
 ret.in.nb_val=nb_val;
 ret.build.y=y;
 ret.norm=rbf.norm;
+ret.manq=manq;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de MSE par Cross-Validation
@@ -121,7 +142,7 @@ aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
 
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,300);
+    val_para=linspace(meta.para.min,meta.para.max,gene_nbele(nb_var));
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -133,6 +154,7 @@ if meta.para.estim&&meta.para.aff_estim
         %si affichage dispo
         if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:numel(val_X)
+            
             %calcul de la log-vraisemblance et stockage
             val_msep(itli)=bloc_rbf(ret,meta,[val_X(itli) val_Y(itli)]);
             %affichage barre attente
@@ -160,11 +182,15 @@ if meta.para.estim&&meta.para.aff_estim
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(1,length(val_para));
+        rippa_bomp=val_msep;
+        cv_moi=val_msep;
         %si affichage dispo
         if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
         for itli=1:length(val_para)
             %calcul de la log-vraisemblance et stockage
-            val_msep(itli)=bloc_rbf(ret,meta,val_para(itli));
+            [~,build_rbf]=bloc_rbf(ret,meta,val_para(itli),'etud');
+            rippa_bomp(itli)=build_rbf.cv.eloot;
+            cv_moi(itli)=build_rbf.cv.perso.eloot;
             %affichage barre attente
             if usejava('desktop')&&exist('h','var')
                 avance=(itli-1)/length(val_para);
@@ -183,10 +209,15 @@ if meta.para.estim&&meta.para.aff_estim
         
         %trace log-vraisemblance
         figure;
-        semilogy(val_para,val_msep);
-        title('Evolution de MSE (CV)');
-        figure
-        disp('ICI')
+        semilogy(val_para,rippa_bomp,'r');
+        hold on
+        semilogy(val_para,cv_moi,'k');
+        legend('Rippa (Bompard)','Moi');
+        title('CV');
+        
+        %         semilogy(val_para,val_msep);
+        %         title('Evolution de MSE (CV)');
+        
     end
     
     %stocke les courbes (si actif)
@@ -230,7 +261,7 @@ ret.cv=block.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;
 ret.tps=tps_stop-tps_start;
-if pres_grad;txt='HBRBF';else txt='RBF';end
+if pres_grad;txt='GRBF';else txt='RBF';end
 fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

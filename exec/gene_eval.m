@@ -3,6 +3,9 @@
 
 function [eval,grad]=gene_eval(fct,X,type)
 
+fprintf('=========================================\n')
+fprintf('  >>> GENERATION EVALUATION FONCTION <<<\n');
+[tMesu,tInit]=mesu_time;
 
 % en fonction du type d'évaluation (calcul au points tirés ou calcul pour
 % affichage)
@@ -19,12 +22,14 @@ switch type
         %préparation jeu de données pour evaluation
         X_eval=zeros(nb_val,1,nb_var);
         
-        for ii=1:nb_var
+        parfor ii=1:nb_var
             X_eval(:,:,ii)=X(:,ii);
         end
         %évaluation pour affichage (X est une matrice de matrice)
     case 'aff'
         X_eval=X;
+        nb_var=size(X,3);
+        nb_val=size(X,1);
 end
 
 %evaluation fonction et gradients aux points x
@@ -36,7 +41,7 @@ elseif nargout==2
     % gradients
     if strcmp(type,'eval')
         grad=zeros(size(X));
-        for ii=1:nb_var
+        parfor ii=1:nb_var
            grad(:,ii)=gradb(:,:,ii); 
         end
     else
@@ -46,3 +51,9 @@ else
     fprintf('Mauvais nombre de paramètres de sortie (cf. gene_eval)');
 end
 
+fprintf('++ Evaluation de la fonction %s en %i pts (%iD)\n',fct,nb_val,nb_var);
+fprintf('++ Calcul des gradients: ');
+if nargout==2;fprintf('Oui\n');else fprintf('Non\s');end
+
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

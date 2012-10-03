@@ -1,12 +1,19 @@
-%% Fonction assurant la création d'un nouveau point d'echantillonnage basé sur un metamodele
+%% Fonction assurant la crï¿½ation d'un nouveau point d'echantillonnage basï¿½ sur un metamodele
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
 
 function [pts,ret_tir_meta]=ajout_tir_meta(meta,approx,enrich)
 
+[tMesu,tInit]=mesu_time;
 global doe
 
-%en fonction du type de nouveau point reclamé
+%%%Definition manuelle de la population initiale par LHS (Ga)
+popInitManu=enrich.popInitManu;
+nbPopInit=enrich.nbPopInit;
+%critere arret minimisation
+crit_opti=enrich.crit_opti;
+
+%en fonction du type de nouveau point reclamï¿½
 switch enrich.type
     %Expected Improvement (Krigeage/RBF)
     case 'EI'
@@ -14,6 +21,9 @@ switch enrich.type
         %Weighted Expected Improvement (Krigeage/RBF)
     case 'WEI'
         fun=@(point)ret_WEI(point,approx,meta);
+        %Generalized Expected Improvement (Krigeage/RBF)
+    case 'GEI'
+        fun=@(point)ret_GEI(point,approx,meta);
         %Lower Confidence Bound (Krigeage/RBF)
     case 'LCB'
         fun=@(point)ret_LCB(point,approx,meta);
@@ -26,15 +36,17 @@ lb=doe.Xmin;ub=doe.Xmax;
 %nombre parametres
 nb_var=numel(doe.Xmin);
 
-
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
 options_ga = gaoptimset(...
     'Display', 'iter',...        %affichage evolution
-    'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+    'OutputFcn','',...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'UseParallel','always',...
-    'PopInitRange',[lb(:)';ub(:)'],...    %zone de définition de la population initiale
-    'PlotFcns','');
+    'PopInitRange',[lb(:)';ub(:)'],...    %zone de dï¿½finition de la population initiale
+    'PlotFcns','',...
+    'TolFun',crit_opti,...
+    'StallGenLimit',20);
+
 %{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,@gaplotexpectation,...
 %@gaplotmaxconstr,@gaplotrange,@gaplotselection,@gaplotscorediversity,@gaplotscores,@gaplotstopping});
 %affichage des iterations
@@ -44,9 +56,24 @@ else
     figure
 end
 if ~enrich.aff_iter_cmd
-    options_ga=gaoptimset(options_ga,'Display', 'off');
+    options_ga=gaoptimset(options_ga,'Display', 'final');
 end
-    %% Minimisation par algo genetique
+
+%affichage informations interations algo (sous forme de plot
+if enrich.aff_plot_algo
+    options_ga=gaoptimset(options_ga,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
+        @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
+        @gaplotscorediversity,@gaplotscores,@gaplotstopping});
+end
+
+%specification manuelle de la population initiale (Ga)
+if popInitManu
+    doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=popInitManu;
+    tir_pop=gene_doe(doePop);
+    options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
+end
+
+%% Minimisation par algo genetique
 switch enrich.algo
     case 'ga'
         [pts,fval,exitflag,output] = ga(fun,nb_var,[],[],[],[],lb,ub,[],options_ga);
@@ -58,6 +85,9 @@ end
 ret_tir_meta.out_algo=output;
 ret_tir_meta.out_algo.fval=fval;
 ret_tir_meta.out_algo.exitflag=exitflag;
+%%
+mesu_time(tMesu,tInit);
+fprintf('#########################################\n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -72,6 +102,12 @@ end
 function WEI=ret_WEI(X,approx,meta)
 ZZ=eval_meta(X,approx,meta);
 WEI=-ZZ.wei;
+end
+
+%fonction extraction GEI
+function GEI=ret_GEI(X,approx,meta)
+ZZ=eval_meta(X,approx,meta);
+GEI=-ZZ.gei(:,:,meta.enrich.para_gei);
 end
 
 %fonction extraction LCB

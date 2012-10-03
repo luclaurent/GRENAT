@@ -10,6 +10,14 @@ coef=10^-6;
 fact_rcc='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%chargement grandeurs utiles
+nb_val=data.in.nb_val;
+nb_var=data.in.nb_var;
+tiragesn=data.in.tiragesn;
+fct_corr=meta.corr;
+para_val=meta.para.val;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para defini alors on charge cette nouvelle valeur
 if nargin==3
     meta.para.val=para;
@@ -19,70 +27,98 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation matrice de correlation
 if donnees.in.pres_grad
-    %morceau de la matrice issu du krigeage
-    rc=zeros(donnees.in.nb_val,donnees.in.nb_val);
-    rca=zeros(donnees.in.nb_val,donnees.in.nb_var*donnees.in.nb_val);
-    rci=zeros(donnees.in.nb_val*donnees.in.nb_var,donnees.in.nb_val*donnees.in.nb_var);
-    
-    for ii=1:donnees.in.nb_val
-        ind=ii:donnees.in.nb_val;
-        indd=(ii-1)*donnees.in.nb_var+1:donnees.in.nb_val*donnees.in.nb_var;
-        inddd=donnees.in.nb_val-numel(ind)+1:donnees.in.nb_val;
-        indddd=(ii-1)*donnees.in.nb_var+1:ii*donnees.in.nb_var;
-        %distance 1 tirages aux autres (construction par colonne)
-        dist=repmat(donnees.in.tiragesn(ii,:),numel(ind),1)-donnees.in.tiragesn(ind,:);
-        % evaluation de la fonction de correlation
-        [ev,dev,ddev]=feval(meta.corr,dist,meta.para.val);
-        %morceau de la matrice issue du krigeage
-        rc(ind,ii)=ev;
-        %morceau de la matrice provenant du Cokrigeage
-        rca(ii,indd)=-reshape(dev',1,numel(ind)*donnees.in.nb_var);
-        rca(inddd,indddd)=dev;
-        %matrice des derivees secondes
-        rci(donnees.in.nb_var*(ii-1)+1:donnees.in.nb_var*ii,indd)=...
-            -reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var);
-        % reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var)
+    %si parallelisme actif ou non    
+    if matlabpool('size')>=2
+        %%%%%% PARALLEL %%%%%%
+        %morceaux de la matrice GRBF
+        rc=zeros(nb_val,nb_val);
+        rca=cell(1,nb_val);
+        rci=cell(1,nb_val);
+        parfor ii=1:nb_val
+             %distance 1 tirages aux autres (construction par colonne)
+            dist=repmat(tiragesn(ii,:),nb_val,1)-tirages;
+            % evaluation de la fonction de correlation
+            [ev,dev,ddev]=feval(fct_corr,dist,para_val);
+            %morceau de la matrice issue du modele RBF classique
+            rc(:,ii)=ev;
+            %morceau des derivees premieres
+            %KKa(:,(ii-1)*nb_var+1:ii*nb_var)=dev;
+            rca{ii}=dev;
+            %matrice des derivees secondes
+            rci{ii}=-reshape(ddev,nb_var,nb_val*nb_var);
+        end
+        %%construction des matrices completes
+        rcaC=horzcat(rca{:});
+        rciC=vertcat(rci{:});
+        %Matrice de complete
+        rcc=[rc rcaC;-rcaC' rciC];
+    else
+        %morceau de la matrice issu du krigeage
+        rc=zeros(nb_val,nb_val);
+        rca=zeros(nb_val,nb_var*nb_val);
+        rci=zeros(nb_val*nb_var,nb_val*nb_var);
+
+        for ii=1:jnb_val
+            ind=ii:nb_val;
+            indd=(ii-1)*nb_var+1:nb_val*nb_var;
+            inddd=nb_val-numel(ind)+1:nb_val;
+            indddd=(ii-1)*nb_var+1:ii*nb_var;
+            %distance 1 tirages aux autres (construction par colonne)
+            dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
+            % evaluation de la fonction de correlation
+            [ev,dev,ddev]=feval(fct_corr,dist,meta.para.val);
+            %morceau de la matrice issue du krigeage
+            rc(ind,ii)=ev;
+            %morceau de la matrice provenant du Cokrigeage
+            rca(ii,indd)=-reshape(dev',1,numel(ind)*nb_var);
+            rca(inddd,indddd)=dev;
+            %matrice des derivees secondes
+            rci(nb_var*(ii-1)+1:nb_var*ii,indd)=...
+                -reshape(ddev,nb_var,numel(ind)*nb_var);
+            % reshape(ddev,donnees.in.nb_var,numel(ind)*donnees.in.nb_var)
+
+        end
+        %construction matrices completes
+        rc=rc+rc'-eye(donnees.in.nb_val);
+        %extraction de la diagonale (procedure pour eviter les doublons)
+        diago=0;   % //!!\\ corrections envisageables ici
+        val_diag=spdiags(rci,diago);
+        %full(spdiags(val_diag./2,diago,zeros(size(rci))))
+        rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
+        %rci
+        %Matrice de correlation du Cokrigeage
+        rcc=[rc rca;rca' rci];
         
-    end
-    %construction matrices completes
-    rc=rc+rc'-eye(donnees.in.nb_val);
-    %extraction de la diagonale (procedure pour eviter les doublons)
-    diago=0;   % //!!\\ corrections envisageables ici
-    val_diag=spdiags(rci,diago);
-    %full(spdiags(val_diag./2,diago,zeros(size(rci))))
-    rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
-    %rci
-    %Matrice de correlation du Cokrigeage
-    rcc=[rc rca;rca' rci];
-    %si donnees manquantes
-    if donnees.manq.eval.on
-        rcc(donnees.manq.eval.ix_manq,:)=[];
-        rcc(:,donnees.manq.eval.ix_manq)=[];
-    end
-    
-    %si donnees manquantes
-    if donnees.manq.grad.on
-        rep_ev=donnees.in.nb_val-donnees.manq.eval.nb;
-        rcc(rep_ev+donnees.manq.grad.ixt_manq_line,:)=[];
-        rcc(:,rep_ev+donnees.manq.grad.ixt_manq_line)=[];
+        %si donnees manquantes
+        if donnees.manq.eval.on
+            rcc(donnees.manq.eval.ix_manq,:)=[];
+            rcc(:,donnees.manq.eval.ix_manq)=[];
+        end
+
+        %si donnees manquantes
+        if donnees.manq.grad.on
+            rep_ev=nb_val-donnees.manq.eval.nb;
+            rcc(rep_ev+donnees.manq.grad.ixt_manq_line,:)=[];
+            rcc(:,rep_ev+donnees.manq.grad.ixt_manq_line)=[];
+        end
     end
     
 else
-    %matrice de correlation du Krigeage par matrice triangulaire inf�rieure
+    %matrice de correlation du Krigeage par matrice triangulaire inferieure
     %sans diagonale
-    rcc=zeros(donnees.in.nb_val,donnees.in.nb_val);
-    bmax=donnees.in.nb_val-1;
+    rcc=zeros(nb_val,nb_val);
+    bmax=nb_val-1;
     for ii=1:bmax
-        ind=ii+1:donnees.in.nb_val;
+        ind=ii+1:nb_val;
         %distance 1 tirages aux autres (construction par colonne)
-        dist=repmat(donnees.in.tiragesn(ii,:),numel(ind),1)-donnees.in.tiragesn(ind,:);
+        dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
         % evaluation de la fonction de correlation
-        [ev]=feval(meta.corr,dist,meta.para.val);
+        [ev]=feval(fct_corr,dist,meta.para.val);
         % matrice de krigeage
         rcc(ind,ii)=ev;
     end
     %Construction matrice complete
-    rcc=rcc+rcc'+eye(donnees.in.nb_val);
+    rcc=rcc+rcc'+eye(nb_val);
     %si donnees manquantes
     if donnees.manq.eval.on
         rcc(donnees.manq.eval.ix_manq,:)=[];

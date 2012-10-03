@@ -32,12 +32,13 @@ switch statut
             options.workers='auto';
             fprintf(' >> Definition auto nombre de workers\n');
         end
+        
+        arret=true;
         %%Si parallelisme reclame
         if options.on
             % chargement config par defaut
             def_parallel=findResource;
             if matlabpool('size')~=0
-                arret=false;
                 switch options.workers
                     case 'auto'
                         if matlabpool('size')>=def_parallel.ClusterSize

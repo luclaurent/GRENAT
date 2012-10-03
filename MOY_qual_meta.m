@@ -18,8 +18,8 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % nombre tirages mini et maxi
 nb_tir_mini=5;
-nb_tir_maxi=20;
-pas_tir=5;
+nb_tir_maxi=150;
+pas_tir=1;
 list_nb_tir=nb_tir_mini:pas_tir:nb_tir_maxi;
 num_tir_list=numel(list_nb_tir);
 
@@ -54,7 +54,7 @@ aff.nbele=30;%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS_manu';
+doe.type='LHS_R';
 
 %nb d'echantillons
 doe.nb_samples=15;
@@ -87,7 +87,7 @@ meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-4;
 meta.para.aniso=true;
-meta.para.estim=false;
+meta.para.estim=true;
 meta.para.method=algo_estim;
 meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=false;
@@ -107,7 +107,7 @@ meta.save=false;
 [aff.doss,aff.date]=init_dossier(meta,doe,'_2D');
 
 
-%%% Evalution de la fonction de références
+%%% Evalution de la fonction de rï¿½fï¿½rences
 %Trace de la fonction de la fonction etudiee et des gradients
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
@@ -131,7 +131,7 @@ for iter_tent=1:nb_tent
         %evaluations de la fonction aux points
         [eval,grad]=gene_eval(doe.fct,tirages,'eval');
         
-        %boucle sur les type de métamodeles
+        %boucle sur les type de mï¿½tamodeles
         for ll=1:numel(type_conf)
             meta.type=type_conf{ll};
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -198,26 +198,20 @@ for num_meta=1:numel(donnees_const)
             
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
-            parfor jj=1:size(points,1)
-                for kk=1:size(points,2)
-                    [rep(jj,kk),G,var_rep(jj,kk)]=predictor(points(jj,kk,:),meta_donnee);
-                    GR(jj,kk)=G(1);
-                    GR(jj,kk)=G(2);
-                end
+            for jj=1:nb_ev_pts
+                [rep(jj),G,var_rep(jj)]=predictor(ev_pts(jj,:),meta_donnee);
+                GR(jj,:)=G;
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'PRG'
             for degre=meta.deg
                 %% Evaluation du metamodele de Regression
-                parfor jj=1:length(points)
-                    for kk=1:size(points,2)
-                        rep(jj,kk)=eval_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),meta_donnee);
-                        %evaluation des gradients du MT
-                        [GRG1,GRG2]=evald_prg(prg.coef,points(jj,kk,1),points(jj,kk,2),meta_donnee);
-                        GR(jj,kk)=GRG1;
-                        GR(jj,kk)=GRG2;
-                    end
+                parfor jj=1:nb_ev_pts
+                    rep(jj)=eval_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+                    %evaluation des gradients du MT
+                    [GRG1,GRG2]=evald_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+                    GR(jj,:)=[GRG1,GRG2];
                 end
             end
             %%%%%%%%=================================%%%%%%%%
@@ -225,12 +219,10 @@ for num_meta=1:numel(donnees_const)
         case 'ILIN'
             %% interpolation par fonction de base lineaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction de base lin�aire' textf]);
-            for jj=1:size(points,1)
-                for kk=1:size(points,2)
-                    [rep(jj,kk),G]=interp_lin(points(jj,kk,:),meta_donnee);
-                    GR1(jj,kk)=G(1);
-                    GR2(jj,kk)=G(2);
-                end
+            parfor jj=1:nb_ev_pts
+                [rep(jj),G]=interp_lin(ev_pts(jj,:),meta_donnee);
+                GR1(jj,:)=G;
+                
             end
             
             %%%%%%%%=================================%%%%%%%%
@@ -238,12 +230,10 @@ for num_meta=1:numel(donnees_const)
         case 'ILAG'
             %% interpolation par fonction polynomiale de Lagrange
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
-            for jj=1:size(points,1)
-                for kk=1:size(points,2)
-                    [rep(jj,kk),G]=interp_lag(points(jj,kk,:),meta_donnee);
-                    GR1(jj,kk)=G(1);
-                    GR2(jj,kk)=G(2);
-                end
+            parfor jj=1:nb_ev_pts
+                [rep(jj),G]=interp_lag(ev_pts(jj,:),meta_donnee);
+                GR1(jj,:)=G;
+                
             end
             
     end
@@ -304,14 +294,10 @@ for num_meta=1:numel(donnees_const)
                 if exist('exploit','var');Z.exploit=exploit;end
             else
                 if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-                    spmd
-                        Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
-                        Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
-                    end
+                    Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+                    Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
                 end
-                spmd
-                    Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-                end
+                Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
                 if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
                 if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
                 if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
@@ -322,14 +308,10 @@ for num_meta=1:numel(donnees_const)
             end
         else
             if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-                spmd
-                    Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
-                    Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
-                end
+                Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+                Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
             end
-            spmd
-                Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-            end
+            Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
             if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
             if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
             if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end

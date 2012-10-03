@@ -34,7 +34,7 @@ fct='rosenbrock';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=5;
 %esp=[0 15];
 esp=[];
 
@@ -42,7 +42,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=100;
+aff.nbele=10;
 %gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
@@ -50,7 +50,7 @@ aff.nbele=100;
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=150;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];

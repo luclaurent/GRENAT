@@ -45,7 +45,7 @@ nb_var=size(tirages,2);
 
 %test presence des gradients
 pres_grad=~isempty(grad);
-%test données manquantes
+%test donnees manquantes
 if nargin==5
     manq_eval=manq.eval.on;
     manq_grad=manq.grad.on;

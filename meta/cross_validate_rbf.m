@@ -1,4 +1,6 @@
-%procedure de calcul CV pour debug
+%% Fonction assurant le calcul de diverses erreurs par validation croisee dans le cas RBF/GFRB
+%L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
+%nouvelle  version du 31/05/2012
 
 function [cv]=cross_validate_rbf(data_block,data,meta,type)
 
@@ -20,7 +22,7 @@ if nargin==4
         case 'debug' %mode debug (grandeurs affichees)
             fprintf('+++ CV RBF en mode DEBUG\n');
             mod_debug=true;
-        case 'etud'  %mode etude (calcul des critères par les deux méthodes
+        case 'etud'  %mode etude (calcul des critï¿½res par les deux mï¿½thodes
             mod_etud=true;
             % case 'nominal'  %mode nominal (calcul des criteres par la methode de Rippa)
         case 'final'    %mode final (calcul des variances)
@@ -73,39 +75,37 @@ end
 
 %calcul des erreurs en reponses et en gradients (differentes normes
 %employees)
-spmd
-    switch LOO_norm
-        case 'L1'
-            if data.in.pres_grad
-                cv.press=esr'*esr;
-                cv.eloor=1/data.in.nb_val*sum(abs(esr));
-                cv.eloog=1/(data.in.nb_val*data.in.nb_var)*sum(abs(esg));
-                cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*sum(abs(es));
-            else
-                cv.press=es'*es;
-                cv.eloot=1/data.in.nb_val*sum(abs(es));
-            end
-        case 'L2' %MSE
-            if data.in.pres_grad
-                cv.press=esr'*esr;
-                cv.eloor=1/data.in.nb_val*(cv.press);
-                cv.eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
-                cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*(es'*es);
-            else
-                cv.press=es'*es;
-                cv.eloot=1/data.in.nb_val*(cv.press);
-            end
-        case 'Linf'
-            if data.in.pres_grad
-                cv.press=esr'*esr;
-                cv.eloor=1/data.in.nb_val*max(esr(:));
-                cv.eloog=1/(data.in.nb_val*data.in.nb_var)*max(esg(:));
-                cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*max(es(:));
-            else
-                cv.press=es'*es;
-                cv.eloot=1/data.in.nb_val*max(es(:));
-            end
-    end
+switch LOO_norm
+    case 'L1'
+        if data.in.pres_grad
+            cv.press=esr'*esr;
+            cv.eloor=1/data.in.nb_val*sum(abs(esr));
+            cv.eloog=1/(data.in.nb_val*data.in.nb_var)*sum(abs(esg));
+            cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*sum(abs(es));
+        else
+            cv.press=es'*es;
+            cv.eloot=1/data.in.nb_val*sum(abs(es));
+        end
+    case 'L2' %MSE
+        if data.in.pres_grad
+            cv.press=esr'*esr;
+            cv.eloor=1/data.in.nb_val*(cv.press);
+            cv.eloog=1/(data.in.nb_val*data.in.nb_var)*(esg'*esg);
+            cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*(es'*es);
+        else
+            cv.press=es'*es;
+            cv.eloot=1/data.in.nb_val*(cv.press);
+        end
+    case 'Linf'
+        if data.in.pres_grad
+            cv.press=esr'*esr;
+            cv.eloor=1/data.in.nb_val*max(esr(:));
+            cv.eloog=1/(data.in.nb_val*data.in.nb_var)*max(esg(:));
+            cv.eloot=1/(data.in.nb_val*(data.in.nb_var+1))*max(es(:));
+        else
+            cv.press=es'*es;
+            cv.eloot=1/data.in.nb_val*max(es(:));
+        end
 end
 %affichage qques infos
 if mod_debug
@@ -300,7 +300,7 @@ if mod_final
         PP(pos)=[];
         if ~aff_warning; warning off all;end
         cv_varR(tir)=1-PP'*(ret_KK\PP);
-        %calcul de la réponse
+        %calcul de la rï¿½ponse
         cv_zRn(tir)=PP'*(ret_KK\ret_y);
         if ~aff_warning; warning on all;end
     end

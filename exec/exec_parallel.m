@@ -34,6 +34,10 @@ switch statut
         end
         %%Si parallelisme reclame
         if options.on
+            if matlabpool('size')~=0
+                fprintf(' //!\\ MatLab parallel actif >>> ARRET\n');
+                matlabpool('close','force')
+            end
             %si parallelisme actif
             fprintf(' >>> Lancement workers MatLab Parallel <<<\n');
             % chargement config par defaut

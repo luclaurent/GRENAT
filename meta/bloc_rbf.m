@@ -57,16 +57,13 @@ if data.in.pres_grad
             %KKa(:,(ii-1)*nb_var+1:ii*nb_var)=dev;
             KKa{ii}=dev;
             %matrice des derivees secondes
-            KKi{ii}=...
-                reshape(ddev,nb_var,nb_val*nb_var);
+            KKi{ii}=reshape(ddev,nb_var,nb_val*nb_var);
         end
         %%construction des matrices completes
         KKaC=horzcat(KKa{:});
         KKiC=horzcat(KKi{:});
         %Matrice de complete
-        spmd
-            KK=[KK KKaC;KKaC' KKiC];
-        end
+        KK=[KK KKaC;KKaC' KKiC];
     else
         %morceaux de la matrice GRBF
         KK=zeros(nb_val,nb_val);
@@ -149,14 +146,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %amelioration du conditionnement de la matrice de correlation
 if meta.recond
-    ret.build.cond_orig=condest(KK);
-    if ret.build.cond_orig>10^13
-        cond_old=ret.build.cond_orig;
+    cond_orig=condest(KK);
+    if cond_orig>10^13
+        cond_old=cond_orig;
         KK=KK+coef*speye(size(KK));
         if ~mod_estim
-            ret.build.cond=condest(KK);
+            cond_new=condest(KK);
             fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-                cond_old,ret.build.cond);
+                cond_old,cond_new);
         end
     end
 end
@@ -164,8 +161,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %conditionnement de la matrice de correlation
 if nargin==2   %en phase de construction
-    ret.build.cond=condest(KK);
-    fprintf('Conditionnement R: %4.2e\n',ret.build.cond)
+    cond_new=condest(KK);
+    fprintf('Conditionnement R: %4.2e\n',cond_new)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,46 +171,44 @@ end
 %QR
 switch fact_KK
     case 'QR'
-        spmd
-            [Q,R]=qr(KK);
-            ret.build.QKK=Q;
-            ret.build.RKK=R;
-            ret.build.iKK=R\Q';
-            ret.build.yQ=Q'*data.build.y;
-            ret.build.w=R\ret.build.yQ;
-        end
+        [Q,R]=qr(KK);
+        QKK=Q;
+        RKK=R;
+        iKK=R\Q';
+        yQ=Q'*data.build.y;
+        w=R\yQ;
     case 'LU'
-        spmd
-            [L,U]=lu(KK);
-            % a ecrire
-        end
+        [L,U]=lu(KK);
+        % a ecrire
     case 'LL'
-        spmd
-            %%% A coder
-            L=chol(KK,'lower');
-            % a ecrire
-        end
+        %%% A coder
+        L=chol(KK,'lower');
+        % a ecrire
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
         if ~aff_warning; warning off all;end
-        spmd
-            ret.build.iKK=inv(KK);
-        end
+        iKK=inv(KK);
         if ~aff_warning; warning on all;end
-        spmd
-            ret.build.w=ret.build.iKK*data.build.y;
-        end
+        w=iKK*data.build.y;
 end
-ret
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
-ret.build.fct=meta.rbf;
-ret.build.para=meta.para;
-ret.build.KK=KK;
+if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
+if exist('cond_new','var');build_data.cond_new=cond_new;end
+if exist('QKK','var');build_data.QKK=QKK;end
+if exist('RKK','var');build_data.RKK=RKK;end
+if exist('iKK','var');build_data.iKK=iKK;end
+if exist('yQ','var');build_data.yQ=yQ;end
+build_data.w=w;
+build_data.KK=KK;
+build_data.fct=meta.rbf;
+build_data.para=meta.para;
+ret.build=build_data;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%Validation croisee (obligatoire pour affinage parametre)
@@ -226,7 +221,9 @@ if meta.cv||meta.para.estim
     if isfield(cv,fct_min)
         crit_min=cv.(fct_min);
     else
+        disp('la')
         crit_min=cv.eloot;
+        disp('ici')
     end
 else
     cv=[];

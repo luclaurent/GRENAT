@@ -114,25 +114,34 @@ for num_meta=1:numel(donnees_const)
             if meta.verif
                 parfor jj=1:size(tirages,1)
                     [Zverif(jj),G]=eval_rbf(tirages(jj,:),meta_donnee);
-                    GZverif(jj,:)=G;
+                    GZverif(jj,:)=G;                    
                 end
-                diffZ=Zverif-eval;
                 
-                if ~isempty(find(diffZ>1e-7, 1))
-                    fprintf('pb d''interpolation (eval) GRBF\n')
-                    diffZ
+                diffZ=Zverif-eval;
+                if ~isempty(find(diffZ>1e-7,1))
+                    fprintf('Pb d''interpolation (eval) GRBF\n')
+                    fprintf('DiffZ \t\t||Eval\t\t||Zverif\n');
+                    conc=vertcat(diffZ',eval',Zverif');
+                    fprintf('%4.2e\t\||%4.2e\t\||%4.2e\n',conc(:))
                 end
                 
                 if meta_donnee.in.pres_grad
                     diffGZ=GZverif-grad;
                     if ~isempty(find(diffGZ>1e-7, 1))
-                        fprintf('pb d''interpolation (grad) GRBF\n')
-                        diffGZ
+                        fprintf('Pb d''interpolation (grad) GRBF\n')
+                        tt=repmat('\t\t',1,nb_var);
+                        fprintf(['DiffGZ' tt '||Grad' tt '||GZverif\n']);
+                        conc=vertcat(diffGZ',grad',GZverif');
+                        tt=repmat('%4.2e\t',1,nb_var);
+                        tt=[tt '||' tt '||' tt '\n'];
+                        fprintf(tt,conc(:))
+                        
                     end
                     diffNG=sqrt(sum(GZverif.^2,2))-sqrt(sum(grad.^2,2));
                     if ~isempty(find(diffNG>1e-7, 1))
-                        fprintf('pb d''interpolation (grad) GRBF\n')
-                        diffNG
+                        fprintf('Pb d''interpolation (grad) GRBF\n')
+                        fprintf('DiffNG\n')
+                        fprintf('%4.2e\n',diffNG)
                     end
                 end
             end

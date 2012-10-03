@@ -261,7 +261,7 @@ ret.cv=block.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;
 ret.tps=tps_stop-tps_start;
-if pres_grad;txt='HBRBF';else txt='RBF';end
+if pres_grad;txt='GRBF';else txt='RBF';end
 fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

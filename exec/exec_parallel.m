@@ -34,14 +34,32 @@ switch statut
         end
         %%Si parallelisme reclame
         if options.on
+            % chargement config par defaut
+            def_parallel=findResource;
             if matlabpool('size')~=0
-                fprintf(' //!\\ MatLab parallel actif >>> ARRET\n');
-                matlabpool('close','force')
+                arret=false;
+                switch options.workers
+                    case 'auto'
+                        if matlabpool('size')>=def_parallel.ClusterSize
+                            arret=false;
+                        else
+                            arret=true;
+                        end                         
+                    case 'manu'
+                        if matlabpool('size')~=options.num_workers&&options.num_workers~=0
+                            arret=true;
+                        end                         
+                end
+                if arret
+                    fprintf(' //!\\ MatLab parallel actif >>> ARRET\n');
+                    matlabpool('close','force')
+                else
+                    fprintf(' //!\\ MatLab parallel actif >>> POURSUITE\n');
+                end
+                    
             end
             %si parallelisme actif
             fprintf(' >>> Lancement workers MatLab Parallel <<<\n');
-            % chargement config par defaut
-            def_parallel=findResource;
             %si lancement automatique
             if strcmp(options.workers,'auto')
                 %recuperation nombre de workers maxi
@@ -58,11 +76,14 @@ switch statut
             fprintf(' >> Demande de workers: %s\n',options.workers);
             fprintf(' >> Nombre de workers: %i\n',options.num_workers);
             %execution demande et lancement workers
-            matlabpool('open',options.num_workers);
-            
+            if arret
+                matlabpool('open',options.num_workers);
+            end
         end
         
     case 'stop'
-        fprintf(' >>> Arret workers MatLab Parallel <<<\n');
-        matlabpool('close');
+        if matlabpool('size')~=0
+            fprintf(' >>> Arret workers MatLab Parallel <<<\n');
+            matlabpool('close');
+        end
 end

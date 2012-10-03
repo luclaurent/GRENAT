@@ -39,8 +39,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction de la matrice de Gram
 if data.in.pres_grad
-    %si parallelisme actif ou non
-    if numlabs>2
+    %si parallelisme actif ou non    
+    if matlabpool('size')>=2
+        %%%%%% PARALLEL %%%%%%
         %morceaux de la matrice GRBF
         KK=zeros(nb_val,nb_val);
         KKa=cell(1,nb_val);
@@ -61,9 +62,9 @@ if data.in.pres_grad
         end
         %%construction des matrices completes
         KKaC=horzcat(KKa{:});
-        KKiC=horzcat(KKi{:});
+        KKiC=vertcat(KKi{:});
         %Matrice de complete
-        KK=[KK KKaC;KKaC' KKiC];
+        KK=[KK KKaC;-KKaC' KKiC];
     else
         %morceaux de la matrice GRBF
         KK=zeros(nb_val,nb_val);
@@ -101,7 +102,7 @@ if data.in.pres_grad
         %full(spdiags(val_diag./2,diago,zeros(size(rci))))
         KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
         %Matrice de complete
-        KK=[KK KKa;KKat KKi];
+        KK=[KK KKa;KKat KKi];        
     end
     %si donnees manquantes
     if data.manq.eval.on
@@ -116,23 +117,37 @@ if data.in.pres_grad
         KK(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
     end
     
-else
-    %matrice de RBF classique par matrice triangulaire inferieure
-    %sans diagonale
-    KK=zeros(nb_val,nb_val);
-    bmax=nb_val-1;
-    for ii=1:bmax
-        ind=ii+1:nb_val;
-        %distance 1 tirages aux autres (construction par colonne)
-        dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
-        % evaluation de la fonction de correlation
-        [ev]=feval(meta.rbf,dist,para_val);
-        % matrice de RBF
-        KK(ind,ii)=ev;
+else    
+    if matlabpool('size')>=2
+        %%%%%% PARALLEL %%%%%%
+        %matrice de RBF classique par bloc
+        KK=zeros(nb_val,nb_val);
+        parfor ii=1:nb_val
+            %distance 1 tirages aux autres (construction par colonne)
+            dist=tiragesn-repmat(tiragesn(ii,:),nb_val,1);
+            % evaluation de la fonction de correlation
+            [ev]=feval(fct_rbf,dist,para_val);
+            %morceau de la matrice issue du modele RBF classique
+            KK(:,ii)=ev;
+        end
+    else
+        %matrice de RBF classique par matrice triangulaire inferieure
+        %sans diagonale
+        KK=zeros(nb_val,nb_val);
+        bmax=nb_val-1;
+        for ii=1:bmax
+            ind=ii+1:nb_val;
+            %distance 1 tirages aux autres (construction par colonne)
+            dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
+            % evaluation de la fonction de correlation
+            [ev]=feval(meta.rbf,dist,para_val);
+            % matrice de RBF
+            KK(ind,ii)=ev;
+        end
+        %Construction matrice complete
+        KK=KK+KK'+eye(nb_val);
+        %si donnees manquantes
     end
-    %Construction matrice complete
-    KK=KK+KK'+eye(nb_val);
-    %si donnees manquantes
     if data.manq.eval.on
         KK(data.manq.eval.ix_manq,:)=[];
         KK(:,data.manq.eval.ix_manq)=[];

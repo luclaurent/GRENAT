@@ -48,7 +48,7 @@ end
 %vecteurs des ecarts aux echantillons retires (reponses et gradients)
 esn=data_block.build.w./diag(data_block.build.iKK);
 
-%denormalisation des grandeurs (forc
+%denormalisation des grandeurs 
 infos.moy=data.norm.moy_eval;
 infos.std=data.norm.std_eval;infos.std_e=infos.std;
 infos.std_t=data.norm.std_tirages;

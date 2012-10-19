@@ -230,24 +230,26 @@ switch fact_rcc
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
         %%approche classique
-        block1=((donnees.build.fct/rcc)*donnees.build.fc);
-        block2=((donnees.build.fct/rcc)*donnees.build.y);
-        beta=block1\block2;
-        fctCfc=(donnees.build.fc\rcc)/donnees.build.fct;
-        
+       % block1=((donnees.build.fct/rcc)*donnees.build.fc);
+       % block2=((donnees.build.fct/rcc)*donnees.build.y);
+       % beta=block1\block2;
+       % fctCfc=(donnees.build.fc\rcc)/donnees.build.fct;
+       % beta
         %% Nouvelle version
         % matrice de krigeage: M=[C X;Xt 0];
-        dim_c=size(donnees.build.fct,1);
-        MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(dim_c)];
-        coef=MKrg\[donnees.build.y;zeros(dim_c,1)];
+        MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(donnees.build.dim_fc)];
+        iMKrg=inv(MKrg);
+        coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
-        gamma=rcc\(donnees.build.y-donnees.build.fc*beta);
-        beta
-        gamma
-        coef
+        beta=coef_KRG((end-donnees.build.dim_fc+1):end);
+        gamma=coef_KRG(1:(end-donnees.build.dim_fc));
+        %gamma=rcc\(donnees.build.y-donnees.build.fc*beta);
+      %  beta
+      %  gamma
+        
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -268,10 +270,12 @@ if exist('fcL','var');build_data.fcL=fcL;end
 if exist('fctU','var');build_data.fctU=fctU;end
 if exist('Lrcc','var');build_data.Lrcc=Lrcc;end
 if exist('Urcc','var');build_data.Urcc=Urcc;end
+build_data.coef_KRG=coef_KRG;
 build_data.beta=beta;
 build_data.gamma=gamma;
 build_data.rcc=rcc;
 build_data.MKrg=MKrg;
+build_data.iMKrg=iMKrg;
 build_data.deg=meta.deg;
 build_data.para=meta.para;
 build_data.fact_rcc=fact_rcc;

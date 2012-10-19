@@ -104,7 +104,7 @@ if donnees.in.pres_grad
 else
     if calc_grad  %si calcul des gradients
         [rr,jr]=feval(donnees.build.corr,dist,donnees.build.para.val);
-    else %sinon
+            else %sinon
         rr=feval(donnees.build.corr,dist,donnees.build.para.val);
     end
     %si donnees manquantes
@@ -158,9 +158,8 @@ if nargout >=3
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Lrcc)*Lrr+...
                 u'*donnees.build.fctCfc*u);
         otherwise
-            rcrr=donnees.build.rcc \ rr;
-            u=donnees.build.fct*rcrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+u'*donnees.build.fctCfc*u - rr'*rcrr);
+           vv=[rr;ff'];
+           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
     end
     if ~aff_warning;warning on all;end
     

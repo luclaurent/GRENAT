@@ -28,13 +28,13 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock';
+fct='manu';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 %esp=[0 15];
 esp=[];
 
@@ -58,19 +58,19 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-<<<<<<< HEAD
-data.type='KRG';
+data.type='RBF';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=1;
+data.deg=0;
 
 meta=init_meta(data);
 
 meta.para.estim=false;
 meta.cv=true;
-meta.norm=false;
+meta.cv_aff=true;
+meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';

@@ -148,7 +148,7 @@ details=[];
 if data.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(data.in.eval);
-    %calcul crit�res enrichissement
+    %calcul criteres enrichissement
     [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,data.enrich);
 end
 

@@ -201,6 +201,7 @@ ret.in.nb_val=nb_val;
 ret.norm=nkrg.norm;
 ret.build.fc=fc;
 ret.build.fct=fc';
+ret.build.dim_fc=size(fc,2);
 ret.build.y=y;
 ret.build.fct_reg=fct;
 ret.build.corr=meta.corr;

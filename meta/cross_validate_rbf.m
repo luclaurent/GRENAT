@@ -3,7 +3,9 @@
 %nouvelle  version du 31/05/2012
 
 function [cv]=cross_validate_rbf(data_block,data,meta,type)
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%% OPTIONS
 %norme employee dans le calcul de l'erreur LOO
 %MSE: norme-L2
 LOO_norm='L2';
@@ -13,6 +15,8 @@ aff_warning=false;
 
 %denormalisation des grandeurs pour calcul CV
 denorm_cv=true;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if denorm_cv;denorm_cv=data.norm.on;end
 
 %differents cas de figure
@@ -44,7 +48,6 @@ end
 %%% Methode de Rippa (Rippa 1999/Fasshauer 2007/Bompard 2011)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %vecteurs des ecarts aux echantillons retires (reponses et gradients)
 esn=data_block.build.w./diag(data_block.build.iKK);
 
@@ -284,6 +287,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Calcul de la variance de prediction aux points echantillonnes (pour CV)
+%%%ATTENTION defaut pour cas avec gradients
 if mod_final
     cv_varR=zeros(data.in.nb_val,1);
     cv_zRn=zeros(data.in.nb_val,1);
@@ -300,7 +304,7 @@ if mod_final
         PP(pos)=[];
         if ~aff_warning; warning off all;end
         cv_varR(tir)=1-PP'*(ret_KK\PP);
-        %calcul de la r�ponse
+        %calcul de la reponse
         cv_zRn(tir)=PP'*(ret_KK\ret_y);
         if ~aff_warning; warning on all;end
     end

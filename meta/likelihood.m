@@ -3,7 +3,7 @@
 %L. LAURENT -- 10/11/2010 -- laurent@lmt.ens-cachan.fr
 
 %le calcul realise ici s'applique au krigeage
-%% //!\\ calcul du logarithme népérien du determinant manuellement pour eviter les prob de précision de matlab
+%% //!\\ calcul du logarithme neperien du determinant manuellement pour eviter les prob de precision de matlab
 function [logli,li]=likelihood(donnees)
 
 %taille matrice de correlation
@@ -17,38 +17,38 @@ switch donnees.build.fact_rcc
         diagRrcc=diag(donnees.build.Rrcc);
         det_corr=abs(prod(diagRrcc)); %Q est une matrice unitaire        
         log_det_corr=sum(log(abs(diagRrcc)));
-        %contrôle positivité
+        %controle positivite
         sumd=sum(diagRrcc<0);
         if mod(sumd,2)~=0&&detQrcc>0
-           fprintf('<< Matrice de corrélation non positive >>\n'); 
+           fprintf('<< Matrice de correlation non positive >>\n'); 
         end
     case 'LL'
-        fprintf('Cholesky non optimisé dans likelihood.m')
+        fprintf('Cholesky non optimise dans likelihood.m')
         eig_val=eig(donnees.build.rcc);
         det_corr=prod(eig_val);        
         log_det_corr=sum(log(eig_val));
-                %contrôle positivité
+                %controle positivite
         sumd=sum(eig_val<0);
         if mod(sumd,2)~=0
-           fprintf('<< Matrice de corrélation non positive >>\n'); 
+           fprintf('<< Matrice de correlation non positive >>\n'); 
         end
     case 'LU'
         diagUrcc=diag(donnees.build.Urcc);
-        det_corr=prod(diagUrcc); %L est quasi triangulaire (à une permutation près) et la matrice L comporte des 1 sur la diagonale
+        det_corr=prod(diagUrcc); %L est quasi triangulaire (a une permutation pres) et la matrice L comporte des 1 sur la diagonale
         log_det_corr=sum(log(abs(diagUrcc)));
-        %contrôle positivité
+        %controle positivite
         sumd=sum(diagUrcc<0);
         if mod(sumd,2)~=0
-           fprintf('<< Matrice de corrélation non positive >>\n'); 
+           fprintf('<< Matrice de correlation non positive >>\n'); 
         end
     otherwise
         eig_val=eig(donnees.build.rcc);
         det_corr=prod(eig_val);        
         log_det_corr=sum(log(eig_val));
-         %contrôle positivité
+         %controle positivite
         sumd=sum(eig_val<0);
         if mod(sumd,2)~=0
-           fprintf('<< Matrice de corrélation non positive >>\n'); 
+           fprintf('<< Matrice de correlation non positive >>\n'); 
         end
 end
 

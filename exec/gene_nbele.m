@@ -1,4 +1,4 @@
-%% Fonction assurant le calcul/la determination du nombre de points pour déterminer la grille du metamodele (pour affichage ou vérification)
+%% Fonction assurant le calcul/la determination du nombre de points pour dï¿½terminer la grille du metamodele (pour affichage ou vï¿½rification)
 %% L.LAURENT -- 15/05/2012 -- laurent@lmt.ens-cachan.fr
 
 function nb_ele=gene_nbele(dim)
@@ -14,6 +14,8 @@ elseif dim==4
 elseif dim==5;
     nb_ele=4;
 elseif dim==6
+    nb_ele=3;
+elseif dim==10
     nb_ele=3;
 else 
     fprintf('##############################\n');

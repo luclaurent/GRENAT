@@ -58,6 +58,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
+<<<<<<< HEAD
 data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
@@ -69,7 +70,7 @@ meta=init_meta(data);
 
 meta.para.estim=false;
 meta.cv=true;
-meta.norm=true;
+meta.norm=false;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';

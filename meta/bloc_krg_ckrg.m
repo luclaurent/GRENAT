@@ -7,7 +7,7 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 %coefficient de reconditionnement
 coef=10^-6;
 % type de factorisation de la matrice de correlation
-fact_rcc='None' ; %LU %QR %LL %None
+fact_rcc='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement grandeurs utiles
@@ -168,27 +168,40 @@ end
 %QR
 switch fact_rcc
     case 'QR'
-        [Q,R]=qr(rcc);
-         Qrcc=Q;
-        Rrcc=R;
-        Qt=Q';
-        tic
+%         [Q,R]=qr(rcc);
+%          Qrcc=Q;
+%         Rrcc=R;
+%         Qt=Q';
+%         tic
+%         
+%         yQ=Qt*donnees.build.y;
+%         fcQ=Qt*donnees.build.fc;
+%         fctR=donnees.build.fct/R;
+%         fctCfc=(donnees.build.fc\Q)*(R/donnees.build.fct);
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %calcul du coefficient beta
+%         %%approche classique
+%         block1=fctR*fcQ;
+%         block2=fctR*yQ;
+%         beta=block1\block2;
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %calcul du coefficient gamma
+%         gamma=R\(yQ-fcQ*beta);
         
-        yQ=Qt*donnees.build.y;
-        fcQ=Qt*donnees.build.fc;
-        fctR=donnees.build.fct/R;
-        fctCfc=(donnees.build.fc\Q)*(R/donnees.build.fct);
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient beta
-        %%approche classique
-        block1=fctR*fcQ;
-        block2=fctR*yQ;
-        beta=block1\block2;
+                %% Nouvelle version
+        % matrice de krigeage: M=[C X;Xt 0];
+        MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(donnees.build.dim_fc)];
+        [QMKrg,RMKrg]=qr(MKrg);
+        iMKrg=RMKrg\QMKrg';
+        coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
-        gamma=R\(yQ-fcQ*beta);
+        beta=coef_KRG((end-donnees.build.dim_fc+1):end);
+        gamma=coef_KRG(1:(end-donnees.build.dim_fc));
         
     case 'LU'
         [Lrcc,Urcc]=lu(rcc);
@@ -257,8 +270,8 @@ end
 %sauvegarde de donnees
 if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
 if exist('cond_new','var');build_data.cond_new=cond_new;end
-if exist('Qrcc','var');build_data.Qrcc=Qrcc;end
-if exist('Rrcc','var');build_data.Rrcc=Rrcc;end
+if exist('QMKrg','var');build_data.QMKrg=QMKrg;end
+if exist('RMKrg','var');build_data.RMKrg=RMKrg;end
 if exist('iRcc','var');build_data.iRcc=iRcc;end
 if exist('yQ','var');build_data.yQ=yQ;end
 if exist('fcQ','var');build_data.fcQ=fcQ;end

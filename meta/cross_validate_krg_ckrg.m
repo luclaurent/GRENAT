@@ -12,8 +12,6 @@ LOO_norm='L2';
 % affichages warning ou non
 aff_warning=false;
 
-mod_debug=true;
-
 %denormalisation des grandeurs pour calcul CV
 denorm_cv=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,33 +193,33 @@ if mod_etud||mod_debug||mod_final
     %si factorisation
     if ~aff_warning; warning off all;end
     switch data_block.build.fact_rcc
-        case 'QR'
-            %prise en compte suppression lignes/colonnes
-            Qr=data_block.build.Qrcc;Rr=data_block.build.Rrcc;
-            for ii=length(pos):-1:1
-                [Qr,Rr]=qrdelete(Qr,Rr,pos(ii),'col');
-                [Qr,Rr]=qrdelete(Qr,Rr,pos(ii),'row');
-            end
-            donnees_cv.build.Qrcc=Qr;
-            donnees_cv.build.Rrcc=Rr;
-            donnees_cv.build.yQ=Qr'*cv_y;
-            donnees_cv.build.fcQ=Qr'*cv_fc;
-            donnees_cv.build.fctR=cv_fct/Rr;
-            donnees_cv.build.fctCfc=(cv_fc\Qr)*(Rr/cv_fct);
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %calcul du coefficient beta
-            %%approche classique
-            block1=donnees_cv.build.fctR*donnees_cv.build.fcQ;
-            block2=donnees_cv.build.fctR* donnees_cv.build.yQ;
-            donnees_cv.build.beta=block1\block2;
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %calcul du coefficient gamma
-            donnees_cv.build.gamma=Rr\(donnees_cv.build.yQ-donnees_cv.build.fcQ*donnees_cv.build.beta);
-            %calcul de la variance de prediction
-            sig2=1/size(Qr,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/Rr*Qr')...
-                *(cv_y-cv_fc*donnees_cv.build.beta);
+%         case 'QR'
+%             %prise en compte suppression lignes/colonnes
+%             Qr=data_block.build.Qrcc;Rr=data_block.build.Rrcc;
+%             for ii=length(pos):-1:1
+%                 [Qr,Rr]=qrdelete(Qr,Rr,pos(ii),'col');
+%                 [Qr,Rr]=qrdelete(Qr,Rr,pos(ii),'row');
+%             end
+%             donnees_cv.build.Qrcc=Qr;
+%             donnees_cv.build.Rrcc=Rr;
+%             donnees_cv.build.yQ=Qr'*cv_y;
+%             donnees_cv.build.fcQ=Qr'*cv_fc;
+%             donnees_cv.build.fctR=cv_fct/Rr;
+%             donnees_cv.build.fctCfc=(cv_fc\Qr)*(Rr/cv_fct);
+%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             %calcul du coefficient beta
+%             %%approche classique
+%             block1=donnees_cv.build.fctR*donnees_cv.build.fcQ;
+%             block2=donnees_cv.build.fctR* donnees_cv.build.yQ;
+%             donnees_cv.build.beta=block1\block2;
+%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%             %calcul du coefficient gamma
+%             donnees_cv.build.gamma=Rr\(donnees_cv.build.yQ-donnees_cv.build.fcQ*donnees_cv.build.beta);
+%             %calcul de la variance de prediction
+%             sig2=1/size(Qr,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/Rr*Qr')...
+%                 *(cv_y-cv_fc*donnees_cv.build.beta);
             % case 'LU'
             % case 'LL'
         otherwise
@@ -361,23 +359,23 @@ if meta.cv_aff&&mod_final
     cv_zn=norm_denorm(cv_z,'norm',infos);
     opt.newfig=false;
     figure
-    subplot(3,2,1);
-    opt.title='Original data (CV R)';
-    qq_plot(data_block.in.eval,cv_zR,opt)
-    subplot(3,2,2);
-    opt.title='Standardized data (CV R)';
-    qq_plot(data_block.in.evaln,cv_zRn,opt)
-    subplot(3,2,3);
+    %subplot(3,2,1);
+    %opt.title='Original data (CV R)';
+    %qq_plot(data_block.in.eval,cv_zR,opt)
+    %subplot(3,2,2);
+    %opt.title='Standardized data (CV R)';
+    %qq_plot(data_block.in.evaln,cv_zRn,opt)
+    %subplot(3,2,3);
     opt.title='Standardized data (CV F)';
     qq_plot(data_block.in.evaln,cv_z,opt)
     subplot(3,2,4);
     opt.title='Standardized data (CV F)';
     qq_plot(data_block.in.evaln,cv_zn,opt)
-    subplot(3,2,5);
-    opt.title='SCVR';
-    opt.xlabel='Predicted' ;
-    opt.ylabel='SCVR';
-    scvr_plot(cv_zRn,cv.scvr,opt)
+    %subplot(3,2,5);
+    %opt.title='SCVR';
+    %opt.xlabel='Predicted' ;
+    %opt.ylabel='SCVR';
+    %scvr_plot(cv_zRn,cv.scvr,opt)
 end
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

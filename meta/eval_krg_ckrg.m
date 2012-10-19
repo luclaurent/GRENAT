@@ -143,10 +143,9 @@ if nargout >=3
     %en fonction de la factorisation
     switch donnees.build.fact_rcc
         case 'QR'
-            Qrr=donnees.build.Qrcc'*rr;
-            u=donnees.build.fctR*Qrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
-                u'*donnees.build.fctCfc*u);
+           vv=[rr;ff'];
+           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
+           
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctU*Lrr-ff';

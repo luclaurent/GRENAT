@@ -152,7 +152,7 @@ if data.enrich.on&&exist('variance','var')
     [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,data.enrich);
 end
 
-%extraction d�tails
+%extraction details
 if nargout==4
     if ~isempty(explor);details.enrich.explor=explor;end
     if ~isempty(exploit);details.enrich.exploit=exploit;end

@@ -287,16 +287,17 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Calcul de la variance de prediction aux points echantillonnes (pour CV)
-%%%ATTENTION defaut pour cas avec gradients
+%%%ATTENTION defaut pour cas avec gradients et/ou donnees manquantes
 if mod_final
     cv_varR=zeros(data.in.nb_val,1);
     cv_zRn=zeros(data.in.nb_val,1);
-    for tir=1:data.in.nb_val
+    KK=data_block.build.KK;
+    parfor tir=1:data.in.nb_val
         %retrait des reponses seules
         pos=tir;
         %extraction vecteur et calcul de la variance
-        PP=data_block.build.KK(:,tir);
-        ret_KK=data_block.build.KK;
+        PP=KK(:,tir);
+        ret_KK=KK;
         ret_y=data.build.y;
         ret_KK(pos,:)=[];
         ret_KK(:,pos)=[];

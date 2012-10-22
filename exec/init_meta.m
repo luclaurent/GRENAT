@@ -20,6 +20,8 @@ meta.norm=true;
 meta.recond=false;
 %validation croisee
 meta.cv=true;
+%calcul tous criteres CV
+meta.cv_full=false;
 %affichage QQ plot CV
 meta.cv_aff=false;
 
@@ -113,6 +115,8 @@ if nargin==1
     if isfield(in,'recond');meta.recond=in.recond;end
     %validation croisee
     if isfield(in,'cv');meta.cv=in.cv;end
+    %calcul tous criteres CV
+    if isfield(in,'cv_full');meta.cv_full=in.cv_full;end
     %affichage QQ plot CV
     if isfield(in,'cv_aff');meta.cv_aff=in.cv_aff;end
     

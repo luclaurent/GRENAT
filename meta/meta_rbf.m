@@ -15,6 +15,7 @@ if ~isempty(grad);fprintf('GRBF \n');else fprintf('RBF \n');end
 fprintf('>> Fonction de base radiale: %s\n',meta.rbf);
 fprintf('>>> Normalisation: ');if meta.norm; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>>> Calcul tous criteres CV: ');if meta.cv_full; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
 
 fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end

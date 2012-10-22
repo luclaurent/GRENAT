@@ -70,6 +70,7 @@ meta=init_meta(data);
 meta.para.estim=true;
 meta.cv=true;
 meta.cv_aff=true;
+meta.cv_full=true;
 meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy

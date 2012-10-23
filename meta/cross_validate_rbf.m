@@ -49,7 +49,7 @@ if mod_debug||mod_etud
     end
 end
 
-tic
+if mod_final;tic;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Methode de Rippa (Rippa 1999/Fasshauer 2007/Bompard 2011)
@@ -147,7 +147,7 @@ if mod_debug||mod_final
     fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
     fprintf('+++ PRESS %4.2f\n',cv.then.press);
 end
-toc
+if mod_final;toc;end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

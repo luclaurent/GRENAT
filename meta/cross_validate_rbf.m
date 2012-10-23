@@ -155,7 +155,7 @@ toc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if mod_debug
-    tic
+    if mod_final;tic;end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %stockage des evaluations du metamodele au point enleve
@@ -266,7 +266,7 @@ if mod_debug
         fprintf('+++ SCVR (Mean) %4.2f\n',cv.then.scvr_mean);
         fprintf('+++ Adequation %4.2f\n',cv.then.adequ);
     end
-    toc
+    if mod_final;toc;end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

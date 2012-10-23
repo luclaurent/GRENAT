@@ -13,12 +13,21 @@ if nargin==3
     if isfield(infos,'moy')
         if ~isempty(infos.moy)
             norm_data=true;
+        else
+            calc_para_norm=false;
         end
     elseif isfield(infos,'eval')
         norm_manq=infos.eval.on;
+        calc_para_norm=true;
     elseif isfield(infos,'moy')&&isfield(infos,'eval')
-        norm_data=true;
+        if ~isempty(infos.moy)
+            norm_data=true;
+        else
+             calc_para_norm=false;
+        end
     end
+else
+     calc_para_norm=true;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,7 +50,7 @@ switch type
         else
             inm=in;
         end
-        calc_para_norm=true;
+       
         if norm_data
             out=(in-repmat(infos.moy,nbs,1))./repmat(infos.std,nbs,1);
             calc_para_norm=false;
@@ -69,7 +78,9 @@ switch type
                 infos.moy=moy_i;
                 infos.std=std_i;
             end
-            
+        end
+        if ~calc_para_norm&&~norm_data
+            out=in;            
         end
         
         %denormalisation

@@ -25,7 +25,7 @@ if nargin==3
         case 'debug' %mode debug (grandeurs affichees)
             fprintf('+++ CV KRG en mode DEBUG\n');
             mod_debug=true;
-        case 'etud'  %mode etude (calcul des criteres par les deux m�thodes
+        case 'etud'  %mode etude (calcul des criteres par les deux methodes
             mod_etud=true;
             % case 'nominal'  %mode nominal (calcul des criteres par la methode de Rippa)
         case 'final'    %mode final (calcul des variances)

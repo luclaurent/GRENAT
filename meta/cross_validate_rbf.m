@@ -152,11 +152,11 @@ if mod_debug||mod_final
     fprintf('=== CV-LOO par methode de Rippa 1999 (extension Bompard 2011)\n');
     fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
     if pres_grad
-        fprintf('+++ Erreur reponses %4.2f\n',cv.then.eloor);
-        fprintf('+++ Erreur gradient %4.2f\n',cv.then.eloog);
+        fprintf('+++ Erreur reponses %4.2e\n',cv.then.eloor);
+        fprintf('+++ Erreur gradient %4.2e\n',cv.then.eloog);
     end
-    fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
-    fprintf('+++ PRESS %4.2f\n',cv.then.press);
+    fprintf('+++ Erreur total %4.2e\n',cv.then.eloot);
+    fprintf('+++ PRESS %4.2e\n',cv.then.press);
 end
 if mod_final;toc;end
 
@@ -273,17 +273,17 @@ if mod_debug
         fprintf('=== CV-LOO par methode retrait reponses PUIS gradients (debug)\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
-            fprintf('+++ Erreur reponses %4.2f\n',cv.then.eloor);
-            fprintf('+++ Erreur gradient %4.2f\n',cv.then.eloog);
+            fprintf('+++ Erreur reponses %4.2e\n',cv.then.eloor);
+            fprintf('+++ Erreur gradient %4.2e\n',cv.then.eloog);
         end
-        fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
-        fprintf('+++ Biais moyen %4.2f\n',cv.then.bm);
-        fprintf('+++ PRESS %4.2f\n',cv.then.press);
-        fprintf('+++ Critere perso %4.2f\n',cv.then.errp);
-        fprintf('+++ SCVR (Min) %4.2f\n',cv.then.scvr_min);
-        fprintf('+++ SCVR (Max) %4.2f\n',cv.then.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2f\n',cv.then.scvr_mean);
-        fprintf('+++ Adequation %4.2f\n',cv.then.adequ);
+        fprintf('+++ Erreur total %4.2e\n',cv.then.eloot);
+        fprintf('+++ Biais moyen %4.2e\n',cv.then.bm);
+        fprintf('+++ PRESS %4.2e\n',cv.then.press);
+        fprintf('+++ Critere perso %4.2e\n',cv.then.errp);
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
+        fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
     toc
 end
@@ -294,7 +294,7 @@ end
 %%% chaque echantillon)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if mod_etud||mod_debug
+if mod_etud||mod_debug||meta.cv_aff
     tic
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -376,17 +376,17 @@ if mod_etud||mod_debug
         fprintf('=== CV-LOO par methode retrait reponses ET gradients\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
-            fprintf('+++ Erreur reponses %4.2f\n',cv.and.eloor);
-            fprintf('+++ Erreur gradient %4.2f\n',cv.and.eloog);
+            fprintf('+++ Erreur reponses %4.2e\n',cv.and.eloor);
+            fprintf('+++ Erreur gradient %4.2e\n',cv.and.eloog);
         end
-        fprintf('+++ Erreur total %4.2f\n',cv.and.eloot);
-        fprintf('+++ Biais moyen %4.2f\n',cv.and.bm);
-        fprintf('+++ PRESS %4.2f\n',cv.and.press);
-        fprintf('+++ Critere perso %4.2f\n',cv.and.errp);
-        fprintf('+++ SCVR (Min) %4.2f\n',cv.and.scvr_min);
-        fprintf('+++ SCVR (Max) %4.2f\n',cv.and.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2f\n',cv.and.scvr_mean);
-        fprintf('+++ Adequation %4.2f\n',cv.and.adequ);
+        fprintf('+++ Erreur total %4.2e\n',cv.and.eloot);
+        fprintf('+++ Biais moyen %4.2e\n',cv.and.bm);
+        fprintf('+++ PRESS %4.2e\n',cv.and.press);
+        fprintf('+++ Critere perso %4.2e\n',cv.and.errp);
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.and.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.and.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);
+        fprintf('+++ Adequation %4.2e\n',cv.and.adequ);
     end
     toc
 end
@@ -453,17 +453,17 @@ if meta.cv_aff||mod_debug
         fprintf('=== CV-LOO par methode retrait reponses PUIS gradients\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
-            fprintf('+++ Erreur reponses %4.2f\n',cv.then.eloor);
-            fprintf('+++ Erreur gradient %4.2f\n',cv.then.eloog);
+            fprintf('+++ Erreur reponses %4.2e\n',cv.then.eloor);
+            fprintf('+++ Erreur gradient %4.2e\n',cv.then.eloog);
         end
-        fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
-        fprintf('+++ Biais moyen %4.2f\n',cv.then.bm);
-        fprintf('+++ PRESS %4.2f\n',cv.then.press);
-        fprintf('+++ Critere perso %4.2f\n',cv.then.errp);
-        fprintf('+++ SCVR (Min) %4.2f\n',cv.then.scvr_min);
-        fprintf('+++ SCVR (Max) %4.2f\n',cv.then.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2f\n',cv.then.scvr_mean);
-        fprintf('+++ Adequation %4.2f\n',cv.then.adequ);
+        fprintf('+++ Erreur total %4.2e\n',cv.then.eloot);
+        fprintf('+++ Biais moyen %4.2e\n',cv.then.bm);
+        fprintf('+++ PRESS %4.2e\n',cv.then.press);
+        fprintf('+++ Critere perso %4.2e\n',cv.then.errp);
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
+        fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
     toc
 end
@@ -500,9 +500,9 @@ if mod_final
     %affichage qques infos
     if mod_debug||mod_final
         fprintf('=== CV-LOO SCVR\n');
-        fprintf('+++ SCVR (Min) %4.2f\n',cv.final.scvr_min);
-        fprintf('+++ SCVR (Max) %4.2f\n',cv.final.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2f\n',cv.final.scvr_mean);
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
     end
     toc
 end

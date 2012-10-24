@@ -1,3 +1,4 @@
+
 %%Etude metamodeles en nD
 %%L. LAURENT -- 16/09/2011 -- laurent@lmt.ens-cachan.fr
 
@@ -34,7 +35,7 @@ fct='rosenbrock';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=10;
 %esp=[0 15];
 esp=[];
 
@@ -49,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=30;
+doe.nb_samples=130;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -69,7 +70,7 @@ meta=init_meta(data);
 
 meta.para.estim=false;
 meta.cv=true;
-meta.cv_aff=false;
+meta.cv_aff=true;
 meta.cv_full=false;
 meta.norm=true;
 meta.recond=false;

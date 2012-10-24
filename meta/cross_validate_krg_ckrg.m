@@ -10,7 +10,7 @@ function cv=cross_validate_krg_ckrg(data_block,meta,type)
 %MSE: norme-L2
 LOO_norm='L2';
 %debug
-debug=true;
+debug=false;
 
 % affichages warning ou non
 aff_warning=false;
@@ -147,15 +147,15 @@ switch LOO_norm
         end
 end
 %affichage qques infos
-if mod_debug
+if mod_debug||mod_final
     fprintf('=== CV-LOO par methode de Rippa 1999 (extension Bompard 2011)\n');
     fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
     if pres_grad
-        fprintf('+++ Erreur reponses %4.2f\n',cv.then.eloor);
-        fprintf('+++ Erreur gradient %4.2f\n',cv.then.eloog);
+        fprintf('+++ Erreur reponses %4.2e\n',cv.then.eloor);
+        fprintf('+++ Erreur gradient %4.2e\n',cv.then.eloog);
     end
-    fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
-    fprintf('+++ PRESS %4.2f\n',cv.then.press);
+    fprintf('+++ Erreur total %4.2e\n',cv.then.eloot);
+    fprintf('+++ PRESS %4.2e\n',cv.then.press);
 end
 if mod_final;toc;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -303,29 +303,20 @@ if mod_debug
         fprintf('=== CV-LOO par methode retrait reponses PUIS gradients (debug)\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
-            fprintf('+++ Erreur reponses %4.2f\n',cv.then.eloor);
-            fprintf('+++ Erreur gradient %4.2f\n',cv.then.eloog);
+            fprintf('+++ Erreur reponses %4.2e\n',cv.then.eloor);
+            fprintf('+++ Erreur gradient %4.2e\n',cv.then.eloog);
         end
-        fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
-        fprintf('+++ Biais moyen %4.2f\n',cv.then.bm);
-        fprintf('+++ PRESS %4.2f\n',cv.then.press);
-        fprintf('+++ Critere perso %4.2f\n',cv.then.errp);
-        fprintf('+++ SCVR (Min) %4.2f\n',cv.then.scvr_min);
-        fprintf('+++ SCVR (Max) %4.2f\n',cv.then.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2f\n',cv.then.scvr_mean);
-        fprintf('+++ Adequation %4.2f\n',cv.then.adequ);
+        fprintf('+++ Erreur total %4.2e\n',cv.then.eloot);
+        fprintf('+++ Biais moyen %4.2e\n',cv.then.bm);
+        fprintf('+++ PRESS %4.2e\n',cv.then.press);
+        fprintf('+++ Critere perso %4.2e\n',cv.then.errp);
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
+        fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
     toc
 end
-% aa=-(cv_z-eval);
-% esr-aa
-% pause
-% bb=-(cv_gz-grad);
-% bb=bb';
-% bb=bb(:);
-% esg-bb
-% pause
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,7 +324,7 @@ end
 %%% chaque echantillon)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if mod_etud||mod_debug
+if mod_etud||mod_debug||meta.cv_aff
     tic
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -352,7 +343,7 @@ if mod_etud||mod_debug
     dim_c=data_block.build.dim_fc;
     %parcours des echantillons
     for tir=1:nb_val
-    %chargement des donnees
+        %chargement des donnees
         donnees_cv=data_block;
         %retrait des grandeurs
         if pres_grad
@@ -411,7 +402,7 @@ if mod_etud||mod_debug
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%Evaluation du metamodele au point supprime de la construction
-        [Z,GZ,variance]=eval_krg_ckrg(tirages(tir,:),donnees_cv);    
+        [Z,GZ,variance]=eval_krg_ckrg(tirages(tir,:),donnees_cv);
         cv_z(tir)=Z;
         cv_gz(tir,:)=GZ;
         cv_var(tir)=variance;
@@ -425,25 +416,166 @@ if mod_etud||mod_debug
         fprintf('=== CV-LOO par methode retrait reponses ET gradients\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
-            fprintf('+++ Erreur reponses %4.2f\n',cv.and.eloor);
-            fprintf('+++ Erreur gradient %4.2f\n',cv.and.eloog);
+            fprintf('+++ Erreur reponses %4.2e\n',cv.and.eloor);
+            fprintf('+++ Erreur gradient %4.2e\n',cv.and.eloog);
         end
-        fprintf('+++ Erreur total %4.2f\n',cv.and.eloot);
-        fprintf('+++ Biais moyen %4.2f\n',cv.and.bm);
-        fprintf('+++ PRESS %4.2f\n',cv.and.press);
-        fprintf('+++ Critere perso %4.2f\n',cv.and.errp);
-        fprintf('+++ SCVR (Min) %4.2f\n',cv.and.scvr_min);
-        fprintf('+++ SCVR (Max) %4.2f\n',cv.and.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2f\n',cv.and.scvr_mean);
-        fprintf('+++ Adequation %4.2f\n',cv.and.adequ);
+        fprintf('+++ Erreur total %4.2e\n',cv.and.eloot);
+        fprintf('+++ Biais moyen %4.2e\n',cv.and.bm);
+        fprintf('+++ PRESS %4.2e\n',cv.and.press);
+        fprintf('+++ Critere perso %4.2e\n',cv.and.errp);
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.and.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.and.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);
+        fprintf('+++ Adequation %4.2e\n',cv.and.adequ);
     end
 end
-pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Calcul de la variance de prediction aux points echantillonnes (pour CV)
-if mod_final
+%%Calcul de la variance  de prediction aux points echantillonnes + test calcul reponses et gradients (pour CV)
+%%%ATTENTION defaut pour cas avec gradients et/ou donnees manquantes
+if meta.cv_aff||mod_debug
+    tic
+    cv_varR=zeros(nb_val,1);
+    cv_zRn=zeros(nb_val,1);
+    cv_GZn=zeros(nb_val,nb_var);
+    yy=data_block.build.y;
+    MKrg=data_block.build.MKrg;
+    fc=data_block.build.fc;
+    rcc=data_block.build.rcc;
+    grad=data_block.in.grad;
+    eval=data_block.in.eval;
+    dim_c=data_block.build.dim_fc;
+    for tir=1:nb_val
+        %extraction des grandeurs
+        PP=MKrg(tir,:);
+        PP(tir)=[];
+        cv_MKrg=MKrg([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
+        cv_y=yy([1:(tir-1) (tir+1):end]');
+        cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
+        cv_fc=fc([1:(tir-1) (tir+1):end],:);
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul des coefficients
+        if ~aff_warning; warning off all;end
+        coefKRG=cv_MKrg\[cv_y;zeros(dim_c,1)];
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %extraction coefficients beta et gamma
+        beta=coefKRG((end-dim_c+1):end);
+        
+        %calcul de la variance du processus
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'/cv_rcc)*(cv_y-cv_fc*beta);
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        if norm_on
+            sig2=sig2*std_eval^2;
+        else
+            sig2=sig2;
+        end
+        %calcul de la variance de prediction
+        cv_varR(tir)=sig2*(1-PP*(cv_MKrg\PP'));
+        %calcul de la reponse
+        cv_zRn(tir)=PP*coefKRG;
+        if ~aff_warning; warning on all;end
+        %retrait gradients
+        if pres_grad
+            for pos_gr=1:nb_var
+                pos=nb_val+(tir-1)*nb_var+pos_gr;
+                %retrait des grandeurs
+                cv_MKrg=MKrg([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
+                cv_y=yy([1:(pos-1) (pos+1):end]');
+                %extraction vecteur
+                dPP=MKrg(pos,:);
+                dPP(pos)=[];
+                %calcul du gradients
+                GZ=dPP*(cv_MKrg\[cv_y;zeros(dim_c,1)]);
+                cv_GZn(tir,pos_gr)=GZ;
+            end
+        end
+    end
     
+    %denormalisation
+    cv_zR=norm_denorm(cv_zRn,'denorm',infos);
+    cv_GZ=norm_denorm_g(cv_GZn,'denorm',infos);
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Calcul des erreurs
+    [cv.then]=calc_err_loo(eval,cv_zR,cv_varR,grad,cv_GZ,nb_val,nb_var,LOO_norm);
+    %affichage qques infos
+    if mod_debug||mod_final
+        fprintf('=== CV-LOO par methode retrait reponses PUIS gradients\n');
+        fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
+        if pres_grad
+            fprintf('+++ Erreur reponses %4.2e\n',cv.then.eloor);
+            fprintf('+++ Erreur gradient %4.2e\n',cv.then.eloog);
+        end
+        fprintf('+++ Erreur total %4.2e\n',cv.then.eloot);
+        fprintf('+++ Biais moyen %4.2e\n',cv.then.bm);
+        fprintf('+++ PRESS %4.2e\n',cv.then.press);
+        fprintf('+++ Critere perso %4.2e\n',cv.then.errp);
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
+        fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
+    end
+    toc
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Calcul de la variance  de prediction aux points echantillonnes (pour CV)
+%%%ATTENTION defaut pour cas avec gradients et/ou donnees manquantes
+if mod_final
+    tic
+    cv_varR=zeros(nb_val,1);
+    yy=data_block.build.y;
+    MKrg=data_block.build.MKrg;
+    fc=data_block.build.fc;
+    rcc=data_block.build.rcc;
+    dim_c=data_block.build.dim_fc;
+    for tir=1:nb_val
+        
+        %extraction des grandeurs
+        PP=MKrg(tir,:);
+        PP(tir)=[];
+        cv_MKrg=MKrg([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
+        cv_y=yy([1:(tir-1) (tir+1):end]');
+        cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
+        cv_fc=fc([1:(tir-1) (tir+1):end],:);
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul des coefficients
+        if ~aff_warning; warning off all;end
+        coefKRG=cv_MKrg\[cv_y;zeros(dim_c,1)];
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %extraction coefficients beta et gamma
+        beta=coefKRG((end-dim_c+1):end);
+        
+        %calcul de la variance du processus
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'/cv_rcc)*(cv_y-cv_fc*beta);
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        if norm_on
+            sig2=sig2*std_eval^2;
+        end
+        %calcul de la variance de prediction
+        cv_varR(tir)=sig2*(1-PP*(cv_MKrg\PP'));
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Calcul des erreurs
+    [cv.final]=calc_err_loo(zeros(size(esr)),-esr,cv_varR,[],[],nb_val,nb_var,LOO_norm);
+    cv.then.scvr_min=cv.final.scvr_min;
+    cv.then.scvr_max=cv.final.scvr_max;
+    cv.then.scvr_mean=cv.final.scvr_mean;
+    %affichage qques infos
+    if mod_debug||mod_final
+        fprintf('=== CV-LOO SCVR\n');
+        fprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
+    end
+    toc
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -454,41 +586,25 @@ if meta.cv_aff&&mod_final
     cv_zn=norm_denorm(cv_z,'norm',infos);
     opt.newfig=false;
     figure
-    %subplot(3,2,1);
-    %opt.title='Original data (CV R)';
-    %qq_plot(data_block.in.eval,cv_zR,opt)
-    %subplot(3,2,2);
-    %opt.title='Standardized data (CV R)';
-    %qq_plot(data_block.in.evaln,cv_zRn,opt)
-    %subplot(3,2,3);
-    opt.title='Standardized data (CV F)';
-    qq_plot(data_block.in.evaln,cv_z,opt)
+    subplot(3,2,1);
+    opt.title='Original data (CV R)';
+    qq_plot(data_block.in.eval,cv_zR,opt)
+    subplot(3,2,2);
+    opt.title='Standardized data (CV R)';
+    qq_plot(data_block.in.evaln,cv_zRn,opt)
+    subplot(3,2,3);
+    opt.title='Original data (CV F)';
+    qq_plot(data_block.in.eval,cv_z,opt)
     subplot(3,2,4);
     opt.title='Standardized data (CV F)';
     qq_plot(data_block.in.evaln,cv_zn,opt)
-    %subplot(3,2,5);
-    %opt.title='SCVR';
-    %opt.xlabel='Predicted' ;
-    %opt.ylabel='SCVR';
-    %scvr_plot(cv_zRn,cv.scvr,opt)
+    subplot(3,2,5);
+    opt.title='SCVR';
+    opt.xlabel='Predicted' ;
+    opt.ylabel='SCVR';
+    scvr_plot(cv_zRn,cv.final.scvr,opt)
 end
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-end
-
-
-
-%critere d'adequation (SCVR Keane 2005/Jones 1998)
-%cv.scvr=diff./cv_var;
-%cv.scvr_min=min(cv.scvr(:));
-%cv.scvr_max=max(cv.scvr(:));
-%cv.scvr_mean=mean(cv.scvr(:));
-%critere perso
-%somm=0.5*(cv_z+data_block.in.eval);
-%cv.perso.errp=1/nb_val*sum(diff./somm);
-
-
-

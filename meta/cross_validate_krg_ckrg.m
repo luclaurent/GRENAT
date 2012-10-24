@@ -428,6 +428,7 @@ if mod_etud||mod_debug||meta.cv_aff
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.and.adequ);
     end
+    toc
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

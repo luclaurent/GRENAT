@@ -21,7 +21,7 @@ fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
 [tMesu,tInit]=mesu_time;
 
 %execution parallele (option et lancement des workers)
-parallel.on=false;
+parallel.on=true;
 parallel.workers='auto';
 exec_parallel('start',parallel);
 
@@ -70,7 +70,7 @@ meta=init_meta(data);
 
 meta.para.estim=false;
 meta.cv=true;
-meta.cv_aff=true;
+meta.cv_aff=false;
 meta.cv_full=false;
 meta.norm=true;
 meta.recond=false;

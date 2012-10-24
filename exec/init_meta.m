@@ -25,6 +25,7 @@ meta.cv_full=false;
 %affichage QQ plot CV
 meta.cv_aff=false;
 
+
 %%%options specifiques
 %parametre SWF
 swf_para=1;
@@ -160,6 +161,8 @@ if nargin==1
     end
 end
 
+%comptage du nombre de workers disponibles (pour parallelisme)
+meta.worker_parallel=matlabpool('size');
 
 mesu_time(tMesu,tInit);
 fprintf('=========================================\n')

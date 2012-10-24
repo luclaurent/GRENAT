@@ -13,43 +13,43 @@ tail_rcc=size(donnees.build.rcc,1);
 %calcul de la log vraisemblance d'apres Jones 1993 / Leary 2004
 switch donnees.build.fact_rcc
     case 'QR'
-        detQMKrg=det(donnees.build.QMKrg);
+        %detQMKrg=det(donnees.build.QMKrg);
         diagRMKrg=diag(donnees.build.RMKrg);
         det_corr=abs(prod(diagRMKrg)); %Q est une matrice unitaire
         log_det_corr=sum(log(abs(diagRMKrg)));
         %controle positivite
-        sumd=sum(diagRMKrg<0);
+        %sumd=sum(diagRMKrg<0);
 %         if mod(sumd,2)~=0&&detQMKrg>0
 %             fprintf('<< Matrice de correlation non positive >>\n');
 %         end
     case 'LL'
         fprintf('Cholesky non optimise dans likelihood.m')
         eig_val=eig(donnees.build.rcc);
-        det_corr=prod(eig_val);
+        %det_corr=prod(eig_val);
         log_det_corr=sum(log(eig_val));
         %controle positivite
-        sumd=sum(eig_val<0);
-        if mod(sumd,2)~=0
-            fprintf('<< Matrice de correlation non positive >>\n');
-        end
+        %sumd=sum(eig_val<0);
+%         if mod(sumd,2)~=0
+%             fprintf('<< Matrice de correlation non positive >>\n');
+%         end
     case 'LU'
         diagUrcc=diag(donnees.build.Urcc);
         det_corr=prod(diagUrcc); %L est quasi triangulaire (a une permutation pres) et la matrice L comporte des 1 sur la diagonale
         log_det_corr=sum(log(abs(diagUrcc)));
         %controle positivite
-        sumd=sum(diagUrcc<0);
-        if mod(sumd,2)~=0
-            fprintf('<< Matrice de correlation non positive >>\n');
-        end
+        %sumd=sum(diagUrcc<0);
+%         if mod(sumd,2)~=0
+%             fprintf('<< Matrice de correlation non positive >>\n');
+%         end
     otherwise
         eig_val=eig(donnees.build.rcc);
-        det_corr=prod(eig_val);
+       % det_corr=prod(eig_val);
         log_det_corr=sum(log(eig_val));
         %controle positivite
-        sumd=sum(eig_val<0);
-        if mod(sumd,2)~=0
-            fprintf('<< Matrice de correlation non positive >>\n');
-        end
+%         sumd=sum(eig_val<0);
+%         if mod(sumd,2)~=0
+%             fprintf('<< Matrice de correlation non positive >>\n');
+%         end
 end
 
 

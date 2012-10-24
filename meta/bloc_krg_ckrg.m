@@ -19,8 +19,11 @@ para_val=meta.para.val;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para defini alors on charge cette nouvelle valeur
+final=false;
 if nargin==3
     para_val=para;
+else
+    final=true;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -28,7 +31,7 @@ end
 %creation matrice de correlation
 if donnees.in.pres_grad
     %si parallelisme actif ou non
-    if matlabpool('size')>=2
+    if meta.worker_parallel>=2
         %%%%%% PARALLEL %%%%%%
         %morceaux de la matrice GRBF
         rc=zeros(nb_val,nb_val);
@@ -194,8 +197,13 @@ switch fact_rcc
         % matrice de krigeage: M=[C X;Xt 0];
         MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(donnees.build.dim_fc)];
         [QMKrg,RMKrg]=qr(MKrg);
-        iMKrg=RMKrg\QMKrg';
-        coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        if final
+            iMKrg=RMKrg\QMKrg';
+            coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        else
+            calc_Q=QMKrg'*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+            coef_KRG=RMKrg\calc_Q;
+        end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,8 +259,12 @@ switch fact_rcc
         %% Nouvelle version
         % matrice de krigeage: M=[C X;Xt 0];
         MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(donnees.build.dim_fc)];
-        iMKrg=inv(MKrg);
-        coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        if final
+            iMKrg=inv(MKrg);
+            coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        else
+            coef_KRG=MKrg\[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -272,6 +284,7 @@ if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
 if exist('cond_new','var');build_data.cond_new=cond_new;end
 if exist('QMKrg','var');build_data.QMKrg=QMKrg;end
 if exist('RMKrg','var');build_data.RMKrg=RMKrg;end
+if exist('iMKrg','var');build_data.iMKrg=iMKrg;end
 if exist('iRcc','var');build_data.iRcc=iRcc;end
 if exist('yQ','var');build_data.yQ=yQ;end
 if exist('fcQ','var');build_data.fcQ=fcQ;end
@@ -288,7 +301,6 @@ build_data.beta=beta;
 build_data.gamma=gamma;
 build_data.rcc=rcc;
 build_data.MKrg=MKrg;
-build_data.iMKrg=iMKrg;
 build_data.deg=meta.deg;
 build_data.para=meta.para;
 build_data.fact_rcc=fact_rcc;

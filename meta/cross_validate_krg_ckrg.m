@@ -206,8 +206,7 @@ if mod_debug
         donnees_cv.build.rcc=cv_rcc;
         
         %calcul de la variance de prediction
-        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/cv_rcc)...
-            *(cv_y-cv_fc*donnees_cv.build.beta);
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'*donnees_cv.build.gamma);
         if ~aff_warning; warning on all;end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -262,8 +261,7 @@ if mod_debug
                 donnees_cv.build.rcc=cv_rcc;
                 
                 %calcul de la variance de prediction
-                sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/cv_rcc)...
-                    *(cv_y-cv_fc*donnees_cv.build.beta);
+                sig2=1/size(rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'*donnees_cv.build.gamma);
                 if ~aff_warning; warning on all;end
                 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -379,8 +377,7 @@ if mod_etud||mod_debug||meta.cv_aff
         donnees_cv.build.rcc=cv_rcc;
         
         %calcul de la variance de prediction
-        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/cv_rcc)...
-            *(cv_y-cv_fc*donnees_cv.build.beta);
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'*donnees_cv.build.gamma);
         if ~aff_warning; warning on all;end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -465,13 +462,11 @@ if meta.cv_aff||mod_debug
         beta=coefKRG((end-dim_c+1):end);
         
         %calcul de la variance du processus
-        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'/cv_rcc)*(cv_y-cv_fc*beta);
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'*gamma);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if norm_on
             sig2=sig2*std_eval^2;
-        else
-            sig2=sig2;
         end
         %calcul de la variance de prediction
         cv_varR(tir)=sig2*(1-PP*(cv_MKrg\PP'));

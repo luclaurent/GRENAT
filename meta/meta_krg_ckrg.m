@@ -211,7 +211,7 @@ ret.manq=manq;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 %(si on saouhaite avoir les valeurs de la log-vraisemblance en fonction des
-%param�tres)
+%parametres)
 if meta.para.estim&&meta.para.aff_estim
     val_para=linspace(meta.para.min,meta.para.max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2

@@ -9,6 +9,9 @@ function cv=cross_validate_krg_ckrg(data_block,meta,type)
 %norme employee dans le calcul de l'erreur LOO
 %MSE: norme-L2
 LOO_norm='L2';
+%debug
+debug=true;
+
 % affichages warning ou non
 aff_warning=false;
 
@@ -19,7 +22,7 @@ denorm_cv=true;
 if denorm_cv;denorm_cv=data_block.norm.on;end
 
 %differents cas de figure
-mod_debug=false;mod_etud=false;mod_final=false;
+mod_debug=debug;mod_etud=meta.cv_full;mod_final=false;
 if nargin==3
     switch type
         case 'debug' %mode debug (grandeurs affichees)
@@ -27,6 +30,8 @@ if nargin==3
             mod_debug=true;
         case 'etud'  %mode etude (calcul des criteres par les deux methodes
             mod_etud=true;
+        case 'estim'  %mode estimation
+            mod_etud=false;
             % case 'nominal'  %mode nominal (calcul des criteres par la methode de Rippa)
         case 'final'    %mode final (calcul des variances)
             mod_final=true;
@@ -41,6 +46,18 @@ if mod_debug||mod_etud
         fprintf('+++ //!\\ Mauvais conditionnement (%4.2e)\n',condRcc);
     end
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%chargement des grandeurs
+nb_var=data_block.in.nb_var;
+nb_val=data_block.in.nb_val;
+norm_on=data_block.norm.on;
+pres_grad=data_block.in.pres_grad;
+moy_eval=data_block.norm.moy_eval;
+std_eval=data_block.norm.std_eval;
+std_tirages=data_block.norm.std_tirages;
+
+if mod_final;tic;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Adaptation de la methode de Rippa (Rippa 1999/Fasshauer 2007) par M. Bompard (Bompard 2011)
@@ -52,24 +69,24 @@ esn=data_block.build.coef_KRG./diag(data_block.build.iMKrg);
 %tendance/regression)
 esn=esn(1:(end-data_block.build.dim_fc));
 
-%denormalisation des grandeurs 
-infos.moy=data_block.norm.moy_eval;
-infos.std=data_block.norm.std_eval;infos.std_e=infos.std;
-infos.std_t=data_block.norm.std_tirages;
-if data_block.in.pres_grad
-    if data_block.norm.on&&denorm_cv
+%denormalisation des grandeurs
+infos.moy=moy_eval;
+infos.std=std_eval;infos.std_e=infos.std;
+infos.std_t=std_tirages;
+if pres_grad
+    if norm_on&&denorm_cv
         %denormalisation difference reponses
-        esr=norm_denorm(esn(1:data_block.in.nb_val),'denorm_diff',infos);
+        esr=norm_denorm(esn(1:nb_val),'denorm_diff',infos);
         %denormalisation difference gradients
-        esg=norm_denorm_g(esn(data_block.in.nb_val+1:end),'denorm_concat',infos);
+        esg=norm_denorm_g(esn(nb_val+1:end),'denorm_concat',infos);
         es=[esr;esg];
     else
-        esr=esn(1:data_block.in.nb_val);
-        esg=esn(data_block.in.nb_val+1:end);
+        esr=esn(1:nb_val);
+        esg=esn(nb_val+1:end);
         es=esn;
     end
 else
-    if data_block.norm.on&&denorm_cv
+    if norm_on&&denorm_cv
         es=norm_denorm(esn,'denorm_diff',infos);
     else
         es=esn;
@@ -81,274 +98,352 @@ end
 %employees)
 switch LOO_norm
     case 'L1'
-        if data_block.in.pres_grad
-            cv.press=esr'*esr;
-            cv.eloor=1/data_block.in.nb_val*sum(abs(esr));
-            cv.eloog=1/(data_block.in.nb_val*data_block.in.nb_var)*sum(abs(esg));
-            cv.eloot=1/(data_block.in.nb_val*(data_block.in.nb_var+1))*sum(abs(es));
+        if pres_grad
+            cv.then.press=esr'*esr;
+            cv.then.eloor=1/nb_val*sum(abs(esr));
+            cv.then.eloog=1/(nb_val*nb_var)*sum(abs(esg));
+            cv.then.eloot=1/(nb_val*(nb_var+1))*sum(abs(es));
+            cv.press=cv.then.press;
+            cv.eloor=cv.then.eloor;
+            cv.eloog=cv.then.eloog;
+            cv.eloot=cv.then.eloot;
         else
-            cv.press=es'*es;
-            cv.eloot=1/data_block.in.nb_val*sum(abs(es));
+            cv.then.press=es'*es;
+            cv.then.eloot=1/nb_val*sum(abs(es));
+            cv.press=cv.then.press;
+            cv.eloot=cv.then.eloot;
         end
     case 'L2' %MSE
-        if data_block.in.pres_grad
-            cv.press=esr'*esr;
-            cv.eloor=1/data_block.in.nb_val*(cv.press);
-            cv.eloog=1/(data_block.in.nb_val*data_block.in.nb_var)*(esg'*esg);
-            cv.eloot=1/(data_block.in.nb_val*(data_block.in.nb_var+1))*(es'*es);
+        if pres_grad
+            cv.then.press=esr'*esr;
+            cv.then.eloor=1/nb_val*(cv.then.press);
+            cv.then.eloog=1/(nb_val*nb_var)*(esg'*esg);
+            cv.then.eloot=1/(nb_val*(nb_var+1))*(es'*es);
+            cv.press=cv.then.press;
+            cv.eloor=cv.then.eloor;
+            cv.eloog=cv.then.eloog;
+            cv.eloot=cv.then.eloot;
         else
-            cv.press=es'*es;
-            cv.eloot=1/data_block.in.nb_val*(cv.press);
+            cv.then.press=es'*es;
+            cv.then.eloot=1/nb_val*(cv.then.press);
+            cv.press=cv.then.press;
+            cv.eloot=cv.then.eloot;
         end
     case 'Linf'
-        if data_block.in.pres_grad
-            cv.press=esr'*esr;
-            cv.eloor=1/data_block.in.nb_val*max(esr(:));
-            cv.eloog=1/(data_block.in.nb_val*data_block.in.nb_var)*max(esg(:));
-            cv.eloot=1/(data_block.in.nb_val*(data_block.in.nb_var+1))*max(es(:));
+        if pres_grad
+            cv.then.press=esr'*esr;
+            cv.then.eloor=1/nb_val*max(esr(:));
+            cv.then.eloog=1/(nb_val*nb_var)*max(esg(:));
+            cv.then.eloot=1/(nb_val*(nb_var+1))*max(es(:));
+            cv.press=cv.then.press;
+            cv.eloor=cv.then.eloor;
+            cv.eloog=cv.then.eloog;
+            cv.eloot=cv.then.eloot;
         else
-            cv.press=es'*es;
-            cv.eloot=1/data_block.in.nb_val*max(es(:));
+            cv.then.press=es'*es;
+            cv.then.eloot=1/nb_val*max(es(:));
+            cv.press=cv.then.press;
+            cv.eloot=cv.then.eloot;
         end
 end
 %affichage qques infos
 if mod_debug
     fprintf('=== CV-LOO par methode de Rippa 1999 (extension Bompard 2011)\n');
     fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
-    if data_block.in.pres_grad
-        fprintf('+++ Erreur reponses %4.2f\n',cv.eloor);
-        fprintf('+++ Erreur gradient %4.2f\n',cv.eloog);
+    if pres_grad
+        fprintf('+++ Erreur reponses %4.2f\n',cv.then.eloor);
+        fprintf('+++ Erreur gradient %4.2f\n',cv.then.eloog);
     end
-    fprintf('+++ Erreur total %4.2f\n',cv.eloot);
-    fprintf('+++ PRESS %4.2f\n',cv.press);
+    fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
+    fprintf('+++ PRESS %4.2f\n',cv.then.press);
 end
+if mod_final;toc;end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Methode CV classique (retrait SUCCESSIVE des reponses et gradients)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if mod_debug
+    tic
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %stockage des evaluations du metamodele au point enleve
+    cv_z=zeros(nb_val,1);
+    cv_var=zeros(nb_val,1);
+    cv_gz=zeros(nb_val,nb_var);
+    yy=data_block.build.y;
+    MKrg=data_block.build.MKrg;
+    fc=data_block.build.fc;
+    rcc=data_block.build.rcc;
+    tirages=data_block.in.tirages;
+    tiragesn=data_block.in.tiragesn;
+    grad=data_block.in.grad;
+    eval=data_block.in.eval;
+    dim_c=data_block.build.dim_fc;
+    %parcours des echantillons
+    for tir=1:nb_val
+        %chargement des donnees
+        donnees_cv=data_block;
+        %retrait des grandeurs
+        cv_MKrg=MKrg([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
+        cv_y=yy([1:(tir-1) (tir+1):end]');
+        cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
+        cv_fc=fc([1:(tir-1) (tir+1):end],:);
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %calcul des coefficients
+        if ~aff_warning; warning off all;end
+        donnees_cv.build.fact_rcc='None';
+        cv_iMKrg=inv(cv_MKrg);
+        donnees_cv.build.iMKrg=cv_iMKrg;
+        coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %extraction coefficients beta et gamma
+        donnees_cv.build.beta=coefKRG((end-dim_c+1):end);
+        donnees_cv.build.gamma=coefKRG(1:(end-dim_c));
+        donnees_cv.build.rcc=cv_rcc;
+        
+        %calcul de la variance de prediction
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/cv_rcc)...
+            *(cv_y-cv_fc*donnees_cv.build.beta);
+        if ~aff_warning; warning on all;end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        if norm_on
+            donnees_cv.sig2=sig2*std_eval^2;
+        else
+            donnees_cv.sig2=sig2;
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %passage des parametres
+        donnees_cv.in.tirages=tirages;
+        donnees_cv.in.tiragesn=tiragesn;
+        donnees_cv.in.nb_val=nb_val;  %retrait d'un site
+        donnees_cv.build.fc=cv_fc;
+        donnees_cv.build.fct=cv_fc';
+        donnees_cv.enrich.on=false;
+        %on retire la reponse associe
+        donnees_cv.manq.grad.on=false;
+        donnees_cv.manq.eval.on=true;
+        donnees_cv.manq.eval.ix_manq=tir;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%Evaluation du metamodele au point supprime de la construction
+        [cv_z(tir),~,cv_var(tir)]=eval_krg_ckrg(tirages(tir,:),donnees_cv);
+        %retrait gradients
+        if pres_grad
+            for pos_gr=1:nb_var
+                %chargement des donnees
+                donnees_cv=data_block;
+                pos=nb_val+(tir-1)*nb_var+pos_gr;
+                %retrait des grandeurs
+                cv_MKrg=MKrg([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
+                cv_y=yy([1:(pos-1) (pos+1):end]');
+                cv_rcc=rcc([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
+                cv_fc=fc([1:(pos-1) (pos+1):end],:);
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %calcul des coefficients
+                if ~aff_warning; warning off all;end
+                donnees_cv.build.fact_rcc='None';
+                cv_iMKrg=inv(cv_MKrg);
+                donnees_cv.build.iMKrg=cv_iMKrg;
+                coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
+                
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %extraction coefficients beta et gamma
+                donnees_cv.build.beta=coefKRG((end-dim_c+1):end);
+                donnees_cv.build.gamma=coefKRG(1:(end-dim_c));
+                donnees_cv.build.rcc=cv_rcc;
+                
+                %calcul de la variance de prediction
+                sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/cv_rcc)...
+                    *(cv_y-cv_fc*donnees_cv.build.beta);
+                if ~aff_warning; warning on all;end
+                
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                if norm_on
+                    donnees_cv.sig2=sig2*std_eval^2;
+                else
+                    donnees_cv.sig2=sig2;
+                end
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %passage des parametres
+                donnees_cv.in.tirages=tirages;
+                donnees_cv.in.tiragesn=tiragesn;
+                donnees_cv.in.nb_val=nb_val;  %retrait d'un site
+                donnees_cv.build.fc=cv_fc;
+                donnees_cv.build.fct=cv_fc';
+                donnees_cv.enrich.on=false;
+                %on retire le gradient associe
+                donnees_cv.manq.grad.on=true;
+                donnees_cv.manq.eval.on=false;
+                donnees_cv.manq.grad.ixt_manq_line=pos-nb_val;
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%Evaluation du metamodele au point supprime de la construction
+                [~,GZ,~]=eval_krg_ckrg(tirages(tir,:),donnees_cv);
+                cv_gz(tir,pos_gr)=GZ(pos_gr);
+            end
+        end
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Calcul des erreurs
+    [cv.then]=calc_err_loo(eval,cv_z,cv_var,grad,cv_gz,nb_val,nb_var,LOO_norm);
+    %affichage qques infos
+    if mod_debug
+        fprintf('=== CV-LOO par methode retrait reponses PUIS gradients (debug)\n');
+        fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
+        if pres_grad
+            fprintf('+++ Erreur reponses %4.2f\n',cv.then.eloor);
+            fprintf('+++ Erreur gradient %4.2f\n',cv.then.eloog);
+        end
+        fprintf('+++ Erreur total %4.2f\n',cv.then.eloot);
+        fprintf('+++ Biais moyen %4.2f\n',cv.then.bm);
+        fprintf('+++ PRESS %4.2f\n',cv.then.press);
+        fprintf('+++ Critere perso %4.2f\n',cv.then.errp);
+        fprintf('+++ SCVR (Min) %4.2f\n',cv.then.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2f\n',cv.then.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2f\n',cv.then.scvr_mean);
+        fprintf('+++ Adequation %4.2f\n',cv.then.adequ);
+    end
+    toc
+end
+% aa=-(cv_z-eval);
+% esr-aa
+% pause
+% bb=-(cv_gz-grad);
+% bb=bb';
+% bb=bb(:);
+% esg-bb
+% pause
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Methode CV classique (retrait simultanee des reponses et gradient en
 %%% chaque echantillon)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if mod_etud||mod_debug||mod_final
+if mod_etud||mod_debug
+    tic
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %stockage des evaluations du metamodele au point enleve
-    cv_z=zeros(data_block.in.nb_val,1);
-    cv_var=zeros(data_block.in.nb_val,1);
-    cv_gz=zeros(data_block.in.nb_val,data_block.in.nb_var);
+    cv_z=zeros(nb_val,1);
+    cv_var=zeros(nb_val,1);
+    cv_gz=zeros(nb_val,nb_var);
+    yy=data_block.build.y;
+    MKrg=data_block.build.MKrg;
+    fc=data_block.build.fc;
+    rcc=data_block.build.rcc;
+    tirages=data_block.in.tirages;
+    tiragesn=data_block.in.tiragesn;
+    grad=data_block.in.grad;
+    eval=data_block.in.eval;
+    dim_c=data_block.build.dim_fc;
     %parcours des echantillons
-    for tir=1:data_block.in.nb_val
-        %chargement des donnees
+    for tir=1:nb_val
+    %chargement des donnees
         donnees_cv=data_block;
+        %retrait des grandeurs
+        if pres_grad
+            pos=[tir nb_val+(tir-1)*nb_var+(1:nb_var)];
+            IX_i=1:((nb_var+1)*nb_val);
+        else
+            pos=tir;
+            IX_i=1:(nb_val);
+        end
+        %complement index initiaux
+        IX_c=IX_i(end)+(1:dim_c);
+        %index des elements a extraire
+        IX_e=setxor(IX_i,pos);
+        
+        cv_MKrg=MKrg([IX_e IX_c],[IX_e IX_c]);
+        cv_y=yy(IX_e');
+        cv_rcc=rcc(IX_e,IX_e);
+        cv_fc=fc(IX_e,:);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %positions des element a retirer
-        %on retire ce qui est disponible
-        if data_block.manq.eval.on||data_block.manq.grad.on
-            if data_block.manq.eval.on
-                if data_block.manq.eval.masque(tir)
-                    pos=[];
-                else
-                    pos=parcours_ev;
-                    parcours_ev=parcours_ev+1;
-                end
-            end
-            if data_block.manq.grad.on&&data_block.in.pres_grad
-                nb_manq_grad=sum(data_block.manq.grad.masque(tir,:));
-                if nb_manq_grad==data_block.in.nb_var
-                    pos=pos;
-                else
-                    pos=[pos data_block.in.nb_val-data_block.manq.eval.nb+(parcours_gr:(parcours_gr+data_block.in.nb_var-nb_manq_grad-1))];
-                    parcours_gr=parcours_gr+data_block.in.nb_var;
-                end
-                
-            end
-        else
-            if data_block.in.pres_grad
-                pos=[tir data_block.in.nb_val+(tir-1)*data_block.in.nb_var+(1:data_block.in.nb_var)];
-            else
-                pos=tir;
-            end
-        end
-        cv_fc=data_block.build.fc;
-    cv_fc(pos,:)=[];
-    cv_fct=cv_fc';
-    cv_y=data_block.build.y;
-    cv_y(pos)=[];
-    cv_tirages=data_block.in.tirages;
-    cv_tirages(tir,:)=[];
-    cv_tiragesn=data_block.in.tiragesn;
-    cv_tiragesn(tir,:)=[];
-    cv_eval=data_block.in.eval;
-    if data_block.manq.eval.on||data_block.manq.grad.on
-        cv_eval(tir)=[];
-        if data_block.in.pres_grad
-            cv_grad=data_block.in.grad;
-            cv_grad(tir,:)=[];
-        else
-            cv_grad=[];
-        end
-        ret_manq=examen_in_data(cv_tirages,cv_eval,cv_grad);
-        donnees_cv.manq=ret_manq;
-    end
-    %si factorisation
-    if ~aff_warning; warning off all;end
-    switch data_block.build.fact_rcc
-%         case 'QR'
-%             %prise en compte suppression lignes/colonnes
-%             Qr=data_block.build.Qrcc;Rr=data_block.build.Rrcc;
-%             for ii=length(pos):-1:1
-%                 [Qr,Rr]=qrdelete(Qr,Rr,pos(ii),'col');
-%                 [Qr,Rr]=qrdelete(Qr,Rr,pos(ii),'row');
-%             end
-%             donnees_cv.build.Qrcc=Qr;
-%             donnees_cv.build.Rrcc=Rr;
-%             donnees_cv.build.yQ=Qr'*cv_y;
-%             donnees_cv.build.fcQ=Qr'*cv_fc;
-%             donnees_cv.build.fctR=cv_fct/Rr;
-%             donnees_cv.build.fctCfc=(cv_fc\Qr)*(Rr/cv_fct);
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             %calcul du coefficient beta
-%             %%approche classique
-%             block1=donnees_cv.build.fctR*donnees_cv.build.fcQ;
-%             block2=donnees_cv.build.fctR* donnees_cv.build.yQ;
-%             donnees_cv.build.beta=block1\block2;
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%             %calcul du coefficient gamma
-%             donnees_cv.build.gamma=Rr\(donnees_cv.build.yQ-donnees_cv.build.fcQ*donnees_cv.build.beta);
-%             %calcul de la variance de prediction
-%             sig2=1/size(Qr,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/Rr*Qr')...
-%                 *(cv_y-cv_fc*donnees_cv.build.beta);
-            % case 'LU'
-            % case 'LL'
-        otherwise
-            donnees_cv.build.fact_rcc='None';
-            cv_rcc=data_block.build.rcc;
-            cv_rcc(pos,:)=[];
-            cv_rcc(:,pos)=[];
-            
-                    % matrice de krigeage: M=[C X;Xt 0];
-        dim_c=size(cv_fct,1);
-        cv_MKrg=[cv_rcc cv_fc;cv_fct zeros(dim_c)];
+        %calcul des coefficients
+        if ~aff_warning; warning off all;end
+        donnees_cv.build.fact_rcc='None';
         cv_iMKrg=inv(cv_MKrg);
+        donnees_cv.build.iMKrg=cv_iMKrg;
         coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient gamma
-         donnees_cv.build.beta=coefKRG((end-dim_c+1):end);
-         donnees_cv.build.gamma=coefKRG(1:(end-dim_c));
-        %reconditionnement variable KRG (CV)
-            donnees_cv.build.rcc=cv_rcc;
-            donnees_cv.build.MKrg=cv_MKrg;
-            donnees_cv.build.iMKrg=cv_iMKrg;
-            %calcul de la variance de prediction
-            sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/cv_rcc)...
-                *(cv_y-cv_fc*donnees_cv.build.beta);
-    end
-    if ~aff_warning; warning on all;end
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    if data_block.norm.on
-        donnees_cv.sig2=sig2*data_block.norm.std_eval^2;
-    else
-        donnees_cv.sig2=sig2;
-    end
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %passage des parametres
-    donnees_cv.in.tirages=cv_tirages;
-    donnees_cv.in.tiragesn=cv_tiragesn;
-    donnees_cv.in.nb_val=data_block.in.nb_val-1;  %retrait d'un site
-    donnees_cv.build.fc=cv_fc;
-    donnees_cv.build.fct=cv_fct;
-    donnees_cv.enrich.on=false;
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%Evaluation du metamodele au point supprime de la construction
-    [cv_z(tir),cv_gz(tir,:),cv_var(tir)]=eval_krg_ckrg(data_block.in.tirages(tir,:),donnees_cv);
+        %extraction coefficients beta et gamma
+        donnees_cv.build.beta=coefKRG((end-dim_c+1):end);
+        donnees_cv.build.gamma=coefKRG(1:(end-dim_c));
+        donnees_cv.build.rcc=cv_rcc;
+        
+        %calcul de la variance de prediction
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'/cv_rcc)...
+            *(cv_y-cv_fc*donnees_cv.build.beta);
+        if ~aff_warning; warning on all;end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        if norm_on
+            donnees_cv.sig2=sig2*std_eval^2;
+        else
+            donnees_cv.sig2=sig2;
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %passage des parametres
+        donnees_cv.in.tirages=tirages([1:(tir-1) (tir+1):end],:);
+        donnees_cv.in.tiragesn=tiragesn([1:(tir-1) (tir+1):end],:);
+        donnees_cv.in.nb_val=nb_val-1;  %retrait d'un site
+        donnees_cv.build.fc=cv_fc;
+        donnees_cv.build.fct=cv_fc';
+        donnees_cv.enrich.on=false;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%Evaluation du metamodele au point supprime de la construction
+        [Z,GZ,variance]=eval_krg_ckrg(tirages(tir,:),donnees_cv);    
+        cv_z(tir)=Z;
+        cv_gz(tir,:)=GZ;
+        cv_var(tir)=variance;
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Calcul des erreurs
-    %ecart reponses
-    diff=cv_z-data_block.in.eval;
-    if data_block.in.pres_grad
-        %ecart gradients
-        diffg=cv_gz-data_block.in.grad;
-    end
-    %ecart reponses (norme au choix)
-    switch LOO_norm
-        case 'L1'
-            diffc=abs(diff);
-        case 'L2'
-            diffc=diff.^2;
-        case 'Linf'
-            diffc=max(diff(:));
-    end
-    
-    %critere perso
-    somm=0.5*(cv_z+data_block.in.eval);
-    cv.perso.errp=1/data_block.in.nb_val*sum(abs(diff)./somm);
-    %PRESS
-    cv.perso.press=sum(diffc);
-    %biais moyen
-    cv.perso.bm=1/data_block.in.nb_val*sum(diff);
-    if data_block.in.pres_grad
-        %ecart gradients (norme au choix)
-        switch LOO_norm
-            case 'L1'
-                diffgc=abs(diffg);
-            case 'L2'
-                diffgc=diff.^2;
-            case 'Linf'
-                diffgc=max(diffg);
-        end
-        %moyenne ecart reponses, gradients et mixte au carres
-        cv.perso.eloor=1/data_block.in.nb_val*sum(diffc);
-        cv.perso.eloog=1/(data_block.in.nb_val*data_block.in.nb_var)*sum(diffgc(:));
-        cv.perso.eloot=1/(data_block.in.nb_val*(1+data_block.in.nb_var))*(sum(diffc)+sum(diffgc(:)));
-    else
-        %moyenne ecart reponses
-        cv.perso.eloor=1/data_block.in.nb_val*sum(diffc);
-        cv.perso.eloot=cv.perso.eloor;
-    end
-    %critere d'adequation (SCVR Keane 2005/Jones 1998)
-    cv.perso.scvr=diff./cv_var;
-    cv.perso.scvr_min=min(cv.perso.scvr(:));
-    cv.perso.scvr_max=max(cv.perso.scvr(:));
-    cv.perso.scvr_mean=mean(cv.perso.scvr(:));
-    %critere d'adequation (ATTENTION: a la norme!!!>> diff au carre)
-    diffa=diffc./cv_var;
-    cv.perso.adequ=1/data_block.in.nb_val*sum(diffa);
+    [cv.and]=calc_err_loo(eval,cv_z,cv_var,grad,cv_gz,nb_val,nb_var,LOO_norm);
     %affichage qques infos
-    if mod_debug
-        fprintf('=== CV-LOO par methode retrait reponses et gradients\n');
+    if mod_debug||mod_final
+        fprintf('=== CV-LOO par methode retrait reponses ET gradients\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
-        if data_block.in.pres_grad
-            fprintf('+++ Erreur reponses %4.2f\n',cv.perso.eloor);
-            fprintf('+++ Erreur gradient %4.2f\n',cv.perso.eloog);
+        if pres_grad
+            fprintf('+++ Erreur reponses %4.2f\n',cv.and.eloor);
+            fprintf('+++ Erreur gradient %4.2f\n',cv.and.eloog);
         end
-        fprintf('+++ Erreur total %4.2f\n',cv.perso.eloot);
-        fprintf('+++ Biais moyen %4.2f\n',cv.perso.bm);
-        fprintf('+++ PRESS %4.2f\n',cv.perso.press);
-        fprintf('+++ Critere perso %4.2f\n',cv.perso.errp);
-        fprintf('+++ SCVR (Min) %4.2f\n',cv.perso.scvr_min);
-        fprintf('+++ SCVR (Max) %4.2f\n',cv.perso.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2f\n',cv.perso.scvr_mean);
-        fprintf('+++ Adequation %4.2f\n',cv.perso.adequ);
+        fprintf('+++ Erreur total %4.2f\n',cv.and.eloot);
+        fprintf('+++ Biais moyen %4.2f\n',cv.and.bm);
+        fprintf('+++ PRESS %4.2f\n',cv.and.press);
+        fprintf('+++ Critere perso %4.2f\n',cv.and.errp);
+        fprintf('+++ SCVR (Min) %4.2f\n',cv.and.scvr_min);
+        fprintf('+++ SCVR (Max) %4.2f\n',cv.and.scvr_max);
+        fprintf('+++ SCVR (Mean) %4.2f\n',cv.and.scvr_mean);
+        fprintf('+++ Adequation %4.2f\n',cv.and.adequ);
     end
 end
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Calcul de la variance de prediction aux points echantillonnes (pour CV)
 if mod_final
-
+    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -393,7 +488,7 @@ end
 %cv.scvr_mean=mean(cv.scvr(:));
 %critere perso
 %somm=0.5*(cv_z+data_block.in.eval);
-%cv.perso.errp=1/data_block.in.nb_val*sum(diff./somm);
+%cv.perso.errp=1/nb_val*sum(diff./somm);
 
 
 

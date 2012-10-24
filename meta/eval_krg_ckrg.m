@@ -118,7 +118,7 @@ end
 %matrice de regression aux points d'evaluations
 if calc_grad
     [ff,~,jf,~]=feval(donnees.build.fct_reg,X);
-    jf=vertcat(jf{:});
+    jf=vertcat(jf{:});        
 else
     ff=feval(donnees.build.fct_reg,X);
 end

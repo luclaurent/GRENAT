@@ -58,7 +58,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='GRBF';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -67,7 +67,7 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=true;
 meta.cv_aff=false;
 meta.cv_full=false;

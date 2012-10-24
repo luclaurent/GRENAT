@@ -528,7 +528,7 @@ if mod_final
     fc=data_block.build.fc;
     rcc=data_block.build.rcc;
     dim_c=data_block.build.dim_fc;
-    for tir=1:nb_val
+    parfor tir=1:nb_val
         
         %extraction des grandeurs
         PP=MKrg(tir,:);

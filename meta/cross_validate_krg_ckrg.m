@@ -146,6 +146,8 @@ switch LOO_norm
             cv.eloot=cv.then.eloot;
         end
 end
+%biais moyen
+cv.bm=1/nb_val*sum(esr);
 %affichage qques infos
 if mod_debug||mod_final
     fprintf('=== CV-LOO par methode de Rippa 1999 (extension Bompard 2011)\n');

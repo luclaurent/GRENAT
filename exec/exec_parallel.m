@@ -78,7 +78,12 @@ switch statut
             fprintf(' >> Nombre de workers: %i\n',options.num_workers);
             %execution demande et lancement workers
             if arret
-                matlabpool('open',options.num_workers);
+                try 
+                    matlabpool('open',options.num_workers);
+                catch err
+                    fprintf('##>> Probleme initialisation parallele <<##\n');
+                    fprintf('##>> Lancement sans parallelisme <<##\n');
+                end
             end
         end
         

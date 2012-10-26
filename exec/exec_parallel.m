@@ -68,7 +68,7 @@ switch statut
             end
             %si lancement manuel
             if strcmp(options.workers,'manu')
-                fprintf(' >> Nombre de workers demandes/disponibles: %i/%i\n',options.num_workers,def_parallel.NumWorkers);
+                fprintf(' >> Nombre de workers demandes/disponibles: %i/%i\n',options.num_workers,def_parallel.ClusterSize);
                 %verification nombre de workers demandes
                 if options.num_workers>def_parallel.ClusterSize;
                     options.num_workers=def_parallel.ClusterSize;

@@ -40,7 +40,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction de la matrice de Gram
 if data.in.pres_grad
-    %si parallelisme actif ou non    
+    %si parallelisme actif ou non
     if matlabpool('size')>=2
         %%%%%% PARALLEL %%%%%%
         %morceaux de la matrice GRBF
@@ -103,7 +103,7 @@ if data.in.pres_grad
         %full(spdiags(val_diag./2,diago,zeros(size(rci))))
         KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); %correction termes diagonaux pour eviter les doublons
         %Matrice de complete
-        KK=[KK KKa;KKat KKi];        
+        KK=[KK KKa;KKat KKi];
     end
     %si donnees manquantes
     if data.manq.eval.on
@@ -118,7 +118,7 @@ if data.in.pres_grad
         KK(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
     end
     
-else    
+else
     if matlabpool('size')>=2
         %%%%%% PARALLEL %%%%%%
         %matrice de RBF classique par bloc
@@ -163,14 +163,12 @@ end
 %amelioration du conditionnement de la matrice de correlation
 if meta.recond
     cond_orig=condest(KK);
-    if cond_orig>10^14        
+    if cond_orig>10^14
         cond_old=cond_orig;
         KK=KK+coef*speye(size(KK));
-        if ~mod_estim
-            cond_new=condest(KK);
-            fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-                cond_old,cond_new);
-        end
+        cond_new=condest(KK);
+        fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
+            cond_old,cond_new);
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

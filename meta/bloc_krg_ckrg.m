@@ -26,6 +26,8 @@ else
     final=true;
 end
 
+ret=[];
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %creation matrice de correlation
@@ -146,8 +148,8 @@ rcc=sparse(rcc);
 %amelioration du conditionnement de la matrice de corr�lation
 if meta.recond
     cond_orig=condest(rcc);
-    if cond_orig>10^13
-        cond_old=ret.build.cond_orig;
+    if cond_orig>10^14
+        cond_old=cond_orig;
         rcc=rcc+coef*speye(size(rcc));
         cond_new=condest(rcc);
         fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...

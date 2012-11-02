@@ -19,6 +19,7 @@ nb_var=data.in.nb_var;
 tiragesn=data.in.tiragesn;
 fct_rbf=meta.rbf;
 para_val=meta.para.val;
+ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para defini alors on charge cette nouvelle valeur
@@ -162,7 +163,7 @@ end
 %amelioration du conditionnement de la matrice de correlation
 if meta.recond
     cond_orig=condest(KK);
-    if cond_orig>10^13
+    if cond_orig>10^14        
         cond_old=cond_orig;
         KK=KK+coef*speye(size(KK));
         if ~mod_estim
@@ -219,6 +220,8 @@ if exist('QKK','var');build_data.QKK=QKK;end
 if exist('RKK','var');build_data.RKK=RKK;end
 if exist('iKK','var');build_data.iKK=iKK;end
 if exist('yQ','var');build_data.yQ=yQ;end
+if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
+if exist('cond_new','var');build_data.cond_new=cond_new;end
 build_data.w=w;
 build_data.KK=KK;
 build_data.fct=meta.rbf;

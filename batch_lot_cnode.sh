@@ -7,13 +7,13 @@
 # execution possible sans qsub pour lancement jobs sans tableau
 
 # Ce script assure la création d'un tableau de job et prend en paramètres 
-#	- <nb_job>: le nombre de jobs demandés
+#	- <nb_job>: le nombre de jobs demandés (format 0-xxx%yyy avec xxx la fin de la plage de jobs et yyy le nb de jobs simultannés)
 #	- <nom_fichier>: fichier texte contenant les noms des scripts maltab à lancer
 
 
 ## déclaration variables
 # noms dossiers
-DOSSIER_BASE="/data1/laurent/"
+DOSSIER_BASE="/data1/laurent"
 META="code_meta_cluster"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"
@@ -41,13 +41,13 @@ NB_PROC="2"
 #Mémoire requise (mb)
 MEM_PAR_PROC="9000"
 #temps calcul (format hh:mm:ss)
-CPU_TIME="1000:00:00"
+CPU_TIME="300:00:00"
 #Script lancement job
 SCRIPT_LANCE_JOB="batch_cnode.sh"
 
 
 echo `date`
-
+echo $SHELL
 echo '-------------------------------------------'
 echo ' INITIALISATION DOSSIERS'
 echo '-------------------------------------------'
@@ -57,11 +57,11 @@ heure=`date +%H%M%S`
 
 
 # récupération nom du fichier MatLab à récupérer
-DOSSIER_SOURCE=${ORIGIN}
+DOSSIER_SOURCE=${DOSSIER_BASE}
 DOSSIER_RACINE=$DOSSIER_SOURCE
-DOSSIER_META=${DOSSIER_RACINE}/${meta}
+DOSSIER_META=${DOSSIER_RACINE}/${META}
 DOSSIER_DONNEES_EXECUTIONS=${DOSSIER_RACINE}/${DOSSIER_DATA_EXEC}
-DOSSIER_RESULTATS=${DOSSIER_DONNEES_RESULTATS}/${DOSSIER_RESULTS}
+DOSSIER_RESULTATS=${DOSSIER_RACINE}/${DOSSIER_RESULTS}
 
 echo '  >> Préparation des fichiers de calcul'
 echo "Dossier source: $DOSSIER_SOURCE"

@@ -13,7 +13,7 @@
 
 ## déclaration variables
 # noms dossiers
-DOSSIER_BASE="/data1/laurent/"
+DOSSIER_BASE="/data3/laurent/"
 META="code_meta_cluster"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"

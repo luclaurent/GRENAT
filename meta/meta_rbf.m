@@ -15,6 +15,7 @@ if ~isempty(grad);fprintf('GRBF \n');else fprintf('RBF \n');end
 fprintf('>> Fonction de base radiale: %s\n',meta.rbf);
 fprintf('>>> Normalisation: ');if meta.norm; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>>> Calcul tous criteres CV: ');if meta.cv_full; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
 
 fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
@@ -45,9 +46,7 @@ nb_var=size(tirages,2);
 
 %test presence des gradients
 pres_grad=~isempty(grad);
-%test données manquantes
-manq_eval=false;
-manq_grad=false;
+%test donnees manquantes
 if nargin==5
     manq_eval=manq.eval.on;
     manq_grad=manq.grad.on;
@@ -263,7 +262,7 @@ ret.cv=block.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 tps_stop=toc;
 ret.tps=tps_stop-tps_start;
-if pres_grad;txt='HBRBF';else txt='RBF';end
+if pres_grad;txt='GRBF';else txt='RBF';end
 fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

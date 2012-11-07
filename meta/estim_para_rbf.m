@@ -12,7 +12,7 @@ nbPopInit=meta.para.popInit;
 %critere arret minimisation
 crit_opti=meta.para.crit_opti;
 
-%arret affichage CV si c'est le cas et activation CV si ça n'est pas le cas
+%arret affichage CV si c'est le cas et activation CV si ca n'est pas le cas
 cv_old=meta.cv;
 aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
@@ -24,8 +24,8 @@ fprintf('++ Estimation parametres\n');
 [tMesu,tInit]=mesu_time;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Définition des paramètres de minimisation
-% Nombre de parametres à estimer
+% Dï¿½finition des parametres de minimisation
+% Nombre de parametres a estimer
 %anisotropie
 if meta.para.aniso
     nb_para=donnees.in.nb_var;
@@ -36,7 +36,7 @@ end
 lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
 %definition valeur de depart de la variable
 x0=0.1*(ub-lb);
-% Définition de la function à minimiser
+% Dï¿½finition de la function a minimiser
 fun=@(para)bloc_rbf(donnees,meta,para,'estim');
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
@@ -45,20 +45,20 @@ options_fmincon = optimset(...
     'Algorithm','interior-point',... %choix du type d'algorithme
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
-    'UseParallel','always',...
+    'UseParallel','never',...
     'PlotFcns','',...   
     'TolFun',crit_opti);
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
-    'UseParallel','always',...
+    'UseParallel','never',...
     'PlotFcns','');
 options_ga = gaoptimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn','',...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
-    'UseParallel','always',...
-    'PopInitRange',[lb(:)';ub(:)'],...  %zone de définition de la population initiale
+    'UseParallel','never',...
+    'PopInitRange',[lb(:)';ub(:)'],...  %zone de definition de la population initiale
     'PlotFcns','',...
     'TolFun',crit_opti,...
     'StallGenLimit',20);
@@ -135,7 +135,7 @@ switch meta.para.method
         
         fprintf('||Fmincon|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
-        %minimisation avec traitement de point de départ non défini
+        %minimisation avec traitement de point de dï¿½part non dï¿½fini
         indic=0;
         if ~aff_warning;warning off all;end
         pas_min=1/500*(ub-lb);
@@ -156,7 +156,7 @@ switch meta.para.method
                     pas=(pas_max-pas_min).*(1-exp(-(x0-lb).*pas_max./pente))+pas_min;
                     if pas<pas_min;pas=pas_min;elseif pas>pas_max;pas=pas_max;end
                     fprintf('Variation: ');fprintf('%d ',pas);fprintf('\n');
-                    fprintf('Problème initialisation fmincon (fct non définie au point initial)\n');
+                    fprintf('Problï¿½me initialisation fmincon (fct non dï¿½finie au point initial)\n');
                     if desc&&any((x0-pas_min)>lb)
                         x0=x0-pas_min;
                         fprintf('||Fmincon|| Reinitialisation au point:\n');
@@ -190,7 +190,7 @@ switch meta.para.method
                 para_estim.out_algo.exitflag=exitflag;
                 indic=1;
             elseif exitflag==-2
-                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) paramètre(s) fixé(s) à la valeur d''initialisation\n');
+                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) paramï¿½tre(s) fixï¿½(s) ï¿½ la valeur d''initialisation\n');
                 x=xinit;
                 indic=1;
             end
@@ -203,7 +203,7 @@ switch meta.para.method
     case 'ga'
         
         fprintf('||Ga|| Initialisation par tirages LHS\n');
-        %minimisation avec traitement de point de départ non défini
+        %minimisation avec traitement de point de depart non defini
         indic=0;
         if ~aff_warning;warning off all;end
         [x,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
@@ -213,7 +213,7 @@ switch meta.para.method
             para_estim.out_algo.fval=fval;
             para_estim.out_algo.exitflag=exitflag;
         elseif exitflag==-2
-            fprintf('Bug arrêt Ga\n');
+            fprintf('Bug arret Ga\n');
         end
         
         if ~aff_warning;warning on all;end
@@ -223,13 +223,13 @@ switch meta.para.method
         error('Strategie de minimisation non prise en charge');
 end
 
-%reactivation affichage CV si c'était le cas avant la phase d'estimation
+%reactivation affichage CV si c'etait le cas avant la phase d'estimation
 meta.cv_aff=aff_cv_old;
 meta.cv=cv_old;
 
 mesu_time(tMesu,tInit);
 fprintf('- - - - - - - - - - - - - - - - -\n');
-%stockage valeur paramètres obtenue par minimisation
+%stockage valeur parametres obtenue par minimisation
 para_estim.val=x;
 if meta.norm
     para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;

@@ -74,6 +74,7 @@ if data.in.pres_grad
         %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
         %derivee du vecteur de correlation aux points d'evaluations
         dP=[dev' reshape(ddev,nb_var,[])];
+        
         %si donnees manquantes
         if data.manq.eval.on
             P(data.manq.eval.ix_manq)=[];
@@ -86,6 +87,7 @@ if data.in.pres_grad
             P(rep_ev+data.manq.grad.ixt_manq_line)=[];
             dP(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
         end
+        
     else %sinon
         %evaluation de la fonction de base radiale
         [ev,dev]=feval(data.build.fct,dist,data.build.para.val);
@@ -100,15 +102,23 @@ if data.in.pres_grad
 else
     if calc_grad  %si calcul des gradients
         [P,dP]=feval(data.build.fct,dist,data.build.para.val);P=P';dP=dP';
+        %si donnees manquantes
+        if data.manq.eval.on
+            P(data.manq.eval.ix_manq)=[];
+            dP(:,data.manq.eval.ix_manq)=[];
+        end
     else %sinon
         P=feval(data.build.fct,dist,data.build.para.val);P=P';
+        %si donnees manquantes
+        if data.manq.eval.on
+            P(data.manq.eval.ix_manq)=[];
+        end
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Evaluation du metamodele au point X
-Z=data.build.w'*P';
-
+Z=P*data.build.w;
 if calc_grad
     GZ=dP*data.build.w;
 end
@@ -148,11 +158,11 @@ details=[];
 if data.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(data.in.eval);
-    %calcul crit�res enrichissement
+    %calcul criteres enrichissement
     [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,data.enrich);
 end
 
-%extraction d�tails
+%extraction details
 if nargout==4
     if ~isempty(explor);details.enrich.explor=explor;end
     if ~isempty(exploit);details.enrich.exploit=exploit;end

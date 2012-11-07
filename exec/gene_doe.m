@@ -8,13 +8,13 @@ fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('    >>> GENERATION TIRAGES <<<\n');
 [tMesu,tInit]=mesu_time;
 
-% obtenir un "vrai" tirages pseudo al�atoire
+% obtenir un "vrai" tirages pseudo aleatoire
 s = RandStream('mt19937ar','Seed','shuffle');
 RandStream.setGlobalStream(s);
 
 fprintf('===== DOE =====\n');
 
-%recup�ration bornes espace de conception
+%recuperation bornes espace de conception
 if isfield(doe,'Xmin')&&isfield(doe,'Xmax')
     Xmin=doe.Xmin;
     Xmax=doe.Xmax;
@@ -26,17 +26,17 @@ end
 %nombre de variables
 nbv=numel(Xmin);
 
-%recuperation nombre d'�chantillons souhait�s
+%recuperation nombre d'echantillons souhaites
 nbs=doe.nb_samples;
 
 
 
-%ge�n�eration des diff�erents types de tirages
+%generation des differents types de tirages
 switch doe.type
     % plan factoriel complet
     case 'ffact'
         tirages=factorial_design(nbs,doe.bornes);
-        % Latin Hypercube Sampling avec R (et pr�enrichissement)
+        % Latin Hypercube Sampling avec R (et preenrichissement)
     case 'LHS_R'
         tirages=lhsu_R(Xmin,Xmax,prod(nbs(:)));
         % Improved Hypercube Sampling
@@ -45,14 +45,14 @@ switch doe.type
         tirages=tirages./nbs;
         tirages=tirages';
         tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
-        % Improved Hypercube Sampling avec R (et pr�enrichissement)
+        % Improved Hypercube Sampling avec R (et preenrichissement)
     case 'IHS_R'
         tir=ihs_R(Xmin,Xmax,prod(nbs(:)));
         tirages=tir(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
         % Latin Hypercube Sampling (� loi uniforme)
     case 'LHS'
         tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
-        % LHS avec stockage des donn�es
+        % LHS avec stockage des donnees
     case 'LHS_manu'
         %on verifie si le dossier de stockage existe (si non on le cree)
         if exist('TIR_MANU','dir')~=7

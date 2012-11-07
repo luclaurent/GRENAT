@@ -1,4 +1,4 @@
-%% fonction de construction des métamodèles de Krigeage et de Cokrigeage
+%% fonction de construction des metamodeles de Krigeage et de Cokrigeage
 %% L. LAURENT -- 12/12/2011 -- laurent@lmt.ens-cachan.fr
 
 function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)
@@ -24,7 +24,7 @@ if meta.para.estim
 else
     fprintf('>> Valeur parametre: %d\n',meta.para.val);
 end
-fprintf('>> Critère enrichissement actif:');
+fprintf('>> Critere enrichissement actif:');
 if meta.enrich.on;
     fprintf('%s\n','Oui');
     fprintf('>> Ponderation WEI: ')
@@ -55,10 +55,10 @@ nb_val=size(eval,1);
 %dimension du pb (nb de variables de conception)
 nb_var=size(tirages,2);
 
-%test présence des gradients
+%test prï¿½sence des gradients
 pres_grad=~isempty(grad);
 
-%test données manquantes
+%test donnï¿½es manquantes
 manq_eval=false;
 manq_grad=false;
 if nargin==5
@@ -99,10 +99,10 @@ if meta.norm
     clear infos_e infos_t
 else
     nkrg.norm.on=false;
-    std_e=[];
-    std_t=[];
-    moy_e=[];
-    moy_t=[];
+    nkrg.norm.moy_eval=[];
+    nkrg.norm.std_eval=[];
+    nkrg.norm.moy_tirages=[];
+    nkrg.norm.std_tirages=[];
     nkrg.norm.on=false;
     evaln=eval;
     tiragesn=tirages;
@@ -114,7 +114,7 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%evaluations et gradients aux points échantillonnés
+%evaluations et gradients aux points ï¿½chantillonnï¿½s
 y=evaln;
 %suppression reponse(s) manquantes
 if manq_eval
@@ -138,16 +138,16 @@ end
 %autre fonction de calcul des regresseur reg_poly0,1 ou 2
 fct=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
 
-%/!\ en le cokrigeage universel n'est pas opérationnel
+%/!\ en le cokrigeage universel n'est pas opï¿½rationnel
 %if pres_grad&&meta.deg~=0
 %   meta.deg=0;nb_termes=1;
-%   fprintf('Le Cokrigeage Universel n''est pas opérationnel (on construit un Cokrigeage Ordinaire)\n')
+%   fprintf('Le Cokrigeage Universel n''est pas opï¿½rationnel (on construit un Cokrigeage Ordinaire)\n')
 %end
 
 if ~pres_grad
     fc=feval(fct,tiragesn);
     if manq_eval
-        %suppression valeur(s) aux site à reponse(s) manquante(s)
+        %suppression valeur(s) aux site ï¿½ reponse(s) manquante(s)
         fc=fc(manq.eval.ix_dispo,:);
     end
 else
@@ -164,12 +164,12 @@ else
     %initialisation matrice des regresseurs
     fc=zeros(taille_tot,nb_termes);
     if manq_eval
-        %suppression valeur(s) aux site à reponse(s) manquante(s)
+        %suppression valeur(s) aux site a reponse(s) manquante(s)
         Reg=Reg(manq.eval.ix_dispo,:);
     end
     %chargement regresseur (evaluation de monomes)
     fc(1:taille_ev,:)=Reg;
-    %chargement des dérivées des regresseurs (evaluation des dérivées des monomes)
+    %chargement des derivees des regresseurs (evaluation des dï¿½rivï¿½es des monomes)
     if iscell(DReg)
         tmp=horzcat(DReg{:})';
         tmp=reshape(tmp,nb_termes,[])';
@@ -179,7 +179,7 @@ else
     end
     
     if manq_grad
-        %suppression valeur(s) aux sites à gradient(s) manquant(s)
+        %suppression valeur(s) aux sites ï¿½ gradient(s) manquant(s)
         tmp=tmp(manq.grad.ixt_dispo_line,:);
     end
     %chargement derrivees regresseur
@@ -201,6 +201,7 @@ ret.in.nb_val=nb_val;
 ret.norm=nkrg.norm;
 ret.build.fc=fc;
 ret.build.fct=fc';
+ret.build.dim_fc=size(fc,2);
 ret.build.y=y;
 ret.build.fct_reg=fct;
 ret.build.corr=meta.corr;
@@ -210,13 +211,13 @@ ret.manq=manq;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 %(si on saouhaite avoir les valeurs de la log-vraisemblance en fonction des
-%paramètres)
+%parametres)
 if meta.para.estim&&meta.para.aff_estim
     val_para=linspace(meta.para.min,meta.para.max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
-        %on genere la grille d'étude
+        %on genere la grille d'ï¿½tude
         [val_X,val_Y]=meshgrid(val_para,val_para);
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
@@ -281,7 +282,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction des blocs de krigeage finaux tenant compte des longueurs de
-%corrélation obtenues par minimisation
+%corrï¿½lation obtenues par minimisation
 [lilog,block]=bloc_krg_ckrg(ret,meta);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -296,17 +297,18 @@ ret.build.para=meta.para;
 tps_stop=toc;
 ret.tps=tps_stop-tps_start;
 if pres_grad;txt='CoKrigeage';else txt='Krigeage';end
-fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
+fprintf('\nExecution construction %s: %6.4d s\n\n',txt,tps_stop-tps_start);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%Validation croisee
 %%%%%Calcul des differentes erreurs
 if meta.cv
+    id=tic;
     [ret.cv]=cross_validate_krg_ckrg(ret,meta);
     
-    tps_cv=toc;
-    fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tps_cv-tps_stop);
+    tps_cv=toc(id);
+    fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tps_cv);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

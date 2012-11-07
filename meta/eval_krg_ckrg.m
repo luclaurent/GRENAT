@@ -104,7 +104,7 @@ if donnees.in.pres_grad
 else
     if calc_grad  %si calcul des gradients
         [rr,jr]=feval(donnees.build.corr,dist,donnees.build.para.val);
-    else %sinon
+            else %sinon
         rr=feval(donnees.build.corr,dist,donnees.build.para.val);
     end
     %si donnees manquantes
@@ -118,7 +118,7 @@ end
 %matrice de regression aux points d'evaluations
 if calc_grad
     [ff,~,jf,~]=feval(donnees.build.fct_reg,X);
-    jf=vertcat(jf{:});
+    jf=vertcat(jf{:});        
 else
     ff=feval(donnees.build.fct_reg,X);
 end
@@ -143,10 +143,9 @@ if nargout >=3
     %en fonction de la factorisation
     switch donnees.build.fact_rcc
         case 'QR'
-            Qrr=donnees.build.Qrcc'*rr;
-            u=donnees.build.fctR*Qrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
-                u'*donnees.build.fctCfc*u);
+           vv=[rr;ff'];
+           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
+           
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctU*Lrr-ff';
@@ -158,9 +157,8 @@ if nargout >=3
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Lrcc)*Lrr+...
                 u'*donnees.build.fctCfc*u);
         otherwise
-            rcrr=donnees.build.rcc \ rr;
-            u=donnees.build.fct*rcrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+u'*donnees.build.fctCfc*u - rr'*rcrr);
+           vv=[rr;ff'];
+           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
     end
     if ~aff_warning;warning on all;end
     

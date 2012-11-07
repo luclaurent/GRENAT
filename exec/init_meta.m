@@ -20,8 +20,11 @@ meta.norm=true;
 meta.recond=false;
 %validation croisee
 meta.cv=true;
+%calcul tous criteres CV
+meta.cv_full=false;
 %affichage QQ plot CV
 meta.cv_aff=false;
+
 
 %%%options specifiques
 %parametre SWF
@@ -70,7 +73,7 @@ meta.verif=true;
 %sauvegarde des 
 
 
-%% chargement configuration paraticuliere
+%% chargement configuration particuliere
 if nargin==1
     %prise en compte des gradients
     if isfield(in,'grad');meta.grad=in.grad;end
@@ -113,6 +116,8 @@ if nargin==1
     if isfield(in,'recond');meta.recond=in.recond;end
     %validation croisee
     if isfield(in,'cv');meta.cv=in.cv;end
+    %calcul tous criteres CV
+    if isfield(in,'cv_full');meta.cv_full=in.cv_full;end
     %affichage QQ plot CV
     if isfield(in,'cv_aff');meta.cv_aff=in.cv_aff;end
     
@@ -156,6 +161,8 @@ if nargin==1
     end
 end
 
+%comptage du nombre de workers disponibles (pour parallelisme)
+meta.worker_parallel=matlabpool('size');
 
 mesu_time(tMesu,tInit);
 fprintf('=========================================\n')

@@ -1,9 +1,11 @@
+
 %%Etude metamodeles en nD
 %%L. LAURENT -- 16/09/2011 -- laurent@lmt.ens-cachan.fr
 
 %effacement du Workspace
 clear all
 global aff
+
 
 %chargement des repertoires de travail
 init_rep;
@@ -13,6 +15,15 @@ init_esp;
 aff_date;
 %initialisation des variables d'affichage
 init_aff();
+
+fprintf('=========================================\n')
+fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
+[tMesu,tInit]=mesu_time;
+
+%execution parallele (option et lancement des workers)
+parallel.on=false;
+parallel.workers='auto';
+exec_parallel('start',parallel);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -24,7 +35,7 @@ fct='rosenbrock';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=5;
 %esp=[0 15];
 esp=[];
 
@@ -39,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=185;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -47,18 +58,21 @@ data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
-data.rbf='sexp';
-data.type='RBF';
+data.rbf='matern32';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=1;
+data.deg=0;
 
 meta=init_meta(data);
 
 meta.para.estim=true;
 meta.cv=true;
+meta.cv_aff=false;
+meta.cv_full=false;
+meta.test_positiv=false;
 meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
@@ -233,4 +247,8 @@ end
 
 extract_aff_nD
 
+%arret workers
+exec_parallel('stop',parallel)
 
+mesu_time(tMesu,tInit);
+fprintf('=========================================\n')

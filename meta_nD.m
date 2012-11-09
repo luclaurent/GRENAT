@@ -35,7 +35,7 @@ fct='rosenbrock';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=5;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=185;
+doe.nb_samples=50;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];

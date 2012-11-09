@@ -1,3 +1,11 @@
 script 
 qsub -l nodes=01:ppn=8,pmem=3gb,walltime=700:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Rastrigin_ib
 batch_lot_cnodeb.sh
+  337  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Rosenbrock_ib batch_lot_cnode.sh
+  342  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Schwefel_ib batch_lot_cnode.sh
+  508  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 276  -v FICH_SCRIPT=liste_Rastrigin_ib
+  509  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 276  -v FICH_SCRIPT=liste_Rastrigin_ib batch_lot_cnode.sh
+  510  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Rosenbrock_ib batch_lot_cnode.sh
+  511  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Schwefel_ib batch_lot_cnode.sh
+  520  history|grep qsub
+  521  history|grep qsub >> cmd.txt

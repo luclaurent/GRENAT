@@ -13,7 +13,7 @@
 
 ## déclaration variables
 # noms dossiers
-DOSSIER_BASE="/data3/laurent/"
+DOSSIER_BASE="/data3/laurent"
 META="code_meta_cluster"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"
@@ -57,11 +57,11 @@ heure=`date +%H%M%S`
 
 
 # récupération nom du fichier MatLab à récupérer
-DOSSIER_SOURCE=${ORIGIN}
+DOSSIER_SOURCE=${DOSSIER_BASE}
 DOSSIER_RACINE=$DOSSIER_SOURCE
-DOSSIER_META=${DOSSIER_RACINE}/${meta}
+DOSSIER_META=${DOSSIER_RACINE}/${META}
 DOSSIER_DONNEES_EXECUTIONS=${DOSSIER_RACINE}/${DOSSIER_DATA_EXEC}
-DOSSIER_RESULTATS=${DOSSIER_DONNEES_RESULTATS}/${DOSSIER_RESULTS}
+DOSSIER_RESULTATS=${DOSSIER_RACINE}/${DOSSIER_RESULTS}
 
 echo '  >> Préparation des fichiers de calcul'
 echo "Dossier source: $DOSSIER_SOURCE"
@@ -180,7 +180,7 @@ else
 fi
 
 echo '  >> Copie des fichiers dans le dossier temporaire'
-rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
+rsync -av --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
 
 
 echo '-------------------------------------------'

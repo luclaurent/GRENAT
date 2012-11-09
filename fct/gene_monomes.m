@@ -1,13 +1,13 @@
-%% Génération des monomes des polynomes (en fonction du degré et du nb de variables)
+%% Gï¿½nï¿½ration des monomes des polynomes (en fonction du degrï¿½ et du nb de variables)
 % L.LAURENT -- 25/02/2012 -- laurent@lmt.ens-cachan.Fr
 
 clear all
-% degré
-deg_min=1;
-deg_max=4;
+% degrï¿½
+deg_min=2;
+deg_max=2;
 % nb variables
-dim_min=11;
-dim_max=20;
+dim_min=5;
+dim_max=5;
 
 %dossier de stockage
 doss='base_monomes';
@@ -25,7 +25,7 @@ monod1=mono1;
 monod2=mono1;
 cmonod1=mono1;
 cmonod2=mono1;
-matlabpool(8)
+%matlabpool(8)
 for deg=deg_min:deg_max
     for nbv=dim_min:dim_max
         fprintf('deg = %i  dim = %i\n',deg,nbv)
@@ -55,11 +55,12 @@ for deg=deg_min:deg_max
             temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
             clear temp1 temp
             combinaison(:,ii)=temp2;
+            combinaison
             clear temp2;
         end
         combinaison=uint8(combinaison);
         
-        % génération combinaison
+        % gï¿½nï¿½ration combinaison
         %levels=(deg+1)*ones(1,nbv,'uint8');
         %combinaison=sparse(fullfact(levels)-1);
         %suppression ligne td sum term>deg
@@ -79,7 +80,7 @@ for deg=deg_min:deg_max
         monomes_pow(ind,:)=[];
         nbMono=size(monomes_pow,1);
         clear ind
-        %coef derivées première et monomes dérivées premières
+        %coef derivï¿½es premiï¿½re et monomes dï¿½rivï¿½es premiï¿½res
         coef_der1=monomes_pow;
         monomes_der1=repmat(monomes_pow,1,nbv);
         for pp=1:nbv
@@ -94,7 +95,7 @@ for deg=deg_min:deg_max
         %[ind]=find(monomes_der1<0);
         %monomes_der1(ind)=0;
         clear ind
-        %coef derivées secondes et monomes dérivées secondes
+        %coef derivï¿½es secondes et monomes dï¿½rivï¿½es secondes
         tt=[];
         for hh=1:size(coef_der1,2)
             tt=[tt repmat(coef_der1(:,hh),1,nbv)];
@@ -123,7 +124,7 @@ for deg=deg_min:deg_max
         %[ind]=find(monomes_der2<0);
         %monomes_der2(ind)=0;
         clear ind
-        %sauvegarde résultats
+        %sauvegarde rï¿½sultats
         mono1{deg,nbv}=monomes_pow;
         monod1{deg,nbv}=monomes_der1;
         monod2{deg,nbv}=monomes_der2;
@@ -134,180 +135,180 @@ for deg=deg_min:deg_max
     end
 end
 
-
-%stockage des monomes
-for ii=deg_min:deg_max
-    for jj=dim_min:dim_max
-        fonction=[file '_' num2str(ii,'%02i') '_' num2str(jj,'%03i')];
-        fichier=[doss '/' fonction ext];
-        fid=fopen(fichier,'w');
-        fprintf(fid,'%s\n\n',['function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=' fonction '(X)']);
-        fprintf(fid,'derprem=false;dersecond=false;\n');
-        fprintf(fid,'if nargout>=4;derprem=true;end\n');
-        fprintf(fid,'if nargout==6;dersecond=true;end\n\n');
-        fprintf(fid,'MatX=[\n');
-        mat=mono1{ii,jj};
-        %balayage des puissances du monome et construction de la matrice
-        %associée
-        indic=true;
-        for mm=1:size(mat,1)
-            if sum(mat(mm,:))==0
-                fprintf(fid,' ones(size(X,1),1) ...\n');
-            else
-                indic=false;
-                for ll=1:size(mat(mm,:),2)
-                    if ll~=1
-                        if mat(mm,ll-1)~=0&&mat(mm,ll)~=0
-                            fprintf(fid,'.*');
-                        elseif mat(mm,ll)~=0&&indic
-                            fprintf(fid,'.*');
-                            indic=false;
-                        end
-                    end
-                    if mat(mm,ll)~=0
-                        if mat(mm,ll)~=1
-                            fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));
-                        else
-                            fprintf(fid,'X(:,%i)',ll);
-                        end
-                        indic=true;
-                    end
-                end
-                if mm~=size(mat,1)
-                    fprintf(fid,' ...\n');
-                else
-                    fprintf(fid,'\n');
-                end
-            end
-        end
-        fprintf(fid,'];\n');
-        fprintf(fid,'nbmono=%i;\n\n',size(mat,1));
-        %ecriture dérivée première
-        fprintf(fid,'if derprem\n');
-        fprintf(fid,'MatDX=cell(1,size(X,2));\n\n');
-        matD=monod1{ii,jj};
-        matC=cmonod1{ii,jj};
-        for nn=1:jj
-            fprintf(fid,'MatDX{%i}=[\n',nn);
-            mat=matD(:,[jj*(nn-1)+1:jj*nn]);
-            coef=matC(:,nn);
-            for mm=1:size(mat,1)
-                if sum(mat(mm,:))==0&&coef(mm)~=0
-                    if coef(mm)~=1
-                        fprintf(fid,'%g.*',coef(mm));
-                        
-                    end
-                        fprintf(fid,'ones(size(X,1),1) ...\n');
-                elseif coef(mm)==0
-                    fprintf(fid,'zeros(size(X,1),1) ...\n');
-                else
-                    if coef(mm)~=1
-                        fprintf(fid,'%g.*',coef(mm));
-                    end
-                
-                    indic=false;
-                    for ll=1:size(mat(mm,:),2)
-                        if ll~=1
-                            if mat(mm,ll-1)~=0&&mat(mm,ll)~=0
-                                fprintf(fid,'.*');
-                            elseif mat(mm,ll)~=0&&indic
-                                fprintf(fid,'.*');
-                                indic=false;
-                            end
-                        end
-                        if mat(mm,ll)~=0
-                            if mat(mm,ll)~=1
-                                fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));
-                            else
-                                fprintf(fid,'X(:,%i)',ll);
-                            end
-                            indic=true;
-                        end
-                    end
-                    if mm~=size(mat,1)
-                        fprintf(fid,' ...\n');
-                    else
-                        fprintf(fid,'\n');
-                    end
-                end
-            end
-            fprintf(fid,'];\n\n');
-        end
-        
-        %ecriture coefficients dérivée première
-        
-        fprintf(fid,'CoefDX=[\n');
-        mat=cmonod1{ii,jj}';
-        for ll=1:size(mat,1);
-            fprintf(fid,'%i ',mat(ll,:));
-            fprintf(fid,'\n');
-        end
-        fprintf(fid,'];\n');
-        %ecriture dérivée seconde
-        fprintf(fid,'end\n\n');
-        fprintf(fid,'if dersecond\n');
-        fprintf(fid,'MatDDX=cell(size(X,2),size(X,2));\n\n');
-        matDD=monod2{ii,jj};
-        matCC=cmonod2{ii,jj};
-        for nn=1:jj*jj
-            fprintf(fid,'MatDDX{%i}=[\n',nn);
-            mat=matDD(:,jj*(nn-1)+1:jj*nn);
-            coef=matCC(:,nn);
-            for mm=1:size(mat,1)
-                if sum(mat(mm,:))==0&&coef(mm)~=0
-                    if coef(mm)~=1
-                        fprintf(fid,'%g.*',coef(mm));
-                        
-                    end
-                        fprintf(fid,'ones(size(X,1),1) ...\n');
-                elseif coef(mm)==0||any(mat(mm,:)<0)
-                    fprintf(fid,'zeros(size(X,1),1) ...\n');
-                else
-                    if coef(mm)~=1
-                        fprintf(fid,'%g.*',coef(mm));
-                    end
-                
-                    indic=false;
-                    for ll=1:size(mat(mm,:),2)
-                        if ll~=1
-                            if mat(mm,ll-1)~=0&&mat(mm,ll)~=0
-                                fprintf(fid,'.*');
-                            elseif mat(mm,ll)~=0&&indic
-                                fprintf(fid,'.*');
-                                indic=false;
-                            end
-                        end
-                        if mat(mm,ll)~=0
-                            if mat(mm,ll)~=1
-                                fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));
-                            else
-                                fprintf(fid,'X(:,%i)',ll);
-                            end
-                            indic=true;
-                        end
-                    end
-                    if mm~=size(mat,1)
-                        fprintf(fid,' ...\n');
-                    else
-                        fprintf(fid,'\n');
-                    end
-                end
-            end
-            fprintf(fid,'];\n\n');
-        end
-        %ecriture coefficients dérivée seconde
-        fprintf(fid,'CoefDDX=[\n');
-        mat=cmonod2{ii,jj}';
-        for ll=1:size(mat,1);
-            fprintf(fid,'%i ',mat(ll,:));
-            fprintf(fid,'\n');
-        end
-        fprintf(fid,'];\n');
-        %fprintf(fid,'cmonod2=cmonod2'';\n');
-        fprintf(fid,'end\n\n');
-        fprintf(fid,'end\n\n');
-        
-        fclose(fid);
-    end
-    
-end
+% 
+% %stockage des monomes
+% for ii=deg_min:deg_max
+%     for jj=dim_min:dim_max
+%         fonction=[file '_' num2str(ii,'%02i') '_' num2str(jj,'%03i')];
+%         fichier=[doss '/' fonction ext];
+%         fid=fopen(fichier,'w');
+%         fprintf(fid,'%s\n\n',['function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=' fonction '(X)']);
+%         fprintf(fid,'derprem=false;dersecond=false;\n');
+%         fprintf(fid,'if nargout>=4;derprem=true;end\n');
+%         fprintf(fid,'if nargout==6;dersecond=true;end\n\n');
+%         fprintf(fid,'MatX=[\n');
+%         mat=mono1{ii,jj};
+%         %balayage des puissances du monome et construction de la matrice
+%         %associï¿½e
+%         indic=true;
+%         for mm=1:size(mat,1)
+%             if sum(mat(mm,:))==0
+%                 fprintf(fid,' ones(size(X,1),1) ...\n');
+%             else
+%                 indic=false;
+%                 for ll=1:size(mat(mm,:),2)
+%                     if ll~=1
+%                         if mat(mm,ll-1)~=0&&mat(mm,ll)~=0
+%                             fprintf(fid,'.*');
+%                         elseif mat(mm,ll)~=0&&indic
+%                             fprintf(fid,'.*');
+%                             indic=false;
+%                         end
+%                     end
+%                     if mat(mm,ll)~=0
+%                         if mat(mm,ll)~=1
+%                             fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));
+%                         else
+%                             fprintf(fid,'X(:,%i)',ll);
+%                         end
+%                         indic=true;
+%                     end
+%                 end
+%                 if mm~=size(mat,1)
+%                     fprintf(fid,' ...\n');
+%                 else
+%                     fprintf(fid,'\n');
+%                 end
+%             end
+%         end
+%         fprintf(fid,'];\n');
+%         fprintf(fid,'nbmono=%i;\n\n',size(mat,1));
+%         %ecriture dï¿½rivï¿½e premiï¿½re
+%         fprintf(fid,'if derprem\n');
+%         fprintf(fid,'MatDX=cell(1,size(X,2));\n\n');
+%         matD=monod1{ii,jj};
+%         matC=cmonod1{ii,jj};
+%         for nn=1:jj
+%             fprintf(fid,'MatDX{%i}=[\n',nn);
+%             mat=matD(:,[jj*(nn-1)+1:jj*nn]);
+%             coef=matC(:,nn);
+%             for mm=1:size(mat,1)
+%                 if sum(mat(mm,:))==0&&coef(mm)~=0
+%                     if coef(mm)~=1
+%                         fprintf(fid,'%g.*',coef(mm));
+%                         
+%                     end
+%                     fprintf(fid,'ones(size(X,1),1) ...\n');
+%                 elseif coef(mm)==0
+%                     fprintf(fid,'zeros(size(X,1),1) ...\n');
+%                 else
+%                     if coef(mm)~=1
+%                         fprintf(fid,'%g.*',coef(mm));
+%                     end
+%                     
+%                     indic=false;
+%                     for ll=1:size(mat(mm,:),2)
+%                         if ll~=1
+%                             if mat(mm,ll-1)~=0&&mat(mm,ll)~=0
+%                                 fprintf(fid,'.*');
+%                             elseif mat(mm,ll)~=0&&indic
+%                                 fprintf(fid,'.*');
+%                                 indic=false;
+%                             end
+%                         end
+%                         if mat(mm,ll)~=0
+%                             if mat(mm,ll)~=1
+%                                 fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));
+%                             else
+%                                 fprintf(fid,'X(:,%i)',ll);
+%                             end
+%                             indic=true;
+%                         end
+%                     end
+%                     if mm~=size(mat,1)
+%                         fprintf(fid,' ...\n');
+%                     else
+%                         fprintf(fid,'\n');
+%                     end
+%                 end
+%             end
+%             fprintf(fid,'];\n\n');
+%         end
+%         
+%         %ecriture coefficients dï¿½rivï¿½e premiï¿½re
+%         
+%         fprintf(fid,'CoefDX=[\n');
+%         mat=cmonod1{ii,jj}';
+%         for ll=1:size(mat,1);
+%             fprintf(fid,'%i ',mat(ll,:));
+%             fprintf(fid,'\n');
+%         end
+%         fprintf(fid,'];\n');
+%         %ecriture dï¿½rivï¿½e seconde
+%         fprintf(fid,'end\n\n');
+%         fprintf(fid,'if dersecond\n');
+%         fprintf(fid,'MatDDX=cell(size(X,2),size(X,2));\n\n');
+%         matDD=monod2{ii,jj};
+%         matCC=cmonod2{ii,jj};
+%         for nn=1:jj*jj
+%             fprintf(fid,'MatDDX{%i}=[\n',nn);
+%             mat=matDD(:,jj*(nn-1)+1:jj*nn);
+%             coef=matCC(:,nn);
+%             for mm=1:size(mat,1)
+%                 if sum(mat(mm,:))==0&&coef(mm)~=0
+%                     if coef(mm)~=1
+%                         fprintf(fid,'%g.*',coef(mm));
+%                         
+%                     end
+%                     fprintf(fid,'ones(size(X,1),1) ...\n');
+%                 elseif coef(mm)==0||any(mat(mm,:)<0)
+%                     fprintf(fid,'zeros(size(X,1),1) ...\n');
+%                 else
+%                     if coef(mm)~=1
+%                         fprintf(fid,'%g.*',coef(mm));
+%                     end
+%                     
+%                     indic=false;
+%                     for ll=1:size(mat(mm,:),2)
+%                         if ll~=1
+%                             if mat(mm,ll-1)~=0&&mat(mm,ll)~=0
+%                                 fprintf(fid,'.*');
+%                             elseif mat(mm,ll)~=0&&indic
+%                                 fprintf(fid,'.*');
+%                                 indic=false;
+%                             end
+%                         end
+%                         if mat(mm,ll)~=0
+%                             if mat(mm,ll)~=1
+%                                 fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));
+%                             else
+%                                 fprintf(fid,'X(:,%i)',ll);
+%                             end
+%                             indic=true;
+%                         end
+%                     end
+%                     if mm~=size(mat,1)
+%                         fprintf(fid,' ...\n');
+%                     else
+%                         fprintf(fid,'\n');
+%                     end
+%                 end
+%             end
+%             fprintf(fid,'];\n\n');
+%         end
+%         %ecriture coefficients dï¿½rivï¿½e seconde
+%         fprintf(fid,'CoefDDX=[\n');
+%         mat=cmonod2{ii,jj}';
+%         for ll=1:size(mat,1);
+%             fprintf(fid,'%i ',mat(ll,:));
+%             fprintf(fid,'\n');
+%         end
+%         fprintf(fid,'];\n');
+%         %fprintf(fid,'cmonod2=cmonod2'';\n');
+%         fprintf(fid,'end\n\n');
+%         fprintf(fid,'end\n\n');
+%         
+%         fclose(fid);
+%     end
+%     
+% end

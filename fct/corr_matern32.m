@@ -42,10 +42,12 @@ elseif nargout==3
     
     %calcul derivees premieres
     dk=-3./long.^2.*xx.*etd;
+    tic
     L=cumprod(pc,2);L=[ones(nb_pt,1) L(:,1:end-1)];
     U=cumprod(pc(:,end:-1:1),2);U=[U(:,(end-1):-1:1) ones(nb_pt,1)];
     LdU=L.*U;
     dcorrn=LdU.*dk;
+    toc
     %calcul derivees secondes
     %suivant la taille de l'evaluation demandee on stocke les derivees
     %secondes de manieres differentes
@@ -55,7 +57,7 @@ elseif nargout==3
     if nb_pt==1
         % si un seul point d'evaluation (sortie derivees secondes sous la
         % forme d'une matrice)
-        % isgnification U, L et M cf. Lockwood 2010
+        % signification U, L et M cf. Lockwood 2010
         prd=dk'*dk;
         prd(1:nb_comp+1:nb_comp^2)=ddk;
         M=repmat([1 1 pc(2:nb_comp-1)],nb_comp,1);
@@ -68,23 +70,27 @@ elseif nargout==3
     else
         % si plusieurs points alors on stocke les derivees secondes dans un
         % vecteur de matrices
-        dk=reshape(dk,1,nb_comp,nb_pt);
+        IX_diag=repmat(logical(eye(nb_comp)),[1 1 nb_pt]); %acces diatgonales des N-D array
+        %passage grandeur en ND-array
+        dk=reshape(dk',1,nb_comp,nb_pt);
+        Lr=reshape(L',nb_comp,1,nb_pt); % + transpose
+        Ur=reshape(U',1,nb_comp,nb_pt);
+        
         dkt=multitransp(dk);
         prd=multiprod(dkt,dk);
-        pcc=reshape([ones(nb_pt,1) pc],1,nb_comp+1,nb_pt);
-        masq1=repmat([1 1 3:nb_comp],[nb_comp,1]); %decalage indice pour cause decalage ds pc
+        prd(IX_diag)=ddk';
+        pcc=reshape([ones(1,nb_pt);pc'],1,nb_comp+1,nb_pt);
+        masq1=[ones(nb_comp,2) repmat(3:nb_comp,[nb_comp,1])]; %decalage indice pour cause decalage ds pc
+        masq1=triu(masq1,2)+tril(ones(nb_comp),1);
         masq=repmat(masq1,[1,1,nb_pt]); 
-        M=pcc(masq);
+        M=reshape(pcc(1,masq1,:),nb_comp,nb_comp,nb_pt);
         masq2=triu(ones(nb_comp));
         M=cumprod(M,2);
         M=M.*repmat(masq2,[1 1 nb_pt]);
-        Lr=repmat(L',[1,1,nb_pt]);
-        Ur=repmat(U,[1,1,nb_pt]);
-        LUMt=multiprod(Lr,Ur);
+        LUMt=multiprod(Lr,Ur).*M;
         LUM=LUMt+multitransp(LUMt);
         IX_diag=repmat(logical(eye(nb_comp)),[1 1 nb_pt]);
-        LUM(IX_diag)=LdU;
-        LUM
+        LUM(IX_diag)=LdU';
         ddcorrn=LUM.*prd;
     end
     toc
@@ -106,18 +112,20 @@ elseif nargout==2
         pr(:,ii)=prod(pcc(:,[1:(ii-1) (ii+1):end]),2);
     end
     dcorr=dco.*pr;
-    all(dcorr(:)==dcorrn(:))
-    toc
+%     all(abs(dcorr(:)-dcorrn(:))<10^-14)
+%     toc
 elseif nargout==3
     corr=ev;
     dco=-3./long.^2.*xx.*exp(-sqrt(3)./long.*abs(xx));
     %calcul des derivees selon chacune des composantes
+    tic
     pr=zeros(size(xx));
     for ii=1:nb_comp
         pcc=pc;
         pr(:,ii)=prod(pcc(:,[1:(ii-1) (ii+1):end]),2);
     end
     dcorr=dco.*pr;
+    toc
 
     %calcul des derivees secondes
     
@@ -154,9 +162,7 @@ elseif nargout==3
             for mm=ll+1:nb_comp
                 pcc=pc;
                 pcc(:,[ll mm])=[];
-                pcc
                 prr=prod(pcc,2);
-                prr
                 dm(mm,ll,:)=dco(:,ll).*dco(:,mm).*prr;
                 %prr
             end
@@ -168,11 +174,12 @@ elseif nargout==3
         toc
         
     end
-    all(dcorr(:)==dcorrn(:))
-    all(ddcorr(:)==ddcorrn(:))
-    ddcorr
-    ddcorrn
-    ddcorr-ddcorrn
+ %   all(abs(dcorr(:)-dcorrn(:))<10^-14)
+ %    all(abs(ddcorr(:)-ddcorrn(:))<10^-14)
+%     abs(ddcorr(:)-ddcorrn(:))
+%     ddcorr
+%     ddcorrn
+   
     
 else
     error('Mauvais argument de sortie de la fonction corr_matern32');

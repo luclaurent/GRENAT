@@ -1,10 +1,9 @@
 %%fonction de correlation Matern (3/2)
 %%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
-%revision du 09/11/2012
 
-function [corr,dcorr,ddcorr]=corr_matern32(xx,long)
+function [corr,dcorr,ddcorr]=corr_matern32_new(xx,long)
 
-%verification de la dimension de la longueur de correlations
+%verification de la dimension de lalongueur de correlations
 lt=size(long);
 
 %nombre de points a evaluer
@@ -13,6 +12,7 @@ nb_pt=size(xx,1);
 nb_comp=size(xx,2);
 %nombre de sortie
 nb_out=nargout;
+
 
 %La longueur de correlation est definie pour toutes les composantes de xx
 if lt(1)*lt(2)==1
@@ -23,25 +23,29 @@ elseif lt(1)*lt(2)~=nb_comp
     error('mauvaise dimension de la longueur de correlation');
 end
 
-%%%%%%%
 %calcul de la valeur de la fonction au point xx
 etd=exp(-abs(xx)./long*sqrt(3));
 co=1+sqrt(3)./long.*abs(xx);
 pc=co.*etd;
-corr=prod(pc,2);
+
 
 %nouvelle implementation issue de Lockwood 2010/2012
 %calcul derivees premieres et seconde selon chaque dimension puis
 %combinaison
-if nb_out==2
+if nb_out==1
+    corr=prod(pc,2);
+elseif nb_out==2
+    %reponse
+    corr=prod(pc,2);
     %calcul derivees premieres
     dk=-3./long.^2.*xx.*etd;
-    L=[ones(nb_pt,1) cumprod(pc(1:end-1),2)];
-    U=cumprod(pc(:,end-1:-1:1),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
+    L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
+    U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
     dcorr=L.*U.*dk;
 
 elseif nb_out==3
-    
+    %reponse
+    corr=prod(pc,2);
     %calcul derivees premieres
     dk=-3./long.^2.*xx.*etd;
   % signification U et L cf. Lockwood 2010
@@ -63,7 +67,10 @@ elseif nb_out==3
         prd=dk'*dk;
         prd(1:nb_comp+1:nb_comp^2)=ddk;
         %
-        mm=[1 1 pc(2:nb_comp-1)];
+        %pc=[1 pc]; %correction pc pour prise en compte dimension 1
+        if nb_comp>1;motif=[1 1];else motif=1;end
+        mm=[motif pc(2:nb_comp-1)];
+        
         M=mm(ones(nb_comp,1),:);
         M=triu(M,2)+tril(ones(nb_comp),1);
         M=cumprod(M,2);
@@ -84,8 +91,8 @@ elseif nb_out==3
         %
         prd=multiTimes(dk,dk,2.1);
         prd(IX_diag)=ddk';
-        
-        mm=[1 1 3:nb_comp];
+        if nb_comp>1;motif=[1 1];else motif=1;end
+        mm=[motif 3:nb_comp];
         masq1=mm(ones(nb_comp,1),:); %decalage indice pour cause decalage ds pc
         masq1=triu(masq1,2)+tril(ones(nb_comp),1);
         %
@@ -101,6 +108,7 @@ elseif nb_out==3
         %derivees secondes
         ddcorr=LUM.*prd;
     end
+
 
 else
     error('Mauvais argument de sortie de la fonction corr_matern32');

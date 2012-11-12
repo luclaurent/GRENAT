@@ -1,5 +1,6 @@
 %%fonction de correlation Matern (3/2)
 %%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
+%revision du 09/11/2012 (issue de Lockwood 2010)
 
 function [corr,dcorr,ddcorr]=corr_matern32_new(xx,long)
 
@@ -10,7 +11,7 @@ lt=size(long);
 nb_pt=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
-%nombre de sortie
+%nombre de sorties
 nb_out=nargout;
 
 
@@ -24,15 +25,16 @@ elseif lt(1)*lt(2)~=nb_comp
 end
 
 %calcul de la valeur de la fonction au point xx
-etd=exp(-abs(xx)./long*sqrt(3));
-co=1+sqrt(3)./long.*abs(xx);
+td=-abs(xx)./long*sqrt(3);
+etd=exp(td);
+co=1-td;
 pc=co.*etd;
-
 
 %nouvelle implementation issue de Lockwood 2010/2012
 %calcul derivees premieres et seconde selon chaque dimension puis
 %combinaison
 if nb_out==1
+    %reponse
     corr=prod(pc,2);
 elseif nb_out==2
     %reponse
@@ -58,7 +60,7 @@ elseif nb_out==3
     %calcul derivees secondes
     %suivant la taille de l'evaluation demandee on stocke les derivees
     %secondes de manieres differentes
-    ddk=3./long.^2.*(sqrt(3)./long.*abs(xx)-1).*etd;
+    ddk=3./long.^2.*(-td-1).*etd;
     
     if nb_pt==1
         % si un seul point d'evaluation (sortie derivees secondes sous la
@@ -108,8 +110,6 @@ elseif nb_out==3
         %derivees secondes
         ddcorr=LUM.*prd;
     end
-
-
 else
     error('Mauvais argument de sortie de la fonction corr_matern32');
 end

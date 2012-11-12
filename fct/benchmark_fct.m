@@ -3,7 +3,7 @@ clear all
 close all
 
 type='corr_'; %'rf_' ou 'corr_'
-fct='matern52';
+fct='cubicspline1';
 
 fct_all=[type fct];
 

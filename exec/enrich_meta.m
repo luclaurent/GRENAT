@@ -1,4 +1,4 @@
-%% Proc�dure assurant l'enrichissement du metamodele
+%% Procedure assurant l'enrichissement du metamodele
 %% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
 
 function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)

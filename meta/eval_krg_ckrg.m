@@ -144,6 +144,7 @@ if nargout >=3
     switch donnees.build.fact_rcc
         case 'QR'
            vv=[rr;ff'];
+           
            variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
            
         case 'LU'
@@ -200,7 +201,7 @@ if donnees.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(donnees.in.eval);
     %calcul crit�res enrichissement
-    [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
+    [ei,wei,gei,lcb,exploit,explor]=crit_enrich(eval_min,Z,variance,donnees.enrich);
 end
 
 %extraction d�tails

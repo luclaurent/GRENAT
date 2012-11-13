@@ -5,33 +5,36 @@ function [EI,WEI,GEI,LCB,exploit,explor]=crit_enrich(eval_min,Z,variance,enrich)
 
 %reponse mini
 diff_ei=(eval_min-Z);
-if variance~=0
+%if variance~=0
     u=diff_ei/variance;
-end
+%end
 %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
 %2011/Sobester 2005...)
 %exploration (densite probabilite)
-if variance~=0
-    densprob=1/sqrt(2*pi)*exp(-0.5*u^2); %normcdf
+%if variance~=0
+    densprob=1/sqrt(2*pi)*exp(-0.5*u^2); %normpdf
     explor=variance*densprob;
-else
-    explor=0;
-end
+%else
+%    explor=0;
+%end
 
 %exploitation (fonction repartition loi normale centree reduite)
-if variance~=0
+%if variance~=0
     fctrep=0.5*(1+erf(u/sqrt(2))); %cdf
     exploit=diff_ei*fctrep;
-else
-    exploit=0;
-end
+    if exploit<0;
+        fprintf('%4.2e %4.2e %4.2e %4.2e %4.2e %4.2e \n',u,diff_ei,fctrep,variance,Z,exploit); 
+    end
+%else
+%    exploit=0;
+%end
 %critere Weigthed Expected Improvement (Sobester 2005)
 WEI=enrich.para_wei*exploit+(1-enrich.para_wei)*explor;
 %critere Expected Improvement (Schonlau 1997)
 EI=exploit+explor;
 %critere Lower Confidence Bound (Cox et John 1997)
 LCB=Z-enrich.para_lcb*variance;
-%crit�re Generalized Expected Improvement (Schonlau 1997)
+%critere Generalized Expected Improvement (Schonlau 1997)
 g=max(enrich.para_gei);
 t=zeros(1,g);
 GEI=zeros(1,g+1);
@@ -58,4 +61,3 @@ if variance~=0
         GEI(cg+1)=varg*sum(coef.*comb.*ueg.*t([1:cg+1]));        
     end    
 end
-

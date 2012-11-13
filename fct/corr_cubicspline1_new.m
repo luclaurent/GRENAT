@@ -1,4 +1,4 @@
-%%fonction de correlation Matern (3/2)
+%%fonction de correlation Cubic Spline 1
 %%L. LAURENT -- 12/11/2012 -- luc.laurent@ens-cachan.fr
 
 function [corr,dcorr,ddcorr]=corr_cubicspline1_new(xx,long)
@@ -54,7 +54,7 @@ elseif nb_out==2
     L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
     U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
     dcorr=L.*U.*dk;
-
+    
 elseif nb_out==3
     %reponse
     corr=prod(pc,2);
@@ -63,17 +63,17 @@ elseif nb_out==3
     dk2=-3.75.*sign(xx).*(1-td).^2./long;
     dk3=ev3;
     dk=dk1.*IX1+dk2.*IX2+dk3.*IX3;
-  % signification U et L cf. Lockwood 2010
+    % signification U et L cf. Lockwood 2010
     L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
     U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
     LdU=L.*U;
     %derivees premieres
     dcorr=LdU.*dk;
-
+    
     %calcul derivees secondes
     %suivant la taille de l'evaluation demandee on stocke les derivees
     %secondes de manieres differentes
-    ddk1=180./long.^3.*abs(xx)-30./long.^3;
+    ddk1=180./long.^3.*abs(xx)-30./long.^2;
     ddk2=7.5.*(1-td)./long.^2;
     ddk3=ev3;
     ddk=ddk1.*IX1+ddk2.*IX2+ddk3.*IX3;
@@ -121,7 +121,7 @@ elseif nb_out==3
         M=cumprod(M,2);
         M=M.*repmat(masq2,[1 1 nb_pt]);
         LUMt=multiTimes(Lr,Ur,2).*M;
-        LUM=LUMt+multitransp(LUMt);        
+        LUM=LUMt+multitransp(LUMt);
         LUM(IX_diag)=LdU';
         %derivees secondes
         ddcorr=LUM.*prd;

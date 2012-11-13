@@ -2,10 +2,10 @@
 clear all
 close all
 
-type='corr_'; %'rf_' ou 'corr_'
-fct='cubicspline1';
+typef='corr_'; %'rf_' ou 'corr_'
+fct='sexp';
 
-fct_all=[type fct];
+fct_all=[typef fct];
 
 %%nouvelle et ancienne version
 new='_new';old='_old';
@@ -21,7 +21,7 @@ dim=6;
 nb_pt=5000;
 pas=50;
 %parametre
-para=0.8;
+para=0.9;
 %borne verification
 verif=1e-10;
 bilan=true;

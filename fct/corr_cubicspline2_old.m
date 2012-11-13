@@ -1,7 +1,7 @@
-%%fonction de correlation Cubic Spline 1
+%%fonction de correlation Cubic Spline 2
 %%L. LAURENT -- 12/11/2012 -- luc.laurent@ens-cachan.fr
 
-function [corr,dcorr,ddcorr]=corr_cubicspline1_old(xx,long)
+function [corr,dcorr,ddcorr]=corr_cubicspline2_old(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=size(long);
@@ -32,8 +32,8 @@ IX2=(b2<=td).*(td<=b3);
 IX3=(td<=b3);
 
 %calcul des 3 fonctions
-ev1=1-15.*td.^2+30.*td.^3;
-ev2=1.25*(1-td).^3;
+ev1=1-6.*td.^2+6.*td.^3;
+ev2=2*(1-td).^3;
 ev3=zeros(size(td));
 pc=ev1.*IX1+ev2.*IX2+ev3.*IX3;
 
@@ -44,8 +44,8 @@ elseif nb_out==2
     %reponse
     corr=prod(pc,2);
     %derivees premieres
-    dk1=-30.*xx./long.^2+90.*sign(xx).*xx.^2./long.^3;
-    dk2=-3.75.*sign(xx).*(1-td).^2./long;
+    dk1=-12.*xx./long.^2+18.*sign(xx).*xx.^2./long.^3;
+    dk2=-6.*sign(xx).*(1-td).^2./long;
     dk3=ev3;
     dco=dk1.*IX1+dk2.*IX2+dk3.*IX3;
     %calcul des derivees selon chacune des composantes
@@ -61,8 +61,8 @@ elseif nb_out==3
     %reponse
     corr=prod(pc,2);
     %derivees premieres
-    dk1=-30.*xx./long.^2+90.*sign(xx).*xx.^2./long.^3;
-    dk2=-3.75.*sign(xx).*(1-td).^2./long;
+    dk1=-12.*xx./long.^2+18.*sign(xx).*xx.^2./long.^3;
+    dk2=-6.*sign(xx).*(1-td).^2./long;
     dk3=ev3;
     dco=dk1.*IX1+dk2.*IX2+dk3.*IX3;
     %calcul des derivees selon chacune des composantes
@@ -81,8 +81,8 @@ elseif nb_out==3
     %les s%tocke dans une matrice
     if nb_pt==1
         dm=zeros(nb_comp);
-        ddk1=180./long.^3.*abs(xx)-30./long.^3;
-        ddk2=7.5.*(1-td)./long.^2;
+        ddk1=36./long.^3.*abs(xx)-12./long.^2;
+        ddk2=12.*(1-td)./long.^2;
         ddk3=ev3;
         ddco=ddk1.*IX1+ddk2.*IX2+ddk3.*IX3;
         %tic
@@ -104,8 +104,8 @@ elseif nb_out==3
     else
         dm=zeros(nb_comp,nb_comp,nb_pt);
         ddcorr=dm;
-        ddk1=180./long.^3.*abs(xx)-30./long.^3;
-        ddk2=7.5.*(1-td)./long.^2;
+        ddk1=36./long.^3.*abs(xx)-12./long.^2;
+        ddk2=12.*(1-td)./long.^2;
         ddk3=ev3;
         ddco=ddk1.*IX1+ddk2.*IX2+ddk3.*IX3;
         di=ddco.*pr;
@@ -126,9 +126,9 @@ elseif nb_out==3
         %toc
         
     end
-   
+    
     
 else
-    error('Mauvais argument de sortie de la fonction corr_cubispline1');
+    error('Mauvais argument de sortie de la fonction corr_cubispline2');
 end
 

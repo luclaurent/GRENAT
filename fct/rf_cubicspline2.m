@@ -1,7 +1,7 @@
-%%fonction de correlation Cubic Spline 2
+%%fonction de RBF Cubic Spline 2
 %%L. LAURENT -- 12/11/2012 -- luc.laurent@ens-cachan.fr
 
-function [corr,dcorr,ddcorr]=corr_cubicspline2_new(xx,long)
+function [corr,dcorr,ddcorr]=rf_cubicspline2(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=size(long);
@@ -127,5 +127,5 @@ elseif nb_out==3
         ddcorr=LUM.*prd;
     end
 else
-    error('Mauvais argument de sortie de la fonction corr_cubicspline2');
+    error('Mauvais argument de sortie de la fonction rf_cubicspline1');
 end

@@ -1,24 +1,27 @@
-%%fonction de base radiale exponentielle carr�e (RBF)
+%%fonction de base radiale exponentielle carree
 %%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
+%revision du 13/11/2012
 
 %Rasmussen 2006 p. 83
 
 function [rf,drf,ddrf]=rf_sexp(xx,long)
 
-%verification de la dimension de la longueur de correlation
+%verification de la dimension de la longueur de rfelation
 lt=size(long);
-%nombre de points a� evaluer
+%nombre de points a evaluer
 pt_eval=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
+%nombre de sorties
+nb_out=nargout;
 
 if lt(1)*lt(2)==1
     %long est un reel, alors on en fait une matrice de la dimension de xx
-    long = repmat(long,pt_eval,nb_comp);
+    long = long*ones(nb_pt,nb_comp);
 elseif lt(1)*lt(2)==nb_comp
-    long = repmat(long,pt_eval,1);    
+    long = long(ones(nb_pt,1),:);
 elseif lt(1)*lt(2)~=nb_comp
-    error('mauvaise dimension de la longueur de correlation');
+    error('mauvaise dimension de la longueur de d''influence');
 end
 
 
@@ -26,12 +29,12 @@ end
 td=-xx.^2./(2*long.^2);
 ev=exp(sum(td,2));
 
-if nargout==1
+if nb_out==1
     rf=ev;
-elseif nargout==2
+elseif nb_out==2
     rf=ev;
     drf=-xx./long.^2.*repmat(ev,1,nb_comp);
-elseif nargout==3
+elseif nb_out==3
     rf=ev;
     drf=-xx./long.^2.*repmat(ev,1,nb_comp);   
     

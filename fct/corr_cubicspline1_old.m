@@ -81,7 +81,7 @@ elseif nb_out==3
     %les s%tocke dans une matrice
     if nb_pt==1
         dm=zeros(nb_comp);
-        ddk1=180./long.^3.*abs(xx)-30./long.^3;
+        ddk1=180./long.^3.*abs(xx)-30./long.^2;
         ddk2=7.5.*(1-td)./long.^2;
         ddk3=ev3;
         ddco=ddk1.*IX1+ddk2.*IX2+ddk3.*IX3;

@@ -1,7 +1,7 @@
-%%fonction de correlation Matern (3/2)
+%%fonction de correlation Cubic Spline 1
 %%L. LAURENT -- 12/11/2012 -- luc.laurent@ens-cachan.fr
 
-function [corr,dcorr,ddcorr]=corr_cubicspline1_new(xx,long)
+function [corr,dcorr,ddcorr]=corr_cubicspline1(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=size(long);
@@ -73,7 +73,7 @@ elseif nb_out==3
     %calcul derivees secondes
     %suivant la taille de l'evaluation demandee on stocke les derivees
     %secondes de manieres differentes
-    ddk1=180./long.^3.*abs(xx)-30./long.^3;
+    ddk1=180./long.^3.*abs(xx)-30./long.^2;
     ddk2=7.5.*(1-td)./long.^2;
     ddk3=ev3;
     ddk=ddk1.*IX1+ddk2.*IX2+ddk3.*IX3;

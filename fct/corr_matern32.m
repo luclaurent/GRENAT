@@ -1,7 +1,8 @@
 %%fonction de correlation Matern (3/2)
 %%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
+%revision du 12/11/2012 (issue de Lockwood 2010)
 
-function [corr,dcorr,ddcorr]=corr_matern32_new(xx,long)
+function [corr,dcorr,ddcorr]=corr_matern32(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=size(long);
@@ -10,7 +11,7 @@ lt=size(long);
 nb_pt=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
-%nombre de sortie
+%nombre de sorties
 nb_out=nargout;
 
 

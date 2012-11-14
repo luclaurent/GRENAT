@@ -38,7 +38,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=8;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
@@ -47,7 +47,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='sexp';
 data.rbf='sexp';
-data.type='GRBF';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -114,9 +114,9 @@ fprintf('%4.2f ',ii/nbpara*100)
 meta.para.val=valpara(ii);
 [approx]=const_meta(tirages,eval,grad,meta);
 [K]=eval_meta(grid_XY,approx,meta);
-cond_mat(ii)=approx.build.cond;
+cond_mat(ii)=approx.build.cond_new;
 rippa(ii)=approx.cv.eloot;
-perso(ii)=approx.cv.perso.eloot;
+perso(ii)=approx.cv.then.eloot;
 %calcul et affichage des criteres d'erreur
 err=crit_err(K.Z,Z.Z,approx);
 emse(ii)=err.emse;

@@ -55,10 +55,10 @@ nb_val=size(eval,1);
 %dimension du pb (nb de variables de conception)
 nb_var=size(tirages,2);
 
-%test pr�sence des gradients
+%test presence des gradients
 pres_grad=~isempty(grad);
 
-%test donn�es manquantes
+%test donnees manquantes
 manq_eval=false;
 manq_grad=false;
 if nargin==5
@@ -282,7 +282,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction des blocs de krigeage finaux tenant compte des longueurs de
-%corr�lation obtenues par minimisation
+%correlation obtenues par minimisation
 [lilog,block]=bloc_krg_ckrg(ret,meta);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

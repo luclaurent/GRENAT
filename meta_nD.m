@@ -37,7 +37,7 @@ fct='manu';
 % dimension du pb (nb de variables)
 doe.dim_pb=1;
 %esp=[0 15];
-esp=[0 100];
+esp=[0 15];
 
 %%Definition de l'espace de conception
 [doe]=init_doe(fct,doe.dim_pb,esp);
@@ -64,7 +64,7 @@ data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=0;
+data.deg=1;
 
 meta=init_meta(data);
 
@@ -136,7 +136,7 @@ if isfield(K,'var');[ic68,ic95,ic99]=const_ic(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-%valeur par d�faut
+%valeur par defaut
 aff.on=true;
 aff.newfig=false;
 aff.ic.on=true;

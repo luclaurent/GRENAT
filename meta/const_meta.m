@@ -128,7 +128,11 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,meta.para);
+            theta0=(meta.para.max-meta.para.min)./2;
+            theta0
+            lb=meta.para.min;
+            ub=meta.para.max;
+            [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0,lb,ub);
             out_meta=dace;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%

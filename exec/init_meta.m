@@ -93,13 +93,11 @@ if nargin==1
         case 'SWF'
             if isfield(in,'swf_para');meta.swf_para=in.swf_para;else meta.swf_para=swf_para;end
         case 'DACE'
-            if strcmp(type,'DACE')
                 fctp='regpoly';
                 %fonction de regression
                 if isfield(in,'deg');meta.regr=[fctp num2str(in.deg,'%d')];else meta.regr=[fctp num2str(deg,'%d')];end
                 %fonction de correlation
                 if isfield(in,'corr');meta.corr=['corr' in.corr];else meta.corr=['corr' corr];end
-            end
         case {'RBF','GRBF','InRBF'}
             if isfield(in,'rbf');meta.rbf=['rf_' in.rbf];else meta.rbf=rbf;end
         case {'KRG','CKRG','InKRG'}

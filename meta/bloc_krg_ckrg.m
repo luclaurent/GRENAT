@@ -5,7 +5,7 @@
 function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
-coef=10^-6;
+coef=10^-12;
 % type de factorisation de la matrice de correlation
 fact_rcc='None' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +35,7 @@ if donnees.in.pres_grad
     %si parallelisme actif ou non
     if meta.worker_parallel>=2
         %%%%%% PARALLEL %%%%%%
-        %morceaux de la matrice GRBF
+        %morceaux de la matrice GKRG
         rc=zeros(nb_val,nb_val);
         rca=cell(1,nb_val);
         rci=cell(1,nb_val);
@@ -44,7 +44,7 @@ if donnees.in.pres_grad
             dist=repmat(tiragesn(ii,:),nb_val,1)-tiragesn;
             % evaluation de la fonction de correlation
             [ev,dev,ddev]=feval(fct_corr,dist,para_val);
-            %morceau de la matrice issue du modele RBF classique
+            %morceau de la matrice issue du modele KRG classique
             rc(:,ii)=ev;
             %morceau des derivees premieres
             rca{ii}=dev;
@@ -106,9 +106,10 @@ if donnees.in.pres_grad
         rcc(:,rep_ev+donnees.manq.grad.ixt_manq_line)=[];
     end
 else
-    if matlabpool('size')>=2
+    
+    if meta.worker_parallel>=2
         %%%%%% PARALLEL %%%%%%
-        %matrice de RBF classique par bloc
+        %matrice de KRG classique par bloc
         rcc=zeros(nb_val,nb_val);
         parfor ii=1:nb_val
             %distance 1 tirages aux autres (construction par colonne)
@@ -128,7 +129,7 @@ else
             %distance 1 tirages aux autres (construction par colonne)
             dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
             % evaluation de la fonction de correlation
-            [ev]=feval(fct_corr,dist,meta.para.val);
+            [ev]=feval(fct_corr,dist,para_val);
             % matrice de krigeage
             rcc(ind,ii)=ev;
         end
@@ -142,10 +143,10 @@ else
     end
 end
 %passage en sparse
-rcc=sparse(rcc);
+%rcc=sparse(rcc);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%amelioration du conditionnement de la matrice de corr�lation
+%amelioration du conditionnement de la matrice de correlation
 if meta.recond
     cond_orig=condest(rcc);
     if cond_orig>10^14
@@ -173,27 +174,27 @@ end
 %QR
 switch fact_rcc
     case 'QR'
-%         [Q,R]=qr(rcc);
-%          Qrcc=Q;
-%         Rrcc=R;
-%         Qt=Q';
-%         tic
-%         
-%         yQ=Qt*donnees.build.y;
+%          [Q,R]=qr(rcc);
+%           Qrcc=Q;
+%          Rrcc=R;
+%          Qt=Q';
+%          tic
+%          
+%          yQ=Qt*donnees.build.y;
 %         fcQ=Qt*donnees.build.fc;
-%         fctR=donnees.build.fct/R;
-%         fctCfc=(donnees.build.fc\Q)*(R/donnees.build.fct);
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %calcul du coefficient beta
-%         %%approche classique
-%         block1=fctR*fcQ;
-%         block2=fctR*yQ;
-%         beta=block1\block2;
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %calcul du coefficient gamma
-%         gamma=R\(yQ-fcQ*beta);
+%          fctR=donnees.build.fct/R;
+%          fctCfc=(donnees.build.fc\Q)*(R/donnees.build.fct);
+%          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%          %calcul du coefficient beta
+%          %%approche classique
+%          block1=fctR*fcQ;
+%          block2=fctR*yQ;
+%          betao=block1\block2;
+%          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%          %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%          %calcul du coefficient gamma
+%          gammao=R\(yQ-fcQ*betao);
         
                 %% Nouvelle version
         % matrice de krigeage: M=[C X;Xt 0];
@@ -255,8 +256,8 @@ switch fact_rcc
         %%approche classique
        % block1=((donnees.build.fct/rcc)*donnees.build.fc);
        % block2=((donnees.build.fct/rcc)*donnees.build.y);
-       % beta=block1\block2;
-       % fctCfc=(donnees.build.fc\rcc)/donnees.build.fct;
+       % betao=block1\block2;
+        %  fctCfc=(donnees.build.fc\rcc)/donnees.build.fct;
        % beta
         %% Nouvelle version
         % matrice de krigeage: M=[C X;Xt 0];
@@ -273,7 +274,8 @@ switch fact_rcc
         %calcul du coefficient gamma
         beta=coef_KRG((end-donnees.build.dim_fc+1):end);
         gamma=coef_KRG(1:(end-donnees.build.dim_fc));
-        %gamma=rcc\(donnees.build.y-donnees.build.fc*beta);
+       % gammao=rcc\(donnees.build.y-donnees.build.fc*betao);
+
       %  beta
       %  gamma
         

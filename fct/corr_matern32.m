@@ -29,7 +29,6 @@ etd=exp(-abs(xx)./long*sqrt(3));
 co=1+sqrt(3)./long.*abs(xx);
 pc=co.*etd;
 
-
 %nouvelle implementation issue de Lockwood 2010/2012
 %calcul derivees premieres et seconde selon chaque dimension puis
 %combinaison

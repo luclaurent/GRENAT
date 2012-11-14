@@ -9,7 +9,7 @@ function [rf,drf,ddrf]=rf_sexp(xx,long)
 %verification de la dimension de la longueur de rfelation
 lt=size(long);
 %nombre de points a evaluer
-pt_eval=size(xx,1);
+nb_pt=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
 %nombre de sorties
@@ -44,7 +44,7 @@ elseif nb_out==3
     %secondes de manieres differentes
     %si on ne demande le calcul des derivees secondes en un seul point, on
     %les stocke dans une matrice 
-    if pt_eval==1
+    if nb_pt==1
         ddrf=zeros(nb_comp);
         for ll=1:nb_comp
            for mm=1:nb_comp
@@ -59,7 +59,7 @@ elseif nb_out==3
     %si on demande le calcul des derivees secondes en plusieurs point, on
     %les stocke dans un vecteur de matrices
     else
-        ddrf=zeros(nb_comp,nb_comp,pt_eval);
+        ddrf=zeros(nb_comp,nb_comp,nb_pt);
         for ll=1:nb_comp
            for mm=1:nb_comp
                 if(mm==ll)                    

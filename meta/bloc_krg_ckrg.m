@@ -25,7 +25,6 @@ if nargin==3
 else
     final=true;
 end
-
 ret=[];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -142,6 +141,7 @@ else
         rcc(:,donnees.manq.eval.ix_manq)=[];
     end
 end
+
 %passage en sparse
 %rcc=sparse(rcc);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -29,15 +29,15 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu';
+fct='rosenbrock';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[0 15];
-esp=[0 15];
+esp=[];
 
 %%Definition de l'espace de conception
 [doe]=init_doe(fct,doe.dim_pb,esp);
@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=8;
+doe.nb_samples=21;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -59,7 +59,6 @@ data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='sexp';
-data.rbf='matern32';
 data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
@@ -78,7 +77,7 @@ meta.norm=true;
 meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
-meta.para.l_val=1/sqrt(2);%2;
+meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;

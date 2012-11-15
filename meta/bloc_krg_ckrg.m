@@ -5,7 +5,7 @@
 function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
-coef=10^-12;
+coef=eps;
 % type de factorisation de la matrice de correlation
 fact_rcc='None' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -127,6 +127,7 @@ else
             ind=ii+1:nb_val;
             %distance 1 tirages aux autres (construction par colonne)
             dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
+            
             % evaluation de la fonction de correlation
             [ev]=feval(fct_corr,dist,para_val);
             % matrice de krigeage

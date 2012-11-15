@@ -13,7 +13,9 @@ meta.grad=false;
 %type de metamodele
 meta.type='KRG';
 %longueur de correlation
-meta.para.val=1;
+meta.para.l_val=1;
+%parametre puissance 
+meta.para.p_val=2;
 %normalisation
 meta.norm=true;
 %amelioration du conditionnement de la matrice de correlation
@@ -57,8 +59,10 @@ meta.para.popInit=20;
 meta.para.crit_opti=10^-6;
 %bornes esapce recherche parametres
 if meta.para.estim
-    meta.para.max=1e-4;
-    meta.para.min=50;
+    meta.para.l_min=1e-4;
+    meta.para.l_max=50;
+    meta.para.p_max=2.2;
+    meta.para.p_min=1.001;
 end
 
 %enrichissement (evaluation critere)
@@ -80,11 +84,18 @@ if nargin==1
     %type de metamodele KRG/CKRG/DACE/RBF/GRBF
     if isfield(in,'type');meta.type=in.type;end
     %parametre fonction RBF/KRG
-    if isfield(in,'long');meta.para.val=in.long(1);end
+    if isfield(in,'long');meta.para.l_val=in.long(1);end
     if meta.para.estim
         if isfield(in,'long');
-            meta.para.max=in.long(2);
-            meta.para.min=in.long(1);
+            meta.para.l_max=in.long(2);
+            meta.para.l_min=in.long(1);
+        end
+    end
+    if isfield(in,'pow');meta.para.p_val=in.pow(1);end
+    if meta.para.estim
+        if isfield(in,'pow');
+            meta.para.p_max=in.pow(2);
+            meta.para.p_max=in.pow(1);
         end
     end
     

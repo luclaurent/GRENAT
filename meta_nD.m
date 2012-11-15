@@ -54,10 +54,11 @@ doe.nb_samples=8;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
+data.para.pow=[1.001 2.2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
+data.corr='expg';
 data.rbf='matern32';
 data.type='KRG';
 data.grad=false;
@@ -77,7 +78,7 @@ meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
-meta.para.val=1/sqrt(2);%2;
+meta.para.l_val=1/sqrt(2);%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;

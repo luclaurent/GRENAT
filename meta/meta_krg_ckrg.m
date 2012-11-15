@@ -277,7 +277,12 @@ end
 %%parametres
 if meta.para.estim
     para_estim=estim_para_krg_ckrg(ret,meta);
-    meta.para.val=para_estim.val;
+    meta.para.l_val=para_estim.l_val;
+    meta.para.val=para_estim.l_val;
+    if isfield(para_estim,'p_val')
+        meta.para.p_val=para_estim.p_val;
+        meta.para.val=[meta.para.val meta.para.p_val];
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

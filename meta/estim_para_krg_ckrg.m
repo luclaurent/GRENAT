@@ -19,16 +19,33 @@ fprintf('++ Estimation parametres\n');
 [tMesu,tInit]=mesu_time;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Dï¿½finition des parametres de minimisation
+% Definition des parametres de minimisation
 % Nombre de parametres a estimer
 %anisotropie
 if meta.para.aniso
     nb_para=donnees.in.nb_var;
+    nb_para_optim=nb_para;
 else
     nb_para=1;
+    nb_para_optim=nb_para;
 end
-%definition des bornes de l'espace de recherche
-lb=meta.para.min*ones(1,nb_para);ub=meta.para.max*ones(1,nb_para);
+% traitement des cas particuliers (fonctions de correlation exponentielles
+% généralisées)
+switch meta.corr
+    case 'corr_expg'
+        %definition des bornes de l'espace de recherche
+        lb=[meta.para.l_min*ones(1,nb_para) meta.para.p_min];
+        ub=[meta.para.l_max*ones(1,nb_para) meta.para.p_max];
+        nb_para_optim=nb_para+1;
+    case 'corr_expgg'
+        %definition des bornes de l'espace de recherche
+        lb=[meta.para.l_min*ones(1,nb_para) meta.para.p_min*ones(1,nb_para)];
+        ub=[meta.para.l_max*ones(1,nb_para) meta.para.p_max*ones(1,nb_para)];
+        nb_para_optim=2*nb_para;
+    otherwise
+        %definition des bornes de l'espace de recherche
+        lb=meta.para.l_min*ones(1,nb_para);ub=meta.para.l_max*ones(1,nb_para);
+end
 %definition valeur de depart de la variable
 x0=lb+1/5*(ub-lb);
 % Definition de la function a minimiser
@@ -84,7 +101,10 @@ end
 %specification manuelle de la population initiale (Ga)
 if ~isempty(popInitManu)
     doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
+    lb
+    ub
     tir_pop=gene_doe(doePop);
+    tir_pop
     options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
 end
 
@@ -195,7 +215,7 @@ switch meta.para.method
     case 'ga'
         fprintf('||Ga|| Initialisation par tirages %s:\n',popInitManu);
         if ~aff_warning;warning off all;end
-        [x,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
+        [x,fval,exitflag,output] = ga(fun,nb_para_optim,[],[],[],[],lb,ub,[],options_ga);
         %arret minimisation
         if exitflag==1||exitflag==0||exitflag==2
             disp('Arret')
@@ -214,14 +234,25 @@ end
 mesu_time(tMesu,tInit);
 fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
 %stockage valeur parametres obtenue par minimisation
-para_estim.val=x;
+if nb_para_optim>nb_para
+    para_estim.l_val=x(1:nb_para);
+    para_estim.p_val=x(nb_para+1:end);
+else
+    para_estim.l_val=x;
+end
+
 if meta.norm
-    para_estim.val_denorm=x.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
+    para_estim.l_val_denorm=para_estim.l_val.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
     fprintf('\nValeur(s) longueur(s) de correlation');
-    fprintf(' %6.4f',para_estim.val_denorm);
+    fprintf(' %6.4f',para_estim.l_val_denorm);
     fprintf('\n');
 end
 fprintf('Valeur(s) longueur(s) de correlation (brut)');
-fprintf(' %6.4f',x);
+fprintf(' %6.4f',para_estim.l_val);
 fprintf('\n\n');
+if nb_para_optim>nb_para
+    fprintf('Valeur(s) longueur(s) puissance(s)');
+    fprintf(' %6.4f',para_estim.p_val);
+    fprintf('\n\n');
+end
 end

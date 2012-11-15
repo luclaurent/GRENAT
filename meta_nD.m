@@ -58,7 +58,7 @@ data.para.pow=[1.001 2.2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='sexp';
+data.corr='matern32';
 data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')

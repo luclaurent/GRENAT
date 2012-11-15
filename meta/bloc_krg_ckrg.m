@@ -15,7 +15,6 @@ nb_val=donnees.in.nb_val;
 nb_var=donnees.in.nb_var;
 tiragesn=donnees.in.tiragesn;
 fct_corr=meta.corr;
-para_val=[meta.para.l_val meta.para.p_val];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %si para defini alors on charge cette nouvelle valeur
@@ -23,6 +22,7 @@ final=false;
 if nargin==3
     para_val=para;
 else
+    para_val=meta.para.val;
     final=true;
 end
 ret=[];

@@ -101,10 +101,7 @@ end
 %specification manuelle de la population initiale (Ga)
 if ~isempty(popInitManu)
     doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
-    lb
-    ub
     tir_pop=gene_doe(doePop);
-    tir_pop
     options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
 end
 
@@ -206,7 +203,7 @@ switch meta.para.method
                 para_estim.out_algo.exitflag=exitflag;
                 indic=1;
             elseif exitflag==-2
-                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) param�tre(s) fix�(s) � la valeur d''initialisation\n');
+                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) parametre(s) fixe(s) � la valeur d''initialisation\n');
                 x=xinit;
                 indic=1;
             end

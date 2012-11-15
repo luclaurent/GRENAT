@@ -43,7 +43,7 @@ esp=[0 15];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=3000;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -58,14 +58,14 @@ data.para.pow=[1.001 2.2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='expg';
+data.corr='sexp';
 data.rbf='matern32';
 data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=1;
+data.deg=2;
 
 meta=init_meta(data);
 
@@ -75,7 +75,7 @@ meta.cv_aff=false;
 meta.cv_full=false;
 meta.test_positiv=false;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
 meta.para.l_val=1/sqrt(2);%2;

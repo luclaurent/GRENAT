@@ -61,7 +61,7 @@ meta.para.crit_opti=10^-6;
 if meta.para.estim
     meta.para.l_min=1e-4;
     meta.para.l_max=50;
-    meta.para.p_max=2.2;
+    meta.para.p_max=2;
     meta.para.p_min=1.001;
 end
 

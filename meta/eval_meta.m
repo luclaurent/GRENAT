@@ -96,7 +96,7 @@ for num_meta=1:numel(donnees_const)
             lcb=rep;
             exploit=rep;
             explor=rep;
-            %% Evaluation du metamodele de RBF/HBRBF
+            %% Evaluation du metamodele de RBF/GRBF
             parfor jj=1:nb_ev_pts
                 
                 [rep(jj),G,var_rep(jj),det]=eval_rbf(ev_pts(jj,:),meta_donnee);

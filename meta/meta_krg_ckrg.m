@@ -22,7 +22,7 @@ if meta.para.estim
     fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
     fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
 else
-    fprintf('>> Valeur parametre: %d\n',meta.para.val);
+    fprintf('>> Valeur parametre: %d\n',meta.para.l_val);
 end
 fprintf('>> Critere enrichissement actif:');
 if meta.enrich.on;
@@ -55,10 +55,10 @@ nb_val=size(eval,1);
 %dimension du pb (nb de variables de conception)
 nb_var=size(tirages,2);
 
-%test pr�sence des gradients
+%test presence des gradients
 pres_grad=~isempty(grad);
 
-%test donn�es manquantes
+%test donnees manquantes
 manq_eval=false;
 manq_grad=false;
 if nargin==5
@@ -138,16 +138,16 @@ end
 %autre fonction de calcul des regresseur reg_poly0,1 ou 2
 fct=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
 
-%/!\ en le cokrigeage universel n'est pas op�rationnel
+%/!\ en le cokrigeage universel n'est pas operationnel
 %if pres_grad&&meta.deg~=0
 %   meta.deg=0;nb_termes=1;
-%   fprintf('Le Cokrigeage Universel n''est pas op�rationnel (on construit un Cokrigeage Ordinaire)\n')
+%   fprintf('Le Cokrigeage Universel n''est pas operationnel (on construit un Cokrigeage Ordinaire)\n')
 %end
 
 if ~pres_grad
     fc=feval(fct,tiragesn);
     if manq_eval
-        %suppression valeur(s) aux site � reponse(s) manquante(s)
+        %suppression valeur(s) aux sites a reponse(s) manquante(s)
         fc=fc(manq.eval.ix_dispo,:);
     end
 else
@@ -169,7 +169,7 @@ else
     end
     %chargement regresseur (evaluation de monomes)
     fc(1:taille_ev,:)=Reg;
-    %chargement des derivees des regresseurs (evaluation des d�riv�es des monomes)
+    %chargement des derivees des regresseurs (evaluation des derivees des monomes)
     if iscell(DReg)
         tmp=horzcat(DReg{:})';
         tmp=reshape(tmp,nb_termes,[])';
@@ -179,10 +179,10 @@ else
     end
     
     if manq_grad
-        %suppression valeur(s) aux sites � gradient(s) manquant(s)
+        %suppression valeur(s) aux sites a gradient(s) manquant(s)
         tmp=tmp(manq.grad.ixt_dispo_line,:);
     end
-    %chargement derrivees regresseur
+    %chargement derivees regresseur
     fc(taille_ev+1:end,:)=tmp;
 end
 
@@ -277,12 +277,24 @@ end
 %%parametres
 if meta.para.estim
     para_estim=estim_para_krg_ckrg(ret,meta);
-    meta.para.val=para_estim.val;
+    meta.para.l_val=para_estim.l_val;
+    meta.para.val=para_estim.l_val;
+    if isfield(para_estim,'p_val')
+        meta.para.p_val=para_estim.p_val;
+        meta.para.val=[meta.para.val meta.para.p_val];
+    end
+else
+    switch meta.corr
+        case {'corr_expg','corr_expgg'}
+            meta.para.val=[meta.para.l_val meta.para.p_val];
+        otherwise
+            meta.para.val=meta.para.l_val;
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %construction des blocs de krigeage finaux tenant compte des longueurs de
-%corr�lation obtenues par minimisation
+%correlation obtenues par minimisation
 [lilog,block]=bloc_krg_ckrg(ret,meta);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

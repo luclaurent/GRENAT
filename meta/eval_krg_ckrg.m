@@ -144,6 +144,7 @@ if nargout >=3
     switch donnees.build.fact_rcc
         case 'QR'
            vv=[rr;ff'];
+           
            variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
            
         case 'LU'
@@ -170,8 +171,8 @@ if donnees.norm.on
     infos.moy=donnees.norm.moy_eval;
     infos.std=donnees.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);
-    if nargout==4
-        Z_reg=norm_denorm(Z_reg,'denorm',infos);
+    if nargout==4        
+        Z_reg=norm_denorm(Z_reg,'denorm',infos);       
         Z_sto=norm_denorm(Z_sto,'denorm',infos);
     end
     if calc_grad
@@ -199,11 +200,11 @@ lcb=[];
 if donnees.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(donnees.in.eval);
-    %calcul crit�res enrichissement
-    [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
+    %calcul criteres enrichissement
+    [ei,wei,gei,lcb,exploit,explor]=crit_enrich(eval_min,Z,variance,donnees.enrich);
 end
 
-%extraction d�tails
+%extraction details
 if nargout==4
     details.Z_reg=Z_reg;
     details.Z_sto=Z_sto;

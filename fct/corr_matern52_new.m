@@ -2,7 +2,7 @@
 %%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
 %revision du 12/11/2012 (issue de Lockwood 2010)
 
-function [corr,dcorr,ddcorr]=corr_matern52(xx,long)
+function [corr,dcorr,ddcorr]=corr_matern52_new(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=size(long);
@@ -109,5 +109,5 @@ elseif nb_out==3
         ddcorr=LUM.*prd;
     end
 else
-    error('Mauvais argument de sortie de la fonction corr_matern52');
+    error('Mauvais argument de sortie de la fonction corr_gauss');
 end

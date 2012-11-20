@@ -12,7 +12,7 @@ end
 %2011/Sobester 2005...)
 %exploration (densite probabilite)
 if variance~=0
-    densprob=1/sqrt(2*pi)*exp(-0.5*u^2); %normcdf
+    densprob=1/sqrt(2*pi)*exp(-0.5*u^2); %normpdf
     explor=variance*densprob;
 else
     explor=0;
@@ -31,7 +31,7 @@ WEI=enrich.para_wei*exploit+(1-enrich.para_wei)*explor;
 EI=exploit+explor;
 %critere Lower Confidence Bound (Cox et John 1997)
 LCB=Z-enrich.para_lcb*variance;
-%crit�re Generalized Expected Improvement (Schonlau 1997)
+%critere Generalized Expected Improvement (Schonlau 1997)
 g=max(enrich.para_gei);
 t=zeros(1,g);
 GEI=zeros(1,g+1);
@@ -58,4 +58,3 @@ if variance~=0
         GEI(cg+1)=varg*sum(coef.*comb.*ueg.*t([1:cg+1]));        
     end    
 end
-

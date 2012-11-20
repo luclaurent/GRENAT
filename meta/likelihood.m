@@ -43,7 +43,7 @@ switch donnees.build.fact_rcc
 %         end
     otherwise
         eig_val=eig(donnees.build.rcc);
-       % det_corr=prod(eig_val);
+        det_corr=prod(eig_val);
         log_det_corr=sum(log(eig_val));
         %controle positivite
 %         sumd=sum(eig_val<0);

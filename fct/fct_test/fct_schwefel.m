@@ -1,6 +1,6 @@
 %fonction Schwefel
 %L. LAURENT -- 26/01/2011 -- luc.laurent@ens-cachan.fr
-%modif le 16/09/2011 -- modif �criture input pour passage code � n
+%modif le 16/09/2011 -- modif ecriture input pour passage code a n
 %variables
 
 %nombreux minimums locaux
@@ -33,7 +33,7 @@ if ~isempty(xx)
             elseif size(xx,1)==2
                 xxx=xx(:,2);yyy=xx(:,1);
             else
-                error('Mauvais format variable entr�e fct Schwefel');
+                error('Mauvais format variable entree fct Schwefel');
             end
             cal=xxx.*sin(sqrt(abs(xxx)))+yyy.*sin(sqrt(abs(yyy)));
             p=coef*nbvar-cal;

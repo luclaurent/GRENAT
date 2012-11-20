@@ -208,7 +208,7 @@ for num_meta=1:numel(donnees_const)
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:nb_ev_pts
-                [rep(jj),G,var_rep(jj)]=predictor(ev_pts(jj,:),meta_donnee);
+                [rep(jj),G,var_rep(jj)]=predictor(ev_pts(jj,:),meta_donnee.model);
                 GR(jj,:)=G;
             end
             %%%%%%%%=================================%%%%%%%%

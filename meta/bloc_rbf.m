@@ -18,7 +18,6 @@ nb_val=data.in.nb_val;
 nb_var=data.in.nb_var;
 tiragesn=data.in.tiragesn;
 fct_rbf=meta.rbf;
-para_val=meta.para.val;
 ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,6 +28,7 @@ if nargin>=3
     %estimation)
     type_CV='estim';
 else
+    para_val=meta.para.val;
     type_CV='final';
 end
 mod_estim=false;
@@ -41,7 +41,7 @@ end
 %construction de la matrice de Gram
 if data.in.pres_grad
     %si parallelisme actif ou non
-    if matlabpool('size')>=2
+    if meta.worker_parallel>=2
         %%%%%% PARALLEL %%%%%%
         %morceaux de la matrice GRBF
         KK=zeros(nb_val,nb_val);
@@ -50,7 +50,8 @@ if data.in.pres_grad
         
         parfor ii=1:nb_val
             %distance 1 tirages aux autres (construction par colonne)
-            dist=tiragesn-repmat(tiragesn(ii,:),nb_val,1);
+            one_tir=tiragesn(ii,:);
+            dist=tiragesn-one_tir(ones(1,nb_val),:);
             % evaluation de la fonction de correlation
             [ev,dev,ddev]=feval(fct_rbf,dist,para_val);
             %morceau de la matrice issue du modele RBF classique
@@ -79,7 +80,8 @@ if data.in.pres_grad
             inddd=nb_val-numel(ind)+1:nb_val;
             indddd=(ii-1)*nb_var+1:ii*nb_var;
             %distance 1 tirages aux autres (construction par colonne)
-            dist=tiragesn(ind,:)-repmat(tiragesn(ii,:),numel(ind),1);
+            one_tir=tiragesn(ii,:);
+            dist=tiragesn(ind,:)-one_tir(ones(1,numel(ind)),:);
             % evaluation de la fonction de correlation
             [ev,dev,ddev]=feval(fct_rbf,dist,para_val);
             %morceau de la matrice issue du modele RBF classique
@@ -119,13 +121,14 @@ if data.in.pres_grad
     end
     
 else
-    if matlabpool('size')>=2
+    if meta.worker_parallel>=2
         %%%%%% PARALLEL %%%%%%
         %matrice de RBF classique par bloc
         KK=zeros(nb_val,nb_val);
         parfor ii=1:nb_val
             %distance 1 tirages aux autres (construction par colonne)
-            dist=tiragesn-repmat(tiragesn(ii,:),nb_val,1);
+            one_tir=tiragesn(ii,:);
+            dist=tiragesn-one_tir(ones(1,nb_val),:);
             % evaluation de la fonction de correlation
             [ev]=feval(fct_rbf,dist,para_val);
             %morceau de la matrice issue du modele RBF classique
@@ -139,7 +142,8 @@ else
         for ii=1:bmax
             ind=ii+1:nb_val;
             %distance 1 tirages aux autres (construction par colonne)
-            dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
+            one_tir=tiragesn(ii,:);
+            dist=tiragesn(ind,:)-one_tir(ones(1,numel(ind)),:);
             % evaluation de la fonction de correlation
             [ev]=feval(meta.rbf,dist,para_val);
             % matrice de RBF

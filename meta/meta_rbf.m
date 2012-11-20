@@ -242,9 +242,20 @@ meta.cv=cv_old;
 %%proposition de Hardy/Franke
 if meta.para.estim
     para_estim=estim_para_rbf(ret,meta);
-    meta.para.val=para_estim.val;
+    meta.para.l_val=para_estim.l_val;
+    meta.para.val=para_estim.l_val;
+    if isfield(para_estim,'p_val')
+        meta.para.p_val=para_estim.p_val;
+        meta.para.val=[meta.para.val meta.para.p_val];
+    end
 else
-    meta.para.val=calc_para_rbf(tiragesn,meta);
+    meta.para.l_val=calc_para_rbf(tiragesn,meta);
+    switch meta.rbf
+        case {'rf_expg','rf_expgg'}
+            meta.para.val=[meta.para.l_val meta.para.p_val];
+        otherwise
+            meta.para.val=meta.para.l_val;
+    end
     fprintf('Definition parametre (%s), val=',meta.para.type);
     fprintf(' %d',meta.para.val);
     fprintf('\n');

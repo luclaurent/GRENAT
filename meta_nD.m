@@ -21,7 +21,7 @@ fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
 [tMesu,tInit]=mesu_time;
 
 %execution parallele (option et lancement des workers)
-parallel.on=true;
+parallel.on=false;
 parallel.workers='auto';
 exec_parallel('start',parallel);
 
@@ -29,15 +29,15 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock';
+fct='manu';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=3;
+doe.dim_pb=1;
 %esp=[0 15];
-esp=[];
+esp=[0 15];
 
 %%Definition de l'espace de conception
 [doe]=init_doe(fct,doe.dim_pb,esp);
@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=6;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -60,7 +60,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='GRBF';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;

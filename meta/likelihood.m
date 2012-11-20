@@ -23,19 +23,21 @@ switch donnees.build.fact_rcc
 %             fprintf('<< Matrice de correlation non positive >>\n');
 %         end
     case 'LL'
-        fprintf('Cholesky non optimise dans likelihood.m')
-        eig_val=eig(donnees.build.rcc);
+        diagLMKrg=diag(donnees.build.LMKrg);
+        det_corr=prod(diagLMKrg)^2;
+        log_det_corr=2*sum(log(abs(diagLMKrg)));
+        %eig_val=eig(donnees.build.rcc);
         %det_corr=prod(eig_val);
-        log_det_corr=sum(log(eig_val));
+        %log_det_corr=sum(log(eig_val));
         %controle positivite
         %sumd=sum(eig_val<0);
 %         if mod(sumd,2)~=0
 %             fprintf('<< Matrice de correlation non positive >>\n');
 %         end
     case 'LU'
-        diagUrcc=diag(donnees.build.Urcc);
-        det_corr=prod(diagUrcc); %L est quasi triangulaire (a une permutation pres) et la matrice L comporte des 1 sur la diagonale
-        log_det_corr=sum(log(abs(diagUrcc)));
+        diagUMKrg=diag(donnees.build.UMKrg);
+        det_corr=prod(diagUMKrg); %L est quasi triangulaire (a une permutation pres) et la matrice L comporte des 1 sur la diagonale
+        log_det_corr=sum(log(abs(diagUMKrg)));
         %controle positivite
         %sumd=sum(diagUrcc<0);
 %         if mod(sumd,2)~=0
@@ -52,10 +54,6 @@ switch donnees.build.fact_rcc
 %         end
 end
 
-
-%rr=donnees.build.rcc;
-%global rr
-%log_det_corr
 logli=tail_rcc/2*log(2*pi*donnees.build.sig2)+1/2*log_det_corr+tail_rcc/2;
 if isinf(logli)||isnan(logli)
     logli=1e16;

@@ -204,6 +204,8 @@ switch fact_rcc
         % matrice de krigeage: M=[C X;Xt 0];
         MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(donnees.build.dim_fc)];
         [QMKrg,RMKrg]=qr(MKrg);
+        det(rcc)
+        det(MKrg)
         if final
             iMKrg=RMKrg\QMKrg';
             coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
@@ -219,40 +221,78 @@ switch fact_rcc
         gamma=coef_KRG(1:(end-donnees.build.dim_fc));
         
     case 'LU'
-        [Lrcc,Urcc]=lu(rcc);
-        yL=Lrcc\donnees.build.y;
-        fcL=Lrcc\donnees.build.fc;
-        fctU=donnees.build.fct/Urcc;
-        fctCfc=(donnees.build.fc\Lrcc)*(Urcc/donnees.build.fct);
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient beta
-        %%approche classique
-        block1=fctU*fcL;
-        block2=fctU*yL;
-        beta=block1\block2;
+%         [Lrcc,Urcc]=lu(rcc);
+%         yL=Lrcc\donnees.build.y;
+%         fcL=Lrcc\donnees.build.fc;
+%         fctU=donnees.build.fct/Urcc;
+%         fctCfc=(donnees.build.fc\Lrcc)*(Urcc/donnees.build.fct);
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %calcul du coefficient beta
+%         %%approche classique
+%         block1=fctU*fcL;
+%         block2=fctU*yL;
+%         beta=block1\block2;
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %calcul du coefficient gamma
+%         gamma=Urcc\(yL-fcL*beta);
+        
+        %% Nouvelle version
+        % matrice de krigeage: M=[C X;Xt 0];
+        MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(donnees.build.dim_fc)];
+        [LMKrg,UMKrg]=lu(MKrg);
+        if final
+            iMKrg=UMKrg\inv(LMKrg);
+            coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        else
+            calc_Q=LMKrg\[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+            coef_KRG=UMKrg\calc_Q;
+        end
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
-        gamma=Urcc\(yL-fcL*beta);
+        beta=coef_KRG((end-donnees.build.dim_fc+1):end);
+        gamma=coef_KRG(1:(end-donnees.build.dim_fc));
     case 'LL'
-        %%% A debugguer
-        Lrcc=chol(rcc,'lower');
-        yL=Lrcc\donnees.build.y;
-        fcL=Lrcc\donnees.build.fc;
-        fctL=donnees.build.fct/Lrcc;
-        fctCfc=(donnees.build.fc\Lrcc)*(Lrcc/donnees.build.fct);
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient beta
-        %%approche classique
-        block1=fctL*fcL;
-        block2=fctL*yL;
-        beta=block1\block2;
+%         %%% A debugguer
+%         Lrcc=chol(rcc,'lower');
+%         yL=Lrcc\donnees.build.y;
+%         fcL=Lrcc\donnees.build.fc;
+%         fctL=donnees.build.fct/Lrcc;
+%         fctCfc=(donnees.build.fc\Lrcc)*(Lrcc/donnees.build.fct);
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %calcul du coefficient beta
+%         %%approche classique
+%         block1=fctL*fcL;
+%         block2=fctL*yL;
+%         beta=block1\block2;
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %calcul du coefficient gamma
+%         gamma=Lrcc\(yL-fcL*beta);
+        %% Nouvelle version
+        % matrice de krigeage: M=[C X;Xt 0];
+        MKrg=[rcc donnees.build.fc;donnees.build.fct zeros(donnees.build.dim_fc)];
+        det(MKrg)
+        det(rcc)
+        %chol(rcc)
+        LMKrg=chol(MKrg);
+        if final
+            iMKrg=LMKrg'\inv(LMKrg);
+            coef_KRG=iMKrg*[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+        else
+            calc_Q=LMKrg'\[donnees.build.y;zeros(donnees.build.dim_fc,1)];
+            coef_KRG=LMKrg\calc_Q;
+        end
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
-        gamma=Lrcc\(yL-fcL*beta);
+        beta=coef_KRG((end-donnees.build.dim_fc+1):end);
+        gamma=coef_KRG(1:(end-donnees.build.dim_fc));
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,6 +332,8 @@ if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
 if exist('cond_new','var');build_data.cond_new=cond_new;end
 if exist('QMKrg','var');build_data.QMKrg=QMKrg;end
 if exist('RMKrg','var');build_data.RMKrg=RMKrg;end
+if exist('LMKrg','var');build_data.LMKrg=LMKrg;end
+if exist('UMKrg','var');build_data.UMKrg=UMKrg;end
 if exist('iMKrg','var');build_data.iMKrg=iMKrg;end
 if exist('iRcc','var');build_data.iRcc=iRcc;end
 if exist('yQ','var');build_data.yQ=yQ;end

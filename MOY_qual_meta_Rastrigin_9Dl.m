@@ -82,7 +82,7 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.fct=['rf_' data.rbf];
+meta.rbf=['rf_' data.rbf];
 
 meta.para.estim=true;
 meta.cv=true;
@@ -181,6 +181,8 @@ unix(['rm ' fichierB]);
             
         end
     end
+
+
     %sauvegarde
 fichier=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'Dl.mat'];
 fichierB=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'DlB.mat'];
@@ -188,8 +190,8 @@ save(fichierB,'-v7.3')
 unix(['rm ' fichier]);
 unix(['cp ' fichierB ' ' fichier]);
 unix(['rm ' fichierB]);
-end
 
+end
 %traitement
 moy_r2=zeros(nb_conf,num_tir_list);
 moy_r2adj=moy_r2;

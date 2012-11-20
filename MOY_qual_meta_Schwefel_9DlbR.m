@@ -203,7 +203,7 @@ unix(['rm ' fichier]);
 unix(['cp ' fichierB ' ' fichier]);
 unix(['rm ' fichierB]);
 
-end
+
 
 %traitement
 moy_r2=zeros(nb_conf,num_tir_list);

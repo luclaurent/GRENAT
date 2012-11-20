@@ -7,6 +7,7 @@
 ## déclaration variables
 # noms dossiers
 DOSSIER_BASE="/data1/laurent"
+echo $DOSSIER_BASE
 META="code_meta_cluster"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"

@@ -84,7 +84,7 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.fct=['rf_' data.rbf];
+meta.rbf=['rf_' data.rbf];
 
 meta.para.estim=true;
 meta.cv=true;
@@ -192,6 +192,7 @@ unix(['cp ' fichierB ' ' fichier]);
 unix(['rm ' fichierB]);
 
 end
+
 
 %traitement
 moy_r2=zeros(nb_conf,num_tir_list);

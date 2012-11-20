@@ -13,7 +13,7 @@
 
 ## déclaration variables
 # noms dossiers
-DOSSIER_BASE="/data1/laurent"
+DOSSIER_BASE="/data3/laurent"
 META="code_meta_cluster"
 NOM="laurent"
 DOSSIER_RESULTS="resultats_cluster"
@@ -180,7 +180,7 @@ else
 fi
 
 echo '  >> Copie des fichiers dans le dossier temporaire'
-rsync -avuz --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
+rsync -av --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
 
 
 echo '-------------------------------------------'

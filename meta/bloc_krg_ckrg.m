@@ -7,7 +7,7 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 %coefficient de reconditionnement
 coef=eps;
 % type de factorisation de la matrice de correlation
-fact_rcc='None' ; %LU %QR %LL %None
+fact_rcc='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement grandeurs utiles
@@ -40,7 +40,8 @@ if donnees.in.pres_grad
         rci=cell(1,nb_val);
         parfor ii=1:nb_val
             %distance 1 tirages aux autres (construction par colonne)
-            dist=repmat(tiragesn(ii,:),nb_val,1)-tiragesn;
+            one_tir=tiragesn(ii,:);
+            dist=one_tir(ones(1,nb_val),:)-tiragesn;
             % evaluation de la fonction de correlation
             [ev,dev,ddev]=feval(fct_corr,dist,para_val);
             %morceau de la matrice issue du modele KRG classique
@@ -67,7 +68,8 @@ if donnees.in.pres_grad
             inddd=nb_val-numel(ind)+1:nb_val;
             indddd=(ii-1)*nb_var+1:ii*nb_var;
             %distance 1 tirages aux autres (construction par colonne)
-            dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
+            one_tir=tiragesn(ii,:);
+            dist=one_tir(ones(1,numel(ind)),:)-tiragesn(ind,:);
             % evaluation de la fonction de correlation
             [ev,dev,ddev]=feval(fct_corr,dist,para_val);
             %morceau de la matrice issue du krigeage
@@ -112,7 +114,8 @@ else
         rcc=zeros(nb_val,nb_val);
         parfor ii=1:nb_val
             %distance 1 tirages aux autres (construction par colonne)
-            dist=repmat(tiragesn(ii,:),nb_val,1)-tiragesn;
+            one_tir=tiragesn(ii,:);
+            dist=one_tir(ones(1,nb_val),:)-tiragesn;
             % evaluation de la fonction de correlation
             [ev]=feval(fct_corr,dist,para_val);
             %morceau de la matrice issue du modele RBF classique
@@ -126,8 +129,8 @@ else
         for ii=1:bmax
             ind=ii+1:nb_val;
             %distance 1 tirages aux autres (construction par colonne)
-            dist=repmat(tiragesn(ii,:),numel(ind),1)-tiragesn(ind,:);
-            
+            one_tir=tiragesn(ii,:);
+            dist=one_tir(ones(1,numel(ind)),:)-tiragesn(ind,:);            
             % evaluation de la fonction de correlation
             [ev]=feval(fct_corr,dist,para_val);
             % matrice de krigeage

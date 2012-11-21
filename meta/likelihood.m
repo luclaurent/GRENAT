@@ -9,23 +9,21 @@ function [logli,li]=likelihood(donnees)
 %taille matrice de correlation
 tail_rcc=size(donnees.build.rcc,1);
 
-
 %calcul de la log vraisemblance d'apres Jones 1993 / Leary 2004
 switch donnees.build.fact_rcc
     case 'QR'
-        %detQMKrg=det(donnees.build.QMKrg);
-        diagRMKrg=diag(donnees.build.RMKrg);
-        det_corr=abs(prod(diagRMKrg)); %Q est une matrice unitaire
-        log_det_corr=sum(log(abs(diagRMKrg)));
+        diagRrcc=diag(donnees.build.Rrcc);
+        det_corr=abs(prod(diagRrcc)); %Q est une matrice unitaire
+        log_det_corr=sum(log(abs(diagRrcc)));
         %controle positivite
-        %sumd=sum(diagRMKrg<0);
+%         sumd=sum(diagRMKrg<0);
 %         if mod(sumd,2)~=0&&detQMKrg>0
 %             fprintf('<< Matrice de correlation non positive >>\n');
 %         end
     case 'LL'
-        diagLMKrg=diag(donnees.build.LMKrg);
-        det_corr=prod(diagLMKrg)^2;
-        log_det_corr=2*sum(log(abs(diagLMKrg)));
+        diagLrcc=diag(donnees.build.Lrcc);
+        det_corr=prod(diagLrcc)^2;
+        log_det_corr=2*sum(log(abs(diagLrcc)));
         %eig_val=eig(donnees.build.rcc);
         %det_corr=prod(eig_val);
         %log_det_corr=sum(log(eig_val));
@@ -35,9 +33,9 @@ switch donnees.build.fact_rcc
 %             fprintf('<< Matrice de correlation non positive >>\n');
 %         end
     case 'LU'
-        diagUMKrg=diag(donnees.build.UMKrg);
-        det_corr=prod(diagUMKrg); %L est quasi triangulaire (a une permutation pres) et la matrice L comporte des 1 sur la diagonale
-        log_det_corr=sum(log(abs(diagUMKrg)));
+        diagUrcc=diag(donnees.build.Urcc);
+        det_corr=prod(diagUrcc); %L est quasi triangulaire (a une permutation pres) et la matrice L comporte des 1 sur la diagonale
+        log_det_corr=sum(log(abs(diagUrcc)));
         %controle positivite
         %sumd=sum(diagUrcc<0);
 %         if mod(sumd,2)~=0

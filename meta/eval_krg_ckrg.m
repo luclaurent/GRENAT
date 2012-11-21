@@ -147,12 +147,10 @@ if nargout >=3
            variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
            
         case 'LU'
-            vv=[rr;ff'];           
-           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
-            %Lrr=donnees.build.Lrcc\rr;
-            %u=donnees.build.fctU*Lrr-ff';
-            %variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
-             %   u'*donnees.build.fctCfc*u);
+            Lrr=donnees.build.Lrcc\rr;
+            u=donnees.build.fctU*Lrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
+                u'*donnees.build.fctCfc*u);
         case 'LL'
             vv=[rr;ff'];           
            variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);

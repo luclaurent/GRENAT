@@ -37,7 +37,7 @@ fct='manu';
 % dimension du pb (nb de variables)
 doe.dim_pb=1;
 %esp=[0 15];
-esp=[0 15];
+esp=[];
 
 %%Definition de l'espace de conception
 [doe]=init_doe(fct,doe.dim_pb,esp);
@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=6;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -69,8 +69,8 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
-meta.cv=true;
+meta.para.estim=false;
+meta.cv=false;
 meta.cv_aff=false;
 meta.cv_full=false;
 meta.test_positiv=false;

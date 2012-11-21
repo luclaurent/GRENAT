@@ -10,7 +10,7 @@ function cv=cross_validate_krg_ckrg(data_block,meta,type)
 %MSE: norme-L2
 LOO_norm='L2';
 %debug
-debug=false;
+debug=true;
 
 % affichages warning ou non
 aff_warning=false;
@@ -63,11 +63,30 @@ if mod_final;tic;end
 %%% Adaptation de la methode de Rippa (Rippa 1999/Fasshauer 2007) par M. Bompard (Bompard 2011)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%coefficient du Krigegae
+coef_KRG=data_block.build.gamma;
+%extraction partielle de la diagonale de l'inverse de la matrice de
+%Krigeage
+switch data_block.build.fact_rcc
+    case 'QR'
+        fcC=data_block.build.fctR*data_block.build.Qtrcc;
+        diagMK=diag(data_block.build.Rrcc\data_block.build.Qtrcc)-...
+            diag(fcC'*(data_block.build.fcCfct\fcC)); 
+    case 'LU'
+        fcC=data_block.build.fctU/data_block.build.Lrcc;
+        diagMK=diag(data_block.build.Urcc\inv(data_block.build.Lrcc))-...
+            diag(fcC'*(data_block.build.fcCfct\fcC)); 
+    case 'LL'
+        fcC=data_block.build.fctL/data_block.build.Lrcc;
+        diagMK=diag(data_block.build.Lrcc\inv(data_block.build.Lrcc))-...
+            diag(fcC'*(data_block.build.fcCfct\fcC)); 
+    otherwise
+        diagMK=diag(inv(data_block.build.rcc))-...
+            diag(data_block.build.fcC'*(data_block.build.fcCfct\data_block.build.fcC));        
+        
+end
 %vecteurs des ecarts aux echantillons retires (reponses et gradients)
-esn=data_block.build.coef_KRG./diag(data_block.build.iMKrg);
-%retrait des valeurs non coherentes (lie a la partie modele de
-%tendance/regression)
-esn=esn(1:(end-data_block.build.dim_fc));
+esn=coef_KRG./diagMK;
 
 %denormalisation des grandeurs
 infos.moy=moy_eval;
@@ -174,7 +193,6 @@ if mod_debug
     cv_var=zeros(nb_val,1);
     cv_gz=zeros(nb_val,nb_var);
     yy=data_block.build.y;
-    MKrg=data_block.build.MKrg;
     fc=data_block.build.fc;
     rcc=data_block.build.rcc;
     tirages=data_block.in.tirages;
@@ -187,7 +205,6 @@ if mod_debug
         %chargement des donnees
         donnees_cv=data_block;
         %retrait des grandeurs
-        cv_MKrg=MKrg([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
         cv_y=yy([1:(tir-1) (tir+1):end]');
         cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
         cv_fc=fc([1:(tir-1) (tir+1):end],:);
@@ -196,8 +213,8 @@ if mod_debug
         %calcul des coefficients
         if ~aff_warning; warning off all;end
         donnees_cv.build.fact_rcc='None';
+        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
         cv_iMKrg=inv(cv_MKrg);
-        donnees_cv.build.iMKrg=cv_iMKrg;
         coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -242,7 +259,6 @@ if mod_debug
                 donnees_cv=data_block;
                 pos=nb_val+(tir-1)*nb_var+pos_gr;
                 %retrait des grandeurs
-                cv_MKrg=MKrg([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
                 cv_y=yy([1:(pos-1) (pos+1):end]');
                 cv_rcc=rcc([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
                 cv_fc=fc([1:(pos-1) (pos+1):end],:);
@@ -251,8 +267,8 @@ if mod_debug
                 %calcul des coefficients
                 if ~aff_warning; warning off all;end
                 donnees_cv.build.fact_rcc='None';
+                cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
                 cv_iMKrg=inv(cv_MKrg);
-                donnees_cv.build.iMKrg=cv_iMKrg;
                 coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
                 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,7 +349,6 @@ if mod_etud||mod_debug||meta.cv_aff
     cv_var=zeros(nb_val,1);
     cv_gz=zeros(nb_val,nb_var);
     yy=data_block.build.y;
-    MKrg=data_block.build.MKrg;
     fc=data_block.build.fc;
     rcc=data_block.build.rcc;
     tirages=data_block.in.tirages;
@@ -358,7 +373,6 @@ if mod_etud||mod_debug||meta.cv_aff
         %index des elements a extraire
         IX_e=setxor(IX_i,pos);
         
-        cv_MKrg=MKrg([IX_e IX_c],[IX_e IX_c]);
         cv_y=yy(IX_e');
         cv_rcc=rcc(IX_e,IX_e);
         cv_fc=fc(IX_e,:);
@@ -367,8 +381,8 @@ if mod_etud||mod_debug||meta.cv_aff
         %calcul des coefficients
         if ~aff_warning; warning off all;end
         donnees_cv.build.fact_rcc='None';
+        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
         cv_iMKrg=inv(cv_MKrg);
-        donnees_cv.build.iMKrg=cv_iMKrg;
         coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -439,7 +453,6 @@ if meta.cv_aff||mod_debug
     cv_zRn=zeros(nb_val,1);
     cv_GZn=zeros(nb_val,nb_var);
     yy=data_block.build.y;
-    MKrg=data_block.build.MKrg;
     fc=data_block.build.fc;
     rcc=data_block.build.rcc;
     grad=data_block.in.grad;
@@ -449,7 +462,6 @@ if meta.cv_aff||mod_debug
         %extraction des grandeurs
         PP=MKrg(tir,:);
         PP(tir)=[];
-        cv_MKrg=MKrg([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
         cv_y=yy([1:(tir-1) (tir+1):end]');
         cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
         cv_fc=fc([1:(tir-1) (tir+1):end],:);
@@ -457,7 +469,9 @@ if meta.cv_aff||mod_debug
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients
         if ~aff_warning; warning off all;end
-        coefKRG=cv_MKrg\[cv_y;zeros(dim_c,1)];
+        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+        cv_iMKrg=inv(cv_MKrg);
+        coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %extraction coefficients beta et gamma
@@ -471,7 +485,7 @@ if meta.cv_aff||mod_debug
             sig2=sig2*std_eval^2;
         end
         %calcul de la variance de prediction
-        cv_varR(tir)=sig2*(1-PP*(cv_MKrg\PP'));
+        cv_varR(tir)=sig2*(1-PP*(cv_iMKrg*PP'));
         %calcul de la reponse
         cv_zRn(tir)=PP*coefKRG;
         if ~aff_warning; warning on all;end
@@ -480,8 +494,10 @@ if meta.cv_aff||mod_debug
             for pos_gr=1:nb_var
                 pos=nb_val+(tir-1)*nb_var+pos_gr;
                 %retrait des grandeurs
-                cv_MKrg=MKrg([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
+                cv_rcc=rcc([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
+                cv_fc=fc([1:(pos-1) (pos+1):end],:);
                 cv_y=yy([1:(pos-1) (pos+1):end]');
+                cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
                 %extraction vecteur
                 dPP=MKrg(pos,:);
                 dPP(pos)=[];
@@ -526,24 +542,24 @@ if mod_final
     tic
     cv_varR=zeros(nb_val,1);
     yy=data_block.build.y;
-    MKrg=data_block.build.MKrg;
     fc=data_block.build.fc;
     rcc=data_block.build.rcc;
     dim_c=data_block.build.dim_fc;
     parfor tir=1:nb_val
         
         %extraction des grandeurs
-        PP=MKrg(tir,:);
+        PP=[rcc(tir,:) fc(tir,:)];
         PP(tir)=[];
-        cv_MKrg=MKrg([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
-        cv_y=yy([1:(tir-1) (tir+1):end]');
         cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
         cv_fc=fc([1:(tir-1) (tir+1):end],:);
+        cv_y=yy([1:(tir-1) (tir+1):end]');
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients
         if ~aff_warning; warning off all;end
-        coefKRG=cv_MKrg\[cv_y;zeros(dim_c,1)];
+        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+        cv_iMKrg=inv(cv_MKrg);
+        coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %extraction coefficients beta et gamma
@@ -557,7 +573,7 @@ if mod_final
             sig2=sig2*std_eval^2;
         end
         %calcul de la variance de prediction
-        cv_varR(tir)=sig2*(1-PP*(cv_MKrg\PP'));
+        cv_varR(tir)=sig2*(1-PP*(cv_iMKrg*PP'));
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

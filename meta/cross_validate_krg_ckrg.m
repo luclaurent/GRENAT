@@ -69,17 +69,17 @@ coef_KRG=data_block.build.gamma;
 %Krigeage
 switch data_block.build.fact_rcc
     case 'QR'
-        fcC=data_block.build.fcttR*data_block.build.Qtrcc;
+        fcC=data_block.build.fcR*data_block.build.Qtrcc;
         diagMK=diag(data_block.build.Rrcc\data_block.build.Qtrcc)-...
-            diag(fcC'*(data_block.build.fctCfct\fcC)); 
+            diag(fcC'*(data_block.build.fcCfct\fcC)); 
     case 'LU'
-        fcC=data_block.build.fcttU/data_block.build.Lrcc;
+        fcC=data_block.build.fcU/data_block.build.Lrcc;
         diagMK=diag(data_block.build.Urcc\inv(data_block.build.Lrcc))-...
-            diag(fcC'*(data_block.build.fctCfct\fcC)); 
+            diag(fcC'*(data_block.build.fcCfct\fcC)); 
     case 'LL'
-        fcC=data_block.build.fcttL/data_block.build.Lrcc;
+        fcC=data_block.build.fcL/data_block.build.Lrcc;
         diagMK=diag(data_block.build.Lrcc\inv(data_block.build.Lrcc))-...
-            diag(fcC'*(data_block.build.fctCfct\fcC)); 
+            diag(fcC'*(data_block.build.fcCfct\fcC)); 
     otherwise
         diagMK=diag(inv(data_block.build.rcc))-...
             diag(data_block.build.fcC'*(data_block.build.fcCfct\data_block.build.fcC));        

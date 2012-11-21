@@ -1,7 +1,7 @@
 %% Calcul critere EI/WEI/LCB
 %% L. LAURENt -- 04/05/2012 -- laurent@lmt.ens-cachan.fr
 
-function [EI,WEI,GEI,LCB,exploit,explor]=crit_enrich(eval_min,Z,variance,enrich)
+function [EI,WEI,GEI,LCB,exploit_EI,explor_EI]=crit_enrich(eval_min,Z,variance,enrich)
 
 %reponse mini
 diff_ei=(eval_min-Z);
@@ -13,22 +13,22 @@ end
 %exploration (densite probabilite)
 if variance~=0
     densprob=1/sqrt(2*pi)*exp(-0.5*u^2); %normpdf
-    explor=variance*densprob;
+    explor_EI=variance*densprob;
 else
-    explor=0;
+    explor_EI=0;
 end
 
 %exploitation (fonction repartition loi normale centree reduite)
 if variance~=0
     fctrep=0.5*(1+erf(u/sqrt(2))); %cdf
-    exploit=diff_ei*fctrep;
+    exploit_EI=diff_ei*fctrep;
 else
-    exploit=0;
+    exploit_EI=0;
 end
 %critere Weigthed Expected Improvement (Sobester 2005)
-WEI=enrich.para_wei*exploit+(1-enrich.para_wei)*explor;
+WEI=enrich.para_wei*exploit_EI+(1-enrich.para_wei)*explor_EI;
 %critere Expected Improvement (Schonlau 1997)
-EI=exploit+explor;
+EI=exploit_EI+explor_EI;
 %critere Lower Confidence Bound (Cox et John 1997)
 LCB=Z-enrich.para_lcb*variance;
 %critere Generalized Expected Improvement (Schonlau 1997)

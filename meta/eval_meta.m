@@ -94,20 +94,20 @@ for num_meta=1:numel(donnees_const)
             ei=rep;
             gei=zeros(nb_ev_pts,max(meta.enrich.para_gei)+1);
             lcb=rep;
-            exploit=rep;
-            explor=rep;
+            explor_EI=rep;
+            exploit_EI=rep;
             %% Evaluation du metamodele de RBF/GRBF
             parfor jj=1:nb_ev_pts
                 
                 [rep(jj),G,var_rep(jj),det]=eval_rbf(ev_pts(jj,:),meta_donnee);
                 GR(jj,:)=G;
                 if isfield(det,'enrich')
-                    if isfield(det.enrich,'wei');wei(jj,:)=det.enrich.wei;end
-                    if isfield(det.enrich,'ei');ei(jj)=det.enrich.ei;end
-                    if isfield(det.enrich,'gei');gei(jj,:)=det.enrich.gei;end
-                    if isfield(det.enrich,'lcb');lcb(jj)=det.enrich.lcb;end
-                    if isfield(det.enrich,'exploit');exploit(jj)=det.enrich.exploit;end
-                    if isfield(det.enrich,'explor');explor(jj)=det.enrich.explor;end
+                    if isfield(det.enrich,'wei');if ~isempty(det.enrich.wei);wei(jj,:)=det.enrich.wei;end, end
+                    if isfield(det.enrich,'ei');if ~isempty(det.enrich.ei);ei(jj)=det.enrich.ei;end, end
+                    if isfield(det.enrich,'gei');if ~isempty(det.enrich.gei);gei(jj,:)=det.enrich.gei;end, end
+                    if isfield(det.enrich,'lcb');if ~isempty(det.enrich.lcb);lcb(jj)=det.enrich.lcb;end, end
+                    if isfield(det.enrich,'exploit_EI');if ~isempty(det.enrich.exploit_EI);exploit_EI(jj)=det.enrich.exploit_EI;end, end
+                    if isfield(det.enrich,'explor_EI');if ~isempty(det.enrich.explor_EI);explor_EI(jj)=det.enrich.explor_EI;end, end
                 end
             end
             %% verification interpolation
@@ -295,12 +295,12 @@ for num_meta=1:numel(donnees_const)
                 end
                 Z.Z=rep;
                 if ~isempty(var_rep);Z.var=var_rep;end
-                if exist('wei','var');Z.wei=wei;end
-                if exist('ei','var');Z.ei=ei;end
-                if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),1,size(gei,2));end
-                if exist('lcb','var');Z.lcb=lcb;end
-                if exist('explor','var');Z.explor=explor;end
-                if exist('exploit','var');Z.exploit=exploit;end
+                if exist('wei','var');if ~isempty(wei);Z.wei=wei;end, end
+                if exist('ei','var');if ~isempty(ei);Z.ei=ei;end, end
+                if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),1,size(gei,2));end, end
+                if exist('lcb','var');if ~isempty(lcb);Z.lcb=lcb;end, end
+                if exist('explor_EI','var');if ~isempty(explor_EI);Z.explor_EI=explor_EI;end, end
+                if exist('exploit_EI','var');if ~isempty(exploit_EI);Z.exploit_EI=exploit_EI;end, end
             else
                 if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
                     Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
@@ -308,12 +308,12 @@ for num_meta=1:numel(donnees_const)
                 end
                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
                 if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
-                if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
-                if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
-                if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
-                if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
-                if exist('explor','var');Z.explor=reshape(explor,dim_ev(1),dim_ev(2));end
-                if exist('exploit','var');Z.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
+                if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end, end
+                if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
+                if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end, end
+                if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
+                if exist('explor_EI','var');if ~isempty(explor_EI);Z.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
+                if exist('exploit_EI','var');if ~isempty(exploit_EI);Z.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
             end
         else
             if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
@@ -322,12 +322,12 @@ for num_meta=1:numel(donnees_const)
             end
             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
             if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
-            if exist('wei','var');Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
-            if exist('ei','var');Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end
-            if exist('gei','var');Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
-            if exist('lcb','var');Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
-            if exist('explor','var');Z.explor=reshape(explor,dim_ev(1),dim_ev(2));end
-            if exist('exploit','var');Z.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
+            if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end, end
+            if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
+            if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end, end
+            if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
+            if exist('explor_EI','var');if ~isempty(explor_EI);Z.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
+            if exist('exploit_EI','var');if ~isempty(exploit_EI);Z.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
         end
         Z.GZ=GZ;
         if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
@@ -337,12 +337,12 @@ for num_meta=1:numel(donnees_const)
         Z{num_meta}.Z=rep;
         Z{num_meta}.GZ=GZ;
         if ~isempty('var_rep');Z{num_meta}.var=var_rep;end
-        if exist('wei','var');Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end
-        if exist('gei','var');Z{num_meta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end
-        if exist('ei','var');Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end
-        if exist('lcb','var');Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end
-        if exist('explor','var');Z{num_meta}.explor=reshape(explor,dim_ev(1),dim_ev(2));end
-        if exist('exploit','var');Z{num_meta}.exploit=reshape(exploit,dim_ev(1),dim_ev(2));end
+        if exist('wei','var');if ~isempty(wei);Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,2));end, end
+        if exist('gei','var');if ~isempty(gei);Z{num_meta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,2));end, end
+        if exist('ei','var');if ~isempty(ei);Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
+        if exist('lcb','var');if ~isempty(lcb);Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
+        if exist('explor_EI','var');if ~isempty(explor_EI);Z{num_meta}.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
+        if exist('exploit_EI','var');if ~isempty(exploit_EI);Z{num_meta}.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
         if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
             Z{num_meta}.GZ_sto=GZ_sto;Z{num_meta}.GZ_reg=GZ_reg;
         end

@@ -69,17 +69,17 @@ coef_KRG=data_block.build.gamma;
 %Krigeage
 switch data_block.build.fact_rcc
     case 'QR'
-        fcC=data_block.build.fctR*data_block.build.Qtrcc;
+        fcC=data_block.build.fcttR*data_block.build.Qtrcc;
         diagMK=diag(data_block.build.Rrcc\data_block.build.Qtrcc)-...
-            diag(fcC'*(data_block.build.fcCfct\fcC)); 
+            diag(fcC'*(data_block.build.fctCfct\fcC)); 
     case 'LU'
-        fcC=data_block.build.fctU/data_block.build.Lrcc;
+        fcC=data_block.build.fcttU/data_block.build.Lrcc;
         diagMK=diag(data_block.build.Urcc\inv(data_block.build.Lrcc))-...
-            diag(fcC'*(data_block.build.fcCfct\fcC)); 
+            diag(fcC'*(data_block.build.fctCfct\fcC)); 
     case 'LL'
-        fcC=data_block.build.fctL/data_block.build.Lrcc;
+        fcC=data_block.build.fcttL/data_block.build.Lrcc;
         diagMK=diag(data_block.build.Lrcc\inv(data_block.build.Lrcc))-...
-            diag(fcC'*(data_block.build.fcCfct\fcC)); 
+            diag(fcC'*(data_block.build.fctCfct\fcC)); 
     otherwise
         diagMK=diag(inv(data_block.build.rcc))-...
             diag(data_block.build.fcC'*(data_block.build.fcCfct\data_block.build.fcC));        
@@ -169,6 +169,7 @@ end
 cv.bm=1/nb_val*sum(esr);
 %affichage qques infos
 if mod_debug||mod_final
+    fprintf('\n')
     fprintf('=== CV-LOO par methode de Rippa 1999 (extension Bompard 2011)\n');
     fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
     if pres_grad
@@ -193,7 +194,7 @@ if mod_debug
     cv_var=zeros(nb_val,1);
     cv_gz=zeros(nb_val,nb_var);
     yy=data_block.build.y;
-    fc=data_block.build.fc;
+    fct=data_block.build.fct;
     rcc=data_block.build.rcc;
     tirages=data_block.in.tirages;
     tiragesn=data_block.in.tiragesn;
@@ -207,13 +208,16 @@ if mod_debug
         %retrait des grandeurs
         cv_y=yy([1:(tir-1) (tir+1):end]');
         cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
-        cv_fc=fc([1:(tir-1) (tir+1):end],:);
+        cv_fct=fct([1:(tir-1) (tir+1):end],:);
+        
+        cv_fcC=cv_fct'/cv_rcc;
+        cv_fcCfct=cv_fcC*cv_fct;        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients
         if ~aff_warning; warning off all;end
         donnees_cv.build.fact_rcc='None';
-        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+        cv_MKrg=[cv_rcc cv_fct;cv_fct' zeros(dim_c)];
         cv_iMKrg=inv(cv_MKrg);
         coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         
@@ -225,15 +229,15 @@ if mod_debug
         donnees_cv.build.rcc=cv_rcc;
         
         %calcul de la variance de prediction
-        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'*donnees_cv.build.gamma);
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fct*donnees_cv.build.beta)'*donnees_cv.build.gamma);
         if ~aff_warning; warning on all;end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if norm_on
-            donnees_cv.sig2=sig2*std_eval^2;
+            donnees_cv.build.sig2=sig2*std_eval^2;
         else
-            donnees_cv.sig2=sig2;
+            donnees_cv.build.sig2=sig2;
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -241,8 +245,9 @@ if mod_debug
         donnees_cv.in.tirages=tirages;
         donnees_cv.in.tiragesn=tiragesn;
         donnees_cv.in.nb_val=nb_val;  %retrait d'un site
-        donnees_cv.build.fc=cv_fc;
-        donnees_cv.build.fct=cv_fc';
+        donnees_cv.build.fct=cv_fct;
+        donnees_cv.build.fc=cv_fct';
+        donnees_cv.build.fcCfct=cv_fcCfct;
         donnees_cv.enrich.on=false;
         %on retire la reponse associe
         donnees_cv.manq.grad.on=false;
@@ -261,13 +266,15 @@ if mod_debug
                 %retrait des grandeurs
                 cv_y=yy([1:(pos-1) (pos+1):end]');
                 cv_rcc=rcc([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
-                cv_fc=fc([1:(pos-1) (pos+1):end],:);
+                cv_fct=fct([1:(pos-1) (pos+1):end],:);
+                cv_fcC=cv_fct'/cv_rcc;
+                cv_fcCfct=cv_fcC*cv_fct;
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %calcul des coefficients
                 if ~aff_warning; warning off all;end
                 donnees_cv.build.fact_rcc='None';
-                cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+                cv_MKrg=[cv_rcc cv_fct;cv_fct' zeros(dim_c)];
                 cv_iMKrg=inv(cv_MKrg);
                 coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
                 
@@ -279,15 +286,15 @@ if mod_debug
                 donnees_cv.build.rcc=cv_rcc;
                 
                 %calcul de la variance de prediction
-                sig2=1/size(rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'*donnees_cv.build.gamma);
+                sig2=1/size(cv_rcc,1)*((cv_y-cv_fct*donnees_cv.build.beta)'*donnees_cv.build.gamma);
                 if ~aff_warning; warning on all;end
                 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 if norm_on
-                    donnees_cv.sig2=sig2*std_eval^2;
+                    donnees_cv.build.sig2=sig2*std_eval^2;
                 else
-                    donnees_cv.sig2=sig2;
+                    donnees_cv.build.sig2=sig2;
                 end
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -295,8 +302,9 @@ if mod_debug
                 donnees_cv.in.tirages=tirages;
                 donnees_cv.in.tiragesn=tiragesn;
                 donnees_cv.in.nb_val=nb_val;  %retrait d'un site
-                donnees_cv.build.fc=cv_fc;
-                donnees_cv.build.fct=cv_fc';
+                donnees_cv.build.fct=cv_fct;
+                donnees_cv.build.fc=cv_fct';
+                donnees_cv.build.fcCfct=cv_fcCfct;
                 donnees_cv.enrich.on=false;
                 %on retire le gradient associe
                 donnees_cv.manq.grad.on=true;
@@ -313,9 +321,10 @@ if mod_debug
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Calcul des erreurs
-    [cv.then]=calc_err_loo(eval,cv_z,cv_var,grad,cv_gz,nb_val,nb_var,LOO_norm);
+  [cv.then]=calc_err_loo(eval,cv_z,cv_var,grad,cv_gz,nb_val,nb_var,LOO_norm);
     %affichage qques infos
     if mod_debug
+        fprintf('\n')
         fprintf('=== CV-LOO par methode retrait reponses PUIS gradients (debug)\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
@@ -349,7 +358,7 @@ if mod_etud||mod_debug||meta.cv_aff
     cv_var=zeros(nb_val,1);
     cv_gz=zeros(nb_val,nb_var);
     yy=data_block.build.y;
-    fc=data_block.build.fc;
+    fct=data_block.build.fct;
     rcc=data_block.build.rcc;
     tirages=data_block.in.tirages;
     tiragesn=data_block.in.tiragesn;
@@ -375,13 +384,15 @@ if mod_etud||mod_debug||meta.cv_aff
         
         cv_y=yy(IX_e');
         cv_rcc=rcc(IX_e,IX_e);
-        cv_fc=fc(IX_e,:);
+        cv_fct=fct(IX_e,:);
+        cv_fcC=cv_fct'/cv_rcc;
+        cv_fcCfct=cv_fcC*cv_fct;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients
         if ~aff_warning; warning off all;end
         donnees_cv.build.fact_rcc='None';
-        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+        cv_MKrg=[cv_rcc cv_fct;cv_fct' zeros(dim_c)];
         cv_iMKrg=inv(cv_MKrg);
         coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         
@@ -393,15 +404,15 @@ if mod_etud||mod_debug||meta.cv_aff
         donnees_cv.build.rcc=cv_rcc;
         
         %calcul de la variance de prediction
-        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*donnees_cv.build.beta)'*donnees_cv.build.gamma);
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fct*donnees_cv.build.beta)'*donnees_cv.build.gamma);
         if ~aff_warning; warning on all;end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if norm_on
-            donnees_cv.sig2=sig2*std_eval^2;
+            donnees_cv.build.sig2=sig2*std_eval^2;
         else
-            donnees_cv.sig2=sig2;
+            donnees_cv.build.sig2=sig2;
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -409,8 +420,9 @@ if mod_etud||mod_debug||meta.cv_aff
         donnees_cv.in.tirages=tirages([1:(tir-1) (tir+1):end],:);
         donnees_cv.in.tiragesn=tiragesn([1:(tir-1) (tir+1):end],:);
         donnees_cv.in.nb_val=nb_val-1;  %retrait d'un site
-        donnees_cv.build.fc=cv_fc;
-        donnees_cv.build.fct=cv_fc';
+        donnees_cv.build.fct=cv_fct;
+        donnees_cv.build.fc=cv_fct';
+        donnees_cv.build.fcCfct=cv_fcCfct;
         donnees_cv.enrich.on=false;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -426,6 +438,7 @@ if mod_etud||mod_debug||meta.cv_aff
     [cv.and]=calc_err_loo(eval,cv_z,cv_var,grad,cv_gz,nb_val,nb_var,LOO_norm);
     %affichage qques infos
     if mod_debug||mod_final
+        fprintf('\n')
         fprintf('=== CV-LOO par methode retrait reponses ET gradients\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
@@ -453,32 +466,33 @@ if meta.cv_aff||mod_debug
     cv_zRn=zeros(nb_val,1);
     cv_GZn=zeros(nb_val,nb_var);
     yy=data_block.build.y;
-    fc=data_block.build.fc;
+    fct=data_block.build.fct;
     rcc=data_block.build.rcc;
     grad=data_block.in.grad;
     eval=data_block.in.eval;
     dim_c=data_block.build.dim_fc;
     for tir=1:nb_val
         %extraction des grandeurs
-        PP=MKrg(tir,:);
-        PP(tir)=[];
+        PP=[rcc(tir,:) fct(tir,:)];
+        PP(tir)=[];        
         cv_y=yy([1:(tir-1) (tir+1):end]');
         cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
-        cv_fc=fc([1:(tir-1) (tir+1):end],:);
+        cv_fct=fct([1:(tir-1) (tir+1):end],:);        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients
         if ~aff_warning; warning off all;end
-        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+        cv_MKrg=[cv_rcc cv_fct;cv_fct' zeros(dim_c)];
         cv_iMKrg=inv(cv_MKrg);
         coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %extraction coefficients beta et gamma
         beta=coefKRG((end-dim_c+1):end);
-        
+        gamma=coefKRG(1:(end-dim_c));
         %calcul de la variance du processus
-        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'*gamma);
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fct*beta)'*gamma);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if norm_on
@@ -486,6 +500,7 @@ if meta.cv_aff||mod_debug
         end
         %calcul de la variance de prediction
         cv_varR(tir)=sig2*(1-PP*(cv_iMKrg*PP'));
+
         %calcul de la reponse
         cv_zRn(tir)=PP*coefKRG;
         if ~aff_warning; warning on all;end
@@ -495,11 +510,11 @@ if meta.cv_aff||mod_debug
                 pos=nb_val+(tir-1)*nb_var+pos_gr;
                 %retrait des grandeurs
                 cv_rcc=rcc([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
-                cv_fc=fc([1:(pos-1) (pos+1):end],:);
+                cv_fct=fct([1:(pos-1) (pos+1):end],:);
                 cv_y=yy([1:(pos-1) (pos+1):end]');
-                cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+                cv_MKrg=[cv_rcc cv_fct;cv_fct' zeros(dim_c)];
                 %extraction vecteur
-                dPP=MKrg(pos,:);
+                dPP=[rcc(pos,:) fct(pos,:)];
                 dPP(pos)=[];
                 %calcul du gradients
                 GZ=dPP*(cv_MKrg\[cv_y;zeros(dim_c,1)]);
@@ -517,6 +532,7 @@ if meta.cv_aff||mod_debug
     [cv.then]=calc_err_loo(eval,cv_zR,cv_varR,grad,cv_GZ,nb_val,nb_var,LOO_norm);
     %affichage qques infos
     if mod_debug||mod_final
+        fprintf('\n')
         fprintf('=== CV-LOO par methode retrait reponses PUIS gradients\n');
         fprintf('+++ Norme calcul CV-LOO: %s\n',LOO_norm);
         if pres_grad
@@ -542,22 +558,22 @@ if mod_final
     tic
     cv_varR=zeros(nb_val,1);
     yy=data_block.build.y;
-    fc=data_block.build.fc;
+    fct=data_block.build.fct;
     rcc=data_block.build.rcc;
     dim_c=data_block.build.dim_fc;
     parfor tir=1:nb_val
         
         %extraction des grandeurs
-        PP=[rcc(tir,:) fc(tir,:)];
+        PP=[rcc(tir,:) fct(tir,:)];
         PP(tir)=[];
         cv_rcc=rcc([1:(tir-1) (tir+1):end],[1:(tir-1) (tir+1):end]);
-        cv_fc=fc([1:(tir-1) (tir+1):end],:);
+        cv_fct=fct([1:(tir-1) (tir+1):end],:);
         cv_y=yy([1:(tir-1) (tir+1):end]');
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients
         if ~aff_warning; warning off all;end
-        cv_MKrg=[cv_rcc cv_fc;cv_fc' zeros(dim_c)];
+        cv_MKrg=[cv_rcc cv_fct;cv_fct' zeros(dim_c)];
         cv_iMKrg=inv(cv_MKrg);
         coefKRG=cv_iMKrg*[cv_y;zeros(dim_c,1)];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -566,7 +582,7 @@ if mod_final
         beta=coefKRG((end-dim_c+1):end);
         
         %calcul de la variance du processus
-        sig2=1/size(cv_rcc,1)*((cv_y-cv_fc*beta)'/cv_rcc)*(cv_y-cv_fc*beta);
+        sig2=1/size(cv_rcc,1)*((cv_y-cv_fct*beta)'/cv_rcc)*(cv_y-cv_fct*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if norm_on
@@ -574,6 +590,7 @@ if mod_final
         end
         %calcul de la variance de prediction
         cv_varR(tir)=sig2*(1-PP*(cv_iMKrg*PP'));
+
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -584,10 +601,11 @@ if mod_final
     cv.then.scvr_mean=cv.final.scvr_mean;
     %affichage qques infos
     if mod_debug||mod_final
+        fprintf('\n')
         fprintf('=== CV-LOO SCVR\n');
         fprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);
         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
-        fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
+        fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);        
     end
     toc
 end

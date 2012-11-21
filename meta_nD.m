@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=10;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -70,11 +70,11 @@ data.deg=0;
 meta=init_meta(data);
 
 meta.para.estim=false;
-meta.cv=false;
+meta.cv=true;
 meta.cv_aff=false;
 meta.cv_full=false;
 meta.test_positiv=false;
-meta.norm=true;
+meta.norm=false;
 meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';

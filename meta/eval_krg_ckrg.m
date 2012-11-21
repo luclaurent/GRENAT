@@ -162,8 +162,8 @@ if nargout >=3
                 u'*donnees.build.fcCfct*u);
         otherwise
             rcrr=donnees.build.rcc \ rr;
-            u=donnees.build.fct*rcrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)+u'*donnees.build.fcCfct*u - rr'*rcrr);
+            u=donnees.build.fc*rcrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)+u'/donnees.build.fcCfct*u - rr'*rcrr);
         %   vv=[rr;ff'];
         %   variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
     end

@@ -144,28 +144,24 @@ if nargout >=3
     switch donnees.build.fact_rcc
         case 'QR'
            Qrr=donnees.build.Qtrcc*rr;
-            u=donnees.build.fctR*Qrr-ff';
+            u=donnees.build.fcR*Qrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
                 u'*donnees.build.fcCfct*u);
            
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
-            u=donnees.build.fctU*Lrr-ff';
+            u=donnees.build.fcU*Lrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
                 u'*donnees.build.fcCfct*u);
         case 'LL'
-            %vv=[rr;ff'];           
-           %variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
             Lrr=donnees.build.Lrcc\rr;
-            u=donnees.build.fctL*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Lrcc)*Lrr+...
-                u'*donnees.build.fcCfct*u);
+            u=donnees.build.fcL*Lrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Ltrcc)*Lrr+...
+                u'*donnees.build.fcCfct*u);            
         otherwise
             rcrr=donnees.build.rcc \ rr;
             u=donnees.build.fc*rcrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)+u'/donnees.build.fcCfct*u - rr'*rcrr);
-        %   vv=[rr;ff'];
-        %   variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
     end
     if ~aff_warning;warning on all;end
     
@@ -197,17 +193,17 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul critere enrichissement
-explor=[];
-exploit=[];
-wei=[];
+explor_EI=[];
+exploit_EI=[];
 ei=[];
+wei=[];
 gei=[];
 lcb=[];
 if donnees.enrich.on&&exist('variance','var')
     %reponse mini
     eval_min=min(donnees.in.eval);
     %calcul criteres enrichissement
-    [ei,wei,gei,lcb,exploit,explor]=crit_enrich(eval_min,Z,variance,donnees.enrich);
+    [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,Z,variance,donnees.enrich);
 end
 
 %extraction details
@@ -216,8 +212,8 @@ if nargout==4
     details.Z_sto=Z_sto;
     details.GZ_reg=GZ_reg;
     details.GZ_sto=GZ_sto;
-    if ~isempty(explor);details.enrich.explor=explor;end
-    if ~isempty(exploit);details.enrich.exploit=exploit;end
+    if ~isempty(explor_EI);details.enrich.explor_EI=explor_EI;end
+    if ~isempty(exploit_EI);details.enrich.exploit_EI=exploit_EI;end
     if ~isempty(ei);details.enrich.ei=ei;end
     if ~isempty(wei);details.enrich.wei=wei;end
     if ~isempty(gei);details.enrich.gei=gei;end

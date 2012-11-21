@@ -7,7 +7,7 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 %coefficient de reconditionnement
 coef=eps;
 % type de factorisation de la matrice de correlation
-fact_rcc='None' ; %LU %QR %LL %None
+fact_rcc='LL' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement grandeurs utiles
@@ -243,9 +243,10 @@ switch fact_rcc
         %factorisation Cholesky de la matrice de covariance
         %%% A debugguer
         Lrcc=chol(rcc,'lower');
+        Ltrcc=Lrcc';
         yL=Lrcc\donnees.build.y;
         fctL=Lrcc\donnees.build.fct;
-        fcL=donnees.build.fc/Lrcc;
+        fcL=donnees.build.fc/Ltrcc;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient beta
@@ -255,7 +256,7 @@ switch fact_rcc
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul du coefficient gamma
-        gamma=Lrcc\(yL-fctL*beta);
+        gamma=Ltrcc\(yL-fctL*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %sauvegarde variables
@@ -263,6 +264,7 @@ switch fact_rcc
         build_data.fcL=fcL;
         build_data.fctL=fctL;
         build_data.fcCfct=fcCfct;
+        build_data.Ltrcc=Ltrcc;
         build_data.Lrcc=Lrcc;
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

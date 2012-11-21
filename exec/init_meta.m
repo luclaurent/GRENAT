@@ -66,7 +66,7 @@ if meta.para.estim
 end
 
 %enrichissement (evaluation critere)
-meta.enrich.on=true;
+meta.enrich.on=false;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_gei=1;
 meta.enrich.para_lcb=0.5;

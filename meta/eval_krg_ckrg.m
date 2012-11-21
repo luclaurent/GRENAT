@@ -143,23 +143,29 @@ if nargout >=3
     %en fonction de la factorisation
     switch donnees.build.fact_rcc
         case 'QR'
-           vv=[rr;ff'];
-           
-           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
+           Qrr=donnees.build.Qtrcc*rr;
+            u=donnees.build.fctR*Qrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
+                u'*donnees.build.fcCfct*u);
            
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctU*Lrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
-                u'*donnees.build.fctCfc*u);
+                u'*donnees.build.fcCfct*u);
         case 'LL'
+            %vv=[rr;ff'];           
+           %variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fctL*Lrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Lrcc)*Lrr+...
-                u'*donnees.build.fctCfc*u);
+                u'*donnees.build.fcCfct*u);
         otherwise
-           vv=[rr;ff'];
-           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
+            rcrr=donnees.build.rcc \ rr;
+            u=donnees.build.fc*rcrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)+u'/donnees.build.fcCfct*u - rr'*rcrr);
+        %   vv=[rr;ff'];
+        %   variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
     end
     if ~aff_warning;warning on all;end
     

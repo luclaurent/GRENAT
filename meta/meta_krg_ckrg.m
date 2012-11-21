@@ -136,7 +136,7 @@ end
 %creation matrice de conception
 %(regression polynomiale)
 %autre fonction de calcul des regresseur reg_poly0,1 ou 2
-fct=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
+fct_reg=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
 
 %/!\ en le cokrigeage universel n'est pas operationnel
 %if pres_grad&&meta.deg~=0
@@ -145,13 +145,13 @@ fct=['mono_' num2str(meta.deg,'%02i') '_' num2str(nb_var,'%03i')];
 %end
 
 if ~pres_grad
-    fc=feval(fct,tiragesn);
+    fct=feval(fct_reg,tiragesn);
     if manq_eval
         %suppression valeur(s) aux sites a reponse(s) manquante(s)
-        fc=fc(manq.eval.ix_dispo,:);
+        fct=fct(manq.eval.ix_dispo,:);
     end
 else
-    [Reg,nb_termes,DReg,~]=feval(fct,tiragesn);
+    [Reg,nb_termes,DReg,~]=feval(fct_reg,tiragesn);
     if manq_eval||manq_grad
         taille_ev=nb_val-manq.eval.nb;
         taille_gr=nb_val*nb_var-manq.grad.nb;
@@ -162,13 +162,13 @@ else
         taille_tot=taille_ev+taille_gr;
     end
     %initialisation matrice des regresseurs
-    fc=zeros(taille_tot,nb_termes);
+    fct=zeros(taille_tot,nb_termes);
     if manq_eval
         %suppression valeur(s) aux site a reponse(s) manquante(s)
         Reg=Reg(manq.eval.ix_dispo,:);
     end
     %chargement regresseur (evaluation de monomes)
-    fc(1:taille_ev,:)=Reg;
+    fct(1:taille_ev,:)=Reg;
     %chargement des derivees des regresseurs (evaluation des derivees des monomes)
     if iscell(DReg)
         tmp=horzcat(DReg{:})';
@@ -183,7 +183,7 @@ else
         tmp=tmp(manq.grad.ixt_dispo_line,:);
     end
     %chargement derivees regresseur
-    fc(taille_ev+1:end,:)=tmp;
+    fct(taille_ev+1:end,:)=tmp;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,11 +199,11 @@ ret.in.gradn=gradn;
 ret.in.nb_var=nb_var;
 ret.in.nb_val=nb_val;
 ret.norm=nkrg.norm;
-ret.build.fc=fc;
-ret.build.fct=fc';
-ret.build.dim_fc=size(fc,2);
+ret.build.fct=fct;
+ret.build.fc=fct';
+ret.build.dim_fc=size(fct,2);
 ret.build.y=y;
-ret.build.fct_reg=fct;
+ret.build.fct_reg=fct_reg;
 ret.build.corr=meta.corr;
 ret.manq=manq;
 

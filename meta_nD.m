@@ -21,7 +21,7 @@ fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
 [tMesu,tInit]=mesu_time;
 
 %execution parallele (option et lancement des workers)
-parallel.on=true;
+parallel.on=false;
 parallel.workers='auto';
 exec_parallel('start',parallel);
 
@@ -35,7 +35,7 @@ fct='rosenbrock';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=3;
+doe.dim_pb=6;
 %esp=[0 15];
 esp=[];
 
@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=21;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -60,7 +60,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='GRBF';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -69,7 +69,7 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=true;
 meta.cv_aff=false;
 meta.cv_full=false;
@@ -85,6 +85,7 @@ meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
+meta.enrich.on=false;
 meta.enrich.para_wei=0:0.1:1;
 meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;

@@ -69,7 +69,7 @@ data.deg=0;
 
 meta=init_meta(data);
 
-meta.para.estim=true;
+meta.para.estim=false;
 meta.cv=true;
 meta.cv_aff=false;
 meta.cv_full=false;
@@ -85,6 +85,7 @@ meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
+meta.enrich.on=false;
 meta.enrich.para_wei=0:0.1:1;
 meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;

@@ -61,10 +61,10 @@ t=zeros(dim_Z(1),dim_Z(2),g);
 GEI=zeros(dim_Z(1),dim_Z(2),g+1);
 if variance~=0
     if g>=0
-        t(:,:,1)=densprob;
+        t(:,:,1)=fctrep;
     end
     if g>=1
-        t(:,:,2)=-fctrep;
+        t(:,:,2)=-densprob;
     end
     if g>=2
         for kk=3:g+1
@@ -82,7 +82,7 @@ if variance~=0
         % n parmi k
         comb=factorial(cg)./(factorial(k_ite).*factorial(cg-k_ite)); %plus rapide que nchoosek (10 fois plus rapide)
         % elevation a la puissance de u
-        pow=g-k_ite;
+        pow=cg-k_ite;
         ueg=bsxfun(@power,u,pow);
         %calcul terme de la somme
         coef_f=coef.*comb;

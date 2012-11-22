@@ -50,7 +50,7 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
     set(H1,'Color','b')
     set(H2,'LineStyle','--','Color','k')
     legend('var','LCB','Location','EastOutside')
-      set(AX,'xlim',[xmin xmax])
+    set(AX,'xlim',[xmin xmax])
     hold off
     subplot(5,1,3)
     plot(grid_XY,K.explor_EI,'r')
@@ -60,19 +60,24 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
     hold on
     plot(grid_XY,K.ei,'b')
     hold off
-xlim([xmin xmax])
+    xlim([xmin xmax])
     legend('Explor','Exploit','EI','Location','EastOutside')
     subplot(5,1,4)
     clear txt_legend
     txt_legend{1}=['WEI ' num2str(meta.enrich.para_wei(1),'%4.2f')];
     type={'b','r','k','--b','--r','--k','-.b','-.r','-.k','--g','--m'};
+    normer=false;
     for ii=1:size(K.wei,3)
         data=K.wei(:,:,ii);
-       % Dmax=max(data(:));
-       % Dmin=min(data(:));
-       % a=1/(Dmax-Dmin);
-       % b=-Dmin*a;
-        plot(grid_XY,data,type{ii})
+        if normer            
+            Dmax=max(data(:));
+            Dmin=min(data(:));
+            a=1/(Dmax-Dmin);
+            b=-Dmin*a;
+        else
+            b=0;a=1;
+        end
+        plot(grid_XY,a*data+b,type{ii})
         if ii>1
             txt_legend={txt_legend{1:end},['WEI ' num2str(meta.enrich.para_wei(ii),'%4.2f')]};
         end
@@ -89,12 +94,17 @@ xlim([xmin xmax])
     clear txt_legend
     txt_legend{1}='GEI 0';
     type={'b','r','k','--b','--r','--k','-.b','-.r','.k'};
+    normer=true;
     for ii=1:size(K.gei,3)
         data=K.gei(:,:,ii);
-        Dmax=max(data(:));
-        Dmin=min(data(:));
-        a=1/(Dmax-Dmin);
-        b=-Dmin*a;
+        if normer            
+            Dmax=max(data(:));
+            Dmin=min(data(:));
+            a=1/(Dmax-Dmin);
+            b=-Dmin*a;
+        else
+            b=0;a=1;
+        end
         plot(grid_XY,a*data+b,type{ii})
         if ii>1
             txt_legend={txt_legend{1:end},['GEI ' num2str(ii-1)]};

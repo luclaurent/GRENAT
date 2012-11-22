@@ -86,8 +86,8 @@ meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
 meta.enrich.on=true;
-meta.enrich.para_wei=0:0.1:1;
-meta.enrich.para_gei=5;
+meta.enrich.para_wei=0:0.2:1;
+meta.enrich.para_gei=2;
 meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance

@@ -16,8 +16,8 @@ pt{5}=[0.1 -0.3 0.6 0.8 -0.1];
 pt{6}=[0.1 -0.3 0.6 0.8 -0.1 -0.4];
 dim=6;
 %nombre points
-nb_pt=10000;
-pas=10;
+nb_pt=50000;
+pas=5;
 %parametre
 para=0.8;
 %borne verification
@@ -30,7 +30,7 @@ stps_new=zeros(dim,length(1:pas:nb_pt),3);
 stps_old=zeros(dim,length(1:pas:nb_pt),3);
 sgain=zeros(dim,length(1:pas:nb_pt),3);
 ite_j=1;
-%balayage des possibilités
+%balayage des possibilitï¿½s
 for ii=1:dim
     fprintf('============\n'),
     fprintf('Dimension %i\n',ii);
@@ -46,7 +46,7 @@ for ii=1:dim
         tic
         rep_old=feval([fct_all old],repmat(pt{ii},jj,1),para);
         tps_old=toc;
-        gain=(tps_new-tps_old)/tps_old;
+        gain=(tps_old-tps_new)/tps_old;
         stps_new(ii,ite_j,1)=tps_new;
         stps_old(ii,ite_j,1)=tps_old;
         sgain(ii,ite_j,1)=gain;
@@ -65,7 +65,7 @@ for ii=1:dim
         tic
         [rep_old,drep_old]=feval([fct_all old],repmat(pt{ii},jj,1),para);
         tps_old=toc;
-        gain=(tps_new-tps_old)/tps_old;
+        gain=(tps_old-tps_new)/tps_old;
         stps_new(ii,ite_j,2)=tps_new;
         stps_old(ii,ite_j,2)=tps_old;
         sgain(ii,ite_j,2)=gain;
@@ -88,7 +88,7 @@ for ii=1:dim
         tic
         [rep_old,drep_old,ddrep_old]=feval([fct_all old],repmat(pt{ii},jj,1),para);
         tps_old=toc;
-        gain=(tps_new-tps_old)/tps_old;
+        gain=(tps_old-tps_new)/tps_old;
         stps_new(ii,ite_j,3)=tps_new;
         stps_old(ii,ite_j,3)=tps_old;
         sgain(ii,ite_j,3)=gain;
@@ -112,7 +112,7 @@ for ii=1:dim
 end
 if bilan;fprintf('\n\n TOUT: OK\n');else fprintf('\n\n TOUT: BUG\n');end
 
-%tracé graphs
+%tracï¿½ graphs
 figure
 xx=1:pas:nb_pt;
 for ii=1:dim

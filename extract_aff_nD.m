@@ -53,12 +53,15 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
       set(AX,'xlim',[xmin xmax])
     hold off
     subplot(5,1,3)
-    plot(grid_XY,K.explor,'r')
+    plot(grid_XY,K.explor_EI,'r')
     hold on
-    plot(grid_XY,K.exploit,'b')
+    plot(grid_XY,K.exploit_EI,'b')
+    hold off
+    hold on
+    plot(grid_XY,K.ei,'b')
     hold off
 xlim([xmin xmax])
-    legend('Explor','Exploit','Location','EastOutside')
+    legend('Explor','Exploit','EI','Location','EastOutside')
     subplot(5,1,4)
     clear txt_legend
     txt_legend{1}=['WEI ' num2str(meta.enrich.para_wei(1),'%4.2f')];

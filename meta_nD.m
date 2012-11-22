@@ -47,7 +47,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS';
+doe.type='LHS_manu';
 
 %nb d'echantillons
 doe.nb_samples=6;
@@ -60,12 +60,12 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='CKRG';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=0;
+data.deg=2;
 
 meta=init_meta(data);
 
@@ -85,7 +85,7 @@ meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
-meta.enrich.on=false;
+meta.enrich.on=true;
 meta.enrich.para_wei=0:0.1:1;
 meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;

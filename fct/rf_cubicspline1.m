@@ -1,17 +1,18 @@
-%%fonction de correlation Matern (5/2)
-%%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
-%revision du 12/11/2012 (issue de Lockwood 2010)
+%%fonction de RBF Cubic Spline 1
+%%L. LAURENT -- 12/11/2012 -- luc.laurent@ens-cachan.fr
 
-function [corr,dcorr,ddcorr]=corr_matern52(xx,long)
+function [corr,dcorr,ddcorr]=rf_cubicspline1(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=size(long);
-%nombre de points a  evaluer
+
+%nombre de points a evaluer
 nb_pt=size(xx,1);
 %nombre de composantes
 nb_comp=size(xx,2);
 %nombre de sorties
 nb_out=nargout;
+
 
 %La longueur de correlation est definie pour toutes les composantes de xx
 if lt(1)*lt(2)==1
@@ -23,12 +24,20 @@ elseif lt(1)*lt(2)~=nb_comp
 end
 
 %calcul de la valeur de la fonction au point xx
-td=-abs(xx)./long*sqrt(5);
-etd=exp(td);
-co=1-td+5*xx.^2./(3.*long.^2);
-pc=co.*etd;
+td=abs(xx)./long;
+%zone de calcul (fonction definie par morceau)
+b1=0;b2=0.2;b3=1;
+IX1=(b1<=td).*(td<=b2);
+IX2=(b2<=td).*(td<=b3);
+IX3=(td<=b3);
 
-%nouvelle implementation issue de Lockwood 2010
+%calcul des 3 fonctions
+ev1=1-15.*td.^2+30.*td.^3;
+ev2=1.25*(1-td).^3;
+ev3=zeros(size(td));
+pc=ev1.*IX1+ev2.*IX2+ev3.*IX3;
+
+%nouvelle implementation issue de Lockwood 2010/2012
 %calcul derivees premieres et seconde selon chaque dimension puis
 %combinaison
 if nb_out==1
@@ -38,27 +47,36 @@ elseif nb_out==2
     %reponse
     corr=prod(pc,2);
     %calcul derivees premieres
-    %calcul derivees premieres
-    dk=-(5./(3*long.^2).*xx+5*sqrt(5)./(3*long.^3).*xx.^2.*sign(xx)).*etd;
+    dk1=-30.*xx./long.^2+90.*sign(xx).*xx.^2./long.^3;
+    dk2=-3.75.*sign(xx).*(1-td).^2./long;
+    dk3=ev3;
+    dk=dk1.*IX1+dk2.*IX2+dk3.*IX3;
     L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
     U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
     dcorr=L.*U.*dk;
-    
+
 elseif nb_out==3
+    %reponse
     corr=prod(pc,2);
     %calcul derivees premieres
-    dk=-(5./(3*long.^2).*xx+5*sqrt(5)./(3*long.^3).*xx.^2.*sign(xx)).*etd;
-    % signification U et L cf. Lockwood 2010
+    dk1=-30.*xx./long.^2+90.*sign(xx).*xx.^2./long.^3;
+    dk2=-3.75.*sign(xx).*(1-td).^2./long;
+    dk3=ev3;
+    dk=dk1.*IX1+dk2.*IX2+dk3.*IX3;
+  % signification U et L cf. Lockwood 2010
     L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
     U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
     LdU=L.*U;
     %derivees premieres
     dcorr=LdU.*dk;
-    
+
     %calcul derivees secondes
     %suivant la taille de l'evaluation demandee on stocke les derivees
     %secondes de manieres differentes
-    ddk=(-5./(3*long.^2)-5*sqrt(5)./(3*long.^3).*abs(xx)-25./(3*long.^4).*xx.^2).*etd;
+    ddk1=180./long.^3.*abs(xx)-30./long.^2;
+    ddk2=7.5.*(1-td)./long.^2;
+    ddk3=ev3;
+    ddk=ddk1.*IX1+ddk2.*IX2+ddk3.*IX3;
     
     if nb_pt==1
         % si un seul point d'evaluation (sortie derivees secondes sous la
@@ -79,7 +97,7 @@ elseif nb_out==3
         LUM=LUMt+LUMt';
         LUM(1:nb_comp+1:nb_comp^2)=LdU;
         %derivees secondes
-        ddcorr=LUM.*prd;        
+        ddcorr=LUM.*prd;
     else
         % si plusieurs points alors on stocke les derivees secondes dans un
         % vecteur de matrices
@@ -103,11 +121,11 @@ elseif nb_out==3
         M=cumprod(M,2);
         M=M.*repmat(masq2,[1 1 nb_pt]);
         LUMt=multiTimes(Lr,Ur,2).*M;
-        LUM=LUMt+multitransp(LUMt);
+        LUM=LUMt+multitransp(LUMt);        
         LUM(IX_diag)=LdU';
         %derivees secondes
         ddcorr=LUM.*prd;
     end
 else
-    error('Mauvais argument de sortie de la fonction corr_matern52');
+    error('Mauvais argument de sortie de la fonction rf_cubicspline1');
 end

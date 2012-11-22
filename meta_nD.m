@@ -29,13 +29,13 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock';
+fct='manu';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 %esp=[0 15];
 esp=[];
 
@@ -50,21 +50,22 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=50;
+doe.nb_samples=6;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
+data.para.pow=[1.001 2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='CKRG';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=0;
+data.deg=2;
 
 meta=init_meta(data);
 
@@ -74,18 +75,19 @@ meta.cv_aff=false;
 meta.cv_full=false;
 meta.test_positiv=false;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
-meta.para.val=1/sqrt(2);%2;
+meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
-meta.enrich.para_wei=0:0.1:1;
-meta.enrich.para_gei=5;
+meta.enrich.on=true;
+meta.enrich.para_wei=0:0.2:1;
+meta.enrich.para_gei=2;
 meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance
@@ -103,6 +105,8 @@ meta.save=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %realisation des tirages
 tirages=gene_doe(doe);
+%aa=load('test.mat','VALUES');
+%tirages=aa.VALUES;
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
@@ -134,7 +138,7 @@ if isfield(K,'var');[ic68,ic95,ic99]=const_ic(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-%valeur par d�faut
+%valeur par defaut
 aff.on=true;
 aff.newfig=false;
 aff.ic.on=true;

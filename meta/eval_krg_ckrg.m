@@ -143,22 +143,25 @@ if nargout >=3
     %en fonction de la factorisation
     switch donnees.build.fact_rcc
         case 'QR'
-           vv=[rr;ff'];
-           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
+           Qrr=donnees.build.Qtrcc*rr;
+            u=donnees.build.fcR*Qrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
+                u'*donnees.build.fcCfct*u);
            
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
-            u=donnees.build.fctU*Lrr-ff';
+            u=donnees.build.fcU*Lrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
-                u'*donnees.build.fctCfc*u);
+                u'*donnees.build.fcCfct*u);
         case 'LL'
             Lrr=donnees.build.Lrcc\rr;
-            u=donnees.build.fctL*Lrr-ff';
-            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Lrcc)*Lrr+...
-                u'*donnees.build.fctCfc*u);
+            u=donnees.build.fcL*Lrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Ltrcc)*Lrr+...
+                u'*donnees.build.fcCfct*u);            
         otherwise
-           vv=[rr;ff'];
-           variance=donnees.build.sig2*(ones(dim_x,1)-vv'*donnees.build.iMKrg*vv);
+            rcrr=donnees.build.rcc \ rr;
+            u=donnees.build.fc*rcrr-ff';
+            variance=donnees.build.sig2*(ones(dim_x,1)+u'/donnees.build.fcCfct*u - rr'*rcrr);
     end
     if ~aff_warning;warning on all;end
     
@@ -170,8 +173,8 @@ if donnees.norm.on
     infos.moy=donnees.norm.moy_eval;
     infos.std=donnees.norm.std_eval;
     Z=norm_denorm(Z,'denorm',infos);
-    if nargout==4
-        Z_reg=norm_denorm(Z_reg,'denorm',infos);
+    if nargout==4        
+        Z_reg=norm_denorm(Z_reg,'denorm',infos);       
         Z_sto=norm_denorm(Z_sto,'denorm',infos);
     end
     if calc_grad
@@ -186,34 +189,11 @@ if donnees.norm.on
         clear infos
     end
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul critere enrichissement
-explor=[];
-exploit=[];
-wei=[];
-ei=[];
-gei=[];
-lcb=[];
-if donnees.enrich.on&&exist('variance','var')
-    %reponse mini
-    eval_min=min(donnees.in.eval);
-    %calcul crit�res enrichissement
-    [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,donnees.enrich);
-end
-
-%extraction d�tails
+%extraction details
 if nargout==4
     details.Z_reg=Z_reg;
     details.Z_sto=Z_sto;
     details.GZ_reg=GZ_reg;
     details.GZ_sto=GZ_sto;
-    if ~isempty(explor);details.enrich.explor=explor;end
-    if ~isempty(exploit);details.enrich.exploit=exploit;end
-    if ~isempty(ei);details.enrich.ei=ei;end
-    if ~isempty(wei);details.enrich.wei=wei;end
-    if ~isempty(gei);details.enrich.gei=gei;end
-    if ~isempty(lcb);details.enrich.lcb=lcb;end
 end
 end

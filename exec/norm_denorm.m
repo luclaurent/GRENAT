@@ -52,7 +52,9 @@ switch type
         end
        
         if norm_data
-            out=(in-repmat(infos.moy,nbs,1))./repmat(infos.std,nbs,1);
+            moyy=infos.moy;
+            stdd=infos.std;
+            out=(in-moyy(ones(nbs,1),:))./stdd(ones(nbs,1),:);
             calc_para_norm=false;
         end
         
@@ -66,12 +68,12 @@ switch type
                 std_i(ind)=1;
             end
             if norm_manq
-                outm=(inm-repmat(moy_i,infos.eval.nb,1))./...
-                    repmat(std_i,infos.eval.nb,1);
+                outm=(inm-moy_i(ones(infos.eval.nb,1),:))./...
+                    std_i(ones(infos.eval.nb,1),:);
                 out=NaN*zeros(size(in));
                 out(infos.eval.ix_dispo)=outm;
             else
-                out=(inm-repmat(moy_i,nbs,1))./repmat(std_i,nbs,1);
+                out=(inm-moy_i(ones(nbs,1),:))./std_i(ones(nbs,1),:);
             end
             
             if extr_infos
@@ -86,7 +88,9 @@ switch type
         %denormalisation
     case 'denorm'
         if norm_data
-            out=repmat(infos.std,nbs,1).*in+repmat(infos.moy,nbs,1);
+            moyy=infos.moy;
+            stdd=infos.std;
+            out=stdd(ones(nbs,1),:).*in+moyy(ones(nbs,1),:);
         else
             out=in;
         end
@@ -94,7 +98,8 @@ switch type
         %denormalisation d'une difference de valeurs normalisees
     case 'denorm_diff'
         if norm_data
-            out=repmat(infos.std,nbs,1).*in;
+            stdd=infos.std;
+            out=stdd(ones(nbs,1),:).*in;
         else
             out=in;
         end

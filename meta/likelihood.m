@@ -9,24 +9,24 @@ function [logli,li]=likelihood(donnees)
 %taille matrice de correlation
 tail_rcc=size(donnees.build.rcc,1);
 
-
 %calcul de la log vraisemblance d'apres Jones 1993 / Leary 2004
 switch donnees.build.fact_rcc
     case 'QR'
-        %detQMKrg=det(donnees.build.QMKrg);
-        diagRMKrg=diag(donnees.build.RMKrg);
-        det_corr=abs(prod(diagRMKrg)); %Q est une matrice unitaire
-        log_det_corr=sum(log(abs(diagRMKrg)));
+        diagRrcc=diag(donnees.build.Rrcc);
+        det_corr=abs(prod(diagRrcc)); %Q est une matrice unitaire
+        log_det_corr=sum(log(abs(diagRrcc)));
         %controle positivite
-        %sumd=sum(diagRMKrg<0);
+%         sumd=sum(diagRMKrg<0);
 %         if mod(sumd,2)~=0&&detQMKrg>0
 %             fprintf('<< Matrice de correlation non positive >>\n');
 %         end
     case 'LL'
-        fprintf('Cholesky non optimise dans likelihood.m')
-        eig_val=eig(donnees.build.rcc);
+        diagLrcc=diag(donnees.build.Lrcc);
+        det_corr=prod(diagLrcc)^2;
+        log_det_corr=2*sum(log(abs(diagLrcc)));
+        %eig_val=eig(donnees.build.rcc);
         %det_corr=prod(eig_val);
-        log_det_corr=sum(log(eig_val));
+        %log_det_corr=sum(log(eig_val));
         %controle positivite
         %sumd=sum(eig_val<0);
 %         if mod(sumd,2)~=0
@@ -43,7 +43,7 @@ switch donnees.build.fact_rcc
 %         end
     otherwise
         eig_val=eig(donnees.build.rcc);
-       % det_corr=prod(eig_val);
+        det_corr=prod(eig_val);
         log_det_corr=sum(log(eig_val));
         %controle positivite
 %         sumd=sum(eig_val<0);
@@ -52,10 +52,6 @@ switch donnees.build.fact_rcc
 %         end
 end
 
-
-%rr=donnees.build.rcc;
-%global rr
-%log_det_corr
 logli=tail_rcc/2*log(2*pi*donnees.build.sig2)+1/2*log_det_corr+tail_rcc/2;
 if isinf(logli)||isnan(logli)
     logli=1e16;

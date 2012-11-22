@@ -1,9 +1,11 @@
-% benchmark de test des fonctions de correlation
+% benchmark de test des fonctions de correlation (tps calcul)
+clear all
+close all
 
-type='corr_'; %'rf_' ou 'corr_'
-fct='matern32';
+typef='corr_'; %'rf_' ou 'corr_'
+fct='sexp';
 
-fct_all=[type fct];
+fct_all=[typef fct];
 
 %%nouvelle et ancienne version
 new='_new';old='_old';
@@ -16,10 +18,10 @@ pt{5}=[0.1 -0.3 0.6 0.8 -0.1];
 pt{6}=[0.1 -0.3 0.6 0.8 -0.1 -0.4];
 dim=6;
 %nombre points
-nb_pt=50000;
-pas=5;
+nb_pt=5000;
+pas=50;
 %parametre
-para=0.8;
+para=0.9;
 %borne verification
 verif=1e-10;
 bilan=true;

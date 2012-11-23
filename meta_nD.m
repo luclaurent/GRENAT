@@ -58,9 +58,9 @@ data.para.pow=[1.001 2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='gauss';
+data.corr='matern32';
 data.rbf='matern32';
-data.type='DACE';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;

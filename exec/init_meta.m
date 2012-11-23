@@ -153,8 +153,8 @@ if nargin==1
         if isfield(in.para,'crit_opti');meta.para.crit_opti=in.para.crit_opti;end
         if meta.para.estim
             if isfield(in.para,'long');
-                meta.para.max=in.para.long(2);
-                meta.para.min=in.para.long(1);
+                meta.para.l_max=in.para.long(2);
+                meta.para.l_min=in.para.long(1);
             end
         end
     end

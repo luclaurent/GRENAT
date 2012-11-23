@@ -231,7 +231,7 @@ for num_meta=1:numel(donnees_const)
     lcb=[];
     if meta.enrich.on&&exist('var_rep','var')
         %reponse mini
-        eval_min=min(donnees.in.eval);
+        eval_min=min(donnees.eval);
         %calcul criteres enrichissement
         [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,rep,var_rep,meta.enrich);
     end

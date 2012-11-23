@@ -37,23 +37,24 @@ fct='manu';
 % dimension du pb (nb de variables)
 doe.dim_pb=1;
 %esp=[0 15];
-esp=[0 15];
+esp=[];
 
 %%Definition de l'espace de conception
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=3000;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=8;
+doe.nb_samples=6;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
+data.para.pow=[1.001 2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
@@ -74,18 +75,19 @@ meta.cv_aff=false;
 meta.cv_full=false;
 meta.test_positiv=false;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='ga';
-meta.para.val=1/sqrt(2);%2;
+meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
-meta.enrich.para_wei=0:0.1:1;
-meta.enrich.para_gei=5;
+meta.enrich.on=true;
+meta.enrich.para_wei=0:0.2:1;
+meta.enrich.para_gei=2;
 meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance

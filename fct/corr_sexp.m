@@ -33,10 +33,10 @@ if nb_out==1
     corr=ev;
 elseif nb_out==2
     corr=ev;
-    dcorr=-xx./long.^2.*repmat(ev,1,nb_comp);
+    dcorr=-xx./long.^2.*ev(:,ones(1,nb_comp));
 elseif nb_out==3
     corr=ev;
-    dcorr=-xx./long.^2.*repmat(ev,1,nb_comp);   
+    dcorr=-xx./long.^2.*ev(:,ones(1,nb_comp));   
     
     %calcul des derivees secondes    
     

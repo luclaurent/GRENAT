@@ -52,13 +52,13 @@ data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=0;
+data.deg=1;
 
 meta=init_meta(data);
 
 meta.para.estim=false;
 meta.cv=true;
-meta.norm=false;
+meta.norm=true;
 meta.recond=false;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='fmincon';
@@ -106,8 +106,8 @@ tirages=aa.tirages./6.66666666;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %etude CV 
 paramin=10^-4;
-paramax=30;
-nbpara=500;
+paramax=10;
+nbpara=50;
 valpara=linspace(paramin,paramax,nbpara);
 meta.cv_aff=false;
 for ii=1:nbpara
@@ -126,7 +126,7 @@ rmse(ii)=err.rmse;
 eq3(ii)=err.eq3;
 r2(ii)=err.r2;
 r2adj(ii)=err.r2adj;
-lilog(ii)=approx.build.lilog;
+lilo(ii)=approx.build.lilog;
 end
 figure
 semilogy(valpara,rippa,'r')
@@ -138,6 +138,13 @@ semilogy(valpara,eq3,'m')
 semilogy(valpara,r2,'-.r')
 semilogy(valpara,r2adj,'-.k')
 legend('Rippa/Bomp (CV)','Moi (CV)','MSE','RMSE','eq3','r2','R2adj');
+
+figure
+subplot(2,1,1)
+plot(valpara,lilo);
+subplot(2,1,2)
+semilogy(valpara,lilo);
+
 
 PP=[valpara' cond_mat'];
 save('1D_para_cond.dat','PP','-ascii')

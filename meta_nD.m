@@ -57,14 +57,14 @@ data.para.long=[10^-3 50];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
+data.corr='gauss';
 data.rbf='matern32';
-data.type='KRG';
+data.type='DACE';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=1;
+data.deg=0;
 
 meta=init_meta(data);
 
@@ -103,8 +103,8 @@ meta.save=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %realisation des tirages
 tirages=gene_doe(doe);
-%aa=load('test.mat','VALUES');
-%tirages=aa.VALUES;
+aa=load('tirages_1D_8.mat');
+tirages=aa.tirages./6.66666666;
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')

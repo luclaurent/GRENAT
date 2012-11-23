@@ -87,6 +87,8 @@ meta.save=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %realisation des tirages
 tirages=gene_doe(doe);
+aa=load('tirages_1D_8.mat');
+tirages=aa.tirages./6.66666666;
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
@@ -124,6 +126,7 @@ rmse(ii)=err.rmse;
 eq3(ii)=err.eq3;
 r2(ii)=err.r2;
 r2adj(ii)=err.r2adj;
+lilog(ii)=approx.build.lilog;
 end
 figure
 semilogy(valpara,rippa,'r')
@@ -160,7 +163,7 @@ save('1D_para_r2.dat','PP','-ascii')
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%affichage
-% %valeur par défaut
+% %valeur par dï¿½faut
 % aff.on=true;
 % aff.newfig=false;
 % aff.ic.on=true;

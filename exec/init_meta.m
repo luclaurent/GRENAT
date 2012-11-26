@@ -49,6 +49,8 @@ meta.para.aff_estim=false;
 meta.para.aff_iter_graph=false;
 %affichage iteration dans la console
 meta.para.aff_iter_cmd=false;
+%affichage informations convergence algo dans des plots
+meta.para.aff_plot_algo=false;
 % methode de minimisation de la log-vraisemblance
 meta.para.method='ga';
 %strategie tirage population initiale algo GA '', 'LHS','IHS'...

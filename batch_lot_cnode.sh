@@ -180,7 +180,7 @@ else
 fi
 
 echo '  >> Copie des fichiers dans le dossier temporaire'
-rsync -av --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
+rsync -av --exclude '*.e[0-9]*' --exclude '*.o[0-9]*' --exclude 'results/' --exclude '.git/' ${DOSSIER_META}/* ${DOSSIER_TRAVAIL}/.
 
 
 echo '-------------------------------------------'

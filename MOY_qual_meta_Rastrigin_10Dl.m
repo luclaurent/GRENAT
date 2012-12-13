@@ -171,6 +171,9 @@ for iter_tent=1:nb_tent
             cvbm{ll}(iter_tent,jj)=err.cv.bm;
             cveloot{ll}(iter_tent,jj)=err.cv.eloot;
             cvpress{ll}(iter_tent,jj)=err.cv.press;
+cond_new{ll}(iter_tent,jj)=approx{ll}{iter_tent,jj}.build.cond_new;
+approx{ll}{iter_tent,jj}=rmfield(approx{ll}{iter_tent,jj},'build');
+
             %cverrp{ll}(iter_tent,jj)=err.cv.errp;
     %sauvegarde
 fichier=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'Dl.mat'];

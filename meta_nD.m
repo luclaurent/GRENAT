@@ -85,9 +85,9 @@ meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
-meta.enrich.on=false;
-meta.enrich.para_wei=0:0.1:1;
-meta.enrich.para_gei=5;
+meta.enrich.on=true;
+meta.enrich.para_wei=0:0.2:1;
+meta.enrich.para_gei=2;
 meta.enrich.para_lcb=0.5;
 
 %affichage de l'intervalle de confiance
@@ -105,8 +105,8 @@ meta.save=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %realisation des tirages
 tirages=gene_doe(doe);
-%aa=load('test.mat','VALUES');
-%tirages=aa.VALUES;
+aa=load('tirages_1D_8.mat');
+tirages=aa.tirages./6.66666666;
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')

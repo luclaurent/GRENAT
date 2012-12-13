@@ -189,34 +189,11 @@ if donnees.norm.on
         clear infos
     end
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul critere enrichissement
-explor_EI=[];
-exploit_EI=[];
-ei=[];
-wei=[];
-gei=[];
-lcb=[];
-if donnees.enrich.on&&exist('variance','var')
-    %reponse mini
-    eval_min=min(donnees.in.eval);
-    %calcul criteres enrichissement
-    [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,Z,variance,donnees.enrich);
-end
-
 %extraction details
 if nargout==4
     details.Z_reg=Z_reg;
     details.Z_sto=Z_sto;
     details.GZ_reg=GZ_reg;
     details.GZ_sto=GZ_sto;
-    if ~isempty(explor_EI);details.enrich.explor_EI=explor_EI;end
-    if ~isempty(exploit_EI);details.enrich.exploit_EI=exploit_EI;end
-    if ~isempty(ei);details.enrich.ei=ei;end
-    if ~isempty(wei);details.enrich.wei=wei;end
-    if ~isempty(gei);details.enrich.gei=gei;end
-    if ~isempty(lcb);details.enrich.lcb=lcb;end
 end
 end

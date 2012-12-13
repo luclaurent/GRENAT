@@ -32,7 +32,7 @@ stps_new=zeros(dim,length(1:pas:nb_pt),3);
 stps_old=zeros(dim,length(1:pas:nb_pt),3);
 sgain=zeros(dim,length(1:pas:nb_pt),3);
 ite_j=1;
-%balayage des possibilités
+%balayage des possibilitï¿½s
 for ii=1:dim
     fprintf('============\n'),
     fprintf('Dimension %i\n',ii);
@@ -114,7 +114,7 @@ for ii=1:dim
 end
 if bilan;fprintf('\n\n TOUT: OK\n');else fprintf('\n\n TOUT: BUG\n');end
 
-%tracé graphs
+%tracï¿½ graphs
 figure
 xx=1:pas:nb_pt;
 for ii=1:dim

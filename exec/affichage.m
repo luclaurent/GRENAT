@@ -9,7 +9,7 @@ function affichage(grille,Z,tirages,eval,grad,aff)
 %       grille(:,:,1) et grille(:,:,2) en 2D pour respectivement les
 %       abscisse et ordonnee. En 1D il s'agit juste d'un vecteur de reels
 %       obtenu par exemple avec linspace
-%       - Z: structure des donnees a  tracer
+%       - Z: structure des donnees aï¿½ tracer
 %           * Z.Z: cotes obtenus au points definis par la grille
 %           * GR1 et GR2: composant des gradients calcules aux points
 %           definis par la gille
@@ -42,11 +42,11 @@ function affichage(grille,Z,tirages,eval,grad,aff)
 %           * aff.xlabel: nom axe x
 %           * aff.ylabel: nom axe y
 %           * aff.zlabel: nom axe z
-%           * aff.scale: mise a  l'echelle gradients
+%           * aff.scale: mise aï¿½ l'echelle gradients
 %           * aff.doss: dossier de sauvegarde figures
 %           * aff.pas: pas de la grille d'affichage
-%           * aff.bilan_manq: définition données manquantes pour tracé
-%           ajusté
+%           * aff.bilan_manq: dï¿½finition donnï¿½es manquantes pour tracï¿½
+%           ajustï¿½
 
 %traitement des cas 1D ou 2D
 esp1d=false;esp2d=false;
@@ -72,6 +72,9 @@ if isfield(Z,'GZ')&&esp2d
     GR1=Z.GZ(:,:,1);
     GR2=Z.GZ(:,:,2);
 end
+
+%gradients aux points disponibles
+grad_dispo=~isempty(grad);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %recherche et tri des manques d'information
@@ -195,7 +198,7 @@ if aff.on
                     'MarkerFaceColor','g',...
                     'MarkerSize',15);
                 %affichage points il manque un/des gradient(s) et un/des
-                %reponse(s) au même point
+                %reponse(s) au mï¿½me point
                 plot3(tirages(liste_both_manq,1),tirages(liste_both_manq,2),eval(liste_both_manq),...
                     'd','MarkerEdgeColor','r',...
                     'MarkerFaceColor','r',...
@@ -251,7 +254,7 @@ if aff.on
                 %affichage des gradients
                 if aff.grad_meta
                     hold on;
-                    %remise a  l'echelle
+                    %remise aï¿½ l'echelle
                     if aff.scale
                         %quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);
                         quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'Color','b','AutoScale','off','MaxHeadSize',0);
@@ -282,7 +285,7 @@ if aff.on
                         'MarkerFaceColor','r',...
                         'MarkerSize',15);
                     %affichage points il manque un/des gradient(s) et un/des
-                    %reponse(s) au même point
+                    %reponse(s) au mï¿½me point
                     plot(tirages(liste_both_manq,1),tirages(liste_both_manq,2),...
                         'd','MarkerEdgeColor','r',...
                         'MarkerFaceColor','r',...
@@ -290,9 +293,9 @@ if aff.on
                     
                 end
                 %affichage des gradients
-                if aff.grad_eval
+                if aff.grad_eval&&grad_dispo
                     hold on;
-                    %remise a  l'echelle
+                    %remise aï¿½ l'echelle
                     if aff.scale
                         quiver(tirages(:,1),tirages(:,2),...
                             ech(1)*grad(:,1),ech(2)*grad(:,2),...
@@ -382,7 +385,7 @@ if aff.on
                 'MarkerFaceColor','r',...
                 'MarkerSize',7);
             %affichage points il manque un/des gradient(s) et un/des
-            %reponse(s) au même point
+            %reponse(s) au mï¿½me point
             plot(tirages(liste_both_manq),val_trac(liste_both_manq),...
                 'd','MarkerEdgeColor','r',...
                 'MarkerFaceColor','r',...
@@ -410,7 +413,7 @@ if aff.on
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Trace réponse nD
+    %Trace rï¿½ponse nD
     if aff.bar
         Zs=Z.Z(:);
         nb_eval=numel(Zs);

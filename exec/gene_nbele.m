@@ -1,4 +1,4 @@
-%% Fonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)
+%% Fvonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)
 %% L.LAURENT -- 15/05/2012 -- laurent@lmt.ens-cachan.fr
 
 function nb_ele=gene_nbele(dim)
@@ -13,12 +13,11 @@ elseif dim==4
     nb_ele=6;
 elseif dim==5;
     nb_ele=4;
-elseif dim==6
-    nb_ele=3;
-elseif dim==10
-    nb_ele=3;
+elseif dim>6
+    nb_ele=3;  
 else 
     fprintf('##############################\n');
     fprintf('### Dimension du pb ne permettant pas la creation \n de la grille d''affichage ou de verification ####\n');
     fprintf('##############################\n');
+    nb_ele=NaN;
 end

@@ -127,7 +127,6 @@ idx = find(r > 0);   o = (1 : m)';
 mu = (10+m)*eps;
 R = sparse([par.ij(idx,1); o], [par.ij(idx,2); o], ...
   [r(idx); ones(m,1)+mu]);
-full(R)
 % Cholesky factorization with check for pos. def.
 [C rd] = chol(R);
 if  rd,  return, end % not positive definite

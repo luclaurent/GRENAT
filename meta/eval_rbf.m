@@ -144,31 +144,6 @@ if data.norm.on&&~isempty(data.norm.moy_tirages)
         GZ=GZ';
     end
 end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul crit�re enrichissement
-explor=[];
-exploit=[];
-wei=[];
-ei=[];
-gei=[];
-lcb=[];
 details=[];
-if data.enrich.on&&exist('variance','var')
-    %reponse mini
-    eval_min=min(data.in.eval);
-    %calcul criteres enrichissement
-    [ei,wei,gei,lcb,explor,exploit]=crit_enrich(eval_min,Z,variance,data.enrich);
-end
 
-%extraction details
-if nargout==4
-    if ~isempty(explor);details.enrich.explor=explor;end
-    if ~isempty(exploit);details.enrich.exploit=exploit;end
-    if ~isempty(ei);details.enrich.ei=ei;end
-    if ~isempty(wei);details.enrich.wei=wei;end
-    if ~isempty(gei);details.enrich.gei=gei;end
-    if ~isempty(lcb);details.enrich.lcb=lcb;end
-end
 end

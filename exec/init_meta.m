@@ -49,6 +49,8 @@ meta.para.aff_estim=false;
 meta.para.aff_iter_graph=false;
 %affichage iteration dans la console
 meta.para.aff_iter_cmd=false;
+%affichage informations convergence algo dans des plots
+meta.para.aff_plot_algo=false;
 % methode de minimisation de la log-vraisemblance
 meta.para.method='ga';
 %strategie tirage population initiale algo GA '', 'LHS','IHS'...
@@ -153,8 +155,8 @@ if nargin==1
         if isfield(in.para,'crit_opti');meta.para.crit_opti=in.para.crit_opti;end
         if meta.para.estim
             if isfield(in.para,'long');
-                meta.para.max=in.para.long(2);
-                meta.para.min=in.para.long(1);
+                meta.para.l_max=in.para.long(2);
+                meta.para.l_min=in.para.long(1);
             end
         end
     end

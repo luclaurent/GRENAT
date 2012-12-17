@@ -65,7 +65,7 @@ data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=2;
+data.deg=0;
 
 meta=init_meta(data);
 
@@ -105,8 +105,8 @@ meta.save=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %realisation des tirages
 tirages=gene_doe(doe);
-%aa=load('test.mat','VALUES');
-%tirages=aa.VALUES;
+aa=load('tirages_1D_8.mat');
+tirages=aa.tirages./6.66666666;
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')

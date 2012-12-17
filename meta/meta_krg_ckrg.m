@@ -17,7 +17,11 @@ fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\
 fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
 if meta.para.estim
     fprintf('>> Algo estimation: %s\n',meta.para.method);
-    fprintf('>> Borne recherche: [%d , %d]\n',meta.para.min,meta.para.max);
+    fprintf('>> Bornes recherche: [%d , %d]\n',meta.para.l_min,meta.para.l_max);
+    switch meta.corr
+        case {'corr_expg','corr_expgg'}
+            fprintf('>> Bornes recherche puissance: [%d , %d]\n',meta.para.p_min,meta.para.p_max);
+    end
     fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
     fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
     fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end

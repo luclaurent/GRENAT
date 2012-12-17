@@ -30,7 +30,7 @@ else
     nb_para_optim=nb_para;
 end
 % traitement des cas particuliers (fonctions de correlation exponentielles
-% généralisées)
+% gï¿½nï¿½ralisï¿½es)
 switch meta.corr
     case 'corr_expg'
         %definition des bornes de l'espace de recherche
@@ -89,7 +89,7 @@ if ~meta.para.aff_iter_cmd
     options_ga=gaoptimset(options_ga,'Display', 'final');
 end
 
-%affichage informations interations algo (sous forme de plot
+%affichage informations interations algo (sous forme de plot)
 if meta.para.aff_plot_algo
     options_fmincon=optimset(options_fmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});

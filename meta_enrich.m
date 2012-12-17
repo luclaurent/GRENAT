@@ -38,7 +38,7 @@ aff.nbele=gene_nbele(doe.dim_pb);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 data.deg=2;
@@ -48,15 +48,15 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='CKRG';
+data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);
 meta.para.estim=true;
 
 %parametrage enrichissement
-enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE'};% CV_MSE CONV_REP CONV_LOC
-enrich.val_crit={30,10^-6,10^-6,10^-4};%,10^-4};
+enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE','HIST_R2','HIST_Q3'};% CV_MSE CONV_REP CONV_LOC
+enrich.val_crit={30,10^-6,10^-6,10^-4,1.,10^-6};%,10^-4};
 enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
 enrich.type='GEI';

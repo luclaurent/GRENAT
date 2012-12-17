@@ -5,13 +5,13 @@ function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)
 
 [tMesu,tInit]=mesu_time;
 
-%% initialisation des quantitï¿½
+%% initialisation des quantite
 new_tirages=tirages;
 %evaluations de la fonction aux points
 [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
 
 %construction initiale du metamodele
-[approx]=const_meta(new_tirages,new_eval,new_grad,meta);
+[approx{1}]=const_meta(new_tirages,new_eval,new_grad,meta);
 crit_atteint=false;
 pts_ok=true;
 mse_ok=true;
@@ -21,6 +21,20 @@ done_min=false;
 old_tirages=[];
 old_eval=[];
 old_grad=[];
+
+%grille de vérification
+nb_pts_verif=3000;
+type_tir_verif='IHS';
+dd.type=type_tir_verif;
+dd.nb_samples=nb_pts_verif;
+dd.Xmin=doe.Xmin;
+dd.Xmax=doe.Xmax;
+grille_verif=gene_doe(dd);
+
+%critere historique sur N metamodèles
+nb_hist=4;
+
+global debug
 
 enrich.ev_crit=cell(length(enrich.crit_type),1);
 %suivant le critere d'enrichissement (critere multiple)
@@ -54,19 +68,17 @@ while ~crit_atteint&&enrich.on
     %increment numero iteration
     it_enrich=it_enrich+1;
     num_sub=1;
-    
+    fprintf('####################################\n')
+    fprintf('######### Iteration n°: %i ##########\n',it_enrich)
+    fprintf('------------------------------------\n');
     if enrich.aff_evol&&it_enrich==1
         figure
         num_fig=0;
         for  it_type=1:length(type)
             switch type{it_type}
-                case 'NB_PTS'
+                case {'NB_PTS','HIST_R2','HIST_Q3','CV_MSE'}
                     num_fig=num_fig+1;
-                case 'CV_MSE'
-                    num_fig=num_fig+1;
-                case 'CONV_REP'
-                    num_fig=num_fig+2;
-                case 'CONV_LOC'
+                case {'CONV_REP','CONV_LOC'}
                     num_fig=num_fig+2;
             end
         end
@@ -81,7 +93,102 @@ while ~crit_atteint&&enrich.on
             done_min=false;
         end
         switch type{it_type}
-            % controle en nombre de points
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % controle amélioration (par rapport aux 4 métamodèles
+            % précédents)
+            case {'HIST_R2','HIST_Q3'}
+                if it_enrich>1
+                    fprintf(' >> Calcul criteres HIST_Q3 et HIST_R2 <<\n ');
+                    if it_enrich<nb_hist-1
+                        fprintf(' /!\ Historique trop faible donc pas de test HIST_R2 ni HIST_Q3 <<\n ');
+                    end
+                    %evaluation dernier metamodele
+                    Z_end=eval_meta(grille_verif,approx{end},meta);
+                    % evaluation des precedents metamodeles
+                    nbmeta=min(it_enrich,nb_hist+1);
+                    for it_hist=1:nb_hist+1
+                        Z=eval_meta(grille_verif,approx{end-it_hist},meta);
+                        [~,~,vR2(it_hist),~]=fact_corr(Zref,Zap);
+                        [~,~,vQ3(it_hist)]=qual(Zref,Zap);
+                    end
+                    switch type{it_type}
+                        case 'HIST_R2'
+                            %moyenne R2
+                            mR2=mean(vR2);
+                            %sauvegarde valeur critere
+                            enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} mR2];
+                            if it_enrich>=nb_hist-1
+                                depass=(mR2-crit{it_type})/crit{it_type};
+                                %affichage info
+                                fprintf(' ==>> R2 (Hist %i) atteint: %d (max: %d) <<==\n',nb_hist,mR2,crit{it_type});
+                                % verification temps atteint
+                                if mR2>=crit{it_type}
+                                    hist_r2_ok=false;
+                                    fprintf(' ====> LIMITE R2 (Hist %i) ATTEINTE --- + %4.2e%s <====\n',nb_hist,depass*100,char(37))
+                                else
+                                    hist_r2_ok=true;
+                                    fprintf(' ====> LIMITE R2 (Hist %i) NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                                end
+                            else
+                                hist_r2_ok=true;
+                            end
+                            %trace de l'evolution
+                            if enrich.aff_evol
+                                if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                                opt_plot.tag='HIST_R2';
+                                opt_plot.title='Evol. nombre de points';
+                                opt_plot.xlabel='Nombre de points';
+                                opt_plot.ylabel='HIST_R2';
+                                opt_plot.ech_log=false;
+                                opt_plot.type='stairs';
+                                opt_plot.cible=crit{it_type};
+                                if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                                aff_evol(nb_pts,mR2,opt_plot,id_plotloc);
+                                num_sub=num_sub+1;
+                            end
+                        case 'HIST_Q3'
+                            %moyenne Q3
+                            mQ3=mean(vQ3);
+                            %sauvegarde valeur critere
+                            enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} mQ3];
+                            if it_enrich>=nb_hist-1
+                                depass=(mQ3-crit{it_type})/crit{it_type};
+                                %affichage info
+                                fprintf(' ==>> Q3 (Hist %i) atteint: %d (max: %d) <<==\n',nb_hist,mQ3,crit{it_type});
+                                % verification temps atteint
+                                if mQ3<=crit{it_type}
+                                    hist_q3_ok=false;
+                                    fprintf(' ====> LIMITE Q3 (Hist %i) ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                                else
+                                    hist_q3_ok=true;
+                                    fprintf(' ====> LIMITE Q3 (Hist %i) NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                                end
+                            else
+                                hist_q3_ok=true;
+                            end
+                            %trace de l'evolution
+                            if enrich.aff_evol
+                                if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                                opt_plot.tag='HIST_Q3';
+                                opt_plot.title='Evol. nombre de points';
+                                opt_plot.xlabel='Nombre de points';
+                                opt_plot.ylabel='HIST_Q3';
+                                opt_plot.ech_log=false;
+                                opt_plot.type='stairs';
+                                opt_plot.cible=crit{it_type};
+                                if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                                aff_evol(nb_pts,mQ3,opt_plot,id_plotloc);
+                                num_sub=num_sub+1;
+                            end
+                    end
+                    
+                end
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                % controle en nombre de points
             case 'NB_PTS'
                 fprintf(' >> Verification nombre de points echantillons <<\n ')
                 % Extraction temps CPU
@@ -97,7 +204,7 @@ while ~crit_atteint&&enrich.on
                 else
                     pts_ok=true;
                     fprintf(' ====> LIMITE Nombre de points NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
-                end                
+                end
                 %sauvegarde valeur critere
                 enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} nb_pts];
                 
@@ -115,12 +222,15 @@ while ~crit_atteint&&enrich.on
                     aff_evol(nb_pts,nb_pts,opt_plot,id_plotloc);
                     num_sub=num_sub+1;
                 end
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 % controle en MSE (CV)
             case 'CV_MSE'
                 % Extraction MSE (CV)
                 msep=approx.cv.eloot;
                 depass=(msep-crit{it_type})/crit{it_type};
-                 %affichage info
+                %affichage info
                 fprintf(' ==>> MSE (CV) atteint: %d (max: %d) <<==\n',msep,crit{it_type});
                 % verification temps atteint
                 if msep<=crit{it_type}
@@ -146,6 +256,9 @@ while ~crit_atteint&&enrich.on
                     aff_evol(nb_pts,msep,opt_plot,id_plotloc);
                     num_sub=num_sub+1;
                 end
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 % controle en convergence de reponse et/ou de localisation
             case {'CONV_REP','CONV_LOC'}
                 %valeur cible
@@ -191,6 +304,8 @@ while ~crit_atteint&&enrich.on
                 end
                 
                 switch type{it_type}
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     case 'CONV_REP'
                         %Calcul du critere
                         if Z_cible~=0
@@ -231,6 +346,8 @@ while ~crit_atteint&&enrich.on
                             aff_evol(nb_pts,conv_rep,opt_plot,id_plotloc);
                             num_sub=num_sub+1;
                         end
+                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     case 'CONV_LOC'
                         %Calcul du critere
                         conv_loc=dist;
@@ -268,10 +385,13 @@ while ~crit_atteint&&enrich.on
                 mse_ok=false;pts_ok=false;
         end
     end
-    
-    %test: si un des crtiï¿½res est atteint si c'est pas le cas alors on gï¿½nï¿½re
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %test: si un des crteres est atteint si c'est pas le cas alors on genere
     %un nouveau point de calcul
-    crit_atteint=conv_glob_ok&&conv_loc_ok&&mse_ok&&pts_ok;crit_atteint=~crit_atteint;
+    crit_atteint=conv_glob_ok&&conv_loc_ok&&mse_ok&&pts_ok&&hist_r2_ok&&hist_q3_ok;crit_atteint=~crit_atteint;
     
     if ~crit_atteint
         %en fonction du type d'enrichissement
@@ -285,7 +405,7 @@ while ~crit_atteint&&enrich.on
                 fprintf(' >> Enrichissement du tirage\n')
                 new_tirages=ajout_tir_doe(old_tirages);
             otherwise
-                fprintf(' >> Mode d''enrichissement non dï¿½fini <<\n');
+                fprintf(' >> Mode d''enrichissement non defini <<\n');
         end
         
     else
@@ -311,6 +431,7 @@ while ~crit_atteint&&enrich.on
         [new_eval,new_grad]=gene_eval(doe.fct,new_tirages,'eval');
         
         %stockage debug
+        debug=[];
         debug.old_tirages=old_tirages;
         debug.new_tirages=new_tirages;
         debug.old_eval=old_eval;
@@ -318,9 +439,9 @@ while ~crit_atteint&&enrich.on
         debug.old_grad=old_grad;
         debug.new_grad=new_grad;
         debug.approx=approx;
-        global debug
+        
         %construction du metamodele
-        [approx]=const_meta([old_tirages;new_tirages],[old_eval;new_eval],[old_grad;new_grad],meta);
+        [approx{it_enrich+1}]=const_meta([old_tirages;new_tirages],[old_eval;new_eval],[old_grad;new_grad],meta);
     end
     
 end

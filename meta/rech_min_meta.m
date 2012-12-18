@@ -22,7 +22,7 @@ switch optim.algo
         global doe
         %Definition manuelle de la population initiale par LHS (Ga)
         popInitManu=optim.popManu;
-        nbPopInit=optim.popInit;
+        nbPopInit=optim.nbPopInit;
         
         %definition des bornes de l'espace de recherche
         lb=doe.Xmin;ub=doe.Xmax;

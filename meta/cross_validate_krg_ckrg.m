@@ -10,7 +10,7 @@ function cv=cross_validate_krg_ckrg(data_block,meta,type)
 %MSE: norme-L2
 LOO_norm='L2';
 %debug
-debug=true;
+debug=false;
 
 % affichages warning ou non
 aff_warning=false;

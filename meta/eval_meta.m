@@ -14,7 +14,11 @@ if ~iscell(donnees)
     Z=struct;
 else
     donnees_const=donnees;
-    Z=cell(size(donnees));
+    if numel(donnees)~=1
+        Z=cell(size(donnees));
+    else
+        Z=[];
+    end
 end
 
 %nombre de variables

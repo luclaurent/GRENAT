@@ -4,8 +4,8 @@
 function [Zap_min,X_min]=rech_min_meta(meta,approx,optim)
 
 [tMesu,tInit]=mesu_time;
-fprintf('      ++++++++++++++++++++++++++++++++++++\n');
-fprintf('      >>> RECHERCHE MINIMUM METAMODELE <<<\n');
+fprintf('++++++++++++++++++++++++++++++++++++\n');
+fprintf('>>> RECHERCHE MINIMUM METAMODELE <<<\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % definition de la strategie d'optimisation et de ses parametres

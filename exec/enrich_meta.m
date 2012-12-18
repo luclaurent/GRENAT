@@ -17,6 +17,8 @@ pts_ok=true;
 mse_ok=true;
 conv_loc_ok=true;
 conv_glob_ok=true;
+hist_r2_ok=true;
+hist_q3_ok=true;
 done_min=false;
 old_tirages=[];
 old_eval=[];
@@ -24,11 +26,12 @@ old_grad=[];
 
 %grille de vérification
 nb_pts_verif=3000;
-type_tir_verif='IHS';
+type_tir_verif='LHS';
 dd.type=type_tir_verif;
 dd.nb_samples=nb_pts_verif;
 dd.Xmin=doe.Xmin;
 dd.Xmax=doe.Xmax;
+dd.aff=false;
 grille_verif=gene_doe(dd);
 
 %critere historique sur N metamodèles
@@ -86,7 +89,10 @@ while ~crit_atteint&&enrich.on
         nb_col=floor(num_fig/nb_lign)+1;
         opt_plot.bornes=[1 30];
     end
-    
+    %nb de points
+    tir=old_tirages;
+    nb_pts=size(tir,1);
+    not_eval=true;
     %parcours des types d'enrichissement
     for  it_type=1:length(type)
         if it_type==1
@@ -100,18 +106,21 @@ while ~crit_atteint&&enrich.on
             % précédents)
             case {'HIST_R2','HIST_Q3'}
                 if it_enrich>1
-                    fprintf(' >> Calcul criteres HIST_Q3 et HIST_R2 <<\n ');
+                    fprintf(' >> Calcul criteres HIST_Q3 et HIST_R2 <<\n');
                     if it_enrich<nb_hist-1
-                        fprintf(' /!\ Historique trop faible donc pas de test HIST_R2 ni HIST_Q3 <<\n ');
+                        fprintf(' !!! Historique trop faible donc pas de test HIST_R2 ni HIST_Q3 <<\n ');
                     end
-                    %evaluation dernier metamodele
-                    Z_end=eval_meta(grille_verif,approx{end},meta);
-                    % evaluation des precedents metamodeles
-                    nbmeta=min(it_enrich,nb_hist+1);
-                    for it_hist=1:nb_hist+1
-                        Z=eval_meta(grille_verif,approx{end-it_hist},meta);
-                        [~,~,vR2(it_hist),~]=fact_corr(Zref,Zap);
-                        [~,~,vQ3(it_hist)]=qual(Zref,Zap);
+                    if not_eval
+                        %evaluation dernier metamodele
+                        Z_end=eval_meta(grille_verif,approx{end},meta);
+                        % evaluation des precedents metamodeles
+                        nbmeta=min(it_enrich-1,nb_hist+1);
+                        for it_hist=1:nbmeta
+                            Z_old=eval_meta(grille_verif,approx{end-it_hist},meta);
+                            [~,~,vR2(it_hist),~]=fact_corr(Z_end.Z,Z_old.Z);
+                            [~,~,vQ3(it_hist)]=qual(Z_end.Z,Z_old.Z);
+                        end
+                        not_eval=false;
                     end
                     switch type{it_type}
                         case 'HIST_R2'
@@ -136,15 +145,15 @@ while ~crit_atteint&&enrich.on
                             end
                             %trace de l'evolution
                             if enrich.aff_evol
-                                if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                                if it_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
                                 opt_plot.tag='HIST_R2';
                                 opt_plot.title='Evol. nombre de points';
                                 opt_plot.xlabel='Nombre de points';
-                                opt_plot.ylabel='HIST_R2';
+                                opt_plot.ylabel='HIST R2';
                                 opt_plot.ech_log=false;
                                 opt_plot.type='stairs';
                                 opt_plot.cible=crit{it_type};
-                                if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                                if it_enrich==2;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                                 aff_evol(nb_pts,mR2,opt_plot,id_plotloc);
                                 num_sub=num_sub+1;
                             end
@@ -170,15 +179,15 @@ while ~crit_atteint&&enrich.on
                             end
                             %trace de l'evolution
                             if enrich.aff_evol
-                                if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                                if it_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
                                 opt_plot.tag='HIST_Q3';
                                 opt_plot.title='Evol. nombre de points';
                                 opt_plot.xlabel='Nombre de points';
-                                opt_plot.ylabel='HIST_Q3';
+                                opt_plot.ylabel='HIST Q3';
                                 opt_plot.ech_log=false;
                                 opt_plot.type='stairs';
                                 opt_plot.cible=crit{it_type};
-                                if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                                if it_enrich==2;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                                 aff_evol(nb_pts,mQ3,opt_plot,id_plotloc);
                                 num_sub=num_sub+1;
                             end
@@ -228,7 +237,7 @@ while ~crit_atteint&&enrich.on
                 % controle en MSE (CV)
             case 'CV_MSE'
                 % Extraction MSE (CV)
-                msep=approx.cv.eloot;
+                msep=approx{end}.cv.eloot;
                 depass=(msep-crit{it_type})/crit{it_type};
                 %affichage info
                 fprintf(' ==>> MSE (CV) atteint: %d (max: %d) <<==\n',msep,crit{it_type});
@@ -266,7 +275,7 @@ while ~crit_atteint&&enrich.on
                 X_cible=enrich.min_glob.X;
                 %recherche du minimum de la fonction approchee
                 if ~done_min
-                    [Zap_min,X_min]=rech_min_meta(meta,approx,enrich.optim);
+                    [Zap_min,X_min]=rech_min_meta(meta,approx{end},enrich.optim);
                     fprintf(' >> Minimum sur metamodele: %4.2e (cible: %4.2e )\n',Zap_min,Z_cible)
                     fprintf(' >> Au point: ');
                     fprintf('%4.2e ',X_min);
@@ -398,8 +407,8 @@ while ~crit_atteint&&enrich.on
         switch enrich.type
             % en se basant sur l'Expected Improvement
             case {'EI','GEI','VAR','WEI','LCB'}
-                fprintf(' >> Enrichissement par metamodele, critere: %s\n',enrich.type)
-                new_tirages=ajout_tir_meta(meta,approx,enrich);
+                fprintf(' \n>> Enrichissement par metamodele, critere: %s\n',enrich.type)
+                new_tirages=ajout_tir_meta(meta,approx{end},enrich);
                 %en ajoutant des points dans le tirages
             case {'DOE'}
                 fprintf(' >> Enrichissement du tirage\n')
@@ -438,7 +447,7 @@ while ~crit_atteint&&enrich.on
         debug.new_eval=new_eval;
         debug.old_grad=old_grad;
         debug.new_grad=new_grad;
-        debug.approx=approx;
+        debug.approx=approx{end};
         
         %construction du metamodele
         [approx{it_enrich+1}]=const_meta([old_tirages;new_tirages],[old_eval;new_eval],[old_grad;new_grad],meta);

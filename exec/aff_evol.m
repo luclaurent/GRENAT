@@ -91,7 +91,9 @@ else
     %affectation nom au graphe
     set(idd,'Tag',tag);
     plot(id_plot,newX,newY,'ok','MarkerSize',2);
+    warning off all
     ext_bornes_x=get(id_plot,'xlim');
+    warning on all
     maxX=max([maxX,newX,ext_bornes_x]);
     minX=min([minX,newX,ext_bornes_x]);
     %trace de la cible
@@ -124,7 +126,6 @@ else
     end
     maxY=max([maxY,newY,new_bornes_y]);
     minY=min([minY,newY,new_bornes_y]);
-
     ylim(id_plot,[minY maxY])
     xlim(id_plot,[minX maxX])
     xlabel(id_plot,labelx)

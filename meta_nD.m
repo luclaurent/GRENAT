@@ -29,13 +29,13 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu';
+fct='rastrigin';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_manu';
 
 %nb d'echantillons
-doe.nb_samples=6;
+doe.nb_samples=25;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 50];
@@ -60,7 +60,7 @@ data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='KRG';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -105,8 +105,8 @@ meta.save=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %realisation des tirages
 tirages=gene_doe(doe);
-aa=load('tirages_1D_8.mat');
-tirages=aa.tirages./6.66666666;
+%aa=load('tirages_1D_8.mat');
+%tirages=aa.tirages./6.66666666;
 %tirages=[0.25;1.5;3.5;5;5.5;14.5];
 %tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')

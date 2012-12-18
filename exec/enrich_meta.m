@@ -22,6 +22,8 @@ conv_rep_ok=true;
 conv_loc_ok=true;
 hist_r2_ok=true;
 hist_q3_ok=true;
+conv_r2_ok=true;
+conv_q3_ok=true;
 done_min=false;
 old_tirages=[];
 old_eval=[];
@@ -38,6 +40,12 @@ dd.Xmin=doe.Xmin;
 dd.Xmax=doe.Xmax;
 dd.aff=false;
 grille_verif=gene_doe(dd);
+
+%si verification par rapport a la fonction reele
+if any(strcmp(enrich.crit_type,'CONV_R2_EX'))||any(strcmp(enrich.crit_type,'CONV_Q3_EX'))
+    Zref=gene_eval(doe.fct,grille_verif,'eval');
+end
+
 
 %critere historique sur N metamodèles
 nb_hist=4;
@@ -84,9 +92,9 @@ while ~crit_atteint&&enrich.on
         num_fig=0;
         for  it_type=1:length(type)
             switch type{it_type}
-                case {'NB_PTS','HIST_R2','HIST_Q3','CV_MSE'}
+                case {'NB_PTS','HIST_R2','HIST_Q3','CV_MSE','CONV_R2_EX','CONV_Q3_EX'}
                     num_fig=num_fig+1;
-                case {'CONV_REP','CONV_LOC'}
+                case {'CONV_REP','CONV_LOC','CONV_REP_EX','CONV_LOC_EX'}
                     num_fig=num_fig+2;
             end
         end
@@ -98,6 +106,7 @@ while ~crit_atteint&&enrich.on
     tir=old_tirages;
     nb_pts=size(tir,1);
     not_eval=true;
+    not_eval_hist=true;
     %parcours des types d'enrichissement
     for  it_type=1:length(type)
         if it_type==1
@@ -118,17 +127,23 @@ while ~crit_atteint&&enrich.on
                     if not_eval
                         %evaluation dernier metamodele
                         Z_end=eval_meta(grille_verif,approx{end},meta);
+                        not_eval=false;
+                    end
+                    if not_eval_hist
                         % evaluation des precedents metamodeles
                         nbmeta=min(it_enrich-1,nb_hist);
+                        vR2=zeros(nbmeta,1);
+                        vQ3=vR2;
                         for it_hist=1:nbmeta
                             Z_old=eval_meta(grille_verif,approx{end-it_hist},meta);
                             [~,~,vR2(it_hist),~]=fact_corr(Z_end.Z,Z_old.Z);
                             [~,~,vQ3(it_hist)]=qual(Z_end.Z,Z_old.Z);
                         end
-                        not_eval=false;
+                        not_eval_hist=false;
                     end
+                        
                     switch type{it_type}
-                        case 'HIST_R2'
+                        case 'HIST_R2'                            
                             %moyenne R2
                             mR2=mean(vR2);
                             %sauvegarde valeur critere
@@ -143,7 +158,7 @@ while ~crit_atteint&&enrich.on
                                     fprintf(' ====> LIMITE R2 (Hist %i) ATTEINTE --- + %4.2e%s <====\n',nb_hist,depass*100,char(37))
                                 else
                                     hist_r2_ok=true;
-                                    fprintf(' ====> LIMITE R2 (Hist %i) NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                                    fprintf(' ====> LIMITE R2 (Hist %i) NON ATTEINTE --- %4.2e%s <====\n',nb_hist,depass*100,char(37))
                                 end
                             else
                                 hist_r2_ok=true;
@@ -174,10 +189,10 @@ while ~crit_atteint&&enrich.on
                                 % verification temps atteint
                                 if mQ3<=crit{it_type}
                                     hist_q3_ok=false;
-                                    fprintf(' ====> LIMITE Q3 (Hist %i) ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                                    fprintf(' ====> LIMITE Q3 (Hist %i) ATTEINTE --- + %4.2e%s <====\n',nb_hist,depass*100,char(37))
                                 else
                                     hist_q3_ok=true;
-                                    fprintf(' ====> LIMITE Q3 (Hist %i) NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                                    fprintf(' ====> LIMITE Q3 (Hist %i) NON ATTEINTE --- %4.2e%s <====\n',nb_hist,depass*100,char(37))
                                 end
                             else
                                 hist_q3_ok=true;
@@ -199,6 +214,78 @@ while ~crit_atteint&&enrich.on
                     end
                     
                 end
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                % controle R2 par rapport a la vraie fonction
+            case {'CONV_R2_EX','CONV_Q3_EX'}
+                if not_eval
+                    %evaluation dernier metamodele
+                    Z_end=eval_meta(grille_verif,approx{end},meta);
+                    not_eval=false;
+                end
+                               
+                switch type{it_type}
+                    case 'CONV_R2_EX'
+                        [~,~,vR2,~]=fact_corr(Z_end.Z,Zref);
+                        %sauvegarde valeur critere
+                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} vR2];
+                        depass=(vR2-crit{it_type})/crit{it_type};
+                        %affichage info
+                        fprintf(' ==>> R2 atteint: %d (max: %d) <<==\n',vR2,crit{it_type});
+                        % verification temps atteint
+                        if vR2>=crit{it_type}
+                            conv_r2_ok=false;
+                            fprintf(' ====> LIMITE R2 ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                        else
+                            conv_r2_ok=true;
+                            fprintf(' ====> LIMITE R2 NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                        end
+                        %trace de l'evolution
+                        if enrich.aff_evol
+                            if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                            opt_plot.tag='CONV_R2_EX';
+                            opt_plot.title='Evol. nombre de points';
+                            opt_plot.xlabel='Nombre de points';
+                            opt_plot.ylabel='R2 EX';
+                            opt_plot.ech_log=false;
+                            opt_plot.type='stairs';
+                            opt_plot.cible=crit{it_type};
+                            if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                            aff_evol(nb_pts,vR2,opt_plot,id_plotloc);
+                            num_sub=num_sub+1;
+                        end
+                    case 'CONV_Q3_EX'
+                        [~,~,vQ3]=qual(Zref,Z_end.Z); 
+                        %sauvegarde valeur critere
+                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} vQ3];
+                        depass=(vQ3-crit{it_type})/crit{it_type};
+                        %affichage info
+                        fprintf(' ==>> Q3  atteint: %d (max: %d) <<==\n',vQ3,crit{it_type});
+                        % verification temps atteint
+                        if vQ3<=crit{it_type}
+                            conv_q3_ok=false;
+                            fprintf(' ====> LIMITE Q3 ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                        else
+                            conv_q3_ok=true;
+                            fprintf(' ====> LIMITE Q3 NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                        end
+                        %trace de l'evolution
+                        if enrich.aff_evol
+                            if it_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                            opt_plot.tag='CONV_Q3_EX';
+                            opt_plot.title='Evol. nombre de points';
+                            opt_plot.xlabel='Nombre de points';
+                            opt_plot.ylabel='Q3 EX';
+                            opt_plot.ech_log=true;
+                            opt_plot.type='stairs';
+                            opt_plot.cible=crit{it_type};
+                            if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                            aff_evol(nb_pts,vQ3,opt_plot,id_plotloc);
+                            num_sub=num_sub+1;
+                        end
+                end
+                
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -303,7 +390,7 @@ while ~crit_atteint&&enrich.on
                         if it_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         aff_evol(nb_pts,Zap_min(end),opt_plot,id_plotloc);
                         num_sub=num_sub+1;
-                    end                    
+                    end
                 end
                 
                 switch type{it_type}
@@ -493,8 +580,9 @@ while ~crit_atteint&&enrich.on
     %un nouveau point de calcul
     crit_atteint=conv_glob_ex_ok&&conv_rep_ok&&conv_loc_ok&&...
         conv_loc_ex_ok&&mse_ok&&pts_ok...
-        &&hist_r2_ok&&hist_q3_ok;crit_atteint=~crit_atteint;
-
+        &&hist_r2_ok&&hist_q3_ok&&conv_r2_ok&&conv_q3_ok;
+    crit_atteint=~crit_atteint;
+    
     if ~crit_atteint
         %en fonction du type d'enrichissement
         switch enrich.type

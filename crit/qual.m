@@ -9,7 +9,6 @@ function [q1,q2,q3]=qual(Zex,Zap)
 
 %%Calcul des ecarts 
 ecart=(Zex-Zap).^2/max(max(Zex.^2));
-
 %Calcul du critere 1 (max des ecarts)
 q1=max(ecart(:));
 

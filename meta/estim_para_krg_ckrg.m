@@ -85,7 +85,7 @@ options_fminsearch = optimset(...
 if ~meta.para.aff_iter_graph
     options_fmincon=optimset(options_fmincon,'OutputFcn','');
     options_fminbnd=optimset(options_fminbnd,'OutputFcn','');
-     options_fminsearch=optimset(options_fminbnd,'OutputFcn','');
+    options_fminsearch=optimset(options_fminbnd,'OutputFcn','');
     options_ga=gaoptimset(options_ga,'OutputFcn','');
 else
     figure
@@ -131,7 +131,7 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminbnd'
         fprintf('||Fminbnd|| Initialisation au point:\n');
-        fprintf('%g ',x0); fprintf('\n');        
+        fprintf('%g ',x0); fprintf('\n');
         %minimisation
         if ~aff_warning;warning off all;end
         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,options_fminbnd);
@@ -147,7 +147,7 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminsearch'
         fprintf('||Fminsearch|| Initialisation au point:\n');
-        fprintf('%g ',x0); fprintf('\n');        
+        fprintf('%g ',x0); fprintf('\n');
         %minimisation
         [x,fval,exitflag,output] = fminsearch(fun,x0,options_fminsearch);
         

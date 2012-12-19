@@ -29,7 +29,8 @@ nbv=numel(Xmin);
 %recuperation nombre d'echantillons souhaites
 nbs=doe.nb_samples;
 
-
+%nombre de generation pour LHS score
+nb_gene=20;
 
 %generation des differents types de tirages
 switch doe.type
@@ -49,9 +50,54 @@ switch doe.type
     case 'IHS_R'
         tir=ihs_R(Xmin,Xmax,prod(nbs(:)));
         tirages=tir(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
-        % Latin Hypercube Sampling (� loi uniforme)
+        % Latin Hypercube Sampling (a loi uniforme)
     case 'LHS'
         tirages=lhsu(Xmin,Xmax,prod(nbs(:)));
+        % Latin Hypercube Sampling (a loi uniforme) par minimisation somme
+        % distance interpoints
+    case 'LHS_O1'
+        tir_tmp=cell(1,nb_gene);
+        sc=zeros(1,nb_gene);
+        %on genere nb_gene tirages
+        for ii=1:nb_gene
+            tir_tmp{ii}=lhsu(Xmin,Xmax,prod(nbs(:)));
+            %calcul score
+            sc(ii)=score_doe(tir_tmp{ii});
+        end
+        [~,IX]=min(sc);
+        tirages=tir_tmp{IX};
+        clear tir_tmp;
+        % LHS_O1 avec stockage des donnees
+    case 'LHS_O1_manu'
+        %on verifie si le dossier de stockage existe (si non on le cree)
+        if exist('TIR_MANU','dir')~=7
+            unix('mkdir TIR_MANU');
+        end
+        
+        %on verifie si le tirages existe deja (si oui on le charge/si non on le
+        %genere et le sauvegarde)
+        fi=['TIR_MANU/lhsu_o1_man_' num2str(nbv) '_'  num2str(nbs)];
+        fich=[fi '.mat'];
+        if exist(fich,'file')==2
+            st=load(fich);
+            tirages=st.tirages;
+        else
+            fprintf('Tirage inexistant >> execution!!\n')
+            tir_tmp=cell(1,nb_gene);
+            sc=zeros(1,nb_gene);
+            %on genere nb_gene tirages dans [0 1]
+            for ii=1:nb_gene
+                tir_tmp{ii}=lhsu(0*Xmin,0*Xmax+1,prod(nbs(:)));
+                %calcul score
+                sc(ii)=score_doe(tir_tmp{ii});
+            end
+            [~,IX]=min(sc);
+            tirages=tir_tmp{IX};
+            clear tir_tmp;
+            save(fi,'tirages');
+        end
+        % on corrige le tirage pourobetnir le bon espace
+        tirages=tirages.*repmat(Xmax(:)'-Xmin(:)',prod(nbs(:)),1)+repmat(Xmin(:)',prod(nbs(:)),1);
         % LHS avec stockage des donnees
     case 'LHS_manu'
         %on verifie si le dossier de stockage existe (si non on le cree)
@@ -68,7 +114,7 @@ switch doe.type
             tirages=st.tirages;
         else
             fprintf('Tirage inexistant >> execution!!\n')
-            tirages=lhsu(0*Xmin,0*Xmax+1,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
+            tirages=lhsu(0*Xmin,0*Xmax+1,prod(nbs(:))); % on genere un tirage dans l'espace [0 1]
             save(fi,'tirages');
         end
         % on corrige le tirage pourobetnir le bon espace

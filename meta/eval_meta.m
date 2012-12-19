@@ -112,7 +112,7 @@ for num_meta=1:numel(donnees_const)
                     fprintf('Pb d''interpolation (eval) GRBF\n')
                     fprintf('DiffZ \t\t||Eval\t\t||Zverif\n');
                     conc=vertcat(diffZ',eval',Zverif');
-                    fprintf('%4.2e\t\||%4.2e\t\||%4.2e\n',conc(:))
+                    fprintf('%4.2e\t||%4.2e\t||%4.2e\n',conc(:))
                 end
                 
                 if meta_donnee.in.pres_grad

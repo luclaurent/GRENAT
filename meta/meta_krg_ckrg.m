@@ -13,6 +13,7 @@ if meta.deg==0; fprintf('(Ordinaire)\n');else fprintf('(Universel)\n');end;
 fprintf('>> Fonction de correlation: %s\n',meta.corr);
 fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>> Correction conditionnement:');if meta.recond; fprintf('Oui\n');else fprintf('Non\n');end
 
 fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
 if meta.para.estim
@@ -210,7 +211,6 @@ ret.build.y=y;
 ret.build.fct_reg=fct_reg;
 ret.build.corr=meta.corr;
 ret.manq=manq;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres

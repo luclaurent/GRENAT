@@ -217,7 +217,7 @@ ret.manq=manq;
 %(si on saouhaite avoir les valeurs de la log-vraisemblance en fonction des
 %parametres)
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,30);
+    val_para=linspace(meta.para.l_min,meta.para.l_max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2

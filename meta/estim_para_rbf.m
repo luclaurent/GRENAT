@@ -137,6 +137,46 @@ switch meta.para.method
         if ~aff_warning;warning on all;end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'tir_min'
+        nb_pts=nb_para*50;
+        type_tir='LHS';
+        fprintf('||Tir_min||  Tirage %s de %i points\n',type_tir,nb_pts);
+        doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
+        tir_pop=gene_doe(doePop);
+        crit=zeros(1,nb_pts);
+        parfor tir=1:nb_pts
+            crit(tir)=fun(tir_pop(tir,:));
+        end
+        [fval,IX]=min(crit);
+        x=tir_pop(IX,:);
+        
+        %stockage retour algo
+        para_estim.out_algo.fval=fval;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'tir_min_opti'
+        nb_pts=nb_para*10;
+        type_tir='LHS';
+        fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
+        doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
+        tir_pop=gene_doe(doePop);
+        crit=zeros(1,nb_pts);
+        parfor tir=1:nb_pts
+            crit(tir)=fun(tir_pop(tir,:));
+        end
+        [fval1,IX]=min(crit);
+        x1=tir_pop(IX,:);
+        %recherche locale
+        fprintf('||Fmincon|| Initialisation au point:\n');
+        fprintf('%g ',x1); fprintf('\n');
+        [x,fval2,exitflag,output] = fmincon(fun,x1,[],[],[],[],lb,ub,[],options_fmincon);
+        %stockage retour algo
+        para_estim.out_algo.fval1=fval1;
+        para_estim.out_algo=output;
+        para_estim.out_algo.fval=fval2;
+        para_estim.out_algo.exitflag=exitflag;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminbnd'
         fprintf('||Fminbnd|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
@@ -151,9 +191,9 @@ switch meta.para.method
         para_estim.out_algo.exitflag=exitflag;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        case 'fminsearch'
+    case 'fminsearch'
         fprintf('||Fminsearch|| Initialisation au point:\n');
-        fprintf('%g ',x0); fprintf('\n');        
+        fprintf('%g ',x0); fprintf('\n');
         %minimisation
         [x,fval,exitflag,output] = fminsearch(fun,x0,options_fminsearch);
         

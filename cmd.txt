@@ -17,3 +17,8 @@ batch_lot_cnodeb.sh
   516  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Rastrigin -t 1-450 -v FICH_SCRIPT=liste_Rastrigin batch_lot_cnode.sh
     518  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Rosenbrock -t 1-450 -v FICH_SCRIPT=liste_Rosenbrock batch_lot_cnode.sh
       520  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Schwefel -t 1-450 -v FICH_SCRIPT=liste_Schwefel batch_lot_cnode.sh
+  534  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Sch_bR -t 1-450 -v FICH_SCRIPT=liste_Schwefel_ibR batch_lot_cnode.sh
+  535  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ros_bR -t 1-450 -v FICH_SCRIPT=liste_Rosenbrock_ibR batch_lot_cnode.sh
+  536  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ras_bR -t 1-450 -v FICH_SCRIPT=liste_Rastrigin_ibR batch_lot_cnode.sh
+  537  history |grep qsub
+  538  history |grep qsub>> cmd.txt 

@@ -321,11 +321,11 @@ echo '-------------------------------------------'
 echo ' COMPRESSION DES DONNEES (SOURCE ET CLUSTER)'
 echo '-------------------------------------------' 
 # sur source
-tar -cjf ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}.tar.bz2 ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
+tar -cjfP ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}.tar.bz2 ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
 rm -rf ${DOSSIER_DONNEES_EXECUTIONS}/${DOSSIER_BASE_TRAVAIL}
 
 #sur cluster
-tar -cjf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL.tar.bz2 /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL && rm -rf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL 
+tar -cjfP /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL.tar.bz2 /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL && rm -rf /usrtmp/$NUID/$DOSSIER_BASE_TRAVAIL 
 
 echo '-------------------------------------------'
 echo ' ARRET PROCESSUS SI PLANTAGE'

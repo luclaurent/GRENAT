@@ -281,6 +281,7 @@ end
 %%parametres
 if meta.para.estim
     para_estim=estim_para_krg_ckrg(ret,meta);
+    ret.build.para_estim=para_estim;
     meta.para.l_val=para_estim.l_val;
     meta.para.val=para_estim.l_val;
     if isfield(para_estim,'p_val')

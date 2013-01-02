@@ -54,7 +54,7 @@ switch meta.rbf
 end
 %definition valeur de depart de la variable
 x0=0.1*(ub-lb);
-% D�finition de la function a minimiser
+% Definition de la function a minimiser
 fun=@(para)bloc_rbf(donnees,meta,para,'estim');
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
@@ -154,7 +154,7 @@ switch meta.para.method
         para_estim.out_algo.fval=fval;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    case 'tir_min_opti'
+    case 'tir_min_fmincon'
         nb_pts=nb_para*10;
         type_tir='LHS';
         fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
@@ -167,7 +167,7 @@ switch meta.para.method
         [fval1,IX]=min(crit);
         x1=tir_pop(IX,:);
         %recherche locale
-        fprintf('||Fmincon|| Initialisation au point:\n');
+        fprintf('||Fmincon (IP)|| Initialisation au point:\n');
         fprintf('%g ',x1); fprintf('\n');
         [x,fval2,exitflag,output] = fmincon(fun,x1,[],[],[],[],lb,ub,[],options_fmincon);
         %stockage retour algo
@@ -177,6 +177,29 @@ switch meta.para.method
         para_estim.out_algo.exitflag=exitflag;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'tir_min_sqp'
+        nb_pts=nb_para*10;
+        type_tir='LHS';
+        fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
+        doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
+        tir_pop=gene_doe(doePop);
+        crit=zeros(1,nb_pts);
+        parfor tir=1:nb_pts
+            crit(tir)=fun(tir_pop(tir,:));
+        end
+        [fval1,IX]=min(crit);
+        x1=tir_pop(IX,:);
+        %recherche locale
+        fprintf('||Fincon (SQP)|| Initialisation au point:\n');
+        fprintf('%g ',x1); fprintf('\n');
+        options_fmincon=optimset(options_fmincon,'Algorithm','sqp');
+        [x,fval2,exitflag,output] = fmincon(fun,x1,[],[],[],[],lb,ub,[],options_fmincon);
+        %stockage retour algo
+        para_estim.out_algo.fval1=fval1;
+        para_estim.out_algo=output;
+        para_estim.out_algo.fval=fval2;
+        para_estim.out_algo.exitflag=exitflag;
+       
     case 'fminbnd'
         fprintf('||Fminbnd|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');

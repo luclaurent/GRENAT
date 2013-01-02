@@ -250,6 +250,7 @@ meta.cv=cv_old;
 %%proposition de Hardy/Franke
 if meta.para.estim
     para_estim=estim_para_rbf(ret,meta);
+    ret.build.para_estim=para_estim;
     meta.para.l_val=para_estim.l_val;
     meta.para.val=para_estim.l_val;
     if isfield(para_estim,'p_val')

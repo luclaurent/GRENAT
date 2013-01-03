@@ -63,7 +63,7 @@ dist=repmat(X,nb_val,1)-tirages;
 if data.in.pres_grad
     if calc_grad  %si calcul des gradients
         %evaluation de la fonction de base radiale
-        [ev,dev,ddev]=feval(data.build.fct,dist,data.build.para.val);
+        [ev,dev,ddev]=feval(data.build.fct,dist,data.build.para.l_val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         P=[ev' reshape(dev',1,nb_val*nb_var)];
@@ -90,7 +90,7 @@ if data.in.pres_grad
         
     else %sinon
         %evaluation de la fonction de base radiale
-        [ev,dev]=feval(data.build.fct,dist,data.build.para.val);
+        [ev,dev]=feval(data.build.fct,dist,data.build.para.l_val);
         %intercallage reponses et gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         P=[ev' reshape(dev',1,nb_val*nb_var)];
@@ -101,7 +101,7 @@ if data.in.pres_grad
     end
 else
     if calc_grad  %si calcul des gradients
-        [P,dP]=feval(data.build.fct,dist,data.build.para.val);P=P';dP=dP';
+        [P,dP]=feval(data.build.fct,dist,data.build.para.l_val);P=P';dP=dP';
         %si donnees manquantes
         if data.manq.eval.on
             P(data.manq.eval.ix_manq)=[];

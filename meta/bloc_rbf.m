@@ -8,7 +8,7 @@ aff_warning=false;
 % fonction a minimiser pour trouver jeu de parametres
 fct_min='eloot'; %eloot/eloor/eloog
 %coefficient de reconditionnement
-coef=10^-6;
+coef=eps;
 % type de factorisation de la matrice de correlation
 fact_KK='QR' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -167,19 +167,18 @@ end
 %amelioration du conditionnement de la matrice de correlation
 if meta.recond
     cond_orig=condest(KK);
-    if cond_orig>10^14
-        cond_old=cond_orig;
-        KK=KK+coef*speye(size(KK));
-        cond_new=condest(KK);
-        fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-            cond_old,cond_new);
-    end
+    KK=KK+coef*speye(size(KK));
+    cond_new=condest(KK);
+    %     fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
+    %         cond_old,cond_new);
+    
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %conditionnement de la matrice de correlation
-if nargin==2   %en phase de construction
+if nargin==2&&~exist('cond_new','var')   %en phase de construction
     cond_new=condest(KK);
+elseif nargin==2&&exist('cond_new','var')
     fprintf('Conditionnement R: %4.2e\n',cond_new)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,19 +188,21 @@ end
 %QR
 switch fact_KK
     case 'QR'
-        [Q,R]=qr(KK);
-        QKK=Q;
-        RKK=R;
-        iKK=R\Q';
-        yQ=Q'*data.build.y;
-        w=R\yQ;
+        [QKK,RKK]=qr(KK);
+        iKK=RKK\QKK';
+        yQ=QKK'*data.build.y;
+        w=RKK\yQ;
     case 'LU'
-        [L,U]=lu(KK);
-        % a ecrire
+        [LKK,UKK]=lu(KK);
+        iKK=RKK\inv(LKK);
+        yL=LKK\data.build.y;;
+        w=U\yL;
     case 'LL'
         %%% A coder
-        L=chol(KK,'lower');
-        % a ecrire
+        LKK=chol(KK,'lower');
+        iKK=LKK'\inv(LKK);
+        yL=LKK\data.build.y;
+        w=LKK'\yL;
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -220,10 +221,10 @@ if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
 if exist('cond_new','var');build_data.cond_new=cond_new;end
 if exist('QKK','var');build_data.QKK=QKK;end
 if exist('RKK','var');build_data.RKK=RKK;end
+if exist('LKK','var');build_data.LKK=LKK;end
+if exist('UKK','var');build_data.UKK=UKK;end
 if exist('iKK','var');build_data.iKK=iKK;end
 if exist('yQ','var');build_data.yQ=yQ;end
-if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
-if exist('cond_new','var');build_data.cond_new=cond_new;end
 build_data.w=w;
 build_data.KK=KK;
 build_data.fct=meta.rbf;
@@ -241,9 +242,7 @@ if meta.cv||meta.para.estim
     if isfield(cv,fct_min)
         crit_min=cv.(fct_min);
     else
-        disp('la')
         crit_min=cv.eloot;
-        disp('ici')
     end
 else
     cv=[];

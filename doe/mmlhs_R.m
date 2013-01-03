@@ -1,10 +1,11 @@
 %% Generation de plan d'experience LHS a partir de R (avec pretirage de LHS enrichi)
-% IHS: Improved Hypercube Sampling
-% Ref: Beachkofski, B., Grandhi, R. (2002) Improved Distributed Hypercube Sampling American Institute of Aeronautics and Astronautics Paper 1274.
-% L. LAURENT -- 14/01/2012 -- laurent@lmt.ens-cachan.fr
+%% LHS maximin
+%Refs: Beachkofski, B., Grandhi, R. (2002) Improved Distributed Hypercube Sampling American Institute of Aeronautics and Astronautics Paper 1274.
+% L. LAURENT -- 02/01/2013 -- laurent@lmt.ens-cachan.fr
 
 
-function [tir,new_tir]=ihs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
+
+function [tir,new_tir]=mmlhs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
 
 %% INPUT:
 %    - Xmin,Xmax: bornes min et max de l'espace de concpetion
@@ -24,14 +25,20 @@ rep='LHS_R';
 %nombre de plans pretires
 nb_pretir=300;
 %nom du fichier script r
-nom_script='ihsu_R.r';
+nom_script='olhs_R.r';
 %nom du fichier de donnees R
 nom_dataR='dataR.dat';
+
+%options 
+%nombre de permutation "Columnwise Pairwise"
+nbperm=numel(Xmin);
+%critere arret
+crit_stop=1e-2;
 
 %phase de creation des plans
 if nargin==3
     
-    % recuperation dimensions (nombre de variables et nombre d'�chantillon)
+    % recuperation dimensions (nombre de variables et nombre d'echantillon)
     nbs=nb_samples;
     nbv=numel(Xmin);
     
@@ -44,9 +51,10 @@ if nargin==3
     
     %ecriture du script r
     %procedure de creation du tirage initial
-    text_init=['a<-improvedLHS(' num2str(nbs) ',' num2str(nbv) ',5)\n'];
+    text_init=['a<-maximinLHS(' num2str(nbs) ',' num2str(nbv) ','...
+        num2str(nbperm) ',' num2str(crit_stop) ')\n'];
     %procedure d'enrichissement
-    text_enrich=['a<-augmentLHS(a,1)\n'];
+    text_enrich=['a<-optAugmentLHS(a,1,4)\n'];
     %chargement librairie LHS
     load_LHS='library(lhs)\n';
     %procedure stockage tirage
@@ -66,18 +74,17 @@ if nargin==3
     fprintf(fid,stock_tir);
     %fermeture du fichier
     fclose(fid);
-    %%execution du script R (necessite d'avoir R installe)
+    %%execution du script R (necessite d'avoir r installe)
     %test de l'existence de
     [e,t]=unix('which R');
     if e~=0
         error('R non installe (absent du PATH)');
     else
-        [e,t]=unix(['cd ' rep ' && R -f ' nom_script]);
-        pause(1)
+        [~,t]=unix(['cd ' rep ' && R -f ' nom_script]);
+        pause(0.5)
     end
     %lecture du fichier de donnees R
     A=load([rep '/' nom_dataR]);
-    
     %tirage obtenu
     tir=A(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
     new_tir=[];
@@ -96,4 +103,6 @@ elseif nargin==5
     new_tir=A(ind,:).*repmat(Xmax(:)'-Xmin(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
     %liste de tous les tirages
     tir=[old_tir;new_tir];
+    
+    
 end

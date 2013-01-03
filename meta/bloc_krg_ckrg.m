@@ -5,9 +5,9 @@
 function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
-coef=eps;
+coef=(10+size(donnees.build.fct,1))*eps;
 % type de factorisation de la matrice de correlation
-fact_rcc='QR' ; %LU %QR %LL %None
+fact_rcc='LL' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement grandeurs utiles
@@ -153,20 +153,18 @@ end
 %amelioration du conditionnement de la matrice de correlation
 if meta.recond
     cond_orig=condest(rcc);
-    if cond_orig>10^14
-        cond_old=cond_orig;
-        rcc=rcc+coef*speye(size(rcc));
-        cond_new=condest(rcc);
-        fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-            cond_old,cond_new);
-    end
+    rcc=rcc+coef*speye(size(rcc));
+    cond_new=condest(rcc);
+    %   fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
+    %       cond_old,cond_new);
+    
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %conditionnement de la matrice de correlation
 if nargin==2   %en phase de construction
     cond_new=condest(rcc);
-    fprintf('Conditionnement R: %6.5d\n',cond_new)
+    fprintf('Conditionnement R: %6.5e\n',cond_new)
 end
 
 

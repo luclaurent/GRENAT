@@ -3,7 +3,7 @@
 
 function para=calc_para_rbf(tirages,data)
 
-% choix de la strat�gie
+% choix de la strategie
 if isfield(data.para,'type')
     type=data.para.type; %Hardy/Franke ou manu
 else
@@ -16,7 +16,7 @@ aniso=data.para.aniso;
 nb_var=size(tirages,2);
 nb_val=size(tirages,1);
 
-%suivant la strat�gie choisie
+%suivant la strategie choisie
 switch type
     case 'Hardy' %c=0.815d avec d=1/N*sum di ou di la distance entre un point i et son plus proche voisin
         if aniso
@@ -58,5 +58,5 @@ switch type
         para=1.25*1/nb_val*D;
         
     otherwise
-        para=data.para.val;
+        para=data.para.l_val;
 end

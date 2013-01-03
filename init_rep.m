@@ -21,5 +21,6 @@ addpath([doss '/meta']);
 addpath([doss '/crit']);
 addpath([doss '/matlab2tikz/']);
 addpath([doss '/exec']);
+addpath([doss '/libs/sqplab-0.4.5-distrib/src']);
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%

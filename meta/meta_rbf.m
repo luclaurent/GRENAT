@@ -30,7 +30,11 @@ if meta.para.estim
     fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
     fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
 else
-    fprintf('>> Valeur parametre: %d\n',meta.para.val);
+    fprintf('>> Valeur parametre: %d\n',meta.para.l_val);
+    switch meta.rbf
+        case {'rf_expg','rf_expgg'}
+            fprintf('>> Bornes recherche puissance: [%d , %d]\n',meta.para.p_val);
+    end
 end
 fprintf('\n\n')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,7 +151,7 @@ aff_cv_old=meta.cv_aff;
 meta.cv_aff=false;
 
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,gene_nbele(nb_var));
+    val_para=linspace(meta.para.l_min,meta.para.l_max,gene_nbele(nb_var));
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -194,8 +198,8 @@ if meta.para.estim&&meta.para.aff_estim
         for itli=1:length(val_para)
             %calcul de la log-vraisemblance et stockage
             [~,build_rbf]=bloc_rbf(ret,meta,val_para(itli),'etud');
-            rippa_bomp(itli)=build_rbf.cv.eloot;
-            cv_moi(itli)=build_rbf.cv.perso.eloot;
+            rippa_bomp(itli)=build_rbf.cv.and.eloot;
+            cv_moi(itli)=build_rbf.cv.then.eloot;
             %affichage barre attente
             if usejava('desktop')&&exist('h','var')
                 avance=(itli-1)/length(val_para);
@@ -246,6 +250,7 @@ meta.cv=cv_old;
 %%proposition de Hardy/Franke
 if meta.para.estim
     para_estim=estim_para_rbf(ret,meta);
+    ret.build.para_estim=para_estim;
     meta.para.l_val=para_estim.l_val;
     meta.para.val=para_estim.l_val;
     if isfield(para_estim,'p_val')

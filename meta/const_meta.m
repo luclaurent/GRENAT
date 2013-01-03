@@ -128,16 +128,26 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            switch meta.corr
-                case {'correxpg'}
-                    lb=[meta.para.l_min meta.para.p_min];
-                    ub=[meta.para.l_max meta.para.p_max];
-                otherwise                    
-                    lb=meta.para.l_min;
-                    ub=meta.para.l_max;
+            if meta.para.estim
+                switch meta.corr
+                    case {'correxpg'}
+                        lb=[meta.para.l_min meta.para.p_min];
+                        ub=[meta.para.l_max meta.para.p_max];
+                    otherwise
+                        lb=meta.para.l_min;
+                        ub=meta.para.l_max;
+                end
+                theta0=(ub-lb)./2;
+                [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0,lb,ub);
+            else
+                switch meta.corr
+                    case {'correxpg'}
+                        theta0=[meta.para.l_val meta.para.p_val];
+                    otherwise
+                        theta0=meta.para.l_val;
+                end
+                [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0);
             end
-            theta0=(ub-lb)./2;
-            [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0,lb,ub);
             out_meta=dace;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%

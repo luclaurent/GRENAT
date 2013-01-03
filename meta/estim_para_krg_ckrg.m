@@ -74,11 +74,18 @@ options_ga = gaoptimset(...
     'PlotFcns','',...
     'TolFun',crit_opti,...
     'StallGenLimit',20);
+options_fminsearch = optimset(...
+    'Display', 'iter',...        %affichage evolution
+    'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+    'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
+    'TolFun',crit_opti,...
+    'PlotFcns','');
 
 %affichage des iterations
 if ~meta.para.aff_iter_graph
     options_fmincon=optimset(options_fmincon,'OutputFcn','');
     options_fminbnd=optimset(options_fminbnd,'OutputFcn','');
+    options_fminsearch=optimset(options_fminbnd,'OutputFcn','');
     options_ga=gaoptimset(options_ga,'OutputFcn','');
 else
     figure
@@ -86,6 +93,7 @@ end
 if ~meta.para.aff_iter_cmd
     options_fmincon=optimset(options_fmincon,'Display', 'final');
     options_fminbnd=optimset(options_fminbnd,'Display', 'final');
+    options_fminsearch=optimset(options_fminbnd,'Display', 'final');
     options_ga=gaoptimset(options_ga,'Display', 'final');
 end
 
@@ -124,15 +132,24 @@ switch meta.para.method
     case 'fminbnd'
         fprintf('||Fminbnd|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
-        %definition des bornes de l'espace de recherche
-        lb=meta.para.min;ub=meta.para.max;
-        %declaration de la fonction a minimiser
-        fun=@(para)bloc_krg(tiragesn,nbs,fc,y,meta,std_e,para);
-        
         %minimisation
         if ~aff_warning;warning off all;end
         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,options_fminbnd);
         if ~aff_warning;warning on all;end
+        
+        %stockage retour algo
+        para_estim.out_algo=output;
+        para_estim.out_algo.fval=fval;
+        para_estim.out_algo.exitflag=exitflag;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    case 'fminsearch'
+        fprintf('||Fminsearch|| Initialisation au point:\n');
+        fprintf('%g ',x0); fprintf('\n');
+        %minimisation
+        [x,fval,exitflag,output] = fminsearch(fun,x0,options_fminsearch);
         
         %stockage retour algo
         para_estim.out_algo=output;

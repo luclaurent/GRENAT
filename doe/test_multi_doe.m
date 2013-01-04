@@ -3,15 +3,15 @@ init_rep
 part=4;
 
 nb_pt_min=5;
-nb_pt_max=200;
+nb_pt_max=100;
 nb_pt=nb_pt_min:5:nb_pt_max;
 
 nb_iter=floor(linspace(1,50,7));
 for dim_p=2:10
-for part=4:-1:1
+for part=[4 2 1]
 dim_tir=dim_p;
 
-nb_tent=100;
+nb_tent=50;
 
 Xmin=-50;
 Xmax=100;
@@ -140,7 +140,6 @@ if part==1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 elseif part==2
-    nb_pt=nb_pt_min:nb_pt_max;
     dminmin=cell(numel(type_tir),numel(nb_pt));
     sumd=dminmin;recouv=dminmin;rapd=dminmin;avgd=dminmin;
     l2=dminmin;cl2=dminmin;ml2=dminmin;sl2=dminmin;wl2=dminmin;

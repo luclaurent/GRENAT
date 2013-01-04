@@ -19,8 +19,6 @@ RandStream.setGlobalStream(s);
 
 fprintf('===== DOE =====\n');
 
-
-
 %recuperation nombre d'echantillons souhaites
 nbs=doe.nb_samples;
 
@@ -43,6 +41,11 @@ Xmin_def=0.*Xmin;Xmax_def=0.*Xmax+1;
 
 %nombre de variables
 nbv=numel(Xmin);
+
+%% affichage infos
+fprintf(' >> type de tirages: %s\n',doe.type);
+fprintf(' >> Nombre de points: %i\n',nbs);
+fprintf(' >> Nombre de variables: %i\n',nbv);
 
 tir_ok=true;
 tir_perso=false;
@@ -353,9 +356,6 @@ if tir_ok
 else
     tirages=[];
 end
-
-%% affichage infos
-fprintf(' >> type de tirages: %s\n',doe.type);
 
 mesu_time(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

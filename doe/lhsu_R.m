@@ -20,18 +20,25 @@ setenv('DYLD_LIBRARY_PATH','/usr/local/bin/');
 % repertoire de stockage
 rep='LHS_R';
 %nombre de plans pretires
-nb_pretir=300;
+nb_pretir=0;
 %nom du fichier script r
-nom_script='lhsu_R.r';
+nom_script='lhsu_R_';
+ext_script='.r';
 %nom du fichier de donnees R
-nom_dataR='dataR.dat';
-
+nom_dataR='dataR_';
+ext_dataR='.dat';
+%temps de pause apres execution R
+tps_pause=0;
 %phase de creation des plans
 if nargin==3
     
     % recuperation dimensions (nombre de variables et nombre d'echantillon)
     nbs=nb_samples;
     nbv=numel(Xmin);
+    %nom fichier complet
+    nom_script=[nom_script num2str(nbv) '_' num2str(nbs) ext_script];
+    %nom fichier donnees complet
+    nom_dataR=[nom_dataR num2str(nbv) '_' num2str(nbs) ext_dataR];
     
     %%ecriture d'un script R
     %Creation du repertoire de stockage (s'il n'existe pas)
@@ -48,7 +55,7 @@ if nargin==3
     %chargement librairie LHS
     load_LHS='library(lhs)\n';
     %procedure stockage tirage
-    stock_tir='write.table(a,file="dataR.dat",row.names=FALSE,col.names=FALSE)';
+    stock_tir=['write.table(a,file="' nom_dataR '",row.names=FALSE,col.names=FALSE)'];
     
     %creation et ouverture du fichier de script
     fid=fopen([rep '/' nom_script],'w','n','UTF-8');
@@ -71,7 +78,7 @@ if nargin==3
         error('R non installe (absent du PATH)');
     else
         [~,t]=unix(['cd ' rep ' && R -f ' nom_script]);
-        pause(0.5)
+        pause(tps_pause)
     end
     %lecture du fichier de donnees R
     A=load([rep '/' nom_dataR]);

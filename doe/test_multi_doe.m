@@ -1,13 +1,15 @@
 close all
+init_rep
 part=4;
 
 nb_pt_min=5;
-nb_pt_max=6;
-nb_pt=nb_pt_min:nb_pt_max;
+nb_pt_max=200;
+nb_pt=nb_pt_min:5:nb_pt_max;
 
 nb_iter=floor(linspace(1,50,7));
-for part=1:4
-dim_tir=6;
+for dim_p=2:10
+for part=4:-1:1
+dim_tir=dim_p;
 
 nb_tent=100;
 
@@ -762,5 +764,6 @@ elseif part==4
     end
     
     
+end
 end
 end

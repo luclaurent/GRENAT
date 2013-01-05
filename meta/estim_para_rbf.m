@@ -141,7 +141,7 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'tir_min'
         nb_pts=nb_para*50;
-        type_tir='LHS';
+        type_tir='LHS_O1';
         fprintf('||Tir_min||  Tirage %s de %i points\n',type_tir,nb_pts);
         doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
         tir_pop=gene_doe(doePop);
@@ -160,7 +160,7 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'tir_min_fmincon'
         nb_pts=nb_para*10;
-        type_tir='LHS';
+        type_tir='LHS_O1';
         fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
         doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
         tir_pop=gene_doe(doePop);
@@ -185,7 +185,7 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'tir_min_sqp'
         nb_pts=nb_para*10;
-        type_tir='LHS';
+        type_tir='LHS_O1';
         fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
         doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
         tir_pop=gene_doe(doePop);

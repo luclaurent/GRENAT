@@ -137,6 +137,8 @@ switch meta.para.method
         if ~aff_warning;warning on all;end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'tir_min'
         nb_pts=nb_para*50;
         type_tir='LHS';
@@ -152,6 +154,8 @@ switch meta.para.method
         
         %stockage retour algo
         para_estim.out_algo.fval=fval;
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'tir_min_fmincon'
@@ -177,6 +181,8 @@ switch meta.para.method
         para_estim.out_algo.exitflag=exitflag;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'tir_min_sqp'
         nb_pts=nb_para*10;
         type_tir='LHS';
@@ -199,7 +205,10 @@ switch meta.para.method
         para_estim.out_algo=output;
         para_estim.out_algo.fval=fval2;
         para_estim.out_algo.exitflag=exitflag;
-       
+       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminbnd'
         fprintf('||Fminbnd|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
@@ -214,6 +223,8 @@ switch meta.para.method
         para_estim.out_algo.exitflag=exitflag;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminsearch'
         fprintf('||Fminsearch|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
@@ -226,7 +237,8 @@ switch meta.para.method
         para_estim.out_algo.exitflag=exitflag;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fmincon'
         
         fprintf('||Fmincon|| Initialisation au point:\n');
@@ -292,10 +304,10 @@ switch meta.para.method
             end
         end
         if ~aff_warning;warning on all;end
-        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'ga'
         
         fprintf('||Ga|| Initialisation par tirages LHS\n');

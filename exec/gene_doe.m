@@ -65,7 +65,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'LHS_R_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhsuR');
+        [tirages,fich]=test_tir('lhsuR',nbv,nbs);
         if isempty(tirages)
             tirages=lhsu_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
@@ -80,7 +80,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'OLHS_R_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('olhsR');
+        [tirages,fich]=test_tir('olhsR',nbv,nbs);
         if isempty(tirages)
             tirages=olhs_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
@@ -94,7 +94,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'MMLHS_R_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('mmlhsR');
+        [tirages,fich]=test_tir('mmlhsR',nbv,nbs);
         if isempty(tirages)
             tirages=mmlhs_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
@@ -108,7 +108,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'GLHS_R_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('glhsR');
+        [tirages,fich]=test_tir('glhsR',nbv,nbs);
         if isempty(tirages)
             tirages=lhsu_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
@@ -122,7 +122,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'IHS_R_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('ihsR');
+        [tirages,fich]=test_tir('ihsR',nbv,nbs);
         if isempty(tirages)
             tirages=lhsu_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
@@ -139,7 +139,7 @@ switch doe.type
         % Halton avec stockage des donnees
     case 'HALTON_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('halton');
+        [tirages,fich]=test_tir('halton',nbv,nbs);
         if isempty(tirages)
             p = haltonset(nbv,'Skip',1e3,'Leap',1e2);
             p = scramble(p,'RR2');
@@ -158,7 +158,7 @@ switch doe.type
         % Sobol avec stockage des donnees
     case 'SOBOL_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('sobol');
+        [tirages,fich]=test_tir('sobol',nbv,nbs);
         if isempty(tirages)
             p = sobolset(nbv,'Skip',1e3,'Leap',1e2);
             p = scramble(p,'MatousekAffineOwen');
@@ -175,7 +175,7 @@ switch doe.type
         % LHS avec stockage des donnees
     case 'LHSD_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhsd');
+        [tirages,fich]=test_tir('lhsd',nbv,nbs);
         if isempty(tirages)
             tirages=lhsdesign(prod(nbs(:)),nbv,'iterations',nb_iter);
             save(fich,'tirages');
@@ -190,7 +190,7 @@ switch doe.type
         % LHS avec stockage des donnees
     case 'LHSD_CORRMIN_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhsdcorrmin');
+        [tirages,fich]=test_tir('lhsdcorrmin',nbv,nbs);
         if isempty(tirages)
             tirages=lhsdesign(prod(nbs(:)),nbv,'criterion','correlation','iterations',nb_iter);
             save(fich,'tirages');
@@ -205,7 +205,7 @@ switch doe.type
         % LHS avec stockage des donnees
     case 'LHSD_MAXMIN_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhsdmaxmin');
+        [tirages,fich]=test_tir('lhsdmaxmin',nbv,nbs);
         if isempty(tirages)
             tirages=lhsdesign(prod(nbs(:)),nbv,'criterion','maximin','iterations',nb_iter);
             save(fich,'tirages');
@@ -220,7 +220,7 @@ switch doe.type
         % LHS avec stockage des donnees
     case 'LHSD_NS_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhsdns');
+        [tirages,fich]=test_tir('lhsdns',nbv,nbs);
         if isempty(tirages)
             tirages=lhsdesign(prod(nbs(:)),nbv,'smooth','off','iterations',nb_iter);
             save(fich,'tirages');
@@ -235,7 +235,7 @@ switch doe.type
         % LHS avec stockage des donnees
     case 'LHS_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhsu');
+        [tirages,fich]=test_tir('lhsu',nbv,nbs);
         if isempty(tirages)
             tirages=lhsu(Xmin_def,Xmax_def,prod(nbs(:)));
             save(fich,'tirages');
@@ -251,7 +251,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'IHS_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('ihs');
+        [tirages,fich]=test_tir('ihs',nbv,nbs);
         if isempty(tirages)
             tirages=ihs(nbv,nbs,5,17);
             tirages=tirages./nbs;
@@ -280,7 +280,7 @@ switch doe.type
         % LHS_O1 avec stockage des donnees
     case 'LHS_O1_manu'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhs_o1');
+        [tirages,fich]=test_tir('lhs_o1',nbv,nbs);
         if isempty(tirages)
             tir_tmp=cell(1,nb_gene);
             sc=zeros(1,nb_gene);
@@ -300,7 +300,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'IHS_R_manu_enrich'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('ihsre');
+        [tirages,fich]=test_tir('ihsre',nbv,nbs);
         if isempty(tirages)
             t_init=ihs_R(Xmin_def,Xmax_def,doe.nbs_min); % on initialise le tirage
             [tirages,~]=ihs_R(Xmin_def,Xmax_def,doe.nbs_min,t_init,doe.nbs_max);
@@ -310,7 +310,7 @@ switch doe.type
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'LHS_R_manu_enrich'
         %recuperation tirage si dispo
-        [tirages,fich]=test_tir('lhsre');
+        [tirages,fich]=test_tir('lhsre',nbv,nbs);
         if isempty(tirages)
             t_init=lhsu_R(Xmin_def,Xmax_def,doe.nbs_min); % on initialise le tirage
             [tirages,~]=lhsu_R(Xmin_def,Xmax_def,doe.nbs_min,t_init,doe.nbs_max);
@@ -363,7 +363,7 @@ end
 
 
 %fonction de test d'existence d'un tirages et recuperation
-function [tirages,fich]=test_tir(nom_fich)
+function [tirages,fich]=test_tir(nom_fich,nbv,nbs)
 
 %on verifie si le dossier de stockage existe (si non on le cree)
 if exist('TIR_MANU','dir')~=7

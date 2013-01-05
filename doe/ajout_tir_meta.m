@@ -8,10 +8,11 @@ function [pts,ret_tir_meta]=ajout_tir_meta(meta,approx,enrich)
 global doe
 
 %%%Definition manuelle de la population initiale par LHS (Ga)
-popInitManu=enrich.popInitManu;
-nbPopInit=enrich.nbPopInit;
+popInitManu=enrich.optim.popInitManu;
+nbPopInit=enrich.optim.nbPopInit;
 %critere arret minimisation
-crit_opti=enrich.crit_opti;
+crit_opti=enrich.optim.crit_opti;
+meta.enrich.on=true;
 
 %en fonction du type de nouveau point reclam�
 switch enrich.type

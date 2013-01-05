@@ -1,11 +1,11 @@
-%% Fonction assurant la g�n�ration d'un plan factoriel en dimension n
+%% Fonction assurant la generation d'un plan factoriel en dimension n
 % L. LAURENT -- 07/10/2011 -- laurent@lmt.ens-cachan.fr
 
-function tir=factorial_design(nb_tir,esp)
+function tir=factorial_design(nb_tir,Xmin,Xmax)
 
 
-%nombre de variables prises en consid�ration
-nb_var=size(esp,1);
+%nombre de variables prises en consideration
+nb_var=numel(Xmin);
 
 %reconditionnement
 if length(nb_tir)==1
@@ -21,7 +21,7 @@ tir=zeros(nb_tir_tot,nb_var);
 %valeurs pour chaques variables
 val_var=cell(nb_var,1);
 for ii=1:nb_var
-    val_var{ii}=linspace(esp(ii,1),esp(ii,2),nb_tir(ii));
+    val_var{ii}=linspace(Xmin(ii),Xmax(ii),nb_tir(ii));
 end
 
 % generation de la matrice des tirages

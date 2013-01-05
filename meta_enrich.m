@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rastrigin'; 
+fct='branin'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -35,38 +35,41 @@ aff.nbele=gene_nbele(doe.dim_pb);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R
-doe.type='LHS_manu';
+doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=10;
+doe.nb_samples=25;
 
 % Parametrage du metamodele
-data.deg=2;
+data.deg=0;
 data.para.long=[0.5 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
 data.corr='matern32';
 data.rbf='matern32';
-data.type='CKRG';
+data.type='KRG';
 data.grad=true;
 
 meta=init_meta(data);
 meta.para.estim=true;
 
 %parametrage enrichissement
-enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE'};% CV_MSE CONV_REP CONV_LOC
-enrich.val_crit={30,10^-6,10^-6,10^-4};%,10^-4};
+meta.enrich.para_wei=0.5;
+meta.enrich.para_gei=5;
+meta.enrich.para_lcb=0.5;
+%enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE','HIST_R2','HIST_Q3'};% CV_MSE CONV_REP CONV_LOC
+%enrich.val_crit={30,10^-6,10^-6,10^-4,1.,10^-6};%,10^-4};
+enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2','HIST_Q3'};
+enrich.val_crit={1,10^-6,1,10^-6};
 enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
-enrich.type='GEI';
+enrich.type='VAR';
 enrich.on=true;
 enrich.algo='ga';
 enrich.aff_iter_cmd=true;
 enrich.aff_evol=true;
-meta.enrich.para_wei=0.5;
-meta.enrich.para_gei=5;
-meta.enrich.para_lcb=0.5;
+
 enrich.aff_iter_graph=false;
 enrich.aff_iter_cmd=false;
 enrich.aff_plot_algo=false;
@@ -76,7 +79,7 @@ enrich.optim.aff_iter_graph=false;
 enrich.optim.aff_iter_cmd=false;
 enrich.optim.aff_plot_algo=false;
 enrich.optim.popManu='IHS';     %strategie tirage population initiale algo GA '', 'LHS','IHS'...
-enrich.optim.popInit=20;       %population initiale algo GA
+enrich.optim.nbPopInit=20;       %population initiale algo GA
 enrich.optim.crit_opti=10^-6;  %critere arret algo optimisation
 
 

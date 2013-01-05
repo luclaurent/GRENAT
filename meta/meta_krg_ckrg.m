@@ -13,6 +13,7 @@ if meta.deg==0; fprintf('(Ordinaire)\n');else fprintf('(Universel)\n');end;
 fprintf('>> Fonction de correlation: %s\n',meta.corr);
 fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
 fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
+fprintf('>> Correction conditionnement:');if meta.recond; fprintf('Oui\n');else fprintf('Non\n');end
 
 fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
 if meta.para.estim
@@ -210,14 +211,13 @@ ret.build.y=y;
 ret.build.fct_reg=fct_reg;
 ret.build.corr=meta.corr;
 ret.manq=manq;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de la log-vraisemblance dans le cas  de l'estimation des parametres
 %(si on saouhaite avoir les valeurs de la log-vraisemblance en fonction des
 %parametres)
 if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.min,meta.para.max,30);
+    val_para=linspace(meta.para.l_min,meta.para.l_max,30);
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
     if meta.para.aniso&&nb_var==2
@@ -281,6 +281,7 @@ end
 %%parametres
 if meta.para.estim
     para_estim=estim_para_krg_ckrg(ret,meta);
+    ret.build.para_estim=para_estim;
     meta.para.l_val=para_estim.l_val;
     meta.para.val=para_estim.l_val;
     if isfield(para_estim,'p_val')

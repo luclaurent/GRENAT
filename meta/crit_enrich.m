@@ -3,7 +3,7 @@
 
 function [EI,WEI,GEI,LCB,exploit_EI,explor_EI]=crit_enrich(eval_min,Z,variance,enrich)
 
-fprintf('  >>> Calculs criteres enrichissement\n');
+%fprintf('  >>> Calculs criteres enrichissement\n');
 
 %dimensions
 dim_Z=size(Z);

@@ -1,10 +1,12 @@
 %% Generation de plan d'experience LHS a partir de R (avec pretirage de LHS enrichi)
-% IHS: Improved Hypercube Sampling
-% Ref: Beachkofski, B., Grandhi, R. (2002) Improved Distributed Hypercube Sampling American Institute of Aeronautics and Astronautics Paper 1274.
-% L. LAURENT -- 14/01/2012 -- laurent@lmt.ens-cachan.fr
+%% LHS S-optimal (genere en utilisant un algo genetique)
+%Refs:  - Stocki, R. (2005) A method to improve design reliability using optimal Latin hypercube sampling Computer Assisted Mechanics and Engineering Sciences 12, 87?105.
+%       -Stein, M. (1987) Large Sample Properties of Simulations Using Latin Hypercube Sampling. Technometrics. 29, 143?151.
+% L. LAURENT -- 02/01/2013 -- laurent@lmt.ens-cachan.fr
 
 
-function [tir,new_tir]=ihs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
+
+function [tir,new_tir]=glhs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
 
 %% INPUT:
 %    - Xmin,Xmax: bornes min et max de l'espace de concpetion
@@ -24,24 +26,32 @@ rep='LHS_R';
 %nombre de plans pretires
 nb_pretir=0;;
 %nom du fichier script r
-nom_script='ihsu_R_';
+nom_script='glhs_R_';
 ext_script='.r';
 %nom du fichier de donnees R
-nom_dataR='dataR_';
+nom_dataR='dataR';
 ext_dataR='.dat';
 %temps de pause apres execution R
 tps_pause=0;
+
+%options algo genetique
+%population initiale
+popinit=100;
+%nb de mutation
+nbmut=5;
+%probabilite de mutation
+probmut=0.25;
+
 %phase de creation des plans
 if nargin==3
     
-    % recuperation dimensions (nombre de variables et nombre d'�chantillon)
+    % recuperation dimensions (nombre de variables et nombre d'echantillon)
     nbs=nb_samples;
     nbv=numel(Xmin);
     %nom fichier complet
     nom_script=[nom_script num2str(nbv) '_' num2str(nbs) ext_script];
     %nom fichier donnees complet
     nom_dataR=[nom_dataR num2str(nbv) '_' num2str(nbs) ext_dataR];
-    
     %%ecriture d'un script R
     %Creation du repertoire de stockage (s'il n'existe pas)
     if exist(rep,'dir')~=7
@@ -51,9 +61,10 @@ if nargin==3
     
     %ecriture du script r
     %procedure de creation du tirage initial
-    text_init=['a<-improvedLHS(' num2str(nbs) ',' num2str(nbv) ',5)\n'];
+    text_init=['a<-geneticLHS(' num2str(nbs) ',' num2str(nbv) ','...
+        num2str(popinit) ',' num2str(nbmut) ',' num2str(probmut) ')\n'];
     %procedure d'enrichissement
-    text_enrich=['a<-augmentLHS(a,1)\n'];
+    text_enrich=['a<-optAugmentLHS(a,1,4)\n'];
     %chargement librairie LHS
     load_LHS='library(lhs)\n';
     %procedure stockage tirage
@@ -73,18 +84,17 @@ if nargin==3
     fprintf(fid,stock_tir);
     %fermeture du fichier
     fclose(fid);
-    %%execution du script R (necessite d'avoir R installe)
+    %%execution du script R (necessite d'avoir r installe)
     %test de l'existence de
     [e,t]=unix('which R');
     if e~=0
         error('R non installe (absent du PATH)');
     else
-        [e,t]=unix(['cd ' rep ' && R -f ' nom_script]);
-        pause(1)
+        [~,t]=unix(['cd ' rep ' && R -f ' nom_script]);
+        pause(tps_pause)
     end
     %lecture du fichier de donnees R
     A=load([rep '/' nom_dataR]);
-    
     %tirage obtenu
     tir=A(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
     new_tir=[];
@@ -103,4 +113,6 @@ elseif nargin==5
     new_tir=A(ind,:).*repmat(Xmax(:)'-Xmin(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
     %liste de tous les tirages
     tir=[old_tir;new_tir];
+    
+    
 end

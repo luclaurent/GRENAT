@@ -4,8 +4,8 @@
 function [Zap_min,X_min]=rech_min_meta(meta,approx,optim)
 
 [tMesu,tInit]=mesu_time;
-fprintf('      ++++++++++++++++++++++++++++++++++++\n');
-fprintf('      >>> RECHERCHE MINIMUM METAMODELE <<<\n');
+fprintf('++++++++++++++++++++++++++++++++++++\n');
+fprintf('>>> RECHERCHE MINIMUM METAMODELE <<<\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % definition de la strategie d'optimisation et de ses parametres
@@ -22,7 +22,7 @@ switch optim.algo
         global doe
         %Definition manuelle de la population initiale par LHS (Ga)
         popInitManu=optim.popManu;
-        nbPopInit=optim.popInit;
+        nbPopInit=optim.nbPopInit;
         
         %definition des bornes de l'espace de recherche
         lb=doe.Xmin;ub=doe.Xmax;

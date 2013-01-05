@@ -1,13 +1,14 @@
 %% Generation de plan d'experience LHS a partir de R (avec pretirage de LHS enrichi)
-% IHS: Improved Hypercube Sampling
-% Ref: Beachkofski, B., Grandhi, R. (2002) Improved Distributed Hypercube Sampling American Institute of Aeronautics and Astronautics Paper 1274.
-% L. LAURENT -- 14/01/2012 -- laurent@lmt.ens-cachan.fr
+%% LHS S-optimal (genere en utilisant des permutations de colonnes)
+%Refs: Stocki, R. (2005) A method to improve design reliability using optimal Latin hypercube sampling Computer Assisted Mechanics and Engineering Sciences 12, 87?105.
+% L. LAURENT -- 02/01/2013 -- laurent@lmt.ens-cachan.fr
 
 
-function [tir,new_tir]=ihs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
+
+function [tir,new_tir]=olhs_R(Xmin,Xmax,nb_samples,old_tir,nb_enrich)
 
 %% INPUT:
-%    - Xmin,Xmax: bornes min et max de l'espace de concpetion
+%    - Xmin,Xmax: bornes min et max de l'espace de conception
 %    - nb_samples: nombre d'echantillons requis
 %    - nb_enrich: nombre d'echantillons requis pour enrichir
 %% OUTPUT
@@ -24,17 +25,23 @@ rep='LHS_R';
 %nombre de plans pretires
 nb_pretir=0;;
 %nom du fichier script r
-nom_script='ihsu_R_';
+nom_script='olhs_R_';
 ext_script='.r';
 %nom du fichier de donnees R
 nom_dataR='dataR_';
 ext_dataR='.dat';
 %temps de pause apres execution R
 tps_pause=0;
+%options 
+%nombre de permutation "Columnwise Pairwise"
+nbperm=numel(Xmin);
+%critere arret
+crit_stop=1e-2;
+
 %phase de creation des plans
 if nargin==3
     
-    % recuperation dimensions (nombre de variables et nombre d'�chantillon)
+    % recuperation dimensions (nombre de variables et nombre d'echantillon)
     nbs=nb_samples;
     nbv=numel(Xmin);
     %nom fichier complet
@@ -51,9 +58,10 @@ if nargin==3
     
     %ecriture du script r
     %procedure de creation du tirage initial
-    text_init=['a<-improvedLHS(' num2str(nbs) ',' num2str(nbv) ',5)\n'];
+    text_init=['a<-optimumLHS(' num2str(nbs) ',' num2str(nbv) ','...
+        num2str(nbperm) ',' num2str(crit_stop) ')\n'];
     %procedure d'enrichissement
-    text_enrich=['a<-augmentLHS(a,1)\n'];
+    text_enrich=['a<-optAugmentLHS(a,1,4)\n'];
     %chargement librairie LHS
     load_LHS='library(lhs)\n';
     %procedure stockage tirage
@@ -73,18 +81,17 @@ if nargin==3
     fprintf(fid,stock_tir);
     %fermeture du fichier
     fclose(fid);
-    %%execution du script R (necessite d'avoir R installe)
+    %%execution du script R (necessite d'avoir r installe)
     %test de l'existence de
     [e,t]=unix('which R');
     if e~=0
         error('R non installe (absent du PATH)');
     else
-        [e,t]=unix(['cd ' rep ' && R -f ' nom_script]);
-        pause(1)
+        [~,t]=unix(['cd ' rep ' && R -f ' nom_script]);
+        pause(tps_pause)
     end
     %lecture du fichier de donnees R
     A=load([rep '/' nom_dataR]);
-    
     %tirage obtenu
     tir=A(1:nbs,:).*repmat(Xmax(:)'-Xmin(:)',nbs,1)+repmat(Xmin(:)',nbs,1);
     new_tir=[];
@@ -103,4 +110,6 @@ elseif nargin==5
     new_tir=A(ind,:).*repmat(Xmax(:)'-Xmin(:)',nb_enrich,1)+repmat(Xmin(:)',nb_enrich,1);
     %liste de tous les tirages
     tir=[old_tir;new_tir];
+    
+    
 end

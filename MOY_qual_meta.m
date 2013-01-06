@@ -118,30 +118,30 @@ meta.save=false;
 % boucle sur les tentatives
 
 for iter_tent=1:nb_tent
-    %boucles sur les tirages
+%boucles sur les tirages
     for jj=1:num_tir_list
         doe.nb_samples=list_nb_tir(jj);
-        
-        %realisation des tirages
+
+%realisation des tirages
         tirages=gene_doe(doe);
-        %tirages=[0.25;1.5;3.5;5;5.5;14.5];
-        %load('cm2011_27eval.mat')
-        %tirages=tir_ckrg_9;
-        
-        %evaluations de la fonction aux points
+%tirages=[0.25;1.5;3.5;5;5.5;14.5];
+%load('cm2011_27eval.mat')
+%tirages=tir_ckrg_9;
+
+%evaluations de la fonction aux points
         [eval,grad]=gene_eval(doe.fct,tirages,'eval');
-        
-        %boucle sur les type de m�tamodeles
+
+%boucle sur les type de m�tamodeles
         for ll=1:numel(type_conf)
             meta.type=type_conf{ll};
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %Construction et evaluation du metamodele aux points souhaites
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Construction et evaluation du metamodele aux points souhaites
             [approx{ll}{iter_tent,jj}]=const_meta(tirages,eval,grad,meta);
             [K{ll}{iter_tent,jj}]=eval_meta(grid_XY,approx{ll}{iter_tent,jj},meta);
-            
-            
-            %calcul et affichage des criteres d'erreur
+
+
+%calcul et affichage des criteres d'erreur
             err=crit_err(K{ll}{iter_tent,jj}.Z,Z.Z,approx{ll}{iter_tent,jj});
             mse{ll}(iter_tent,jj)=err.emse;
             rmse{ll}(iter_tent,jj)=err.rmse;
@@ -163,7 +163,7 @@ for iter_tent=1:nb_tent
             cvmsep{ll}(iter_tent,jj)=err.cv.msep;
             cvpress{ll}(iter_tent,jj)=err.cv.press;
             cverrp{ll}(iter_tent,jj)=err.cv.errp;
-            
+
         end
     end
 end

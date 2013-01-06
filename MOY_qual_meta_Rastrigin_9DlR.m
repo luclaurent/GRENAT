@@ -36,7 +36,7 @@ nb_tent=1;
 %construction des mï¿½tamodï¿½les
 type_conf={'KRG','CKRG','RBF','GRBF','InKRG','InRBF'};
 nb_conf=numel(type_conf);
-%nombre échantillons pour verification
+%nombre ï¿½chantillons pour verification
 nb_tir_verif=3000;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -126,29 +126,29 @@ meta.save=false;
 % boucle sur les tentatives
 
 for iter_tent=1:nb_tent
-    %boucles sur les tirages
+%boucles sur les tirages
     for jj=1:num_tir_list
         doe.nb_samples=list_nb_tir(jj);
-        
-        %realisation des tirages
+
+%realisation des tirages
         tirages=gene_doe(doe);
-        %tirages=[0.25;1.5;3.5;5;5.5;14.5];
-        %load('cm2011_27eval.mat')
-        %tirages=tir_ckrg_9;
-        
-        %evaluations de la fonction aux points
+%tirages=[0.25;1.5;3.5;5;5.5;14.5];
+%load('cm2011_27eval.mat')
+%tirages=tir_ckrg_9;
+
+%evaluations de la fonction aux points
         [eval,grad]=gene_eval(doe.fct,tirages,'eval');
-        
-        %boucle sur les type de mï¿½tamodeles
+
+%boucle sur les type de mï¿½tamodeles
         for ll=1:numel(type_conf)
             meta.type=type_conf{ll};
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %Construction et evaluation du metamodele aux points souhaites
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Construction et evaluation du metamodele aux points souhaites
             [approx{ll}{iter_tent,jj}]=const_meta(tirages,eval,grad,meta);
             [K{ll}{iter_tent,jj}]=eval_meta(grid_XY,approx{ll}{iter_tent,jj},meta);
-            
-            %calcul et affichage des criteres d'erreur
+
+%calcul et affichage des criteres d'erreur
             err=crit_err(K{ll}{iter_tent,jj}.Z,Z.Z,approx{ll}{iter_tent,jj});
 
             mse{ll}(iter_tent,jj)=err.emse;
@@ -170,27 +170,27 @@ for iter_tent=1:nb_tent
             cvbm{ll}(iter_tent,jj)=err.cv.bm;
             cveloot{ll}(iter_tent,jj)=err.cv.eloot;
             cvpress{ll}(iter_tent,jj)=err.cv.press;
-cond_new{ll}(iter_tent,jj)=approx{ll}{iter_tent,jj}.build.cond_new;
-approx{ll}{iter_tent,jj}=rmfield(approx{ll}{iter_tent,jj},'build');
+            cond_new{ll}(iter_tent,jj)=approx{ll}{iter_tent,jj}.build.cond_new;
+            approx{ll}{iter_tent,jj}=rmfield(approx{ll}{iter_tent,jj},'build');
 
-            %cverrp{ll}(iter_tent,jj)=err.cv.errp;
-    %sauvegarde
-fichier=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'Dl.mat'];
-fichierB=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'DlB.mat'];
-save(fichierB,'-v7.3')
-unix(['rm ' fichier]);
-unix(['cp ' fichierB ' ' fichier]);
-unix(['rm ' fichierB]);
-            
+%cverrp{ll}(iter_tent,jj)=err.cv.errp;
+%sauvegarde
+            fichier=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'Dl.mat'];
+            fichierB=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'DlB.mat'];
+            save(fichierB,'-v7.3')
+            unix(['rm ' fichier]);
+            unix(['cp ' fichierB ' ' fichier]);
+            unix(['rm ' fichierB]);
+
         end
     end
-    %sauvegarde
-fichier=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'Dl.mat'];
-fichierB=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'DlB.mat'];
-save(fichierB,'-v7.3')
-unix(['rm ' fichier]);
-unix(['cp ' fichierB ' ' fichier]);
-unix(['rm ' fichierB]);
+%sauvegarde
+    fichier=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'Dl.mat'];
+    fichierB=['MOY_QUAL_' doe.fct '_' algo_estim '_' num2str(doe.dim_pb) 'DlB.mat'];
+    save(fichierB,'-v7.3')
+    unix(['rm ' fichier]);
+    unix(['cp ' fichierB ' ' fichier]);
+    unix(['rm ' fichierB]);
 end
 
 %traitement
@@ -226,7 +226,7 @@ for ii=1:nb_conf
     moy_cvbm(ii,:)=mean(cvbm{ii});
     moy_cveloot(ii,:)=mean(cveloot{ii});
     moy_cvpress(ii,:)=mean(cvpress{ii});
-    %moy_cverrp(ii,:)=mean(cverrp{ii});
+%moy_cverrp(ii,:)=mean(cverrp{ii});
 end
 
 

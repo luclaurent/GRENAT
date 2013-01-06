@@ -146,10 +146,7 @@ for iter_tent=1:nb_tent
         %boucle sur les type de m�tamodeles
                 for ll=1:numel(type_conf)
 			
-			if jj>=21
-				meta.para.estim=false;
-				meta.para.val=val_extr{ll};
-			end  
+			  
             meta.type=type_conf{ll};
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -157,10 +154,7 @@ for iter_tent=1:nb_tent
             [approx{ll}{iter_tent,jj}]=const_meta(tirages,eval,grad,meta);
                         [K{ll}{iter_tent,jj}]=eval_meta(grid_XY,approx{ll}{iter_tent,jj},meta);
             
-            if jj==20
-            	app=approx{ll}{iter_tent,jj};
-				val_extr{ll}=app.build.para.val;
-			end 
+             
 
             %calcul et affichage des criteres d'erreur
             err=crit_err(K{ll}{iter_tent,jj}.Z,Z.Z,approx{ll}{iter_tent,jj});

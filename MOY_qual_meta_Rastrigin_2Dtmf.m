@@ -21,6 +21,7 @@ parallel.workers='manu';
 parallel.num_workers=8;
 exec_parallel('start',parallel);
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % nombre tirages mini et maxi
@@ -30,7 +31,7 @@ pas_tir=5;
 list_nb_tir=nb_tir_mini:pas_tir:nb_tir_maxi;
 num_tir_list=numel(list_nb_tir);
 
-algo_estim='tir_min';
+algo_estim='tir_min_fmincon';
 
 %nb de tentative (pour approche moyenne)
 nb_tent=1;
@@ -38,21 +39,19 @@ nb_tent=1;
 %construction des mï¿½tamodï¿½les
 type_conf={'KRG','CKRG','RBF','GRBF','InKRG','InRBF'};
 nb_conf=numel(type_conf);
-
-%nombre échantillons pour vérification
+%nombre échantillons pour verification
 nb_tir_verif=3000;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='schwefel';
+fct='rastrigin';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=8;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -92,7 +91,7 @@ meta.para.estim=true;
 meta.cv=true;
 meta.cv_aff=false;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-4;
@@ -103,6 +102,8 @@ meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=false;
+meta.enrich.on=false;
+meta.enrich.on=false;
 meta.enrich.para_wei=0.5;
 meta.enrich.para_lcb=0.5;
 
@@ -145,7 +146,10 @@ for iter_tent=1:nb_tent
         %boucle sur les type de mï¿½tamodeles
                 for ll=1:numel(type_conf)
 			
-			  
+			if jj>=21
+				meta.para.estim=false;
+				meta.para.val=val_extr{ll};
+			end  
             meta.type=type_conf{ll};
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,9 +157,11 @@ for iter_tent=1:nb_tent
             [approx{ll}{iter_tent,jj}]=const_meta(tirages,eval,grad,meta);
                         [K{ll}{iter_tent,jj}]=eval_meta(grid_XY,approx{ll}{iter_tent,jj},meta);
             
-             
-            
-            
+            if jj==20
+            	app=approx{ll}{iter_tent,jj};
+				val_extr{ll}=app.build.para.val;
+			end 
+
             %calcul et affichage des criteres d'erreur
             err=crit_err(K{ll}{iter_tent,jj}.Z,Z.Z,approx{ll}{iter_tent,jj});
             mse{ll}(iter_tent,jj)=err.emse;

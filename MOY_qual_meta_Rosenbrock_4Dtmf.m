@@ -30,7 +30,7 @@ pas_tir=5;
 list_nb_tir=nb_tir_mini:pas_tir:nb_tir_maxi;
 num_tir_list=numel(list_nb_tir);
 
-algo_estim='tir_min';
+algo_estim='tir_min_fmincon';
 
 %nb de tentative (pour approche moyenne)
 nb_tent=1;
@@ -42,17 +42,18 @@ nb_conf=numel(type_conf);
 %nombre échantillons pour vérification
 nb_tir_verif=3000;
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='schwefel';
+fct='rosenbrock';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=8;
+doe.dim_pb=4;
 %esp=[0 15];
 esp=[];
 
@@ -92,7 +93,7 @@ meta.para.estim=true;
 meta.cv=true;
 meta.cv_aff=false;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-4;
@@ -145,7 +146,10 @@ for iter_tent=1:nb_tent
         %boucle sur les type de mï¿½tamodeles
                 for ll=1:numel(type_conf)
 			
-			  
+			if jj>=21
+				meta.para.estim=false;
+				meta.para.val=val_extr{ll};
+			end  
             meta.type=type_conf{ll};
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,7 +157,10 @@ for iter_tent=1:nb_tent
             [approx{ll}{iter_tent,jj}]=const_meta(tirages,eval,grad,meta);
                         [K{ll}{iter_tent,jj}]=eval_meta(grid_XY,approx{ll}{iter_tent,jj},meta);
             
-             
+            if jj==20
+            	app=approx{ll}{iter_tent,jj};
+				val_extr{ll}=app.build.para.val;
+			end 
             
             
             %calcul et affichage des criteres d'erreur

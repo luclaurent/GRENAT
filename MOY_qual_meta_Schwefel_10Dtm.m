@@ -52,7 +52,7 @@ fct='schwefel';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=8;
+doe.dim_pb=10;
 %esp=[0 15];
 esp=[];
 
@@ -200,6 +200,8 @@ unix(['rm ' fichier]);
 unix(['cp ' fichierB ' ' fichier]);
 unix(['rm ' fichierB]);
 
+
+
 %traitement
 moy_r2=zeros(nb_conf,num_tir_list);
 moy_r2adj=moy_r2;
@@ -247,4 +249,5 @@ unix(['rm ' fichierB]);
 
 %arret workers
 exec_parallel('stop',parallel)
+
 

@@ -42,17 +42,18 @@ nb_conf=numel(type_conf);
 %nombre échantillons pour vérification
 nb_tir_verif=3000;
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='schwefel';
+fct='rosenbrock';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=8;
+doe.dim_pb=10;
 %esp=[0 15];
 esp=[];
 
@@ -92,7 +93,7 @@ meta.para.estim=true;
 meta.cv=true;
 meta.cv_aff=false;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-4;

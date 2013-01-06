@@ -38,21 +38,19 @@ nb_tent=1;
 %construction des mï¿½tamodï¿½les
 type_conf={'KRG','CKRG','RBF','GRBF','InKRG','InRBF'};
 nb_conf=numel(type_conf);
-
-%nombre échantillons pour vérification
+%nombre échantillons pour verification
 nb_tir_verif=3000;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='schwefel';
+fct='rastrigin';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=8;
+doe.dim_pb=10;
 %esp=[0 15];
 esp=[];
 
@@ -92,7 +90,7 @@ meta.para.estim=true;
 meta.cv=true;
 meta.cv_aff=false;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.val=0.5;
 meta.para.pas_tayl=10^-4;
@@ -155,9 +153,9 @@ for iter_tent=1:nb_tent
             
              
             
-            
             %calcul et affichage des criteres d'erreur
             err=crit_err(K{ll}{iter_tent,jj}.Z,Z.Z,approx{ll}{iter_tent,jj});
+
             mse{ll}(iter_tent,jj)=err.emse;
             rmse{ll}(iter_tent,jj)=err.rmse;
             r2{ll}(iter_tent,jj)=err.r2;

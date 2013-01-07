@@ -52,6 +52,12 @@ uniform.avg_min_dist=min_dist_moy;
 %2000 & du manuscrit de these de Jessica Franco)
 
 if nargout>=2
+    %le tirages est ramene sur un espace [0,1]^d
+    mintir=min(tirages);
+    maxtir=max(tirages);
+    p=1./(maxtir-mintir);
+    c=-mintir.*p;
+    tirages=tirages.*repmat(p,nb_val,1)+repmat(c,nb_val,1);
     %preparation
     tirm=reshape(tirages,nb_val,1,nb_var);
     tirm=repmat(tirm,[1 nb_val 1]);

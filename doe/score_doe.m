@@ -52,7 +52,7 @@ min_dist_moy=mean(min_dist_pt);
 %distance mini (maximin)
 uniform.dist_min=min(min_dist_pt);
 %somme inverse distance Leary et al. 2004
-uniform.sum_dist=sum(1./dist(:));
+uniform.sum_dist=sum(1./dist(:).^2);
 %%critères issus de La thèse de Jessica FRANCO 2008
 %distance min moyenne
 uniform.avg_min_dist=min_dist_moy;
@@ -65,7 +65,7 @@ min_dist_moyn=mean(min_dist_ptn);
 %distance mini (maximin)
 uniform.dist_minn=min(min_dist_ptn);
 %somme inverse distance Leary et al. 2004
-uniform.sum_distn=sum(1./distn(:));
+uniform.sum_distn=sum(1./distn(:).^2);
 %%critères issus de La thèse de Jessica FRANCO 2008
 %mesure de recouvrement/uniformité
 uniform.recouv=1/min_dist_moyn*...

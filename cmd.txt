@@ -38,3 +38,5 @@ batch_lot_cnodeb.sh
   513  history |grep 419 >> cmd.txt 
   420  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Sch_tmf -t 1-450 -v FICH_SCRIPT=liste_Schwefel_itmf batch_lot_cnode.sh
   514  history |grep 420 >> cmd.txt 
+  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Rastm_recup -t 124,125,127,157,158,170,172,39-79,81,82 -v FICH_SCRIPT=liste_Rastrigin_itm batch_lot_cnode.sh
+

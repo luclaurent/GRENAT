@@ -1,4 +1,4 @@
-%% Fonction assurant la cr�ation d'un nouveau point d'echantillonnage bas� sur un metamodele
+%% Fonction assurant la creation d'un nouveau point d'echantillonnage bas� sur un metamodele
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
 
@@ -14,7 +14,7 @@ nbPopInit=enrich.optim.nbPopInit;
 crit_opti=enrich.optim.crit_opti;
 meta.enrich.on=true;
 
-%en fonction du type de nouveau point reclam�
+%en fonction du type de nouveau point reclame
 switch enrich.type
     %Expected Improvement (Krigeage/RBF)
     case 'EI'

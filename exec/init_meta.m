@@ -56,7 +56,7 @@ meta.para.method='ga';
 %strategie tirage population initiale algo GA '', 'LHS','IHS'...
 meta.para.popManu='IHS';
 %population initiale algo GA
-meta.para.popInit=20;
+meta.para.nbPopInit=[];
 %critere arret algo optimisation
 meta.para.crit_opti=10^-4;
 %bornes esapce recherche parametres

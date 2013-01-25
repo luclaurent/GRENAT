@@ -1,4 +1,4 @@
-%% Procédure de recherche du minimum de l'approximation construite
+%% Procï¿½dure de recherche du minimum de l'approximation construite
 %% L.LAURENT -- 25/06/2012 -- laurent@lmt.ens-cachan.fr
 
 function [Zap_min,X_min]=rech_min_meta(meta,approx,optim)
@@ -20,22 +20,26 @@ switch optim.algo
         
     case 'ga'
         global doe
-        %Definition manuelle de la population initiale par LHS (Ga)
-        popInitManu=optim.popManu;
-        nbPopInit=optim.nbPopInit;
-        
         %definition des bornes de l'espace de recherche
         lb=doe.Xmin;ub=doe.Xmax;
         %nombre parametres
-        nb_var=numel(doe.Xmin);
-        
+        nb_para=numel(doe.Xmin);
+        %Definition manuelle de la population initiale par LHS (Ga)
+        popInitManu=optim.popManu;
+        nbPopInit=optim.nbPopInit;
+        if popInitManu
+            nbpopspecif=false;
+            if isfield(optim,'nbPopInit');if ~isempty(optim.nbPopInit);nbpopspecif=false;end, end
+            if nbpopspecif;nbPopInit=optim.nbPopInit;else nbPopInit=10*nb_para; end
+        end
+                
         %Options algo pour chaque fonction de minimisation
         %declaration des options de la strategie de minimisation
         options_ga = gaoptimset(...
             'Display', 'iter',...        %affichage evolution
             'OutputFcn','',...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
             'UseParallel','always',...
-            'PopInitRange',[lb(:)';ub(:)'],...    %zone de définition de la population initiale
+            'PopInitRange',[lb(:)';ub(:)'],...    %zone de dï¿½finition de la population initiale
             'PlotFcns','',...
             'TolFun',optim.crit_opti,...
             'StallGenLimit',20);
@@ -59,7 +63,7 @@ switch optim.algo
         %specification manuelle de la population initiale (Ga)
         if ~isempty(popInitManu)
             doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
-            tir_pop=gene_doe(doePop);
+             tir_pop=gene_doe(doePop);
             options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
         end
         
@@ -79,10 +83,11 @@ fun=@(point)ext_rep(point,approx,meta);
 %minimisation
 switch optim.algo
     case 'ga'
-        [pts,fval,exitflag,output] = ga(fun,nb_var,[],[],[],[],lb,ub,[],options_ga);
+        [pts,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
         Zap_min=fval;
         X_min=pts;
     case 'fmincon'
+    case 'sqp'
     case 'ANT'
     case 'PSO'
 end

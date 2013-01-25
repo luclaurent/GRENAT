@@ -67,7 +67,7 @@ switch doe.type
         %recuperation tirage si dispo
         [tirages,fich]=test_tir('lhsuR',nbv,nbs);
         if isempty(tirages)
-            tirages=lhsu_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
+            tirages=lhsu_R(Xmin_def,Xmax_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
         end
         
@@ -82,7 +82,7 @@ switch doe.type
         %recuperation tirage si dispo
         [tirages,fich]=test_tir('olhsR',nbv,nbs);
         if isempty(tirages)
-            tirages=olhs_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
+            tirages=olhs_R(Xmin_def,Xmax_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,7 +96,7 @@ switch doe.type
         %recuperation tirage si dispo
         [tirages,fich]=test_tir('mmlhsR',nbv,nbs);
         if isempty(tirages)
-            tirages=mmlhs_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
+            tirages=mmlhs_R(Xmin_def,Xmax_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,7 +110,7 @@ switch doe.type
         %recuperation tirage si dispo
         [tirages,fich]=test_tir('glhsR',nbv,nbs);
         if isempty(tirages)
-            tirages=lhsu_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
+            tirages=lhsu_R(Xmin_def,Xmax_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -124,7 +124,7 @@ switch doe.type
         %recuperation tirage si dispo
         [tirages,fich]=test_tir('ihsR',nbv,nbs);
         if isempty(tirages)
-            tirages=lhsu_R(Xmin_def,Xmin_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
+            tirages=lhsu_R(Xmin_def,Xmax_def,prod(nbs(:))); % on g�n�re un tirage dans l'espace [0 1]
             save(fich,'tirages');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

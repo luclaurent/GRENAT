@@ -79,7 +79,7 @@ while ~crit_atteint&&enrich.on
     [crit_atteint,id_sub,approx_min]=verif_crit_meta(enrich,meta,info_enrich,ref,approx,aff_subplot,old_tirages);
     %regroupement infos
     info_enrich.min.Xap_min=[info_enrich.min.Xap_min;approx_min.Xap_min];
-    info_enrich.min.Zap_min=[info_enrich.min.Xap_min;approx_min.Xap_min];
+    info_enrich.min.Zap_min=[info_enrich.min.Zap_min;approx_min.Zap_min];
     if ~isempty(aff_subplot);aff_subplot.id_sub=id_sub;end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

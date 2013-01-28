@@ -2,7 +2,7 @@
 % L. LAURENt -- 28/01/2013 -- laurent@lmt.ens-cachan.fr
 
 
-function  [crit_atteint,id_sub,infos_min]=verif_crit_meta(enrich,meta,infos_enrich,ref,approx,aff_subplot,old_tirages)
+function  [crit_atteint,id_sub,det_enrich]=verif_crit_meta(enrich,meta,infos_enrich,ref,approx,aff_subplot,old_tirages,num_sub)
 
 %initialisation flag criteres
 crit_atteint=false;
@@ -17,9 +17,8 @@ hist_r2_ok=true;
 hist_q3_ok=true;
 conv_r2_ok=true;
 conv_q3_ok=true;
-infos_min=[];
-infos_min.Zap_min=[];
-infos_min.Xap_min=[];
+det_enrich.min.Zap_min=[];
+det_enrich.min.Xap_min=[];
 
 %reponse de reference et grille de verification
 Zref=ref.Zref;
@@ -50,7 +49,7 @@ not_eval=true;
 not_eval_hist=true;
     
 %numero subplot
-num_sub=1;
+if nargin<8;num_sub=1;end
 %identifiant subplot
 id_sub=aff_subplot.id_sub;
 nb_lign=aff_subplot.nb_lign;
@@ -101,7 +100,7 @@ for  it_type=1:length(criteres)
                         %moyenne R2
                         mR2=mean(vR2);
                         %sauvegarde valeur critere
-                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} mR2];
+                        det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} mR2];
                         if iteration_enrich>=nb_hist-1
                             depass=(mR2-crit_val{it_type})/crit_val{it_type};
                             %affichage info
@@ -135,7 +134,7 @@ for  it_type=1:length(criteres)
                         %moyenne Q3
                         mQ3=mean(vQ3);
                         %sauvegarde valeur critere
-                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} mQ3];
+                        det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} mQ3];
                         if iteration_enrich>=nb_hist-1
                             depass=(mQ3-crit_val{it_type})/crit_val{it_type};
                             %affichage info
@@ -183,7 +182,7 @@ for  it_type=1:length(criteres)
                 case 'CONV_R2_EX'
                     [~,~,vR2,~]=fact_corr(Z_end.Z,Zref);
                     %sauvegarde valeur critere
-                    enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} vR2];
+                    det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} vR2];
                     depass=(vR2-crit_val{it_type})/crit_val{it_type};
                     %affichage info
                     fprintf(' ==>> R2 atteint: %d (max: %d) <<==\n',vR2,crit_val{it_type});
@@ -212,7 +211,7 @@ for  it_type=1:length(criteres)
                 case 'CONV_Q3_EX'
                     [~,~,vQ3]=qual(Zref,Z_end.Z);
                     %sauvegarde valeur critere
-                    enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} vQ3];
+                    det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} vQ3];
                     depass=(vQ3-crit_val{it_type})/crit_val{it_type};
                     %affichage info
                     fprintf(' ==>> Q3  atteint: %d (max: %d) <<==\n',vQ3,crit_val{it_type});
@@ -261,7 +260,7 @@ for  it_type=1:length(criteres)
                 fprintf(' ====> LIMITE Nombre de points NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
             end
             %sauvegarde valeur critere
-            enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} nb_pts];
+            det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} nb_pts];
             
             %trace de l'evolution
             if enrich.aff_evol
@@ -296,7 +295,7 @@ for  it_type=1:length(criteres)
                 fprintf(' ====> LIMITE MSE (CV) NON ATTEINTE --- %4.2e%s <====\n',depass,char(37))
             end
             %sauvegarde valeur critere
-            enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} msep];
+            det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} msep];
             %trace de l'evolution
             if enrich.aff_evol
                 if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
@@ -326,11 +325,11 @@ for  it_type=1:length(criteres)
             if ~done_min
                 [Zap_min,Xap_min]=rech_min_meta(meta,approx{end},enrich.optim);
                 %extraction informations sur le minimum
-                infos_min.Zap_min=Zap_min;
-                infos_min.Xap_min=Xap_min;
+                det_enrich.min.Zap_min=Zap_min;
+                det_enrich.min.Xap_min=Xap_min;
                 %donnees minimum completes
-                Zap_min=[infos_enrich.min.Zap_min;Zap_min];
-                Xap_min=[infos_enrich.min.Xap_min;Xap_min];
+                Zap_min=[det_enrich.min.Zap_min;Zap_min];
+                Xap_min=[det_enrich.min.Xap_min;Xap_min];
                 done_min=true;
                 fprintf(' >> Minimum sur metamodele: %4.2e\n',Zap_min(end))
                 fprintf(' >> Au point: ');
@@ -380,7 +379,7 @@ for  it_type=1:length(criteres)
                         fprintf('%4.2e%s <====\n',depass,char(37));
                     end
                     %sauvegarde valeur critere
-                    enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_rep];
+                    det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} conv_rep];
                     %reinitialisation flag min executee
                     if ~done_min;done_min=~done_min;end
                     %trace de l'evolution
@@ -430,7 +429,7 @@ for  it_type=1:length(criteres)
                         fprintf(' ====> Convergence vers le minimum (LOC/EX) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
                     end
                     %sauvegarde valeur critere
-                    enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_loc];
+                    det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} conv_loc];
                     %reinitialisation flag min executee
                     if ~done_min;done_min=~done_min;end
                     %trace de l'evolution
@@ -464,7 +463,7 @@ for  it_type=1:length(criteres)
                             fprintf(' ====> Convergence vers le minimum (REP) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
                         end
                         %sauvegarde valeur critere
-                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_loc];
+                        det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} conv_loc];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end
                         %trace de l'evolution
@@ -503,7 +502,7 @@ for  it_type=1:length(criteres)
                             fprintf(' ====> Convergence vers le minimum (LOC) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
                         end
                         %sauvegarde valeur critere
-                        enrich.ev_crit{it_type}=[enrich.ev_crit{it_type} conv_loc];
+                        det_enrich.ev_crit{it_type}=[det_enrich.ev_crit{it_type} conv_loc];
                         %reinitialisation flag min executee
                         if ~done_min;done_min=~done_min;end
                         %trace de l'evolution

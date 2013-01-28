@@ -31,7 +31,7 @@ old_grad=[];
 Xap_min=[];
 Zap_min=[];
 
-%grille de vérification
+%grille de vï¿½rification
 nb_pts_verif=3000;
 type_tir_verif='LHS';
 dd.type=type_tir_verif;
@@ -47,7 +47,7 @@ if any(strcmp(enrich.crit_type,'CONV_R2_EX'))||any(strcmp(enrich.crit_type,'CONV
 end
 
 
-%critere historique sur N metamodèles
+%critere historique sur N metamodï¿½les
 nb_hist=4;
 
 global debug
@@ -85,19 +85,14 @@ while ~crit_atteint&&enrich.on
     it_enrich=it_enrich+1;
     num_sub=1;
     fprintf('#########################################\n')
-    fprintf('########### Iteration n°: %i ############\n',it_enrich)
+    fprintf('########### Iteration n: %i ############\n',it_enrich)
     fprintf('-----------------------------------------\n');
     if enrich.aff_evol&&it_enrich==1
         figure
         num_fig=0;
-        for  it_type=1:length(type)
-            switch type{it_type}
-                case {'NB_PTS','HIST_R2','HIST_Q3','CV_MSE','CONV_R2_EX','CONV_Q3_EX'}
-                    num_fig=num_fig+1;
-                case {'CONV_REP','CONV_LOC','CONV_REP_EX','CONV_LOC_EX'}
-                    num_fig=num_fig+2;
-            end
-        end
+        %nombre de figures
+        num_fig=num_fig_meta(type,num_fig);
+        %parametres affichage subplot
         nb_lign=2;
         nb_col=floor(num_fig/nb_lign)+1;
         opt_plot.bornes=[nb_tir-1 nb_tir+1];
@@ -116,8 +111,8 @@ while ~crit_atteint&&enrich.on
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % controle amélioration (par rapport aux 4 métamodèles
-            % précédents)
+            % controle amelioration (par rapport aux 4 mï¿½tamodï¿½les
+            % precedents)
             case {'HIST_R2','HIST_Q3'}
                 if it_enrich>1
                     fprintf(' >> Calcul criteres HIST_Q3 et HIST_R2 <<\n');
@@ -362,7 +357,7 @@ while ~crit_atteint&&enrich.on
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 % controle en convergence de reponse et/ou de localisation
-                % par rapport aux solutions précédentes et/ou par rapport à
+                % par rapport aux solutions prï¿½cï¿½dentes et/ou par rapport ï¿½
                 % la solution exacte
             case {'CONV_REP','CONV_LOC','CONV_LOC_EX','CONV_REP_EX'}
                 %valeur cible

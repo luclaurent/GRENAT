@@ -114,8 +114,10 @@ tirages=gene_doe(doe);
 %proc�dure d'enrichissement
 meta.cv_aff=false;
 [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich);
-[K]=eval_meta(grid_XY,approx,meta);
-
+%evaluation metamodele final
+[K]=eval_meta(grid_XY,approx{end},meta);
+%evaluation de ts les metamodeles
+[Kautre]=eval_meta(grid_XY,approx,meta);
 eval=in.eval;
 tirages=in.tirages;
 grad=in.grad;

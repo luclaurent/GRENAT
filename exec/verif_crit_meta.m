@@ -320,9 +320,14 @@ for  it_type=1:length(criteres)
             % par rapport aux solutions pr�c�dentes et/ou par rapport �
             % la solution exacte
         case {'CONV_REP','CONV_LOC','CONV_LOC_EX','CONV_REP_EX'}
-            %valeur cible
-            if isfield(enrich.min_glob,'Z');Z_cible=enrich.min_glob.Z;else Z_cible=[];end
-            if isfield(enrich.min_glob,'X');X_cible=enrich.min_glob.X;else Z_cible=[];end
+            %valeur cible$
+            if isfield(enrich,'min_glob')
+                if isfield(enrich.min_glob,'Z');Z_cible=enrich.min_glob.Z;else Z_cible=[];end
+                if isfield(enrich.min_glob,'X');X_cible=enrich.min_glob.X;else Z_cible=[];end
+            else
+                Z_cible=[];
+                X_cible=[];
+            end
             %recherche du minimum de la fonction approchee
             if ~done_min
                 [Zap_min,Xap_min]=rech_min_meta(meta,approx{end},enrich.optim);
@@ -330,12 +335,12 @@ for  it_type=1:length(criteres)
                 det_enrich.min.Zap_min=Zap_min;
                 det_enrich.min.Xap_min=Xap_min;
                 %donnees minimum completes
-                Zap_min=[det_enrich.min.Zap_min;Zap_min];
-                Xap_min=[det_enrich.min.Xap_min;Xap_min];
+                Zap_min=[infos_enrich.min.Zap_min;Zap_min];
+                Xap_min=[infos_enrich.min.Xap_min;Xap_min];
                 done_min=true;
                 fprintf(' >> Minimum sur metamodele: %4.2e\n',Zap_min(end))
                 fprintf(' >> Au point: ');
-                fprintf('%4.2e ',Xap_min{end});
+                fprintf('%4.2e ',Xap_min(end,:));
                 fprintf('\n')
                 
                 %trace de l'evolution

@@ -49,7 +49,7 @@ end
 %flag criteres bases sur l'histoire du critere
 not_eval=true;
 not_eval_hist=true;
-    
+
 %numero subplot
 if nargin<8;num_sub=1;end
 %identifiant subplot
@@ -75,9 +75,9 @@ for  it_type=1:length(criteres)
         % precedents)
         case {'HIST_R2','HIST_Q3'}
             if iteration_enrich>1
-                fprintf(' >> Calcul criteres HIST_Q3 et HIST_R2 <<\n');
+                fprintf(' >> Calcul criteres %s <<\n',criteres{it_type});
                 if iteration_enrich<nb_hist-1
-                    fprintf(' !!! Historique trop faible donc pas de test HIST_R2 ni HIST_Q3 <<\n ');
+                    fprintf(' !!! Historique trop faible donc pas de test %s <<\n ',criteres{it_type});
                 end
                 if not_eval
                     %evaluation dernier metamodele
@@ -120,17 +120,15 @@ for  it_type=1:length(criteres)
                         end
                         %trace de l'evolution
                         if enrich.aff_evol
-                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             opt_plot.tag='HIST_R2';
-                            opt_plot.title='Evol. nombre de points';
+                            opt_plot.title='HIST R2';
                             opt_plot.xlabel='Nombre de points';
                             opt_plot.ylabel='HIST R2';
                             opt_plot.ech_log=false;
                             opt_plot.type='stairs';
                             opt_plot.cible=crit_val{it_type};
-                            if iteration_enrich==2;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             aff_evol(nb_pts,mR2,opt_plot,id_plotloc);
-                            num_sub=num_sub+1;
                         end
                     case 'HIST_Q3'
                         %moyenne Q3
@@ -154,21 +152,19 @@ for  it_type=1:length(criteres)
                         end
                         %trace de l'evolution
                         if enrich.aff_evol
-                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             opt_plot.tag='HIST_Q3';
-                            opt_plot.title='Evol. nombre de points';
+                            opt_plot.title='HIST Q3';
                             opt_plot.xlabel='Nombre de points';
                             opt_plot.ylabel='HIST Q3';
                             opt_plot.ech_log=false;
                             opt_plot.type='stairs';
                             opt_plot.cible=crit_val{it_type};
-                            if iteration_enrich==2;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             aff_evol(nb_pts,mQ3,opt_plot,id_plotloc);
-                            num_sub=num_sub+1;
                         end
                 end
-                
             end
+            num_sub=num_sub+1;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,7 +194,7 @@ for  it_type=1:length(criteres)
                     end
                     %trace de l'evolution
                     if enrich.aff_evol
-                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         opt_plot.tag='CONV_R2_EX';
                         opt_plot.title='Evol. nombre de points';
                         opt_plot.xlabel='Nombre de points';
@@ -206,9 +202,7 @@ for  it_type=1:length(criteres)
                         opt_plot.ech_log=false;
                         opt_plot.type='stairs';
                         opt_plot.cible=crit_val{it_type};
-                        if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         aff_evol(nb_pts,vR2,opt_plot,id_plotloc);
-                        num_sub=num_sub+1;
                     end
                 case 'CONV_Q3_EX'
                     [~,~,vQ3]=qual(Zref,Z_end.Z);
@@ -227,7 +221,7 @@ for  it_type=1:length(criteres)
                     end
                     %trace de l'evolution
                     if enrich.aff_evol
-                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         opt_plot.tag='CONV_Q3_EX';
                         opt_plot.title='Evol. nombre de points';
                         opt_plot.xlabel='Nombre de points';
@@ -235,12 +229,10 @@ for  it_type=1:length(criteres)
                         opt_plot.ech_log=true;
                         opt_plot.type='stairs';
                         opt_plot.cible=crit_val{it_type};
-                        if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         aff_evol(nb_pts,vQ3,opt_plot,id_plotloc);
-                        num_sub=num_sub+1;
                     end
             end
-            
+            num_sub=num_sub+1;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -266,7 +258,7 @@ for  it_type=1:length(criteres)
             
             %trace de l'evolution
             if enrich.aff_evol
-                if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 opt_plot.tag='NB_PTS';
                 opt_plot.title='Evol. nombre de points';
                 opt_plot.xlabel='Nombre de points';
@@ -274,10 +266,9 @@ for  it_type=1:length(criteres)
                 opt_plot.ech_log=false;
                 opt_plot.type='stairs';
                 opt_plot.cible=crit_val{it_type};
-                if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 aff_evol(nb_pts,nb_pts,opt_plot,id_plotloc);
-                num_sub=num_sub+1;
             end
+            num_sub=num_sub+1;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -300,7 +291,7 @@ for  it_type=1:length(criteres)
             det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} msep];
             %trace de l'evolution
             if enrich.aff_evol
-                if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 opt_plot.tag='CV_MSE';
                 opt_plot.title='MSE (LOO/CV)';
                 opt_plot.xlabel='Nombre de points';
@@ -308,16 +299,14 @@ for  it_type=1:length(criteres)
                 opt_plot.ech_log=true;
                 opt_plot.type='stairs';
                 opt_plot.cible=crit_val{it_type};
-                if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 aff_evol(nb_pts,msep,opt_plot,id_plotloc);
-                num_sub=num_sub+1;
             end
-            
+            num_sub=num_sub+1;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % controle en convergence de reponse et/ou de localisation
-            % par rapport aux solutions pr�c�dentes et/ou par rapport �
+            % par rapport aux solutions precedentes et/ou par rapport
             % la solution exacte
         case {'CONV_REP','CONV_LOC','CONV_LOC_EX','CONV_REP_EX'}
             %valeur cible$
@@ -345,7 +334,7 @@ for  it_type=1:length(criteres)
                 
                 %trace de l'evolution
                 if enrich.aff_evol
-                    if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                    if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='Min_meta';
                     opt_plot.title='Minimum Metamodele';
                     opt_plot.xlabel='Nombre de points';
@@ -353,7 +342,6 @@ for  it_type=1:length(criteres)
                     opt_plot.ech_log=false;
                     opt_plot.type='stairs';
                     opt_plot.cible=Z_cible;
-                    if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     aff_evol(nb_pts,Zap_min(end),opt_plot,id_plotloc);
                     num_sub=num_sub+1;
                 end
@@ -387,11 +375,9 @@ for  it_type=1:length(criteres)
                     end
                     %sauvegarde valeur critere
                     det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_rep];
-                    %reinitialisation flag min executee
-                    if ~done_min;done_min=~done_min;end
                     %trace de l'evolution
                     if enrich.aff_evol
-                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         opt_plot.tag='CONV_REP_EX';
                         opt_plot.title='Critere conv. Minimum/exacte';
                         opt_plot.xlabel='Nombre de points';
@@ -399,7 +385,6 @@ for  it_type=1:length(criteres)
                         opt_plot.ech_log=true;
                         opt_plot.type='stairs';
                         opt_plot.cible=crit_val{it_type};
-                        if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         aff_evol(nb_pts,conv_rep,opt_plot,id_plotloc);
                         num_sub=num_sub+1;
                     end
@@ -413,7 +398,7 @@ for  it_type=1:length(criteres)
                     %distance au vrai minimum
                     ec=(Xap_min_new-X_cible).^2;
                     dist=sum(ec(:));
-                    if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                    if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='dist_min';
                     opt_plot.title='Ecart minimum reel/metamodele';
                     opt_plot.xlabel='Nombre de points';
@@ -421,7 +406,6 @@ for  it_type=1:length(criteres)
                     opt_plot.ech_log=true;
                     opt_plot.type='stairs';
                     opt_plot.cible=10^-7;
-                    if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     aff_evol(nb_pts,dist,opt_plot,id_plotloc);
                     num_sub=num_sub+1;
                     %Calcul du critere
@@ -437,11 +421,9 @@ for  it_type=1:length(criteres)
                     end
                     %sauvegarde valeur critere
                     det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
-                    %reinitialisation flag min executee
-                    if ~done_min;done_min=~done_min;end
                     %trace de l'evolution
                     if enrich.aff_evol
-                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         opt_plot.tag='CONV_LOC_EX';
                         opt_plot.title='Critere conv. Localisation/exacte';
                         opt_plot.xlabel='Nombre de points';
@@ -449,7 +431,6 @@ for  it_type=1:length(criteres)
                         opt_plot.ech_log=true;
                         opt_plot.type='stairs';
                         opt_plot.cible=crit_val{it_type};
-                        if iteration_enrich==1;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
                         num_sub=num_sub+1;
                     end
@@ -471,11 +452,9 @@ for  it_type=1:length(criteres)
                         end
                         %sauvegarde valeur critere
                         det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
-                        %reinitialisation flag min executee
-                        if ~done_min;done_min=~done_min;end
                         %trace de l'evolution
                         if enrich.aff_evol
-                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);end
+                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             opt_plot.tag='CONV_REP';
                             opt_plot.title='Critere conv. Minimum (hist)';
                             opt_plot.xlabel='Nombre de points';
@@ -483,20 +462,20 @@ for  it_type=1:length(criteres)
                             opt_plot.ech_log=true;
                             opt_plot.type='stairs';
                             opt_plot.cible=crit_val{it_type};
-                            if iteration_enrich==2;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
                             num_sub=num_sub+1;
                         end
                     else
                         fprintf(' >> Critere CONV_REP non actif a la 1ere iteration\n');
                         conv_rep_ok=true;
+                        num_sub=num_sub+1;
                     end
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 case 'CONV_LOC'
                     if iteration_enrich>1
                         %ecart au minimum precedent
-                        ec=(Xap_min{end}-Xap_min{end-1}).^2;
+                        ec=(Xap_min(end,:)-Xap_min(end-1,:)).^2;
                         dist=sum(ec(:));
                         conv_loc=dist;
                         depass=abs(conv_loc-crit_val{it_type})/crit_val{it_type};
@@ -510,25 +489,23 @@ for  it_type=1:length(criteres)
                         end
                         %sauvegarde valeur critere
                         det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
-                        %reinitialisation flag min executee
-                        if ~done_min;done_min=~done_min;end
                         %trace de l'evolution
                         if enrich.aff_evol
-                            if iteration_enrich==iter_actif;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);else id_sub=[];end
-                                opt_plot.tag='CONV_LOC';
-                                opt_plot.title='Critere conv. Localisation (hist)';
-                                opt_plot.xlabel='Nombre de points';
-                                opt_plot.ylabel='CONV LOC';
-                                opt_plot.ech_log=true;
-                                opt_plot.type='stairs';
-                                opt_plot.cible=crit_val{it_type};
-                                if iteration_enrich==iter_actif;id_plotloc=[];else id_plotloc=id_sub(num_sub);end
-                                aff_evol(nb_pts,con_loc,opt_plot,id_plotloc);
-                                num_sub=num_sub+1;                           
+                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                            opt_plot.tag='CONV_LOC';
+                            opt_plot.title='Critere conv. Localisation (hist)';
+                            opt_plot.xlabel='Nombre de points';
+                            opt_plot.ylabel='CONV LOC';
+                            opt_plot.ech_log=true;
+                            opt_plot.type='stairs';
+                            opt_plot.cible=crit_val{it_type};
+                            aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
+                            num_sub=num_sub+1;
                         end
                     else
                         fprintf(' >> Critere CONV_LOC non actif a la 1ere iteration\n');
                         conv_loc_ok=true;
+                        num_sub=num_sub+1;
                     end
             end
     end
@@ -542,7 +519,9 @@ end
 crit_atteint=conv_glob_ex_ok&&conv_rep_ok&&conv_loc_ok&&...
     conv_loc_ex_ok&&mse_ok&&pts_ok...
     &&hist_r2_ok&&hist_q3_ok&&conv_r2_ok&&conv_q3_ok;
+
 crit_atteint=~crit_atteint;
+
 end
 
 

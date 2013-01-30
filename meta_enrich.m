@@ -18,7 +18,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; 
+fct='rosenbrock'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
@@ -60,8 +60,8 @@ meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;
 %enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE','HIST_R2','HIST_Q3'};% CV_MSE CONV_REP CONV_LOC
 %enrich.val_crit={30,10^-6,10^-6,10^-4,1.,10^-6};%,10^-4};
-enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2','HIST_Q3'};
-enrich.val_crit={1,10^-6,1,10^-6};
+enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2','HIST_Q3','CONV_REP','CONV_LOC','CONV_LOC_EX','CONV_REP_EX','CV_MSE'};
+enrich.val_crit={1,10^-6,1,10^-6,1e-6,1e-6,1e-6,1e-6,1e-6};
 enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
 enrich.type='VAR';
@@ -73,7 +73,7 @@ enrich.aff_evol=true;
 enrich.aff_iter_graph=false;
 enrich.aff_iter_cmd=false;
 enrich.aff_plot_algo=false;
-enrich.optim.algo='tir_min_fmincon';
+enrich.optim.algo='ga';
 enrich.optim.popInitManu=false;
 enrich.optim.aff_iter_graph=false;
 enrich.optim.aff_iter_cmd=false;

@@ -52,7 +52,7 @@ meta.para.aff_iter_cmd=false;
 %affichage informations convergence algo dans des plots
 meta.para.aff_plot_algo=false;
 % methode de minimisation de la log-vraisemblance
-meta.para.method='ga';
+meta.para.method='tir_min_fmincon';
 %strategie tirage population initiale algo GA '', 'LHS','IHS'...
 meta.para.popManu='IHS';
 %population initiale algo GA

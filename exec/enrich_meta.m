@@ -38,7 +38,7 @@ end
 
 global debug
 
-enrich.ev_crit=cell(length(enrich.crit_type),1);
+info_enrich.ev_crit=cell(length(enrich.crit_type),1);
 %suivant le critere d'enrichissement (critere multiple)
 %critere TPS_CPU prioritaire si specifie
 
@@ -71,15 +71,17 @@ while ~crit_atteint&&enrich.on
     %increment numero iteration
     it_enrich=it_enrich+1;
     info_enrich.iter=it_enrich;
+    info_enrich.minZex=min(old_eval);
+    info_enrich.maxZex=max(old_eval);
     fprintf('#########################################\n')
     fprintf('########### Iteration n: %i ############\n',it_enrich)
     fprintf('-----------------------------------------\n');
     
     %parcours des types d'enrichissement
-    [crit_atteint,id_sub,approx_min]=verif_crit_meta(enrich,meta,info_enrich,ref,approx,aff_subplot,old_tirages);
+    [crit_atteint,id_sub,det_enrich]=verif_crit_meta(enrich,meta,info_enrich,ref,approx,aff_subplot,old_tirages);
     %regroupement infos
-    info_enrich.min.Xap_min=[info_enrich.min.Xap_min;approx_min.Xap_min];
-    info_enrich.min.Zap_min=[info_enrich.min.Zap_min;approx_min.Zap_min];
+    info_enrich.min.Xap_min=[info_enrich.min.Xap_min;det_enrich.min.Xap_min];
+    info_enrich.min.Zap_min=[info_enrich.min.Zap_min;det_enrich.min.Zap_min];
     if ~isempty(aff_subplot);aff_subplot.id_sub=id_sub;end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,7 +95,8 @@ while ~crit_atteint&&enrich.on
             % en se basant sur l'Expected Improvement
             case {'EI','GEI','VAR','WEI','LCB'}
                 fprintf(' \n>> Enrichissement par metamodele, critere: %s\n',enrich.type)
-                new_tirages=ajout_tir_meta(meta,approx{end},enrich);
+%                 [new_tirages,info_ajout]=ajout_tir_meta(meta,approx{end},enrich);
+                info_enrich.valCRIT=info_ajout.fval;
                 %en ajoutant des points dans le tirages
             case {'DOE'}
                 fprintf(' >> Enrichissement du tirage\n')

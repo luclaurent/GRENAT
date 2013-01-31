@@ -38,10 +38,10 @@ end
 
 global debug
 
-info_enrich.ev_crit=cell(length(enrich.crit_type),1);
-%suivant le critere d'enrichissement (critere multiple)
-%critere TPS_CPU prioritaire si specifie
+%on verifie que les criteres choisis seront bien exploitables
+enrich=tri_crit(enrich);
 
+info_enrich.ev_crit=cell(length(enrich.crit_type),1);
 
 %specification affichage subplot
 if enrich.aff_evol
@@ -88,24 +88,24 @@ while ~crit_atteint&&enrich.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %test: si un des criteres est atteint si c'est pas le cas alors on genere
-    %un nouveau point de calcul  
+    %un nouveau point de calcul
     if ~crit_atteint
         %en fonction du type d'enrichissement
         switch enrich.type
             % en se basant sur l'Expected Improvement
             case {'EI','GEI','VAR','WEI','LCB'}
                 fprintf(' \n>> Enrichissement par metamodele, critere: %s\n',enrich.type)
-%                 [new_tirages,info_ajout]=ajout_tir_meta(meta,approx{end},enrich);
-                info_enrich.valCRIT=info_ajout.fval;
+                [new_tirages,info_ajout]=ajout_tir_meta(meta,approx{end},enrich);
+                info_enrich.valCRIT=info_ajout.out_algo.fval;
                 %en ajoutant des points dans le tirages
             case {'DOE'}
                 fprintf(' >> Enrichissement du tirage\n')
                 new_tirages=ajout_tir_doe(old_tirages);
             otherwise
                 fprintf(' >> Mode d''enrichissement non defini <<\n');
-        end        
+        end
     else
-        new_tirages=[];        
+        new_tirages=[];
     end
     
     %Affichage nouveau point
@@ -147,3 +147,57 @@ in.grad=old_grad;
 
 mesu_time(tMesu,tInit);
 fprintf('#########################################\n');
+
+end
+
+
+%fonction de tri des criteres
+function ret=tri_crit(enrich)
+%methode enrichissement
+meth_enrich=enrich.type;
+
+%criteres choisis
+choix_crit=enrich.crit_type;
+
+%liste criteres
+liste_crit={'CONV_VAR';'CONV_VARR';'CONV_LCB';...
+    'CONV_LCBR';'CONV_WEI';'CONV_WEIR';...
+    'CONV_EIRb';'CONV_GEIR';'CONV_GEI';...
+    'CONV_EI';'CONV_EIR';'HIST_R2';...
+    'HIST_Q3';'CONV_R2_EX';'CONV_Q3_EX';...
+    'NB_PTS';'CV_MSE';'CONV_REP_EX';...
+    'CONV_LOC_EX';'CONV_REP';'CONV_LOC'};
+%on cree un masque des criteres de convergence inapplicables
+switch meth_enrich
+    case 'DOE'
+        masque_bad={liste_crit{1:11}};
+    case 'VAR'
+        masque_bad={liste_crit{3:11}};
+    case 'LCB'
+        masque_bad={liste_crit{[1 2 5:11]}};
+    case 'EI'
+        masque_bad={liste_crit{1:9}};
+    case 'GEI'
+        masque_bad={liste_crit{[1:7 10 11]}};
+    case 'WEI'
+        masque_bad={liste_crit{[1:4 7:11]}};
+end
+%on recherche les criteres a retirer si present
+iter_retir=[];
+for iter_masq=1:numel(masque_bad)
+    [~,IX]=find(strcmp(choix_crit,masque_bad{iter_masq}));
+    iter_retir=[iter_retir,IX];
+end
+crit_type=enrich.crit_type;
+val_crit=enrich.val_crit;
+if ~isempty(iter_retir)
+    fprintf('Les criteres ');
+    fprintf('%s ',crit_type{iter_retir});
+    fprintf('ne sont plus operationnels\n');
+    crit_type(iter_retir)=[];
+    val_crit(iter_retir)=[];
+end
+ret=enrich;
+ret.crit_type=crit_type;
+ret.val_type=val_crit;
+end

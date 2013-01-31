@@ -12,7 +12,9 @@ num_fig_fin=num_fig_orig;
 for  it_type=1:length(crit)
     switch crit{it_type}
         case {'NB_PTS','HIST_R2','HIST_Q3','CV_MSE','CONV_R2_EX','CONV_Q3_EX',...
-                'CONV_EI','CONV_EI','CONV_EIRb','CONV_GEIR','CONV_GEI'}
+                'CONV_EI','CONV_EIR','CONV_EIRb','CONV_GEIR','CONV_GEI',...
+                'CONV_VAR','CONV_VARR','CONV_LCB',...
+                'CONV_LCBR','CONV_WEI','CONV_WEIR'};
             num_fig_fin=num_fig_fin+1;
         case {'CONV_REP','CONV_LOC','CONV_REP_EX','CONV_LOC_EX'}
             num_fig_fin=num_fig_fin+2;

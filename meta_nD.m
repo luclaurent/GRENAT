@@ -29,7 +29,7 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='mystery';
+fct='rosenbrock';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -47,7 +47,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS_O1';
+doe.type='LHS_manu';
 
 %nb d'echantillons
 doe.nb_samples=20;
@@ -58,7 +58,7 @@ data.para.pow=[1.001 2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='sexp_m';
+data.corr='matern32_m';
 %data.corr='gauss';
 data.rbf='matern32_m';
 data.type='KRG';
@@ -168,6 +168,7 @@ if aff.ic.on
     v.Z=K.var;
     subplot(1,2,2)
     affichage(grid_XY,v,tirages,eval,grad,aff);
+    pause
     camlight; lighting gouraud;
     aff.titre='Metamodele';
     aff.rendu=false;
@@ -202,6 +203,7 @@ if aff.on
     subplot(2,2,4)
     affichage(grid_XY,K,tirages,eval,grad,aff);
     aff.titre=[];
+    
 end
 
 %% affichage des r�ponses sous forme d'un diagramme bar
@@ -249,7 +251,7 @@ if meta.save
     save([aff.doss '/WS.mat']);
 end
 %extract_nD
-
+pause
 extract_aff_nD
 
 %arret workers

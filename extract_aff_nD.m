@@ -119,7 +119,7 @@ end
 if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     %%
     figure
-    surf(grid_XY(:,:,1),grid_XY(:,:,2),K.var*10^20)
+    surf(grid_XY(:,:,1),grid_XY(:,:,2),K.var)
     title('variance')
     %%
     figure

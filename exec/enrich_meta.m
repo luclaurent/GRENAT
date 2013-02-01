@@ -45,7 +45,7 @@ info_enrich.ev_crit=cell(length(enrich.crit_type),1);
 
 %specification affichage subplot
 if enrich.aff_evol
-    figure('Name','Criteres META')
+    figure('Name','Criteres META & Cofast')
     num_fig=0;
     %nombre de figures
     aff_subplot.num_fig=num_fig_meta(enrich.crit_type,num_fig);
@@ -97,6 +97,7 @@ while ~crit_atteint&&enrich.on
                 fprintf(' \n>> Enrichissement par metamodele, critere: %s\n',enrich.type)
                 [new_tirages,info_ajout]=ajout_tir_meta(meta,approx{end},enrich);
                 info_enrich.valCRIT=info_ajout.out_algo.fval;
+                approx{end}.enrich.algo=info_ajout.out_algo;
                 %en ajoutant des points dans le tirages
             case {'DOE'}
                 fprintf(' >> Enrichissement du tirage\n')
@@ -176,7 +177,7 @@ switch meth_enrich
     case 'LCB'
         masque_bad={liste_crit{[1 2 5:11]}};
     case 'EI'
-        masque_bad={liste_crit{1:9}};
+        masque_bad={liste_crit{[1:6 8:9]}};
     case 'GEI'
         masque_bad={liste_crit{[1:7 10 11]}};
     case 'WEI'

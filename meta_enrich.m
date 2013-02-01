@@ -18,12 +18,12 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock'; 
+fct='manu'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 %esp=[-5 5];
 esp=[];
 
@@ -38,7 +38,7 @@ aff.nbele=gene_nbele(doe.dim_pb);
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=25;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 data.deg=0;
@@ -75,7 +75,7 @@ enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2',...
     'CONV_EIRb','CONV_GEIR','CONV_GEI',...
     'CONV_EI','CONV_EIR'};
 enrich.val_crit={1,10^-6,1,...
-    10^-6,1e-6,1e-6,...
+    10^-6,1e-6,1e-8,...
     1e-6,1e-6,1e-6,...
     1e-6,1e-6,1e-6,...
     1e-6,1e-6,1e-6,...
@@ -83,7 +83,7 @@ enrich.val_crit={1,10^-6,1,...
     1e-6,1e-6};
 enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
-enrich.type='VAR';
+enrich.type='EI';
 enrich.on=true;
 enrich.algo='ga';
 enrich.aff_iter_cmd=true;

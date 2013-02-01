@@ -350,7 +350,7 @@ for  it_type=1:length(criteres)
                 end
                 depass=(maxEIRb-crit_val{it_type})/crit_val{it_type};
                 %affichage info
-                fprintf(' ==>> maximum EI relative (Huang 2006): %d (max: %d) <<==\n',maxEIR,crit_val{it_type});
+                fprintf(' ==>> maximum EI relative (Huang 2006): %d (max: %d) <<==\n',maxEIRb,crit_val{it_type});
                 % verification temps atteint
                 if maxEIRb<=crit_val{it_type}
                     eirb_ok=false;
@@ -820,6 +820,9 @@ for  it_type=1:length(criteres)
                     opt_plot.type='stairs';
                     opt_plot.cible=Z_cible;
                     Zap_min(end)
+                      opt_plot.ech_log
+                      id_plotloc
+                      id_sub(num_sub)
                     aff_evol(nb_pts,Zap_min(end),opt_plot,id_plotloc);
                     num_sub=num_sub+1;
                 end

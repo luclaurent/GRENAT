@@ -47,7 +47,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS_manu';
+doe.type='LHS_O1_manu';
 
 %nb d'echantillons
 doe.nb_samples=20;
@@ -78,7 +78,7 @@ meta.test_positiv=false;
 meta.norm=true;
 meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.method='tir_min_fmincon'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
+meta.para.method='ga'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
 meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;

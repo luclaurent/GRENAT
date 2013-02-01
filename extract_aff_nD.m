@@ -205,3 +205,79 @@ if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     hold off
     
 end
+if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(K,'gei'))
+    XX=grid_XY(:,:,1);
+    YY=grid_XY(:,:,2);
+    xmin=min(XX(:));
+    xmax=max(XX(:));
+    ymin=min(YY(:));
+    ymax=max(YY(:));
+    nb_li=3;
+    nb_col=3;
+    nbsub=1;
+    figure
+    if isfield(K,'var')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.var);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Variance')
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'ei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.ei);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('EI')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.explor_EI);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Explor EI')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.exploit_EI);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Exploit EI')
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'wei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.wei(:,:,2));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title(['WEI ' num2str(meta.enrich.para_wei(2),'%4.2e')])
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'gei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,1));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 0')
+        nbsub=nbsub+1;        
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,2));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 1')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,3));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 2')
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'lcb')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.lcb);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('LCB')
+        nbsub=nbsub+1;
+    end
+end

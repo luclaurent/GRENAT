@@ -16,16 +16,6 @@ else
     nb_para=1;
     nb_para_optim=nb_para;
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%Definition manuelle de la population initiale par LHS (Ga)
-popInitManu=meta.para.popManu;
-if popInitManu
-    nbpopspecif=false;
-    if isfield(meta.para,'nbPopInit');if ~isempty(meta.para.nbPopInit);nbpopspecif=false;end, end
-    if nbpopspecif;nbPopInit=meta.para.nbPopInit;else nbPopInit=10*nb_para; end
-end
 
 %critere arret minimisation
 crit_opti=meta.para.crit_opti;
@@ -54,6 +44,17 @@ switch meta.corr
         %definition des bornes de l'espace de recherche
         lb=meta.para.l_min*ones(1,nb_para);ub=meta.para.l_max*ones(1,nb_para);
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Definition manuelle de la population initiale par LHS/IHS (Ga)
+popInitManu=meta.para.popManu;
+if popInitManu
+    nbpopspecif=false;
+    if isfield(meta.para,'nbPopInit');if ~isempty(meta.para.nbPopInit);nbpopspecif=false;end, end
+    if nbpopspecif;nbPopInit=meta.para.nbPopInit;else nbPopInit=10*nb_para_optim; end
+end
+
 %definition valeur de depart de la variable
 x0=lb+1/5*(ub-lb);
 % Definition de la function a minimiser

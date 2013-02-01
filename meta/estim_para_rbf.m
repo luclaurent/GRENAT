@@ -5,10 +5,6 @@ function para_estim=estim_para_rbf(donnees,meta)
 % affichages warning ou non
 aff_warning=false;
 
-%Definition manuelle de la population initiale par LHS (Ga)
-popInitManu=meta.para.popManu;
-nbPopInit=meta.para.popInit;
-
 %critere arret minimisation
 crit_opti=meta.para.crit_opti;
 
@@ -34,6 +30,7 @@ else
     nb_para=1;
     nb_para_optim=nb_para;
 end
+
 %definition des bornes de l'espace de recherche
 % traitement des cas particuliers (fonctions de correlation exponentielles
 % généralisées)
@@ -51,6 +48,15 @@ switch meta.rbf
     otherwise
         %definition des bornes de l'espace de recherche
         lb=meta.para.l_min*ones(1,nb_para);ub=meta.para.l_max*ones(1,nb_para);
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Definition manuelle de la population initiale par LHS/IHS (Ga)
+popInitManu=meta.para.popManu;
+if popInitManu
+    nbpopspecif=false;
+    if isfield(meta.para,'nbPopInit');if ~isempty(meta.para.nbPopInit);nbpopspecif=false;end, end
+    if nbpopspecif;nbPopInit=meta.para.nbPopInit;else nbPopInit=10*nb_para_optim; end
 end
 %definition valeur de depart de la variable
 x0=0.1*(ub-lb);

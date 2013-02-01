@@ -206,89 +206,78 @@ if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     
 end
 if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(K,'gei'))
-    XX=min(grid_XY(:,:,1));
-    YY=max(grid_XY(:,:,2));
-    xmin=min(XX);
-    xmax=max(XX);
-    ymin=min(YY);
-    ymax=max(YY);
+    XX=grid_XY(:,:,1);
+    YY=grid_XY(:,:,2);
+    xmin=min(XX(:));
+    xmax=max(XX(:));
+    ymin=min(YY(:));
+    ymax=max(YY(:));
+    nb_li=3;
+    nb_col=3;
+    nbsub=1;
     figure
-    subplot(5,1,1)
-    plot(grid_XY,K.Z,'r')
-    hold on
-    plot(tirages,eval,'ok')
-    plot(grid_XY,Z.Z,'k')
-    xlim([xmin xmax])
-    legend('approx','sample resp.','eval','Location','EastOutside')
-    hold off
-    subplot(5,1,2)
-    [AX,H1,H2]=plotyy(grid_XY,K.var,grid_XY,K.lcb);
-    set(H1,'Color','b')
-    set(H2,'LineStyle','--','Color','k')
-    legend('var','LCB','Location','EastOutside')
-    set(AX,'xlim',[xmin xmax])
-    hold off
-    subplot(5,1,3)
-    plot(grid_XY,K.explor_EI,'r')
-    hold on
-    plot(grid_XY,K.exploit_EI,'b')
-    hold off
-    hold on
-    plot(grid_XY,K.ei,'b')
-    hold off
-    xlim([xmin xmax])
-    legend('Explor','Exploit','EI','Location','EastOutside')
-    subplot(5,1,4)
-    clear txt_legend
-    txt_legend{1}=['WEI ' num2str(meta.enrich.para_wei(1),'%4.2f')];
-    type={'b','r','k','--b','--r','--k','-.b','-.r','-.k','--g','--m'};
-    normer=false;
-    for ii=1:size(K.wei,3)
-        data=K.wei(:,:,ii);
-        if normer            
-            Dmax=max(data(:));
-            Dmin=min(data(:));
-            a=1/(Dmax-Dmin);
-            b=-Dmin*a;
-        else
-            b=0;a=1;
-        end
-        plot(grid_XY,a*data+b,type{ii})
-        if ii>1
-            txt_legend={txt_legend{1:end},['WEI ' num2str(meta.enrich.para_wei(ii),'%4.2f')]};
-        end
-        hold on
+    if isfield(K,'var')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.var);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Variance')
+        nbsub=nbsub+1;
     end
-    xlim([xmin xmax])
-    legend(txt_legend,'Location','EastOutside')
-    
-    %[~,H1,H2]=plotyy(grid_XY,K.wei,grid_XY,K.ei);
-    %set(H1,'Color','b')
-    %set(H2,'LineStyle','--','Color','k')
-    %legend('EI','WEI','Location','EastOutside')
-    subplot(5,1,5)
-    clear txt_legend
-    txt_legend{1}='GEI 0';
-    type={'b','r','k','--b','--r','--k','-.b','-.r','.k'};
-    normer=true;
-    for ii=1:size(K.gei,3)
-        data=K.gei(:,:,ii);
-        if normer            
-            Dmax=max(data(:));
-            Dmin=min(data(:));
-            a=1/(Dmax-Dmin);
-            b=-Dmin*a;
-        else
-            b=0;a=1;
-        end
-        plot(grid_XY,a*data+b,type{ii})
-        if ii>1
-            txt_legend={txt_legend{1:end},['GEI ' num2str(ii-1)]};
-        end
-        hold on
+    if isfield(K,'ei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.ei);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('EI')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.explor_EI);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Explor EI')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.exploit_EI);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Exploit EI')
+        nbsub=nbsub+1;
     end
-    xlim([xmin xmax])
-    legend(txt_legend,'Location','EastOutside')
-    title('Donnees normalisees')
-    hold off
+    if isfield(K,'wei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.wei(:,:,2));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title(['WEI ' num2str(meta.enrich.para_wei(2),'%4.2e')])
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'gei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,1));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 0')
+        nbsub=nbsub+1;        
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,2));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 1')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,3));
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 2')
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'lcb')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.lcb);
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('LCB')
+        nbsub=nbsub+1;
+    end
 end

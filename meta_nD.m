@@ -61,7 +61,7 @@ data.para.rbf_para=1;
 data.corr='matern52_m';
 %data.corr='gauss';
 data.rbf='matern32_m';
-data.type='RBF';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;

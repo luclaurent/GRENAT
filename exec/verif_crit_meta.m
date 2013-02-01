@@ -819,7 +819,6 @@ for  it_type=1:length(criteres)
                     opt_plot.ech_log=false;
                     opt_plot.type='stairs';
                     opt_plot.cible=Z_cible;
-                    Zap_min(end)
                     aff_evol(nb_pts,Zap_min(end),opt_plot,id_plotloc);
                     num_sub=num_sub+1;
                 end

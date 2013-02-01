@@ -176,7 +176,7 @@ switch meth_enrich
     case 'LCB'
         masque_bad={liste_crit{[1 2 5:11]}};
     case 'EI'
-        masque_bad={liste_crit{1:9}};
+        masque_bad={liste_crit{[1:6 8:11}};
     case 'GEI'
         masque_bad={liste_crit{[1:7 10 11]}};
     case 'WEI'

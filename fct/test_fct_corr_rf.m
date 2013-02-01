@@ -1,4 +1,4 @@
-dim=1;
+dim=2;
 fct='rf_matern32';
 
 pas=0.01;

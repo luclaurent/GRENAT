@@ -146,7 +146,6 @@ end
 Yt = C \ par.y;   beta = G \ (Q'*Yt);
 rho = Yt - Ft*beta;  sigma2 = sum(rho.^2)/m;
 detR = prod( full(diag(C)) .^ (2/m) );
-global obj
 obj = sum(sigma2) * detR;
 if  nargout > 1
   fit = struct('sigma2',sigma2, 'beta',beta, 'gamma',rho' / C, ...

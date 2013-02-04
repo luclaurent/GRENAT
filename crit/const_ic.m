@@ -5,7 +5,7 @@
 %sortie intervalles de confiance a 68%, 95% et 99%
 function [ic68,ic95,ic99]=const_ic(ZZ,var)
 
-%probleme de variance négative (pb numerique)
+%probleme de variance negative (pb numerique)
 v=abs(var);
 
 %a 68%

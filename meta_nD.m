@@ -29,7 +29,7 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='rosenbrock';
+fct='mystery';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -43,23 +43,23 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=50;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=70;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_O1_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=30;
 
 % Parametrage du metamodele
-data.para.long=[10^-10 5];
+data.para.long=[10^-1 20];
 %data.para.long=[0.0138 3.21*10^-5];
 data.para.pow=[1.9998 2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32_m';
+data.corr='sexp_m';
 %data.corr='gauss';
 %data.corr='expg';
 data.rbf='matern32_m';
@@ -68,7 +68,7 @@ data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=0;
+data.deg=2;
 
 meta=init_meta(data);
 
@@ -117,11 +117,11 @@ tirages=gene_doe(doe);
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(doe.fct,tirages,'eval');
-
+%eval=2.*eval;
 %Trace de la fonction de la fonction etudiee et des gradients
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
-
+%Z.Z=2.*Z.Z;
 %grad(2)=NaN;
 %%grad(6)=NaN;
 %grad(3)=NaN;

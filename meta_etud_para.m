@@ -45,7 +45,7 @@ data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='sexp_m';
+data.corr='matern32_m';
 data.rbf='sexp';
 data.type='KRG';
 data.grad=false;
@@ -100,10 +100,10 @@ tirages=gene_doe(doe);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %etude CV 
-xparamin=0.015;
-xparamax=0.05;
-yparamin=2.6e-4;
-yparamax=3e-4;
+xparamin=0.3;
+xparamax=0.5;
+yparamin=0.08;
+yparamax=0.5;
 nbpara=20;
 valparax=linspace(xparamin,xparamax,nbpara);
 valparay=linspace(yparamin,yparamax,nbpara);

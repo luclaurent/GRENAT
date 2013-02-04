@@ -312,7 +312,7 @@ lilog=ret.lilog;
 if meta.norm&&~isempty(donnees.norm.std_eval)
     ret.build.sig2=ret.build.sig2*donnees.norm.std_eval^2;
 else
-    ret.build.sig2=sret.build.ig2;
+    ret.build.sig2=ret.build.sig2;
 end
 
 

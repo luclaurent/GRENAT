@@ -116,8 +116,23 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
     title('Donnees normalisees')
     hold off
 end
+if doe.dim_pb==2&&exist('ic68','var')
+%%
+    figure;
+    hh=surf(grid_XY(:,:,1),grid_XY(:,:,2),K.Z,'facecolor','interp');
+    shading interp
+    camlight;lighting gouraud;
+    hold on;
+    h1=surf(grid_XY(:,:,1),grid_XY(:,:,2),ic68.inf,'EdgeColor','k');
+    h2=surf(grid_XY(:,:,1),grid_XY(:,:,2),ic68.sup,'EdgeColor','k');
+    plot3(tirages(:,1),tirages(:,2),eval,'ok')
+     alpha(h1,0.2)
+     alpha(h2,0.2)
+      scatter3(tirages(:,1),tirages(:,2),eval,'g','filled')
+    
+end
 if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
-    %%
+    
     figure
     surf(grid_XY(:,:,1),grid_XY(:,:,2),K.var)
     title('variance')

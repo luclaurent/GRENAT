@@ -18,7 +18,6 @@ end
 %calcul  ecarte type
 ecart_type=sqrt(variance);
 
-
 %reponse mini
 diff_ei=(eval_min-Z);
 u=diff_ei./ecart_type;

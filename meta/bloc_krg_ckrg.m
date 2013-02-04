@@ -6,6 +6,7 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
 coef=(10+size(donnees.build.fct,1))*eps;
+
 % type de factorisation de la matrice de correlation
 fact_rcc='LL' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -294,17 +295,24 @@ build_data.deg=meta.deg;
 build_data.para=meta.para;
 build_data.fact_rcc=fact_rcc;
 ret.build=build_data;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %variance de prediction
-sig2=1/size(rcc,1)*...
+ret.build.sig2=1/size(rcc,1)*...
     ((donnees.build.y-donnees.build.fct*ret.build.beta)'*ret.build.gamma);
-if meta.norm&&~isempty(donnees.norm.std_eval)
-    ret.build.sig2=sig2*donnees.norm.std_eval^2;
-else
-    ret.build.sig2=sig2;
-end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Maximum de vraisemblance
 [ret.lilog,ret.li]=likelihood(ret);
 lilog=ret.lilog;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%denormalisation sigma^2
+if meta.norm&&~isempty(donnees.norm.std_eval)
+    ret.build.sig2=ret.build.sig2*donnees.norm.std_eval^2;
+else
+    ret.build.sig2=sret.build.ig2;
+end
+
+

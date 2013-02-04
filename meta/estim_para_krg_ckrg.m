@@ -69,6 +69,14 @@ options_fmincon = optimset(...
     'UseParallel','never',...
     'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
     'TolFun',crit_opti);
+options_sqp = optimset(...
+    'Display', 'iter',...        %affichage evolution
+    'Algorithm','sqp',... %choix du type d'algorithme
+    'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
+    'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
+    'UseParallel','never',...
+    'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+    'TolFun',crit_opti);
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
@@ -82,7 +90,7 @@ options_ga = gaoptimset(...
     'UseParallel','always',...
     'PlotFcns','',...
     'TolFun',crit_opti,...
-    'StallGenLimit',20);
+    'StallGenLimit',50);
 options_fminsearch = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
@@ -93,6 +101,7 @@ options_fminsearch = optimset(...
 %affichage des iterations
 if ~meta.para.aff_iter_graph
     options_fmincon=optimset(options_fmincon,'OutputFcn','');
+    options_sqp=optimset(options_sqp,'OutputFcn','');
     options_fminbnd=optimset(options_fminbnd,'OutputFcn','');
     options_fminsearch=optimset(options_fminbnd,'OutputFcn','');
     options_ga=gaoptimset(options_ga,'OutputFcn','');
@@ -101,6 +110,7 @@ else
 end
 if ~meta.para.aff_iter_cmd
     options_fmincon=optimset(options_fmincon,'Display', 'final');
+    options_sqp=optimset(options_sqp,'Display', 'final');
     options_fminbnd=optimset(options_fminbnd,'Display', 'final');
     options_fminsearch=optimset(options_fminbnd,'Display', 'final');
     options_ga=gaoptimset(options_ga,'Display', 'final');
@@ -109,6 +119,8 @@ end
 %affichage informations interations algo (sous forme de plot)
 if meta.para.aff_plot_algo
     options_fmincon=optimset(options_fmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
+        @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+    options_sqp=optimset(options_sqp,'PlotFcns',{@optimplotx,@optimplotfunccount,...
         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
     options_ga=gaoptimset(options_ga,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
         @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
@@ -121,10 +133,38 @@ if ~isempty(popInitManu)
     tir_pop=gene_doe(doePop);
     options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
 end
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% traitement des strategie de type tir_min_xxxx
+%on recherche si le motif tir_min_ est present dans le nom de strategie
+motif='tir_min_';
+[motfind]=strfind(meta.para.method,motif);
+if isempty(motif)
+    method_optim=meta.para.method;
+    tir_min_ok=false;
+else
+    method_optim=meta.para.method((motfind+numel(motif)):end);    
+    tir_min_ok=true;
+end
+% si tir_min alors on fait un tirage pour rechercher un point
+% d'initialisation de l'algorithme
+if tir_min_ok
+    nb_pts=nb_para*10;
+    type_tir='LHS_O1';
+    fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
+    doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
+    tir_pop=gene_doe(doePop);
+    crit=zeros(1,nb_pts);
+    parfor tir=1:nb_pts
+        crit(tir)=fun(tir_pop(tir,:));
+    end
+    [fval1,IX]=min(crit);
+    x0=tir_pop(IX,:);
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %minimisation de la log-vraisemblance suivant l'algorithme choisi
-switch meta.para.method
+switch method_optim
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'simplex'  %methode du simplexe
@@ -159,53 +199,24 @@ switch meta.para.method
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    case 'tir_min_fmincon'
-        nb_pts=nb_para*10;
-        type_tir='LHS_O1';
-        fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
-        doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
-        tir_pop=gene_doe(doePop);
-        crit=zeros(1,nb_pts);
-        parfor tir=1:nb_pts
-            crit(tir)=fun(tir_pop(tir,:));
+    case 'sqp'
+        fprintf('||Fmincon|| Initialisation au point:\n');
+        fprintf('%g ',x0); fprintf('\n');
+        %minimisation avec traitement de point de depart non defini
+        if ~aff_warning;warning off all;end
+        %pas de recherche d'initialisation
+        [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options_sqp);
+        %arret minimisation
+        if exitflag==1||exitflag==0||exitflag==2
+            disp('Arret')
+            para_estim.out_algo=output;
+            para_estim.out_algo.fval=fval;
+            para_estim.out_algo.exitflag=exitflag;
+            if exist('fval1','var');para_estim.out_algo.fval1=fval1;end
+        elseif exitflag==-2
+            fprintf('Bug arret SQP\n');
         end
-        [fval1,IX]=min(crit);
-        x1=tir_pop(IX,:);
-        %recherche locale
-        fprintf('||Fmincon (IP)|| Initialisation au point:\n');
-        fprintf('%g ',x1); fprintf('\n');
-        [x,fval2,exitflag,output] = fmincon(fun,x1,[],[],[],[],lb,ub,[],options_fmincon);
-        %stockage retour algo
-        para_estim.out_algo.fval1=fval1;
-        para_estim.out_algo=output;
-        para_estim.out_algo.fval=fval2;
-        para_estim.out_algo.exitflag=exitflag;
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    case 'tir_min_sqp'
-        nb_pts=nb_para*10;
-        type_tir='LHS_O1';
-        fprintf('||Tir_min + opti||  Tirage %s de %i points\n',type_tir,nb_pts);
-        doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
-        tir_pop=gene_doe(doePop);
-        crit=zeros(1,nb_pts);
-        parfor tir=1:nb_pts
-            crit(tir)=fun(tir_pop(tir,:));
-        end
-        [fval1,IX]=min(crit);
-        x1=tir_pop(IX,:);
-        %recherche locale
-        fprintf('||Fincon (SQP)|| Initialisation au point:\n');
-        fprintf('%g ',x1); fprintf('\n');
-        options_fmincon=optimset(options_fmincon,'Algorithm','sqp');
-        [x,fval2,exitflag,output] = fmincon(fun,x1,[],[],[],[],lb,ub,[],options_fmincon);
-        %stockage retour algo
-        para_estim.out_algo.fval1=fval1;
-        para_estim.out_algo=output;
-        para_estim.out_algo.fval=fval2;
-        para_estim.out_algo.exitflag=exitflag;
+        if ~aff_warning;warning on all;end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -217,11 +228,16 @@ switch meta.para.method
         if ~aff_warning;warning off all;end
         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,options_fminbnd);
         if ~aff_warning;warning on all;end
-        
-        %stockage retour algo
-        para_estim.out_algo=output;
-        para_estim.out_algo.fval=fval;
-        para_estim.out_algo.exitflag=exitflag;
+        %arret minimisation
+        if exitflag==1||exitflag==0||exitflag==2
+            disp('Arret')
+            para_estim.out_algo=output;
+            para_estim.out_algo.fval=fval;
+            para_estim.out_algo.exitflag=exitflag;
+            if exist('fval1','var');para_estim.out_algo.fval1=fval1;end
+        elseif exitflag==-2
+            fprintf('Bug arret SQP\n');
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -231,11 +247,16 @@ switch meta.para.method
         fprintf('%g ',x0); fprintf('\n');
         %minimisation
         [x,fval,exitflag,output] = fminsearch(fun,x0,options_fminsearch);
-        
-        %stockage retour algo
-        para_estim.out_algo=output;
-        para_estim.out_algo.fval=fval;
-        para_estim.out_algo.exitflag=exitflag;
+        %arret minimisation
+        if exitflag==1||exitflag==0||exitflag==2
+            disp('Arret')
+            para_estim.out_algo=output;
+            para_estim.out_algo.fval=fval;
+            para_estim.out_algo.exitflag=exitflag;
+            if exist('fval1','var');para_estim.out_algo.fval1=fval1;end
+        elseif exitflag==-2
+            fprintf('Bug arret Fminsearch\n');
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -243,69 +264,19 @@ switch meta.para.method
     case 'fmincon'
         fprintf('||Fmincon|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
-        %minimisation avec traitement de point de d�part non d�fini
-        indic=0;
+        %minimisation avec traitement de point de depart non defini
         if ~aff_warning;warning off all;end
         %pas de recherche d'initialisation
-        pas_min=1/500*(ub-lb);
-        pas_max=1/50*(ub-lb);
-        pente=0.2;
-        desc=true;
-        xinit=x0;
-        pas_pres=pas_max;
-        while indic==0
-            try
-                [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options_fmincon);
-            catch exception
-                text='undefined at initial point';
-                [tt,~,~]=regexp(exception.message,text,'match','start','end');
-                
-                if ~isempty(tt)
-                    %calcul du pas de variation
-                    pas=(pas_max-pas_min).*(1-exp(-(x0-lb).*pas_max./pente))+pas_min;
-                    if pas<pas_min;pas=pas_min;elseif pas>pas_max;pas=pas_max;end
-                    fprintf('Variation: ');fprintf('%d ',pas);fprintf('\n');
-                    fprintf('Probleme initialisation fmincon (fct non definie au point initial)\n');
-                    if desc&&any((x0-pas)>lb)
-                        x0=x0-pas;
-                        fprintf('||Fmincon|| Reinitialisation au point:\n');
-                        fprintf('%g ',x0); fprintf('\n');
-                        exitflag=-1;
-                    elseif desc&&any((x0-pas)<lb)
-                        desc=false;
-                        x0=xinit;
-                        fprintf('||Fmincon|| Reinitialisation au point:\n');
-                        fprintf('%g ',x0); fprintf('\n');
-                        exitflag=-1;
-                    elseif ~desc&&any((x0+pas)<ub)
-                        x0=x0+pas;
-                        fprintf('||Fmincon|| Reinitialisation au point:\n');
-                        fprintf('%g ',x0); fprintf('\n');
-                        exitflag=-1;
-                    elseif ~desc&&any((x0+pas)>ub)
-                        exitflag=-2;
-                        fprintf('||Fmincon|| Reinitialisation impossible.\n');
-                    end
-                else
-                    exitflag=-1;
-                    getReport(exception,'extended')
-                    x=x0;
-                    break
-                end
-            end
-            
-            %arret minimisation
-            if exitflag==1||exitflag==0||exitflag==2
-                disp('Arret')
-                para_estim.out_algo=output;
-                para_estim.out_algo.fval=fval;
-                para_estim.out_algo.exitflag=exitflag;
-                indic=1;
-            elseif exitflag==-2
-                fprintf('Impossible d''initialiser l''algorithme\n Valeur du (des) parametre(s) fixe(s) � la valeur d''initialisation\n');
-                x=xinit;
-                indic=1;
-            end
+        [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options_fmincon);
+        %arret minimisation
+        if exitflag==1||exitflag==0||exitflag==2
+            disp('Arret')
+            para_estim.out_algo=output;
+            para_estim.out_algo.fval=fval;
+            para_estim.out_algo.exitflag=exitflag;
+            if exist(fval1,'var');para_estim.out_algo.fval1=fval1;end
+        elseif exitflag==-2
+            fprintf('Bug arret Fmincon\n');
         end
         if ~aff_warning;warning on all;end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -322,6 +293,7 @@ switch meta.para.method
             para_estim.out_algo=output;
             para_estim.out_algo.fval=fval;
             para_estim.out_algo.exitflag=exitflag;
+            if exist('fval1','var');para_estim.out_algo.fval1=fval1;end
         elseif exitflag==-2
             fprintf('Bug arret Ga\n');
         end

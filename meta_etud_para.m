@@ -17,13 +17,13 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='manu'; 
+fct='rosenbrock'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[0 15];
 esp=[];
 
@@ -31,28 +31,28 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=20;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS_manu';
+doe.type='LHS_O1_manu';
 
 %nb d'echantillons
-doe.nb_samples=8;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
 data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='sexp';
+data.corr='sexp_m';
 data.rbf='sexp';
 data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=1;
+data.deg=0;
 
 meta=init_meta(data);
 
@@ -87,12 +87,7 @@ meta.save=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %realisation des tirages
 tirages=gene_doe(doe);
-aa=load('tirages_1D_8.mat');
-tirages=aa.tirages./6.66666666;
-%tirages=[0.25;1.5;3.5;5;5.5;14.5];
-%tirages=[-0.5;0;1.5];
-%load('cm2011_27eval.mat')
-%tirages=tir_ckrg_9;
+
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(doe.fct,tirages,'eval');
@@ -105,29 +100,69 @@ tirages=aa.tirages./6.66666666;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %etude CV 
-paramin=10^-4;
-paramax=10;
-nbpara=50;
-valpara=linspace(paramin,paramax,nbpara);
+xparamin=0.015;
+xparamax=0.05;
+yparamin=2.6e-4;
+yparamax=3e-4;
+nbpara=20;
+valparax=linspace(xparamin,xparamax,nbpara);
+valparay=linspace(yparamin,yparamax,nbpara);
 meta.cv_aff=false;
+li_sack=zeros(nbpara);
+objdace=li_sack;
+condi=li_sack;
+mv=li_sack;
 for ii=1:nbpara
+    for jj=1:nbpara
 %Construction et evaluation du metamodele aux points souhaites
 fprintf('%4.2f ',ii/nbpara*100)
-meta.para.val=valpara(ii);
+meta.para.l_val=[valparax(ii) valparay(jj)];
+[approx]=const_meta(tirages,eval,grad,meta);
+ [K]=eval_meta(grid_XY,approx,meta);
+% cond_mat(ii)=approx.build.cond_new;
+% rippa(ii)=approx.cv.eloot;
+% perso(ii)=approx.cv.then.eloot;
+% %calcul et affichage des criteres d'erreur
+% err=crit_err(K.Z,Z.Z,approx);
+% emse(ii)=err.emse;
+% rmse(ii)=err.rmse;
+% eq3(ii)=err.eq3;
+% r2(ii)=err.r2;
+% r2adj(ii)=err.r2adj;
+mv(ii,jj)=max(K.var(:));
+condi(ii,jj)=approx.build.cond_new;
+lilo(ii,jj)=approx.build.lilog;
+global lisack
+li_sack(ii,jj)=lisack;
+    end
+end
+[VX,VY]=meshgrid(valparax,valparay);
+ figure('Name','li_sack');surf(VX,VY,li_sack)
+ set(gca,'zscale','log')
+ figure('Name','var');surf(VX,VY,mv)
+ set(gca,'zscale','log')
+  figure('Name','lilo');surf(VX,VY,lilo)
+ set(gca,'zscale','log')
+   figure('Name','cond');surf(VX,VY,condi)
+ set(gca,'zscale','log')
+%%%%%
+meta.corr='corrgauss';
+meta.type='DACE';
+meta.regr='regpoly0';
+for ii=1:nbpara
+    for jj=1:nbpara
+%Construction et evaluation du metamodele aux points souhaites
+fprintf('%4.2f ',ii/nbpara*100)
+meta.para.l_val=[valparax(ii) valparay(jj)];
 [approx]=const_meta(tirages,eval,grad,meta);
 [K]=eval_meta(grid_XY,approx,meta);
-cond_mat(ii)=approx.build.cond_new;
-rippa(ii)=approx.cv.eloot;
-perso(ii)=approx.cv.then.eloot;
-%calcul et affichage des criteres d'erreur
-err=crit_err(K.Z,Z.Z,approx);
-emse(ii)=err.emse;
-rmse(ii)=err.rmse;
-eq3(ii)=err.eq3;
-r2(ii)=err.r2;
-r2adj(ii)=err.r2adj;
-lilo(ii)=approx.build.lilog;
+global obj
+objdace(ii,jj)=obj;
+    end
 end
+  figure('Name','dace');surf(VX,VY,objdace)
+ set(gca,'zscale','log')
+%%%%
 figure
 semilogy(valpara,rippa,'r')
 hold on

@@ -43,7 +43,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=50;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -53,13 +53,15 @@ doe.type='LHS_O1_manu';
 doe.nb_samples=20;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 10];
-data.para.pow=[1.001 2];
+data.para.long=[10^-10 5];
+%data.para.long=[0.0138 3.21*10^-5];
+data.para.pow=[1.9998 2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32_m';
+data.corr='sexp_m';
 %data.corr='gauss';
+%data.corr='expg';
 data.rbf='matern32_m';
 data.type='KRG';
 data.grad=false;
@@ -78,14 +80,14 @@ meta.test_positiv=false;
 meta.norm=true;
 meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.method='ga'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
-meta.para.l_val=0.1;%2;
+meta.para.method='tir_min_sqp'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
+%meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
-meta.para.aff_estim=false;
+meta.para.aff_estim=true;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
-meta.para.aff_plot_algo=false;
+meta.para.aff_plot_algo=true;
 meta.enrich.on=true;
 meta.enrich.para_wei=0:0.2:1;
 meta.enrich.para_gei=2;
@@ -167,8 +169,7 @@ if aff.ic.on
     aff.d3=true;
     v.Z=K.var;
     subplot(1,2,2)
-    affichage(grid_XY,v,tirages,eval,grad,aff);
-    pause
+    affichage(grid_XY,v,tirages,eval,grad,aff);    
     camlight; lighting gouraud;
     aff.titre='Metamodele';
     aff.rendu=false;
@@ -251,7 +252,6 @@ if meta.save
     save([aff.doss '/WS.mat']);
 end
 %extract_nD
-pause
 extract_aff_nD
 
 %arret workers

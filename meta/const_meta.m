@@ -45,7 +45,7 @@ else
 end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%Examen des donnees entrantes (traitement des données manquantes
+%Examen des donnees entrantes (traitement des donnï¿½es manquantes
 [bilan_manq]=examen_in_data(tirages,eval,grad_in);
 
 %%%%%%%%=================================%%%%%%%%
@@ -92,7 +92,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            inkrg=meta_inkrg(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
+            inkrg=meta_inkrg(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des rï¿½ponses pour gradients au lieu des gradients evalues)
             out_meta=inkrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -101,7 +101,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            inrbf=meta_inrbf(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des réponses pour gradients au lieu des gradients evalues)
+            inrbf=meta_inrbf(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des rï¿½ponses pour gradients au lieu des gradients evalues)
             out_meta=inrbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -131,11 +131,11 @@ for type=metype
             if meta.para.estim
                 switch meta.corr
                     case {'correxpg'}
-                        lb=[meta.para.l_min meta.para.p_min];
-                        ub=[meta.para.l_max meta.para.p_max];
+                        lb=[meta.para.l_min.*ones(1,nb_var), meta.para.p_min];
+                        ub=[meta.para.l_max.*ones(1,nb_var), meta.para.p_max];
                     otherwise
-                        lb=meta.para.l_min;
-                        ub=meta.para.l_max;
+                        lb=meta.para.l_min.*ones(nb_var,1);
+                        ub=meta.para.l_max.*ones(nb_var,1);
                 end
                 theta0=(ub-lb)./2;
                 [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0,lb,ub);

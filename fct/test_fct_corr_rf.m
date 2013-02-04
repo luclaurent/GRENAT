@@ -1,12 +1,13 @@
 dim=2;
-fct='rf_matern32';
-
-pas=0.01;
+fct1='corrgauss';
+fct2='corr_sexp_m';
+pas=0.1;
 
 if dim==1
 
 x=-10:pas:10;
-[ev,dev,ddev]=feval(fct,x',2);
+[ev,dev,ddev]=feval(fct1,x',2);
+[evv,devv,ddevv]=feval(fct2,x',2);
 
 figure
 hold on
@@ -18,7 +19,8 @@ elseif dim ==2
     x=-10:pas:10;
     [X,Y]=meshgrid(x);
     XX=[X(:) Y(:)];
-    [ev,dev,ddev]=feval(fct,XX,1);
+    [ev,dev]=feval(fct1,1,XX);
+    [evv,devv,ddevv]=feval(fct2,XX,1);
     Z=reshape(ev,size(X,1),size(X,2));
     GZX=reshape(dev(:,1),size(X,1),size(X,2));
     GZY=reshape(dev(:,2),size(X,1),size(X,2));

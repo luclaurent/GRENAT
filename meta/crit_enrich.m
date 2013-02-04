@@ -9,21 +9,24 @@ function [EI,WEI,GEI,LCB,exploit_EI,explor_EI]=crit_enrich(eval_min,Z,variance,e
 dim_Z=size(Z);
 
 %tests variance
-IX_inf=find(variance<0,1);
-IX_zero=find(variance<=0,1);
+IX_inf=find(variance<1e-4);
+IX_zero=find(variance<=1e-4);
 if ~isempty(IX_inf)
     fprintf('Probleme variance inferieure a zero en certains points \n')
 end
 
+%calcul  ecarte type
+ecart_type=sqrt(variance);
+
 
 %reponse mini
 diff_ei=(eval_min-Z);
-u=diff_ei./variance;
+u=diff_ei./ecart_type;
 %pour calcul Expected Improvement (Schonlau 1997/Jones 1999/Bompard
 %2011/Sobester 2005...)
 %exploration (densite probabilite)
 densprob=1/sqrt(2*pi)*exp(-0.5*u.^2); %normpdf
-explor_EI=variance.*densprob;
+explor_EI=ecart_type.*densprob;
 
 %exploitation (fonction repartition loi normale centree reduite)
 fctrep=0.5*(1+erf(u/sqrt(2))); %cdf
@@ -49,7 +52,7 @@ end
 %critere Expected Improvement (Schonlau 1997)
 EI=exploit_EI+explor_EI;
 %critere Lower Confidence Bound (Cox et John 1997)
-LCB=Z-enrich.para_lcb*variance;
+LCB=Z-enrich.para_lcb*ecart_type;
 %traitement cas particulier: variance nulle ou inferieure a zero (anormale)
 if ~isempty(IX_zero)
     LCB(IX_zero)=0;
@@ -59,7 +62,7 @@ end
 g=max(enrich.para_gei);
 t=zeros(dim_Z(1),dim_Z(2),g);
 GEI=zeros(dim_Z(1),dim_Z(2),g+1);
-if variance~=0
+if ecart_type~=0
     if g>=0
         t(:,:,1)=fctrep;
     end
@@ -78,7 +81,7 @@ if variance~=0
         %coefficent
         coef=(-1).^k_ite;
         %variance a la puissance
-        varg=variance.^cg;
+        varg=ecart_type.^cg;
         % n parmi k
         comb=factorial(cg)./(factorial(k_ite).*factorial(cg-k_ite)); %plus rapide que nchoosek (10 fois plus rapide)
         % elevation a la puissance de u

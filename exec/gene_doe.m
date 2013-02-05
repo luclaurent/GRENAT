@@ -56,6 +56,9 @@ switch doe.type
     % plan factoriel complet
     case 'ffact'
         tirages=factorial_design(nbs,Xmin_def,Xmax_def);
+        if numel(nbs)==1
+            nbs=nbs^nbv;
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % Latin Hypercube Sampling avec R (et preenrichissement)

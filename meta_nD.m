@@ -29,7 +29,7 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='mystery';
+fct='rosenbrock';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
@@ -43,23 +43,23 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=70;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
 doe.type='LHS_O1_manu';
 
 %nb d'echantillons
-doe.nb_samples=30;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
-data.para.long=[10^-1 20];
+data.para.long=[10^-10 5];
 %data.para.long=[0.0138 3.21*10^-5];
-data.para.pow=[1.9998 2];
+data.para.pow=[1 2.2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='sexp_m';
+data.corr='matern32_m';
 %data.corr='gauss';
 %data.corr='expg';
 data.rbf='matern32_m';
@@ -68,13 +68,16 @@ data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
 end
-data.deg=2;
+if strcmp(data.type,'DACE')
+    data.corr='expg';
+end
+data.deg=0;
 
 meta=init_meta(data);
 
 meta.para.estim=true;
-meta.cv=true;
-meta.cv_aff=false;
+meta.cv=false;
+meta.cv_aff=true;
 meta.cv_full=false;
 meta.test_positiv=false;
 meta.norm=true;
@@ -84,7 +87,7 @@ meta.para.method='tir_min_sqp'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_f
 %meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
-meta.para.aff_estim=true;
+meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
 meta.para.aff_plot_algo=true;

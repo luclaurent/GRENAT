@@ -58,7 +58,7 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
     plot(grid_XY,K.exploit_EI,'b')
     hold off
     hold on
-    plot(grid_XY,K.ei,'b')
+    plot(grid_XY,K.ei,'k')
     hold off
     xlim([xmin xmax])
     legend('Explor','Exploit','EI','Location','EastOutside')
@@ -233,7 +233,8 @@ if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(
     figure
     if isfield(K,'var')
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.var);
+        surf(XX,YY,K.var);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('Variance')
@@ -241,19 +242,22 @@ if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(
     end
     if isfield(K,'ei')
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.ei);
+        surf(XX,YY,K.ei);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('EI')
         nbsub=nbsub+1;
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.explor_EI);
+        surf(XX,YY,K.explor_EI);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('Explor EI')
         nbsub=nbsub+1;
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.exploit_EI);
+        surf(XX,YY,K.exploit_EI);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('Exploit EI')
@@ -261,7 +265,8 @@ if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(
     end
     if isfield(K,'wei')
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.wei(:,:,2));
+        surf(XX,YY,K.wei(:,:,2));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title(['WEI ' num2str(meta.enrich.para_wei(2),'%4.2e')])
@@ -269,19 +274,22 @@ if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(
     end
     if isfield(K,'gei')
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.gei(:,:,1));
+        surf(XX,YY,K.gei(:,:,1));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('GEI 0')
         nbsub=nbsub+1;        
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.gei(:,:,2));
+        surf(XX,YY,K.gei(:,:,2));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('GEI 1')
         nbsub=nbsub+1;
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.gei(:,:,3));
+        surf(XX,YY,K.gei(:,:,3));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('GEI 2')
@@ -289,7 +297,8 @@ if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(
     end
     if isfield(K,'lcb')
         subplot(nb_li,nb_col,nbsub)
-        surf(XX,YY,K.lcb);
+        surf(XX,YY,K.lcb);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
         xlim([xmin xmax])
         ylim([ymin ymax])
         title('LCB')

@@ -31,7 +31,7 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=20;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=10;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
@@ -45,7 +45,7 @@ data.para.long=[10^-3 30];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32_m';
+data.corr='sexp_m';
 data.rbf='sexp';
 data.type='KRG';
 data.grad=false;
@@ -59,7 +59,7 @@ meta=init_meta(data);
 meta.para.estim=false;
 meta.cv=true;
 meta.norm=true;
-meta.recond=false;
+meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
 meta.para.method='fmincon';
 meta.para.val=3.4736;%1/sqrt(2);%2;
@@ -99,69 +99,192 @@ tirages=gene_doe(doe);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%etude CV 
-xparamin=0.3;
-xparamax=0.5;
-yparamin=0.08;
-yparamax=0.5;
-nbpara=20;
-valparax=linspace(xparamin,xparamax,nbpara);
-valparay=linspace(yparamin,yparamax,nbpara);
-meta.cv_aff=false;
-li_sack=zeros(nbpara);
-objdace=li_sack;
-condi=li_sack;
-mv=li_sack;
-for ii=1:nbpara
-    for jj=1:nbpara
-%Construction et evaluation du metamodele aux points souhaites
-fprintf('%4.2f ',ii/nbpara*100)
-meta.para.l_val=[valparax(ii) valparay(jj)];
-[approx]=const_meta(tirages,eval,grad,meta);
- [K]=eval_meta(grid_XY,approx,meta);
-% cond_mat(ii)=approx.build.cond_new;
-% rippa(ii)=approx.cv.eloot;
-% perso(ii)=approx.cv.then.eloot;
-% %calcul et affichage des criteres d'erreur
-% err=crit_err(K.Z,Z.Z,approx);
-% emse(ii)=err.emse;
-% rmse(ii)=err.rmse;
-% eq3(ii)=err.eq3;
-% r2(ii)=err.r2;
-% r2adj(ii)=err.r2adj;
-mv(ii,jj)=max(K.var(:));
-condi(ii,jj)=approx.build.cond_new;
-lilo(ii,jj)=approx.build.lilog;
-global lisack
-li_sack(ii,jj)=lisack;
+%etude CV
+if doe.dim_pb==1
+    xparamin=1e-5;
+    xparamax=20;
+    nbpara=100;
+    valparax=linspace(xparamin,xparamax,nbpara);
+    meta.cv_aff=false;
+    li_sack=zeros(nbpara,1);
+    objdace=li_sack;
+    condi=li_sack;
+    mv=li_sack;
+%     for ii=1:nbpara
+%         %Construction et evaluation du metamodele aux points souhaites
+%         fprintf('%4.2f ',ii/nbpara*100)
+%         meta.para.l_val=[valparax(ii)];
+%         [approx]=const_meta(tirages,eval,grad,meta);
+%         [K]=eval_meta(grid_XY,approx,meta);
+%         % cond_mat(ii)=approx.build.cond_new;
+%         % rippa(ii)=approx.cv.eloot;
+%         % perso(ii)=approx.cv.then.eloot;
+%         % %calcul et affichage des criteres d'erreur
+%         % err=crit_err(K.Z,Z.Z,approx);
+%         % emse(ii)=err.emse;
+%         % rmse(ii)=err.rmse;
+%         % eq3(ii)=err.eq3;
+%         % r2(ii)=err.r2;
+%         % r2adj(ii)=err.r2adj;
+%         mv(ii)=max(K.var(:));
+%         condi(ii)=approx.build.cond_new;
+%         lilo(ii)=approx.build.lilog;
+%         global lisack
+%         li_sack(ii)=lisack;
+%         
+%     end
+%     figure('Name','li_sack');semilogy(valparax,li_sack)
+%     figure('Name','var');semilogy(valparax,mv)
+%     figure('Name','lilo');semilogy(valparax,lilo)
+%     figure('Name','cond');semilogy(valparax,condi)
+    %%%%
+    meta.corr='corrgauss';
+     meta.type='DACE';
+    meta.regr='regpoly0';
+     meta.para.l_val=30;
+     [approx]=const_meta(tirages,eval,grad,meta);
+     [K]=eval_meta(grid_XY,approx,meta);
+     meta.corr='corr_sexp_m';
+     meta.type='KRG';
+     
+     meta.para.l_val=30;
+ [approx]=const_meta(tirages,eval,grad,meta);    
+   [KK]=eval_meta(grid_XY,approx,meta);
+    fprintf('DACE %4.2e KRG %4.2e\n',max(K.var(:)),max(KK.var(:)));
+    pause
+    meta.corr='corrgauss';
+    meta.type='DACE';
+    meta.regr='regpoly0';
+    for ii=1:nbpara
+        %Construction et evaluation du metamodele aux points souhaites
+        fprintf('%4.2f ',ii/nbpara*100)
+        meta.para.l_val=[valparax(ii)];
+        [approx]=const_meta(tirages,eval,grad,meta);
+        [K]=eval_meta(grid_XY,approx,meta);
+        global obj
+        obj
+        objdace(ii)=obj;
+         mvdace(ii)=max(K.var(:));
+        
     end
-end
-[VX,VY]=meshgrid(valparax,valparay);
- figure('Name','li_sack');surf(VX,VY,li_sack)
- set(gca,'zscale','log')
- figure('Name','var');surf(VX,VY,mv)
- set(gca,'zscale','log')
-  figure('Name','lilo');surf(VX,VY,lilo)
- set(gca,'zscale','log')
-   figure('Name','cond');surf(VX,VY,condi)
- set(gca,'zscale','log')
-%%%%%
-meta.corr='corrgauss';
-meta.type='DACE';
-meta.regr='regpoly0';
-for ii=1:nbpara
-    for jj=1:nbpara
-%Construction et evaluation du metamodele aux points souhaites
-fprintf('%4.2f ',ii/nbpara*100)
-meta.para.l_val=[valparax(ii) valparay(jj)];
-[approx]=const_meta(tirages,eval,grad,meta);
-[K]=eval_meta(grid_XY,approx,meta);
-global obj
-objdace(ii,jj)=obj;
+    figure('Name','dace');semilogy(valparax,objdace)
+    figure('Name','mvdace');semilogy(valparax,mvdace)
+    
+elseif doe.dim_pb==2
+    xparamin=1e-5;
+    xparamax=1e-1;
+    yparamin=1e-5;
+    yparamax=1e-2;
+    nbpara=20;
+    valparax=linspace(xparamin,xparamax,nbpara);
+    valparay=linspace(yparamin,yparamax,nbpara);
+    meta.cv_aff=false;
+    li_sack=zeros(nbpara);
+    objdace=li_sack;
+    condi=li_sack;
+    mv=li_sack;
+    for ii=1:nbpara
+        for jj=1:nbpara
+            %Construction et evaluation du metamodele aux points souhaites
+            fprintf('%4.2f ',ii/nbpara*100)
+            meta.para.l_val=[valparax(ii) valparay(jj)];
+            [approx]=const_meta(tirages,eval,grad,meta);
+            [K]=eval_meta(grid_XY,approx,meta);
+            % cond_mat(ii)=approx.build.cond_new;
+            % rippa(ii)=approx.cv.eloot;
+            % perso(ii)=approx.cv.then.eloot;
+            % %calcul et affichage des criteres d'erreur
+            % err=crit_err(K.Z,Z.Z,approx);
+            % emse(ii)=err.emse;
+            % rmse(ii)=err.rmse;
+            % eq3(ii)=err.eq3;
+            % r2(ii)=err.r2;
+            % r2adj(ii)=err.r2adj;
+            mv(ii,jj)=max(K.var(:));
+            condi(ii,jj)=approx.build.cond_new;
+            lilo(ii,jj)=approx.build.lilog;
+            global lisack
+            li_sack(ii,jj)=lisack;
+        end
     end
+    [VX,VY]=meshgrid(valparax,valparay);
+        [~,IX]=min(li_sack(:));    
+    figure('Name','2 li_sack');surf(VX,VY,li_sack);hold on;scatter3(VX(IX),VY(IX),li_sack(IX),'g','filled')
+    set(gca,'zscale','log')
+    [~,IX]=min(mv(:));  
+    figure('Name','2 var');surf(VX,VY,mv);hold on;scatter3(VX(IX),VY(IX),mv(IX),'g','filled')
+    set(gca,'zscale','log')
+    [~,IX]=min(lilo(:));  
+    figure('Name','2 lilo');surf(VX,VY,lilo);hold on;scatter3(VX(IX),VY(IX),lilo(IX),'g','filled')
+    %set(gca,'zscale','log')
+    [~,IX]=min(condi(:));  
+    figure('Name','2 cond');surf(VX,VY,condi);hold on;scatter3(VX(IX),VY(IX),condi(IX),'g','filled')
+    set(gca,'zscale','log')
+    set(gca,'zscale','log')
+    pause
+    xparamin=1e-2;
+    xparamax=1;
+    yparamin=1e-2;
+    yparamax=1e-1;
+    valparax=linspace(xparamin,xparamax,nbpara);
+    valparay=linspace(yparamin,yparamax,nbpara);
+    meta.corr='corr_matern32_m';
+     for ii=1:nbpara
+        for jj=1:nbpara
+            %Construction et evaluation du metamodele aux points souhaites
+            fprintf('%4.2f ',ii/nbpara*100)
+            meta.para.l_val=[valparax(ii) valparay(jj)];
+            [approx]=const_meta(tirages,eval,grad,meta);
+            [K]=eval_meta(grid_XY,approx,meta);
+            % cond_mat(ii)=approx.build.cond_new;
+            % rippa(ii)=approx.cv.eloot;
+            % perso(ii)=approx.cv.then.eloot;
+            % %calcul et affichage des criteres d'erreur
+            % err=crit_err(K.Z,Z.Z,approx);
+            % emse(ii)=err.emse;
+            % rmse(ii)=err.rmse;
+            % eq3(ii)=err.eq3;
+            % r2(ii)=err.r2;
+            % r2adj(ii)=err.r2adj;
+            mv(ii,jj)=max(K.var(:));
+            condi(ii,jj)=approx.build.cond_new;
+            lilo(ii,jj)=approx.build.lilog;
+            global lisack
+            li_sack(ii,jj)=lisack;
+        end
+    end
+    [VX,VY]=meshgrid(valparax,valparay);
+    [~,IX]=min(li_sack(:));    
+    figure('Name','2 li_sack');surf(VX,VY,li_sack);hold on;scatter3(VX(IX),VY(IX),li_sack(IX),'g','filled')
+    set(gca,'zscale','log')
+    [~,IX]=min(mv(:));  
+    figure('Name','2 var');surf(VX,VY,mv);hold on;scatter3(VX(IX),VY(IX),mv(IX),'g','filled')
+    set(gca,'zscale','log')
+    [~,IX]=min(lilo(:));  
+    figure('Name','2 lilo');surf(VX,VY,lilo);hold on;scatter3(VX(IX),VY(IX),lilo(IX),'g','filled')
+    set(gca,'zscale','log')
+    [~,IX]=min(condi(:));  
+    figure('Name','2 cond');surf(VX,VY,condi);hold on;scatter3(VX(IX),VY(IX),condi(IX),'g','filled')
+    set(gca,'zscale','log')
+    
+    %%%%%
+    meta.corr='corrgauss';
+    meta.type='DACE';
+    meta.regr='regpoly0';
+    for ii=1:nbpara
+        for jj=1:nbpara
+            %Construction et evaluation du metamodele aux points souhaites
+            fprintf('%4.2f ',ii/nbpara*100)
+            meta.para.l_val=[valparax(ii) valparay(jj)];
+            [approx]=const_meta(tirages,eval,grad,meta);
+            [K]=eval_meta(grid_XY,approx,meta);
+            global obj
+            objdace(ii,jj)=obj;
+        end
+    end
+    figure('Name','dace');surf(VX,VY,objdace)
+    set(gca,'zscale','log')
 end
-  figure('Name','dace');surf(VX,VY,objdace)
- set(gca,'zscale','log')
 %%%%
 figure
 semilogy(valpara,rippa,'r')
@@ -214,12 +337,12 @@ save('1D_para_r2.dat','PP','-ascii')
 %     aff.on=false;
 %     aff.ic.on=false;
 % end
-% 
-% if aff.ic.on 
+%
+% if aff.ic.on
 %     figure
 % subplot(1,2,1)
 %     aff.rendu=true;
-%     aff.titre=['Intervalle de confiance IC' aff.ic.type]; 
+%     aff.titre=['Intervalle de confiance IC' aff.ic.type];
 %     switch aff.ic.type
 %         case '68'
 %             affichage_ic(grid_XY,ic68,aff);
@@ -234,11 +357,11 @@ save('1D_para_r2.dat','PP','-ascii')
 %     v.Z=K.var;
 %     subplot(1,2,2)
 %     affichage(grid_XY,v,tirages,eval,grad,aff);
-%     camlight; lighting gouraud; 
+%     camlight; lighting gouraud;
 %     aff.titre='Metamodele';
 %     aff.rendu=false;
 % end
-%             
+%
 % %fonction de reference
 % aff.newfig=false;
 % aff.d3=true;
@@ -251,7 +374,7 @@ save('1D_para_r2.dat','PP','-ascii')
 % aff.titre='';
 % subplot(2,2,2)
 % affichage(grid_XY,K,tirages,eval,grad,aff);
-% 
+%
 % aff.titre='Fonction de reference';
 % aff.d3=false;
 % aff.d2=true;
@@ -265,15 +388,15 @@ save('1D_para_r2.dat','PP','-ascii')
 % subplot(2,2,4)
 % affichage(grid_XY,K,tirages,eval,grad,aff);
 % aff.titre=[];
-% 
-% 
-% 
+%
+%
+%
 % %calcul et affichage des criteres d'erreur
 % err=crit_err(K.Z,Z.Z,approx);
-% 
+%
 % fprintf('=====================================\n');
 % fprintf('=====================================\n');
-% 
+%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % % Sauvegarde des infos dans un fichier tex

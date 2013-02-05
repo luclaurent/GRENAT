@@ -6,7 +6,6 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 
 %coefficient de reconditionnement
 coef=(10+size(donnees.build.fct,1))*eps;
-
 % type de factorisation de la matrice de correlation
 fact_rcc='LL' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,7 +152,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %amelioration du conditionnement de la matrice de correlation
 if meta.recond
-    cond_orig=condest(rcc);
+    cond_orig=condest(rcc);    
     rcc=rcc+coef*speye(size(rcc));
     cond_new=condest(rcc);
     %   fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
@@ -167,7 +166,6 @@ if nargin==2   %en phase de construction
     cond_new=condest(rcc);
     fprintf('Conditionnement R: %6.5e\n',cond_new)
 end
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -266,6 +264,7 @@ switch fact_rcc
         build_data.Ltrcc=Ltrcc;
         build_data.Lrcc=Lrcc;
     otherwise
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients beta et gamma

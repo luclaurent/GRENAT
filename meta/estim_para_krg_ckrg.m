@@ -76,7 +76,8 @@ options_sqp = optimset(...
     'FunValCheck','off',...      %test valeur fonction (Nan,Inf)
     'UseParallel','never',...
     'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
-    'TolFun',crit_opti);
+    'TolFun',crit_opti,...
+    'TolX',1e-8);
 options_fminbnd = optimset(...
     'Display', 'iter',...        %affichage evolution
     'OutputFcn',@stop_estim,...      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation
@@ -139,7 +140,8 @@ end
 %on recherche si le motif tir_min_ est present dans le nom de strategie
 motif='tir_min_';
 [motfind]=strfind(meta.para.method,motif);
-if isempty(motif)
+
+if isempty(motfind)
     method_optim=meta.para.method;
     tir_min_ok=false;
 else
@@ -161,6 +163,7 @@ if tir_min_ok
     [fval1,IX]=min(crit);
     x0=tir_pop(IX,:);
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %minimisation de la log-vraisemblance suivant l'algorithme choisi
@@ -274,7 +277,7 @@ switch method_optim
             para_estim.out_algo=output;
             para_estim.out_algo.fval=fval;
             para_estim.out_algo.exitflag=exitflag;
-            if exist(fval1,'var');para_estim.out_algo.fval1=fval1;end
+            if exist('fval1','var');para_estim.out_algo.fval1=fval1;end
         elseif exitflag==-2
             fprintf('Bug arret Fmincon\n');
         end

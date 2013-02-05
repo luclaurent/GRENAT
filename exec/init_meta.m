@@ -58,7 +58,7 @@ meta.para.popManu='IHS';
 %population initiale algo GA
 meta.para.nbPopInit=[];
 %critere arret algo optimisation
-meta.para.crit_opti=10^-4;
+meta.para.crit_opti=10^-6;
 %bornes esapce recherche parametres
 if meta.para.estim
     meta.para.l_min=1e-4;

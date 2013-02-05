@@ -19,6 +19,8 @@ old_eval=[];
 old_grad=[];
 info_enrich.min.Xap_min=[];
 info_enrich.min.Zap_min=[];
+info_enrich.min.Vap_max=[];
+info_enrich.min.XVap_max=[];
 
 %grille de verification
 nb_pts_verif=3000;
@@ -82,6 +84,8 @@ while ~crit_atteint&&enrich.on
     %regroupement infos
     info_enrich.min.Xap_min=[info_enrich.min.Xap_min;det_enrich.min.Xap_min];
     info_enrich.min.Zap_min=[info_enrich.min.Zap_min;det_enrich.min.Zap_min];
+    info_enrich.min.XVap_max=[info_enrich.min.XVap_max;det_enrich.min.XVap_max];
+    info_enrich.min.Vap_max=[info_enrich.min.Vap_max;det_enrich.min.Vap_max];
     if ~isempty(aff_subplot);aff_subplot.id_sub=id_sub;end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -161,27 +165,29 @@ meth_enrich=enrich.type;
 choix_crit=enrich.crit_type;
 
 %liste criteres
-liste_crit={'CONV_VAR';'CONV_VARR';'CONV_LCB';...
-    'CONV_LCBR';'CONV_WEI';'CONV_WEIR';...
-    'CONV_EIRb';'CONV_GEIR';'CONV_GEI';...
-    'CONV_EI';'CONV_EIR';'HIST_R2';...
-    'HIST_Q3';'CONV_R2_EX';'CONV_Q3_EX';...
-    'NB_PTS';'CV_MSE';'CONV_REP_EX';...
-    'CONV_LOC_EX';'CONV_REP';'CONV_LOC'};
+liste_crit={'CONV_VAR';'CONV_VARR';'CONV_LCB';...   %3
+    'CONV_LCBR';'CONV_WEI';'CONV_WEIR';...          %6
+    'CONV_EIRb';'CONV_GEIR';'CONV_GEI';...          %9
+    'CONV_EI';'CONV_EIR';'HIST_R2';...              %12
+    'HIST_Q3';'CONV_R2_EX';'CONV_Q3_EX';...         %15
+    'NB_PTS';'CV_MSE';'CONV_REP_EX';...             %18
+    'CONV_LOC_EX';'CONV_REP';'CONV_LOC';...         %21
+    'CONV_WEIRb';'CONV_GEIRb';'CONV_EIRn';...       %24
+    'CONV_WEIRn';'CONV_GEIRn'};                     %26
 %on cree un masque des criteres de convergence inapplicables
 switch meth_enrich
     case 'DOE'
-        masque_bad={liste_crit{1:11}};
+        masque_bad={liste_crit{1:end}};
     case 'VAR'
-        masque_bad={liste_crit{3:11}};
+        masque_bad={liste_crit{[3:11 22:end]}};
     case 'LCB'
-        masque_bad={liste_crit{[1 2 5:11]}};
+        masque_bad={liste_crit{[1 2 5:11 19:end]}};
     case 'EI'
-        masque_bad={liste_crit{[1:6 8:9]}};
+        masque_bad={liste_crit{[1:6 8:9 22 23 25 26]}};
     case 'GEI'
-        masque_bad={liste_crit{[1:7 10 11]}};
+        masque_bad={liste_crit{[1:7 10 11 22 24:end]}};
     case 'WEI'
-        masque_bad={liste_crit{[1:4 7:11]}};
+        masque_bad={liste_crit{[1:4 7:10 23 24 26]}};
 end
 %on recherche les criteres a retirer si present
 iter_retir=[];

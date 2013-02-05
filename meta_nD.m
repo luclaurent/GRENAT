@@ -63,7 +63,7 @@ data.corr='matern32_m';
 %data.corr='gauss';
 %data.corr='expg';
 data.rbf='matern32_m';
-data.type='KRG';
+data.type='DACE';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -71,7 +71,7 @@ end
 if strcmp(data.type,'DACE')
     data.corr='expg';
 end
-data.deg=0;
+data.deg=2;
 
 meta=init_meta(data);
 

@@ -6,7 +6,6 @@ function  [crit_atteint,id_sub,det_enrich]=verif_crit_meta(enrich,meta,infos_enr
 
 %initialisation flag criteres
 crit_atteint=false;
-done_min=false;
 pts_ok=true;
 mse_ok=true;
 ei_ok=true;
@@ -20,6 +19,11 @@ varr_ok=true;
 gei_ok=true;
 geir_ok=true;
 eirb_ok=true;
+geirb_ok=true;
+weirb_ok=true;
+eirn_ok=true;
+geirn_ok=true;
+weirn_ok=true;
 conv_loc_ex_ok=true;
 conv_glob_ex_ok=true;
 conv_rep_ok=true;
@@ -71,12 +75,87 @@ nb_col=aff_subplot.nb_col;
 nb_pts=size(old_tirages,1);
 opt_plot.bornes=[nb_pts-1 nb_pts+1];
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%recherche du minimum du metamodele si necessaire
+%criteres necessitant la recherche du minimum
+crit_min={'CONV_REP','CONV_LOC','CONV_REP_EX','CONV_LOC_EX'};
+if any(ismember(criteres,crit_min))
+    %valeur cible
+    if isfield(enrich,'min_glob')
+        if isfield(enrich.min_glob,'Z');Z_cible=enrich.min_glob.Z;else Z_cible=[];end
+        if isfield(enrich.min_glob,'X');X_cible=enrich.min_glob.X;else Z_cible=[];end
+    else
+        Z_cible=[];
+        X_cible=[];
+    end
+    %recherche du minimum de la fonction approchee
+    [Zap_min,Xap_min]=rech_min_meta(meta,approx{end},enrich.optim);
+    %extraction informations sur le minimum
+    det_enrich.min.Zap_min=Zap_min;
+    det_enrich.min.Xap_min=Xap_min;
+    %donnees minimum completes
+    Zap_min=[infos_enrich.min.Zap_min;Zap_min];
+    Xap_min=[infos_enrich.min.Xap_min;Xap_min];
+    fprintf(' >> Minimum sur metamodele: %4.2e\n',Zap_min(end))
+    fprintf(' >> Au point: ');
+    fprintf('%4.2e ',Xap_min(end,:));
+    fprintf('\n')
+    
+    %trace de l'evolution
+    if enrich.aff_evol
+        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+        opt_plot.tag='Min_meta';
+        opt_plot.title='Minimum Metamodele';
+        opt_plot.xlabel='Nombre de points';
+        opt_plot.ylabel='Minimum Metamodele';
+        opt_plot.ech_log=false;
+        opt_plot.type='stairs';
+        opt_plot.cible=Z_cible;
+        aff_evol(nb_pts,Zap_min(end),opt_plot,id_plotloc);
+        num_sub=num_sub+1;
+    end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%recherche de la variance maxi du metamodele si necessaire
+%criteres necessitant la recherche de la variance maxi
+crit_var={'CONV_EIRn','CONV_WEIRn','CONV_GEIRn'};
+if any(ismember(criteres,crit_var))
+    %recherche du variance maxi
+    [MVar_min,XVap_max]=rech_min_meta(meta,approx{end},enrich.optim,'var');
+    Vap_max=-MVar_min;
+    %extraction informations sur le maximum
+    det_enrich.min.Vap_max=Vap_max;
+    det_enrich.min.XVap_max=XVap_max;
+    %donnees minimum completes
+    Vap_max=[infos_enrich.min.Vap_max;Vap_max];
+    XVap_max=[infos_enrich.min.XVap_max;XVap_max];
+    fprintf(' >> Variance maxi metamodele: %4.2e\n',Vap_max(end))
+    fprintf(' >> Au point: ');
+    fprintf('%4.2e ',XVap_max(end,:));
+    fprintf('\n')
+    
+    %trace de l'evolution
+    if enrich.aff_evol
+        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+        opt_plot.tag='Max_Var_meta';
+        opt_plot.title='Variance maxi Metamodele';
+        opt_plot.xlabel='Nombre de points';
+        opt_plot.ylabel='Variance maxi Metamodele';
+        opt_plot.ech_log=false;
+        opt_plot.type='stairs';
+        opt_plot.cible=0;
+        aff_evol(nb_pts,Vap_max(end),opt_plot,id_plotloc);
+        num_sub=num_sub+1;
+    end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %parcours des types d'enrichissement
 for  it_type=1:length(criteres)
-    if it_type==1
-        done_min=false;
-    end
     %balayage des criteres
     switch criteres{it_type}
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -334,6 +413,53 @@ for  it_type=1:length(criteres)
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % controle en convergence EI relative (basé sur Huang 2006)
+        case 'CONV_WEIRb'
+            if iteration_enrich>1
+                % W. Expected Improvement maxi
+                maxWEI=-infos_enrich.valCRIT;
+                %reponse exacte mini et maxi
+                minZex=infos_enrich.minZex;
+                maxZex=infos_enrich.maxZex;
+                %critere
+                if minZex~=maxZex
+                    maxWEIRb=maxWEI/abs(maxZex-minZex);
+                else
+                    maxWEIRb=maxWEI;
+                end
+                depass=(maxWEIRb-crit_val{it_type})/crit_val{it_type};
+                %affichage info
+                fprintf(' ==>> maximum WEI relative (~Huang 2006): %d (max: %d) <<==\n',maxWEIRb,crit_val{it_type});
+                % verification temps atteint
+                if maxWEIRb<=crit_val{it_type}
+                    weirb_ok=false;
+                    fprintf(' ====> LIMITE max WEIRb ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                else
+                    weirb_ok=true;
+                    fprintf(' ====> LIMITE max WEIRb NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                end
+                %sauvegarde valeur critere
+                det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxWEIRb];
+                
+                %trace de l'evolution
+                if enrich.aff_evol
+                    if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    opt_plot.tag='CONV_WEIRb';
+                    opt_plot.title='WEI relative maxi (~Huang 2006)';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='maxWEIRb';
+                    opt_plot.ech_log=false;
+                    opt_plot.type='stairs';
+                    opt_plot.cible=crit_val{it_type};
+                    aff_evol(nb_pts,maxWEIRb,opt_plot,id_plotloc);
+                end
+            else
+                fprintf(' >> Critere %s non actif a la 1ere iteration\n',criteres{it_type});
+            end
+            num_sub=num_sub+1;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % controle en convergence EI relative (Huang 2006)
         case 'CONV_EIRb'
             if iteration_enrich>1
@@ -373,6 +499,179 @@ for  it_type=1:length(criteres)
                     opt_plot.type='stairs';
                     opt_plot.cible=crit_val{it_type};
                     aff_evol(nb_pts,maxEIRb,opt_plot,id_plotloc);
+                end
+            else
+                fprintf(' >> Critere %s non actif a la 1ere iteration\n',criteres{it_type});
+            end
+            num_sub=num_sub+1;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % controle en convergence GEI relative (basé sur Huang 2006)
+        case 'CONV_GEIRb'
+            if iteration_enrich>1
+                % G. Expected Improvement maxi
+                maxGEI=-infos_enrich.valCRIT;
+                %reponse exacte mini et maxi
+                minZex=infos_enrich.minZex;
+                maxZex=infos_enrich.maxZex;
+                %critere
+                if minZex~=maxZex
+                    maxGEIRb=maxGEI/abs(maxZex-minZex);
+                else
+                    maxGEIRb=maxGEI;
+                end
+                depass=(maxGEIRb-crit_val{it_type})/crit_val{it_type};
+                %affichage info
+                fprintf(' ==>> maximum WEI relative (~Huang 2006): %d (max: %d) <<==\n',maxGEIRb,crit_val{it_type});
+                % verification temps atteint
+                if maxGEIRb<=crit_val{it_type}
+                    geirb_ok=false;
+                    fprintf(' ====> LIMITE max WEIRb ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                else
+                    geirb_ok=true;
+                    fprintf(' ====> LIMITE max WEIRb NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                end
+                %sauvegarde valeur critere
+                det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxGEIRb];
+                
+                %trace de l'evolution
+                if enrich.aff_evol
+                    if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    opt_plot.tag='CONV_GEIRb';
+                    opt_plot.title='GEI relative maxi (~Huang 2006)';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='maxGEIRb';
+                    opt_plot.ech_log=false;
+                    opt_plot.type='stairs';
+                    opt_plot.cible=crit_val{it_type};
+                    aff_evol(nb_pts,maxGEIRb,opt_plot,id_plotloc);
+                end
+            else
+                fprintf(' >> Critere %s non actif a la 1ere iteration\n',criteres{it_type});
+            end
+            num_sub=num_sub+1;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % controle en convergence WEI relative (norme par la variance maxi)
+        case 'CONV_WEIRn'
+            if iteration_enrich>1
+                % W. Expected Improvement maxi
+                maxWEI=-infos_enrich.valCRIT;
+                %variance maxi
+                maxVar=Vap_max(end);
+                %critere
+                maxWEIRn=maxWEI/maxVar;
+                depass=(maxWEIRn-crit_val{it_type})/crit_val{it_type};
+                %affichage info
+                fprintf(' ==>> maximum WEI relative (norme var max): %d (max: %d) <<==\n',maxWEIRn,crit_val{it_type});
+                % verification temps atteint
+                if maxWEIRn<=crit_val{it_type}
+                    weirn_ok=false;
+                    fprintf(' ====> LIMITE max WEIRn ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                else
+                    weirn_ok=true;
+                    fprintf(' ====> LIMITE max WEIRn NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                end
+                %sauvegarde valeur critere
+                det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxWEIRn];
+                
+                %trace de l'evolution
+                if enrich.aff_evol
+                    if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    opt_plot.tag='CONV_WEIRn';
+                    opt_plot.title='WEI relative maxi (norme var.)';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='maxWEIRn';
+                    opt_plot.ech_log=false;
+                    opt_plot.type='stairs';
+                    opt_plot.cible=crit_val{it_type};
+                    aff_evol(nb_pts,maxWEIRn,opt_plot,id_plotloc);
+                end
+            else
+                fprintf(' >> Critere %s non actif a la 1ere iteration\n',criteres{it_type});
+            end
+            num_sub=num_sub+1;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % controle en convergence EI relative (norme par la variance maxi)
+        case 'CONV_EIRn'
+            if iteration_enrich>1
+                % Expected Improvement maxi
+                maxEI=-infos_enrich.valCRIT;
+                %variance maxi
+                maxVar=Vap_max(end);
+                %critere
+                maxEIRn=maxEI/maxVar;
+                depass=(maxEIRn-crit_val{it_type})/crit_val{it_type};
+                %affichage info
+                fprintf(' ==>> maximum EI relative (norme var max): %d (max: %d) <<==\n',maxEIRn,crit_val{it_type});
+                % verification temps atteint
+                if maxEIRn<=crit_val{it_type}
+                    eirn_ok=false;
+                    fprintf(' ====> LIMITE max EIRn ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                else
+                    eirn_ok=true;
+                    fprintf(' ====> LIMITE max EIRn NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                end
+                %sauvegarde valeur critere
+                det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxEIRn];
+                
+                %trace de l'evolution
+                if enrich.aff_evol
+                    if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    opt_plot.tag='CONV_EIRn';
+                    opt_plot.title='EI relative maxi (norme var.)';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='maxEIRn';
+                    opt_plot.ech_log=false;
+                    opt_plot.type='stairs';
+                    opt_plot.cible=crit_val{it_type};
+                    aff_evol(nb_pts,maxEIRn,opt_plot,id_plotloc);
+                end
+            else
+                fprintf(' >> Critere %s non actif a la 1ere iteration\n',criteres{it_type});
+            end
+            num_sub=num_sub+1;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % controle en convergence GEI relative (norme par la variance maxi)
+        case 'CONV_GEIRn'
+            if iteration_enrich>1
+                % G. Expected Improvement maxi
+                maxGEI=-infos_enrich.valCRIT;
+                %variance maxi
+                maxVar=Vap_max(end);
+                %critere
+                maxGEIRn=maxGEI/maxVar;
+                depass=(maxGEIRn-crit_val{it_type})/crit_val{it_type};
+                %affichage info
+                fprintf(' ==>> maximum GEI relative (norme var max): %d (max: %d) <<==\n',maxGEIRn,crit_val{it_type});
+                % verification temps atteint
+                if maxGEIRn<=crit_val{it_type}
+                    geirn_ok=false;
+                    fprintf(' ====> LIMITE max GEIRn ATTEINTE --- + %4.2e%s <====\n',depass*100,char(37))
+                else
+                    geirn_ok=true;
+                    fprintf(' ====> LIMITE max GEIRn NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
+                end
+                %sauvegarde valeur critere
+                det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxGEIRn];
+                
+                %trace de l'evolution
+                if enrich.aff_evol
+                    if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    opt_plot.tag='CONV_GEIRn';
+                    opt_plot.title='GEI relative maxi (norme var.)';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='maxGEIRn';
+                    opt_plot.ech_log=false;
+                    opt_plot.type='stairs';
+                    opt_plot.cible=crit_val{it_type};
+                    aff_evol(nb_pts,maxGEIRn,opt_plot,id_plotloc);
                 end
             else
                 fprintf(' >> Critere %s non actif a la 1ere iteration\n',criteres{it_type});
@@ -450,7 +749,7 @@ for  it_type=1:length(criteres)
                 if enrich.aff_evol
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_GEI';
-                    opt_plot.title='EI maxi';
+                    opt_plot.title='GEI maxi';
                     opt_plot.xlabel='Nombre de points';
                     opt_plot.ylabel='maxGEI';
                     opt_plot.ech_log=false;
@@ -785,206 +1084,166 @@ for  it_type=1:length(criteres)
             % controle en convergence de reponse et/ou de localisation
             % par rapport aux solutions precedentes et/ou par rapport
             % la solution exacte
-        case {'CONV_REP','CONV_LOC','CONV_LOC_EX','CONV_REP_EX'}
-            %valeur cible$
-            if isfield(enrich,'min_glob')
-                if isfield(enrich.min_glob,'Z');Z_cible=enrich.min_glob.Z;else Z_cible=[];end
-                if isfield(enrich.min_glob,'X');X_cible=enrich.min_glob.X;else Z_cible=[];end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        case 'CONV_REP_EX'
+            Zap_min_new=Zap_min(end);
+            %Calcul du critere
+            if Z_cible~=0
+                conv_rep=abs((Zap_min_new-Z_cible)/Z_cible);
             else
-                Z_cible=[];
-                X_cible=[];
+                conv_rep=abs(Zap_min_new-Z_cible);
             end
-            %recherche du minimum de la fonction approchee
-            if ~done_min
-                [Zap_min,Xap_min]=rech_min_meta(meta,approx{end},enrich.optim);
-                %extraction informations sur le minimum
-                det_enrich.min.Zap_min=Zap_min;
-                det_enrich.min.Xap_min=Xap_min;
-                %donnees minimum completes
-                Zap_min=[infos_enrich.min.Zap_min;Zap_min];
-                Xap_min=[infos_enrich.min.Xap_min;Xap_min];
-                done_min=true;
-                fprintf(' >> Minimum sur metamodele: %4.2e\n',Zap_min(end))
-                fprintf(' >> Au point: ');
-                fprintf('%4.2e ',Xap_min(end,:));
-                fprintf('\n')
-                
+            depass=(conv_rep-crit_val{it_type})/crit_val{it_type};
+            % verification convergence
+            if conv_rep<=crit_val{it_type}
+                conv_glob_ex_ok=false;
+                fprintf(' ====> Convergence vers le minimum (REP/EX):')
+                fprintf('%4.2e ',conv_rep);
+                fprintf('(min: %4.2e) --- ',crit_val{it_type});
+                fprintf('+ %4.2e%s <====\n',depass,char(37))
+            else
+                conv_glob_ex_ok=true;
+                fprintf(' ====> Convergence vers le minimum (REP/EX) OK: ')
+                fprintf('%4.2e ',conv_rep)
+                fprintf('(min: %4.2e) --- ',crit_val{it_type})
+                fprintf('%4.2e%s <====\n',depass,char(37));
+            end
+            %sauvegarde valeur critere
+            det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_rep];
+            %trace de l'evolution
+            if enrich.aff_evol
+                if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                opt_plot.tag='CONV_REP_EX';
+                opt_plot.title='Critere conv. Minimum/exacte';
+                opt_plot.xlabel='Nombre de points';
+                opt_plot.ylabel='CONV REP EX';
+                opt_plot.ech_log=true;
+                opt_plot.type='stairs';
+                opt_plot.cible=crit_val{it_type};
+                aff_evol(nb_pts,conv_rep,opt_plot,id_plotloc);
+                num_sub=num_sub+1;
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        case 'CONV_LOC_EX'
+            fprintf(' (cible: [ ');
+            fprintf('%4.2e ',X_cible);
+            fprintf('])\n')
+            Xap_min_new=Xap_min(end,:);
+            %distance au vrai minimum
+            ec=(Xap_min_new-X_cible).^2;
+            dist=sum(ec(:));
+            if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+            opt_plot.tag='dist_min';
+            opt_plot.title='Ecart minimum reel/metamodele';
+            opt_plot.xlabel='Nombre de points';
+            opt_plot.ylabel='Ecart minimum reel/metamodele';
+            opt_plot.ech_log=true;
+            opt_plot.type='stairs';
+            opt_plot.cible=10^-7;
+            aff_evol(nb_pts,dist,opt_plot,id_plotloc);
+            num_sub=num_sub+1;
+            %Calcul du critere
+            conv_loc=dist;
+            depass=(conv_loc-crit_val{it_type})/crit_val{it_type};
+            % verification convergence
+            if conv_loc<=crit_val{it_type}
+                conv_loc_ex_ok=false;
+                fprintf(' ====> Convergence vers le minimum (LOC/EX): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
+            else
+                conv_loc_ex_ok=true;
+                fprintf(' ====> Convergence vers le minimum (LOC/EX) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
+            end
+            %sauvegarde valeur critere
+            det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
+            %trace de l'evolution
+            if enrich.aff_evol
+                if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                opt_plot.tag='CONV_LOC_EX';
+                opt_plot.title='Critere conv. Localisation/exacte';
+                opt_plot.xlabel='Nombre de points';
+                opt_plot.ylabel='CONV LOC EX';
+                opt_plot.ech_log=true;
+                opt_plot.type='stairs';
+                opt_plot.cible=crit_val{it_type};
+                aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
+                num_sub=num_sub+1;
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        case 'CONV_REP'
+            if iteration_enrich>1
+                %ecart au minimum precedent en reponse
+                ec=abs(Zap_min(end)-Zap_min(end-1));
+                conv_loc=ec;
+                depass=abs(conv_loc-crit_val{it_type})/crit_val{it_type};
+                % verification convergence
+                if conv_loc<=crit_val{it_type}
+                    conv_rep_ok=false;
+                    fprintf(' ====> Convergence vers le minimum (REP): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
+                else
+                    conv_rep_ok=true;
+                    fprintf(' ====> Convergence vers le minimum (REP) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
+                end
+                %sauvegarde valeur critere
+                det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
                 %trace de l'evolution
                 if enrich.aff_evol
-                    if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
-                    opt_plot.tag='Min_meta';
-                    opt_plot.title='Minimum Metamodele';
+                    if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    opt_plot.tag='CONV_REP';
+                    opt_plot.title='Critere conv. Minimum (hist)';
                     opt_plot.xlabel='Nombre de points';
-                    opt_plot.ylabel='Minimum Metamodele';
-                    opt_plot.ech_log=false;
-                    opt_plot.type='stairs';
-                    opt_plot.cible=Z_cible;
-                    aff_evol(nb_pts,Zap_min(end),opt_plot,id_plotloc);
-                    num_sub=num_sub+1;
-                end
-            end
-            
-            switch criteres{it_type}
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                case 'CONV_REP_EX'
-                    Zap_min_new=Zap_min(end);
-                    %Calcul du critere
-                    if Z_cible~=0
-                        conv_rep=abs((Zap_min_new-Z_cible)/Z_cible);
-                    else
-                        conv_rep=abs(Zap_min_new-Z_cible);
-                    end
-                    depass=(conv_rep-crit_val{it_type})/crit_val{it_type};
-                    % verification convergence
-                    if conv_rep<=crit_val{it_type}
-                        conv_glob_ex_ok=false;
-                        fprintf(' ====> Convergence vers le minimum (REP/EX):')
-                        fprintf('%4.2e ',conv_rep);
-                        fprintf('(min: %4.2e) --- ',crit_val{it_type});
-                        fprintf('+ %4.2e%s <====\n',depass,char(37))
-                    else
-                        conv_glob_ex_ok=true;
-                        fprintf(' ====> Convergence vers le minimum (REP/EX) OK: ')
-                        fprintf('%4.2e ',conv_rep)
-                        fprintf('(min: %4.2e) --- ',crit_val{it_type})
-                        fprintf('%4.2e%s <====\n',depass,char(37));
-                    end
-                    %sauvegarde valeur critere
-                    det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_rep];
-                    %trace de l'evolution
-                    if enrich.aff_evol
-                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
-                        opt_plot.tag='CONV_REP_EX';
-                        opt_plot.title='Critere conv. Minimum/exacte';
-                        opt_plot.xlabel='Nombre de points';
-                        opt_plot.ylabel='CONV REP EX';
-                        opt_plot.ech_log=true;
-                        opt_plot.type='stairs';
-                        opt_plot.cible=crit_val{it_type};
-                        aff_evol(nb_pts,conv_rep,opt_plot,id_plotloc);
-                        num_sub=num_sub+1;
-                    end
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                case 'CONV_LOC_EX'
-                    fprintf(' (cible: [ ');
-                    fprintf('%4.2e ',X_cible);
-                    fprintf('])\n')
-                    Xap_min_new=Xap_min(end,:);
-                    %distance au vrai minimum
-                    ec=(Xap_min_new-X_cible).^2;
-                    dist=sum(ec(:));
-                    if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
-                    opt_plot.tag='dist_min';
-                    opt_plot.title='Ecart minimum reel/metamodele';
-                    opt_plot.xlabel='Nombre de points';
-                    opt_plot.ylabel='Ecart minimum reel/metamodele';
+                    opt_plot.ylabel='CONV REP';
                     opt_plot.ech_log=true;
                     opt_plot.type='stairs';
-                    opt_plot.cible=10^-7;
-                    aff_evol(nb_pts,dist,opt_plot,id_plotloc);
+                    opt_plot.cible=crit_val{it_type};
+                    aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
                     num_sub=num_sub+1;
-                    %Calcul du critere
-                    conv_loc=dist;
-                    depass=(conv_loc-crit_val{it_type})/crit_val{it_type};
-                    % verification convergence
-                    if conv_loc<=crit_val{it_type}
-                        conv_loc_ex_ok=false;
-                        fprintf(' ====> Convergence vers le minimum (LOC/EX): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
-                    else
-                        conv_loc_ex_ok=true;
-                        fprintf(' ====> Convergence vers le minimum (LOC/EX) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
-                    end
-                    %sauvegarde valeur critere
-                    det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
-                    %trace de l'evolution
-                    if enrich.aff_evol
-                        if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
-                        opt_plot.tag='CONV_LOC_EX';
-                        opt_plot.title='Critere conv. Localisation/exacte';
-                        opt_plot.xlabel='Nombre de points';
-                        opt_plot.ylabel='CONV LOC EX';
-                        opt_plot.ech_log=true;
-                        opt_plot.type='stairs';
-                        opt_plot.cible=crit_val{it_type};
-                        aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
-                        num_sub=num_sub+1;
-                    end
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                case 'CONV_REP'
-                    if iteration_enrich>1
-                        %ecart au minimum precedent en reponse
-                        ec=abs(Zap_min(end)-Zap_min(end-1));
-                        conv_loc=ec;
-                        depass=abs(conv_loc-crit_val{it_type})/crit_val{it_type};
-                        % verification convergence
-                        if conv_loc<=crit_val{it_type}
-                            conv_rep_ok=false;
-                            fprintf(' ====> Convergence vers le minimum (REP): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
-                        else
-                            conv_rep_ok=true;
-                            fprintf(' ====> Convergence vers le minimum (REP) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
-                        end
-                        %sauvegarde valeur critere
-                        det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
-                        %trace de l'evolution
-                        if enrich.aff_evol
-                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
-                            opt_plot.tag='CONV_REP';
-                            opt_plot.title='Critere conv. Minimum (hist)';
-                            opt_plot.xlabel='Nombre de points';
-                            opt_plot.ylabel='CONV REP';
-                            opt_plot.ech_log=true;
-                            opt_plot.type='stairs';
-                            opt_plot.cible=crit_val{it_type};
-                            aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
-                            num_sub=num_sub+1;
-                        end
-                    else
-                        fprintf(' >> Critere CONV_REP non actif a la 1ere iteration\n');
-                        conv_rep_ok=true;
-                        num_sub=num_sub+1;
-                    end
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                case 'CONV_LOC'
-                    if iteration_enrich>1
-                        %ecart au minimum precedent
-                        ec=(Xap_min(end,:)-Xap_min(end-1,:)).^2;
-                        dist=sum(ec(:));
-                        conv_loc=dist;
-                        depass=abs(conv_loc-crit_val{it_type})/crit_val{it_type};
-                        % verification convergence
-                        if conv_loc<=crit_val{it_type}
-                            conv_loc_ok=false;
-                            fprintf(' ====> Convergence vers le minimum (LOC): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
-                        else
-                            conv_loc_ok=true;
-                            fprintf(' ====> Convergence vers le minimum (LOC) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
-                        end
-                        %sauvegarde valeur critere
-                        det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
-                        %trace de l'evolution
-                        if enrich.aff_evol
-                            if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
-                            opt_plot.tag='CONV_LOC';
-                            opt_plot.title='Critere conv. Localisation (hist)';
-                            opt_plot.xlabel='Nombre de points';
-                            opt_plot.ylabel='CONV LOC';
-                            opt_plot.ech_log=true;
-                            opt_plot.type='stairs';
-                            opt_plot.cible=crit_val{it_type};
-                            aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
-                            num_sub=num_sub+1;
-                        end
-                    else
-                        fprintf(' >> Critere CONV_LOC non actif a la 1ere iteration\n');
-                        conv_loc_ok=true;
-                        num_sub=num_sub+1;
-                    end
+                end
+            else
+                fprintf(' >> Critere CONV_REP non actif a la 1ere iteration\n');
+                conv_rep_ok=true;
+                num_sub=num_sub+1;
             end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        case 'CONV_LOC'
+            if iteration_enrich>1
+                %ecart au minimum precedent
+                ec=(Xap_min(end,:)-Xap_min(end-1,:)).^2;
+                dist=sum(ec(:));
+                conv_loc=dist;
+                depass=abs(conv_loc-crit_val{it_type})/crit_val{it_type};
+                % verification convergence
+                if conv_loc<=crit_val{it_type}
+                    conv_loc_ok=false;
+                    fprintf(' ====> Convergence vers le minimum (LOC): %4.2e (cible: %4.2e) --- + %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
+                else
+                    conv_loc_ok=true;
+                    fprintf(' ====> Convergence vers le minimum (LOC) OK: %4.2e (cible: %4.2e) --- %4.2e%s <====\n',conv_loc,crit_val{it_type},depass,char(37))
+                end
+                %sauvegarde valeur critere
+                det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
+                %trace de l'evolution
+                if enrich.aff_evol
+                    if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
+                    opt_plot.tag='CONV_LOC';
+                    opt_plot.title='Critere conv. Localisation (hist)';
+                    opt_plot.xlabel='Nombre de points';
+                    opt_plot.ylabel='CONV LOC';
+                    opt_plot.ech_log=true;
+                    opt_plot.type='stairs';
+                    opt_plot.cible=crit_val{it_type};
+                    aff_evol(nb_pts,conv_loc,opt_plot,id_plotloc);
+                    num_sub=num_sub+1;
+                end
+            else
+                fprintf(' >> Critere CONV_LOC non actif a la 1ere iteration\n');
+                conv_loc_ok=true;
+                num_sub=num_sub+1;
+            end
+            
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -997,7 +1256,8 @@ crit_atteint=conv_glob_ex_ok&&conv_rep_ok&&conv_loc_ok&&...
     conv_loc_ex_ok&&mse_ok&&pts_ok...
     &&hist_r2_ok&&hist_q3_ok&&conv_r2_ok&&conv_q3_ok&&...
     ei_ok&&eir_ok&&gei_ok&&geir_ok&&eirb_ok&&...
-    wei_ok&&weir_ok&&lcb_ok&&lcbr_ok&&var_ok&&varr_ok;
+    wei_ok&&weir_ok&&lcb_ok&&lcbr_ok&&var_ok&&varr_ok&&...
+    weirb_ok&&geirb_ok&&eirn_ok&&weirn_ok&&geirn_ok;
 
 crit_atteint=~crit_atteint;
 

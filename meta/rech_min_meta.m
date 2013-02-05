@@ -1,17 +1,21 @@
 %% Proc�dure de recherche du minimum de l'approximation construite
 %% L.LAURENT -- 25/06/2012 -- laurent@lmt.ens-cachan.fr
 
-function [Zap_min,X_min]=rech_min_meta(meta,approx,optim)
+function [Zap_min,X_min]=rech_min_meta(meta,approx,optim,type)
 
 [tMesu,tInit]=mesu_time;
 fprintf('++++++++++++++++++++++++++++++++++++\n');
 fprintf('>>> RECHERCHE MINIMUM METAMODELE <<<\n');
+
+%%type de minimum recherche (par defaut minimisation fonction
+if nargin==3
+    type='rep';
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % definition de la strategie d'optimisation et de ses parametres
 
-%critere arret minimisation
-crit_opti=optim.crit_opti;
 
 % en fonction du type d'algo souhaite
 switch optim.algo
@@ -77,7 +81,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % declaration de la fonction a minimiser
-fun=@(point)ext_rep(point,approx,meta);
+switch type
+    case 'rep'
+        fun=@(point)ext_rep(point,approx,meta);
+    case 'var'
+        fun=@(point)ext_var(point,approx,meta);
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %minimisation
@@ -102,5 +111,11 @@ end
 function REP=ext_rep(X,approx,meta)
 ZZ=eval_meta(X,approx,meta);
 REP=ZZ.Z;
+end
+
+%fonction extraction variance metamodele
+function VARIANCE=ext_var(X,approx,meta)
+ZZ=eval_meta(X,approx,meta);
+VARIANCE=-ZZ.var;
 end
 

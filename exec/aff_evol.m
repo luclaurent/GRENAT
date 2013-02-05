@@ -131,8 +131,6 @@ else
     xlabel(id_plot,labelx)
     ylabel(id_plot,labely)
     title(id_plot,titre)
-    [minY,newY,new_bornes_y]
-    [maxY,newY,new_bornes_y]
     drawnow
     %hold off
 end

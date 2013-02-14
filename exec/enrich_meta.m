@@ -41,7 +41,7 @@ end
 global debug
 
 %on verifie que les criteres choisis seront bien exploitables
-enrich=tri_crit(enrich);
+enrich=tri_crit(enrich,ref);
 
 info_enrich.ev_crit=cell(length(enrich.crit_type),1);
 
@@ -203,6 +203,29 @@ if ~isempty(iter_retir)
     fprintf('ne sont plus operationnels\n');
     crit_type(iter_retir)=[];
     val_crit(iter_retir)=[];
+end
+%si on a pas d'info sur le minimum global
+min_glob_info=isfield(enrich,'min_glob');
+if min_glob_info
+    min_glob_info=isfield(enrich.min_glob,'Z');
+    if min_glob_info
+        min_glob_info=~isempty(enrich.min_glob,Z);
+    end
+end
+
+if ~min_glob_info
+    crit_retrait={'CONV_REP_EX','CONV_LOC_EX'};
+    for ii=1:numel(crit_retrait)
+        [IX{ii}]=find(strcmp(choix_crit,crit_retrait{ii}));
+    end
+    IIX=horzcat(IX{:});
+    if ~isempty(IIX)
+        fprintf('Les criteres ');
+        fprintf('%s ',crit_retrait);
+        fprintf('ne sont plus operationnels\n');
+        crit_type(IIX)=[];
+        val_crit(IIX)=[];
+    end
 end
 ret=enrich;
 ret.crit_type=crit_type;

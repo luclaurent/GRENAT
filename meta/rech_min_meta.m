@@ -1,4 +1,4 @@
-%% Proc�dure de recherche du minimum de l'approximation construite
+%% Procedure de recherche du minimum de l'approximation construite
 %% L.LAURENT -- 25/06/2012 -- laurent@lmt.ens-cachan.fr
 
 function [Zap_min,X_min]=rech_min_meta(meta,approx,optim,type)
@@ -28,10 +28,8 @@ switch optim.algo
         lb=doe.Xmin;ub=doe.Xmax;
         %nombre parametres
         nb_para=numel(doe.Xmin);
-        %Definition manuelle de la population initiale par LHS (Ga)
-        popInitManu=optim.popManu;
-        nbPopInit=optim.nbPopInit;
-        if popInitManu
+        %Definition manuelle de la population initiale par LHS (Ga)       
+        if optim.popInitManu
             nbpopspecif=false;
             if isfield(optim,'nbPopInit');if ~isempty(optim.nbPopInit);nbpopspecif=false;end, end
             if nbpopspecif;nbPopInit=optim.nbPopInit;else nbPopInit=10*nb_para; end
@@ -65,8 +63,8 @@ switch optim.algo
         end
         
         %specification manuelle de la population initiale (Ga)
-        if ~isempty(popInitManu)
-            doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
+        if optim.popInitManu
+            doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=optim.popManu;
              tir_pop=gene_doe(doePop);
             options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
         end

@@ -51,16 +51,21 @@ switch donnees.build.fact_rcc
 %             fprintf('<< Matrice de correlation non positive >>\n');
 %         end
 end
-
+global lisack
 logli=tail_rcc/2*log(2*pi*donnees.build.sig2)+1/2*log_det_corr+tail_rcc/2;
+lisack=abs(det_corr)^(1/tail_rcc)*donnees.build.sig2;
+%logli=lisack;
+
+
 if isinf(logli)||isnan(logli)
     logli=1e16;
 end
 
 if nargout==2
     %calcul de la vraisemblance d'apres Jones 1993 / Leary 2004
-    li=1/((2*pi*donnees.build.sig2)^(tail_rcc/2)*sqrt(det_corr));
+    li=1/((2*pi*donnees.build.sig2)^(tail_rcc/2)*sqrt(det_corr))*exp(-tail_rcc/2);
     
 elseif nargout >2
     error('Mauvais nombre de parametres de sortie de la fonction likelihood.m');
 end
+

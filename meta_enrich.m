@@ -18,12 +18,12 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='branin'; 
+fct='manu'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 %esp=[-5 5];
 esp=[];
 
@@ -38,7 +38,7 @@ aff.nbele=gene_nbele(doe.dim_pb);
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=25;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
 data.deg=0;
@@ -46,8 +46,8 @@ data.para.long=[0.5 20];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='matern32';
-data.rbf='matern32';
+data.corr='matern32_m';
+data.rbf='matern32_m';
 data.type='KRG';
 data.grad=true;
 
@@ -60,11 +60,34 @@ meta.enrich.para_gei=5;
 meta.enrich.para_lcb=0.5;
 %enrich.crit_type={'NB_PTS','CONV_REP','CONV_LOC','CV_MSE','HIST_R2','HIST_Q3'};% CV_MSE CONV_REP CONV_LOC
 %enrich.val_crit={30,10^-6,10^-6,10^-4,1.,10^-6};%,10^-4};
-enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2','HIST_Q3'};
-enrich.val_crit={1,10^-6,1,10^-6};
+%'CONV_VAR';'CONV_VARR';'CONV_LCB';...
+%    'CONV_LCBR';'CONV_WEI';'CONV_WEIR';...
+%    'CONV_EIRb';'CONV_GEIR';'CONV_GEI';...
+%    'CONV_EI';'CONV_EIR';'HIST_R2';...
+%    'HIST_Q3';'CONV_R2_EX';'CONV_Q3_EX';...
+%    'NB_PTS';'CV_MSE';'CONV_REP_EX';...
+%    'CONV_LOC_EX';'CONV_REP';'CONV_LOC'
+enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2',...
+    'HIST_Q3','CONV_REP','CONV_LOC',...
+    'CONV_LOC_EX','CONV_REP_EX','CV_MSE',...
+    'CONV_VAR','CONV_VARR','CONV_LCB',...
+    'CONV_LCBR','CONV_WEI','CONV_WEIR',...
+    'CONV_EIRb','CONV_WEIRb','CONV_GEIRb',...
+    'CONV_GEIR','CONV_GEI','CONV_EI',...
+    'CONV_EIRn','CONV_WEIRn','CONV_GEIRn',...
+    'CONV_EIR'};
+enrich.val_crit={1,10^-6,1,...
+    10^-6,1e-6,1e-8,...
+    1e-6,1e-6,1e-6,...
+    1e-6,1e-6,1e-6,...
+    1e-6,1e-6,1e-6,...
+    1e-6,1e-6,1e-6,...
+    1e-6,1e-6,1e-6,...
+    1e-6,1e-6,1e-6,...
+    1e-6};
 enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
-enrich.type='VAR';
+enrich.type='EI';
 enrich.on=true;
 enrich.algo='ga';
 enrich.aff_iter_cmd=true;
@@ -114,8 +137,10 @@ tirages=gene_doe(doe);
 %proc�dure d'enrichissement
 meta.cv_aff=false;
 [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich);
-[K]=eval_meta(grid_XY,approx,meta);
-
+%evaluation metamodele final
+[K]=eval_meta(grid_XY,approx{end},meta);
+%evaluation de ts les metamodeles
+[Kautre]=eval_meta(grid_XY,approx,meta);
 eval=in.eval;
 tirages=in.tirages;
 grad=in.grad;

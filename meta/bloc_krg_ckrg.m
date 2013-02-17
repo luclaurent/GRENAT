@@ -152,7 +152,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %amelioration du conditionnement de la matrice de correlation
 if meta.recond
-    cond_orig=condest(rcc);
+    cond_orig=condest(rcc);    
     rcc=rcc+coef*speye(size(rcc));
     cond_new=condest(rcc);
     %   fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
@@ -166,7 +166,6 @@ if nargin==2   %en phase de construction
     cond_new=condest(rcc);
     fprintf('Conditionnement R: %6.5e\n',cond_new)
 end
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -265,6 +264,7 @@ switch fact_rcc
         build_data.Ltrcc=Ltrcc;
         build_data.Lrcc=Lrcc;
     otherwise
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %calcul des coefficients beta et gamma
@@ -294,17 +294,24 @@ build_data.deg=meta.deg;
 build_data.para=meta.para;
 build_data.fact_rcc=fact_rcc;
 ret.build=build_data;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %variance de prediction
-sig2=1/size(rcc,1)*...
+ret.build.sig2=1/size(rcc,1)*...
     ((donnees.build.y-donnees.build.fct*ret.build.beta)'*ret.build.gamma);
-if meta.norm&&~isempty(donnees.norm.std_eval)
-    ret.build.sig2=sig2*donnees.norm.std_eval^2;
-else
-    ret.build.sig2=sig2;
-end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Maximum de vraisemblance
 [ret.lilog,ret.li]=likelihood(ret);
 lilog=ret.lilog;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%denormalisation sigma^2
+if meta.norm&&~isempty(donnees.norm.std_eval)
+    ret.build.sig2=ret.build.sig2*donnees.norm.std_eval^2;
+else
+    ret.build.sig2=ret.build.sig2;
+end
+
+

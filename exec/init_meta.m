@@ -52,13 +52,13 @@ meta.para.aff_iter_cmd=false;
 %affichage informations convergence algo dans des plots
 meta.para.aff_plot_algo=false;
 % methode de minimisation de la log-vraisemblance
-meta.para.method='ga';
+meta.para.method='tir_min_fmincon';
 %strategie tirage population initiale algo GA '', 'LHS','IHS'...
 meta.para.popManu='IHS';
 %population initiale algo GA
-meta.para.popInit=20;
+meta.para.nbPopInit=[];
 %critere arret algo optimisation
-meta.para.crit_opti=10^-4;
+meta.para.crit_opti=10^-6;
 %bornes esapce recherche parametres
 if meta.para.estim
     meta.para.l_min=1e-4;
@@ -86,19 +86,21 @@ if nargin==1
     %type de metamodele KRG/CKRG/DACE/RBF/GRBF
     if isfield(in,'type');meta.type=in.type;end
     %parametre fonction RBF/KRG
-    if isfield(in,'long');meta.para.l_val=in.long(1);end
+    if isfield(in,'para')
+    if isfield(in.para,'long');meta.para.l_val=in.para.long;end
     if meta.para.estim
         if isfield(in,'long');
-            meta.para.l_max=in.long(2);
-            meta.para.l_min=in.long(1);
+            meta.para.l_max=in.para.long(2);
+            meta.para.l_min=in.para.long(1);
         end
     end
-    if isfield(in,'pow');meta.para.p_val=in.pow(1);end
+    if isfield(in.para,'pow');meta.para.p_val=in.para.pow;end
     if meta.para.estim
         if isfield(in,'pow');
-            meta.para.p_max=in.pow(2);
-            meta.para.p_max=in.pow(1);
+            meta.para.p_max=in.para.pow(2);
+            meta.para.p_max=in.para.pow(1);
         end
+    end
     end
     
     %en fonction du type de metamodele

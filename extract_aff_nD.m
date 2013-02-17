@@ -58,7 +58,7 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
     plot(grid_XY,K.exploit_EI,'b')
     hold off
     hold on
-    plot(grid_XY,K.ei,'b')
+    plot(grid_XY,K.ei,'k')
     hold off
     xlim([xmin xmax])
     legend('Explor','Exploit','EI','Location','EastOutside')
@@ -116,10 +116,25 @@ if doe.dim_pb==1&&isfield(K,'wei')&&isfield(K,'ei')&&isfield(K,'lcb')&&isfield(K
     title('Donnees normalisees')
     hold off
 end
+if doe.dim_pb==2&&exist('ic68','var')
+%%
+    figure;
+    hh=surf(grid_XY(:,:,1),grid_XY(:,:,2),K.Z,'facecolor','interp');
+    shading interp
+    camlight;lighting gouraud;
+    hold on;
+    h1=surf(grid_XY(:,:,1),grid_XY(:,:,2),ic68.inf,'EdgeColor','k');
+    h2=surf(grid_XY(:,:,1),grid_XY(:,:,2),ic68.sup,'EdgeColor','k');
+    plot3(tirages(:,1),tirages(:,2),eval,'ok')
+     alpha(h1,0.2)
+     alpha(h2,0.2)
+      scatter3(tirages(:,1),tirages(:,2),eval,'g','filled')
+    
+end
 if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
-    %%
+    
     figure
-    surf(grid_XY(:,:,1),grid_XY(:,:,2),K.var*10^20)
+    surf(grid_XY(:,:,1),grid_XY(:,:,2),K.var)
     title('variance')
     %%
     figure
@@ -204,4 +219,89 @@ if doe.dim_pb==2&&(strcmp(meta.type,'KRG')||strcmp(meta.type,'CKRG'))
     title('GX eval')
     hold off
     
+end
+if doe.dim_pb==2&&(isfield(K,'wei')||isfield(K,'ei')||isfield(K,'lcb')||isfield(K,'gei'))
+    XX=grid_XY(:,:,1);
+    YY=grid_XY(:,:,2);
+    xmin=min(XX(:));
+    xmax=max(XX(:));
+    ymin=min(YY(:));
+    ymax=max(YY(:));
+    nb_li=3;
+    nb_col=3;
+    nbsub=1;
+    figure
+    if isfield(K,'var')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.var);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Variance')
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'ei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.ei);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('EI')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.explor_EI);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Explor EI')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.exploit_EI);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('Exploit EI')
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'wei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.wei(:,:,2));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title(['WEI ' num2str(meta.enrich.para_wei(2),'%4.2e')])
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'gei')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,1));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 0')
+        nbsub=nbsub+1;        
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,2));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 1')
+        nbsub=nbsub+1;
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.gei(:,:,3));hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('GEI 2')
+        nbsub=nbsub+1;
+    end
+    if isfield(K,'lcb')
+        subplot(nb_li,nb_col,nbsub)
+        surf(XX,YY,K.lcb);hold on
+        scatter3(tirages(:,1),tirages(:,2),zeros(size(tirages,1),1),'g','filled')
+        xlim([xmin xmax])
+        ylim([ymin ymax])
+        title('LCB')
+        nbsub=nbsub+1;
+    end
 end

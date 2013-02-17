@@ -1,4 +1,4 @@
-%% Fonction assurant la cr�ation d'un nouveau point d'echantillonnage bas� sur un metamodele
+%% Fonction assurant la creation d'un nouveau point d'echantillonnage bas� sur un metamodele
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
 
@@ -6,15 +6,24 @@ function [pts,ret_tir_meta]=ajout_tir_meta(meta,approx,enrich)
 
 [tMesu,tInit]=mesu_time;
 global doe
+%definition des bornes de l'espace de recherche
+lb=doe.Xmin;ub=doe.Xmax;
+%nombre parametres
+nb_para=numel(doe.Xmin);
 
 %%%Definition manuelle de la population initiale par LHS (Ga)
-popInitManu=enrich.optim.popInitManu;
-nbPopInit=enrich.optim.nbPopInit;
+popInitManu=enrich.optim.popManu;
+if popInitManu
+    nbpopspecif=false;
+    if isfield(enrich.optim,'nbPopInit');if ~isempty(enrich.optim.nbPopInit);nbpopspecif=false;end, end
+    if nbpopspecif;nbPopInit=enrich.optim.nbPopInit;else nbPopInit=10*nb_para; end
+end
+
 %critere arret minimisation
 crit_opti=enrich.optim.crit_opti;
 meta.enrich.on=true;
 
-%en fonction du type de nouveau point reclam�
+%en fonction du type de nouveau point reclame
 switch enrich.type
     %Expected Improvement (Krigeage/RBF)
     case 'EI'
@@ -32,10 +41,6 @@ switch enrich.type
     case 'VAR'
         fun=@(point)ret_VAR(point,approx,meta);
 end
-%definition des bornes de l'espace de recherche
-lb=doe.Xmin;ub=doe.Xmax;
-%nombre parametres
-nb_var=numel(doe.Xmin);
 
 %Options algo pour chaque fonction de minimisation
 %declaration des options de la strategie de minimisation
@@ -77,7 +82,7 @@ end
 %% Minimisation par algo genetique
 switch enrich.algo
     case 'ga'
-        [pts,fval,exitflag,output] = ga(fun,nb_var,[],[],[],[],lb,ub,[],options_ga);
+        [pts,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
     otherwise
         error('Algorithme phase enrichissement mal specifie')
 end

@@ -1,4 +1,4 @@
-function [fct,dfct,infos,ddfct]=fct_manu(x,~)
+function [fct,dfct,infos,ddfct,dddfct]=fct_manu(x,~)
 v=2;
 
 
@@ -30,8 +30,11 @@ elseif v==2
     if nargout>=2||dem
         dfct=-exp(-x/a).*(sin(x)+1/a.*cos(x))+1/a;
     end
-    if nargout==4
+    if nargout>=4
         ddfct=exp(-x/a).*(-cos(x)+2.*sin(x)./a+1/a^2.*cos(x));
+    end
+    if nargout==5
+        dddfct=exp(-x/a).*(-cos(x)./a^3+3/a.*cos(x)-3/a^2.*sin(x)+sin(x));
     end
     %sortie informations sur la fonction
     %sortie informations sur la fonction

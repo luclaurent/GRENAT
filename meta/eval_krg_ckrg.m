@@ -146,18 +146,17 @@ if nargout >=3
            Qrr=donnees.build.Qtrcc*rr;
             u=donnees.build.fcR*Qrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Rrcc)*Qrr+...
-                u'*donnees.build.fcCfct*u);
-           
+                u'/donnees.build.fcCfct*u);           
         case 'LU'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fcU*Lrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Urcc)*Lrr+...
-                u'*donnees.build.fcCfct*u);
+                u'/donnees.build.fcCfct*u);
         case 'LL'
             Lrr=donnees.build.Lrcc\rr;
             u=donnees.build.fcL*Lrr-ff';
             variance=donnees.build.sig2*(ones(dim_x,1)-(rr'/donnees.build.Ltrcc)*Lrr+...
-                u'*donnees.build.fcCfct*u);            
+                u'/donnees.build.fcCfct*u);
         otherwise
             rcrr=donnees.build.rcc \ rr;
             u=donnees.build.fc*rcrr-ff';

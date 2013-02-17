@@ -70,8 +70,7 @@ function  [y, or1, or2, dmse] = predictor(x, dmodel)
         rt = dmodel.C \ r;
         u = dmodel.Ft.' * rt - f.';
         v = dmodel.G \ u;
-        or2 = repmat(dmodel.sigma2,mx,1) .* repmat((1 + sum(v.^2) - sum(rt.^2))',1,q);
-        
+        or2 = repmat(dmodel.sigma2,mx,1) .* repmat((1 + sum(v.^2) - sum(rt.^2))',1,q);        
         if  nargout > 3  % gradient/Jacobian of MSE wanted
           % Scaled gradient as a row vector
           Gv = dmodel.G' \ v;

@@ -109,7 +109,7 @@ for num_meta=1:numel(donnees_const)
                 
                 diffZ=Zverif-eval;
                 if ~isempty(find(diffZ>1e-7,1))
-                    fprintf('Pb d''interpolation (eval) GRBF\n')
+                    fprintf('Pb d''interpolation (eval) RBF\n')
                     fprintf('DiffZ \t\t||Eval\t\t||Zverif\n');
                     conc=vertcat(diffZ',eval',Zverif');
                     fprintf('%4.2e\t||%4.2e\t||%4.2e\n',conc(:))
@@ -118,7 +118,7 @@ for num_meta=1:numel(donnees_const)
                 if meta_donnee.in.pres_grad
                     diffGZ=GZverif-grad;
                     if ~isempty(find(diffGZ>1e-7, 1))
-                        fprintf('Pb d''interpolation (grad) GRBF\n')
+                        fprintf('Pb d''interpolation (grad) RBF\n')
                         tt=repmat('\t\t',1,nb_var);
                         fprintf(['DiffGZ' tt '||Grad' tt '||GZverif\n']);
                         conc=vertcat(diffGZ',grad',GZverif');
@@ -129,7 +129,7 @@ for num_meta=1:numel(donnees_const)
                     end
                     diffNG=sqrt(sum(GZverif.^2,2))-sqrt(sum(grad.^2,2));
                     if ~isempty(find(diffNG>1e-7, 1))
-                        fprintf('Pb d''interpolation (grad) GRBF\n')
+                        fprintf('Pb d''interpolation (grad) RBF\n')
                         fprintf('DiffNG\n')
                         fprintf('%4.2e\n',diffNG)
                     end
@@ -151,33 +151,42 @@ for num_meta=1:numel(donnees_const)
                 GR_reg(jj,:)=det.GZ_reg;
                 GR_sto(jj,:)=det.GZ_sto;
             end
-            
-            
             %% verification interpolation
             if meta.verif
                 parfor jj=1:size(tirages,1)
-                    [Zverif(jj),G,varverif(jj)]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
-                    GZverif(jj,:)=G';
+                    [Zverif(jj),G]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
+                    GZverif(jj,:)=G;
                 end
-                diffZ=Zverif-eval;
                 
-                if ~isempty(find(diffZ>1e-7, 1))
-                    fprintf('pb d''interpolation (eval) CKRG\n')
-                    diffZ
+                diffZ=Zverif-eval;
+                if ~isempty(find(diffZ>1e-7,1))
+                    fprintf('Pb d''interpolation (eval) KRG\n')
+                    fprintf('DiffZ \t\t||Eval\t\t||Zverif\n');
+                    conc=vertcat(diffZ',eval',Zverif');
+                    fprintf('%4.2e\t||%4.2e\t||%4.2e\n',conc(:))
                 end
+                
                 if meta_donnee.in.pres_grad
                     diffGZ=GZverif-grad;
                     if ~isempty(find(diffGZ>1e-7, 1))
-                        fprintf('pb d''interpolation (grad) CKRG\n')
-                        diffGZ
+                        fprintf('Pb d''interpolation (grad) KRG\n')
+                        tt=repmat('\t\t',1,nb_var);
+                        fprintf(['DiffGZ' tt '||Grad' tt '||GZverif\n']);
+                        conc=vertcat(diffGZ',grad',GZverif');
+                        tt=repmat('%4.2e\t',1,nb_var);
+                        tt=[tt '||' tt '||' tt '\n'];
+                        fprintf(tt,conc(:))
+                        
                     end
                     diffNG=sqrt(sum(GZverif.^2,2))-sqrt(sum(grad.^2,2));
                     if ~isempty(find(diffNG>1e-7, 1))
-                        fprintf('pb d''interpolation (grad) CKRG\n')
-                        diffNG
+                        fprintf('Pb d''interpolation (grad) KRG\n')
+                        fprintf('DiffNG\n')
+                        fprintf('%4.2e\n',diffNG)
                     end
                 end
             end
+            
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
             
@@ -186,6 +195,21 @@ for num_meta=1:numel(donnees_const)
             for jj=1:nb_ev_pts
                 [rep(jj),G,var_rep(jj)]=predictor(ev_pts(jj,:),meta_donnee.model);
                 GR(jj,:)=G;
+            end
+            %% verification interpolation
+            if meta.verif
+                parfor jj=1:size(tirages,1)
+                    [Zverif(jj),G]=predictor(tirages(jj,:),meta_donnee.model);
+                    GZverif(jj,:)=G;
+                end
+                
+                diffZ=Zverif-eval;
+                if ~isempty(find(diffZ>1e-7,1))
+                    fprintf('Pb d''interpolation (eval) DACE\n')
+                    fprintf('DiffZ \t\t||Eval\t\t||Zverif\n');
+                    conc=vertcat(diffZ',eval',Zverif');
+                    fprintf('%4.2e\t||%4.2e\t||%4.2e\n',conc(:))
+                end
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -235,7 +259,7 @@ for num_meta=1:numel(donnees_const)
     lcb=[];
     if meta.enrich.on&&exist('var_rep','var')
         %reponse mini
-        eval_min=min(donnees.eval);
+        eval_min=min(meta_donnee.eval);
         %calcul criteres enrichissement
         [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,rep,var_rep,meta.enrich);
     end

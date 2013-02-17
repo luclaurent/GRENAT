@@ -29,13 +29,13 @@ exec_parallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %fonction etudiee
-fct='mystery';
+fct='manu';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=2;
+doe.dim_pb=1;
 %esp=[0 15];
 esp=[];
 
@@ -43,49 +43,54 @@ esp=[];
 [doe]=init_doe(fct,doe.dim_pb,esp);
 
 %nombre d'element pas dimension (pour le trace)
-aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+aff.nbele=500;%gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 
 %type de tirage LHS/Factoriel complet (ffact)/Remplissage espace
 %(sfill)/LHS_R/IHS_R/LHS_manu/LHS_R_manu/IHS_R_manu
-doe.type='LHS_O1';
+doe.type='LHS_O1_manu';
 
 %nb d'echantillons
-doe.nb_samples=20;
+doe.nb_samples=5;
 
 % Parametrage du metamodele
-data.para.long=[10^-3 10];
-data.para.pow=[1.001 2];
+data.para.long=[10^-10 5];
+%data.para.long=[0.0138 3.21*10^-5];
+data.para.pow=[1 2.2];
 data.para.swf_para=4;
 data.para.rbf_para=1;
 %long=3;
-data.corr='sexp_m';
+data.corr='matern32_m';
 %data.corr='gauss';
+%data.corr='expg';
 data.rbf='matern32_m';
-data.type='KRG';
+data.type='CKRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
+end
+if strcmp(data.type,'DACE')
+    data.corr='expg';
 end
 data.deg=2;
 
 meta=init_meta(data);
 
 meta.para.estim=true;
-meta.cv=true;
-meta.cv_aff=false;
+meta.cv=false;
+meta.cv_aff=true;
 meta.cv_full=false;
 meta.test_positiv=false;
 meta.norm=true;
 meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.method='tir_min_fmincon'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
-meta.para.l_val=0.1;%2;
+meta.para.method='tir_min_sqp'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
+%meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;
 meta.para.aff_estim=false;
 meta.para.aff_iter_cmd=true;
 meta.para.aff_iter_graph=false;
-meta.para.aff_plot_algo=false;
+meta.para.aff_plot_algo=true;
 meta.enrich.on=true;
 meta.enrich.para_wei=0:0.2:1;
 meta.enrich.para_gei=2;
@@ -115,11 +120,11 @@ tirages=gene_doe(doe);
 
 %evaluations de la fonction aux points
 [eval,grad]=gene_eval(doe.fct,tirages,'eval');
-
+%eval=2.*eval;
 %Trace de la fonction de la fonction etudiee et des gradients
 [grid_XY,aff]=gene_aff(doe,aff);
 [Z.Z,Z.GZ]=gene_eval(doe.fct,grid_XY,'aff');
-
+%Z.Z=2.*Z.Z;
 %grad(2)=NaN;
 %%grad(6)=NaN;
 %grad(3)=NaN;
@@ -167,7 +172,7 @@ if aff.ic.on
     aff.d3=true;
     v.Z=K.var;
     subplot(1,2,2)
-    affichage(grid_XY,v,tirages,eval,grad,aff);
+    affichage(grid_XY,v,tirages,eval,grad,aff);    
     camlight; lighting gouraud;
     aff.titre='Metamodele';
     aff.rendu=false;
@@ -202,6 +207,7 @@ if aff.on
     subplot(2,2,4)
     affichage(grid_XY,K,tirages,eval,grad,aff);
     aff.titre=[];
+    
 end
 
 %% affichage des r�ponses sous forme d'un diagramme bar
@@ -249,7 +255,6 @@ if meta.save
     save([aff.doss '/WS.mat']);
 end
 %extract_nD
-
 extract_aff_nD
 
 %arret workers

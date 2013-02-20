@@ -53,7 +53,7 @@ doe.type='LHS_O1_manu';
 doe.nb_samples=5;
 
 % Parametrage du metamodele
-data.para.long=[10^-10 5];
+data.para.long=[10^-5 5];
 %data.para.long=[0.0138 3.21*10^-5];
 data.para.pow=[1 2.2];
 data.para.swf_para=4;
@@ -71,7 +71,7 @@ end
 if strcmp(data.type,'DACE')
     data.corr='expg';
 end
-data.deg=2;
+data.deg=0;
 
 meta=init_meta(data);
 
@@ -113,7 +113,8 @@ meta.save=false;
 tirages=gene_doe(doe);
 %aa=load('tirages_1D_8.mat');
 %tirages=aa.tirages./6.66666666;
-%tirages=[0.25;1.5;3.5;5;5.5;14.5];
+tirages=[0.25;1.5;2.5;5;11;14.5];
+%tirages=[-1;0.25;2.56;2.97;3.2;5.5;8;9.16;10.5;11;14.5];
 %tirages=[-0.5;0;1.5];
 %load('cm2011_27eval.mat')
 %tirages=tir_ckrg_9;

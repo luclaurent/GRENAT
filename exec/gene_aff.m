@@ -27,7 +27,7 @@ elseif dim_esp==2
     
 else
     % en nD on utilise la fonction de generation de factoriel complet
-    grid=factorial_design(aff.nbele,doe.bornes);
+    grid=factorial_design(aff.nbele,doe.Xmin,doe.Xmax);
     
     %reorganisation grille
     XY=zeros(size(grid,1),1,dim_esp);

@@ -35,7 +35,7 @@ fct='rastrigin';
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=3;
+doe.dim_pb=8;
 %esp=[0 15];
 esp=[];
 
@@ -50,7 +50,7 @@ aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 doe.type='LHS_O1_manu';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=150;
 
 % Parametrage du metamodele
 data.para.long=[10^-5 5];
@@ -63,7 +63,7 @@ data.corr='matern32_m';
 %data.corr='gauss';
 %data.corr='expg';
 data.rbf='matern32_m';
-data.type='CKRG';
+data.type='KRG';
 data.grad=false;
 if strcmp(data.type,'CKRG')||strcmp(data.type,'GRBF')||strcmp(data.type,'InKRG')||strcmp(data.type,'InRBF')
     data.grad=true;
@@ -83,7 +83,7 @@ meta.test_positiv=false;
 meta.norm=true;
 meta.recond=true;
 meta.para.type='Manu'; %Franke/Hardy
-meta.para.method='tir_min_sqp'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
+meta.para.method='sqp'; %ga/fmincon/fminbnd/fminsearch/tir_min/tir_min_fmincon/tir_min_sqp
 %meta.para.l_val=0.1;%2;
 meta.para.pas_tayl=10^-2;
 meta.para.aniso=true;

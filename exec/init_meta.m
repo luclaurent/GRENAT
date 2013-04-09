@@ -174,8 +174,12 @@ if nargin==1
     end
 end
 
-%comptage du nombre de workers disponibles (pour parallelisme)
-meta.worker_parallel=matlabpool('size');
+if usejava('jvm')
+    %comptage du nombre de workers disponibles (pour parallelisme)
+    meta.worker_parallel=matlabpool('size');
+else
+    meta.worker_parallel=1;
+end
 
 mesu_time(tMesu,tInit);
 fprintf('=========================================\n')

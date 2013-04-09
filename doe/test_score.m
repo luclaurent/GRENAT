@@ -25,35 +25,39 @@ if dim==1
         cl2(ii+1)=dispc.CL2;
         ml2(ii+1)=dispc.ML2;
         sl2(ii+1)=dispc.SL2;
+        morris(ii+1)=uni.morris;
     end
     figure
-    subplot(331)
+    subplot(341)
     plot(0:nbt,l2,'k')
     title('L2')
-    subplot(332)
+    subplot(342)
     plot(0:nbt,cl2,'k')
     title('CL2')
-    subplot(333)
+    subplot(343)
     plot(0:nbt,ml2,'k')
     title('ML2')
-    subplot(334)
+    subplot(344)
     plot(0:nbt,sl2,'k')
     title('SL2')
-    subplot(335)
+    subplot(345)
     plot(0:nbt,dminmin,'k')
     title('Dist min')
-    subplot(336)
+    subplot(346)
     plot(0:nbt,recouv,'k')
     title('recouv')
-    subplot(337)
+    subplot(347)
     plot(0:nbt,rapd,'k')
     title('rap dist')
-    subplot(338)
+    subplot(348)
     plot(0:nbt,avgd,'k')
     title('avg min dist')
-    subplot(339)
+    subplot(349)
     plot(0:nbt,sumd,'k')
     title('sum invers dist')
+        subplot(3410)
+    plot(0:nbt,morris,'k')
+    title('morris')
     
     
 elseif dim==2
@@ -77,6 +81,7 @@ elseif dim==2
         cl2(ii+1)=dispc.CL2;
         ml2(ii+1)=dispc.ML2;
         sl2(ii+1)=dispc.SL2;
+        morris(ii+1)=uni.morris;
     end
     figure
     subplot(3,4,1)
@@ -106,7 +111,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+         subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf1(2,1);conft(2,1)],[conf1(2,2);conft(2,2)],'.r')
@@ -128,6 +136,7 @@ elseif dim==2
         cl2(ii+1)=dispc.CL2;
         ml2(ii+1)=dispc.ML2;
         sl2(ii+1)=dispc.SL2;
+        morris(ii+1)=uni.morris;
     end
     figure
     subplot(3,4,1)
@@ -157,7 +166,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+         subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf1(2,1);conft(2,1)],[conf1(2,2);conft(2,2)],'.r')
@@ -211,7 +223,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+         subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf1(2,1);conft(2,1)],[conf1(2,2);conft(2,2)],'.r')
@@ -264,7 +279,14 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+     subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+         subplot(3,4,11)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
+    
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf1(2,1);conft(2,1)],[conf1(2,2);conft(2,2)],'.r')
@@ -318,7 +340,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+     subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf2(1,1)-1;conft(1,1)],[conf2(1,2);conft(1,2)],'.r')
@@ -371,7 +396,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+     subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf2(1,1)-1;conft(1,1)],[conf2(1,2);conft(1,2)],'.r')
@@ -425,7 +453,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+     subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf2(1,1)-1;conft(1,1)],[conf2(1,2)-1;conft(1,2)],'.r')
@@ -478,7 +509,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+     subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf3(1,1)-1;conft(1,1)],[conf3(1,2);conft(1,2)],'.r')
@@ -531,7 +565,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+     subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf3(1,1)-1;conft(1,1)],[conf3(1,2);conft(1,2)],'.r')
@@ -585,7 +622,10 @@ elseif dim==2
     subplot(3,4,9)
     plot(0:nbt,sumd,'k')
      title('sum inverse dist')
-    subplot(3,4,10)
+     subplot(3,4,10)
+    plot(0:nbt,morris,'k')
+     title('morris')
+    subplot(3,4,11)
     plot(conft(:,1),conft(:,2),'.b')
     hold on
     plot([conf3(1,1)-1;conft(1,1)],[conf3(1,2)-1;conft(1,2)],'.r')

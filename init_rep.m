@@ -5,7 +5,7 @@
 function init_rep(doss)
 
 if nargin==0
-    doss='.';
+    doss=pwd;
 end
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%

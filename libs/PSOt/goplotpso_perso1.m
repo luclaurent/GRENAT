@@ -12,6 +12,10 @@
 
 % setup figure, change this for your own machine
 clf
+
+functperso='test';
+
+
 %set(gcf,'Position',[651    31   626   474]); % this is the computer dependent part
 %set(gcf,'Position',[743    33   853   492]);
 set(gcf,'Doublebuffer','on');
@@ -71,16 +75,16 @@ ylabel('gbest val.','color','y')
 
 if D==1
     titstr1=sprintf(['%11.6g = %s( [ %9.6g ] )'],...
-        gbestval,strrep(functname,'_','\_'),gbest(1));
+        gbestval,strrep(functperso,'_','\_'),gbest(1));
 elseif D==2
     titstr1=sprintf(['%11.6g = %s( [ %9.6g, %9.6g ] )'],...
-        gbestval,strrep(functname,'_','\_'),gbest(1),gbest(2));
+        gbestval,strrep(functperso,'_','\_'),gbest(1),gbest(2));
 elseif D==3
     titstr1=sprintf(['%11.6g = %s( [ %9.6g, %9.6g, %9.6g ] )'],...
-        gbestval,strrep(functname,'_','\_'),gbest(1),gbest(2),gbest(3));
+        gbestval,strrep(functperso,'_','\_'),gbest(1),gbest(2),gbest(3));
 else
     titstr1=sprintf(['%11.6g = %s( [ %g inputs ] )'],...
-        gbestval,strrep(functname,'_','\_'),D);
+        gbestval,strrep(functperso,'_','\_'),D);
 end
 title(titstr1,'color','m','fontweight','bold');
 
@@ -140,7 +144,7 @@ titstr={'PSO Model: '      ,PSOtype;...
     'Dimensions : '    ,num2str(D);...
     '# of particles : ',num2str(ps);...
     minmaxstr          ,errgoalstr;...
-    'Function : '      ,strrep(functname,'_','\_');...
+    'Function : '      ,strrep(functperso,'_','\_');...
     xtraname           ,xtraval;...
     rststat1           ,rststat2};
 
@@ -155,7 +159,7 @@ text(.1,.5,[titstr{6,1},titstr{6,2}],'color','w','fontweight','bold');
 text(.1,.4,[titstr{7,1},titstr{7,2}],'color','r','fontweight','bold');
 
 % if we are training a neural net, show a few more parameters
-if strcmp('pso_neteval',functname)
+if strcmp('pso_neteval',functperso)
     % net is passed from trainpso to pso_Trelea_vectorized in case you are
     % wondering where that structure comes from
     hiddlyrstr = [];

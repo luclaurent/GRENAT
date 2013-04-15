@@ -123,6 +123,8 @@ disp(' ');
 
  % run pso
  % vectorized version
+ 
+ functname
   [pso_out,tr,te]=pso_Trelea_vectorized(functname, dims,...
       mv, varrange, minmax, psoparams,plotfcn,PSOseedValue);
 

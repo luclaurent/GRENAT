@@ -5,12 +5,18 @@ function [Zap_min,X_min]=rech_min_meta(meta,approx,optim,type)
 
 [tMesu,tInit]=mesu_time;
 fprintf('++++++++++++++++++++++++++++++++++++\n');
-fprintf('>>> RECHERCHE MINIMUM METAMODELE <<<\n');
-
 %%type de minimum recherche (par defaut minimisation fonction
 if nargin==3
     type='rep';
 end
+
+switch type
+    case 'rep'
+        fprintf('>>> RECHERCHE MINIMUM METAMODELE <<<\n');
+    case 'var'
+        fprintf('>>> RECHERCHE MAXIMUM VARIANCE METAMODELE <<<\n');
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 global doe
@@ -158,7 +164,7 @@ switch optim.algo
             PSOT_tirage);       %tirage initial aleatoire (=0) ou utilisateur (=1)
         
         %extraction infos
-        X_min=pso_out(1:end-1);
+        X_min=pso_out(1:end-1)';
         Zap_min=pso_out(end);
         exitflag=[];
         output.tr=tr;
@@ -177,13 +183,13 @@ end
 
 %fonction extraction reponse metamodele
 function REP=ext_rep(X,approx,meta)
-ZZ=eval_meta(X,approx,meta);
+ZZ=eval_meta(X,approx,meta,false);
 REP=ZZ.Z;
 end
 
 %fonction extraction variance metamodele
 function VARIANCE=ext_var(X,approx,meta)
-ZZ=eval_meta(X,approx,meta);
+ZZ=eval_meta(X,approx,meta,false);
 VARIANCE=-ZZ.var;
 end
 

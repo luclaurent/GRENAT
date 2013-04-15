@@ -67,7 +67,7 @@ PSOseed = 0;    % if=1 then can input particle starting positions, if= 0 then al
 % starting particle positions (first 20 at zero, just for an example)
 PSOT_plot=[];
 PSOT_tirage = [];
-PSOT_mv=[]; %vitesse maxi des particules (=4 def) 
+PSOT_mv=4; %vitesse maxi des particules (=4 def) 
 shw=0;      %MAJ affichage a chque iteration (0 sinon)
 ps=10*nb_para; %nb de particules
 errgoal=NaN;    %cible minimisation
@@ -135,7 +135,7 @@ switch enrich.algo
             PSOT_tirage);       %tirage initial aleatoire (=0) ou utilisateur (=1)
         
         %extraction infos
-        pts=pso_out(1:end-1);
+        pts=pso_out(1:end-1)';
         fval=pso_out(end);
         exitflag=[];
         output.tr=tr;
@@ -157,31 +157,31 @@ end
 %%Fonction extraction criteres
 %fonction extraction WEI
 function EI=ret_EI(X,approx,meta)
-ZZ=eval_meta(X,approx,meta);
+ZZ=eval_meta(X,approx,meta,false);
 EI=-ZZ.ei;
 end
 
 %fonction extraction WEI
 function WEI=ret_WEI(X,approx,meta)
-ZZ=eval_meta(X,approx,meta);
+ZZ=eval_meta(X,approx,meta,false);
 WEI=-ZZ.wei;
 end
 
 %fonction extraction GEI
 function GEI=ret_GEI(X,approx,meta)
-ZZ=eval_meta(X,approx,meta);
+ZZ=eval_meta(X,approx,meta,false);
 GEI=-ZZ.gei(:,:,meta.enrich.para_gei);
 end
 
 %fonction extraction LCB
 function LCB=ret_LCB(X,approx,meta)
-ZZ=eval_meta(X,approx,meta);
+ZZ=eval_meta(X,approx,meta,false);
 LCB=ZZ.lcb;
 end
 
 %fonction extraction variance
 function VARIANCE=ret_VAR(X,approx,meta)
-ZZ=eval_meta(X,approx,meta);
+ZZ=eval_meta(X,approx,meta,false);
 VARIANCE=-ZZ.var;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

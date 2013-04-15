@@ -41,7 +41,7 @@ end
 global debug
 
 %on verifie que les criteres choisis seront bien exploitables
-enrich=tri_crit(enrich,ref);
+enrich=tri_crit(enrich);
 
 info_enrich.ev_crit=cell(length(enrich.crit_type),1);
 
@@ -209,7 +209,7 @@ min_glob_info=isfield(enrich,'min_glob');
 if min_glob_info
     min_glob_info=isfield(enrich.min_glob,'Z');
     if min_glob_info
-        min_glob_info=~isempty(enrich.min_glob,Z);
+        min_glob_info=~isempty(enrich.min_glob.Z);
     end
 end
 

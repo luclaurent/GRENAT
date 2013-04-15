@@ -89,7 +89,7 @@ enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
 enrich.type='EI';
 enrich.on=true;
-enrich.algo='ga';
+enrich.algo='pso';
 enrich.aff_iter_cmd=true;
 enrich.aff_evol=true;
 

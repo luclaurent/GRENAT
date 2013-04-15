@@ -9,7 +9,6 @@ if nargin==0
 end
 %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%
-addpath([doss '/lightspeed']); %%debug possible
 addpath([doss '/doe/LHS']);
 addpath([doss '/doe/IHS']);
 addpath([doss '/meta/dace']);
@@ -21,6 +20,10 @@ addpath([doss '/meta']);
 addpath([doss '/crit']);
 addpath([doss '/matlab2tikz/']);
 addpath([doss '/exec']);
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+%librairies externes
+addpath([doss '/libs/lightspeed']); %%debug possible
 addpath([doss '/libs/sqplab-0.4.5-distrib/src']);
-%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%
+addpath([doss '/libs/PSOt'],[doss '/libs/PSOt/nnet'],...
+    [doss '/libs/PSOt/hiddenutils'],[doss '/libs/PSOt/testfunctions']);

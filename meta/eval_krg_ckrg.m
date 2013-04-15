@@ -4,7 +4,7 @@
 function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non
 aff_warning=false;
-%D�claration des variables
+%Declaration des variables
 nb_val=donnees.in.nb_val;
 nb_var=donnees.in.nb_var;
 
@@ -24,23 +24,24 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-X=U(:)';    %correction (changement type d'element)
+X=U;   
 dim_x=size(X,1);
+%version vectoriel du code
+vect_code=false;
+if dim_x>1;vect_code=true;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
 if donnees.norm.on
     infos.moy=donnees.norm.moy_tirages;
-    infos.std=donnees.norm.std_tirages;
-    
-    X=norm_denorm(X,'norm',infos);
-    
+    infos.std=donnees.norm.std_tirages;    
+    X=norm_denorm(X,'norm',infos);    
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %calcul de l'evaluation du metamodele au point considere
-%d�finition des dimensions des matrices/vecteurs selon KRG et CKRG
+%definition des dimensions des matrices/vecteurs selon KRG et CKRG
 if donnees.in.pres_grad
     tail_matvec=nb_val*(nb_var+1);
 else
@@ -54,7 +55,7 @@ if calc_grad
     jr=zeros(tail_matvec,nb_var);
 end
 %distance du point d'evaluation aux sites obtenus par DOE
-dist=repmat(X,nb_val,1)-tirages;
+dist=repmat(X,nb_val,dim_x)-tirages;
 
 %KRG/CKRG
 if donnees.in.pres_grad

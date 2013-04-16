@@ -53,7 +53,7 @@ doe.type='LHS_O1_manu';
 doe.nb_samples=150;
 
 % Parametrage du metamodele
-data.para.long=[10^-5 5];
+data.para.long=ones(1,8);%[10^-5 5];
 %data.para.long=[0.0138 3.21*10^-5];
 data.para.pow=[1 2.2];
 data.para.swf_para=4;

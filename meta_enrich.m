@@ -117,7 +117,7 @@ aff.ic.on=true;
 aff.ic.type='68'; %('0','68','95','99')
 
 %sauvegarde dans un dossier active ou non
-meta.save=false;
+meta.save=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Creation du dossier de travail

@@ -3,7 +3,7 @@
 
 function [XY,aff]=gene_aff(doe,aff)
 
-fprintf('=========================================\n')
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('     >>> GENERATION AFFICHAGE <<<\n');
 [tMesu,tInit]=mesu_time;
 %dimension de l'espace
@@ -27,7 +27,7 @@ elseif dim_esp==2
     
 else
     % en nD on utilise la fonction de generation de factoriel complet
-    grid=factorial_design(aff.nbele,doe.bornes);
+    grid=factorial_design(aff.nbele,doe.Xmin,doe.Xmax);
     
     %reorganisation grille
     XY=zeros(size(grid,1),1,dim_esp);
@@ -41,8 +41,8 @@ end
 %pas de la grille d'affichage selon les deux variables
 aff.pas=abs(doe.Xmax-doe.Xmin)./aff.nbele;
 
-fprintf('++ Nombre de points de la grille %i (%i',aff.nbele^dim_esp,aff.nbele);
+fprintf(' >> Nombre de points de la grille %i (%i',aff.nbele^dim_esp,aff.nbele);
 fprintf('x%i',aff.nbele*ones(1,dim_esp-1));fprintf(')\n');
 
 mesu_time(tMesu,tInit);
-fprintf('=========================================\n')
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

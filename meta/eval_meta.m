@@ -3,7 +3,7 @@
 % modif le 12/12/2011
 
 
-function [Z]=eval_meta(points,donnees,meta)
+function [Z]=eval_meta(points,donnees,meta,verb)
 
 
 [tMesu,tInit]=mesu_time;
@@ -19,6 +19,11 @@ else
     else
         Z=[];
     end
+end
+
+%parametre verbosite de la fonction
+if nargin==3
+    verb=true;
 end
 
 %nombre de variables
@@ -60,7 +65,7 @@ else
     rep=[];
     GR=[];
 end
-if nb_ev_pts>1
+if nb_ev_pts>1&&verb
     fprintf('#########################################\n');
     fprintf('  >>> EVALUATION METAMODELE <<<\n');
 end
@@ -373,7 +378,7 @@ for num_meta=1:numel(donnees_const)
     end
 end
 
-if nb_ev_pts>1
+if nb_ev_pts>1&&verb
     fprintf('++ Evaluation en %i points\n',nb_ev_pts);
     mesu_time(tMesu,tInit);
     fprintf('#########################################\n');

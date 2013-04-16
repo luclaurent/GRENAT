@@ -3,7 +3,7 @@
 
 function [eval,grad]=gene_eval(fct,X,type)
 
-fprintf('=========================================\n')
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('  >>> GENERATION EVALUATION FONCTION <<<\n');
 [tMesu,tInit]=mesu_time;
 
@@ -51,9 +51,9 @@ else
     fprintf('Mauvais nombre de paramètres de sortie (cf. gene_eval)');
 end
 
-fprintf('++ Evaluation de la fonction %s en %i pts (%iD)\n',fct,nb_val,nb_var);
-fprintf('++ Calcul des gradients: ');
-if nargout==2;fprintf('Oui\n');else fprintf('Non\s');end
+fprintf(' >> Evaluation de la fonction %s en %i pts (%iD)\n',fct,nb_val,nb_var);
+fprintf(' >> Calcul des gradients: ');
+if nargout==2;fprintf('Oui\n');else fprintf('Non\n');end
 
 mesu_time(tMesu,tInit);
-fprintf('=========================================\n')
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

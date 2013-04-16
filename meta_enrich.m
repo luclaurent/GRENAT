@@ -16,14 +16,17 @@ init_aff();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%execution parallele (option et lancement des workers)
+parallel.on=true;
+parallel.workers='auto';
+exec_parallel('start',parallel);
 %fonction etudiee
-fct='manu'; 
+fct='rastrigin'; 
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n)
 % dimension du pb (nb de variables)
-doe.dim_pb=1;
+doe.dim_pb=2;
 %esp=[-5 5];
 esp=[];
 
@@ -38,7 +41,7 @@ aff.nbele=gene_nbele(doe.dim_pb);
 doe.type='LHS';
 
 %nb d'echantillons
-doe.nb_samples=5;
+doe.nb_samples=20;
 
 % Parametrage du metamodele
 data.deg=0;
@@ -67,7 +70,7 @@ meta.enrich.para_lcb=0.5;
 %    'HIST_Q3';'CONV_R2_EX';'CONV_Q3_EX';...
 %    'NB_PTS';'CV_MSE';'CONV_REP_EX';...
 %    'CONV_LOC_EX';'CONV_REP';'CONV_LOC'
-enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2',...
+enrich.crit_type={'NB_PTS','CONV_R2_EX','CONV_Q3_EX','HIST_R2',...
     'HIST_Q3','CONV_REP','CONV_LOC',...
     'CONV_LOC_EX','CONV_REP_EX','CV_MSE',...
     'CONV_VAR','CONV_VARR','CONV_LCB',...
@@ -76,12 +79,12 @@ enrich.crit_type={'CONV_R2_EX','CONV_Q3_EX','HIST_R2',...
     'CONV_GEIR','CONV_GEI','CONV_EI',...
     'CONV_EIRn','CONV_WEIRn','CONV_GEIRn',...
     'CONV_EIR'};
-enrich.val_crit={1,10^-6,1,...
+enrich.val_crit={30,1,10^-6,1,...
     10^-6,1e-6,1e-8,...
     1e-6,1e-6,1e-6,...
     1e-6,1e-6,1e-6,...
     1e-6,1e-6,1e-6,...
-    1e-6,1e-6,1e-6,...
+    1e-3,1e-6,1e-6,...
     1e-6,1e-6,1e-6,...
     1e-6,1e-6,1e-6,...
     1e-6};
@@ -89,18 +92,21 @@ enrich.min_glob=doe.infos.min_glob;
 enrich.min_loc=doe.infos.min_loc;
 enrich.type='EI';
 enrich.on=true;
-enrich.algo='ga';
+enrich.algo='pso';
 enrich.aff_iter_cmd=true;
 enrich.aff_evol=true;
+enrich.aff_ref=true;
 
 enrich.aff_iter_graph=false;
 enrich.aff_iter_cmd=false;
-enrich.aff_plot_algo=false;
-enrich.optim.algo='ga';
-enrich.optim.popInitManu=false;
+enrich.aff_plot_algo=true;
+
+enrich.optim.algo='pso';
+enrich.optim.popInitManu=true;
 enrich.optim.aff_iter_graph=false;
 enrich.optim.aff_iter_cmd=false;
-enrich.optim.aff_plot_algo=false;
+enrich.optim.aff_plot_algo=true;
+enrich.optim.aff_ref=true;
 enrich.optim.popManu='IHS';     %strategie tirage population initiale algo GA '', 'LHS','IHS'...
 enrich.optim.nbPopInit=20;       %population initiale algo GA
 enrich.optim.crit_opti=10^-6;  %critere arret algo optimisation
@@ -119,11 +125,9 @@ meta.save=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp('=====================================');
-disp('=====================================');
-disp('=======Construction metamodele=======');
-disp('=====================================');
-disp('=====================================');
+disp('=========================================');
+disp('=========CONSTRUCTION METAMODELE=========');
+disp('=========================================');
 
 %realisation des tirages
 tirages=gene_doe(doe);
@@ -152,7 +156,7 @@ grad=in.grad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%affichage
-%valeur par d�faut
+%valeur par defaut
 aff.on=true;
 aff.newfig=false;
 aff.ic.on=true;

@@ -13,6 +13,9 @@ IX_inf=find(variance<1e-4);
 IX_zero=find(variance<=1e-4);
 if ~isempty(IX_inf)
     fprintf('Probleme variance inferieure a zero en certains points \n')
+    disp(variance(IX_inf))
+    fprintf('correction a zero\n')
+    variance(IX_inf)=0;
 end
 
 %calcul  ecarte type

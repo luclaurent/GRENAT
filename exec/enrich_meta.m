@@ -3,6 +3,10 @@
 
 function [approx,enrich,in]=enrich_meta(tirages,doe,meta,enrich)
 
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+fprintf('  >>>   ENRICHISSEMENT METAMODELE   <<<\n');
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n\n')
+
 [tMesu,tInit]=mesu_time;
 
 %% initialisation des quantite
@@ -41,13 +45,13 @@ end
 global debug
 
 %on verifie que les criteres choisis seront bien exploitables
-enrich=tri_crit(enrich,ref);
+enrich=tri_crit(enrich);
 
 info_enrich.ev_crit=cell(length(enrich.crit_type),1);
 
 %specification affichage subplot
 if enrich.aff_evol
-    figure('Name','Criteres META & Cofast')
+    fig_evol=figure('Name','Criteres META & Cofast');    
     num_fig=0;
     %nombre de figures
     aff_subplot.num_fig=num_fig_meta(enrich.crit_type,num_fig);
@@ -57,12 +61,14 @@ if enrich.aff_evol
     aff_subplot.id_sub=[];
 else
     aff_subplot=[];
+    fig_evol=[];
 end
 
 %numero iteration enrichissement
 it_enrich=0;
-
-fprintf('\n >>><<< Enrichissement >>><<<\n')
+fprintf('\n\n=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+fprintf('\n >>><<< DEBUT Enrichissement >>><<<\n')
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 %tant que le critere retenu n'est pas atteint
 while ~crit_atteint&&enrich.on
     %basculement des anciens resultats
@@ -75,8 +81,9 @@ while ~crit_atteint&&enrich.on
     info_enrich.iter=it_enrich;
     info_enrich.minZex=min(old_eval);
     info_enrich.maxZex=max(old_eval);
-    fprintf('#########################################\n')
-    fprintf('########### Iteration n: %i ############\n',it_enrich)
+    info_enrich.fig_evol=fig_evol;
+    fprintf('\n*****************************************\n')
+    fprintf('************ Iteration n: %i ************\n',it_enrich)
     fprintf('-----------------------------------------\n');
     
     %parcours des types d'enrichissement
@@ -94,33 +101,36 @@ while ~crit_atteint&&enrich.on
     %test: si un des criteres est atteint si c'est pas le cas alors on genere
     %un nouveau point de calcul
     if ~crit_atteint
+        fprintf('_________________________________________\n');
+        fprintf(' ###### ENRICHISSEMENT - critere: %s ######\n',enrich.type)
         %en fonction du type d'enrichissement
         switch enrich.type
             % en se basant sur l'Expected Improvement
             case {'EI','GEI','VAR','WEI','LCB'}
-                fprintf(' \n>> Enrichissement par metamodele, critere: %s\n',enrich.type)
                 [new_tirages,info_ajout]=ajout_tir_meta(meta,approx{end},enrich);
                 info_enrich.valCRIT=info_ajout.out_algo.fval;
                 approx{end}.enrich.algo=info_ajout.out_algo;
                 %en ajoutant des points dans le tirages
             case {'DOE'}
-                fprintf(' >> Enrichissement du tirage\n')
                 new_tirages=ajout_tir_doe(old_tirages);
             otherwise
-                fprintf(' >> Mode d''enrichissement non defini <<\n');
+                fprintf(' >> Mode d''enrichissement non defini ou non pris en charge <<\n');
         end
+        fprintf('_________________________________________\n');
     else
         new_tirages=[];
     end
     
     %Affichage nouveau point
     if isempty(new_tirages)
+        fprintf('_________________________________________\n');
         fprintf('>>> Pas de nouveaux points <<<\n')
-        fprintf('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n')
+        fprintf('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n');
     else
+        fprintf('_________________________________________\n');
         fprintf(' >> Nouveau point: ');
-        fprintf('%4.2f ',new_tirages);
-        fprintf('\n')
+        fprintf('%4.2f ',new_tirages);        
+        fprintf('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n');
     end
     
     %calcul des grandeurs en ce nouveau point et generation du nouveaux
@@ -145,14 +155,13 @@ while ~crit_atteint&&enrich.on
 end
 
 
-%Extraction des grandeurs ajout�s
+%Extraction des grandeurs ajoutees
 in.tirages=old_tirages;
 in.eval=old_eval;
 in.grad=old_grad;
 
 mesu_time(tMesu,tInit);
-fprintf('#########################################\n');
-
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n\n')
 end
 
 
@@ -199,8 +208,8 @@ crit_type=enrich.crit_type;
 val_crit=enrich.val_crit;
 if ~isempty(iter_retir)
     fprintf('Les criteres ');
-    fprintf('%s ',crit_type{iter_retir});
-    fprintf('ne sont plus operationnels\n');
+    fprintf('%s \n',crit_type{iter_retir});
+    fprintf('\n ne sont plus operationnels\n');
     crit_type(iter_retir)=[];
     val_crit(iter_retir)=[];
 end
@@ -209,7 +218,7 @@ min_glob_info=isfield(enrich,'min_glob');
 if min_glob_info
     min_glob_info=isfield(enrich.min_glob,'Z');
     if min_glob_info
-        min_glob_info=~isempty(enrich.min_glob,Z);
+        min_glob_info=~isempty(enrich.min_glob.Z);
     end
 end
 
@@ -221,8 +230,8 @@ if ~min_glob_info
     IIX=horzcat(IX{:});
     if ~isempty(IIX)
         fprintf('Les criteres ');
-        fprintf('%s ',crit_retrait);
-        fprintf('ne sont plus operationnels\n');
+        fprintf('%s \n',crit_retrait);
+        fprintf('\n ne sont plus operationnels\n');
         crit_type(IIX)=[];
         val_crit(IIX)=[];
     end

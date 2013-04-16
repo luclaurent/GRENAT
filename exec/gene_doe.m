@@ -17,8 +17,6 @@ fprintf('    >>> GENERATION TIRAGES <<<\n');
 s = RandStream('mt19937ar','Seed','shuffle');
 RandStream.setGlobalStream(s);
 
-fprintf('===== DOE =====\n');
-
 %recuperation nombre d'echantillons souhaites
 nbs=doe.nb_samples;
 

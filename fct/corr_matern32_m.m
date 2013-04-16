@@ -15,7 +15,6 @@ nb_comp=size(xx,2);
 %nombre de sorties
 nb_out=nargout;
 
-
 %La longueur de correlation est definie pour toutes les composantes de xx
 if lt(1)*lt(2)==1
     long = long*ones(nb_pt,nb_comp);

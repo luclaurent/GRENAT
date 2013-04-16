@@ -3,7 +3,7 @@
 
 function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)
 
-fprintf('#########################################\n');
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('  >>> CONSTRUCTION METAMODELE <<<\n');
 [tMesu,tInit]=mesu_time;
 %%%%%%%%=================================%%%%%%%%
@@ -199,4 +199,4 @@ for type=metype
 end
 
 mesu_time(tMesu,tInit);
-fprintf('#########################################\n');
+fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

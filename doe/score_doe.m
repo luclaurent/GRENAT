@@ -1,7 +1,12 @@
 %procedure de calcul de score de tirages
 % L. LAURENT -- 19/12/2012 -- laurent@lmt.ens-cachan.fr
 
-function [uniform,discrepance]=score_doe(tirages)
+function [uniform,discrepance]=score_doe(tirages,q)
+
+% norme distance employee
+if nargin==1
+    q=2;
+end
 
 %nombre de points
 nb_val=size(tirages,1);
@@ -14,35 +19,11 @@ p=1./(maxtir-mintir);
 c=-mintir.*p;
 tiragesn=tirages.*repmat(p,nb_val,1)+repmat(c,nb_val,1);
 
-%generation des combinaison
-comb=fullfact([nb_val nb_val]);
-comb1=comb(:,1);comb2=comb(:,2);
-diff=comb1-comb2;
-ind=diff~=0;
-comb1=comb1(ind);
-comb2=comb2(ind);
-
-%calcul des distances interpoints
-pti=tirages(comb1,:);
-ptj=tirages(comb2,:);
-%reorganisation
-pti=reshape(pti',nb_var,nb_val-1,nb_val);
-ptj=reshape(ptj',nb_var,nb_val-1,nb_val);
-ind=[2 1 3];
-pti=permute(pti,ind);
-ptj=permute(ptj,ind);
-dist=sum((ptj-pti).^2,2).^.5;
+% Calcul distance inter-points + multiplicite (cf. Forrester,Sobester&Keane
+% 2008)
+[dist,~,distu,paire]=distir(tirages,q);
 %meme calculs sur les valeurs normees
-%calcul des distances interpoints
-ptin=tiragesn(comb1,:);
-ptjn=tiragesn(comb2,:);
-%reorganisation
-ptin=reshape(ptin',nb_var,nb_val-1,nb_val);
-ptjn=reshape(ptjn',nb_var,nb_val-1,nb_val);
-indn=[2 1 3];
-ptin=permute(ptin,indn);
-ptjn=permute(ptjn,indn);
-distn=sum((ptjn-ptin).^2,2).^.5;
+[distn,~,distun,pairen]=distir(tiragesn,q);
 
 % avec les donnees brutes
 %distance mini en chaque point
@@ -50,9 +31,9 @@ min_dist_pt=min(dist);
 %distance mini moyenne en chaque point
 min_dist_moy=mean(min_dist_pt);
 %distance mini (maximin)
-uniform.dist_min=min(min_dist_pt);
+uniform.dist_min=distu(1);
 %somme inverse distance Leary et al. 2004
-uniform.sum_dist=sum(1./dist(:).^2);
+uniform.sum_dist=sum(1./distu(:).^2);
 %%critères issus de La thèse de Jessica FRANCO 2008
 %distance min moyenne
 uniform.avg_min_dist=min_dist_moy;
@@ -63,18 +44,21 @@ min_dist_ptn=min(distn);
 %distance mini moyenne en chaque point
 min_dist_moyn=mean(min_dist_ptn);
 %distance mini (maximin)
-uniform.dist_minn=min(min_dist_ptn);
+uniform.dist_minn=distun(1);
 %somme inverse distance Leary et al. 2004
-uniform.sum_distn=sum(1./distn(:).^2);
+uniform.sum_distn=sum(1./distun(:).^2);
 %%critères issus de La thèse de Jessica FRANCO 2008
 %mesure de recouvrement/uniformité
 uniform.recouv=1/min_dist_moyn*...
     (1/nb_val*sum(min_dist_ptn-min_dist_moyn)^2)^.5;
 %rapport des distance
-uniform.rap_dist=max(min_dist_ptn)/min(min_dist_ptn);
+uniform.rap_dist=distun(end)/distun(1);
 %distance min moyenne
 uniform.avg_min_distn=min_dist_moyn;
 
+%critere Morris & Mitechll 1995
+uniform.morris=sum(paire.*distu.^(-q))^(1/q);
+uniform.morrisn=sum(pairen.*distun.^(-q))^(1/q);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

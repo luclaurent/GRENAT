@@ -16,7 +16,7 @@ popInitManu=enrich.optim.popManu;
 if popInitManu
     nbpopspecif=false;
     if isfield(enrich.optim,'nbPopInit');if ~isempty(enrich.optim.nbPopInit);nbpopspecif=false;end, end
-    if nbpopspecif;nbPopInit=enrich.optim.nbPopInit;else nbPopInit=10*nb_para; end
+    if nbpopspecif;nbPopInit=enrich.optim.nbPopInit;else nbPopInit=10*nb_para+10; end
 end
 
 %critere arret minimisation
@@ -67,9 +67,9 @@ PSOseed = 0;    % if=1 then can input particle starting positions, if= 0 then al
 % starting particle positions (first 20 at zero, just for an example)
 PSOT_plot=[];
 PSOT_tirage = [];
-PSOT_mv=4; %vitesse maxi des particules (=4 def) 
+PSOT_mv=4; %vitesse maxi des particules (=4 def)
 shw=0;      %MAJ affichage a chque iteration (0 sinon)
-ps=10*nb_para; %nb de particules
+ps=nbPopInit; %nb de particules
 errgoal=NaN;    %cible minimisation
 modl=3;         %type de PSO
 %                   0 = Common PSO w/intertia (default)
@@ -96,7 +96,8 @@ if enrich.aff_plot_algo
     options_ga=gaoptimset(options_ga,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
         @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
         @gaplotscorediversity,@gaplotscores,@gaplotstopping});
-    PSOT_plot='goplotpso';
+    PSOT_plot='goplotpso_perso1';
+    PSOT_options(1)=10;
 end
 
 %specification manuelle de la population initiale (Ga)
@@ -110,19 +111,71 @@ else
     PSOT_options(13)=0;
 end
 
+%generation reference pour controle
+if isfield(enrich,'aff_ref')
+    aff_ref=enrich.aff_ref;
+else
+    aff_ref=false;
+end
+if aff_ref&&nb_para<=2
+    fprintf(' >> Generation et affichage critere\n')
+    %generation de la grille de reference
+    ref.nbele=gene_nbele(nb_para);
+    [grid_XY_ref,ref]=gene_aff(doe,ref);
+    text_titre=[enrich.type ' ' num2str(approx.nb_val) ' pts'];
+    text_file=[enrich.type '_' num2str(approx.nb_val) '_pts'];
+    ref_tirages=approx.tirages;
+    hhh=figure('Name',text_titre);
+    %affichage de la fonction
+    if nb_para==1
+        ZZref=fun(grid_XY_ref);
+        ZZtir=fun(ref_tirages);
+        plot(grid_XY_ref,ZZref);
+        hold on
+        plot(ref_tirages,ZZtir,...
+            'o','MarkerEdgeColor','g',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',7);
+        hold off
+    elseif nb_para==2
+        XX=grid_XY_ref(:,:,1);
+        YY=grid_XY_ref(:,:,2);
+        ZZ=fun([XX(:) YY(:)]);
+        ZZref=zeros(size(XX));
+        ZZref(:)=ZZ;
+        ZZtir=fun(ref_tirages);
+        subplot(121)
+        surf(XX,YY,ZZref);
+        hold on
+        plot3(ref_tirages(:,1),ref_tirages(:,2),ZZtir,...
+            'o','MarkerEdgeColor','g',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',7);
+        hold off
+        subplot(122)
+        contour(XX,YY,ZZref);
+        hold on
+        plot(ref_tirages(:,1),ref_tirages(:,2),...
+            'o','MarkerEdgeColor','g',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',7);
+        hold off
+    end
+end
+
 %% Minimisation par algo genetique
 switch enrich.algo
     case 'ga'
         [pts,fval,exitflag,output] = ga(fun,nb_para,[],[],[],[],lb,ub,[],options_ga);
     case 'pso'
         %variation des parametres
-        PSOT_varrange=[lb';ub'];
+        PSOT_varrange=[lb ub];
         %minimisation
         PSOT_minmax=0;
         
         %PSOt version vectorisee
         [pso_out,...    %pt minimum et reponse associee
-            tr,...      %pt minimum a chaque iteration 
+            tr,...      %pt minimum a chaque iteration
             te...       %epoch? iterations
             ]=pso_Trelea_vectorized(...
             fun,...             %fonction
@@ -142,6 +195,27 @@ switch enrich.algo
         output.te=te;
     otherwise
         error('Algorithme phase enrichissement mal specifie')
+end
+
+%on ajoute le point sur le graphe
+if aff_ref&&nb_para<=2&&exist('pts','var')
+    figure(hhh)
+    hold on
+    if nb_para==1
+        plot(pts,fval,'rs','LineWidth',2,...
+            'MarkerEdgeColor','k',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',10);
+    elseif nb_para==2
+        plot3(pts(1),pts(2),fval,'rs','LineWidth',2,...
+            'MarkerEdgeColor','k',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',10);
+    end
+    hold off
+    global aff
+    hgsave(hhh,[aff.doss '/' text_file '.fig'])
+    saveas(hhh,[aff.doss  '/' text_file '.eps'],'eps')
 end
 
 %extraction retour algo

@@ -6,8 +6,8 @@
 
 %domaine d'etude -5.12<xi<5.12
 
-%[TZ89] A. Tï¿½rn and A. Zilinskas. "Global Optimization". Lecture Notes in Computer Science, No 350, Springer-Verlag, Berlin,1989.
-%[MSB91] H. Mï¿½hlenbein, D. Schomisch and J. Born. "The Parallel Genetic Algorithm as Function Optimizer ". Parallel Computing, 17, pages 619-632,1991.
+%[TZ89] A. T\¨orn and A. Zilinskas. "Global Optimization". Lecture Notes in Computer Science, No 350, Springer-Verlag, Berlin,1989.
+%[MSB91] H. M\¨uhlenbein, D. Schomisch and J. Born. "The Parallel Genetic Algorithm as Function Optimizer ". Parallel Computing, 17, pages 619-632,1991.
 
 function [p,dp,infos]=fct_rastrigin(xx,dim)
 

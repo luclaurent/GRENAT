@@ -22,7 +22,7 @@ if isfield(meta,'corr')
     dossier=[dossier '_' meta.corr];
 end
 if isfield(meta,'deg')
-    dossier=[dossier '_reg' meta.deg];
+    dossier=[dossier '_reg' num2str(meta.deg)];
 end
 
 

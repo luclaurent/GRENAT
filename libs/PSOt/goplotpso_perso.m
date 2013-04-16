@@ -6,7 +6,7 @@
 % 1/1/3
 
 % setup figure
-clf
+h=figure('Name','PSOt');
 
 functperso='test';
 

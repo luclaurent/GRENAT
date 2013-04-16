@@ -11,7 +11,13 @@
 % 3/1/06
 
 % setup figure, change this for your own machine
-clf
+fig_exist=findobj('Name','PSOt');
+if isempty(fig_exist)
+    figure('Name','PSOt')
+else
+    figure(fig_exist)
+    clf
+end
 
 functperso='test';
 
@@ -191,4 +197,6 @@ hold off
 set(gca,'color','k');
 set(gca,'visible','off');
 
+warning off all
 drawnow
+warning on all

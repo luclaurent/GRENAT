@@ -7,6 +7,8 @@ fprintf('=========================================\n')
 fprintf('    >>> INITIALISATION DOSSIER <<<\n');
 [tMesu,tInit]=mesu_time;
 
+dossier_base='results';
+
 day=clock;
 date_doss=[num2str(day(1),'%4.0f') '-' num2str(day(2),'%02.0f') '-' num2str(day(3),'%02.0f')...
     '_' num2str(day(4),'%02.0f') '-' num2str(day(5),'%02.0f') '-' num2str(day(6),'%02.0f') '_'];
@@ -35,10 +37,13 @@ end
 if nargin==4
     dossier=[chemin dossier];
 else
-    dossier=['results/' dossier];
+    dossier=[dossier_base '/' dossier];
 end
 
 if meta.save
+    if nargin<4&&~exist(dossier_base,'dir')
+        unix(['mkdir ' dossier_base]);
+    end
     %creation du repertoire
     unix(['mkdir ' dossier]);
 else

@@ -17,7 +17,7 @@ init_aff();
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %execution parallele (option et lancement des workers)
-parallel.on=true;
+parallel.on=false;
 parallel.workers='auto';
 exec_parallel('start',parallel);
 %fonction etudiee

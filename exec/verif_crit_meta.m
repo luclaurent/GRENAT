@@ -4,6 +4,9 @@
 
 function  [crit_atteint,id_sub,det_enrich]=verif_crit_meta(enrich,meta,infos_enrich,ref,approx,aff_subplot,old_tirages,num_sub)
 
+fprintf('_________________________________________\n');
+fprintf(' ###### VERIFICATION DES CRITERES ######\n')
+
 %initialisation flag criteres
 crit_atteint=false;
 pts_ok=true;
@@ -74,6 +77,8 @@ nb_col=aff_subplot.nb_col;
 %nb de points
 nb_pts=size(old_tirages,1);
 opt_plot.bornes=[nb_pts-1 nb_pts+1];
+%handle figure evolution multiplot
+opt_plot.fig_evol=infos_enrich.fig_evol;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -100,10 +105,11 @@ if any(ismember(criteres,crit_min))
     fprintf(' >> Minimum sur metamodele: %4.2e\n',Zap_min(end))
     fprintf(' >> Au point: ');
     fprintf('%4.2e ',Xap_min(end,:));
-    fprintf('\n')
+    fprintf('\n+++++++++++++++++++++++++++++++++++++++++\n');
     
     %trace de l'evolution
-    if enrich.aff_evol
+    if enrich.aff_evol         
+        figure(infos_enrich.fig_evol)        
         if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
         opt_plot.tag='Min_meta';
         opt_plot.title='Minimum Metamodele';
@@ -117,8 +123,6 @@ if any(ismember(criteres,crit_min))
     end
 end
 
-fprintf('#########################################\n')
-fprintf('Verification criteres\n')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %recherche de la variance maxi du metamodele si necessaire
@@ -137,10 +141,11 @@ if any(ismember(criteres,crit_var))
     fprintf(' >> Variance maxi metamodele: %4.2e\n',Vap_max(end))
     fprintf(' >> Au point: ');
     fprintf('%4.2e ',XVap_max(end,:));
-    fprintf('\n')
+    fprintf('\n+++++++++++++++++++++++++++++++++++++++++\n');
     
     %trace de l'evolution
-    if enrich.aff_evol
+    if enrich.aff_evol         
+        figure(infos_enrich.fig_evol)
         if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
         opt_plot.tag='Max_Var_meta';
         opt_plot.title='Variance maxi Metamodele';
@@ -156,11 +161,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
+fprintf('\n')
 %parcours des types d'enrichissement
 for  it_type=1:length(criteres)
     %balayage des criteres
-    switch criteres{it_type}
+    fprintf(' **** CRITERE: %s **** \n',criteres{it_type})
+    switch criteres{it_type}        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -184,7 +190,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxVAR];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_VAR';
                     opt_plot.title='VAR maxi';
@@ -230,7 +237,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxVARR];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_VARR';
                     opt_plot.title='VAR relative maxi';
@@ -268,7 +276,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxLCB];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_LCB';
                     opt_plot.title='LCB maxi';
@@ -314,7 +323,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxLCB];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_LCBR';
                     opt_plot.title='LCB relative maxi';
@@ -352,7 +362,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxWEI];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_WEI';
                     opt_plot.title='WEI maxi';
@@ -398,7 +409,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxWEIR];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_WEIR';
                     opt_plot.title='WEI relative maxi';
@@ -445,7 +457,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxWEIRb];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_WEIRb';
                     opt_plot.title='WEI relative maxi (~Huang 2006)';
@@ -492,7 +505,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxEIRb];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_EIRb';
                     opt_plot.title='EI relative maxi (Huang 2006)';
@@ -539,7 +553,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxGEIRb];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_GEIRb';
                     opt_plot.title='GEI relative maxi (~Huang 2006)';
@@ -581,7 +596,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxWEIRn];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_WEIRn';
                     opt_plot.title='WEI relative maxi (norme var.)';
@@ -623,7 +639,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxEIRn];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_EIRn';
                     opt_plot.title='EI relative maxi (norme var.)';
@@ -665,7 +682,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxGEIRn];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_GEIRn';
                     opt_plot.title='GEI relative maxi (norme var.)';
@@ -711,7 +729,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxGEIR];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_GEIR';
                     opt_plot.title='GEI relative maxi';
@@ -749,7 +768,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxGEI];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_GEI';
                     opt_plot.title='GEI maxi';
@@ -787,7 +807,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxEI];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_EI';
                     opt_plot.title='EI maxi';
@@ -833,7 +854,8 @@ for  it_type=1:length(criteres)
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} maxEIR];
                 
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_EIR';
                     opt_plot.title='EI relative maxi';
@@ -899,7 +921,8 @@ for  it_type=1:length(criteres)
                             hist_r2_ok=true;
                         end
                         %trace de l'evolution
-                        if enrich.aff_evol
+                        if enrich.aff_evol         
+                            figure(infos_enrich.fig_evol)
                             if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             opt_plot.tag='HIST_R2';
                             opt_plot.title='HIST R2';
@@ -931,7 +954,8 @@ for  it_type=1:length(criteres)
                             hist_q3_ok=true;
                         end
                         %trace de l'evolution
-                        if enrich.aff_evol
+                        if enrich.aff_evol         
+                            figure(infos_enrich.fig_evol)
                             if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                             opt_plot.tag='HIST_Q3';
                             opt_plot.title='HIST Q3';
@@ -973,7 +997,8 @@ for  it_type=1:length(criteres)
                         fprintf(' ====> LIMITE R2 NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
                     end
                     %trace de l'evolution
-                    if enrich.aff_evol
+                    if enrich.aff_evol         
+                        figure(infos_enrich.fig_evol)
                         if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         opt_plot.tag='CONV_R2_EX';
                         opt_plot.title='R2 EX';
@@ -1000,7 +1025,8 @@ for  it_type=1:length(criteres)
                         fprintf(' ====> LIMITE Q3 NON ATTEINTE --- %4.2e%s <====\n',depass*100,char(37))
                     end
                     %trace de l'evolution
-                    if enrich.aff_evol
+                    if enrich.aff_evol         
+                        figure(infos_enrich.fig_evol)
                         if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                         opt_plot.tag='CONV_Q3_EX';
                         opt_plot.title='Q3 EX';
@@ -1036,7 +1062,8 @@ for  it_type=1:length(criteres)
             det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} nb_pts];
             
             %trace de l'evolution
-            if enrich.aff_evol
+            if enrich.aff_evol         
+                figure(infos_enrich.fig_evol)
                 if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 opt_plot.tag='NB_PTS';
                 opt_plot.title='Evol. nombre de points';
@@ -1069,7 +1096,8 @@ for  it_type=1:length(criteres)
             %sauvegarde valeur critere
             det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} msep];
             %trace de l'evolution
-            if enrich.aff_evol
+            if enrich.aff_evol         
+                figure(infos_enrich.fig_evol)
                 if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 opt_plot.tag='CV_MSE';
                 opt_plot.title='MSE (LOO/CV)';
@@ -1115,7 +1143,8 @@ for  it_type=1:length(criteres)
             %sauvegarde valeur critere
             det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_rep];
             %trace de l'evolution
-            if enrich.aff_evol
+            if enrich.aff_evol         
+                figure(infos_enrich.fig_evol)
                 if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 opt_plot.tag='CONV_REP_EX';
                 opt_plot.title='Critere conv. Minimum/exacte';
@@ -1161,7 +1190,8 @@ for  it_type=1:length(criteres)
             %sauvegarde valeur critere
             det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
             %trace de l'evolution
-            if enrich.aff_evol
+            if enrich.aff_evol         
+                figure(infos_enrich.fig_evol)
                 if iteration_enrich==1;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                 opt_plot.tag='CONV_LOC_EX';
                 opt_plot.title='Critere conv. Localisation/exacte';
@@ -1192,7 +1222,8 @@ for  it_type=1:length(criteres)
                 %sauvegarde valeur critere
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_REP';
                     opt_plot.title='Critere conv. Minimum (hist)';
@@ -1229,7 +1260,8 @@ for  it_type=1:length(criteres)
                 %sauvegarde valeur critere
                 det_enrich.ev_crit{it_type}=[infos_enrich.ev_crit{it_type} conv_loc];
                 %trace de l'evolution
-                if enrich.aff_evol
+                if enrich.aff_evol         
+                    figure(infos_enrich.fig_evol)
                     if iteration_enrich==2;id_sub(num_sub)=subplot(nb_lign,nb_col,num_sub);id_plotloc=[];else id_plotloc=id_sub(num_sub);end
                     opt_plot.tag='CONV_LOC';
                     opt_plot.title='Critere conv. Localisation (hist)';
@@ -1245,9 +1277,9 @@ for  it_type=1:length(criteres)
                 fprintf(' >> Critere CONV_LOC non actif a la 1ere iteration\n');
                 conv_loc_ok=true;
                 num_sub=num_sub+1;
-            end
-            
+            end            
     end
+    fprintf(' **** **** **** \n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1263,7 +1295,7 @@ crit_atteint=conv_glob_ex_ok&&conv_rep_ok&&conv_loc_ok&&...
     weirb_ok&&geirb_ok&&eirn_ok&&weirn_ok&&geirn_ok;
 
 crit_atteint=~crit_atteint;
-
+fprintf('_________________________________________\n');
 end
 
 

@@ -23,7 +23,8 @@ crit_opti=meta.para.crit_opti;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
-fprintf('++ Estimation parametres\n');
+fprintf('      > Estimation parametres <\n');
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
 [tMesu,tInit]=mesu_time;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,7 +47,19 @@ switch meta.corr
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%on recherche si le motif tir_min_ est present dans le nom de strategie
+motif='tir_min_';
+[motfind]=strfind(meta.para.method,motif);
 
+if isempty(motfind)
+    method_optim=meta.para.method;
+    tir_min_ok=false;
+else
+    method_optim=meta.para.method((motfind+numel(motif)):end);    
+    tir_min_ok=true;
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Definition manuelle de la population initiale par LHS/IHS (Ga)
 popInitManu=meta.para.popManu;
 if popInitManu
@@ -129,7 +142,7 @@ if meta.para.aff_plot_algo
 end
 
 %specification manuelle de la population initiale (Ga)
-if ~isempty(popInitManu)
+if ~isempty(popInitManu)&&~tir_min_ok
     doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
     tir_pop=gene_doe(doePop);
     options_ga=gaoptimset(options_ga,'PopulationSize',nbPopInit,'InitialPopulation',tir_pop);
@@ -137,17 +150,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% traitement des strategie de type tir_min_xxxx
-%on recherche si le motif tir_min_ est present dans le nom de strategie
-motif='tir_min_';
-[motfind]=strfind(meta.para.method,motif);
 
-if isempty(motfind)
-    method_optim=meta.para.method;
-    tir_min_ok=false;
-else
-    method_optim=meta.para.method((motfind+numel(motif)):end);    
-    tir_min_ok=true;
-end
 % si tir_min alors on fait un tirage pour rechercher un point
 % d'initialisation de l'algorithme
 if tir_min_ok
@@ -203,7 +206,7 @@ switch method_optim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'sqp'
-        fprintf('||Fmincon|| Initialisation au point:\n');
+        fprintf('||Fmincon (SQP)|| Initialisation au point:\n');
         fprintf('%g ',x0); fprintf('\n');
         %minimisation avec traitement de point de depart non defini
         if ~aff_warning;warning off all;end
@@ -330,4 +333,6 @@ if nb_para_optim>nb_para
     fprintf(' %6.4f',para_estim.p_val);
     fprintf('\n\n');
 end
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
 end

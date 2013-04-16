@@ -40,3 +40,8 @@ batch_lot_cnodeb.sh
   514  history |grep 420 >> cmd.txt 
   qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Rastm_recup -t 124,125,127,157,158,170,172,39-79,81,82 -v FICH_SCRIPT=liste_Rastrigin_itm batch_lot_cnode.sh
 
+ 1681  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Ras_tms -t 1-450%20 -v FICH_SCRIPT=liste_Rastrigin_itms batch_lot_cnode.sh
+ 1682  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Ros_tms -t 1-450%20 -v FICH_SCRIPT=liste_Rosenbrock_itms batch_lot_cnode.sh
+ 1683  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Sch_tms -v FICH_SCRIPT=liste_Schwefel_itms batch_lot_cnode.sh
+ 1690  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Sch_tms -t 1-450%20 -v FICH_SCRIPT=liste_Schwefel_itms batch_lot_cnode.sh
+ 1697  hg qsub |grep tms

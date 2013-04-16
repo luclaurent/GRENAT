@@ -4,7 +4,8 @@
 function [Zap_min,X_min]=rech_min_meta(meta,approx,optim,type)
 
 [tMesu,tInit]=mesu_time;
-fprintf('++++++++++++++++++++++++++++++++++++\n');
+
+fprintf('+++++++++++++++++++++++++++++++++++++++++\n');
 %%type de minimum recherche (par defaut minimisation fonction
 if nargin==3
     type='rep';
@@ -12,7 +13,7 @@ end
 
 switch type
     case 'rep'
-        fprintf('>>> RECHERCHE MINIMUM METAMODELE <<<\n');
+        fprintf('  >>> RECHERCHE MINIMUM METAMODELE <<<\n');
     case 'var'
         fprintf('>>> RECHERCHE MAXIMUM VARIANCE METAMODELE <<<\n');
 end
@@ -30,7 +31,7 @@ nb_para=numel(doe.Xmin);
 if optim.popInitManu
     nbpopspecif=false;
     if isfield(optim,'nbPopInit');if ~isempty(optim.nbPopInit);nbpopspecif=false;end, end
-    if nbpopspecif;nbPopInit=optim.nbPopInit;else nbPopInit=10*nb_para; end
+    if nbpopspecif;nbPopInit=optim.nbPopInit;else nbPopInit=10*nb_para+10; end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,7 +92,7 @@ switch optim.algo
         PSOT_tirage = [];
         PSOT_mv=4; %vitesse maxi des particules (=4 def)
         shw=0;      %MAJ affichage a chque iteration (0 sinon)
-        ps=10*nb_para; %nb de particules
+        ps=nbPopInit; %nb de particules
         errgoal=NaN;    %cible minimisation
         modl=3;         %type de PSO
         %                   0 = Common PSO w/intertia (default)
@@ -105,7 +106,8 @@ switch optim.algo
         
         %affichage informations interations algo (sous forme de plot
         if optim.aff_plot_algo
-            PSOT_plot='goplotpso';
+            PSOT_plot='goplotpso_perso1';
+            PSOT_options(1)=10;
         end
         
         %specification manuelle de la population initiale (Ga)
@@ -118,7 +120,7 @@ switch optim.algo
             PSOT_options(13)=0;
         end
         %variation des parametres
-        PSOT_varrange=[doe.Xmin';doe.Xmax'];
+        PSOT_varrange=[doe.Xmin doe.Xmax];
         %minimisation
         PSOT_minmax=0;
         
@@ -139,6 +141,59 @@ switch type
     case 'var'
         fun=@(point)ext_var(point,approx,meta);
 end
+
+%generation reference pour controle
+if isfield(optim,'aff_ref')
+    aff_ref=optim.aff_ref;
+else
+    aff_ref=false;
+end
+if aff_ref&&nb_para<=2
+    fprintf(' >> Generation et affichage critere\n')
+    %generation de la grille de reference
+    ref.nbele=gene_nbele(nb_para);
+    [grid_XY_ref,ref]=gene_aff(doe,ref);
+    text_titre=[type ' ' num2str(approx.nb_val) ' pts'];
+    text_file=[type '_' num2str(approx.nb_val) '_pts'];
+    ref_tirages=approx.tirages;
+    hhh=figure('Name',text_titre);
+    %affichage de la fonction
+    if nb_para==1
+        ZZref=fun(grid_XY_ref);
+        ZZtir=fun(ref_tirages);
+        plot(grid_XY_ref,ZZref);
+        hold on
+        plot(ref_tirages,ZZtir,...
+            'o','MarkerEdgeColor','g',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',7);
+        hold off
+    elseif nb_para==2
+        XX=grid_XY_ref(:,:,1);
+        YY=grid_XY_ref(:,:,2);
+        ZZ=fun([XX(:) YY(:)]);
+        ZZref=zeros(size(XX));
+        ZZref(:)=ZZ;
+        ZZtir=fun(ref_tirages);
+        subplot(121)
+        surf(XX,YY,ZZref);
+        hold on
+        plot3(ref_tirages(:,1),ref_tirages(:,2),ZZtir,...
+            'o','MarkerEdgeColor','g',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',7);
+        hold off
+        subplot(122)
+        contour(XX,YY,ZZref);
+        hold on
+        plot(ref_tirages(:,1),ref_tirages(:,2),...
+            'o','MarkerEdgeColor','g',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',7);
+        hold off
+    end
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %minimisation
@@ -175,10 +230,29 @@ switch optim.algo
         
 end
 
-
+%on ajoute le point sur le graphe
+if aff_ref&&nb_para<=2&&exist('X_min','var')
+    figure(hhh)
+    hold on
+    if nb_para==1
+        plot(X_min,Zap_min,'rs','LineWidth',2,...
+            'MarkerEdgeColor','k',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',10);
+    elseif nb_para==2
+        plot3(X_min(1),X_min(2),Zap_min,'rs','LineWidth',2,...
+            'MarkerEdgeColor','k',...
+            'MarkerFaceColor','g',...
+            'MarkerSize',10);
+    end
+    hold off
+    global aff
+    hgsave(hhh,[aff.doss '/' text_file '.fig'])
+    saveas(hhh,[aff.doss  '/' text_file '.eps'],'eps')
+end
 
 mesu_time(tMesu,tInit);
-fprintf('      ++++++++++++++++++++++++++++++++++++\n');
+fprintf('++++++++++++++++++++++++++++++++++++\n');
 end
 
 %fonction extraction reponse metamodele

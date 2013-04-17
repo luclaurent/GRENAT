@@ -226,8 +226,10 @@ fprintf('=====================================\n');
 fprintf('=====================================\n');
 
 hh_fig=findobj('Name','Criteres META & Cofast');
+if ~isempty(hh_fig)
 hgsave(hh_fig,[aff.doss '/crit_enrich.fig'])
 saveas(hh_fig,[aff.doss  '/crit_enrich.eps'],'eps')
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Sauvegarde des infos dans un fichier tex

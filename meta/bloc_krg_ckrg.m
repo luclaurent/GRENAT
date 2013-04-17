@@ -7,7 +7,11 @@ function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
 %coefficient de reconditionnement
 coef=(10+size(donnees.build.fct,1))*eps;
 % type de factorisation de la matrice de correlation
-fact_rcc='LL' ; %LU %QR %LL %None
+if strcmp(meta.type,'CKRG')
+    fact_rcc='QR';
+else
+    fact_rcc='LL' ; %LU %QR %LL %None
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement grandeurs utiles

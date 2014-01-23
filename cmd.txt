@@ -1,0 +1,47 @@
+script 
+qsub -l nodes=01:ppn=8,pmem=3gb,walltime=700:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Rastrigin_ib
+batch_lot_cnodeb.sh
+  337  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Rosenbrock_ib batch_lot_cnode.sh
+  342  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Schwefel_ib batch_lot_cnode.sh
+  508  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 276  -v FICH_SCRIPT=liste_Rastrigin_ib
+  509  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 276  -v FICH_SCRIPT=liste_Rastrigin_ib batch_lot_cnode.sh
+  510  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Rosenbrock_ib batch_lot_cnode.sh
+  511  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450%50  -v FICH_SCRIPT=liste_Schwefel_ib batch_lot_cnode.sh
+  520  history|grep qsub
+  521  history|grep qsub >> cmd.txt
+  476  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450 -v FICH_SCRIPT=liste_Schwefel_ib batch_lot_cnode.sh
+  511  history | grep qsub|grep 476
+  512  history | grep qsub|grep 476 >> cmd.txt 
+    514  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450 -v FICH_SCRIPT=liste_Schwefel_ib batch_lot_cnode.sh
+      515  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=100:00:00 -t 1-450 -v FICH_SCRIPT=liste_Rosenbrock_ib batch_lot_cnode.sh
+  516  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Rastrigin -t 1-450 -v FICH_SCRIPT=liste_Rastrigin batch_lot_cnode.sh
+    518  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Rosenbrock -t 1-450 -v FICH_SCRIPT=liste_Rosenbrock batch_lot_cnode.sh
+      520  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Schwefel -t 1-450 -v FICH_SCRIPT=liste_Schwefel batch_lot_cnode.sh
+  534  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Sch_bR -t 1-450 -v FICH_SCRIPT=liste_Schwefel_ibR batch_lot_cnode.sh
+  535  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ros_bR -t 1-450 -v FICH_SCRIPT=liste_Rosenbrock_ibR batch_lot_cnode.sh
+  536  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ras_bR -t 1-450 -v FICH_SCRIPT=liste_Rastrigin_ibR batch_lot_cnode.sh
+  537  history |grep qsub
+  538  history |grep qsub>> cmd.txt 
+  415  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ras_tm -t 1-450 -v FICH_SCRIPT=liste_Rastrigin_itm batch_lot_cnode.sh
+  507  history |grep 415,416,417
+  508  history |grep 415>> cmd.txt 
+  509  history |grep 415 >> cmd.txt 
+  416  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ros_tm -t 1-450 -v FICH_SCRIPT=liste_Rosenbrock_itm batch_lot_cnode.sh
+  507  history |grep 415,416,417
+  510  history |grep 416 >> cmd.txt 
+  417  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Sch_tm -t 1-450 -v FICH_SCRIPT=liste_Schwefel_itm batch_lot_cnode.sh
+  507  history |grep 415,416,417
+  511  history |grep 417 >> cmd.txt 
+  418  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ras_tmf -t 1-450 -v FICH_SCRIPT=liste_Rastrigin_itmf batch_lot_cnode.sh
+  512  history |grep 418 >> cmd.txt 
+  419  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Ros_tmf -t 1-450 -v FICH_SCRIPT=liste_Rosenbrock_itmf batch_lot_cnode.sh
+  513  history |grep 419 >> cmd.txt 
+  420  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=200:00:00 -N Sch_tmf -t 1-450 -v FICH_SCRIPT=liste_Schwefel_itmf batch_lot_cnode.sh
+  514  history |grep 420 >> cmd.txt 
+  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Rastm_recup -t 124,125,127,157,158,170,172,39-79,81,82 -v FICH_SCRIPT=liste_Rastrigin_itm batch_lot_cnode.sh
+
+ 1681  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Ras_tms -t 1-450%20 -v FICH_SCRIPT=liste_Rastrigin_itms batch_lot_cnode.sh
+ 1682  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Ros_tms -t 1-450%20 -v FICH_SCRIPT=liste_Rosenbrock_itms batch_lot_cnode.sh
+ 1683  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Sch_tms -v FICH_SCRIPT=liste_Schwefel_itms batch_lot_cnode.sh
+ 1690  qsub -l nodes=01:ppn=8,pmem=3gb,walltime=500:00:00 -N Sch_tms -t 1-450%20 -v FICH_SCRIPT=liste_Schwefel_itms batch_lot_cnode.sh
+ 1697  hg qsub |grep tms

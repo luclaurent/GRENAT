@@ -1,0 +1,11 @@
+.DS_Store
+*.dat
+*.mat
+CST2012
+LHS_R
+POST
+TIR_MANU
+Website*
+tmp
+libs
+results

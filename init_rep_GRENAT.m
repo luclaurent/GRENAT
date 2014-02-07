@@ -1,7 +1,7 @@
 %%initialisation des chemins de fichiers
 %%L. LAURENT -- 30/01/2014  -- luc.laurent@ens-cachan.fr
 
-function init_rep_GRENAT(chemin,other)
+function doss=init_rep_GRENAT(chemin,other)
 
 % variable 'other' de type cellule contenant la liste des autre toolbox a
 % charger (elles doivent etre situees dans le dossier ../.)

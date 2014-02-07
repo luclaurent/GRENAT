@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of init_aff</title>
+  <meta name="keywords" content="init_aff">
+  <meta name="description" content="% Initialisation des variables d'affichage">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html init -->
+<h1>init_aff
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Initialisation des variables d'affichage</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function aff_def=init_aff() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Initialisation des variables d'affichage
+% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/EXEMPLE_UTILISATION.html" class="code" title="">EXEMPLE_UTILISATION</a>	Exemple d'utilisation de la Toolbox GRENAT</li><li><a href="../../../GRENAT/EXEMPLE_UTILISATION_DOE.html" class="code" title="">EXEMPLE_UTILISATION_DOE</a>	Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir</li><li><a href="../../../GRENAT/routines/aff/affichage.html" class="code" title="function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)">affichage</a>	%fonction realisant l'affichage des surfaces de reponse</li><li><a href="../../../GRENAT/routines/aff/affichage_ic.html" class="code" title="function affichage_ic(X,ic,aff,Z)">affichage_ic</a>	% Affichage des intervalles de confiance</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Initialisation des variables d'affichage</span>
+0002 <span class="comment">%% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function aff_def=init_aff()</a>
+0005 
+0006     aff_def.scale=true;             <span class="comment">%mise a  l'echelle (affichage gradients)</span>
+0007     aff_def.tikz=false;             <span class="comment">%sauvegarde au format Tikz</span>
+0008     aff_def.on=false;               <span class="comment">%affichage actif ou non</span>
+0009     aff_def.d3=false;               <span class="comment">%affichage 3D</span>
+0010     aff_def.d2=false;               <span class="comment">%affichage 2D</span>
+0011     aff_def.contour=false;         <span class="comment">%affichage contour</span>
+0012     aff_def.save=true;              <span class="comment">%sauvegarde de ts les traces</span>
+0013     aff_def.grad_meta=false;        <span class="comment">%affichage des gradients du metamodele</span>
+0014     aff_def.grad_eval=false;        <span class="comment">%affichage des gradients evalues</span>
+0015     aff_def.ic.on=false;            <span class="comment">%affichage des IC actif ou non</span>
+0016     aff_def.ic.type=<span class="string">'0'</span>;            <span class="comment">%affichage des intervalles de confiance</span>
+0017     aff_def.newfig=true;            <span class="comment">%affichage des figures comme nouvelles figure</span>
+0018     aff_def.opt=[];                 <span class="comment">%options de traces</span>
+0019     aff_def.uni=false;              <span class="comment">%affichage en couleur uni (2D)</span>
+0020     aff_def.color=[];               <span class="comment">%couleur d'affichage</span>
+0021     aff_def.xlabel=<span class="string">'x_1'</span>;           <span class="comment">%nom abscisse</span>
+0022     aff_def.ylabel=<span class="string">'x_2'</span>;           <span class="comment">%nom ordonn*ee</span>
+0023     aff_def.zlabel=<span class="string">''</span>;              <span class="comment">%nom cote</span>
+0024     aff_def.titre=<span class="string">''</span>;               <span class="comment">%titre figure</span>
+0025     aff_def.rendu=false;            <span class="comment">%rendu de l'affichage 3D</span>
+0026     aff_def.pts=false;              <span class="comment">%affichage des points d'evaluation</span>
+0027     aff_def.num=0;                  <span class="comment">%numérotation affichage</span>
+0028     aff_def.save=false;             <span class="comment">%sauvegarde des donnees</span>
+0029     aff_def.tex=true;               <span class="comment">%sauvegarde des données dans le fichier TeX</span>
+0030     aff_def.bar=false;              <span class="comment">%affichage des réponses sous forme de barre</span>
+0031     aff_def.trans=false;            <span class="comment">%affichage surface en transparence</span>
+0032     aff_def.nbele=Inf;              <span class="comment">%nombre d'elements grille de reference reguliere</span>
+0033     aff_def.pas=0;                  <span class="comment">%pas de la grille de reference reguliere</span>
+0034 <span class="keyword">if</span> nargout==0
+0035     <span class="keyword">global</span> aff
+0036     aff
+0037     aff=aff_def;
+0038     aff
+0039 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

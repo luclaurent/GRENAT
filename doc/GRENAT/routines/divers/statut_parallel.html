@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of statut_parallel</title>
+  <meta name="keywords" content="statut_parallel">
+  <meta name="description" content="% Petite routine de verification du statut parallele (actif ou non)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html divers -->
+<h1>statut_parallel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Petite routine de verification du statut parallele (actif ou non)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [statut,num]=statut_parallel </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Petite routine de verification du statut parallele (actif ou non)
+% L. LAURENT -- 24/01/2014 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Petite routine de verification du statut parallele (actif ou non)</span>
+0002 <span class="comment">%% L. LAURENT -- 24/01/2014 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function [statut,num]=statut_parallel</a>
+0005 <span class="comment">%statut</span>
+0006 statut=false;
+0007 num=0;
+0008 <span class="comment">%si la variable globale est disponible on vois ce qu'il y a dedans sinon</span>
+0009 <span class="comment">%pas de parallelisme</span>
+0010 <span class="keyword">if</span> ~isempty(whos(<span class="string">'global'</span>,<span class="string">'parallel_actif'</span>));
+0011     <span class="keyword">global</span> parallel_actif;
+0012     statut=parallel_actif;
+0013     <span class="keyword">if</span> statut
+0014         num=Inf;
+0015     <span class="keyword">end</span>
+0016 <span class="keyword">end</span>
+0017 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,450 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of meta_rbf</title>
+  <meta name="keywords" content="meta_rbf">
+  <meta name="description" content="%fonction permettant de construire un metamodele à l'aide de fonctions a">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>meta_rbf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%fonction permettant de construire un metamodele à l'aide de fonctions a</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function ret=meta_rbf(tirages,eval,grad,meta,manq) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%fonction permettant de construire un metamodele à l'aide de fonctions a
+base radiale
+ RBF: sans gradient
+ HBRBF: avec gradients
+%L. LAURENT      luc.laurent@ens-cachan.fr
+% 15/03/2010 modif le 12/04/2010 puis le 15/01/2012</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/routines/divers/gene_nbele.html" class="code" title="function nb_ele=gene_nbele(dim)">gene_nbele</a>	% Fvonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)</li><li><a href="../../../GRENAT/routines/divers/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="../../../GRENAT/routines/divers/norm_denorm.html" class="code" title="function [out,infos]=norm_denorm(in,type,infos)">norm_denorm</a>	% fonction assurant la normalisation/denormalisation des donnees</li><li><a href="../../../GRENAT/routines/divers/norm_denorm_g.html" class="code" title="function [out]=norm_denorm_g(in,type,infos)">norm_denorm_g</a>	% fonction assurant la normalisation/denormalisation des donnees de type gradients</li><li><a href="bloc_rbf.html" class="code" title="function [crit_min,ret]=bloc_rbf(data,meta,para,type)">bloc_rbf</a>	% Procedure de construction de la matrice RBF et de calcul de la validation croisee</li><li><a href="calc_para_rbf.html" class="code" title="function para=calc_para_rbf(tirages,data)">calc_para_rbf</a>	% procedure de calcul automatique du param�tre RBF</li><li><a href="estim_para_rbf.html" class="code" title="function para_estim=estim_para_rbf(donnees,meta)">estim_para_rbf</a>	% Fonction assurant l'estimation des parametres en RBF</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="const_meta.html" class="code" title="function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)">const_meta</a>	% fonction assurant la construction du metamodele (pas son evaluation)</li><li><a href="meta_inrbf.html" class="code" title="function ret=meta_inrbf(tirages,eval,grad,meta,manq)">meta_inrbf</a>	% fonction assurant la construction du RBF a gradients indirect</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%fonction permettant de construire un metamodele à l'aide de fonctions a</span>
+0002 <span class="comment">%base radiale</span>
+0003 <span class="comment">% RBF: sans gradient</span>
+0004 <span class="comment">% HBRBF: avec gradients</span>
+0005 <span class="comment">%%L. LAURENT      luc.laurent@ens-cachan.fr</span>
+0006 <span class="comment">%% 15/03/2010 modif le 12/04/2010 puis le 15/01/2012</span>
+0007 
+0008 <a name="_sub0" href="#_subfunctions" class="code">function ret=meta_rbf(tirages,eval,grad,meta,manq)</a>
+0009 
+0010 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0011 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0012 <span class="comment">% Affichage des informations de construction</span>
+0013 fprintf(<span class="string">' &gt;&gt; Construction : '</span>);
+0014 <span class="keyword">if</span> ~isempty(grad);fprintf(<span class="string">'GRBF \n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'RBF \n'</span>);<span class="keyword">end</span>
+0015 fprintf(<span class="string">'&gt;&gt; Fonction de base radiale: %s\n'</span>,meta.rbf);
+0016 fprintf(<span class="string">'&gt;&gt;&gt; Normalisation: '</span>);<span class="keyword">if</span> meta.norm; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0017 fprintf(<span class="string">'&gt;&gt;&gt; CV: '</span>);<span class="keyword">if</span> meta.cv; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0018 fprintf(<span class="string">'&gt;&gt;&gt; Calcul tous criteres CV: '</span>);<span class="keyword">if</span> meta.cv_full; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0019 fprintf(<span class="string">'&gt;&gt; Affichage CV: '</span>);<span class="keyword">if</span> meta.cv_aff; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0020 
+0021 fprintf(<span class="string">'&gt;&gt;&gt; Estimation parametre: '</span>);<span class="keyword">if</span> meta.para.estim; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0022 <span class="keyword">if</span> meta.para.estim
+0023     fprintf(<span class="string">'&gt;&gt; Algo estimation: %s\n'</span>,meta.para.method);
+0024     fprintf(<span class="string">'&gt;&gt; Bornes recherche: [%d , %d]\n'</span>,meta.para.l_min,meta.para.l_max);
+0025     <span class="keyword">switch</span> meta.rbf
+0026         <span class="keyword">case</span> {<span class="string">'rf_expg'</span>,<span class="string">'rf_expgg'</span>}
+0027             fprintf(<span class="string">'&gt;&gt; Bornes recherche puissance: [%d , %d]\n'</span>,meta.para.p_min,meta.para.p_max);
+0028     <span class="keyword">end</span>
+0029     fprintf(<span class="string">'&gt;&gt; Anisotropie: '</span>);<span class="keyword">if</span> meta.para.aniso; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0030     fprintf(<span class="string">'&gt;&gt; Affichage estimation console: '</span>);<span class="keyword">if</span> meta.para.aff_iter_cmd; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0031     fprintf(<span class="string">'&gt;&gt; Affichage estimation graphique: '</span>);<span class="keyword">if</span> meta.para.aff_iter_graph; fprintf(<span class="string">'Oui\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'Non\n'</span>);<span class="keyword">end</span>
+0032 <span class="keyword">else</span>
+0033     fprintf(<span class="string">'&gt;&gt; Valeur parametre: %d\n'</span>,meta.para.l_val);
+0034     <span class="keyword">switch</span> meta.rbf
+0035         <span class="keyword">case</span> {<span class="string">'rf_expg'</span>,<span class="string">'rf_expgg'</span>}
+0036             fprintf(<span class="string">'&gt;&gt; Bornes recherche puissance: [%d , %d]\n'</span>,meta.para.p_val);
+0037     <span class="keyword">end</span>
+0038 <span class="keyword">end</span>
+0039 fprintf(<span class="string">'&gt;&gt; Critere enrichissement actif:'</span>);
+0040 <span class="keyword">if</span> meta.enrich.on;
+0041     fprintf(<span class="string">'%s\n'</span>,<span class="string">'Oui'</span>);
+0042     fprintf(<span class="string">'&gt;&gt; Ponderation WEI: '</span>)
+0043     fprintf(<span class="string">'%d '</span>,meta.enrich.para_wei);
+0044     fprintf(<span class="string">'\n'</span>)
+0045     fprintf(<span class="string">'&gt;&gt; Ponderation GEI: '</span>)
+0046     fprintf(<span class="string">'%d '</span>,meta.enrich.para_gei);
+0047     fprintf(<span class="string">'\n'</span>)
+0048     fprintf(<span class="string">'&gt;&gt; Ponderation LCB: %d\n'</span>,meta.enrich.para_lcb);
+0049 <span class="keyword">else</span>
+0050     fprintf(<span class="string">'%s\n'</span>,<span class="string">'non'</span>);
+0051 <span class="keyword">end</span>
+0052 fprintf(<span class="string">'\n'</span>)
+0053 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0054 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0055 <span class="comment">%chargement variables globales</span>
+0056 <span class="keyword">global</span> aff
+0057 
+0058 <span class="comment">%initialisation tempo</span>
+0059 tic;
+0060 tps_start=toc;
+0061 
+0062 <span class="comment">%initialisation des variables</span>
+0063 <span class="comment">%nombre d'evalutions</span>
+0064 nb_val=size(eval,1);
+0065 <span class="comment">%dimension du pb (nb de variables de conception)</span>
+0066 nb_var=size(tirages,2);
+0067 
+0068 <span class="comment">%test presence des gradients</span>
+0069 pres_grad=~isempty(grad);
+0070 <span class="comment">%test donnees manquantes</span>
+0071 <span class="keyword">if</span> nargin==5
+0072     manq_eval=manq.eval.on;
+0073     manq_grad=manq.grad.on;
+0074     pres_grad=(~manq.grad.all&amp;&amp;manq.grad.on)||(pres_grad&amp;&amp;~manq.grad.on);
+0075 <span class="keyword">else</span>
+0076     manq.eval.on=false;
+0077     manq.grad.on=false;
+0078     manq_eval=manq.eval.on;
+0079     manq_grad=manq.grad.on;
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0083 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0084 <span class="comment">%Normalisation</span>
+0085 <span class="keyword">if</span> meta.norm
+0086     disp(<span class="string">'Normalisation'</span>);
+0087     <span class="comment">%normalisation des donnees</span>
+0088     [evaln,infos_e]=<a href="../../../GRENAT/routines/divers/norm_denorm.html" class="code" title="function [out,infos]=norm_denorm(in,type,infos)">norm_denorm</a>(eval,<span class="string">'norm'</span>,manq);
+0089     [tiragesn,infos_t]=<a href="../../../GRENAT/routines/divers/norm_denorm.html" class="code" title="function [out,infos]=norm_denorm(in,type,infos)">norm_denorm</a>(tirages,<span class="string">'norm'</span>);
+0090     std_e=infos_e.std;moy_e=infos_e.moy;
+0091     std_t=infos_t.std;moy_t=infos_t.moy;
+0092     
+0093     <span class="comment">%normalisation des gradients</span>
+0094     <span class="keyword">if</span> pres_grad
+0095         infos.std_e=infos_e.std;infos.moy_e=infos_e.moy;
+0096         infos.std_t=infos_t.std;infos.moy_t=infos_t.moy;
+0097         gradn=<a href="../../../GRENAT/routines/divers/norm_denorm_g.html" class="code" title="function [out]=norm_denorm_g(in,type,infos)">norm_denorm_g</a>(grad,<span class="string">'norm'</span>,infos); clear infos
+0098     <span class="keyword">else</span>
+0099         gradn=[];
+0100     <span class="keyword">end</span>
+0101     
+0102     <span class="comment">%sauvegarde des calculs</span>
+0103     rbf.norm.moy_eval=infos_e.moy;
+0104     rbf.norm.std_eval=infos_e.std;
+0105     rbf.norm.moy_tirages=infos_t.moy;
+0106     rbf.norm.std_tirages=infos_t.std;
+0107     rbf.norm.on=true;
+0108     clear infos_e infos_t
+0109 <span class="keyword">else</span>
+0110     rbf.norm.on=false;
+0111     rbf.norm.moy_eval=[];
+0112     rbf.norm.std_eval=[];
+0113     rbf.norm.moy_tirages=[];
+0114     rbf.norm.std_tirages=[];
+0115     rbf.norm.on=false;
+0116     evaln=eval;
+0117     tiragesn=tirages;
+0118     <span class="keyword">if</span> pres_grad
+0119         gradn=grad;
+0120     <span class="keyword">else</span>
+0121         gradn=[];
+0122     <span class="keyword">end</span>
+0123 <span class="keyword">end</span>
+0124 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0125 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0126 <span class="comment">%evaluations et gradients aux points echantillonnes</span>
+0127 y=evaln;
+0128 <span class="comment">%suppression reponse(s) manquantes</span>
+0129 <span class="keyword">if</span> manq_eval
+0130     y=y(manq.eval.ix_dispo);
+0131 <span class="keyword">end</span>
+0132 <span class="keyword">if</span> pres_grad
+0133     tmp=gradn';
+0134     der=tmp(:);
+0135     <span class="comment">%supression gradient(s) manquant(s)</span>
+0136     <span class="keyword">if</span> manq_grad
+0137         der=der(manq.grad.ixt_dispo_line);
+0138     <span class="keyword">end</span>
+0139     y=vertcat(y,der);
+0140 <span class="keyword">end</span>
+0141 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0142 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0143 <span class="comment">% construction systeme d'indices pour la construction de la matrice de</span>
+0144 <span class="comment">% krigeage/cokrigeage</span>
+0145 <span class="keyword">if</span> pres_grad
+0146     
+0147     taille_matRc=(nb_val^2+nb_val)/2;
+0148     taille_matRa=nb_var*(nb_val^2+nb_val)/2;
+0149     taille_matRi=nb_var^2*(nb_val^2+nb_val)/2;
+0150     ind_matrix=zeros(taille_matRc,1);
+0151     ind_matrixA=zeros(taille_matRa,1);
+0152     ind_matrixAb=zeros(taille_matRa,1);
+0153     ind_matrixI=zeros(taille_matRi,1);
+0154     ind_dev=zeros(taille_matRa,1);
+0155     ind_pts=zeros(taille_matRc,2);
+0156     
+0157     liste_tmp=zeros(taille_matRc,nb_var);
+0158     liste_tmp(:)=1:taille_matRc*nb_var;
+0159     
+0160     ite=0;
+0161     iteA=0;
+0162     iteAb=0;
+0163     pres=0;
+0164     <span class="comment">%table indices pour les inter-distances (1), les reponses (1) et les</span>
+0165     <span class="comment">%derivees 1ere (2)</span>
+0166     <span class="keyword">for</span> ii=1:nb_val
+0167         
+0168         ite=ite(end)+(1:(nb_val-ii+1));
+0169         ind_matrix(ite)=(nb_val+1)*ii-nb_val:ii*nb_val;
+0170         ind_pts(ite,:)=[ii(ones(nb_val-ii+1,1)) (ii:nb_val)'];        
+0171         iteAb=iteAb(end)+(1:((nb_val-ii+1)*nb_var));
+0172         
+0173         debb=(ii-1)*nb_var*nb_val+ii;
+0174         finb=nb_val^2*nb_var-(nb_val-ii);
+0175         lib=debb:nb_val:finb;
+0176         
+0177         ind_matrixAb(iteAb)=lib;
+0178 
+0179         <span class="keyword">for</span> jj=1:nb_var
+0180             iteA=iteA(end)+(1:(nb_val-ii+1));
+0181             decal=(ii-1);
+0182             deb=pres+decal;
+0183             li=deb + (1:(nb_val-ii+1));
+0184             ind_matrixA(iteA)=li;
+0185             pres=li(end);
+0186             liste_tmpB=reshape(liste_tmp',[],1);
+0187             ind_dev(iteA)=liste_tmp(ite,jj);
+0188             ind_devb=liste_tmpB; 
+0189         <span class="keyword">end</span>
+0190     <span class="keyword">end</span>
+0191     <span class="comment">%table indices derivees secondes</span>
+0192     a=zeros(nb_val*nb_var,nb_var);
+0193     decal=0;
+0194     precI=0;
+0195     iteI=0;
+0196     <span class="keyword">for</span> ii=1:nb_val
+0197         li=1:nb_val*nb_var^2;
+0198         a(:)=decal+li;
+0199         decal=a(end);
+0200         b=a';
+0201         
+0202         iteI=precI+(1:(nb_var^2*(nb_val-(ii-1))));
+0203         
+0204         debb=(ii-1)*nb_var^2+1;
+0205         finb=nb_var^2*nb_val;
+0206         iteb=debb:finb;
+0207         ind_matrixI(iteI)=b(iteb);
+0208         precI=iteI(end);
+0209     <span class="keyword">end</span>
+0210 <span class="keyword">else</span>
+0211     <span class="comment">%table indices pour les inter-distances (1), les reponses (1)</span>
+0212     bmax=nb_val-1;
+0213     ind_matrix=zeros(nb_val*(nb_val-1)/2,1);
+0214     ind_pts=zeros(nb_val*(nb_val-1)/2,2);
+0215     ite=0;
+0216     <span class="keyword">for</span> ii=1:bmax
+0217         ite=ite(end)+(1:(nb_val-ii));
+0218         ind_matrix(ite)=(nb_val+1)*ii-nb_val+1:ii*nb_val;
+0219         ind_pts(ite,:)=[ii(ones(nb_val-ii,1)) (ii+1:nb_val)'];
+0220     <span class="keyword">end</span>
+0221 <span class="keyword">end</span>
+0222 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0223 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0224 <span class="comment">%calcul distances inter-sites</span>
+0225 dist=tiragesn(ind_pts(:,1),:)-tiragesn(ind_pts(:,2),:);
+0226 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0227 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0228 <span class="comment">%stockage des grandeurs</span>
+0229 ret.in.tirages=tirages;
+0230 ret.in.tiragesn=tiragesn;
+0231 ret.in.dist=dist;
+0232 ret.in.eval=eval;
+0233 ret.in.evaln=evaln;
+0234 ret.in.pres_grad=pres_grad;
+0235 ret.in.grad=grad;
+0236 ret.in.gradn=gradn;
+0237 ret.in.nb_var=nb_var;
+0238 ret.in.nb_val=nb_val;
+0239 ret.ind.matrix=ind_matrix;
+0240 ret.ind.pts=ind_pts;
+0241 <span class="keyword">if</span> pres_grad
+0242     ret.ind.matrixA=ind_matrixA;
+0243     ret.ind.matrixAb=ind_matrixAb;
+0244     ret.ind.matrixI=ind_matrixI;
+0245     ret.ind.dev=ind_dev;
+0246     ret.ind.devb=ind_devb;
+0247 <span class="keyword">end</span>
+0248 ret.build.y=y;
+0249 ret.norm=rbf.norm;
+0250 ret.manq=manq;
+0251 
+0252 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0253 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0254 <span class="comment">%Calcul de MSE par Cross-Validation</span>
+0255 <span class="comment">%arret affichage CV si c'est le cas et activation CV si ca n'est pas le cas</span>
+0256 cv_old=meta.cv;
+0257 aff_cv_old=meta.cv_aff;
+0258 meta.cv_aff=false;
+0259 
+0260 <span class="keyword">if</span> meta.para.estim&amp;&amp;meta.para.aff_estim
+0261     val_para=linspace(meta.para.l_min,meta.para.l_max,<a href="../../../GRENAT/routines/divers/gene_nbele.html" class="code" title="function nb_ele=gene_nbele(dim)">gene_nbele</a>(nb_var));
+0262     <span class="comment">%dans le cas ou on considere de l'anisotropie (et si on a 2</span>
+0263     <span class="comment">%variable de conception)</span>
+0264     <span class="keyword">if</span> meta.para.aniso&amp;&amp;nb_var==2
+0265         <span class="comment">%on genere la grille d'etude</span>
+0266         [val_X,val_Y]=meshgrid(val_para,val_para);
+0267         <span class="comment">%initialisation matrice de stockage des valeurs de la</span>
+0268         <span class="comment">%log-vraisemblance</span>
+0269         val_msep=zeros(size(val_X));
+0270         <span class="comment">%si affichage dispo</span>
+0271         <span class="keyword">if</span> usejava(<span class="string">'desktop'</span>);h = waitbar(0,<span class="string">'Evaluation critere .... '</span>);<span class="keyword">end</span>
+0272         <span class="keyword">for</span> itli=1:numel(val_X)
+0273             
+0274             <span class="comment">%calcul de la log-vraisemblance et stockage</span>
+0275             val_msep(itli)=<a href="bloc_rbf.html" class="code" title="function [crit_min,ret]=bloc_rbf(data,meta,para,type)">bloc_rbf</a>(ret,meta,[val_X(itli) val_Y(itli)]);
+0276             <span class="comment">%affichage barre attente</span>
+0277             <span class="keyword">if</span> usejava(<span class="string">'desktop'</span>)&amp;&amp;exist(<span class="string">'h'</span>,<span class="string">'var'</span>)
+0278                 avance=(itli-1)/numel(val_X);
+0279                 aff_av=avance*100;
+0280                 mess=[<span class="string">'Eval. en cours '</span> num2str(aff_av,3) <span class="string">'% '</span> num2str(itli) <span class="string">'/'</span> num2str(numel(val_X)) ];
+0281                 waitbar(avance,h,mess);
+0282             <span class="keyword">end</span>
+0283         <span class="keyword">end</span>
+0284         close(h)
+0285         <span class="comment">%trace log-vraisemblance</span>
+0286         figure;
+0287         [C,h]=contourf(val_X,val_Y,val_msep);
+0288         text_handle = clabel(C,h);
+0289         set(text_handle,<span class="string">'BackgroundColor'</span>,[1 1 .6],<span class="keyword">...</span>
+0290             <span class="string">'Edgecolor'</span>,[.7 .7 .7])
+0291         set(h,<span class="string">'LineWidth'</span>,2)
+0292         <span class="comment">%stockage de la figure au format LaTeX/TikZ</span>
+0293         <span class="keyword">if</span> meta.save
+0294             matlab2tikz([aff.doss <span class="string">'/logli.tex'</span>])
+0295         <span class="keyword">end</span>
+0296         
+0297     <span class="keyword">elseif</span> ~meta.para.aniso||nb_var==1
+0298         <span class="comment">%initialisation matrice de stockage des valeurs de la</span>
+0299         <span class="comment">%log-vraisemblance</span>
+0300         val_msep=zeros(1,length(val_para));
+0301         rippa_bomp=val_msep;
+0302         cv_moi=val_msep;
+0303         <span class="comment">%si affichage dispo</span>
+0304         <span class="keyword">if</span> usejava(<span class="string">'desktop'</span>);h = waitbar(0,<span class="string">'Evaluation critere .... '</span>);<span class="keyword">end</span>
+0305         <span class="keyword">for</span> itli=1:length(val_para)
+0306             val_para(itli)
+0307             <span class="comment">%calcul de la log-vraisemblance et stockage</span>
+0308             [~,build_rbf]=<a href="bloc_rbf.html" class="code" title="function [crit_min,ret]=bloc_rbf(data,meta,para,type)">bloc_rbf</a>(ret,meta,val_para(itli),<span class="string">'etud'</span>);
+0309             rippa_bomp(itli)=build_rbf.cv.and.eloot;
+0310             cv_moi(itli)=build_rbf.cv.then.eloot;
+0311             <span class="comment">%affichage barre attente</span>
+0312             <span class="keyword">if</span> usejava(<span class="string">'desktop'</span>)&amp;&amp;exist(<span class="string">'h'</span>,<span class="string">'var'</span>)
+0313                 avance=(itli-1)/length(val_para);
+0314                 aff_av=avance*100;
+0315                 mess=[<span class="string">'Eval. en cours '</span> num2str(aff_av,3) <span class="string">'% '</span> num2str(itli) <span class="string">'/'</span> num2str(numel(val_para)) ];
+0316                 waitbar(avance,h,mess);
+0317             <span class="keyword">end</span>
+0318         <span class="keyword">end</span>
+0319         close(h)
+0320         
+0321         <span class="comment">%stockage mse dans un fichier .dat</span>
+0322         <span class="keyword">if</span> meta.save
+0323             ss=[val_para' val_msep'];
+0324             save([aff.doss <span class="string">'/logli.dat'</span>],<span class="string">'ss'</span>,<span class="string">'-ascii'</span>);
+0325         <span class="keyword">end</span>
+0326         
+0327         <span class="comment">%trace log-vraisemblance</span>
+0328         figure;
+0329         semilogy(val_para,rippa_bomp,<span class="string">'r'</span>);
+0330         hold on
+0331         semilogy(val_para,cv_moi,<span class="string">'k'</span>);
+0332         legend(<span class="string">'Rippa (Bompard)'</span>,<span class="string">'Moi'</span>);
+0333         title(<span class="string">'CV'</span>);
+0334         
+0335         <span class="comment">%         semilogy(val_para,val_msep);</span>
+0336         <span class="comment">%         title('Evolution de MSE (CV)');</span>
+0337         
+0338     <span class="keyword">end</span>
+0339     
+0340     <span class="comment">%stocke les courbes (si actif)</span>
+0341     <span class="keyword">if</span> aff.save&amp;&amp;(nb_val&lt;=2)
+0342         fich=save_aff(<span class="string">'fig_mse_cv'</span>,aff.doss);
+0343         <span class="keyword">if</span> aff.tex
+0344             fid=fopen([aff.doss <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
+0345             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fich,<span class="string">'Vraisemblance'</span>,fich);
+0346             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
+0347             fclose(fid);
+0348         <span class="keyword">end</span>
+0349     <span class="keyword">end</span>
+0350 <span class="keyword">end</span>
+0351 <span class="comment">%rechargement config initiale si c'etait le cas avant la phase d'estimation</span>
+0352 meta.cv_aff=aff_cv_old;
+0353 meta.cv=cv_old;
+0354 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0355 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0356 <span class="comment">%%Construction des differents elements avec ou sans estimation des</span>
+0357 <span class="comment">%%parametres sinon on propose une/des valeur(s) des parametres a partir des</span>
+0358 <span class="comment">%%proposition de Hardy/Franke</span>
+0359 <span class="keyword">if</span> meta.para.estim
+0360     para_estim=<a href="estim_para_rbf.html" class="code" title="function para_estim=estim_para_rbf(donnees,meta)">estim_para_rbf</a>(ret,meta);
+0361     ret.build.para_estim=para_estim;
+0362     meta.para.l_val=para_estim.l_val;
+0363     meta.para.val=para_estim.l_val;
+0364     <span class="keyword">if</span> isfield(para_estim,<span class="string">'p_val'</span>)
+0365         meta.para.p_val=para_estim.p_val;
+0366         meta.para.val=[meta.para.val meta.para.p_val];
+0367     <span class="keyword">end</span>
+0368 <span class="keyword">else</span>
+0369     meta.para.l_val=<a href="calc_para_rbf.html" class="code" title="function para=calc_para_rbf(tirages,data)">calc_para_rbf</a>(tiragesn,meta);
+0370     <span class="keyword">switch</span> meta.rbf
+0371         <span class="keyword">case</span> {<span class="string">'rf_expg'</span>,<span class="string">'rf_expgg'</span>}
+0372             meta.para.val=[meta.para.l_val meta.para.p_val];
+0373         <span class="keyword">otherwise</span>
+0374             meta.para.val=meta.para.l_val;
+0375     <span class="keyword">end</span>
+0376     fprintf(<span class="string">'Definition parametre (%s), val='</span>,meta.para.type);
+0377     fprintf(<span class="string">' %d'</span>,meta.para.val);
+0378     fprintf(<span class="string">'\n'</span>);
+0379 <span class="keyword">end</span>
+0380 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0381 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0382 <span class="comment">% construction elements finaux RBF (matrice, coefficients et CV) en tenant</span>
+0383 <span class="comment">% compte des parametres obtenus par minimisation</span>
+0384 [~,block]=<a href="bloc_rbf.html" class="code" title="function [crit_min,ret]=bloc_rbf(data,meta,para,type)">bloc_rbf</a>(ret,meta);
+0385 <span class="comment">%sauvegarde informations</span>
+0386 tmp=<a href="../../../GRENAT/routines/divers/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>(ret.build,block.build);
+0387 ret.build=tmp;
+0388 ret.cv=block.cv;
+0389 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0390 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0391 tps_stop=toc;
+0392 ret.tps=tps_stop-tps_start;
+0393 <span class="keyword">if</span> pres_grad;txt=<span class="string">'GRBF'</span>;<span class="keyword">else</span> txt=<span class="string">'RBF'</span>;<span class="keyword">end</span>
+0394 fprintf(<span class="string">'\nExecution construction %s: %6.4d s\n'</span>,txt,tps_stop-tps_start);
+0395 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0396 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0397 <span class="keyword">end</span>
+0398 
+0399</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

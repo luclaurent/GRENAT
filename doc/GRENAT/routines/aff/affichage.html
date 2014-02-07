@@ -1,0 +1,515 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of affichage</title>
+  <meta name="keywords" content="affichage">
+  <meta name="description" content="%fonction realisant l'affichage des surfaces de reponse">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html aff -->
+<h1>affichage
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%fonction realisant l'affichage des surfaces de reponse</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function fig_handle=affichage(grille,Z,tirages,eval,grad,aff) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%fonction realisant l'affichage des surfaces de reponse
+%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/routines/init/init_aff.html" class="code" title="function aff_def=init_aff()">init_aff</a>	% Initialisation des variables d'affichage</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/EXEMPLE_UTILISATION.html" class="code" title="">EXEMPLE_UTILISATION</a>	Exemple d'utilisation de la Toolbox GRENAT</li><li><a href="../../../GRENAT/EXEMPLE_UTILISATION_DOE.html" class="code" title="">EXEMPLE_UTILISATION_DOE</a>	Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%fonction realisant l'affichage des surfaces de reponse</span>
+0002 <span class="comment">%%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr</span>
+0003 
+0004 
+0005 <a name="_sub0" href="#_subfunctions" class="code">function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)</a>
+0006 
+0007 <span class="comment">%% Parametres d'entree:</span>
+0008 <span class="comment">%       - grille: grille de trace (meshgrid en 2D) sous la forme</span>
+0009 <span class="comment">%       grille(:,:,1) et grille(:,:,2) en 2D pour respectivement les</span>
+0010 <span class="comment">%       abscisse et ordonnee. En 1D il s'agit juste d'un vecteur de reels</span>
+0011 <span class="comment">%       obtenu par exemple avec linspace</span>
+0012 <span class="comment">%       - Z: structure des donnees aï¿½ tracer</span>
+0013 <span class="comment">%           * vZ: cotes obtenus au points definis par la grille</span>
+0014 <span class="comment">%           * GR1 et GR2: composant des gradients calcules aux points</span>
+0015 <span class="comment">%           definis par la gille</span>
+0016 <span class="comment">%       - tirages: liste des points tires (par strategie quelconque)</span>
+0017 <span class="comment">%       - eval: evaluations/cotes obtenus aux points du tirage</span>
+0018 <span class="comment">%       - grad: gradients obtenus aux points de tirage</span>
+0019 <span class="comment">%       - aff: structure contenant l'ensemble des options gere par la</span>
+0020 <span class="comment">%       fonction</span>
+0021 <span class="comment">%           * aff.on: affichage actif ou non (booleen)</span>
+0022 <span class="comment">%           * aff.newfig: affichage du trace dans une nouvelle figure</span>
+0023 <span class="comment">%           (booleen)</span>
+0024 <span class="comment">%           * aff.grad_meta: affichage des gradients calcules aux points de</span>
+0025 <span class="comment">%           la grille (issus generalement du metamodele)</span>
+0026 <span class="comment">%           * aff.grad_eval: affichage des gradients calcules aux points du</span>
+0027 <span class="comment">%           tirages</span>
+0028 <span class="comment">%           * aff.d3: affichage graphique 3D (surf quiver3...)</span>
+0029 <span class="comment">%           * aff.d2: affichage graphique 2D (plot quiver...)</span>
+0030 <span class="comment">%           * aff.contour: affichage des courbes de niveaux</span>
+0031 <span class="comment">%           * aff.pts: affichage des points d'evaluation</span>
+0032 <span class="comment">%           * aff.uni: affichage des surfaces en une couleurs (booleen)</span>
+0033 <span class="comment">%           * aff.color: couleur choisie</span>
+0034 <span class="comment">%           * aff.rendu: rendu sur graphique 3D</span>
+0035 <span class="comment">%           * aff.save: sauvegarde figures en eps et png</span>
+0036 <span class="comment">%           * aff.tikz: sauvegarde au format Tikz</span>
+0037 <span class="comment">%           * aff.tex: ecriture du fichier TeX associe</span>
+0038 <span class="comment">%           * aff.opt: option courbes en 1D</span>
+0039 <span class="comment">%           * aff.titre: titre figure</span>
+0040 <span class="comment">%           * aff.xlabel: nom axe x</span>
+0041 <span class="comment">%           * aff.ylabel: nom axe y</span>
+0042 <span class="comment">%           * aff.zlabel: nom axe z</span>
+0043 <span class="comment">%           * aff.scale: mise a l'echelle gradients</span>
+0044 <span class="comment">%           * aff.doss: dossier de sauvegarde figures</span>
+0045 <span class="comment">%           * aff.pas: pas de la grille d'affichage</span>
+0046 <span class="comment">%           * aff.bilan_manq: dfinition donnees manquantes pour trace</span>
+0047 <span class="comment">%           ajuste</span>
+0048 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0049 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0050 <span class="comment">%chargement des options par défaut</span>
+0051 aff_def=<a href="../../../GRENAT/routines/init/init_aff.html" class="code" title="function aff_def=init_aff()">init_aff</a>;
+0052 <span class="comment">%on traite les options manquantes (en les ajoutant)</span>
+0053 f_def=fieldnames(aff_def);
+0054 f_dispo=fieldnames(aff);
+0055 f_manq=setxor(f_def,f_dispo);
+0056 <span class="comment">%on ajoute les valeurs par défaut manquantes</span>
+0057 <span class="keyword">if</span> ~isempty(f_manq)
+0058     fprintf(<span class="string">'Qques options affichage manquantes (ajout)\n'</span>);
+0059     <span class="keyword">for</span> ii=1:numel(f_manq)
+0060         fprintf(<span class="string">'%s '</span>,f_manq{ii});
+0061         aff.(f_manq{ii})=aff_def.(f_manq{ii});
+0062     <span class="keyword">end</span>
+0063     fprintf(<span class="string">'\n'</span>)
+0064 <span class="keyword">end</span>
+0065 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0066 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0067 
+0068 
+0069 fig_handle=[];
+0070 
+0071 <span class="comment">%traitement des cas 1D ou 2D</span>
+0072 esp1d=false;esp2d=false;
+0073 <span class="keyword">if</span> size(tirages,2)==1
+0074     esp1d=true;
+0075 <span class="keyword">elseif</span> size(tirages,2)==2
+0076     esp2d=true;
+0077     <span class="keyword">if</span> size(grille,3)&gt;1
+0078         grille_X=grille(:,:,1);
+0079         grille_Y=grille(:,:,2);
+0080     <span class="keyword">else</span>
+0081         grille_X=grille(:,1);
+0082         grille_Y=grille(:,2);
+0083     <span class="keyword">end</span>
+0084 <span class="keyword">else</span>
+0085     
+0086     aff.bar=true;
+0087 <span class="keyword">end</span>
+0088 <span class="comment">%Mise en forme grandeur a afficher</span>
+0089 <span class="keyword">if</span> isa(Z,<span class="string">'struct'</span>)
+0090     vZ=Z.Z;
+0091 <span class="keyword">else</span>
+0092     vZ=Z;
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="comment">%mise en forme des gradients</span>
+0096 <span class="keyword">if</span> isfield(Z,<span class="string">'GZ'</span>)&amp;&amp;esp2d
+0097     GR1=Z.GZ(:,:,1);
+0098     GR2=Z.GZ(:,:,2);
+0099 <span class="keyword">end</span>
+0100 
+0101 <span class="keyword">if</span> ~isfield(Z,<span class="string">'GZ'</span>);aff.grad_eval=false;<span class="keyword">end</span>
+0102 
+0103 <span class="comment">%gradients aux points disponibles</span>
+0104 grad_dispo=~isempty(grad);
+0105 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0106 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0107 <span class="comment">%recherche et tri des manques d'information</span>
+0108 liste_pts_ok=1:size(tirages,1);
+0109 liste_eval_manq=[];
+0110 liste_grad_manq=[];
+0111 liste_both_manq=[];
+0112 <span class="keyword">if</span> isfield(aff,<span class="string">'bilan_manq'</span>)
+0113     <span class="keyword">if</span> aff.bilan_manq.eval.on
+0114         liste_eval_manq=unique(aff.bilan_manq.eval.ix_manq(:));
+0115         <span class="keyword">for</span> ii=1:numel(liste_eval_manq)
+0116             ix= liste_pts_ok==liste_eval_manq(ii);
+0117             liste_pts_ok(ix)=[];
+0118         <span class="keyword">end</span>
+0119     <span class="keyword">end</span>
+0120     <span class="keyword">if</span> aff.bilan_manq.grad.on
+0121         liste_grad_manq=unique(aff.bilan_manq.grad.ix_manq(:,1));
+0122         <span class="keyword">for</span> ii=1:numel(liste_grad_manq)
+0123             ix= liste_pts_ok==liste_grad_manq(ii);
+0124             liste_pts_ok(ix)=[];
+0125         <span class="keyword">end</span>
+0126     <span class="keyword">end</span>
+0127     <span class="keyword">if</span> aff.bilan_manq.eval.on|| aff.bilan_manq.grad.on
+0128         liste_both_manq=intersect(liste_eval_manq,liste_grad_manq);
+0129         <span class="keyword">for</span> ii=1:numel(liste_both_manq)
+0130             ix= liste_eval_manq==liste_both_manq(ii);
+0131             liste_eval_manq(ix)=[];
+0132             ix= liste_grad_manq==liste_both_manq(ii);
+0133             liste_grad_manq(ix)=[];
+0134         <span class="keyword">end</span>
+0135     <span class="keyword">end</span>
+0136 <span class="keyword">end</span>
+0137 
+0138 <span class="comment">%Affichage actif</span>
+0139 <span class="keyword">if</span> aff.on
+0140     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0141     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0142     <span class="comment">%affichage dans une nouvelle fenetre</span>
+0143     <span class="keyword">if</span> aff.newfig
+0144         fig_handle=figure;
+0145     <span class="keyword">else</span>
+0146         hold on
+0147     <span class="keyword">end</span>
+0148     
+0149     <span class="comment">%affichage 2D</span>
+0150     <span class="keyword">if</span> esp2d
+0151         
+0152         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0153         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0154         <span class="comment">%%mise a l'echelle des traces de gradients</span>
+0155         <span class="keyword">if</span> aff.grad_meta||aff.grad_eval
+0156             <span class="comment">%calcul norme gradient</span>
+0157             ngr=zeros(size(GR1));
+0158             <span class="keyword">for</span> ii=1:size(GR1,1)*size(GR1,2)
+0159                 ngr(ii)=norm([GR1(ii) GR2(ii)],2);
+0160             <span class="keyword">end</span>
+0161             <span class="comment">%recherche du maxi de la norme du gradient</span>
+0162             nm=max(max(ngr));
+0163             
+0164             n1=max(max(abs(GR1)));
+0165             n2=max(max(abs(GR2)));
+0166             
+0167             <span class="comment">%definition de la taille mini de la grille d'affichage</span>
+0168             gx=grille_X-grille_X(1);
+0169             ind= gx&gt;0;
+0170             tailg(1)=min(min(gx(ind)));
+0171             gy=grille_Y-grille_Y(1);
+0172             ind= gy&gt;0;
+0173             tailg(2)=min(min(gy(ind)));
+0174             
+0175             
+0176             <span class="comment">%taille de la plus grande fleche</span>
+0177             para_fl=0.9;
+0178             tailf=para_fl*tailg;
+0179             
+0180             
+0181             <span class="comment">%echelle</span>
+0182             <span class="comment">% nm</span>
+0183             <span class="comment">%  tailf</span>
+0184             ech=tailf./[n1 n2];
+0185             
+0186             
+0187         <span class="keyword">end</span>
+0188         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0189         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0190         <span class="comment">%affichage des surfaces 3D</span>
+0191         <span class="keyword">if</span> aff.d3
+0192             <span class="comment">%affichage des contour</span>
+0193             <span class="keyword">if</span> aff.contour
+0194                 <span class="comment">%affichage unicolor</span>
+0195                 surfc(grille_X,grille_Y,vZ);
+0196                 <span class="keyword">if</span> aff.uni
+0197                     set(h,<span class="string">'FaceColor'</span>,aff.color,<span class="string">'EdgeColor'</span>,aff.color);
+0198                 <span class="keyword">end</span>
+0199             <span class="keyword">else</span>
+0200                 h=surf(grille_X,grille_Y,vZ);
+0201                 <span class="keyword">if</span> aff.uni                    
+0202                     set(h,<span class="string">'FaceColor'</span>,aff.color,<span class="string">'EdgeColor'</span>,aff.color);
+0203                 <span class="keyword">end</span>
+0204             <span class="keyword">end</span>
+0205             
+0206             <span class="keyword">if</span> aff.pts
+0207                 hold on
+0208                 
+0209                 <span class="comment">%affichage des points d'evaluations</span>
+0210                 <span class="comment">%affichage points ou toutes les infos sont connues</span>
+0211                 plot3(tirages(liste_pts_ok,1),tirages(liste_pts_ok,2),eval(liste_pts_ok),<span class="keyword">...</span>
+0212                     <span class="string">'.'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0213                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0214                     <span class="string">'MarkerSize'</span>,15);
+0215                 <span class="comment">%affichage points il manque une/des reponse(s)</span>
+0216                 plot3(tirages(liste_eval_manq,1),tirages(liste_eval_manq,2),eval(liste_eval_manq),<span class="keyword">...</span>
+0217                     <span class="string">'rs'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0218                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0219                     <span class="string">'MarkerSize'</span>,7);
+0220                 <span class="comment">%affichage points il manque un/des gradient(s)</span>
+0221                 plot3(tirages(liste_grad_manq,1),tirages(liste_grad_manq,2),eval(liste_grad_manq),<span class="keyword">...</span>
+0222                     <span class="string">'v'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0223                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0224                     <span class="string">'MarkerSize'</span>,15);
+0225                 <span class="comment">%affichage points il manque un/des gradient(s) et un/des</span>
+0226                 <span class="comment">%reponse(s) au mï¿½me point</span>
+0227                 plot3(tirages(liste_both_manq,1),tirages(liste_both_manq,2),eval(liste_both_manq),<span class="keyword">...</span>
+0228                     <span class="string">'d'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0229                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0230                     <span class="string">'MarkerSize'</span>,15);
+0231             <span class="keyword">end</span>
+0232             
+0233             <span class="comment">%Affichage des gradients</span>
+0234             <span class="keyword">if</span> aff.grad_eval
+0235                 <span class="comment">%determination des vecteurs de plus grandes pentes (dans le</span>
+0236                 <span class="comment">%sens de descente du gradient)</span>
+0237                 <span class="keyword">for</span> ii=1:size(GR1,1)*size(GR1,2)
+0238                     vec.X(ii)=-GR1(ii);
+0239                     vec.Y(ii)=-GR2(ii);
+0240                     vec.Z(ii)=-GR1(ii)^2-GR2(ii)^2;
+0241                     <span class="comment">%normalisation du vecteur de plus grande pente</span>
+0242                     vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
+0243                     vec.Xn(ii)=vec.X(ii)/vec.N(ii);
+0244                     vec.Yn(ii)=vec.Y(ii)/vec.N(ii);
+0245                     vec.Zn(ii)=vec.Z(ii)/vec.N(ii);
+0246                 <span class="keyword">end</span>
+0247                 hold on
+0248                 
+0249                 <span class="comment">%hcones =coneplot(X,Y,vZ,vec.X,vec.Y,vec.Z,0.1,'nointerp');</span>
+0250                 <span class="comment">% hcones=coneplot(X,Y,vZ,GR1,GR2,-ones(size(GR1)),0.1,'nointerp');</span>
+0251                 <span class="comment">% set(hcones,'FaceColor','red','EdgeColor','none')</span>
+0252                 
+0253                 <span class="comment">%hold on</span>
+0254                 <span class="comment">%dimension maximale espace de conception</span>
+0255                 dimm=max(abs(max(max(grille_X))-min(min(grille_X))),<span class="keyword">...</span>
+0256                     abs(max(max(grille_Y))-min(min(grille_Y))));
+0257                 <span class="comment">%dimension espace de reponse</span>
+0258                 dimr=abs(max(max(vZ))-min(min(vZ)));
+0259                 <span class="comment">%norme maxi du gradient</span>
+0260                 nmax=max(max(vec.N));
+0261                 quiver3(grille_X,grille_Y,vZ,ech*vec.X,ech*vec.Y,ech*vec.Z,<span class="keyword">...</span>
+0262                     <span class="string">'b'</span>,<span class="string">'MaxHeadSize'</span>,0.1*dimr/nmax,<span class="string">'AutoScale'</span>,<span class="string">'off'</span>)
+0263             <span class="keyword">end</span>
+0264             <span class="comment">%axis([min(grille_X(:)) max(grille_X(:)) min(grille_Y(:)) max(grille_Y(:)) min(vZ(:)) max(vZ(:))])</span>
+0265         <span class="keyword">end</span>
+0266         
+0267         
+0268         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0269         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0270         <span class="comment">%affichage des surfaces 2D (contours)</span>
+0271         <span class="keyword">if</span> aff.d2
+0272             <span class="comment">%affichage des contours</span>
+0273             <span class="keyword">if</span> aff.contour
+0274                 [C,h]=contourf(grille_X,grille_Y,vZ);
+0275                 text_handle = clabel(C,h);
+0276                 set(text_handle,<span class="string">'BackgroundColor'</span>,[1 1 .6],<span class="keyword">...</span>
+0277                     <span class="string">'Edgecolor'</span>,[.7 .7 .7]);
+0278                 set(h,<span class="string">'LineWidth'</span>,2);
+0279                 <span class="comment">%affichage des gradients</span>
+0280                 <span class="keyword">if</span> aff.grad_meta
+0281                     hold on;
+0282                     <span class="comment">%remise aï¿½ l'echelle</span>
+0283                     <span class="keyword">if</span> aff.scale
+0284                         <span class="comment">%quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);</span>
+0285                         quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,<span class="string">'Color'</span>,<span class="string">'b'</span>,<span class="string">'AutoScale'</span>,<span class="string">'off'</span>,<span class="string">'MaxHeadSize'</span>,0);
+0286                         <span class="comment">%axis equal</span>
+0287                         <span class="comment">%ncquiverref(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2);</span>
+0288                         <span class="comment">%ech(1)*GR1</span>
+0289                         <span class="comment">%ech(2)*GR2</span>
+0290                     <span class="keyword">else</span>
+0291                         quiver(grille_X,grille_Y,GR1,GR2,<span class="string">'Color'</span>,<span class="string">'b'</span>,<span class="string">'AutoScale'</span>,<span class="string">'off'</span>);
+0292                     <span class="keyword">end</span>
+0293                 <span class="keyword">end</span>
+0294                 <span class="comment">%affichage des points d'evaluation</span>
+0295                 <span class="keyword">if</span> aff.pts
+0296                     hold on
+0297                     <span class="comment">%affichage points ou toutes les infos sont connues</span>
+0298                     plot(tirages(liste_pts_ok,1),tirages(liste_pts_ok,2),<span class="keyword">...</span>
+0299                         <span class="string">'o'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0300                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0301                         <span class="string">'MarkerSize'</span>,15);
+0302                     <span class="comment">%affichage points il manque une/des reponse(s)</span>
+0303                     plot(tirages(liste_eval_manq,1),tirages(liste_eval_manq,2),<span class="keyword">...</span>
+0304                         <span class="string">'rs'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0305                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0306                         <span class="string">'MarkerSize'</span>,7);
+0307                     <span class="comment">%affichage points il manque un/des gradient(s)</span>
+0308                     plot(tirages(liste_grad_manq,1),tirages(liste_grad_manq,2),<span class="keyword">...</span>
+0309                         <span class="string">'v'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0310                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0311                         <span class="string">'MarkerSize'</span>,15);
+0312                     <span class="comment">%affichage points il manque un/des gradient(s) et un/des</span>
+0313                     <span class="comment">%reponse(s) au mï¿½me point</span>
+0314                     plot(tirages(liste_both_manq,1),tirages(liste_both_manq,2),<span class="keyword">...</span>
+0315                         <span class="string">'d'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0316                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0317                         <span class="string">'MarkerSize'</span>,15);
+0318                     
+0319                 <span class="keyword">end</span>
+0320                 <span class="comment">%affichage des gradients</span>
+0321                 <span class="keyword">if</span> aff.grad_eval&amp;&amp;grad_dispo
+0322                     hold on;
+0323                     <span class="comment">%remise aï¿½ l'echelle</span>
+0324                     <span class="keyword">if</span> aff.scale
+0325                         quiver(tirages(:,1),tirages(:,2),<span class="keyword">...</span>
+0326                             ech(1)*grad(:,1),ech(2)*grad(:,2),<span class="keyword">...</span>
+0327                             <span class="string">'Color'</span>,<span class="string">'g'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'AutoScale'</span>,<span class="string">'off'</span>,<span class="string">'MaxHeadSize'</span>,0);
+0328                         
+0329                     <span class="keyword">else</span>
+0330                         quiver(tirages(:,1),tirages(:,2),<span class="keyword">...</span>
+0331                             grad(:,1),grad(:,2),<span class="keyword">...</span>
+0332                             <span class="string">'Color'</span>,<span class="string">'g'</span>,<span class="string">'LineWidth'</span>,2,<span class="string">'AutoScale'</span>,<span class="string">'off'</span>);
+0333                     <span class="keyword">end</span>
+0334                     
+0335                 <span class="keyword">end</span>
+0336                 
+0337                 
+0338             <span class="keyword">end</span>
+0339         <span class="keyword">end</span>
+0340         
+0341         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0342         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0343         <span class="comment">%rendu</span>
+0344         <span class="keyword">if</span> aff.rendu
+0345             hlight=light;               <span class="comment">% activ. eclairage</span>
+0346             lighting(<span class="string">'gouraud'</span>)         <span class="comment">% type de rendu</span>
+0347             lightangle(hlight,48,70)    <span class="comment">% dir. eclairage</span>
+0348         <span class="keyword">end</span>
+0349         
+0350         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0351         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0352         <span class="comment">% affichage label</span>
+0353         title(aff.titre);
+0354         xlabel(aff.xlabel);
+0355         ylabel(aff.ylabel);
+0356         <span class="keyword">if</span> aff.d3
+0357             zlabel(aff.zlabel);
+0358             view(3)
+0359         <span class="keyword">end</span>
+0360         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0361         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0362         <span class="comment">%affichage 1D</span>
+0363     <span class="keyword">elseif</span> esp1d
+0364         <span class="keyword">if</span> aff.grad_meta&amp;&amp;isfield(Z,<span class="string">'GZ'</span>)
+0365             <span class="keyword">if</span> ~isempty(aff.color)
+0366                 <span class="keyword">if</span> ~isempty(aff.opt)
+0367                     plot(grille,Z.GZ,aff.opt,<span class="string">'Color'</span>,aff.color);
+0368                 <span class="keyword">else</span>
+0369                     plot(grille,Z.GZ,<span class="string">'Color'</span>,aff.color);
+0370                 <span class="keyword">end</span>
+0371             <span class="keyword">else</span>
+0372                 <span class="keyword">if</span> ~isempty(aff.opt)
+0373                     plot(grille,Z.GZ,aff.opt);
+0374                 <span class="keyword">else</span>
+0375                     plot(grille,Z.GZ);
+0376                 <span class="keyword">end</span>
+0377             <span class="keyword">end</span>
+0378         <span class="keyword">else</span>
+0379             <span class="keyword">if</span> ~isempty(aff.color)
+0380                 <span class="keyword">if</span> ~isempty(aff.opt)
+0381                     plot(grille,vZ,aff.opt,<span class="string">'Color'</span>,aff.color);
+0382                 <span class="keyword">else</span>
+0383                     plot(grille,vZ,<span class="string">'Color'</span>,aff.color);
+0384                 <span class="keyword">end</span>
+0385             <span class="keyword">else</span>
+0386                 <span class="keyword">if</span> ~isempty(aff.opt)
+0387                     plot(grille,vZ,aff.opt);
+0388                 <span class="keyword">else</span>
+0389                     plot(grille,vZ);
+0390                 <span class="keyword">end</span>
+0391             <span class="keyword">end</span>
+0392         <span class="keyword">end</span>
+0393         <span class="comment">%affichage des points d'evaluation</span>
+0394         <span class="keyword">if</span> aff.pts
+0395             hold on
+0396             <span class="keyword">if</span> aff.grad_eval;val_trac=grad;<span class="keyword">else</span> val_trac=eval;<span class="keyword">end</span>
+0397             <span class="comment">%affichage points ou toutes les infos sont connues</span>
+0398             plot(tirages(liste_pts_ok),val_trac(liste_pts_ok),<span class="keyword">...</span>
+0399                 <span class="string">'.'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0400                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0401                 <span class="string">'MarkerSize'</span>,15);
+0402             <span class="comment">%affichage points il manque une/des reponse(s)</span>
+0403             plot(tirages(liste_eval_manq),val_trac(liste_eval_manq),<span class="keyword">...</span>
+0404                 <span class="string">'rs'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0405                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0406                 <span class="string">'MarkerSize'</span>,7);
+0407             <span class="comment">%affichage points il manque un/des gradient(s)</span>
+0408             plot(tirages(liste_grad_manq),val_trac(liste_grad_manq),<span class="keyword">...</span>
+0409                 <span class="string">'v'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0410                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0411                 <span class="string">'MarkerSize'</span>,7);
+0412             <span class="comment">%affichage points il manque un/des gradient(s) et un/des</span>
+0413             <span class="comment">%reponse(s) au mï¿½me point</span>
+0414             plot(tirages(liste_both_manq),val_trac(liste_both_manq),<span class="keyword">...</span>
+0415                 <span class="string">'d'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0416                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0417                 <span class="string">'MarkerSize'</span>,7);
+0418         <span class="keyword">end</span>
+0419         title(aff.titre);
+0420         xlabel(aff.xlabel);
+0421         ylabel(aff.ylabel);
+0422     <span class="keyword">end</span>
+0423     
+0424     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0425     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0426     <span class="comment">%sauvegarde traces figure</span>
+0427     <span class="keyword">if</span> aff.save
+0428         <span class="keyword">global</span> num
+0429         <span class="keyword">if</span> isempty(num); num=1; <span class="keyword">else</span> num=num+1; <span class="keyword">end</span>
+0430         fich=save_aff(num,aff.doss);
+0431         <span class="keyword">if</span> aff.tex
+0432             fid=fopen([aff.doss <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
+0433             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fich,aff.titre,fich);
+0434             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
+0435             fclose(fid);
+0436         <span class="keyword">end</span>
+0437     <span class="keyword">end</span>
+0438     
+0439     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0440     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0441     <span class="comment">%Trace rï¿½ponse nD</span>
+0442     <span class="keyword">if</span> aff.bar
+0443         Zs=vZ(:);
+0444         nb_eval=numel(Zs);
+0445         <span class="keyword">if</span> ~isempty(aff.color)
+0446             plot(1:nb_eval,Zs,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,aff.color,<span class="string">'MarkerFaceColor'</span>,aff.color,<span class="string">'Markersize'</span>,5);
+0447             <span class="comment">%line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',aff.color,'lineStyle','--')</span>
+0448         <span class="keyword">else</span>
+0449             plot(1:nb_eval,Zs,<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="string">'Markersize'</span>,5);
+0450             <span class="comment">%line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',[0. 0. .8],'lineStyle','--')</span>
+0451         <span class="keyword">end</span>
+0452         title(aff.titre);
+0453         xlabel(aff.xlabel);
+0454         ylabel(aff.ylabel);
+0455     <span class="keyword">end</span>
+0456     
+0457     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0458     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0459     <span class="comment">%exportation tikz</span>
+0460     <span class="keyword">if</span> aff.tikz
+0461         nomfig=[aff.doss <span class="string">'/fig_'</span> num2str(aff.num,<span class="string">'%04.0f'</span>) <span class="string">'.tex'</span>];
+0462         matlab2tikz(nomfig);
+0463     <span class="keyword">end</span>
+0464     
+0465     
+0466     hold off
+0467 <span class="keyword">end</span>
+0468</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

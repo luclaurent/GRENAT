@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rf_expgg</title>
+  <meta name="keywords" content="rf_expgg">
+  <meta name="description" content="%fonction de rfelation exponentielle generalisee G (KRG)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html fct -->
+<h1>rf_expgg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%fonction de rfelation exponentielle generalisee G (KRG)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [rf,drf,ddrf]=rf_expgg(xx,para) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%fonction de rfelation exponentielle generalisee G (KRG)
+%L. LAURENT -- 20/11/2012 -- luc.laurent@ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%fonction de rfelation exponentielle generalisee G (KRG)</span>
+0002 <span class="comment">%%L. LAURENT -- 20/11/2012 -- luc.laurent@ens-cachan.fr</span>
+0003 
+0004 <span class="comment">% 2*nd parametres possible avec nd la dimension du pb</span>
+0005 <span class="comment">% les parametre para(nd+1:end) doit être compris entre 1 et n</span>
+0006 <span class="comment">% (n vaut généralement 2)</span>
+0007 
+0008 <a name="_sub0" href="#_subfunctions" class="code">function [rf,drf,ddrf]=rf_expgg(xx,para)</a>
+0009 
+0010 
+0011 <span class="comment">%verification de la dimension de para</span>
+0012 lt=size(para);
+0013 <span class="comment">%nombre de points a evaluer</span>
+0014 nb_pt=size(xx,1);
+0015 <span class="comment">%nombre de composantes</span>
+0016 nb_comp=size(xx,2);
+0017 <span class="comment">%nombre de sorties</span>
+0018 nb_out=nargout;
+0019 
+0020 <span class="comment">%La longueur de rfelation est definie pour toutes les composantes de xx</span>
+0021 <span class="comment">%(la puissance est unique)</span>
+0022 <span class="keyword">if</span>  lt(1)*lt(2)==2
+0023     pow=para(2);
+0024     pow = pow*ones(nb_pt,nb_comp);
+0025     long=para(1);
+0026     long = long*ones(nb_pt,nb_comp);
+0027 <span class="keyword">elseif</span> lt(1)*lt(2)==2*nb_comp
+0028     pow=para(nb_comp+1:end);
+0029     pow = pow(ones(nb_pt,1),:);
+0030     long=para(1:nb_comp);
+0031     long = long(ones(nb_pt,1),:);
+0032 <span class="keyword">elseif</span> lt(1)*lt(2)~=nb_comp+1
+0033     error(<span class="string">'mauvaise dimension de para'</span>);
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">%calcul de la valeur de la fonction au point xx</span>
+0037 td=-abs(xx).^pow./long;
+0038 ev=exp(sum(td,2));
+0039 
+0040 <span class="comment">%evaluation ou derivees</span>
+0041 <span class="keyword">if</span> nb_out==1
+0042     rf=ev;
+0043 <span class="keyword">elseif</span> nb_out==2
+0044     rf=ev;
+0045     drf=-pow./long.*sign(xx).*(abs(xx).^(pow-1)).*<span class="keyword">...</span>
+0046         ev(:,ones(1,nb_comp));
+0047 <span class="keyword">elseif</span> nb_out==3
+0048     rf=ev;
+0049     drf=-pow./long.*sign(xx).*(abs(xx).^(pow-1)).*<span class="keyword">...</span>
+0050         ev(:,ones(1,nb_comp));
+0051     
+0052     <span class="comment">%calcul des derivees secondes</span>
+0053     
+0054     <span class="comment">%suivant la taille de l'evaluation demandee on stocke les derivees</span>
+0055     <span class="comment">%secondes de manieres differentes</span>
+0056     <span class="comment">%si on ne demande le calcul des derivees secondes en un seul point, on</span>
+0057     <span class="comment">%les stocke dans une matrice</span>
+0058     <span class="keyword">if</span> nb_pt==1
+0059         ddrf=zeros(nb_comp);
+0060         <span class="keyword">for</span> ll=1:nb_comp
+0061             <span class="keyword">for</span> mm=1:nb_comp
+0062                 <span class="keyword">if</span>(mm==ll)
+0063                     ddrf(mm,ll)=(pow(1,mm)^2.*abs(xx(mm)).^(2*(pow(1,mm)-1))./long(1,mm).^2-<span class="keyword">...</span>
+0064                         pow(1,mm).*(pow(1,mm)-1).*abs(xx(mm)).^(pow(1,mm)-1)./long(1,mm)).*ev;
+0065                 <span class="keyword">else</span>
+0066                     ddrf(mm,ll)=ev/(long(1,mm)*long(1,ll)).*sign(xx(ll)).*<span class="keyword">...</span>
+0067                         sign(xx(mm)).*abs(xx(ll))^(pow(1,ll)-1)*abs(xx(mm))^(pow(1,mm)-1).*<span class="keyword">...</span>
+0068                         pow(1,ll).*pow(1,mm).*ev;
+0069                 <span class="keyword">end</span>
+0070             <span class="keyword">end</span>
+0071         <span class="keyword">end</span>
+0072         
+0073         <span class="comment">%si on demande le calcul des derivees secondes en plusieurs point, on</span>
+0074         <span class="comment">%les stocke dans un vecteur de matrices</span>
+0075     <span class="keyword">else</span>
+0076         ddrf=zeros(nb_comp,nb_comp,nb_pt);
+0077         <span class="keyword">for</span> ll=1:nb_comp
+0078             <span class="keyword">for</span> mm=1:nb_comp
+0079                 <span class="keyword">if</span>(mm==ll)
+0080                     ddrf(mm,ll,:)=(pow(1,mm).^2.*abs(xx(:,mm)).^(2*(pow(1,mm)-1))./long(1,mm).^2-<span class="keyword">...</span>
+0081                         pow(1,mm).*(pow(1,mm)-1).*abs(xx(:,mm)).^(pow(1,mm)-1)./long(1,mm)).*ev;
+0082                 <span class="keyword">else</span>
+0083                     ddrf(mm,ll,:)=ev./(long(1,mm)*long(1,ll)).*sign(xx(:,ll)).*<span class="keyword">...</span>
+0084                         sign(xx(:,mm)).*abs(xx(:,ll)).^(pow(1,mm)-1).*abs(xx(:,mm)).^(pow(1,mm)-1).*<span class="keyword">...</span>
+0085                         pow(1,ll).*pow(1,mm).*ev;
+0086                 <span class="keyword">end</span>
+0087                 
+0088             <span class="keyword">end</span>
+0089         <span class="keyword">end</span>
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">else</span>
+0092     error(<span class="string">'Trop d''arguments de sortie dans l''appel de la fonction rf_expg'</span>);
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

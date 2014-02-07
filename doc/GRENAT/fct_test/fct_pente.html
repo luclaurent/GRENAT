@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fct_pente</title>
+  <meta name="keywords" content="fct_pente">
+  <meta name="description" content="Fonction pente">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GRENAT --><!-- menu.html fct_test -->
+<h1>fct_pente
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Fonction pente</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [p,dp,infos]=fct_pente(xx,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fonction pente
+ L. LAURENT -- 15/12/2011 --</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Fonction pente</span>
+0002 <span class="comment">% L. LAURENT -- 15/12/2011 --</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=fct_pente(xx,dim)</a>
+0005 
+0006 <span class="comment">%pente dans la direction</span>
+0007 dir=2;
+0008 
+0009 
+0010 <span class="comment">% pour demonstration</span>
+0011 dem=false;
+0012 <span class="keyword">if</span> nargin==0
+0013     pas=50;
+0014     borne=5;
+0015     [x,y]=meshgrid(linspace(-borne,borne,pas));
+0016     xx=zeros(pas,pas,2);
+0017     xx(:,:,1)=x;xx(:,:,2)=y;
+0018     dem=true;
+0019 <span class="keyword">end</span>
+0020 <span class="keyword">if</span> ~isempty(xx)
+0021     <span class="comment">%Nombre de variables</span>
+0022     nbvar=size(xx,3);
+0023     
+0024     <span class="comment">%valeur constant</span>
+0025     val=10;
+0026     
+0027     <span class="keyword">if</span> nbvar==1
+0028         
+0029         p=val*xx(:,dir);
+0030         <span class="keyword">if</span> nargout==2
+0031             
+0032             dp(:,:,1)=0*p;
+0033             dp(:,:,2)=0*p;
+0034             dp(:,:,dir)=val*ones(size(p));
+0035         <span class="keyword">end</span>
+0036         
+0037     <span class="keyword">else</span>
+0038         p=val*xx(:,:,dir);
+0039         <span class="keyword">if</span> nargout==2||dem
+0040             dp=zeros(size(xx));
+0041             dp(:,:,dir)=val*ones(size(p));
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">else</span>
+0045     nbvar=dim;
+0046     p=[];
+0047     dp=[];
+0048 <span class="keyword">end</span>
+0049 <span class="comment">%sortie informations sur la fonction</span>
+0050 <span class="keyword">if</span> nargout==3
+0051     pts=NaN;
+0052     infos.min_glob.X=NaN;
+0053     infos.min_glob.Z=NaN;
+0054     infos.min_loc.Z=NaN;
+0055     infos.min_loc.X=NaN;
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%demonstration</span>
+0059 <span class="keyword">if</span> nargin==0
+0060     figure
+0061     subplot(1,3,1)
+0062     surf(x,y,p);
+0063     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0064     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Pente'</span>)
+0065     subplot(1,3,2)
+0066     surf(x,y,dp(:,:,1));
+0067     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0068     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Pente'</span>)
+0069     subplot(1,3,3)
+0070     surf(x,y,dp(:,:,2));
+0071     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0072     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Pente'</span>)
+0073     p=[];
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

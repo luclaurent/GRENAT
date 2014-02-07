@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fct_mystery</title>
+  <meta name="keywords" content="fct_mystery">
+  <meta name="description" content="Fonction &quot;Mystery&quot; (Sasena 2002)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GRENAT --><!-- menu.html fct_test -->
+<h1>fct_mystery
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Fonction &quot;Mystery&quot; (Sasena 2002)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [p,dp,infos]=fct_mystery(xx,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Fonction &quot;Mystery&quot; (Sasena 2002)
+L. LAURENT -- 01/04/2011 -- laurent@lmt.ens-cachan.fr
+modif le 16/09/2011 -- modif �criture input pour passage code � n
+variables</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Fonction &quot;Mystery&quot; (Sasena 2002)</span>
+0002 <span class="comment">%L. LAURENT -- 01/04/2011 -- laurent@lmt.ens-cachan.fr</span>
+0003 <span class="comment">%modif le 16/09/2011 -- modif �criture input pour passage code � n</span>
+0004 <span class="comment">%variables</span>
+0005 
+0006 <span class="comment">%3 minimas locaux</span>
+0007 <span class="comment">%1 minimum global: f(x)=-1.4565 pour x={2.5044,2.5778}</span>
+0008 
+0009 <span class="comment">%domaine d'etude: 0&lt;xi&lt;5</span>
+0010 
+0011 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=fct_mystery(xx,dim)</a>
+0012 
+0013 a=2;
+0014 b=0.01;
+0015 c=2;
+0016 d=2;
+0017 e=7;
+0018 f=0.5;
+0019 g=0.7;
+0020 
+0021 <span class="comment">% pour demonstration</span>
+0022 dem=false;
+0023 <span class="keyword">if</span> nargin==0
+0024     pas=50;
+0025     borne=5;
+0026     [x,y]=meshgrid(linspace(0,borne,pas));
+0027     xx=zeros(pas,pas,2);
+0028     xx(:,:,1)=x;xx(:,:,2)=y;
+0029     dem=true;
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">if</span> ~isempty(xx)
+0032     <span class="keyword">if</span> size(xx,3)&gt;2
+0033         error(<span class="string">'La fonction Mystery est une fonction de deux variables'</span>);
+0034     <span class="keyword">elseif</span> size(xx,3)==1
+0035         <span class="keyword">if</span> size(xx,2)==2
+0036             xxx=xx(:,1);yyy=xx(:,2);
+0037         <span class="keyword">elseif</span> size(xx,1)==2
+0038             xxx=xx(:,2);yyy=xx(:,1);
+0039         <span class="keyword">else</span>
+0040             error(<span class="string">'Mauvais format variable entree fct Mystery'</span>);
+0041         <span class="keyword">end</span>
+0042         
+0043     <span class="keyword">else</span>
+0044         xxx=xx(:,:,1);yyy=xx(:,:,2);
+0045     <span class="keyword">end</span>
+0046     
+0047     myst=a+b*(yyy-xxx.^2).^2+(1-xxx).^2+c*(d-yyy).^2+e*sin(f*xxx).*sin(g*xxx.*yyy);
+0048     p=myst;
+0049     <span class="keyword">if</span> nargout==2||dem
+0050         dmyst(:,:,1)=-b*4*(yyy-xxx.^2)-2*(1-xxx)+<span class="keyword">...</span>
+0051             e*f*cos(f*xxx).*sin(g*xxx.*yyy)+e*g*yyy.*sin(f*xxx).*cos(g*xxx.*yyy);
+0052         dmyst(:,:,2)=2*b*(yyy-xxx.^2)-4*(d-yyy)+e*g*xxx.*sin(f*xxx).*cos(g*xxx.*yyy);
+0053     <span class="keyword">end</span>
+0054     dp=dmyst;
+0055 <span class="keyword">else</span>
+0056     nbvar=dim;
+0057     p=[];
+0058     dp=[];
+0059 <span class="keyword">end</span>
+0060 <span class="comment">%sortie informations sur la fonction</span>
+0061 <span class="keyword">if</span> nargout==3
+0062     pts=[2.5044,2.5778];
+0063     infos.min_glob.X=pts;
+0064     infos.min_glob.Z=-1.4565;
+0065     infos.min_loc.Z=NaN;
+0066     infos.min_loc.X=NaN;
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="comment">%demonstration</span>
+0070 <span class="keyword">if</span> nargin==0
+0071     figure
+0072     subplot(1,3,1)
+0073     surf(x,y,p);
+0074     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0075     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Mystery'</span>)
+0076     subplot(1,3,2)
+0077     surf(x,y,dp(:,:,1));
+0078     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0079     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Mystery'</span>)
+0080     subplot(1,3,3)
+0081     surf(x,y,dp(:,:,2));
+0082     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0083     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Mystery'</span>)
+0084     p=[];
+0085 <span class="keyword">end</span>
+0086 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

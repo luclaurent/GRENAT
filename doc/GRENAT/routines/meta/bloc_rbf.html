@@ -1,0 +1,306 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of bloc_rbf</title>
+  <meta name="keywords" content="bloc_rbf">
+  <meta name="description" content="% Procedure de construction de la matrice RBF et de calcul de la validation croisee">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>bloc_rbf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Procedure de construction de la matrice RBF et de calcul de la validation croisee</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [crit_min,ret]=bloc_rbf(data,meta,para,type) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Procedure de construction de la matrice RBF et de calcul de la validation croisee
+% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="cross_validate_rbf.html" class="code" title="function [cv]=cross_validate_rbf(data_block,data,meta,type)">cross_validate_rbf</a>	% Fonction assurant le calcul de diverses erreurs par validation croisee dans le cas RBF/GFRB</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="estim_para_rbf.html" class="code" title="function para_estim=estim_para_rbf(donnees,meta)">estim_para_rbf</a>	% Fonction assurant l'estimation des parametres en RBF</li><li><a href="meta_rbf.html" class="code" title="function ret=meta_rbf(tirages,eval,grad,meta,manq)">meta_rbf</a>	%fonction permettant de construire un metamodele à l'aide de fonctions a</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ret_etat=mod_warning(etat_demande,old_etat)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Procedure de construction de la matrice RBF et de calcul de la validation croisee</span>
+0002 <span class="comment">%% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function [crit_min,ret]=bloc_rbf(data,meta,para,type)</a>
+0005 
+0006 <span class="comment">% affichages warning ou non</span>
+0007 aff_warning=false;
+0008 state_warning=<a href="#_sub1" class="code" title="subfunction ret_etat=mod_warning(etat_demande,old_etat)">mod_warning</a>([],[]);
+0009 <span class="comment">% fonction a minimiser pour trouver jeu de parametres</span>
+0010 fct_min=<span class="string">'eloot'</span>; <span class="comment">%eloot/eloor/eloog</span>
+0011 <span class="comment">%coefficient de reconditionnement</span>
+0012 coef=eps;
+0013 <span class="comment">% type de factorisation de la matrice de correlation</span>
+0014 fact_KK=<span class="string">'LU'</span> ; <span class="comment">%LU %QR %LL %None</span>
+0015 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0016 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0017 <span class="comment">%chargement grandeurs utiles</span>
+0018 nb_val=data.in.nb_val;
+0019 nb_var=data.in.nb_var;
+0020 tiragesn=data.in.tiragesn;
+0021 fct_rbf=meta.rbf;
+0022 ret=[];
+0023 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0025 <span class="comment">%si para defini alors on charge cette nouvelle valeur</span>
+0026 <span class="keyword">if</span> nargin&gt;=3
+0027     para_val=para;
+0028     <span class="comment">%dans ce cas, on ne calcul que le critere a minimiser (phase</span>
+0029     <span class="comment">%estimation)</span>
+0030     type_CV=<span class="string">'estim'</span>;
+0031 <span class="keyword">else</span>
+0032     para_val=meta.para.val;
+0033     type_CV=<span class="string">'final'</span>;
+0034 <span class="keyword">end</span>
+0035 meta.para.l_val=para_val;
+0036 
+0037 mod_estim=false;
+0038 <span class="keyword">if</span> nargin==4
+0039     <span class="keyword">if</span> strcmp(type,<span class="string">'etud'</span>);type_CV=type;<span class="keyword">end</span>
+0040     <span class="keyword">if</span> strcmp(type,<span class="string">'estim'</span>);type_CV=type;mod_estim=true;<span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0043 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0044 <span class="comment">%construction de la matrice de Gram</span>
+0045 <span class="keyword">if</span> data.in.pres_grad
+0046     <span class="comment">%si parallelisme actif ou non</span>
+0047     <span class="keyword">if</span> meta.worker_parallel&gt;=2
+0048         <span class="comment">%%%%%% PARALLEL %%%%%%</span>
+0049         <span class="comment">%morceaux de la matrice GRBF</span>
+0050         KK=zeros(nb_val,nb_val);
+0051         KKa=cell(1,nb_val);
+0052         KKi=cell(1,nb_val);
+0053         
+0054         parfor ii=1:nb_val
+0055             <span class="comment">%distance 1 tirages aux autres (construction par colonne)</span>
+0056             one_tir=tiragesn(ii,:);
+0057             dist=tiragesn-one_tir(ones(1,nb_val),:);
+0058             <span class="comment">% evaluation de la fonction de correlation</span>
+0059             [ev,dev,ddev]=feval(fct_rbf,dist,para_val);
+0060             <span class="comment">%morceau de la matrice issue du modele RBF classique</span>
+0061             KK(:,ii)=ev;
+0062             <span class="comment">%morceau des derivees premieres</span>
+0063             <span class="comment">%KKa(:,(ii-1)*nb_var+1:ii*nb_var)=dev;</span>
+0064             KKa{ii}=dev;
+0065             <span class="comment">%matrice des derivees secondes</span>
+0066             KKi{ii}=reshape(ddev,nb_var,nb_val*nb_var);
+0067         <span class="keyword">end</span>
+0068         <span class="comment">%%construction des matrices completes</span>
+0069         KKaC=horzcat(KKa{:});
+0070         KKiC=vertcat(KKi{:});
+0071         <span class="comment">%Matrice de complete</span>
+0072         KK=[KK KKaC;-KKaC' KKiC];
+0073     <span class="keyword">else</span>        
+0074         <span class="comment">%evaluation de la fonction de correlation pour les differents</span>
+0075         <span class="comment">%intersites</span>
+0076         [ev,dev,ddev]=feval(meta.rbf,data.in.dist,para_val);        
+0077         
+0078         <span class="comment">%morceau de la matrice issu du krigeage</span>
+0079         KK=zeros(nb_val,nb_val);
+0080         KKa=zeros(nb_val,nb_var*nb_val);
+0081         KKat=KKa;
+0082         KKi=zeros(nb_val*nb_var,nb_val*nb_var);
+0083         
+0084         KK(data.ind.matrix)=ev;
+0085         KK=KK+KK'-eye(data.in.nb_val);
+0086         
+0087         KKa(data.ind.matrixA)=-dev(data.ind.dev);
+0088         KKa(data.ind.matrixAb)=dev(data.ind.devb);
+0089         KKat(data.ind.matrixA)=dev(data.ind.dev);
+0090         KKat(data.ind.matrixAb)=-dev(data.ind.devb);
+0091         KKi(data.ind.matrixI)=ddev(:);
+0092         <span class="comment">%extraction de la diagonale (procedure pour eviter les doublons)</span>
+0093         diago=0;   <span class="comment">% //!!\\ corrections envisageables ici</span>
+0094         val_diag=spdiags(KKi,diago);
+0095         <span class="comment">%full(spdiags(val_diag./2,diago,zeros(size(rci))))</span>
+0096         KKi=KKi+KKi'-spdiags(val_diag,diago,zeros(size(KKi))); <span class="comment">%correction termes diagonaux pour eviter les doublons</span>
+0097 
+0098         <span class="comment">%Matrice de correlation du Cokrigeage</span>
+0099         KK=[KK KKa;KKat' KKi];
+0100     <span class="keyword">end</span>
+0101     <span class="comment">%si donnees manquantes</span>
+0102     <span class="keyword">if</span> data.manq.eval.on
+0103         KK(data.manq.eval.ix_manq,:)=[];
+0104         KK(:,data.manq.eval.ix_manq)=[];
+0105     <span class="keyword">end</span>
+0106     
+0107     <span class="comment">%si donnees manquantes</span>
+0108     <span class="keyword">if</span> data.manq.grad.on
+0109         rep_ev=nb_val-data.manq.eval.nb;
+0110         KK(rep_ev+data.manq.grad.ixt_manq_line,:)=[];
+0111         KK(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
+0112     <span class="keyword">end</span>
+0113     
+0114 <span class="keyword">else</span>
+0115     <span class="keyword">if</span> meta.worker_parallel&gt;=2
+0116         <span class="comment">%%%%%% PARALLEL %%%%%%</span>
+0117         <span class="comment">%matrice de RBF classique par bloc</span>
+0118         KK=zeros(nb_val,nb_val);
+0119         parfor ii=1:nb_val
+0120             <span class="comment">%distance 1 tirages aux autres (construction par colonne)</span>
+0121             one_tir=tiragesn(ii,:);
+0122             dist=tiragesn-one_tir(ones(1,nb_val),:);
+0123             <span class="comment">% evaluation de la fonction de correlation</span>
+0124             [ev]=feval(fct_rbf,dist,para_val);
+0125             <span class="comment">%morceau de la matrice issue du modele RBF classique</span>
+0126             KK(:,ii)=ev;
+0127         <span class="keyword">end</span>
+0128     <span class="keyword">else</span>        
+0129         <span class="comment">%matrice de RBF classique par matrice triangulaire inferieure</span>
+0130         <span class="comment">%sans diagonale</span>
+0131         KK=zeros(nb_val,nb_val);
+0132         <span class="comment">% evaluation de la fonction de correlation</span>
+0133         [ev]=feval(meta.rbf,data.in.dist,para_val);
+0134         KK(data.ind.matrix)=ev;
+0135         <span class="comment">%Construction matrice complete</span>
+0136         KK=KK+KK'+eye(nb_val);        
+0137     <span class="keyword">end</span>
+0138     <span class="comment">%si donnees manquantes</span>
+0139     <span class="keyword">if</span> data.manq.eval.on
+0140         KK(data.manq.eval.ix_manq,:)=[];
+0141         KK(:,data.manq.eval.ix_manq)=[];
+0142     <span class="keyword">end</span>
+0143 <span class="keyword">end</span>
+0144 
+0145 
+0146 <span class="comment">%passage en sparse</span>
+0147 <span class="comment">%KK=sparse(KK);</span>
+0148 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0149 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0150 <span class="comment">%amelioration du conditionnement de la matrice de correlation</span>
+0151 <span class="keyword">if</span> meta.recond
+0152     <span class="comment">%cond_orig=condest(KK);</span>
+0153     KK=KK+coef*speye(size(KK));
+0154     <span class="comment">%cond_new=condest(KK);</span>
+0155 <span class="comment">%          fprintf('&gt;&gt;&gt; Amelioration conditionnement: \n%g &gt;&gt; %g  &lt;&lt;&lt;\n',...</span>
+0156 <span class="comment">%              cond_orig,cond_new);</span>
+0157     
+0158 <span class="keyword">end</span>
+0159 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0160 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0161 <span class="comment">%conditionnement de la matrice de correlation</span>
+0162 <span class="keyword">if</span> nargin==2&amp;&amp;~exist(<span class="string">'cond_new'</span>,<span class="string">'var'</span>)   <span class="comment">%en phase de construction</span>
+0163     cond_new=condest(KK);
+0164 <span class="keyword">elseif</span> nargin==2&amp;&amp;exist(<span class="string">'cond_new'</span>,<span class="string">'var'</span>)
+0165     fprintf(<span class="string">'Conditionnement R: %4.2e\n'</span>,cond_new)
+0166 <span class="keyword">end</span>
+0167 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0168 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0169 <span class="comment">%approche factorisee</span>
+0170 <span class="comment">%attention cette factorisation n'est possible que sous condition</span>
+0171 <span class="comment">%QR</span>
+0172 <span class="keyword">switch</span> fact_KK
+0173     <span class="keyword">case</span> <span class="string">'QR'</span>
+0174         [QKK,RKK,PKK]=qr(KK);
+0175         iKK=PKK*(RKK\QKK');
+0176         yQ=QKK'*data.build.y;
+0177         w=PKK*(RKK\yQ);
+0178     <span class="keyword">case</span> <span class="string">'LU'</span>
+0179         [LKK,UKK,PKK]=lu(KK);
+0180         iKK=UKK\(LKK\PKK);
+0181         yL=LKK\PKK*data.build.y;
+0182         w=UKK\yL;
+0183     <span class="keyword">case</span> <span class="string">'LL'</span>
+0184         <span class="comment">%%% A coder</span>
+0185         LKK=chol(KK,<span class="string">'lower'</span>);
+0186         iKK=LKK'\inv(LKK);
+0187         yL=LKK\data.build.y;
+0188         w=LKK'\yL;
+0189     <span class="keyword">otherwise</span>
+0190         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0191         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0192         <span class="comment">%calcul du coefficient beta</span>
+0193         <span class="comment">%%approche classique</span>
+0194         <span class="keyword">if</span> ~aff_warning; warning off all;<span class="keyword">end</span>
+0195         iKK=inv(KK);
+0196         <span class="keyword">if</span> ~aff_warning; warning on all;<span class="keyword">end</span>
+0197         w=iKK*data.build.y;
+0198 <span class="keyword">end</span>
+0199 
+0200 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0201 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0202 <span class="comment">%stockage des grandeurs</span>
+0203 <span class="keyword">if</span> exist(<span class="string">'cond_orig'</span>,<span class="string">'var'</span>);build_data.cond_orig=cond_orig;<span class="keyword">end</span>
+0204 <span class="keyword">if</span> exist(<span class="string">'cond_new'</span>,<span class="string">'var'</span>);build_data.cond_new=cond_new;<span class="keyword">end</span>
+0205 <span class="keyword">if</span> exist(<span class="string">'QKK'</span>,<span class="string">'var'</span>);build_data.QKK=QKK;<span class="keyword">end</span>
+0206 <span class="keyword">if</span> exist(<span class="string">'RKK'</span>,<span class="string">'var'</span>);build_data.RKK=RKK;<span class="keyword">end</span>
+0207 <span class="keyword">if</span> exist(<span class="string">'LKK'</span>,<span class="string">'var'</span>);build_data.LKK=LKK;<span class="keyword">end</span>
+0208 <span class="keyword">if</span> exist(<span class="string">'UKK'</span>,<span class="string">'var'</span>);build_data.UKK=UKK;<span class="keyword">end</span>
+0209 <span class="keyword">if</span> exist(<span class="string">'iKK'</span>,<span class="string">'var'</span>);build_data.iKK=iKK;<span class="keyword">end</span>
+0210 <span class="keyword">if</span> exist(<span class="string">'yQ'</span>,<span class="string">'var'</span>);build_data.yQ=yQ;<span class="keyword">end</span>
+0211 build_data.w=w;
+0212 build_data.KK=KK;
+0213 build_data.fct=meta.rbf;
+0214 build_data.para=meta.para;
+0215 ret.build=build_data;
+0216 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0217 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0218 <span class="comment">%%%%%Validation croisee (obligatoire pour affinage parametre)</span>
+0219 <span class="comment">%%%%%Calcul des differentes erreurs</span>
+0220 <span class="keyword">if</span> meta.cv||meta.para.estim
+0221     <span class="comment">%tps_stop=toc;</span>
+0222     [cv]=<a href="cross_validate_rbf.html" class="code" title="function [cv]=cross_validate_rbf(data_block,data,meta,type)">cross_validate_rbf</a>(ret,data,meta,type_CV);
+0223     <span class="comment">%tps_cv=toc;</span>
+0224     <span class="comment">%fprintf('Execution validation croisee RBF/HBRBF: %6.4d s\n\n',tps_cv-tps_stop);</span>
+0225     <span class="keyword">if</span> isfield(cv,fct_min)
+0226         crit_min=cv.(fct_min);
+0227     <span class="keyword">else</span>
+0228         crit_min=cv.eloot;
+0229     <span class="keyword">end</span>
+0230 <span class="keyword">else</span>
+0231     cv=[];
+0232     crit_min=[];
+0233 <span class="keyword">end</span>
+0234 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0235 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0236 ret.cv=cv;
+0237 <a href="#_sub1" class="code" title="subfunction ret_etat=mod_warning(etat_demande,old_etat)">mod_warning</a>([],state_warning)
+0238 <span class="keyword">end</span>
+0239 <span class="comment">%</span>
+0240 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0241 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0242 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0243 <span class="comment">%fonction assurant l'arret de l'affichage des warning et le retour a letat initial</span>
+0244 <a name="_sub1" href="#_subfunctions" class="code">function ret_etat=mod_warning(etat_demande,old_etat)</a>
+0245 <span class="keyword">if</span> nargin==1
+0246 <span class="keyword">if</span> ~etat_demande
+0247     warning off all
+0248 <span class="keyword">end</span>    
+0249 <span class="keyword">else</span>
+0250     <span class="keyword">if</span> isempty(old_etat)
+0251         ret_etat=warning;
+0252     <span class="keyword">else</span>
+0253         warning(old_etat)
+0254     <span class="keyword">end</span>
+0255 <span class="keyword">end</span>
+0256 <span class="keyword">end</span>
+0257</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

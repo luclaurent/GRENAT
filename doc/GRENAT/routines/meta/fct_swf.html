@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fct_swf</title>
+  <meta name="keywords" content="fct_swf">
+  <meta name="description" content="%% Calcul des fonctions de ponderation au point considere et ses gradients">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>fct_swf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%% Calcul des fonctions de ponderation au point considere et ses gradients</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [W,Wm,dW,dWm]=fct_swf(point,tirages,para) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%% Calcul des fonctions de ponderation au point considere et ses gradients
+% L. LAURENT -- 23/11/2011 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="eval_swf.html" class="code" title="function [Z,GZ]=eval_swf(U,swf)">eval_swf</a>	%% Fonction assurant l'evaluation du metamodele 'Shepard Weighting Functions'</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%% Calcul des fonctions de ponderation au point considere et ses gradients</span>
+0002 <span class="comment">%% L. LAURENT -- 23/11/2011 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function [W,Wm,dW,dWm]=fct_swf(point,tirages,para)</a>
+0005 
+0006 <span class="comment">%% OUT: Wm &gt;&gt; fonctions de ponderation moyennees</span>
+0007 <span class="comment">%%        dWm &gt;&gt; derivees des fonctions de ponderation moyennees</span>
+0008 <span class="comment">%%        Wm &gt;&gt; fonctions de ponderation</span>
+0009 <span class="comment">%%        dWm &gt;&gt; derivees des fonctions de ponderation</span>
+0010 
+0011 <span class="comment">%type de norme utilisé</span>
+0012 type_norm=<span class="string">'L2'</span>;    <span class="comment">%L1,L2,Linf,Lp</span>
+0013 p=1.99; <span class="comment">%si 'Lp'</span>
+0014 
+0015 nbv=size(tirages,2);
+0016 nbs=size(tirages,1);
+0017 
+0018 <span class="comment">%% calcul de la distance aux tirages</span>
+0019 ecart=repmat(point,nbs,1)-tirages;
+0020 <span class="keyword">switch</span> type_norm
+0021     <span class="keyword">case</span> <span class="string">'L1'</span>
+0022         d=sum(abs(ecart),2);
+0023     <span class="keyword">case</span> <span class="string">'L2'</span>
+0024         d=sqrt(sum(ecart.^2,2));
+0025         <span class="comment">%case 'Linf'</span>
+0026         <span class="comment">%d=max(ecart,[],2);</span>
+0027     <span class="keyword">case</span> <span class="string">'Lp'</span>
+0028         d=sum(ecart.^p,2);
+0029     <span class="keyword">otherwise</span>
+0030         error(<span class="string">'mauvaise norme selectionnee (cf.fct_swf.m)'</span>)
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%% calcul distance au centre de la zone d'influence</span>
+0034 dist=para-d;
+0035 
+0036 <span class="comment">%% extraction valeurs dans la zone d'influence (construction fonctions positives)</span>
+0037 <span class="comment">%[ind]=find(dist&gt;0);</span>
+0038 <span class="comment">%val_influ=zeros(size(dist));</span>
+0039 val_influ=0.5*(dist+abs(dist));
+0040 <span class="comment">%val_influ=dist;</span>
+0041 
+0042 <span class="comment">%% fonctions de ponderation</span>
+0043 W=(val_influ./(para.*d)).^2;
+0044 
+0045 Wmm=zeros(size(W));
+0046 hh=val_influ./d;
+0047 
+0048 <span class="comment">%for ii=1:size(tirages,1)</span>
+0049 <span class="comment">%    hd=val_influ([1:ii-1 ii+1:end])./d([1:ii-1 ii+1:end]);</span>
+0050 <span class="comment">%    Wmm(ii)=val_influ(ii).^2./(val_influ(ii).^2+(d(ii)^2.*sum(hd.^2)));</span>
+0051 <span class="comment">%end</span>
+0052 
+0053 Wm=val_influ.^2./(d.^2.*sum(hh.^2));
+0054 
+0055 <span class="comment">%% fonctions de ponderation moyennees</span>
+0056 sW=sum(W);
+0057 sWm=sum(Wm);
+0058 <span class="comment">%if sW==Inf</span>
+0059 <span class="comment">%Wm=zeros(size(W));</span>
+0060 <span class="comment">%else</span>
+0061 <span class="comment">%Wm=W./sW;</span>
+0062 <span class="comment">%end</span>
+0063 <span class="comment">%Wm</span>
+0064 <span class="comment">%sW</span>
+0065 
+0066 
+0067 <span class="comment">%% Calcul des derivees des fonctions de ponderation</span>
+0068 <span class="keyword">if</span> nargout&gt;=3
+0069     <span class="keyword">switch</span> type_norm
+0070         <span class="keyword">case</span> <span class="string">'L2'</span>
+0071             deri=-2*W./(para*d.^4);
+0072             dW=repmat(deri,1,nbv).*ecart;
+0073     <span class="keyword">end</span>
+0074     
+0075     <span class="comment">%% derivees fonctions de ponderation moyennees</span>
+0076     dWm=(dW.*repmat(sWm,nbs,nbv)-repmat(Wm,1,nbv).*repmat(sum(dW,1),nbs,1))./sW;
+0077 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gene_monomes</title>
+  <meta name="keywords" content="gene_monomes">
+  <meta name="description" content="% G�n�ration des monomes des polynomes (en fonction du degr� et du nb de variables)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html fct -->
+<h1>gene_monomes
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% G�n�ration des monomes des polynomes (en fonction du degr� et du nb de variables)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% G�n�ration des monomes des polynomes (en fonction du degr� et du nb de variables)
+ L.LAURENT -- 25/02/2012 -- laurent@lmt.ens-cachan.Fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% G�n�ration des monomes des polynomes (en fonction du degr� et du nb de variables)</span>
+0002 <span class="comment">% L.LAURENT -- 25/02/2012 -- laurent@lmt.ens-cachan.Fr</span>
+0003 
+0004 clear all
+0005 <span class="comment">% degr�</span>
+0006 deg_min=2;
+0007 deg_max=2;
+0008 <span class="comment">% nb variables</span>
+0009 dim_min=5;
+0010 dim_max=5;
+0011 
+0012 <span class="comment">%dossier de stockage</span>
+0013 doss=<span class="string">'base_monomes'</span>;
+0014 <span class="keyword">if</span> exist(doss,<span class="string">'dir'</span>)~=7
+0015     unix([<span class="string">'mkdir '</span> doss])
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="comment">%fichier de stockage</span>
+0019 file=<span class="string">'mono'</span>;
+0020 ext=<span class="string">'.m'</span>;
+0021 
+0022 <span class="comment">%stockage</span>
+0023 mono1=cell(deg_max,dim_max);
+0024 monod1=mono1;
+0025 monod2=mono1;
+0026 cmonod1=mono1;
+0027 cmonod2=mono1;
+0028 <span class="comment">%matlabpool(8)</span>
+0029 <span class="keyword">for</span> deg=deg_min:deg_max
+0030     <span class="keyword">for</span> nbv=dim_min:dim_max
+0031         fprintf(<span class="string">'deg = %i  dim = %i\n'</span>,deg,nbv)
+0032         <span class="comment">%valeurs pour chaques variables</span>
+0033         val_var=cell(nbv,1);
+0034         <span class="keyword">for</span> ii=1:nbv
+0035             val_var{ii}=uint8(0:deg);
+0036             
+0037         <span class="keyword">end</span>
+0038         nb_tir=(deg+1)*ones(1,nbv);
+0039         
+0040         <span class="comment">% generation de la matrice des tirages</span>
+0041         <span class="comment">% parcours des variables</span>
+0042         
+0043         <span class="keyword">for</span> ii=1:nbv
+0044             <span class="keyword">if</span> ii&gt;1
+0045                 nb_ter_pre=prod(nb_tir(1:ii-1));
+0046             <span class="keyword">else</span>
+0047                 nb_ter_pre=1;
+0048             <span class="keyword">end</span>
+0049             <span class="comment">%parcours des valeurs par variables</span>
+0050             temp1=[];
+0051             <span class="keyword">for</span> jj=1:length(val_var{ii})
+0052                 temp=repmat(val_var{ii}(jj),nb_ter_pre,1);
+0053                 temp1=uint8([temp1;temp]);
+0054             <span class="keyword">end</span>
+0055             temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
+0056             clear temp1 temp
+0057             combinaison(:,ii)=temp2;
+0058             combinaison
+0059             clear temp2;
+0060         <span class="keyword">end</span>
+0061         combinaison=uint8(combinaison);
+0062         
+0063         <span class="comment">% g�n�ration combinaison</span>
+0064         <span class="comment">%levels=(deg+1)*ones(1,nbv,'uint8');</span>
+0065         <span class="comment">%combinaison=sparse(fullfact(levels)-1);</span>
+0066         <span class="comment">%suppression ligne td sum term&gt;deg</span>
+0067         ind=[];
+0068         
+0069         parfor cc=1:size(combinaison,1)
+0070             <span class="keyword">if</span> sum(combinaison(cc,:))&gt;deg
+0071                 ind=[ind cc];
+0072             <span class="keyword">end</span>
+0073         <span class="keyword">end</span>
+0074         <span class="comment">%[ind]=find(sum(combinaison,2)&gt;deg);</span>
+0075         monomes_pow=combinaison;
+0076         
+0077         clear combinaison
+0078         <span class="comment">%puissance monomes</span>
+0079         
+0080         monomes_pow(ind,:)=[];
+0081         nbMono=size(monomes_pow,1);
+0082         clear ind
+0083         <span class="comment">%coef deriv�es premi�re et monomes d�riv�es premi�res</span>
+0084         coef_der1=monomes_pow;
+0085         monomes_der1=repmat(monomes_pow,1,nbv);
+0086         <span class="keyword">for</span> pp=1:nbv
+0087             monomes_der1(:,(pp-1)*nbv+pp)=monomes_der1(:,(pp-1)*nbv+pp)-1;
+0088         <span class="keyword">end</span>
+0089         
+0090         <span class="comment">%for cc=1:numel(monomes_der1)</span>
+0091         <span class="comment">%    if monomes_der1(cc)&lt;0</span>
+0092         <span class="comment">%        monomes_der1(cc)=0;</span>
+0093         <span class="comment">%    end</span>
+0094         <span class="comment">%end</span>
+0095         <span class="comment">%[ind]=find(monomes_der1&lt;0);</span>
+0096         <span class="comment">%monomes_der1(ind)=0;</span>
+0097         clear ind
+0098         <span class="comment">%coef deriv�es secondes et monomes d�riv�es secondes</span>
+0099         tt=[];
+0100         <span class="keyword">for</span> hh=1:size(coef_der1,2)
+0101             tt=[tt repmat(coef_der1(:,hh),1,nbv)];
+0102         <span class="keyword">end</span>
+0103 <span class="comment">%                 tt</span>
+0104 <span class="comment">%         tmp=repmat(tt,1,nbv);</span>
+0105 <span class="comment">%         tmp</span>
+0106 <span class="comment">%         tmp=reshape(tmp,nbMono,nbv*nbv);</span>
+0107 <span class="comment">%         tmp</span>
+0108 <span class="comment">%         monomes_der1</span>
+0109         coef_der2=monomes_der1.*tt;
+0110         monomes_der2=int8(repmat(monomes_der1,1,nbv));
+0111         <span class="keyword">for</span> pp=1:nbv
+0112             <span class="keyword">for</span> oo=1:nbv
+0113                 indd=(oo-1)*nbv+(pp-1)*nbv^2+pp;   
+0114                 monomes_der2(:,indd)=monomes_der2(:,indd)-1;
+0115                 
+0116             <span class="keyword">end</span>
+0117         <span class="keyword">end</span>
+0118         <span class="comment">%coef_der2=reshape(monomes_der2,,nbv)</span>
+0119         parfor cc=1:numel(monomes_der2)
+0120             <span class="keyword">if</span> monomes_der2(cc)&lt;0
+0121                 monomes_der2(cc)=0;
+0122             <span class="keyword">end</span>
+0123         <span class="keyword">end</span>
+0124         <span class="comment">%[ind]=find(monomes_der2&lt;0);</span>
+0125         <span class="comment">%monomes_der2(ind)=0;</span>
+0126         clear ind
+0127         <span class="comment">%sauvegarde r�sultats</span>
+0128         mono1{deg,nbv}=monomes_pow;
+0129         monod1{deg,nbv}=monomes_der1;
+0130         monod2{deg,nbv}=monomes_der2;
+0131         cmonod1{deg,nbv}=coef_der1;
+0132         cmonod2{deg,nbv}=coef_der2;
+0133         clear combinaison comb_mod temp temp1 temp2 ind indd
+0134         clear monomes_pow monomes_der1 monomes_der2 coef_der2 coef_der1
+0135     <span class="keyword">end</span>
+0136 <span class="keyword">end</span>
+0137 
+0138 <span class="comment">%</span>
+0139 <span class="comment">% %stockage des monomes</span>
+0140 <span class="comment">% for ii=deg_min:deg_max</span>
+0141 <span class="comment">%     for jj=dim_min:dim_max</span>
+0142 <span class="comment">%         fonction=[file '_' num2str(ii,'%02i') '_' num2str(jj,'%03i')];</span>
+0143 <span class="comment">%         fichier=[doss '/' fonction ext];</span>
+0144 <span class="comment">%         fid=fopen(fichier,'w');</span>
+0145 <span class="comment">%         fprintf(fid,'%s\n\n',['function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=' fonction '(X)']);</span>
+0146 <span class="comment">%         fprintf(fid,'derprem=false;dersecond=false;\n');</span>
+0147 <span class="comment">%         fprintf(fid,'if nargout&gt;=4;derprem=true;end\n');</span>
+0148 <span class="comment">%         fprintf(fid,'if nargout==6;dersecond=true;end\n\n');</span>
+0149 <span class="comment">%         fprintf(fid,'MatX=[\n');</span>
+0150 <span class="comment">%         mat=mono1{ii,jj};</span>
+0151 <span class="comment">%         %balayage des puissances du monome et construction de la matrice</span>
+0152 <span class="comment">%         %associ�e</span>
+0153 <span class="comment">%         indic=true;</span>
+0154 <span class="comment">%         for mm=1:size(mat,1)</span>
+0155 <span class="comment">%             if sum(mat(mm,:))==0</span>
+0156 <span class="comment">%                 fprintf(fid,' ones(size(X,1),1) ...\n');</span>
+0157 <span class="comment">%             else</span>
+0158 <span class="comment">%                 indic=false;</span>
+0159 <span class="comment">%                 for ll=1:size(mat(mm,:),2)</span>
+0160 <span class="comment">%                     if ll~=1</span>
+0161 <span class="comment">%                         if mat(mm,ll-1)~=0&amp;&amp;mat(mm,ll)~=0</span>
+0162 <span class="comment">%                             fprintf(fid,'.*');</span>
+0163 <span class="comment">%                         elseif mat(mm,ll)~=0&amp;&amp;indic</span>
+0164 <span class="comment">%                             fprintf(fid,'.*');</span>
+0165 <span class="comment">%                             indic=false;</span>
+0166 <span class="comment">%                         end</span>
+0167 <span class="comment">%                     end</span>
+0168 <span class="comment">%                     if mat(mm,ll)~=0</span>
+0169 <span class="comment">%                         if mat(mm,ll)~=1</span>
+0170 <span class="comment">%                             fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));</span>
+0171 <span class="comment">%                         else</span>
+0172 <span class="comment">%                             fprintf(fid,'X(:,%i)',ll);</span>
+0173 <span class="comment">%                         end</span>
+0174 <span class="comment">%                         indic=true;</span>
+0175 <span class="comment">%                     end</span>
+0176 <span class="comment">%                 end</span>
+0177 <span class="comment">%                 if mm~=size(mat,1)</span>
+0178 <span class="comment">%                     fprintf(fid,' ...\n');</span>
+0179 <span class="comment">%                 else</span>
+0180 <span class="comment">%                     fprintf(fid,'\n');</span>
+0181 <span class="comment">%                 end</span>
+0182 <span class="comment">%             end</span>
+0183 <span class="comment">%         end</span>
+0184 <span class="comment">%         fprintf(fid,'];\n');</span>
+0185 <span class="comment">%         fprintf(fid,'nbmono=%i;\n\n',size(mat,1));</span>
+0186 <span class="comment">%         %ecriture d�riv�e premi�re</span>
+0187 <span class="comment">%         fprintf(fid,'if derprem\n');</span>
+0188 <span class="comment">%         fprintf(fid,'MatDX=cell(1,size(X,2));\n\n');</span>
+0189 <span class="comment">%         matD=monod1{ii,jj};</span>
+0190 <span class="comment">%         matC=cmonod1{ii,jj};</span>
+0191 <span class="comment">%         for nn=1:jj</span>
+0192 <span class="comment">%             fprintf(fid,'MatDX{%i}=[\n',nn);</span>
+0193 <span class="comment">%             mat=matD(:,[jj*(nn-1)+1:jj*nn]);</span>
+0194 <span class="comment">%             coef=matC(:,nn);</span>
+0195 <span class="comment">%             for mm=1:size(mat,1)</span>
+0196 <span class="comment">%                 if sum(mat(mm,:))==0&amp;&amp;coef(mm)~=0</span>
+0197 <span class="comment">%                     if coef(mm)~=1</span>
+0198 <span class="comment">%                         fprintf(fid,'%g.*',coef(mm));</span>
+0199 <span class="comment">%</span>
+0200 <span class="comment">%                     end</span>
+0201 <span class="comment">%                     fprintf(fid,'ones(size(X,1),1) ...\n');</span>
+0202 <span class="comment">%                 elseif coef(mm)==0</span>
+0203 <span class="comment">%                     fprintf(fid,'zeros(size(X,1),1) ...\n');</span>
+0204 <span class="comment">%                 else</span>
+0205 <span class="comment">%                     if coef(mm)~=1</span>
+0206 <span class="comment">%                         fprintf(fid,'%g.*',coef(mm));</span>
+0207 <span class="comment">%                     end</span>
+0208 <span class="comment">%</span>
+0209 <span class="comment">%                     indic=false;</span>
+0210 <span class="comment">%                     for ll=1:size(mat(mm,:),2)</span>
+0211 <span class="comment">%                         if ll~=1</span>
+0212 <span class="comment">%                             if mat(mm,ll-1)~=0&amp;&amp;mat(mm,ll)~=0</span>
+0213 <span class="comment">%                                 fprintf(fid,'.*');</span>
+0214 <span class="comment">%                             elseif mat(mm,ll)~=0&amp;&amp;indic</span>
+0215 <span class="comment">%                                 fprintf(fid,'.*');</span>
+0216 <span class="comment">%                                 indic=false;</span>
+0217 <span class="comment">%                             end</span>
+0218 <span class="comment">%                         end</span>
+0219 <span class="comment">%                         if mat(mm,ll)~=0</span>
+0220 <span class="comment">%                             if mat(mm,ll)~=1</span>
+0221 <span class="comment">%                                 fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));</span>
+0222 <span class="comment">%                             else</span>
+0223 <span class="comment">%                                 fprintf(fid,'X(:,%i)',ll);</span>
+0224 <span class="comment">%                             end</span>
+0225 <span class="comment">%                             indic=true;</span>
+0226 <span class="comment">%                         end</span>
+0227 <span class="comment">%                     end</span>
+0228 <span class="comment">%                     if mm~=size(mat,1)</span>
+0229 <span class="comment">%                         fprintf(fid,' ...\n');</span>
+0230 <span class="comment">%                     else</span>
+0231 <span class="comment">%                         fprintf(fid,'\n');</span>
+0232 <span class="comment">%                     end</span>
+0233 <span class="comment">%                 end</span>
+0234 <span class="comment">%             end</span>
+0235 <span class="comment">%             fprintf(fid,'];\n\n');</span>
+0236 <span class="comment">%         end</span>
+0237 <span class="comment">%</span>
+0238 <span class="comment">%         %ecriture coefficients d�riv�e premi�re</span>
+0239 <span class="comment">%</span>
+0240 <span class="comment">%         fprintf(fid,'CoefDX=[\n');</span>
+0241 <span class="comment">%         mat=cmonod1{ii,jj}';</span>
+0242 <span class="comment">%         for ll=1:size(mat,1);</span>
+0243 <span class="comment">%             fprintf(fid,'%i ',mat(ll,:));</span>
+0244 <span class="comment">%             fprintf(fid,'\n');</span>
+0245 <span class="comment">%         end</span>
+0246 <span class="comment">%         fprintf(fid,'];\n');</span>
+0247 <span class="comment">%         %ecriture d�riv�e seconde</span>
+0248 <span class="comment">%         fprintf(fid,'end\n\n');</span>
+0249 <span class="comment">%         fprintf(fid,'if dersecond\n');</span>
+0250 <span class="comment">%         fprintf(fid,'MatDDX=cell(size(X,2),size(X,2));\n\n');</span>
+0251 <span class="comment">%         matDD=monod2{ii,jj};</span>
+0252 <span class="comment">%         matCC=cmonod2{ii,jj};</span>
+0253 <span class="comment">%         for nn=1:jj*jj</span>
+0254 <span class="comment">%             fprintf(fid,'MatDDX{%i}=[\n',nn);</span>
+0255 <span class="comment">%             mat=matDD(:,jj*(nn-1)+1:jj*nn);</span>
+0256 <span class="comment">%             coef=matCC(:,nn);</span>
+0257 <span class="comment">%             for mm=1:size(mat,1)</span>
+0258 <span class="comment">%                 if sum(mat(mm,:))==0&amp;&amp;coef(mm)~=0</span>
+0259 <span class="comment">%                     if coef(mm)~=1</span>
+0260 <span class="comment">%                         fprintf(fid,'%g.*',coef(mm));</span>
+0261 <span class="comment">%</span>
+0262 <span class="comment">%                     end</span>
+0263 <span class="comment">%                     fprintf(fid,'ones(size(X,1),1) ...\n');</span>
+0264 <span class="comment">%                 elseif coef(mm)==0||any(mat(mm,:)&lt;0)</span>
+0265 <span class="comment">%                     fprintf(fid,'zeros(size(X,1),1) ...\n');</span>
+0266 <span class="comment">%                 else</span>
+0267 <span class="comment">%                     if coef(mm)~=1</span>
+0268 <span class="comment">%                         fprintf(fid,'%g.*',coef(mm));</span>
+0269 <span class="comment">%                     end</span>
+0270 <span class="comment">%</span>
+0271 <span class="comment">%                     indic=false;</span>
+0272 <span class="comment">%                     for ll=1:size(mat(mm,:),2)</span>
+0273 <span class="comment">%                         if ll~=1</span>
+0274 <span class="comment">%                             if mat(mm,ll-1)~=0&amp;&amp;mat(mm,ll)~=0</span>
+0275 <span class="comment">%                                 fprintf(fid,'.*');</span>
+0276 <span class="comment">%                             elseif mat(mm,ll)~=0&amp;&amp;indic</span>
+0277 <span class="comment">%                                 fprintf(fid,'.*');</span>
+0278 <span class="comment">%                                 indic=false;</span>
+0279 <span class="comment">%                             end</span>
+0280 <span class="comment">%                         end</span>
+0281 <span class="comment">%                         if mat(mm,ll)~=0</span>
+0282 <span class="comment">%                             if mat(mm,ll)~=1</span>
+0283 <span class="comment">%                                 fprintf(fid,'X(:,%i).^%i',ll,mat(mm,ll));</span>
+0284 <span class="comment">%                             else</span>
+0285 <span class="comment">%                                 fprintf(fid,'X(:,%i)',ll);</span>
+0286 <span class="comment">%                             end</span>
+0287 <span class="comment">%                             indic=true;</span>
+0288 <span class="comment">%                         end</span>
+0289 <span class="comment">%                     end</span>
+0290 <span class="comment">%                     if mm~=size(mat,1)</span>
+0291 <span class="comment">%                         fprintf(fid,' ...\n');</span>
+0292 <span class="comment">%                     else</span>
+0293 <span class="comment">%                         fprintf(fid,'\n');</span>
+0294 <span class="comment">%                     end</span>
+0295 <span class="comment">%                 end</span>
+0296 <span class="comment">%             end</span>
+0297 <span class="comment">%             fprintf(fid,'];\n\n');</span>
+0298 <span class="comment">%         end</span>
+0299 <span class="comment">%         %ecriture coefficients d�riv�e seconde</span>
+0300 <span class="comment">%         fprintf(fid,'CoefDDX=[\n');</span>
+0301 <span class="comment">%         mat=cmonod2{ii,jj}';</span>
+0302 <span class="comment">%         for ll=1:size(mat,1);</span>
+0303 <span class="comment">%             fprintf(fid,'%i ',mat(ll,:));</span>
+0304 <span class="comment">%             fprintf(fid,'\n');</span>
+0305 <span class="comment">%         end</span>
+0306 <span class="comment">%         fprintf(fid,'];\n');</span>
+0307 <span class="comment">%         %fprintf(fid,'cmonod2=cmonod2'';\n');</span>
+0308 <span class="comment">%         fprintf(fid,'end\n\n');</span>
+0309 <span class="comment">%         fprintf(fid,'end\n\n');</span>
+0310 <span class="comment">%</span>
+0311 <span class="comment">%         fclose(fid);</span>
+0312 <span class="comment">%     end</span>
+0313 <span class="comment">%</span>
+0314 <span class="comment">% end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rf_sexp</title>
+  <meta name="keywords" content="rf_sexp">
+  <meta name="description" content="%fonction de base radiale exponentielle carree">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html fct -->
+<h1>rf_sexp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%fonction de base radiale exponentielle carree</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [rf,drf,ddrf]=rf_sexp(xx,long) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%fonction de base radiale exponentielle carree
+%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
+revision du 13/11/2012
+modification parametre le 19/12/2012</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%fonction de base radiale exponentielle carree</span>
+0002 <span class="comment">%%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr</span>
+0003 <span class="comment">%revision du 13/11/2012</span>
+0004 <span class="comment">%modification parametre le 19/12/2012</span>
+0005 
+0006 
+0007 <span class="comment">%Rasmussen 2006 p. 83</span>
+0008 
+0009 <a name="_sub0" href="#_subfunctions" class="code">function [rf,drf,ddrf]=rf_sexp(xx,long)</a>
+0010 
+0011 <span class="comment">%verification de la dimension de la longueur de rfelation</span>
+0012 lt=size(long);
+0013 <span class="comment">%nombre de points a evaluer</span>
+0014 nb_pt=size(xx,1);
+0015 <span class="comment">%nombre de composantes</span>
+0016 nb_comp=size(xx,2);
+0017 <span class="comment">%nombre de sorties</span>
+0018 nb_out=nargout;
+0019 
+0020 <span class="keyword">if</span> lt(1)*lt(2)==1
+0021     <span class="comment">%long est un reel, alors on en fait une matrice de la dimension de xx</span>
+0022     long = long*ones(nb_pt,nb_comp);
+0023 <span class="keyword">elseif</span> lt(1)*lt(2)==nb_comp
+0024     long = long(ones(nb_pt,1),:);
+0025 <span class="keyword">elseif</span> lt(1)*lt(2)~=nb_comp
+0026     error(<span class="string">'mauvaise dimension de la longueur de d''influence'</span>);
+0027 <span class="keyword">end</span>
+0028 
+0029 
+0030 <span class="comment">%calcul de la valeur de la fonction au point xx</span>
+0031 td=-xx.^2.*long;
+0032 ev=exp(sum(td,2));
+0033 
+0034 <span class="keyword">if</span> nb_out==1
+0035     rf=ev;
+0036 <span class="keyword">elseif</span> nb_out==2
+0037     rf=ev;
+0038     drf=-2*xx.*long.*ev(:,ones(1,nb_comp));
+0039 <span class="keyword">elseif</span> nb_out==3
+0040     rf=ev;
+0041     drf=-2*xx.*long.^2.*ev(:,ones(1,nb_comp));   
+0042     
+0043     <span class="comment">%calcul des derivees secondes</span>
+0044     
+0045     <span class="comment">%suivant la taille de l'evaluation demandee on stocke les derivees</span>
+0046     <span class="comment">%secondes de manieres differentes</span>
+0047     <span class="comment">%si on ne demande le calcul des derivees secondes en un seul point, on</span>
+0048     <span class="comment">%les stocke dans une matrice</span>
+0049     <span class="keyword">if</span> nb_pt==1
+0050         ddrf=zeros(nb_comp);
+0051         <span class="keyword">for</span> ll=1:nb_comp
+0052            <span class="keyword">for</span> mm=1:nb_comp
+0053                 <span class="keyword">if</span>(mm==ll)
+0054                     ddrf(mm,ll)=ev*4*long(1,mm)^2*(xx(mm)^2-1/(2*long(1,mm)));
+0055                 <span class="keyword">else</span>
+0056                     ddrf(mm,ll)=ev*4*long(1,mm)*long(1,ll)*xx(ll)*xx(mm);
+0057                 <span class="keyword">end</span>
+0058            <span class="keyword">end</span>
+0059         <span class="keyword">end</span>
+0060        
+0061     <span class="comment">%si on demande le calcul des derivees secondes en plusieurs point, on</span>
+0062     <span class="comment">%les stocke dans un vecteur de matrices</span>
+0063     <span class="keyword">else</span>
+0064         ddrf=zeros(nb_comp,nb_comp,nb_pt);
+0065         <span class="keyword">for</span> ll=1:nb_comp
+0066            <span class="keyword">for</span> mm=1:nb_comp
+0067                 <span class="keyword">if</span>(mm==ll)                    
+0068                     ddrf(mm,ll,:)=4*ev.*long(1,mm)^2.*(xx(:,mm).^2-1/(2*long(1,mm)));
+0069                 <span class="keyword">else</span>
+0070                     ddrf(mm,ll,:)=4*ev.*long(1,mm)*long(1,ll).*xx(:,ll).*xx(:,mm);
+0071                 <span class="keyword">end</span>
+0072            <span class="keyword">end</span>
+0073         <span class="keyword">end</span>
+0074     <span class="keyword">end</span>
+0075 <span class="keyword">else</span>
+0076     error(<span class="string">'Mauvais argument de sortie de la fonction rf_sexp'</span>);
+0077 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

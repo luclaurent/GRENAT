@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of meta_inkrg</title>
+  <meta name="keywords" content="meta_inkrg">
+  <meta name="description" content="% fonction assurant la construction du Krigeage a gradients indirect">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>meta_inkrg
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% fonction assurant la construction du Krigeage a gradients indirect</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function ret=meta_inkrg(tirages,eval,grad,meta,manq) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% fonction assurant la construction du Krigeage a gradients indirect
+% L. LAURENT -- 18/04/2012 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="meta_krg_ckrg.html" class="code" title="function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)">meta_krg_ckrg</a>	% fonction de construction des metamodeles de Krigeage et de Cokrigeage</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="const_meta.html" class="code" title="function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)">const_meta</a>	% fonction assurant la construction du metamodele (pas son evaluation)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% fonction assurant la construction du Krigeage a gradients indirect</span>
+0002 <span class="comment">%% L. LAURENT -- 18/04/2012 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function ret=meta_inkrg(tirages,eval,grad,meta,manq)</a>
+0005 
+0006 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0007 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0008 <span class="comment">% Affichage des informations de construction</span>
+0009 fprintf(<span class="string">'&gt;&gt;&gt; Preparation donnees Krigeage a gradient indirect (appel Krigeage)  \n'</span>);
+0010 
+0011 <span class="comment">%dimension du probleme (nombre de variables)</span>
+0012 nb_var=size(tirages,2);
+0013 <span class="comment">%nombre de points initiaux</span>
+0014 nb_val_init=size(tirages,1);
+0015 
+0016 <span class="keyword">if</span> ~nargin==5
+0017     manq.eval.on=false;
+0018     manq.grad.on=false;
+0019 <span class="keyword">end</span>  
+0020 
+0021 <span class="comment">%en fonction du type de donnees en entree</span>
+0022 <span class="keyword">if</span> ~isstruct(grad)
+0023     fprintf(<span class="string">'&gt;&gt; Valeur pas developpement de Taylor (manu):'</span>)
+0024     fprintf(<span class="string">' %d'</span>,meta.para.pas_tayl);
+0025     fprintf(<span class="string">'\n'</span>)
+0026     
+0027     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0028     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0029     <span class="comment">%%% Creation des nouveaux points (1 nouveau points par direction)</span>
+0030     <span class="comment">%traitement pas Taylor</span>
+0031     <span class="keyword">if</span> numel(meta.para.pas_tayl)~=nb_var
+0032         pas_tayl=meta.para.pas_tayl(1)*ones(1,nb_var);
+0033     <span class="keyword">else</span>
+0034         pas_tayl=meta.para.pas_tayl;
+0035     <span class="keyword">end</span>
+0036     
+0037     <span class="comment">%Reordonnancement tirages et duplication</span>
+0038     reord_tir=reshape(tirages',1,[]);
+0039     dup_tir=repmat(reord_tir,nb_var+1,[]);
+0040     <span class="comment">%creation decalage par direction</span>
+0041     mat_pas=diag(pas_tayl);
+0042     mat_pas_dup=[zeros(1,nb_var*nb_val_init);repmat(mat_pas,1,nb_val_init)];
+0043     badord_tir=dup_tir+mat_pas_dup;
+0044     tirages_new=zeros((nb_var+1)*nb_val_init,nb_var);
+0045         
+0046     <span class="comment">%nouveaux points</span>
+0047     <span class="keyword">for</span> ii=1:nb_var
+0048         li=ii:nb_var:(nb_var*nb_val_init);            
+0049         tirages_new(:,ii)=reshape(badord_tir(:,li),(nb_var+1)*nb_val_init,[]);
+0050     <span class="keyword">end</span>
+0051     
+0052     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0053     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0054     <span class="comment">%%% Nettoyage si donnees manquantes (attention en cas de reponse</span>
+0055     <span class="comment">%%% manquante, on retire egalement le gradient car impossible d'estimer</span>
+0056     <span class="comment">%%% la valeur de la reponse aux points proches sans la valeur de cette</span>
+0057     <span class="comment">%%% reponse)</span>
+0058     pos_ev=[];
+0059     <span class="keyword">if</span> manq.eval.on
+0060         pos_tmp=manq.eval.ix_manq;
+0061         fprintf(<span class="string">' &gt;&gt;&gt; Supression informations (r�ponse(s) manquante(s)) a(aux) point(s):'</span>);
+0062         fprintf(<span class="string">' %i'</span>,pos_ev);
+0063         fprintf(<span class="string">'\n'</span>);
+0064         <span class="comment">%renumerotation pour extraction bonnes valeurs</span>
+0065         pos_tmp=(pos_tmp-1)*(nb_var+1)+1;
+0066         <span class="keyword">for</span> ii=1:numel(pos_tmp)
+0067             pos_ev=[pos_ev pos_tmp(ii):pos_tmp(ii)+nb_var+1];
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070 
+0071     pos_gr=[];
+0072     <span class="keyword">if</span> manq.grad.on
+0073         pos_tmp=manq.grad.ix_manq;
+0074         pos_gr=(pos_tmp(:,1)-1)*(nb_var+1)+1+pos_tmp(:,2);
+0075     <span class="keyword">end</span>
+0076   
+0077     <span class="comment">%position des elements manquants</span>
+0078     pos_manq=unique([pos_ev,pos_gr]);
+0079     
+0080     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0081     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0082     <span class="comment">%%% Creation des nouvelles reponses (aux points ajoutes)</span>
+0083     
+0084     <span class="comment">%Reordonnancement reponses</span>
+0085     tmp_ev=[eval zeros(nb_val_init,nb_var-1)];
+0086     reord_ev=reshape(tmp_ev',1,[]);
+0087     dup_ev=repmat(reord_ev,nb_var+1,[]);
+0088     <span class="comment">%Reordonnancement gradients</span>
+0089     reord_grad=reshape(grad',1,[]);
+0090     dup_grad=repmat(reord_grad,nb_var+1,[]);
+0091     tmp=mat_pas_dup.*dup_grad;
+0092     <span class="comment">%si donnees manquantes, traitement specifiques pour eviter les NaN</span>
+0093     <span class="keyword">if</span> manq.grad.on||manq.eval.on
+0094              IX=find(isnan(tmp(:)));
+0095              tmp(IX)=0;
+0096     <span class="keyword">end</span>
+0097         badord_ev=dup_ev+tmp;
+0098     <span class="comment">%nouvelles reponses</span>
+0099     tmp_ev=zeros((nb_var+1)*nb_val_init,nb_var);
+0100     <span class="keyword">for</span> ii=1:nb_var
+0101         li=ii:nb_var:(nb_var*nb_val_init);
+0102         tmp_ev(:,ii)=reshape(badord_ev(:,li),(nb_var+1)*nb_val_init,[]);
+0103     <span class="keyword">end</span>
+0104     eval_new=sum(tmp_ev,2);
+0105     
+0106     <span class="comment">%supression des donnees manquantes</span>
+0107     <span class="keyword">if</span> ~isempty(pos_manq)
+0108         tirages_new(pos_manq,:)=[];
+0109         eval_new(pos_manq)=[];
+0110     <span class="keyword">end</span>
+0111 
+0112 <span class="keyword">else</span>
+0113     <span class="comment">%%Attention donnees manquante non prises en compte dans cette approche</span>
+0114     <span class="comment">%%(a coder)</span>
+0115     <span class="comment">%calcul des pas de Taylor dans chaque direction</span>
+0116     pas_tayl_d=grad.tirages{1}-repmat(tirages(1,:),nb_var,1);
+0117     pas_tayl=abs(sum(pas_tayl_d,2));
+0118     
+0119     <span class="comment">%Nouveaux tirages et reponses</span>
+0120     tirages_new=zeros((nb_var+1)*nb_val_init,nb_var);
+0121     eval_new=zeros((nb_var+1)*nb_val_init,1);
+0122     <span class="keyword">for</span> ii=1:nb_val_init
+0123         li_tir=(ii-1)*(nb_var+1)+1;
+0124         li_tirg=li_tir+1:ii*(nb_var+1);
+0125         tirages_new(li_tir,:)=tirages(ii,:);
+0126         tirages_new(li_tirg,:)=grad.tirages{ii};
+0127         eval_new(li_tir)=eval(ii);
+0128         eval_new(li_tirg)=grad.eval{ii};
+0129     <span class="keyword">end</span>
+0130     
+0131     fprintf(<span class="string">'&gt;&gt; Valeur pas developpement de Taylor (auto):'</span>)
+0132     fprintf(<span class="string">' %d'</span>,pas_tayl);
+0133     fprintf(<span class="string">'\n'</span>)
+0134     
+0135 <span class="keyword">end</span>
+0136  fprintf(<span class="string">'\n'</span>);
+0137 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0138 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0139 <span class="comment">%%% Construction Krigeage a partir de ces donnees</span>
+0140 fprintf(<span class="string">'&gt;&gt;&gt; Nombre de points pris en compte: %d  \n'</span>,numel(eval_new));
+0141 ret=<a href="meta_krg_ckrg.html" class="code" title="function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)">meta_krg_ckrg</a>(tirages_new,eval_new,[],meta);
+0142 <span class="comment">%% extraction informations</span>
+0143 ret.in.tirages_init=tirages;
+0144 ret.in.eval_init=eval;
+0145 ret.in.pas_tayl=pas_tayl;
+0146</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

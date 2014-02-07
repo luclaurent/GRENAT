@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of likelihood</title>
+  <meta name="keywords" content="likelihood">
+  <meta name="description" content="%Fonction permettant le calcul de la vraisemblance et de la log">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>likelihood
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%Fonction permettant le calcul de la vraisemblance et de la log</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [logli,li]=likelihood(donnees) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%Fonction permettant le calcul de la vraisemblance et de la log
+%vraisemblance
+L. LAURENT -- 10/11/2010 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="bloc_krg_ckrg.html" class="code" title="function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)">bloc_krg_ckrg</a>	% Construction des blocs du Krigeage</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%Fonction permettant le calcul de la vraisemblance et de la log</span>
+0002 <span class="comment">%%vraisemblance</span>
+0003 <span class="comment">%L. LAURENT -- 10/11/2010 -- laurent@lmt.ens-cachan.fr</span>
+0004 
+0005 <span class="comment">%le calcul realise ici s'applique au krigeage</span>
+0006 <span class="comment">%% //!\\ calcul du logarithme neperien du determinant manuellement pour eviter les prob de precision de matlab</span>
+0007 <a name="_sub0" href="#_subfunctions" class="code">function [logli,li]=likelihood(donnees)</a>
+0008 
+0009 <span class="comment">%taille matrice de correlation</span>
+0010 tail_rcc=size(donnees.build.rcc,1);
+0011 
+0012 <span class="comment">%calcul de la log vraisemblance d'apres Jones 1993 / Leary 2004</span>
+0013 <span class="keyword">switch</span> donnees.build.fact_rcc
+0014     <span class="keyword">case</span> <span class="string">'QR'</span>
+0015         diagRrcc=diag(donnees.build.Rrcc);
+0016         det_corr=abs(prod(diagRrcc)); <span class="comment">%Q est une matrice unitaire</span>
+0017         log_det_corr=sum(log(abs(diagRrcc)));
+0018     <span class="keyword">case</span> <span class="string">'LL'</span>
+0019         diagLrcc=diag(donnees.build.Lrcc);
+0020         det_corr=prod(diagLrcc)^2;
+0021         log_det_corr=2*sum(log(abs(diagLrcc)));
+0022     <span class="keyword">case</span> <span class="string">'LU'</span>
+0023         diagUrcc=diag(donnees.build.Urcc);
+0024         det_corr=prod(diagUrcc); <span class="comment">%L est quasi triangulaire (a une permutation pres) et la matrice L comporte des 1 sur la diagonale</span>
+0025         log_det_corr=sum(log(abs(diagUrcc)));
+0026     <span class="keyword">otherwise</span>
+0027         eig_val=eig(donnees.build.rcc);
+0028         det_corr=prod(eig_val);
+0029         log_det_corr=sum(log(eig_val));
+0030 <span class="keyword">end</span>
+0031 <span class="keyword">global</span> lisack
+0032 logli=tail_rcc/2*log(2*pi*donnees.build.sig2)+1/2*log_det_corr+tail_rcc/2;
+0033 lisack=abs(det_corr)^(1/tail_rcc)*donnees.build.sig2;
+0034 <span class="comment">%logli=lisack;</span>
+0035 
+0036 <span class="keyword">if</span> isinf(logli)||isnan(logli)
+0037     logli=1e16;
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="keyword">if</span> nargout==2
+0041     <span class="comment">%calcul de la vraisemblance d'apres Jones 1993 / Leary 2004</span>
+0042     li=1/((2*pi*donnees.build.sig2)^(tail_rcc/2)*sqrt(det_corr))*exp(-tail_rcc/2);
+0043     
+0044 <span class="keyword">elseif</span> nargout &gt;2
+0045     error(<span class="string">'Mauvais nombre de parametres de sortie de la fonction likelihood.m'</span>);
+0046 <span class="keyword">end</span>
+0047</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

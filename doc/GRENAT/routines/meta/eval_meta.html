@@ -1,0 +1,430 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of eval_meta</title>
+  <meta name="keywords" content="eval_meta">
+  <meta name="description" content="% Evaluation du metamodele">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>eval_meta
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Evaluation du metamodele</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Z]=eval_meta(points,donnees,meta,verb) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Evaluation du metamodele
+% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
+ modif le 12/12/2011</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>	% Fonction assurant l'initialisation et l'affichage des infos temporelles dans les fonctions</li><li><a href="eval_krg_ckrg.html" class="code" title="function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)">eval_krg_ckrg</a>	% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage</li><li><a href="eval_prg.html" class="code" title="function [val]=eval_prg(coef,xx,deg)">eval_prg</a>	%evaluation de la fonction polynomiale</li><li><a href="eval_rbf.html" class="code" title="function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)">eval_rbf</a>	%fonction permettant d'evaluer le metamodele RBF en un ensemble de pts donnes</li><li><a href="eval_swf.html" class="code" title="function [Z,GZ]=eval_swf(U,swf)">eval_swf</a>	%% Fonction assurant l'evaluation du metamodele 'Shepard Weighting Functions'</li><li><a href="evald_prg.html" class="code" title="function [GRG1,GRG2]=evald_prg(coef,xx,yy,deg)">evald_prg</a>	%evaluation de la dérivée de la fonction polynomiale</li><li><a href="interp_lag.html" class="code" title="function [Z,GZ]=interp_lag(x,tirages,eval)">interp_lag</a>	% Interpolation par fonction polynomiale de Lagrange</li><li><a href="interp_lin.html" class="code" title="function [Z,GZ]=interp_lin(x,tirages,eval)">interp_lin</a>	% Interpolation par fonction de base lineaire</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/EXEMPLE_UTILISATION.html" class="code" title="">EXEMPLE_UTILISATION</a>	Exemple d'utilisation de la Toolbox GRENAT</li><li><a href="../../../GRENAT/EXEMPLE_UTILISATION_DOE.html" class="code" title="">EXEMPLE_UTILISATION_DOE</a>	Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function verif_interp(Ref,App,type)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Evaluation du metamodele</span>
+0002 <span class="comment">%% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr</span>
+0003 <span class="comment">% modif le 12/12/2011</span>
+0004 
+0005 
+0006 <a name="_sub0" href="#_subfunctions" class="code">function [Z]=eval_meta(points,donnees,meta,verb)</a>
+0007 
+0008 
+0009 [tMesu,tInit]=<a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>;
+0010 
+0011 <span class="comment">%reconditionnement donnees construction</span>
+0012 <span class="keyword">if</span> ~iscell(donnees)
+0013     donnees_const={donnees};
+0014     Z=struct;
+0015 <span class="keyword">else</span>
+0016     donnees_const=donnees;
+0017     <span class="keyword">if</span> numel(donnees)~=1
+0018         Z=cell(size(donnees));
+0019     <span class="keyword">else</span>
+0020         Z=[];
+0021     <span class="keyword">end</span>
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="comment">%parametre verbosite de la fonction</span>
+0025 <span class="keyword">if</span> nargin==3
+0026     verb=true;
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">%nombre de variables</span>
+0030 nb_var=donnees_const{1}.nb_var;
+0031 <span class="comment">%nombre de points</span>
+0032 nb_val=donnees_const{1}.nb_val;
+0033 dim_ev(1)=size(points,1);
+0034 dim_ev(2)=size(points,2);
+0035 dim_ev(3)=size(points,3);
+0036 
+0037 <span class="comment">%reconditionnement des points d'evaluations</span>
+0038 <span class="keyword">if</span> nb_var&gt;1
+0039     <span class="comment">% si les points d'entree correspondent a une grille</span>
+0040     <span class="keyword">if</span> dim_ev(3)~=1
+0041         <span class="comment">%alors on definit le nombre de points a evaluer</span>
+0042         nb_ev_pts=prod(dim_ev(1:2)); <span class="comment">%nb de points d'evaluation du metamodele</span>
+0043         ev_pts=zeros(nb_ev_pts,dim_ev(3));
+0044         <span class="keyword">for</span> ll=1:dim_ev(3)
+0045             tmp=points(:,:,ll);
+0046             ev_pts(:,ll)=tmp(:);
+0047         <span class="keyword">end</span>
+0048     <span class="keyword">else</span>
+0049         <span class="comment">%sinon on definit le nombre de points a evaluer</span>
+0050         nb_ev_pts=dim_ev(1);
+0051         ev_pts=points;
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">else</span>
+0054     nb_ev_pts=prod(dim_ev(1:2)); <span class="comment">%nb de points d'evaluation du metamodele</span>
+0055     ev_pts=points(:);
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%variables de stockage</span>
+0059 <span class="keyword">if</span> nb_var&gt;1
+0060     var_rep=zeros(size(ev_pts,1),1);
+0061     rep=zeros(size(ev_pts,1),1);
+0062     GR=zeros(nb_ev_pts,nb_var);
+0063 <span class="keyword">else</span>
+0064     var_rep=[];
+0065     rep=[];
+0066     GR=[];
+0067 <span class="keyword">end</span>
+0068 <span class="keyword">if</span> nb_ev_pts&gt;1&amp;&amp;verb
+0069     fprintf(<span class="string">'#########################################\n'</span>);
+0070     fprintf(<span class="string">'  &gt;&gt;&gt; EVALUATION METAMODELE &lt;&lt;&lt;\n'</span>);
+0071 <span class="keyword">end</span>
+0072 <span class="comment">%parallelisme</span>
+0073 numw=0;
+0074 <span class="keyword">if</span> ~isempty(whos(<span class="string">'parallel'</span>,<span class="string">'global'</span>))
+0075     <span class="keyword">global</span> parallel
+0076     numw=parallel.num;
+0077 <span class="keyword">end</span>
+0078 <span class="comment">%%%%%%% Evaluation de divers metamodeles</span>
+0079 <span class="comment">% generation des metamodeles</span>
+0080 <span class="keyword">for</span> num_meta=1:numel(donnees_const)
+0081     type=donnees_const{num_meta}.type;
+0082     meta_donnee=donnees_const{num_meta};
+0083     
+0084     <span class="comment">%chargement variables</span>
+0085     tirages=meta_donnee.tirages;
+0086     eval=meta_donnee.eval;
+0087     grad=meta_donnee.grad;
+0088     
+0089     <span class="comment">%si l'on souhaite verifier le metamodele a l'evaluation (verification</span>
+0090     <span class="comment">%de l'interpolation)</span>
+0091     <span class="keyword">if</span> meta.verif
+0092         Zverif=zeros(nb_val,1);varverif=zeros(nb_val,1);
+0093         GZverif=zeros(nb_val,nb_var);
+0094     <span class="keyword">end</span>
+0095     <span class="keyword">switch</span> type
+0096         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0097         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0098         <span class="keyword">case</span> <span class="string">'SWF'</span>
+0099             <span class="comment">%%    Evaluation du metamodele 'Shepard Weighting Functions'</span>
+0100             <span class="keyword">for</span> jj=1:nb_ev_pts
+0101                 [rep(jj),G]=<a href="eval_swf.html" class="code" title="function [Z,GZ]=eval_swf(U,swf)">eval_swf</a>(ev_pts(jj,:),meta_donnee);
+0102                 GR(jj,:)=G;
+0103             <span class="keyword">end</span>
+0104             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0105             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0106         <span class="keyword">case</span> {<span class="string">'GRBF'</span>,<span class="string">'RBF'</span>,<span class="string">'InRBF'</span>}
+0107             <span class="comment">%% Evaluation du metamodele de RBF/GRBF</span>
+0108             parfor (jj=1:nb_ev_pts,numw)
+0109                 
+0110                 [rep(jj),G,var_rep(jj),det]=<a href="eval_rbf.html" class="code" title="function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)">eval_rbf</a>(ev_pts(jj,:),meta_donnee);
+0111                 GR(jj,:)=G;
+0112             <span class="keyword">end</span>
+0113             <span class="comment">%% verification interpolation</span>
+0114             <span class="keyword">if</span> meta.verif
+0115                 parfor (jj=1:size(tirages,1),numw)
+0116                     [Zverif(jj),G]=<a href="eval_rbf.html" class="code" title="function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)">eval_rbf</a>(tirages(jj,:),meta_donnee);
+0117                     GZverif(jj,:)=G;
+0118                 <span class="keyword">end</span>
+0119                 <a href="#_sub1" class="code" title="subfunction verif_interp(Ref,App,type)">verif_interp</a>(eval,Zverif,<span class="string">'rep'</span>)
+0120                 <span class="keyword">if</span> meta_donnee.in.pres_grad
+0121                     <a href="#_sub1" class="code" title="subfunction verif_interp(Ref,App,type)">verif_interp</a>(grad,GZverif,<span class="string">'grad'</span>)
+0122                 <span class="keyword">end</span>
+0123             <span class="keyword">end</span>
+0124             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0125             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0126         <span class="keyword">case</span> {<span class="string">'KRG'</span>,<span class="string">'CKRG'</span>,<span class="string">'InKRG'</span>}
+0127             
+0128             <span class="comment">%stockage specifique</span>
+0129             Z_sto=rep;Z_reg=rep;
+0130             GR_reg=GR;GR_sto=GR;
+0131             <span class="comment">%% Evaluation du metamodele de Krigeage/CoKrigeage</span>
+0132             parfor (jj=1:nb_ev_pts,numw)
+0133                 [rep(jj),G,var_rep(jj),det]=<a href="eval_krg_ckrg.html" class="code" title="function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)">eval_krg_ckrg</a>(ev_pts(jj,:),meta_donnee);
+0134                 GR(jj,:)=G;
+0135                 Z_sto(jj)=det.Z_sto;
+0136                 Z_reg(jj)=det.Z_reg;
+0137                 GR_reg(jj,:)=det.GZ_reg;
+0138                 GR_sto(jj,:)=det.GZ_sto;
+0139             <span class="keyword">end</span>
+0140             <span class="comment">%% verification interpolation</span>
+0141             <span class="keyword">if</span> meta.verif
+0142                 parfor (jj=1:size(tirages,1),numw)
+0143                     [Zverif(jj),G]=<a href="eval_krg_ckrg.html" class="code" title="function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)">eval_krg_ckrg</a>(tirages(jj,:),meta_donnee);
+0144                     GZverif(jj,:)=G;
+0145                 <span class="keyword">end</span>
+0146                 <a href="#_sub1" class="code" title="subfunction verif_interp(Ref,App,type)">verif_interp</a>(eval,Zverif,<span class="string">'rep'</span>)
+0147                 <span class="keyword">if</span> meta_donnee.in.pres_grad
+0148                     <a href="#_sub1" class="code" title="subfunction verif_interp(Ref,App,type)">verif_interp</a>(grad,GZverif,<span class="string">'grad'</span>)
+0149                 <span class="keyword">end</span>
+0150             <span class="keyword">end</span>
+0151             
+0152             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0153             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0154             
+0155         <span class="keyword">case</span> <span class="string">'DACE'</span>
+0156             <span class="comment">%% Evaluation du metamodele de Krigeage (DACE)</span>
+0157             <span class="keyword">for</span> jj=1:nb_ev_pts
+0158                 [rep(jj),G,var_rep(jj)]=predictor(ev_pts(jj,:),meta_donnee.model);
+0159                 GR(jj,:)=G;
+0160             <span class="keyword">end</span>
+0161             <span class="comment">%% verification interpolation</span>
+0162             <span class="keyword">if</span> meta.verif
+0163                 parfor (jj=1:size(tirages,1),numw)
+0164                     [Zverif(jj),G]=predictor(tirages(jj,:),meta_donnee.model);
+0165                     GZverif(jj,:)=G;
+0166                 <span class="keyword">end</span>
+0167                 <a href="#_sub1" class="code" title="subfunction verif_interp(Ref,App,type)">verif_interp</a>(eval,Zverif,<span class="string">'rep'</span>)
+0168             <span class="keyword">end</span>
+0169             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0170             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0171         <span class="keyword">case</span> <span class="string">'PRG'</span>
+0172             <span class="keyword">for</span> degre=meta.deg
+0173                 <span class="comment">%% Evaluation du metamodele de Regression</span>
+0174                 parfor (jj=1:nb_ev_pts,numw)
+0175                     rep(jj)=<a href="eval_prg.html" class="code" title="function [val]=eval_prg(coef,xx,deg)">eval_prg</a>(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+0176                     <span class="comment">%evaluation des gradients du MT</span>
+0177                     [GRG1,GRG2]=<a href="evald_prg.html" class="code" title="function [GRG1,GRG2]=evald_prg(coef,xx,yy,deg)">evald_prg</a>(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+0178                     GR(jj,:)=[GRG1,GRG2];
+0179                 <span class="keyword">end</span>
+0180             <span class="keyword">end</span>
+0181             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0182             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0183         <span class="keyword">case</span> <span class="string">'ILIN'</span>
+0184             <span class="comment">%% interpolation par fonction de base lineaire</span>
+0185             fprintf(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction de base lin�aire'</span> textf]);
+0186             parfor (jj=1:nb_ev_pts,numw)
+0187                 [rep(jj),G]=<a href="interp_lin.html" class="code" title="function [Z,GZ]=interp_lin(x,tirages,eval)">interp_lin</a>(ev_pts(jj,:),meta_donnee);
+0188                 GR1(jj,:)=G;
+0189                 
+0190             <span class="keyword">end</span>
+0191             
+0192             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0193             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0194         <span class="keyword">case</span> <span class="string">'ILAG'</span>
+0195             <span class="comment">%% interpolation par fonction polynomiale de Lagrange</span>
+0196             fprintf(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction polynomiale de Lagrange'</span> textf]);
+0197             parfor (jj=1:nb_ev_pts,numw)
+0198                 [rep(jj),G]=<a href="interp_lag.html" class="code" title="function [Z,GZ]=interp_lag(x,tirages,eval)">interp_lag</a>(ev_pts(jj,:),meta_donnee);
+0199                 GR1(jj,:)=G;
+0200                 
+0201             <span class="keyword">end</span>
+0202             
+0203     <span class="keyword">end</span>
+0204     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0205     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0206     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0207     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0208     <span class="comment">% calcul des criteres d'enrichissement</span>
+0209     explor_EI=[];
+0210     exploit_EI=[];
+0211     ei=[];
+0212     wei=[];
+0213     gei=[];
+0214     lcb=[];
+0215     <span class="keyword">if</span> meta.enrich.on&amp;&amp;exist(<span class="string">'var_rep'</span>,<span class="string">'var'</span>)
+0216         <span class="comment">%reponse mini</span>
+0217         eval_min=min(meta_donnee.eval);
+0218         <span class="comment">%calcul criteres enrichissement</span>
+0219         [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,rep,var_rep,meta.enrich);
+0220     <span class="keyword">end</span>
+0221     
+0222     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0223     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0224     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0225     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0226     <span class="comment">%reconditionnement gradients</span>
+0227     <span class="keyword">if</span> nb_var&gt;1
+0228         <span class="keyword">if</span> exist(<span class="string">'GR_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'GR_reg'</span>,<span class="string">'var'</span>)==1
+0229             GZ_sto=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+0230             GZ_reg=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+0231         <span class="keyword">end</span>
+0232         GZ=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+0233         <span class="keyword">if</span> dim_ev(3)&gt;1
+0234             <span class="keyword">for</span> ll=1:dim_ev(3)
+0235                 tmp=GR(:,ll);
+0236                 GZ(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
+0237             <span class="keyword">end</span>
+0238             <span class="keyword">if</span> exist(<span class="string">'GR_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'GR_reg'</span>,<span class="string">'var'</span>)==1
+0239                 <span class="keyword">for</span> ll=1:dim_ev(3)
+0240                     tmp=GR_sto(:,ll);
+0241                     tmp1=GR_reg(:,ll);
+0242                     GZ_sto(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
+0243                     GZ_reg(:,:,ll)=reshape(tmp1,dim_ev(1),dim_ev(2));
+0244                 <span class="keyword">end</span>
+0245             <span class="keyword">end</span>
+0246         <span class="keyword">else</span>
+0247             GZ=GR;
+0248             <span class="keyword">if</span> exist(<span class="string">'GR_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'GR_reg'</span>,<span class="string">'var'</span>)==1
+0249                 GZ_sto=GR_sto;
+0250                 GZ_reg=GR_reg;
+0251             <span class="keyword">end</span>
+0252         <span class="keyword">end</span>
+0253     <span class="keyword">else</span>
+0254         GZ=GR;
+0255         <span class="keyword">if</span> exist(<span class="string">'GR_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'GR_reg'</span>,<span class="string">'var'</span>)==1
+0256             GZ_sto=GR_sto;
+0257             GZ_reg=GR_reg;
+0258         <span class="keyword">end</span>
+0259     <span class="keyword">end</span>
+0260     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0261     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0262     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0263     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0264     <span class="comment">%Stockage des evaluations</span>
+0265     <span class="keyword">if</span> numel(donnees_const)==1
+0266         <span class="keyword">if</span> nb_var&gt;1
+0267             <span class="keyword">if</span> dim_ev(3)==1
+0268                 <span class="keyword">if</span> exist(<span class="string">'Z_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'Z_reg'</span>,<span class="string">'var'</span>)==1
+0269                     Z.Z_sto=Z_sto;
+0270                     Z.Z_reg=Z_reg;
+0271                 <span class="keyword">end</span>
+0272                 Z.Z=rep;
+0273                 <span class="keyword">if</span> ~isempty(var_rep);Z.var=var_rep;<span class="keyword">end</span>
+0274                 <span class="keyword">if</span> exist(<span class="string">'wei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(wei);Z.wei=wei;<span class="keyword">end</span>, <span class="keyword">end</span>
+0275                 <span class="keyword">if</span> exist(<span class="string">'ei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(ei);Z.ei=ei;<span class="keyword">end</span>, <span class="keyword">end</span>
+0276                 <span class="keyword">if</span> exist(<span class="string">'gei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(gei);Z.gei=gei;<span class="keyword">end</span>, <span class="keyword">end</span>
+0277                 <span class="keyword">if</span> exist(<span class="string">'lcb'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(lcb);Z.lcb=lcb;<span class="keyword">end</span>, <span class="keyword">end</span>
+0278                 <span class="keyword">if</span> exist(<span class="string">'explor_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(explor_EI);Z.explor_EI=explor_EI;<span class="keyword">end</span>, <span class="keyword">end</span>
+0279                 <span class="keyword">if</span> exist(<span class="string">'exploit_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(exploit_EI);Z.exploit_EI=exploit_EI;<span class="keyword">end</span>, <span class="keyword">end</span>
+0280             <span class="keyword">else</span>
+0281                 <span class="keyword">if</span> exist(<span class="string">'Z_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'Z_reg'</span>,<span class="string">'var'</span>)==1
+0282                     Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+0283                     Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+0284                 <span class="keyword">end</span>
+0285                 Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+0286                 <span class="keyword">if</span> ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));<span class="keyword">end</span>
+0287                 <span class="keyword">if</span> exist(<span class="string">'wei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0288                 <span class="keyword">if</span> exist(<span class="string">'ei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0289                 <span class="keyword">if</span> exist(<span class="string">'gei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0290                 <span class="keyword">if</span> exist(<span class="string">'lcb'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0291                 <span class="keyword">if</span> exist(<span class="string">'explor_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(explor_EI);Z.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0292                 <span class="keyword">if</span> exist(<span class="string">'exploit_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(exploit_EI);Z.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0293             <span class="keyword">end</span>
+0294         <span class="keyword">else</span>
+0295             <span class="keyword">if</span> exist(<span class="string">'Z_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'Z_reg'</span>,<span class="string">'var'</span>)==1
+0296                 Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
+0297                 Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+0298             <span class="keyword">end</span>
+0299             Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
+0300             <span class="keyword">if</span> ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));<span class="keyword">end</span>
+0301             <span class="keyword">if</span> exist(<span class="string">'wei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0302             <span class="keyword">if</span> exist(<span class="string">'ei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0303             <span class="keyword">if</span> exist(<span class="string">'gei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0304             <span class="keyword">if</span> exist(<span class="string">'lcb'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0305             <span class="keyword">if</span> exist(<span class="string">'explor_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(explor_EI);Z.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0306             <span class="keyword">if</span> exist(<span class="string">'exploit_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(exploit_EI);Z.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0307         <span class="keyword">end</span>
+0308         Z.GZ=GZ;
+0309         <span class="keyword">if</span> exist(<span class="string">'GZ_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'GZ_reg'</span>,<span class="string">'var'</span>)==1
+0310             Z.GZ_sto=GZ_sto;Z.GZ_reg=GZ_reg;
+0311         <span class="keyword">end</span>
+0312     <span class="keyword">else</span>
+0313         Z{num_meta}.Z=reshape(rep,dim_ev(1),dim_ev(2));
+0314         Z{num_meta}.GZ=GZ;
+0315         <span class="keyword">if</span> ~isempty(<span class="string">'var_rep'</span>);Z{num_meta}.var=reshape(var_rep,dim_ev(1),dim_ev(2));<span class="keyword">end</span>
+0316         <span class="keyword">if</span> exist(<span class="string">'wei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(wei);Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0317         <span class="keyword">if</span> exist(<span class="string">'gei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(gei);Z{num_meta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0318         <span class="keyword">if</span> exist(<span class="string">'ei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(ei);Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0319         <span class="keyword">if</span> exist(<span class="string">'lcb'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(lcb);Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0320         <span class="keyword">if</span> exist(<span class="string">'explor_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(explor_EI);Z{num_meta}.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0321         <span class="keyword">if</span> exist(<span class="string">'exploit_EI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(exploit_EI);Z{num_meta}.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0322         <span class="keyword">if</span> exist(<span class="string">'GZ_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'GZ_reg'</span>,<span class="string">'var'</span>)==1
+0323             Z{num_meta}.GZ_sto=GZ_sto;Z{num_meta}.GZ_reg=GZ_reg;
+0324         <span class="keyword">end</span>
+0325         <span class="keyword">if</span> exist(<span class="string">'Z_sto'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'Z_reg'</span>,<span class="string">'var'</span>)==1
+0326             Z{num_meta}.Z_sto=Z_sto;Z{num_meta}.Z_reg=Z_reg;
+0327         <span class="keyword">end</span>
+0328     <span class="keyword">end</span>
+0329 <span class="keyword">end</span>
+0330 
+0331 <span class="keyword">if</span> nb_ev_pts&gt;1&amp;&amp;verb
+0332     fprintf(<span class="string">'++ Evaluation en %i points\n'</span>,nb_ev_pts);
+0333     <a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>(tMesu,tInit);
+0334     fprintf(<span class="string">'#########################################\n'</span>);
+0335 <span class="keyword">end</span>
+0336 
+0337 <span class="keyword">end</span>
+0338 
+0339 <span class="comment">%%% routine de v�rification de l'interpolation</span>
+0340 <a name="_sub1" href="#_subfunctions" class="code">function verif_interp(Ref,App,type)</a>
+0341 limite_rep=1e-4;
+0342 limite_grad=1e-4;
+0343 <span class="keyword">switch</span> type
+0344     <span class="keyword">case</span> <span class="string">'rep'</span>
+0345         diffZ=abs(App-Ref);
+0346         IXZverif=find(diffZ&gt;limite_rep);
+0347         <span class="keyword">if</span> ~isempty(IXZverif)
+0348             fprintf(<span class="string">'Pb d''interpolation (eval)\n'</span>)
+0349             fprintf(<span class="string">'Num\t||DiffZ \t||Eval \t||Zverif\n'</span>);
+0350             conc=vertcat(IXZverif',diffZ(IXZverif)',Ref(IXZverif)',App(IXZverif)');
+0351             fprintf(<span class="string">'%d\t||%4.2e\t||%4.2e\t||%4.2e\n'</span>,conc(:))
+0352         <span class="keyword">end</span>
+0353     <span class="keyword">case</span> <span class="string">'grad'</span>
+0354         diffGZ=abs(App-Ref);
+0355         IXGZverif=find(diffGZ&gt;limite_grad);
+0356         <span class="keyword">if</span> ~isempty(IXGZverif)
+0357             [IXi,~]=ind2sub(size(diffGZ),IXGZverif);
+0358             IXi=unique(IXi);
+0359             fprintf(<span class="string">'Pb d''interpolation (grad)\n'</span>)
+0360             nb_var=size(App,2);
+0361             tt=repmat(<span class="string">'\t\t'</span>,1,nb_var);
+0362             fprintf([<span class="string">'Num\t||DiffGZ'</span> tt <span class="string">'||Grad'</span> tt <span class="string">'||GZverif\n'</span>]);
+0363             conc=[IXi,diffGZ(IXi,:),Ref(IXi,:),App(IXi,:)]';
+0364             tt=repmat(<span class="string">'%4.2e\t'</span>,1,nb_var);
+0365             tt=[<span class="string">'%d\t||'</span> tt <span class="string">'||'</span> tt <span class="string">'||'</span> tt <span class="string">'\n'</span>];
+0366             fprintf(tt,conc(:))
+0367             
+0368         <span class="keyword">end</span>
+0369         diffNG=abs(sqrt(sum(Ref.^2,2))-sqrt(sum(App.^2,2)));
+0370         IXNGZverif=find(diffNG&gt;limite_grad);
+0371         <span class="keyword">if</span> ~isempty(IXNGZverif)
+0372             fprintf(<span class="string">'Pb d''interpolation (grad)\n'</span>)
+0373             fprintf(<span class="string">'DiffNG\n'</span>)
+0374             fprintf(<span class="string">'%4.2e\n'</span>,diffNG(IXNGZverif))
+0375         <span class="keyword">end</span>
+0376 <span class="keyword">end</span>
+0377 <span class="keyword">end</span>
+0378 
+0379 
+0380</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

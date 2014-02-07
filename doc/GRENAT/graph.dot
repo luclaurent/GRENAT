@@ -1,0 +1,10 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  EXEMPLE_UTILISATION -> init_rep_GRENAT;
+  EXEMPLE_UTILISATION_DOE -> init_rep_GRENAT;
+
+  EXEMPLE [URL="EXEMPLE.html"];
+  EXEMPLE_UTILISATION [URL="EXEMPLE_UTILISATION.html"];
+  EXEMPLE_UTILISATION_DOE [URL="EXEMPLE_UTILISATION_DOE.html"];
+  init_rep_GRENAT [URL="init_rep_GRENAT.html"];
+}

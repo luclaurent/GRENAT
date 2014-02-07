@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of meta_swf</title>
+  <meta name="keywords" content="meta_swf">
+  <meta name="description" content="%% Fonction assurant la préparation des données pour le metamodele 'Shepard Weighting Functions'">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>meta_swf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%% Fonction assurant la préparation des données pour le metamodele 'Shepard Weighting Functions'</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function swf=meta_swf(tirages,eval,grad,meta) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%% Fonction assurant la préparation des données pour le metamodele 'Shepard Weighting Functions'
+% L. LAURENT -- 23/11/2011 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/routines/divers/norm_denorm.html" class="code" title="function [out,infos]=norm_denorm(in,type,infos)">norm_denorm</a>	% fonction assurant la normalisation/denormalisation des donnees</li><li><a href="../../../GRENAT/routines/divers/norm_denorm_g.html" class="code" title="function [out]=norm_denorm_g(in,type,infos)">norm_denorm_g</a>	% fonction assurant la normalisation/denormalisation des donnees de type gradients</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="const_meta.html" class="code" title="function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)">const_meta</a>	% fonction assurant la construction du metamodele (pas son evaluation)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%% Fonction assurant la préparation des données pour le metamodele 'Shepard Weighting Functions'</span>
+0002 <span class="comment">%% L. LAURENT -- 23/11/2011 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function swf=meta_swf(tirages,eval,grad,meta)</a>
+0005 
+0006 <span class="keyword">global</span> aff
+0007 
+0008 <span class="comment">%initialisation compteur temps</span>
+0009 tic;tps_start=toc;
+0010 
+0011 <span class="comment">%nombre d'evalutions</span>
+0012 nbs=size(eval,1);
+0013 <span class="comment">%dimension du pb (nb de variables de conception)</span>
+0014 nbv=size(tirages,2);
+0015 
+0016 <span class="comment">%Presence des gradients</span>
+0017 pec_grad=~isempty(grad);
+0018 
+0019 <span class="comment">%Normalisation</span>
+0020 <span class="keyword">if</span> meta.norm
+0021     fprintf(<span class="string">'Normalisation\n'</span>);
+0022     <span class="comment">%normalisation des données</span>
+0023     [evaln,infos_e]=<a href="../../../GRENAT/routines/divers/norm_denorm.html" class="code" title="function [out,infos]=norm_denorm(in,type,infos)">norm_denorm</a>(eval,<span class="string">'norm'</span>);
+0024     [tiragesn,infos_t]=<a href="../../../GRENAT/routines/divers/norm_denorm.html" class="code" title="function [out,infos]=norm_denorm(in,type,infos)">norm_denorm</a>(tirages,<span class="string">'norm'</span>);
+0025     infos.std_e=infos_e.std;std_e=infos_e.std;
+0026     infos.moy_e=infos_e.moy;moy_e=infos_e.moy;
+0027     infos.std_t=infos_t.std;std_t=infos_t.std;
+0028     infos.moy_t=infos_t.moy;moy_t=infos_t.moy;
+0029     <span class="keyword">if</span> pec_grad
+0030         gradn=<a href="../../../GRENAT/routines/divers/norm_denorm_g.html" class="code" title="function [out]=norm_denorm_g(in,type,infos)">norm_denorm_g</a>(grad,<span class="string">'norm'</span>,infos);
+0031     <span class="keyword">end</span>
+0032     <span class="comment">%sauvegarde des calculs</span>
+0033     swf.norm.moy_eval=infos_e.moy;
+0034     swf.norm.std_eval=infos_e.std;
+0035     swf.norm.moy_tirages=infos_t.moy;
+0036     swf.norm.std_tirages=infos_t.std;
+0037     swf.norm.on=true;
+0038     clear infos_e infos_t
+0039     clear infos
+0040     swf.norm.on=true;
+0041 <span class="keyword">else</span>
+0042     swf.norm.on=false;
+0043     evaln=eval;
+0044     tiragesn=tirages;
+0045     gradn=grad;
+0046 <span class="keyword">end</span>
+0047 
+0048 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0049 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0050 <span class="comment">%creation vecteur des tirages</span>
+0051 swf.tirages=tiragesn;
+0052 
+0053 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0054 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0055 <span class="comment">%creation vecteur des evaluations et de gradients</span>
+0056 swf.eval=evaln;
+0057 swf.grad=gradn;
+0058 
+0059 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0060 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0061 <span class="comment">%sauvegarde des données</span>
+0062 swf.nbs=nbs;
+0063 swf.nbv=nbv;
+0064 swf.para=meta.swf_para;    <span class="comment">%rayon d'influence des fonctions de ponderation</span>
+0065 <span class="keyword">if</span> pec_grad
+0066     tt=tirages';
+0067     stock=zeros(nbs*(nbv+1),1);
+0068     ind=1:(nbs*(nbv+1));
+0069     
+0070     rech=mod(ind,nbv+1);
+0071     IX=find(rech==1);
+0072     IXX=find(rech~=1);
+0073     
+0074     stock(IXX)=tt(:);
+0075     swf.tir_colon=stock;    <span class="comment">%conditionnement des tirages pour construction avec gradients</span>
+0076     data=stock;
+0077     data(IX)=evaln;
+0078     data(IXX)=gradn;
+0079     swf.F=data;             <span class="comment">%conditionnement des �valuations et gradients</span>
+0080     
+0081 <span class="keyword">end</span>
+0082 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0083 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0084 <span class="comment">%fittage des parametres par CV (LOO)</span>
+0085 
+0086 
+0087 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0088 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0089 tps_stop=toc;
+0090 swf.tps=tps_stop-tps_start;
+0091 fprintf(<span class="string">'\nExecution preparation SWF: %6.4d s\n'</span>,tps_stop-tps_start);
+0092 
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

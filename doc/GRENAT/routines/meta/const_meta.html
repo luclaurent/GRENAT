@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of const_meta</title>
+  <meta name="keywords" content="const_meta">
+  <meta name="description" content="% fonction assurant la construction du metamodele (pas son evaluation)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>const_meta
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% fonction assurant la construction du metamodele (pas son evaluation)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% fonction assurant la construction du metamodele (pas son evaluation)
+% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/routines/divers/examen_in_data.html" class="code" title="function [ret]=examen_in_data(tirages,eval,grad)">examen_in_data</a>	% fonction assurant l'examen des donn�es entrante (en cas de donn�es manquantes)</li><li><a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>	% Fonction assurant l'initialisation et l'affichage des infos temporelles dans les fonctions</li><li><a href="meta_inkrg.html" class="code" title="function ret=meta_inkrg(tirages,eval,grad,meta,manq)">meta_inkrg</a>	% fonction assurant la construction du Krigeage a gradients indirect</li><li><a href="meta_inrbf.html" class="code" title="function ret=meta_inrbf(tirages,eval,grad,meta,manq)">meta_inrbf</a>	% fonction assurant la construction du RBF a gradients indirect</li><li><a href="meta_krg_ckrg.html" class="code" title="function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)">meta_krg_ckrg</a>	% fonction de construction des metamodeles de Krigeage et de Cokrigeage</li><li><a href="meta_prg.html" class="code" title="function [B,MSE]=meta_prg(xx,eval,deg)">meta_prg</a>	%fonction permettant d'etablir une regression polynomiale à partir d'un</li><li><a href="meta_rbf.html" class="code" title="function ret=meta_rbf(tirages,eval,grad,meta,manq)">meta_rbf</a>	%fonction permettant de construire un metamodele à l'aide de fonctions a</li><li><a href="meta_swf.html" class="code" title="function swf=meta_swf(tirages,eval,grad,meta)">meta_swf</a>	%% Fonction assurant la préparation des données pour le metamodele 'Shepard Weighting Functions'</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/EXEMPLE_UTILISATION.html" class="code" title="">EXEMPLE_UTILISATION</a>	Exemple d'utilisation de la Toolbox GRENAT</li><li><a href="../../../GRENAT/EXEMPLE_UTILISATION_DOE.html" class="code" title="">EXEMPLE_UTILISATION_DOE</a>	Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% fonction assurant la construction du metamodele (pas son evaluation)</span>
+0002 <span class="comment">%% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)</a>
+0005 
+0006 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
+0007 fprintf(<span class="string">'  &gt;&gt;&gt; CONSTRUCTION METAMODELE &lt;&lt;&lt;\n'</span>);
+0008 [tMesu,tInit]=<a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>;
+0009 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0010 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0011 <span class="comment">%prise en compte gradients ou pas</span>
+0012 <span class="keyword">if</span> isempty(grad_in);pec_grad=<span class="string">'Non'</span>;grad_in=[];<span class="keyword">else</span> pec_grad=<span class="string">'Oui'</span>;<span class="keyword">end</span>
+0013 fprintf(<span class="string">'\n++ Gradients disponibles: %s\n'</span>,pec_grad);
+0014 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0015 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0016 <span class="comment">% Generation du metamodele</span>
+0017 textd=<span class="string">'++ Type: '</span>;
+0018 textf=<span class="string">''</span>;
+0019 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0020 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0021 <span class="comment">%nombre de variables</span>
+0022 nb_var=size(tirages,2);
+0023 <span class="comment">%nombre de points</span>
+0024 nb_val=size(tirages,1);
+0025 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0026 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0027 <span class="comment">%mise en forme type de metamodele</span>
+0028 <span class="keyword">if</span> ~iscell(meta.type)
+0029     metype={meta.type};
+0030 <span class="keyword">else</span>
+0031     metype=meta.type;
+0032 <span class="keyword">end</span>
+0033 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0034 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0035 <span class="comment">%conditionnement pour InKRG (prise en compte donnees sous forme struct)</span>
+0036 <span class="keyword">if</span> nargin==5&amp;&amp;isstruct(grad_in)
+0037     grad.eval=grad_in.eval{num_fct};
+0038     grad.tirages=grad_in.tirages{num_fct};
+0039 <span class="keyword">else</span>
+0040     grad=grad_in;
+0041 <span class="keyword">end</span>
+0042 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0043 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0044 <span class="comment">%Examen des donnees entrantes (traitement des donn�es manquantes</span>
+0045 [bilan_manq]=<a href="../../../GRENAT/routines/divers/examen_in_data.html" class="code" title="function [ret]=examen_in_data(tirages,eval,grad)">examen_in_data</a>(tirages,eval,grad_in);
+0046 
+0047 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0048 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0049 <span class="comment">%%%%%%% Generation de divers metamodeles</span>
+0050 <span class="comment">%initialisation stockage</span>
+0051 ret=cell(length(meta.type),1);
+0052 <span class="comment">% generation des metamodeles</span>
+0053 num_meta=1;
+0054 <span class="keyword">for</span> type=metype
+0055     <span class="comment">%construction metamodele</span>
+0056     <span class="keyword">switch</span> type{1}
+0057         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0058         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0059         <span class="keyword">case</span> <span class="string">'SWF'</span>
+0060             <span class="comment">%% construction du metamodele 'Shepard Weighting Functions'</span>
+0061             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Fonctions Shepard (SWF)'</span> textf]);
+0062             <span class="comment">%affichage informations</span>
+0063             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n'</span>,nb_var,nb_val)
+0064             swf=<a href="meta_swf.html" class="code" title="function swf=meta_swf(tirages,eval,grad,meta)">meta_swf</a>(tirages,eval,grad_in,meta);
+0065             out_meta=swf;
+0066             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0067             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0068         <span class="keyword">case</span> <span class="string">'RBF'</span>
+0069             <span class="comment">%% construction du metamodele 'RBF' (Radial Basis Functions)</span>
+0070             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Radial Basis Functions (RBF)'</span> textf]);
+0071             <span class="comment">%affichage informations</span>
+0072             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n'</span>,nb_var,nb_val)
+0073             rbf=<a href="meta_rbf.html" class="code" title="function ret=meta_rbf(tirages,eval,grad,meta,manq)">meta_rbf</a>(tirages,eval,[],meta,bilan_manq);
+0074             out_meta=rbf;
+0075             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0076             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0077         <span class="keyword">case</span> <span class="string">'GRBF'</span>
+0078             <span class="comment">%% construction du metamodele 'GRBF' (Hermite-Birkhoff Radial Basis Functions)</span>
+0079             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Gradient-based Radial Basis Functions (GRBF)'</span> textf]);
+0080             <span class="comment">%affichage informations</span>
+0081             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n'</span>,nb_var,nb_val)
+0082             rbf=<a href="meta_rbf.html" class="code" title="function ret=meta_rbf(tirages,eval,grad,meta,manq)">meta_rbf</a>(tirages,eval,grad_in,meta,bilan_manq);
+0083             out_meta=rbf;
+0084             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0085             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0086         <span class="keyword">case</span> <span class="string">'InKRG'</span>
+0087             <span class="comment">%% Construction du metamodele de Krigeage Indirect</span>
+0088             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Krigeage indirect'</span> textf]);
+0089             <span class="comment">%affichage informations</span>
+0090             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n\n'</span>,nb_var,nb_val)
+0091             inkrg=<a href="meta_inkrg.html" class="code" title="function ret=meta_inkrg(tirages,eval,grad,meta,manq)">meta_inkrg</a>(tirages,eval,grad,meta,bilan_manq); <span class="comment">%% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)</span>
+0092             out_meta=inkrg;
+0093             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0094             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0095         <span class="keyword">case</span> <span class="string">'InRBF'</span>
+0096             <span class="comment">%% Construction du metamodele de Krigeage Indirect</span>
+0097             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Krigeage indirect'</span> textf]);
+0098             <span class="comment">%affichage informations</span>
+0099             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n\n'</span>,nb_var,nb_val)
+0100             inrbf=<a href="meta_inrbf.html" class="code" title="function ret=meta_inrbf(tirages,eval,grad,meta,manq)">meta_inrbf</a>(tirages,eval,grad,meta,bilan_manq); <span class="comment">%% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)</span>
+0101             out_meta=inrbf;
+0102             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0103             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0104         <span class="keyword">case</span> <span class="string">'CKRG'</span>
+0105             <span class="comment">%% Construction du metamodele de CoKrigeage</span>
+0106             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'CoKrigeage'</span> textf]);
+0107             <span class="comment">%affichage informations</span>
+0108             fprintf(<span class="string">'Nombre de variables: %d \nNombre de points: %d\n'</span>,nb_var,nb_val)
+0109             ckrg=<a href="meta_krg_ckrg.html" class="code" title="function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)">meta_krg_ckrg</a>(tirages,eval,grad_in,meta,bilan_manq);
+0110             out_meta=ckrg;
+0111             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0112             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0113         <span class="keyword">case</span> <span class="string">'KRG'</span>
+0114             <span class="comment">%% Construction du metamodele de Krigeage</span>
+0115             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Krigeage'</span> textf]);
+0116             <span class="comment">%affichage informations</span>
+0117             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n\n'</span>,nb_var,nb_val)
+0118             krg=<a href="meta_krg_ckrg.html" class="code" title="function [ret]=meta_krg_ckrg(tirages,eval,grad,meta,manq)">meta_krg_ckrg</a>(tirages,eval,[],meta,bilan_manq);
+0119             out_meta=krg;
+0120             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0121             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0122         <span class="keyword">case</span> <span class="string">'DACE'</span>
+0123             <span class="comment">%% Construction du metamodele de Krigeage (DACE)</span>
+0124             fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Krigeage (Toolbox DACE)'</span> textf]);
+0125             <span class="comment">%affichage informations</span>
+0126             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n'</span>,nb_var,nb_val)
+0127             <span class="keyword">if</span> meta.para.estim
+0128                 <span class="keyword">switch</span> meta.corr
+0129                     <span class="keyword">case</span> {<span class="string">'correxpg'</span>}
+0130                         lb=[meta.para.l_min.*ones(1,nb_var), meta.para.p_min];
+0131                         ub=[meta.para.l_max.*ones(1,nb_var), meta.para.p_max];
+0132                     <span class="keyword">otherwise</span>
+0133                         lb=meta.para.l_min.*ones(nb_var,1);
+0134                         ub=meta.para.l_max.*ones(nb_var,1);
+0135                 <span class="keyword">end</span>
+0136                 theta0=(ub-lb)./2;
+0137                 [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0,lb,ub);
+0138             <span class="keyword">else</span>
+0139                 <span class="keyword">switch</span> meta.corr
+0140                     <span class="keyword">case</span> {<span class="string">'correxpg'</span>}
+0141                         theta0=[meta.para.l_val meta.para.p_val];
+0142                     <span class="keyword">otherwise</span>
+0143                         theta0=meta.para.l_val;
+0144                 <span class="keyword">end</span>
+0145                 [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0);
+0146             <span class="keyword">end</span>
+0147             out_meta=dace;
+0148             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0149             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0150         <span class="keyword">case</span> <span class="string">'PRG'</span>
+0151             ite_prg=1;
+0152             ret{num_meta}.prg=length(meta.deg);
+0153             <span class="keyword">for</span> degre=meta.deg
+0154                 <span class="comment">%% Construction du metamodele de Regression polynomiale</span>
+0155                 fprintf(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Regression polynomiale'</span> textf]);
+0156                 fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n'</span>,nb_var,nb_val)
+0157                 dd=[<span class="string">'-- Degre du polynome \n'</span>,num2str(degre)];
+0158                 fprintf(dd);
+0159                 [prg.coef,prg.MSE]=<a href="meta_prg.html" class="code" title="function [B,MSE]=meta_prg(xx,eval,deg)">meta_prg</a>(tirages,eval,degre);
+0160                 out_meta.prg{ite_prg}=prg;
+0161                 ite_prg=ite_prg+1;
+0162             <span class="keyword">end</span>
+0163             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0164             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0165         <span class="keyword">case</span> <span class="string">'ILIN'</span>
+0166             <span class="comment">%% Construction du metamodele d'interpolation lineaire</span>
+0167             fprintf(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction de base '</span> textf]);
+0168             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n'</span>,nb_var,nb_val)
+0169             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0170             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0171         <span class="keyword">case</span> <span class="string">'ILAG'</span>
+0172             <span class="comment">%% interpolation par fonction de base lineaire</span>
+0173             fprintf(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction polynomiale de Lagrange'</span> textf]);
+0174             fprintf(<span class="string">'Nombre de variables: %d \n Nombre de points: %d\n'</span>,nb_var,nb_val)
+0175             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0176             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0177     <span class="keyword">end</span>
+0178     
+0179     
+0180     <span class="comment">%stockage des informations utiles</span>
+0181     out_meta.bilan_manq=bilan_manq;
+0182     out_meta.type=type{1};
+0183     out_meta.nb_var=nb_var;
+0184     out_meta.nb_val=nb_val;
+0185     out_meta.tirages=tirages;
+0186     out_meta.eval=eval;
+0187     out_meta.grad=grad_in;
+0188     out_meta.enrich=meta.enrich;
+0189     <span class="keyword">if</span> numel(metype)==1
+0190         ret=out_meta;
+0191     <span class="keyword">else</span>
+0192         ret{num_meta}=out_meta;
+0193     <span class="keyword">end</span>
+0194     num_meta=num_meta+1;
+0195 <span class="keyword">end</span>
+0196 
+0197 <a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>(tMesu,tInit);
+0198 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of meta_pod</title>
+  <meta name="keywords" content="meta_pod">
+  <meta name="description" content="%fonction permettant de construire un metamodèle en utilisant la POD">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>meta_pod
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%fonction permettant de construire un metamodèle en utilisant la POD</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function S=meta_pod(tirages,xx,yy,eval,nb_vs) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%fonction permettant de construire un metamodèle en utilisant la POD</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%fonction permettant de construire un metamodèle en utilisant la POD</span>
+0002 
+0003 <span class="comment">%%L. LAURENT      luc.laurent@ens-cachan.fr</span>
+0004 <span class="comment">%% 16/03/2010</span>
+0005 
+0006 <a name="_sub0" href="#_subfunctions" class="code">function S=meta_pod(tirages,xx,yy,eval,nb_vs)</a>
+0007 
+0008     A=zeros(sqrt(size(eval,1)));
+0009     [Xv,Yv]=meshgrid(xx,yy);
+0010     <span class="comment">%Xv=zeros(size(A));</span>
+0011     <span class="comment">%Yv=zeros(size(A));</span>
+0012     
+0013     int=1;
+0014     <span class="keyword">for</span> ii=1:size(A,1)
+0015         <span class="keyword">for</span> jj=1:size(A,2)
+0016             A(ii,jj)=eval(int);
+0017             int=int+1;
+0018         <span class="keyword">end</span>
+0019         Xv(ii)=tirages(ii,1);
+0020         Yv(ii)=tirages(ii,2);
+0021      <span class="keyword">end</span>
+0022     
+0023     <span class="comment">%Calcul de la décomposition en valeurs singulières</span>
+0024     [U,S,V]=svd(A);
+0025     
+0026     
+0027     <span class="comment">%subplot(floor(sqrt(nb_vs)),floor(sqrt(nb_vs))+1,1)</span>
+0028     figure
+0029     hold on
+0030     surf(Xv,Yv,A)
+0031     view(3)
+0032     <span class="keyword">for</span> k=1:nb_vs
+0033        
+0034        zz=U(:,1:k)*S(1:k,1:k)*V(:,1:k)';
+0035        <span class="comment">%size(zz)</span>
+0036        <span class="comment">%size(Xv)</span>
+0037        <span class="comment">%hold on</span>
+0038        <span class="comment">%subplot(floor(sqrt(nb_vs)),floor(sqrt(nb_vs))+1,k+1)</span>
+0039        figure;
+0040        <span class="comment">%hold on</span>
+0041        <span class="comment">%mesh(Xv,Yv,zz)</span>
+0042        surf(Xv,Yv,zz)
+0043        <span class="comment">%hold on</span>
+0044        xlabel(<span class="string">'x1'</span>);ylabel(<span class="string">'x2'</span>);zlabel(<span class="string">'F'</span>);
+0045        <span class="comment">%hold on</span>
+0046        title([<span class="string">'Approximation à '</span>,num2str(k),<span class="string">' valeurs singulières'</span>]);
+0047        view(3)
+0048     <span class="keyword">end</span>
+0049     
+0050 
+0051 
+0052 
+0053 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

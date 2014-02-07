@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of reg_poly3</title>
+  <meta name="keywords" content="reg_poly3">
+  <meta name="description" content="fonction assurant l'evaluation d'une fonction polynomiale de degre 3">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html fct -->
+<h1>reg_poly3
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>fonction assurant l'evaluation d'une fonction polynomiale de degre 3</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [ret,dret]=reg_poly3(val) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">fonction assurant l'evaluation d'une fonction polynomiale de degre 3
+L.LAURENT -- 13/12/2011 -- luc.laurent@ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="reg_poly2.html" class="code" title="function [ret,dret]=reg_poly2(val)">reg_poly2</a>	fonction assurant l'evaluation d'une fonction polynomiale de degre 2</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%fonction assurant l'evaluation d'une fonction polynomiale de degre 3</span>
+0002 <span class="comment">%L.LAURENT -- 13/12/2011 -- luc.laurent@ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function [ret,dret]=reg_poly3(val)</a>
+0005 
+0006 d=size(val);
+0007 
+0008 <span class="comment">%recupération de la regression polynomiale de degré 2</span>
+0009 [ret2,dret2,tt]=<a href="reg_poly2.html" class="code" title="function [ret,dret]=reg_poly2(val)">reg_poly2</a>(val);
+0010 
+0011 
+0012 
+0013 
+0014 p=(d(2)+1)*(d(2)+2)*1/2;
+0015 
+0016 t=val;
+0017 tt=zeros(d(1),p-d(2)-1);
+0018 
+0019 j=0;m=d(2);
+0020 <span class="keyword">for</span>  ii=1:d(2)
+0021     tt(:,j+(1:m))=repmat(val(:,ii),1,m).*val(:,ii:end);
+0022     j=j+m;
+0023     m=m-1;
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="comment">%evaluation de la fonction polynomiale</span>
+0027 ret=[ones(d(1),1) t tt];
+0028 
+0029 
+0030 <span class="comment">%evaluation de la derivee</span>
+0031 <span class="keyword">if</span> nargout==2
+0032     <span class="keyword">if</span> d(1)==1
+0033         dd=zeros(d(2),p-d(2)-1);
+0034         j=0;m=d(2);
+0035         <span class="keyword">for</span> ii=1:d(2)
+0036             dd(ii,j+(1:m))=[2*val(ii) val(ii+1:end)];
+0037             <span class="keyword">for</span> jj=1:d(2)-ii
+0038                 dd(ii+jj,j+jj+1)=val(ii);
+0039             <span class="keyword">end</span>
+0040             j=j+m;
+0041             m=m-1;
+0042         <span class="keyword">end</span>
+0043         dret=[zeros(d(2),1) eye(d(2)) dd];
+0044     <span class="keyword">else</span>
+0045         dret=cell(d(1),1);
+0046         <span class="keyword">for</span> ll=1:d(1)
+0047             dd=zeros(d(2),p-d(2)-1);
+0048             j=0;m=d(2);
+0049             <span class="keyword">for</span> ii=1:d(2)
+0050                 dd(ii,j+(1:m))=[2*val(ll,ii) val(ll,ii+1:end)];
+0051                 <span class="keyword">for</span> jj=1:d(2)-ii
+0052                     dd(ii+jj,j+jj+1)=val(ll,ii);
+0053                 <span class="keyword">end</span>
+0054                 j=j+m;
+0055                 m=m-1;
+0056             <span class="keyword">end</span>
+0057             
+0058             dret{ll}=[zeros(d(2),1) eye(d(2)) dd];
+0059         <span class="keyword">end</span>
+0060     <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

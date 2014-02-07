@@ -1,0 +1,471 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of estim_para_rbf</title>
+  <meta name="keywords" content="estim_para_rbf">
+  <meta name="description" content="% Fonction assurant l'estimation des parametres en RBF">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html meta -->
+<h1>estim_para_rbf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Fonction assurant l'estimation des parametres en RBF</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function para_estim=estim_para_rbf(donnees,meta) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Fonction assurant l'estimation des parametres en RBF
+ L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>	% Fonction assurant l'initialisation et l'affichage des infos temporelles dans les fonctions</li><li><a href="../../../GRENAT/routines/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>	%%%%%%</li><li><a href="bloc_rbf.html" class="code" title="function [crit_min,ret]=bloc_rbf(data,meta,para,type)">bloc_rbf</a>	% Procedure de construction de la matrice RBF et de calcul de la validation croisee</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="meta_rbf.html" class="code" title="function ret=meta_rbf(tirages,eval,grad,meta,manq)">meta_rbf</a>	%fonction permettant de construire un metamodele à l'aide de fonctions a</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Fonction assurant l'estimation des parametres en RBF</span>
+0002 <span class="comment">% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function para_estim=estim_para_rbf(donnees,meta)</a>
+0005 <span class="comment">% affichages warning ou non</span>
+0006 aff_warning=false;
+0007 
+0008 <span class="comment">%critere arret minimisation</span>
+0009 crit_opti=meta.para.crit_opti;
+0010 
+0011 <span class="comment">%arret affichage CV si c'est le cas et activation CV si ca n'est pas le cas</span>
+0012 cv_old=meta.cv;
+0013 aff_cv_old=meta.cv_aff;
+0014 meta.cv_aff=false;
+0015 
+0016 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0017 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0018 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0019 fprintf(<span class="string">'      &gt; Estimation parametres &lt;\n'</span>);
+0020 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0021 [tMesu,tInit]=<a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>;
+0022 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0023 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0024 <span class="comment">% Definition des parametres de minimisation</span>
+0025 <span class="comment">% Nombre de parametres a estimer</span>
+0026 <span class="comment">%anisotropie</span>
+0027 <span class="keyword">if</span> meta.para.aniso
+0028     nb_para=donnees.in.nb_var;
+0029     nb_para_optim=nb_para;
+0030 <span class="keyword">else</span>
+0031     nb_para=1;
+0032     nb_para_optim=nb_para;
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%definition des bornes de l'espace de recherche</span>
+0036 <span class="comment">% traitement des cas particuliers (fonctions de correlation exponentielles</span>
+0037 <span class="comment">% generalisees)</span>
+0038 <span class="keyword">switch</span> meta.rbf
+0039     <span class="keyword">case</span> <span class="string">'rf_expg'</span>
+0040         <span class="comment">%definition des bornes de l'espace de recherche</span>
+0041         lb=[meta.para.l_min*ones(1,nb_para) meta.para.p_min];
+0042         ub=[meta.para.l_max*ones(1,nb_para) meta.para.p_max];
+0043         nb_para_optim=nb_para+1;
+0044     <span class="keyword">case</span> <span class="string">'rf_expgg'</span>
+0045         <span class="comment">%definition des bornes de l'espace de recherche</span>
+0046         lb=[meta.para.l_min*ones(1,nb_para) meta.para.p_min*ones(1,nb_para)];
+0047         ub=[meta.para.l_max*ones(1,nb_para) meta.para.p_max*ones(1,nb_para)];
+0048         nb_para_optim=2*nb_para;
+0049     <span class="keyword">otherwise</span>
+0050         <span class="comment">%definition des bornes de l'espace de recherche</span>
+0051         lb=meta.para.l_min*ones(1,nb_para);ub=meta.para.l_max*ones(1,nb_para);
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0055 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0056 <span class="comment">%Definition manuelle de la population initiale par LHS/IHS (Ga)</span>
+0057 popInitManu=meta.para.popManu;
+0058 <span class="keyword">if</span> popInitManu
+0059     nbpopspecif=false;
+0060     <span class="keyword">if</span> isfield(meta.para,<span class="string">'nbPopInit'</span>);<span class="keyword">if</span> ~isempty(meta.para.nbPopInit);nbpopspecif=false;<span class="keyword">end</span>, <span class="keyword">end</span>
+0061     <span class="keyword">if</span> nbpopspecif;nbPopInit=meta.para.nbPopInit;<span class="keyword">else</span> nbPopInit=10*nb_para_optim; <span class="keyword">end</span>
+0062 <span class="keyword">end</span>
+0063 <span class="comment">%definition valeur de depart de la variable</span>
+0064 x0=0.1*(ub-lb);
+0065 <span class="comment">% Definition de la function a minimiser</span>
+0066 fun=@(para)<a href="bloc_rbf.html" class="code" title="function [crit_min,ret]=bloc_rbf(data,meta,para,type)">bloc_rbf</a>(donnees,meta,para,<span class="string">'estim'</span>);
+0067 <span class="comment">%Options algo pour chaque fonction de minimisation</span>
+0068 <span class="comment">%declaration des options de la strategie de minimisation</span>
+0069 options_fmincon = optimset(<span class="keyword">...</span>
+0070     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %affichage evolution</span>
+0071     <span class="string">'Algorithm'</span>,<span class="string">'interior-point'</span>,<span class="keyword">...</span><span class="comment"> %choix du type d'algorithme</span>
+0072     <span class="string">'OutputFcn'</span>,@stop_estim,<span class="keyword">...</span><span class="comment">      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation</span>
+0073     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %test valeur fonction (Nan,Inf)</span>
+0074     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0075     <span class="string">'PlotFcns'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0076     <span class="string">'TolFun'</span>,crit_opti);
+0077 options_sqp = optimset(<span class="keyword">...</span>
+0078     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %affichage evolution</span>
+0079     <span class="string">'Algorithm'</span>,<span class="string">'sqp'</span>,<span class="keyword">...</span><span class="comment"> %choix du type d'algorithme</span>
+0080     <span class="string">'OutputFcn'</span>,@stop_estim,<span class="keyword">...</span><span class="comment">      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation</span>
+0081     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %test valeur fonction (Nan,Inf)</span>
+0082     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0083     <span class="string">'PlotFcns'</span>,<span class="string">''</span>,<span class="keyword">...</span><span class="comment">   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}</span>
+0084     <span class="string">'TolFun'</span>,crit_opti);
+0085 options_fminbnd = optimset(<span class="keyword">...</span>
+0086     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %affichage evolution</span>
+0087     <span class="string">'OutputFcn'</span>,@stop_estim,<span class="keyword">...</span><span class="comment">      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation</span>
+0088     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %test valeur fonction (Nan,Inf)</span>
+0089     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0090     <span class="string">'PlotFcns'</span>,<span class="string">''</span>);
+0091 options_ga = gaoptimset(<span class="keyword">...</span>
+0092     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %affichage evolution</span>
+0093     <span class="string">'OutputFcn'</span>,<span class="string">''</span>,<span class="keyword">...</span><span class="comment">      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation</span>
+0094     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0095     <span class="string">'PopInitRange'</span>,[lb(:)';ub(:)'],<span class="keyword">...</span><span class="comment">  %zone de definition de la population initiale</span>
+0096     <span class="string">'PlotFcns'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0097     <span class="string">'TolFun'</span>,crit_opti,<span class="keyword">...</span>
+0098     <span class="string">'StallGenLimit'</span>,20);
+0099 options_fminsearch = optimset(<span class="keyword">...</span>
+0100     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %affichage evolution</span>
+0101     <span class="string">'OutputFcn'</span>,@stop_estim,<span class="keyword">...</span><span class="comment">      %fonction assurant l'arret de la procedure de minimisation et les traces des iterations de la minimisation</span>
+0102     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %test valeur fonction (Nan,Inf)</span>
+0103     <span class="string">'TolFun'</span>,crit_opti,<span class="keyword">...</span>
+0104     <span class="string">'PlotFcns'</span>,<span class="string">''</span>);
+0105 <span class="comment">%%%%% PSOt</span>
+0106 <span class="comment">%options algo PSO de la toolbox PSOt</span>
+0107 ac      = [2.1,2.1];<span class="comment">% acceleration constants, only used for modl=0</span>
+0108 Iwt     = [0.9,0.6];  <span class="comment">% intertia weights, only used for modl=0</span>
+0109 epoch   = 2000; <span class="comment">% max iterations</span>
+0110 wt_end  = 100; <span class="comment">% iterations it takes to go from Iwt(1) to Iwt(2), only for modl=0</span>
+0111 errgrad = 1e-25;   <span class="comment">% lowest error gradient tolerance</span>
+0112 errgraditer=150; <span class="comment">% max # of epochs without error change &gt;= errgrad</span>
+0113 PSOseed = 0;    <span class="comment">% if=1 then can input particle starting positions, if= 0 then all random</span>
+0114 <span class="comment">% starting particle positions (first 20 at zero, just for an example)</span>
+0115 PSOT_plot=[];
+0116 PSOT_tirage = [];
+0117 PSOT_mv=4; <span class="comment">%vitesse maxi des particules (=4 def)</span>
+0118 shw=0;      <span class="comment">%MAJ affichage a chque iteration (0 sinon)</span>
+0119 ps=nbPopInit; <span class="comment">%nb de particules</span>
+0120 errgoal=NaN;    <span class="comment">%cible minimisation</span>
+0121 modl=3;         <span class="comment">%type de PSO</span>
+0122 <span class="comment">%                   0 = Common PSO w/intertia (default)</span>
+0123 <span class="comment">%                 1,2 = Trelea types 1,2</span>
+0124 <span class="comment">%                 3   = Clerc's Constricted PSO, Type 1&quot;</span>
+0125 
+0126 PSOT_options=<span class="keyword">...</span>
+0127     [shw epoch ps ac(1) ac(2) Iwt(1) Iwt(2) <span class="keyword">...</span>
+0128     wt_end errgrad errgraditer errgoal modl PSOseed];
+0129 <span class="comment">%variation des parametres</span>
+0130 PSOT_varrange=[lb(:) ub(:)];
+0131 <span class="comment">%minimisation</span>
+0132 PSOT_minmax=0;
+0133 
+0134 <span class="comment">%%%%%</span>
+0135 
+0136 <span class="comment">%affichage des iterations</span>
+0137 <span class="keyword">if</span> ~meta.para.aff_iter_graph
+0138     options_fmincon=optimset(options_fmincon,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0139     options_sqp=optimset(options_sqp,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0140     options_fminbnd=optimset(options_fminbnd,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0141     options_fminsearch=optimset(options_fminbnd,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0142     options_ga=gaoptimset(options_ga,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0143 <span class="keyword">else</span>
+0144     figure
+0145 <span class="keyword">end</span>
+0146 
+0147 <span class="keyword">if</span> ~meta.para.aff_iter_cmd
+0148     options_fmincon=optimset(options_fmincon,<span class="string">'Display'</span>,<span class="string">'final'</span>);
+0149     options_sqp=optimset(options_sqp,<span class="string">'Display'</span>, <span class="string">'final'</span>);
+0150     options_fminbnd=optimset(options_fminbnd,<span class="string">'Display'</span>,<span class="string">'final'</span>);
+0151     options_fminsearch=optimset(options_fminbnd,<span class="string">'Display'</span>, <span class="string">'final'</span>);
+0152     options_ga=gaoptimset(options_ga,<span class="string">'Display'</span>,<span class="string">'final'</span>);
+0153 <span class="keyword">end</span>
+0154 
+0155 <span class="comment">%affichage informations interations algo (sous forme de plot</span>
+0156 <span class="keyword">if</span> meta.para.aff_plot_algo
+0157     options_fmincon=optimset(options_fmincon,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
+0158         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+0159     options_sqp=optimset(options_sqp,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
+0160         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+0161     options_fminbnd=optimset(options_fminbnd,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
+0162         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+0163     options_ga=gaoptimset(options_ga,<span class="string">'PlotFcns'</span>,{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,<span class="keyword">...</span>
+0164         @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,<span class="keyword">...</span>
+0165         @gaplotscorediversity,@gaplotscores,@gaplotstopping});
+0166     <span class="comment">%%PSOT</span>
+0167     PSOT_plot=<span class="string">'goplotpso_perso1'</span>;
+0168     PSOT_options(1)=10;
+0169 <span class="keyword">end</span>
+0170 
+0171 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0172 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0173 <span class="comment">%% traitement des strategie de type tir_min_xxxx</span>
+0174 <span class="comment">%on recherche si le motif tir_min_ est present dans le nom de strategie</span>
+0175 motif=<span class="string">'tir_min_'</span>;
+0176 [motfind]=strfind(meta.para.method,motif);
+0177 <span class="keyword">if</span> isempty(motfind)
+0178     method_optim=meta.para.method;
+0179     tir_min_ok=false;
+0180 <span class="keyword">else</span>
+0181     method_optim=meta.para.method((motfind+numel(motif)):end);
+0182     tir_min_ok=true;
+0183 <span class="keyword">end</span>
+0184 <span class="comment">% si tir_min alors on fait un tirage pour rechercher un point</span>
+0185 <span class="comment">% d'initialisation de l'algorithme</span>
+0186 <span class="keyword">if</span> tir_min_ok
+0187     nb_pts=nb_para*10;
+0188     type_tir=<span class="string">'LHS_O1'</span>;
+0189     fprintf(<span class="string">'||Tir_min + opti||  Tirage %s de %i points\n'</span>,type_tir,nb_pts);
+0190     doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
+0191     tir_pop=gene_doe(doePop);
+0192     crit=zeros(1,nb_pts);
+0193     parfor tir=1:nb_pts
+0194         crit(tir)=fun(tir_pop(tir,:));
+0195     <span class="keyword">end</span>
+0196     [fval1,IX]=min(crit);
+0197     x0=tir_pop(IX,:);
+0198 <span class="keyword">end</span>
+0199 <span class="comment">%specification manuelle de la population initiale (Ga)</span>
+0200 <span class="keyword">if</span> ~isempty(popInitManu)&amp;&amp;tir_min_ok
+0201     doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nbPopInit;doePop.aff=false;doePop.type=meta.para.popManu;
+0202     tir_pop=gene_doe(doePop);
+0203     options_ga=gaoptimset(options_ga,<span class="string">'PopulationSize'</span>,nbPopInit,<span class="string">'InitialPopulation'</span>,tir_pop);
+0204     <span class="comment">%PSOt</span>
+0205     PSOT_tirage=tir_pop;
+0206     PSOT_options(13)=1;
+0207 <span class="keyword">end</span>
+0208 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0209 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0210 <span class="comment">%minimisation de la log-vraisemblance suivant l'algorithme choisi</span>
+0211 
+0212 <span class="keyword">switch</span> method_optim
+0213     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0214     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0215     <span class="keyword">case</span> <span class="string">'simplex'</span>  <span class="comment">%methode du simplexe</span>
+0216         fprintf(<span class="string">'||Simplex|| Initialisation au point:\n'</span>);
+0217         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0218         <span class="keyword">if</span> ~aff_warning;warning off all;<span class="keyword">end</span>
+0219         [x, fmax, nf] = nmsmax(fun, x0, [], []);
+0220         <span class="comment">%stockage retour algo</span>
+0221         para_estim.out_algo.fmax=fmax;
+0222         para_estim.out_algo.nf=nf;
+0223         <span class="keyword">if</span> ~aff_warning;warning on all;<span class="keyword">end</span>
+0224         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0225         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0226         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0227         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0228     <span class="keyword">case</span> <span class="string">'tir_min'</span>
+0229         nb_pts=nb_para*50;
+0230         type_tir=<span class="string">'LHS_O1'</span>;
+0231         fprintf(<span class="string">'||Tir_min||  Tirage %s de %i points\n'</span>,type_tir,nb_pts);
+0232         doePop.Xmin=lb;doePop.Xmax=ub;doePop.nb_samples=nb_pts;doePop.aff=false;doePop.type=type_tir;
+0233         tir_pop=gene_doe(doePop);
+0234         crit=zeros(1,nb_pts);
+0235         parfor tir=1:nb_pts
+0236             crit(tir)=fun(tir_pop(tir,:));
+0237         <span class="keyword">end</span>
+0238         [fval,IX]=min(crit);
+0239         x=tir_pop(IX,:);
+0240         
+0241         <span class="comment">%stockage retour algo</span>
+0242         para_estim.out_algo.fval=fval;
+0243         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0244         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0245         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0246         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0247         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0248         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0249         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0250         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0251     <span class="keyword">case</span> <span class="string">'sqp'</span>
+0252         fprintf(<span class="string">'||Fmincon (SQP)|| Initialisation au point:\n'</span>);
+0253         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0254         <span class="comment">%minimisation avec traitement de point de depart non defini</span>
+0255         <span class="keyword">if</span> ~aff_warning;warning off all;<span class="keyword">end</span>
+0256         <span class="comment">%pas de recherche d'initialisation</span>
+0257         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options_sqp);
+0258         <span class="comment">%arret minimisation</span>
+0259         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0260             disp(<span class="string">'Arret'</span>)
+0261             para_estim.out_algo=output;
+0262             para_estim.out_algo.fval=fval;
+0263             para_estim.out_algo.exitflag=exitflag;
+0264             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);para_estim.out_algo.fval1=fval1;<span class="keyword">end</span>
+0265         <span class="keyword">elseif</span> exitflag==-2
+0266             fprintf(<span class="string">'Bug arret SQP\n'</span>);
+0267         <span class="keyword">end</span>
+0268         <span class="keyword">if</span> ~aff_warning;warning on all;<span class="keyword">end</span>
+0269         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0270         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0271         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0272         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0273     <span class="keyword">case</span> <span class="string">'fminbnd'</span>
+0274         fprintf(<span class="string">'||Fminbnd|| Initialisation au point:\n'</span>);
+0275         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0276         <span class="comment">%minimisation</span>
+0277         <span class="keyword">if</span> ~aff_warning;warning off all;<span class="keyword">end</span>
+0278         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,options_fminbnd);
+0279         <span class="keyword">if</span> ~aff_warning;warning on all;<span class="keyword">end</span>
+0280         <span class="comment">%arret minimisation</span>
+0281         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0282             disp(<span class="string">'Arret'</span>)
+0283             para_estim.out_algo=output;
+0284             para_estim.out_algo.fval=fval;
+0285             para_estim.out_algo.exitflag=exitflag;
+0286             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);para_estim.out_algo.fval1=fval1;<span class="keyword">end</span>
+0287         <span class="keyword">elseif</span> exitflag==-2
+0288             fprintf(<span class="string">'Bug arret SQP\n'</span>);
+0289         <span class="keyword">end</span>
+0290         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0291         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0292         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0293         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0294     <span class="keyword">case</span> <span class="string">'fminsearch'</span>
+0295         fprintf(<span class="string">'||Fminsearch|| Initialisation au point:\n'</span>);
+0296         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0297         <span class="comment">%minimisation</span>
+0298         [x,fval,exitflag,output] = fminsearch(fun,x0,options_fminsearch);
+0299         <span class="comment">%arret minimisation</span>
+0300         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0301             disp(<span class="string">'Arret'</span>)
+0302             para_estim.out_algo=output;
+0303             para_estim.out_algo.fval=fval;
+0304             para_estim.out_algo.exitflag=exitflag;
+0305             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);para_estim.out_algo.fval1=fval1;<span class="keyword">end</span>
+0306         <span class="keyword">elseif</span> exitflag==-2
+0307             fprintf(<span class="string">'Bug arret Fminsearch\n'</span>);
+0308         <span class="keyword">end</span>
+0309         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0310         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0311         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0312         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0313     <span class="keyword">case</span> <span class="string">'fmincon'</span>
+0314         fprintf(<span class="string">'||Fmincon|| Initialisation au point:\n'</span>);
+0315         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0316         <span class="comment">%minimisation avec traitement de point de depart non defini</span>
+0317         <span class="keyword">if</span> ~aff_warning;warning off all;<span class="keyword">end</span>
+0318         <span class="comment">%pas de recherche d'initialisation</span>
+0319         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],options_fmincon);
+0320         <span class="comment">%arret minimisation</span>
+0321         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0322             disp(<span class="string">'Arret'</span>)
+0323             para_estim.out_algo=output;
+0324             para_estim.out_algo.fval=fval;
+0325             para_estim.out_algo.exitflag=exitflag;
+0326             <span class="keyword">if</span> exist(fval1,<span class="string">'var'</span>);para_estim.out_algo.fval1=fval1;<span class="keyword">end</span>
+0327         <span class="keyword">elseif</span> exitflag==-2
+0328             fprintf(<span class="string">'Bug arret Fmincon\n'</span>);
+0329         <span class="keyword">end</span>
+0330         <span class="keyword">if</span> ~aff_warning;warning on all;<span class="keyword">end</span>
+0331         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0332         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0333         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0334         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0335     <span class="keyword">case</span> <span class="string">'ga'</span>
+0336         fprintf(<span class="string">'||Ga|| Initialisation par tirages %s:\n'</span>,popInitManu);
+0337         <span class="keyword">if</span> ~aff_warning;warning off all;<span class="keyword">end</span>
+0338         [x,fval,exitflag,output] = ga(fun,nb_para_optim,[],[],[],[],lb,ub,[],options_ga);
+0339         <span class="comment">%arret minimisation</span>
+0340         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0341             disp(<span class="string">'Arret'</span>)
+0342             para_estim.out_algo=output;
+0343             para_estim.out_algo.fval=fval;
+0344             para_estim.out_algo.exitflag=exitflag;
+0345             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);para_estim.out_algo.fval1=fval1;<span class="keyword">end</span>
+0346         <span class="keyword">elseif</span> exitflag==-2
+0347             fprintf(<span class="string">'Bug arret Ga\n'</span>);
+0348         <span class="keyword">end</span>
+0349         
+0350         <span class="keyword">if</span> ~aff_warning;warning on all;<span class="keyword">end</span>
+0351         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0352         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0353         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0354         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0355     <span class="keyword">case</span> <span class="string">'pso'</span>
+0356         fprintf(<span class="string">'||PSOt|| Initialisation par tirages %s:\n'</span>,popInitManu);
+0357         <span class="keyword">if</span> ~aff_warning;warning off all;<span class="keyword">end</span>
+0358         <span class="comment">%PSOt version vectorisee</span>
+0359         [pso_out,<span class="keyword">...</span><span class="comment">    %pt minimum et reponse associee</span>
+0360             tr,<span class="keyword">...</span><span class="comment">      %pt minimum a chaque iteration</span>
+0361             te<span class="keyword">...</span><span class="comment">       %epoch? iterations</span>
+0362             ]=<a href="../../../GRENAT/routines/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>(<span class="keyword">...</span>
+0363             fun,<span class="keyword">...</span><span class="comment">             %fonction</span>
+0364             nb_para,<span class="keyword">...</span><span class="comment">         %nombre variables</span>
+0365             PSOT_mv,<span class="keyword">...</span><span class="comment">         %vitesse maxi particules (def. 4)</span>
+0366             PSOT_varrange,<span class="keyword">...</span><span class="comment">   %matrice des plages de variation des parametres</span>
+0367             PSOT_minmax,<span class="keyword">...</span><span class="comment">     %minimisation (=0 def), maximisation (=1) ou autre (=2)</span>
+0368             PSOT_options,<span class="keyword">...</span><span class="comment">    %vecteur options</span>
+0369             PSOT_plot,<span class="keyword">...</span><span class="comment">       %fonction de tracee (optionnelle)</span>
+0370             PSOT_tirage);       <span class="comment">%tirage initial aleatoire (=0) ou utilisateur (=1)</span>
+0371         
+0372         <span class="comment">%extraction infos</span>
+0373         Xmin=pso_out(1:end-1)';
+0374         Zmin=pso_out(end);
+0375         exitflag=[];
+0376         output.tr=tr;
+0377         output.te=te;
+0378         disp(<span class="string">'Arret'</span>)
+0379         para_estim.out_algo=output;
+0380         para_estim.out_algo.xval=Xmin;
+0381         para_estim.out_algo.fval=Zmin;
+0382         para_estim.out_algo.exitflag=exitflag;
+0383         x=Xmin;
+0384         <span class="keyword">if</span> ~aff_warning;warning on all;<span class="keyword">end</span>
+0385         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0386         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0387         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0388         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0389     <span class="keyword">otherwise</span>
+0390         error(<span class="string">'Strategie de minimisation non prise en charge'</span>);
+0391 <span class="keyword">end</span>
+0392 
+0393 <span class="comment">%reactivation affichage CV si c'etait le cas avant la phase d'estimation</span>
+0394 meta.cv_aff=aff_cv_old;
+0395 meta.cv=cv_old;
+0396 
+0397 <a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>(tMesu,tInit);
+0398 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0399 <span class="comment">%stockage valeur parametres obtenue par minimisation</span>
+0400 <span class="keyword">if</span> nb_para_optim&gt;nb_para
+0401     para_estim.l_val=x(1:nb_para);
+0402     para_estim.p_val=x(nb_para+1:end);
+0403 <span class="keyword">else</span>
+0404     para_estim.l_val=x;
+0405 <span class="keyword">end</span>
+0406 
+0407 <span class="keyword">if</span> meta.norm
+0408     para_estim.l_val_denorm=para_estim.l_val.*donnees.norm.std_tirages+donnees.norm.moy_tirages;
+0409     fprintf(<span class="string">'\nValeur(s) parametre(s) RBF'</span>);
+0410     fprintf(<span class="string">' %6.4f'</span>,para_estim.l_val_denorm);
+0411 <span class="keyword">else</span>
+0412     fprintf(<span class="string">'\n'</span>);
+0413 <span class="keyword">end</span>
+0414 fprintf(<span class="string">'\nValeur(s) parametre(s) RBF (brut)'</span>);
+0415 fprintf(<span class="string">' %6.4f'</span>,para_estim.l_val);
+0416 fprintf(<span class="string">'\n\n'</span>);
+0417 <span class="keyword">if</span> nb_para_optim&gt;nb_para
+0418     fprintf(<span class="string">'Valeur(s) longueur(s) puissance(s)'</span>);
+0419     fprintf(<span class="string">' %6.4f'</span>,para_estim.p_val);
+0420     fprintf(<span class="string">'\n\n'</span>);
+0421 <span class="keyword">end</span>
+0422 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0423 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0424 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

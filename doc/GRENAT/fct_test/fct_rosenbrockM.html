@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fct_rosenbrockM</title>
+  <meta name="keywords" content="fct_rosenbrockM">
+  <meta name="description" content="Fonction de Rosenbrock Modifiee (Sobester 2005)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GRENAT --><!-- menu.html fct_test -->
+<h1>fct_rosenbrockM
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Fonction de Rosenbrock Modifiee (Sobester 2005)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [p,dp,infos] = fct_rosenbrockM(xx,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Fonction de Rosenbrock Modifiee (Sobester 2005)
+ L. LAURENT -- 16/05/2012 -- ajout calcul gradient</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%Fonction de Rosenbrock Modifiee (Sobester 2005)</span>
+0002 <span class="comment">% L. LAURENT -- 16/05/2012 -- ajout calcul gradient</span>
+0003 
+0004 
+0005 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos] = fct_rosenbrockM(xx,dim)</a>
+0006 
+0007 <span class="comment">% pour demonstration</span>
+0008 dem=false;
+0009 <span class="keyword">if</span> nargin==0
+0010     pas=50;
+0011     borne=2.048;
+0012     [x,y]=meshgrid(linspace(-borne,borne,pas));
+0013     xx=zeros(pas,pas,2);
+0014     xx(:,:,1)=x;xx(:,:,2)=y;
+0015     dem=true;
+0016 <span class="keyword">end</span>
+0017 <span class="keyword">if</span> ~isempty(xx)
+0018     <span class="comment">%Nombre de variables</span>
+0019     nbvar=size(xx,3);
+0020     
+0021     <span class="comment">%coefficients</span>
+0022     a=100;
+0023     c=75;
+0024     d=5;
+0025     
+0026     <span class="keyword">if</span> nbvar==1
+0027         <span class="keyword">if</span> size(xx,2)==2
+0028             xxx=xx(:,1);yyy=xx(:,2);
+0029         <span class="keyword">elseif</span> size(xx,1)==2
+0030             xxx=xx(:,2);yyy=xx(:,1);
+0031         <span class="keyword">else</span>
+0032             error(<span class="string">'Mauvais format variable entr�e fct Rosenbrock'</span>);
+0033         <span class="keyword">end</span>
+0034         p=a.*(yyy-xxx.^2).^2 + (1 - xxx).^2 + c * (sin(d*(1-xxx)) + sin(d*(1-yyy)));
+0035         <span class="keyword">if</span> nargout==2||dem
+0036             dp(:,:,1)=-4*a.*xxx.*(yyy-xxx.^2)-2*(1-xxx)-c*d*cos(d(1-xxx));
+0037             dp(:,:,2)=2*a*(yyy-xxx.^2)-c*d*cos(d(1-yyy));
+0038         <span class="keyword">end</span>
+0039         
+0040     <span class="keyword">else</span>
+0041         p=0;
+0042         <span class="keyword">for</span> iter=1:nbvar-1
+0043             p=p+a*(xx(:,:,iter).^2-xx(:,:,iter+1)).^2+(xx(:,:,iter)-1).^2+c*sin(d*(1-xx(:,:,iter)));
+0044         <span class="keyword">end</span>
+0045         
+0046         <span class="keyword">if</span> nargout==2||dem
+0047             <span class="keyword">for</span> iter=1:nbvar
+0048                 <span class="keyword">if</span> iter==1
+0049                     dp(:,:,iter)=4*a*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1)+<span class="keyword">...</span>
+0050                         c*d*cos(d*(1-xx(:,:,iter)));
+0051                 <span class="keyword">elseif</span> iter==nbvar
+0052                     dp(:,:,iter)=2*a*(xx(:,:,iter)-xx(:,:,iter-1).^2)+2*(xx(:,:,iter)-1)+<span class="keyword">...</span>
+0053                         c*d*cos(d*(1-xx(:,:,iter)));
+0054                 <span class="keyword">else</span>
+0055                     dp(:,:,iter)=2*a*(xx(:,:,iter)-xx(:,:,iter-1).^2)+<span class="keyword">...</span>
+0056                         4*a*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1)+c*d*cos(d*(1-xx(:,:,iter)));
+0057                     
+0058                 <span class="keyword">end</span>
+0059             <span class="keyword">end</span>
+0060         <span class="keyword">end</span>
+0061         
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">else</span>
+0064     nbvar=dim;
+0065     p=[];
+0066     dp=[];
+0067 <span class="keyword">end</span>
+0068 <span class="comment">%sortie informations sur la fonction</span>
+0069 <span class="keyword">if</span> nargout==3
+0070     pts=ones(1,nbvar);
+0071     infos.min_glob.X=pts;
+0072     infos.min_glob.Z=0;
+0073     infos.min_loc.Z=NaN;
+0074     infos.min_loc.X=NaN;
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">%demonstration</span>
+0078 <span class="keyword">if</span> nargin==0
+0079     figure
+0080     subplot(1,3,1)
+0081     surf(x,y,p);
+0082     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0083     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'RosenbrockM'</span>)
+0084     subplot(1,3,2)
+0085     surf(x,y,dp(:,:,1));
+0086     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0087     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X RosenbrockM'</span>)
+0088     subplot(1,3,3)
+0089     surf(x,y,dp(:,:,2));
+0090     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0091     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y RosenbrockM'</span>)
+0092     p=[];
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

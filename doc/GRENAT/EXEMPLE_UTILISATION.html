@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of EXEMPLE_UTILISATION</title>
+  <meta name="keywords" content="EXEMPLE_UTILISATION">
+  <meta name="description" content="Exemple d'utilisation de la Toolbox GRENAT">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GRENAT -->
+<h1>EXEMPLE_UTILISATION
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Exemple d'utilisation de la Toolbox GRENAT</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Exemple d'utilisation de la Toolbox GRENAT
+ L. LAURENT -- 30/01/2014 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="init_rep_GRENAT.html" class="code" title="function doss=init_rep_GRENAT(chemin,other)">init_rep_GRENAT</a>	%initialisation des chemins de fichiers</li><li><a href="../GRENAT/routines/aff/aff_date.html" class="code" title="">aff_date</a>	Affichage de la date et/ou de l'heure</li><li><a href="../GRENAT/routines/aff/affichage.html" class="code" title="function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)">affichage</a>	%fonction realisant l'affichage des surfaces de reponse</li><li><a href="../GRENAT/routines/aff/affichage_ic.html" class="code" title="function affichage_ic(X,ic,aff,Z)">affichage_ic</a>	% Affichage des intervalles de confiance</li><li><a href="../GRENAT/routines/crit/const_ic.html" class="code" title="function [ic68,ic95,ic99]=const_ic(ZZ,var)">const_ic</a>	fonction permettant la construction des intervalles de confiance</li><li><a href="../GRENAT/routines/crit/crit_err.html" class="code" title="function [err,errV,errNAME]=crit_err(Zap,Zref,donnees)">crit_err</a>	% Calcul des criteres d'erreur et affichage</li><li><a href="../GRENAT/routines/divers/clean.html" class="code" title="function clean">clean</a>	% Fonction assurant l'effacement de toutes les grandeurs et la fermeture des fenetres ouvertes</li><li><a href="../GRENAT/routines/divers/exec_parallel.html" class="code" title="function [ret]=exec_parallel(statut,options)">exec_parallel</a>	% Script de lancement et d'arret des workers (parrallelisme)</li><li><a href="../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>	% Fonction assurant l'initialisation et l'affichage des infos temporelles dans les fonctions</li><li><a href="../GRENAT/routines/init/init_aff.html" class="code" title="function aff_def=init_aff()">init_aff</a>	% Initialisation des variables d'affichage</li><li><a href="../GRENAT/routines/init/init_meta.html" class="code" title="function meta=init_meta(in)">init_meta</a>	% Initialisation du metamodele</li><li><a href="../GRENAT/routines/meta/const_meta.html" class="code" title="function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)">const_meta</a>	% fonction assurant la construction du metamodele (pas son evaluation)</li><li><a href="../GRENAT/routines/meta/eval_meta.html" class="code" title="function [Z]=eval_meta(points,donnees,meta,verb)">eval_meta</a>	% Evaluation du metamodele</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Exemple d'utilisation de la Toolbox GRENAT</span>
+0002 <span class="comment">% L. LAURENT -- 30/01/2014 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a href="init_rep_GRENAT.html" class="code" title="function doss=init_rep_GRENAT(chemin,other)">init_rep_GRENAT</a>();
+0005 <a href="../GRENAT/routines/divers/clean.html" class="code" title="function clean">clean</a>;
+0006 
+0007 <span class="comment">%affichage de la date</span>
+0008 <a href="../GRENAT/routines/aff/aff_date.html" class="code" title="">aff_date</a>;
+0009 
+0010 <span class="comment">%initialisation des variables d'affichage</span>
+0011 <span class="keyword">global</span> aff
+0012 aff=<a href="../GRENAT/routines/init/init_aff.html" class="code" title="function aff_def=init_aff()">init_aff</a>();
+0013 
+0014 fprintf(<span class="string">'=========================================\n'</span>)
+0015 fprintf(<span class="string">'  &gt;&gt;&gt; PROCEDURE ETUDE METAMODELES  &lt;&lt;&lt;\n'</span>);
+0016 [tMesu,tInit]=<a href="../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>;
+0017 
+0018 <span class="comment">%execution parallele (option et lancement des workers)</span>
+0019 parallel.on=false;
+0020 parallel.workers=<span class="string">'auto'</span>;
+0021 <a href="../GRENAT/routines/divers/exec_parallel.html" class="code" title="function [ret]=exec_parallel(statut,options)">exec_parallel</a>(<span class="string">'start'</span>,parallel);
+0022 
+0023 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0025 <span class="comment">%%chargement d'un jeu de donnee en dimension 2</span>
+0026 C=load(<span class="string">'EXEMPLE.mat'</span>);
+0027 <span class="comment">%tirages</span>
+0028 tirages=C.echantillon.tirages;
+0029 <span class="comment">%evaluation aux points</span>
+0030 eval=C.echantillon.eval;
+0031 <span class="comment">%gradients aux points</span>
+0032 grad=C.echantillon.grad;
+0033 
+0034 <span class="comment">%pour affichage et comparaison avec la vraie fonction</span>
+0035 <span class="comment">%grille reguliere</span>
+0036 grid_ref=C.ref.grid;
+0037 <span class="comment">%valeurs aux points de la grille</span>
+0038 eval_ref=C.ref.eval;
+0039 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0040 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0041 <span class="comment">%chargement des parametres metamodele</span>
+0042 meta=<a href="../GRENAT/routines/init/init_meta.html" class="code" title="function meta=init_meta(in)">init_meta</a>;
+0043 meta.type=<span class="string">'CKRG'</span>;
+0044 meta.cv_aff=true;
+0045 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0046 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0047 <span class="comment">%Construction et evaluation du metamodele aux points souhaites</span>
+0048 [approx]=<a href="../GRENAT/routines/meta/const_meta.html" class="code" title="function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)">const_meta</a>(tirages,eval,grad,meta);
+0049 <span class="comment">%evaluation du metamodele aux points de la grille</span>
+0050 [K]=<a href="../GRENAT/routines/meta/eval_meta.html" class="code" title="function [Z]=eval_meta(points,donnees,meta,verb)">eval_meta</a>(grid_ref,approx,meta);
+0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0052 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0053 <span class="comment">%%%generation des differents intervalles de confiance</span>
+0054 <span class="keyword">if</span> isfield(K,<span class="string">'var'</span>);[ic68,ic95,ic99]=<a href="../GRENAT/routines/crit/const_ic.html" class="code" title="function [ic68,ic95,ic99]=const_ic(ZZ,var)">const_ic</a>(K.Z,K.var);<span class="keyword">end</span>
+0055 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0056 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0057 <span class="comment">%%%affichage</span>
+0058 <span class="comment">%valeur par defaut</span>
+0059 aff.on=true;
+0060 aff.newfig=false;
+0061 aff.ic.on=true;
+0062 <span class="comment">%affichage de l'intervalle de confiance</span>
+0063 aff.rendu=true;
+0064 aff.d3=true;
+0065 aff.xlabel=<span class="string">'x_1'</span>;
+0066 aff.ylabel=<span class="string">'x_2'</span>;
+0067 
+0068 figure
+0069 subplot(2,3,1)
+0070 aff.titre=<span class="string">'Fonction de reference'</span>;
+0071 <a href="../GRENAT/routines/aff/affichage.html" class="code" title="function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)">affichage</a>(grid_ref,eval_ref,tirages,eval,grad,aff);
+0072 subplot(2,3,2)
+0073 aff.titre=<span class="string">'Fonction approchee'</span>;
+0074 <a href="../GRENAT/routines/aff/affichage.html" class="code" title="function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)">affichage</a>(grid_ref,K.Z,tirages,eval,grad,aff);
+0075 subplot(2,3,4)
+0076 aff.titre=<span class="string">''</span>;
+0077 aff.rendu=false;
+0078 aff.d3=false;
+0079 aff.d2=true;
+0080 aff.contour=true;
+0081 aff.grad_eval=true;
+0082 ref.Z=eval_ref;
+0083 <a href="../GRENAT/routines/aff/affichage.html" class="code" title="function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)">affichage</a>(grid_ref,ref,tirages,eval,grad,aff);
+0084 subplot(2,3,5)
+0085 <a href="../GRENAT/routines/aff/affichage.html" class="code" title="function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)">affichage</a>(grid_ref,K,tirages,eval,grad,aff);
+0086 subplot(2,3,3)
+0087 aff.d3=true;
+0088 aff.d2=false;
+0089 aff.contour=false;
+0090 aff.grad_eval=false;
+0091 aff.rendu=true;
+0092 aff.titre=<span class="string">'Variance'</span>;
+0093 <a href="../GRENAT/routines/aff/affichage.html" class="code" title="function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)">affichage</a>(grid_ref,K.var,tirages,eval,grad,aff);
+0094 subplot(2,3,6)
+0095 aff.titre=<span class="string">'Intervalle de confiance a 95%'</span>;
+0096 aff.trans=true;
+0097 aff.uni=true;
+0098  <a href="../GRENAT/routines/aff/affichage_ic.html" class="code" title="function affichage_ic(X,ic,aff,Z)">affichage_ic</a>(grid_ref,ic95,aff,K.Z);
+0099 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0100 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0101 <span class="comment">%%calcul et affichage des criteres d'erreur</span>
+0102 err=<a href="../GRENAT/routines/crit/crit_err.html" class="code" title="function [err,errV,errNAME]=crit_err(Zap,Zref,donnees)">crit_err</a>(K.Z,eval_ref,approx);
+0103 fprintf(<span class="string">'=====================================\n'</span>);
+0104 fprintf(<span class="string">'=====================================\n'</span>);
+0105 
+0106 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0107 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0108 <span class="comment">%arret workers</span>
+0109 <a href="../GRENAT/routines/divers/exec_parallel.html" class="code" title="function [ret]=exec_parallel(statut,options)">exec_parallel</a>(<span class="string">'stop'</span>,parallel)
+0110 
+0111 <a href="../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>(tMesu,tInit);
+0112 fprintf(<span class="string">'=========================================\n'</span>)</pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

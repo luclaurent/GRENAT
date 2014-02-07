@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gene_nbele</title>
+  <meta name="keywords" content="gene_nbele">
+  <meta name="description" content="% Fvonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html divers -->
+<h1>gene_nbele
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Fvonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function nb_ele=gene_nbele(dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Fvonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)
+% L.LAURENT -- 15/05/2012 -- laurent@lmt.ens-cachan.fr</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/EXEMPLE_UTILISATION_DOE.html" class="code" title="">EXEMPLE_UTILISATION_DOE</a>	Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir</li><li><a href="../../../GRENAT/routines/meta/meta_rbf.html" class="code" title="function ret=meta_rbf(tirages,eval,grad,meta,manq)">meta_rbf</a>	%fonction permettant de construire un metamodele à l'aide de fonctions a</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Fvonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)</span>
+0002 <span class="comment">%% L.LAURENT -- 15/05/2012 -- laurent@lmt.ens-cachan.fr</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function nb_ele=gene_nbele(dim)</a>
+0005 
+0006 <span class="keyword">if</span> dim==1
+0007     nb_ele=200;
+0008 <span class="keyword">elseif</span> dim==2
+0009     nb_ele=30;
+0010 <span class="keyword">elseif</span> dim==3
+0011     nb_ele=10;
+0012 <span class="keyword">elseif</span> dim==4
+0013     nb_ele=6;
+0014 <span class="keyword">elseif</span> dim==5;
+0015     nb_ele=4;
+0016 <span class="keyword">elseif</span> dim&gt;=6
+0017     nb_ele=3;  
+0018 <span class="keyword">else</span> 
+0019     fprintf(<span class="string">'##############################\n'</span>);
+0020     fprintf(<span class="string">'### Dimension du pb ne permettant pas la creation \n de la grille d''affichage ou de verification ####\n'</span>);
+0021     fprintf(<span class="string">'##############################\n'</span>);
+0022     nb_ele=NaN;
+0023 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

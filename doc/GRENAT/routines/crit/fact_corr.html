@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fact_corr</title>
+  <meta name="keywords" content="fact_corr">
+  <meta name="description" content="%fonction permettant le calcul de l'erreur R2">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # routines --><!-- menu.html crit -->
+<h1>fact_corr
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%fonction permettant le calcul de l'erreur R2</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [r,radj,r2,r2adj]=fact_corr(Zex,Zap) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%fonction permettant le calcul de l'erreur R2
+%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
+% Correction 20/03/2012 
+ -- Calcul du coefficient de correlation de Pearson et correlation ajustée
+ -- et coefficient de détermination et détermination ajustée</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="crit_err.html" class="code" title="function [err,errV,errNAME]=crit_err(Zap,Zref,donnees)">crit_err</a>	% Calcul des criteres d'erreur et affichage</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%fonction permettant le calcul de l'erreur R2</span>
+0002 <span class="comment">%%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr</span>
+0003 <span class="comment">%% Correction 20/03/2012</span>
+0004 <span class="comment">% -- Calcul du coefficient de correlation de Pearson et correlation ajustée</span>
+0005 <span class="comment">% -- et coefficient de détermination et détermination ajustée</span>
+0006 
+0007 <span class="comment">%%Zex: correspond a l'ensemble des valeurs obtenues par evalutions de la</span>
+0008 <span class="comment">%%fonction objectif</span>
+0009 <span class="comment">%%Zap: correspond a l'ensemble des valeurs</span>
+0010 
+0011 <a name="_sub0" href="#_subfunctions" class="code">function [r,radj,r2,r2adj]=fact_corr(Zex,Zap)</a>
+0012 
+0013 Zex=Zex(:);Zap=Zap(:);
+0014 nbs=length(Zex);
+0015 <span class="comment">%calcul des moyenn empirique</span>
+0016 moyZex=mean(Zex);
+0017 moyZap=mean(Zap);
+0018 
+0019 <span class="comment">%calcul covariance empirique</span>
+0020 covZexZap=sum(Zex.*Zap)-nbs*moyZex*moyZap;
+0021 
+0022 <span class="comment">%calcul variances empiriques</span>
+0023 VZex=sum(Zex.^2)-nbs*moyZex^2;
+0024 VZap=sum(Zap.^2)-nbs*moyZap^2;
+0025 
+0026 <span class="comment">%coefficient de corrélation de Pearson</span>
+0027 r=covZexZap/sqrt(VZex*VZap);
+0028 <span class="comment">%coefficient de détermination</span>
+0029 r2=r^2;
+0030 <span class="comment">%coefficient de correlation ajusté</span>
+0031 radj=sqrt(1-(nbs-1)/(nbs-2)*(1-r2));
+0032 <span class="comment">%coefficient de détermination ajusté</span>
+0033 r2adj=radj^2;
+0034 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

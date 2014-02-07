@@ -1,0 +1,21 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  crit_err -> fact_corr;
+  crit_err -> mse_p;
+  crit_err -> qual;
+  crit_err -> raae;
+  crit_err -> rmae;
+  crit_err -> rmse_p;
+  raae -> raae;
+  rmae -> rmae;
+
+  calc_err_loo [URL="calc_err_loo.html"];
+  const_ic [URL="const_ic.html"];
+  crit_err [URL="crit_err.html"];
+  fact_corr [URL="fact_corr.html"];
+  mse_p [URL="mse_p.html"];
+  qual [URL="qual.html"];
+  raae [URL="raae.html"];
+  rmae [URL="rmae.html"];
+  rmse_p [URL="rmse_p.html"];
+}

@@ -1,0 +1,9 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  aff_date [URL="aff_date.html"];
+  affichage [URL="affichage.html"];
+  affichage_ic [URL="affichage_ic.html"];
+  qq_plot [URL="qq_plot.html"];
+  scvr_plot [URL="scvr_plot.html"];
+}

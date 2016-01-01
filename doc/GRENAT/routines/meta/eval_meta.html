@@ -34,7 +34,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>	% Fonction assurant l'initialisation et l'affichage des infos temporelles dans les fonctions</li><li><a href="eval_krg_ckrg.html" class="code" title="function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)">eval_krg_ckrg</a>	% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage</li><li><a href="eval_prg.html" class="code" title="function [val]=eval_prg(coef,xx,deg)">eval_prg</a>	%evaluation de la fonction polynomiale</li><li><a href="eval_rbf.html" class="code" title="function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)">eval_rbf</a>	%fonction permettant d'evaluer le metamodele RBF en un ensemble de pts donnes</li><li><a href="eval_swf.html" class="code" title="function [Z,GZ]=eval_swf(U,swf)">eval_swf</a>	%% Fonction assurant l'evaluation du metamodele 'Shepard Weighting Functions'</li><li><a href="evald_prg.html" class="code" title="function [GRG1,GRG2]=evald_prg(coef,xx,yy,deg)">evald_prg</a>	%evaluation de la dérivée de la fonction polynomiale</li><li><a href="interp_lag.html" class="code" title="function [Z,GZ]=interp_lag(x,tirages,eval)">interp_lag</a>	% Interpolation par fonction polynomiale de Lagrange</li><li><a href="interp_lin.html" class="code" title="function [Z,GZ]=interp_lin(x,tirages,eval)">interp_lin</a>	% Interpolation par fonction de base lineaire</li></ul>
+<li><a href="../../../GRENAT/routines/divers/mesu_time.html" class="code" title="function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)">mesu_time</a>	% Fonction assurant l'initialisation et l'affichage des infos temporelles dans les fonctions</li><li><a href="eval_krg_ckrg.html" class="code" title="function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)">eval_krg_ckrg</a>	% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage</li><li><a href="eval_rbf.html" class="code" title="function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)">eval_rbf</a>	%fonction permettant d'evaluer le metamodele RBF en un ensemble de pts donnes</li><li><a href="interp_lag.html" class="code" title="function [Z,GZ]=interp_lag(x,tirages,eval)">interp_lag</a>	% Interpolation par fonction polynomiale de Lagrange</li><li><a href="interp_lin.html" class="code" title="function [Z,GZ]=interp_lin(x,tirages,eval)">interp_lin</a>	% Interpolation par fonction de base lineaire</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/EXEMPLE_UTILISATION.html" class="code" title="">EXEMPLE_UTILISATION</a>	Exemple d'utilisation de la Toolbox GRENAT</li><li><a href="../../../GRENAT/EXEMPLE_UTILISATION_DOE.html" class="code" title="">EXEMPLE_UTILISATION_DOE</a>	Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir</li></ul>
@@ -145,7 +145,7 @@ This function is called by:
 0098         <span class="keyword">case</span> <span class="string">'SWF'</span>
 0099             <span class="comment">%%    Evaluation du metamodele 'Shepard Weighting Functions'</span>
 0100             <span class="keyword">for</span> jj=1:nb_ev_pts
-0101                 [rep(jj),G]=<a href="eval_swf.html" class="code" title="function [Z,GZ]=eval_swf(U,swf)">eval_swf</a>(ev_pts(jj,:),meta_donnee);
+0101                 [rep(jj),G]=eval_swf(ev_pts(jj,:),meta_donnee);
 0102                 GR(jj,:)=G;
 0103             <span class="keyword">end</span>
 0104             <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
@@ -219,9 +219,9 @@ This function is called by:
 0172             <span class="keyword">for</span> degre=meta.deg
 0173                 <span class="comment">%% Evaluation du metamodele de Regression</span>
 0174                 parfor (jj=1:nb_ev_pts,numw)
-0175                     rep(jj)=<a href="eval_prg.html" class="code" title="function [val]=eval_prg(coef,xx,deg)">eval_prg</a>(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+0175                     rep(jj)=eval_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
 0176                     <span class="comment">%evaluation des gradients du MT</span>
-0177                     [GRG1,GRG2]=<a href="evald_prg.html" class="code" title="function [GRG1,GRG2]=evald_prg(coef,xx,yy,deg)">evald_prg</a>(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+0177                     [GRG1,GRG2]=evald_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
 0178                     GR(jj,:)=[GRG1,GRG2];
 0179                 <span class="keyword">end</span>
 0180             <span class="keyword">end</span>
@@ -425,6 +425,6 @@ This function is called by:
 0378 
 0379 
 0380</pre></div>
-<hr><address>Generated on Fri 07-Feb-2014 20:13:17 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 27-Aug-2015 11:57:14 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

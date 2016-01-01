@@ -71,9 +71,7 @@ digraph m2html {
   const_meta -> meta_inkrg;
   const_meta -> meta_inrbf;
   const_meta -> meta_krg_ckrg;
-  const_meta -> meta_prg;
   const_meta -> meta_rbf;
-  const_meta -> meta_swf;
   cross_validate_krg_ckrg -> qq_plot;
   cross_validate_krg_ckrg -> scvr_plot;
   cross_validate_krg_ckrg -> calc_err_loo;
@@ -97,17 +95,11 @@ digraph m2html {
   eval_krg_ckrg -> norm_denorm_g;
   eval_meta -> mesu_time;
   eval_meta -> eval_krg_ckrg;
-  eval_meta -> eval_prg;
   eval_meta -> eval_rbf;
-  eval_meta -> eval_swf;
-  eval_meta -> evald_prg;
   eval_meta -> interp_lag;
   eval_meta -> interp_lin;
   eval_rbf -> norm_denorm;
   eval_rbf -> norm_denorm_g;
-  eval_swf -> norm_denorm;
-  eval_swf -> norm_denorm_g;
-  eval_swf -> fct_swf;
   meta_inkrg -> meta_krg_ckrg;
   meta_inrbf -> meta_rbf;
   meta_krg_ckrg -> mergestruct;
@@ -123,8 +115,6 @@ digraph m2html {
   meta_rbf -> bloc_rbf;
   meta_rbf -> calc_para_rbf;
   meta_rbf -> estim_para_rbf;
-  meta_swf -> norm_denorm;
-  meta_swf -> norm_denorm_g;
 
   EXEMPLE [URL="GRENAT/EXEMPLE.html"];
   EXEMPLE_UTILISATION [URL="GRENAT/EXEMPLE_UTILISATION.html"];
@@ -235,12 +225,8 @@ digraph m2html {
   estim_para_rbf [URL="GRENAT/routines/meta/estim_para_rbf.html"];
   eval_krg_ckrg [URL="GRENAT/routines/meta/eval_krg_ckrg.html"];
   eval_meta [URL="GRENAT/routines/meta/eval_meta.html"];
-  eval_prg [URL="GRENAT/routines/meta/eval_prg.html"];
   eval_rbf [URL="GRENAT/routines/meta/eval_rbf.html"];
-  eval_swf [URL="GRENAT/routines/meta/eval_swf.html"];
-  evald_prg [URL="GRENAT/routines/meta/evald_prg.html"];
   evald_rbf [URL="GRENAT/routines/meta/evald_rbf.html"];
-  fct_swf [URL="GRENAT/routines/meta/fct_swf.html"];
   interp_lag [URL="GRENAT/routines/meta/interp_lag.html"];
   interp_lin [URL="GRENAT/routines/meta/interp_lin.html"];
   likelihood [URL="GRENAT/routines/meta/likelihood.html"];
@@ -248,7 +234,5 @@ digraph m2html {
   meta_inrbf [URL="GRENAT/routines/meta/meta_inrbf.html"];
   meta_krg_ckrg [URL="GRENAT/routines/meta/meta_krg_ckrg.html"];
   meta_pod [URL="GRENAT/routines/meta/meta_pod.html"];
-  meta_prg [URL="GRENAT/routines/meta/meta_prg.html"];
   meta_rbf [URL="GRENAT/routines/meta/meta_rbf.html"];
-  meta_swf [URL="GRENAT/routines/meta/meta_swf.html"];
 }

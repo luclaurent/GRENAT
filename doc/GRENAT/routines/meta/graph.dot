@@ -5,21 +5,15 @@ digraph m2html {
   const_meta -> meta_inkrg;
   const_meta -> meta_inrbf;
   const_meta -> meta_krg_ckrg;
-  const_meta -> meta_prg;
   const_meta -> meta_rbf;
-  const_meta -> meta_swf;
   cross_validate_krg_ckrg -> eval_krg_ckrg;
   cross_validate_rbf -> eval_rbf;
   estim_para_krg_ckrg -> bloc_krg_ckrg;
   estim_para_rbf -> bloc_rbf;
   eval_meta -> eval_krg_ckrg;
-  eval_meta -> eval_prg;
   eval_meta -> eval_rbf;
-  eval_meta -> eval_swf;
-  eval_meta -> evald_prg;
   eval_meta -> interp_lag;
   eval_meta -> interp_lin;
-  eval_swf -> fct_swf;
   meta_inkrg -> meta_krg_ckrg;
   meta_inrbf -> meta_rbf;
   meta_krg_ckrg -> bloc_krg_ckrg;
@@ -39,12 +33,8 @@ digraph m2html {
   estim_para_rbf [URL="estim_para_rbf.html"];
   eval_krg_ckrg [URL="eval_krg_ckrg.html"];
   eval_meta [URL="eval_meta.html"];
-  eval_prg [URL="eval_prg.html"];
   eval_rbf [URL="eval_rbf.html"];
-  eval_swf [URL="eval_swf.html"];
-  evald_prg [URL="evald_prg.html"];
   evald_rbf [URL="evald_rbf.html"];
-  fct_swf [URL="fct_swf.html"];
   interp_lag [URL="interp_lag.html"];
   interp_lin [URL="interp_lin.html"];
   likelihood [URL="likelihood.html"];
@@ -52,7 +42,5 @@ digraph m2html {
   meta_inrbf [URL="meta_inrbf.html"];
   meta_krg_ckrg [URL="meta_krg_ckrg.html"];
   meta_pod [URL="meta_pod.html"];
-  meta_prg [URL="meta_prg.html"];
   meta_rbf [URL="meta_rbf.html"];
-  meta_swf [URL="meta_swf.html"];
 }

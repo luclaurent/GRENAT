@@ -47,6 +47,6 @@ if nargin==2
     
     %ajout des toolbox dans le PATH
     nom_fct=cellfun(@(c)['init_rep_' c],other,'uni',false);
-    cellfun(@feval,nom_fct,chemin_full)
+    cellfun(@feval,nom_fct,chemin_full,'uni',false)
 end
 end

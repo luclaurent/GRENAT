@@ -1,14 +1,14 @@
-%% Initialisation des variables d'affichage
-%% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
+%% Initialization of display variables
+%% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function aff_def=init_aff()
 
-    aff_def.scale=true;             %mise a  l'echelle (affichage gradients)
-    aff_def.tikz=false;             %sauvegarde au format Tikz
+    aff_def.scale=true;             %scale for displaying gradients
+    aff_def.tikz=false;             %save on tikz's format
     aff_def.on=false;               %affichage actif ou non
     aff_def.d3=false;               %affichage 3D
     aff_def.d2=false;               %affichage 2D
-    aff_def.contour=false;         %affichage contour
+    aff_def.contour=false;          %affichage contour
     aff_def.save=true;              %sauvegarde de ts les traces
     aff_def.grad_meta=false;        %affichage des gradients du metamodele
     aff_def.grad_eval=false;        %affichage des gradients evalues

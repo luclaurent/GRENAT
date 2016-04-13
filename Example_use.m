@@ -1,13 +1,13 @@
-% Exemple d'utilisation de la Toolbox GRENAT
+% Example of use of GRENAT without the sampling toolbox
 % L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
 init_rep_GRENAT();
 clean;
 
-%affichage de la date
-aff_date;
+%display the date
+disp_date;
 
-%initialisation des variables d'affichage
+%initialization of display variables
 global aff
 aff=init_aff();
 

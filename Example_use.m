@@ -8,14 +8,13 @@ clean;
 disp_date;
 
 %initialization of display variables
-global aff
 aff=init_aff();
 
 fprintf('=========================================\n')
-fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
+fprintf('  >>>   Building surrogate model    <<<\n');
 [tMesu,tInit]=mesu_time;
 
-%execution parallele (option et lancement des workers)
+%parallel execution (options and starting of the workers)
 parallel.on=false;
 parallel.workers='auto';
 exec_parallel('start',parallel);

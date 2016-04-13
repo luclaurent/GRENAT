@@ -1,25 +1,24 @@
-%% Script de lancement et d'arret des workers (parrallelisme)
-%% L. LAURENT -- 01/10/2012 -- laurent@lmt.ens-cachan.fr
+%% Script for starting & stopping workers (parallel)
+%% L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net
 
 
 function [ret]=exec_parallel(statut,options)
 
 global parallel
-parallel.actif=false;
+parallel.on=false;
 parallel.num=0;
 
 if usejava('jvm')
-    %en fonction du statut
+    %depending on the status
     switch statut
         case 'start'
-            %%si pas d'options specifies
+            %%is no specified options
             if nargin==1
                 options.on=[];
                 options.workers=[];
                 options.num_workers=[];
             end
-            %si options manquantes ou non definies:chargement configuration
-            %particuliere
+            %if missing or undefined optionssi options: load specific configuration
             if isfield(options,'on')
                 if isempty(options.on);options.on=false;end
             else
@@ -27,7 +26,7 @@ if usejava('jvm')
             end
             
             arret=true;
-            %%Si parallelisme reclame
+            %%if parallelism is required
             if options.on
                 if isfield(options,'workers')
                     if isempty(options.workers);options.workers='auto';end
@@ -39,7 +38,7 @@ if usejava('jvm')
                 else
                     options.num_workers=0;
                     options.workers='auto';
-                    fprintf(' >> Definition auto nombre de workers\n');
+                    fprintf(' >> Automatic definition of the number of workers\n');
                 end
                 % chargement config par defaut
                 def_parallel=findResource;

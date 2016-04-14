@@ -21,14 +21,14 @@ exec_parallel('start',parallel);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%chargement d'un jeu de donnee en dimension 2
-C=load('EXEMPLE.mat');
-%tirages
-tirages=C.echantillon.tirages;
-%evaluation aux points
-eval=C.echantillon.eval;
-%gradients aux points
-grad=C.echantillon.grad;
+%%Load of a set of 2D data
+C=load('src/various/example_doe.mat');
+%sampling points
+sampling=C.samples.sampling;
+%responses at sample points
+resp=C.samples.resp;
+%gradients at sample points
+grad=C.samples.grad;
 
 %pour affichage et comparaison avec la vraie fonction
 %grille reguliere
@@ -44,7 +44,7 @@ meta.cv_aff=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Construction et evaluation du metamodele aux points souhaites
-[approx]=const_meta(tirages,eval,grad,meta);
+[approx]=const_meta(tirages,resp,grad,meta);
 %evaluation du metamodele aux points de la grille
 [K]=eval_meta(grid_ref,approx,meta);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,10 +67,10 @@ aff.ylabel='x_2';
 figure
 subplot(2,3,1)
 aff.titre='Fonction de reference';
-affichage(grid_ref,eval_ref,tirages,eval,grad,aff);
+affichage(grid_ref,eval_ref,tirages,resp,grad,aff);
 subplot(2,3,2)
 aff.titre='Fonction approchee';
-affichage(grid_ref,K.Z,tirages,eval,grad,aff);
+affichage(grid_ref,K.Z,tirages,resp,grad,aff);
 subplot(2,3,4)
 aff.titre='';
 aff.rendu=false;
@@ -79,9 +79,9 @@ aff.d2=true;
 aff.contour=true;
 aff.grad_eval=true;
 ref.Z=eval_ref;
-affichage(grid_ref,ref,tirages,eval,grad,aff);
+affichage(grid_ref,ref,tirages,resp,grad,aff);
 subplot(2,3,5)
-affichage(grid_ref,K,tirages,eval,grad,aff);
+affichage(grid_ref,K,tirages,resp,grad,aff);
 subplot(2,3,3)
 aff.d3=true;
 aff.d2=false;
@@ -89,7 +89,7 @@ aff.contour=false;
 aff.grad_eval=false;
 aff.rendu=true;
 aff.titre='Variance';
-affichage(grid_ref,K.var,tirages,eval,grad,aff);
+affichage(grid_ref,K.var,tirages,resp,grad,aff);
 subplot(2,3,6)
 aff.titre='Intervalle de confiance a 95%';
 aff.trans=true;

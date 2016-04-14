@@ -4,7 +4,7 @@
 function meta=init_meta(in)
 
 fprintf('=========================================\n')
-fprintf('  >>> INITIALIZATION Surrogae Model <<<\n');
+fprintf('  >>> INITIALIZATION Surrogate Model \n');
 [tMesu,tInit]=mesu_time;
 
 %% default configuration
@@ -21,12 +21,12 @@ meta.para.p_val=2;
 %smoothness
 meta.para.nu_val=0.6;
 %order polynomial 
-meta.para.order=0;
+meta.para.polyorder=0;
 %parameter for SWF
 swf_para=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% kernel function
-kern='matern32';
+meta.kern='matern32';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalization
 meta.norm=true;
@@ -124,16 +124,16 @@ switch meta.type
     case 'DACE'
         fctp='regpoly';
         %regression function
-        if isfield(in,'deg');meta.regr=[fctp num2str(in.deg,'%d')];else meta.regr=[fctp num2str(deg,'%d')];end
+        if isfield(in,'para');if isfield(in.para,'polyorder');meta.regr=[fctp num2str(in.polyorder,'%d')];else meta.regr=[fctp num2str(meta.para.polyorder,'%d')];end;end
         %correlation function
         if isfield(in,'corr');meta.corr=['corr' in.corr];else meta.corr=corr;end
     case {'RBF','GRBF','InRBF'}
-        if isfield(in,'kern');meta.kern=in.kern;else meta.kern=kern;end
+        if isfield(in,'kern');meta.kern=in.kern;end
     case {'KRG','GKRG','InKRG','SVR','GSVR'}
         %order of the polynomial basis used for regression
-        if isfield(in,'deg');meta.deg=in.deg;else meta.deg=deg;end
+        if isfield(in,'para');if isfield(in.para,'polyorder');meta.para.polyorder=in.para.polyorder;end; end
         %kernel function
-        if isfield(in,'kern');meta.kern=in.kern;else meta.kern=kern;end
+        if isfield(in,'kern');meta.kern=in.kern;end
         
     otherwise
 end

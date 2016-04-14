@@ -1,7 +1,7 @@
 % Example of use of GRENAT without the sampling toolbox
 % L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
-init_rep_GRENAT();
+init_dir_GRENAT();
 clean;
 
 %display the date
@@ -30,14 +30,14 @@ resp=C.samples.resp;
 %gradients at sample points
 grad=C.samples.grad;
 
-%pour affichage et comparaison avec la vraie fonction
-%grille reguliere
+%%for diaplaying and comparing with the actual function
+%regular grid
 grid_ref=C.ref.grid;
-%valeurs aux points de la grille
-eval_ref=C.ref.eval;
+%responses at the grid points
+resp_ref=C.ref.resp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%chargement des parametres metamodele
+%load surrogate model parameters
 meta=init_meta;
 meta.type='CKRG';
 meta.cv_aff=true;

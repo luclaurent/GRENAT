@@ -1,93 +1,97 @@
-%% Initialisation du metamodele
-%% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
+%% Initialization of the surrogate model
+%% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function meta=init_meta(in)
 
 fprintf('=========================================\n')
-fprintf('     >>> INITIALISATION META <<<\n');
+fprintf('  >>> INITIALIZATION Surrogae Model <<<\n');
 [tMesu,tInit]=mesu_time;
 
-%%%configuration par defaut
-%prise en compte des gradients
+%% default configuration
+%taking into account gradients
 meta.grad=false;
-%type de metamodele
+%type of surrogate model
 meta.type='KRG';
-%longueur de correlation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% internal parameters
+%length 
 meta.para.l_val=1;
-%parametre puissance
+%power
 meta.para.p_val=2;
-%normalisation
-meta.norm=true;
-%amelioration du conditionnement de la matrice de correlation
-meta.recond=true;
-%validation croisee
-meta.cv=true;
-%calcul tous criteres CV
-meta.cv_full=false;
-%affichage QQ plot CV
-meta.cv_aff=false;
-
-
-%%%options specifiques
-%parametre SWF
+%smoothness
+meta.para.nu_val=0.6;
+%order polynomial 
+meta.para.order=0;
+%parameter for SWF
 swf_para=1;
-%degre regression krigeage
-deg=0;
-%fonction de correlation
-corr='corr_matern32';
-rbf='rf_sexp';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% kernel function
+kern='matern32';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%normalization
+meta.norm=true;
+%improve condition number of matrix (kriging, RBF, SVR...)
+meta.recond=true;
+%cross-validation
+meta.cv.on=true;
+%compute all CV criteria
+meta.cv.full=false;
+%display QQ plot CV
+meta.cv.disp=false;
 
-
-%%estimation parametre long (longueur de correlation)
-% recherche de la longueur de correlation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% internal parameters estimation
+% seek for best values of the internal parameters
 meta.para.estim=true;
-%prise en compte de l'anisotropie (longueur de correlation suivant chaque dimension)
+% anisotropic model (one internal length per variable)
 meta.para.aniso=true;
-%affichage de la fonctionnelle a miniser pour obtenir le "meilleur" jeu de parametres
-meta.para.aff_estim=false;
-%affichage iteration estimation parametres sur un graph (1D/2D)
-meta.para.aff_iter_graph=false;
-%affichage iteration dans la console
-meta.para.aff_iter_cmd=false;
-%affichage informations convergence algo dans des plots
-meta.para.aff_plot_algo=false;
-% methode de minimisation de la log-vraisemblance
+% display objective function to be minimised
+meta.para.disp_estim=false;
+% display iterations of the optimisation process on a figure (1D/2D)
+meta.para.disp_iter_graph=false;
+% display iteration in the console
+meta.para.disp_iter_cmd=false;
+% display convergence information on figures
+meta.para.disp_plot_algo=false;
+% optimizer used for finding internal parameter
 meta.para.method='pso';
-%strategie tirage population initiale algo GA '', 'LHS','IHS'...
-meta.para.popManu='IHS';
-%population initiale algo GA
-meta.para.nbPopInit=[];
-%critere arret algo optimisation
+% method used for the initial sampling for GA ('', 'LHS','IHS'...)
+meta.para.sampManu='IHS';
+% number of sample points of the initial sampling for GA
+meta.para.nbSampInit=[];
+% Value of the stopping criterion of the optimizer
 meta.para.crit_opti=10^-6;
-%bornes esapce recherche parametres
+% bounds of the space on which internal parameters are looked for
 if meta.para.estim
     meta.para.l_min=1e-4;
     meta.para.l_max=50;
     meta.para.p_max=2;
     meta.para.p_min=1.001;
+    meta.para.nu_min=1e-3;
+    meta.para.nu_min=5;
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%enrichissement (evaluation critere)
-meta.enrich.on=false;
-meta.enrich.para_wei=0.5;
-meta.enrich.para_gei=1;
-meta.enrich.para_lcb=0.5;
-
-%Verification interpolation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% infill strategy 
+meta.infill.on=false;
+meta.infill.para_wei=0.5;
+meta.infill.para_gei=1;
+meta.infill.para_lcb=0.5;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Check interpolation
 meta.verif=true;
 
-%sauvegarde des
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% chargement configuration particuliere
 if nargin==0
     in=[];
 end
-%prise en compte des gradients
+%taking gradients into account
 if isfield(in,'grad');meta.grad=in.grad;end
-%type de metamodele KRG/CKRG/DACE/RBF/GRBF
+%type of surrgate model KRG/GKRG/DACE/RBF/GRBF/SVR/GSVR...
 if isfield(in,'type');meta.type=in.type;end
-%parametre fonction RBF/KRG
+%parameter of the kernel function
 if isfield(in,'para')
     if isfield(in.para,'long');meta.para.l_val=in.para.long;end
     if meta.para.estim
@@ -100,62 +104,74 @@ if isfield(in,'para')
     if meta.para.estim
         if isfield(in,'pow');
             meta.para.p_max=in.para.pow(2);
-            meta.para.p_max=in.para.pow(1);
+            meta.para.p_min=in.para.pow(1);
+        end
+    end
+    if isfield(in.para,'nu');meta.para.nu_val=in.para.nu;end
+    if meta.para.estim
+        if isfield(in,'nu');
+            meta.para.nu_max=in.para.nu(2);
+            meta.para.nu_min=in.para.nu(1);
         end
     end
 end
 
-%en fonction du type de metamodele
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% depending on the type of surrogate model
 switch meta.type
     case 'SWF'
         if isfield(in,'swf_para');meta.swf_para=in.swf_para;else meta.swf_para=swf_para;end
     case 'DACE'
         fctp='regpoly';
-        %fonction de regression
+        %regression function
         if isfield(in,'deg');meta.regr=[fctp num2str(in.deg,'%d')];else meta.regr=[fctp num2str(deg,'%d')];end
-        %fonction de correlation
+        %correlation function
         if isfield(in,'corr');meta.corr=['corr' in.corr];else meta.corr=corr;end
     case {'RBF','GRBF','InRBF'}
-        if isfield(in,'rbf');meta.rbf=['rf_' in.rbf];else meta.rbf=rbf;end
-    case {'KRG','CKRG','InKRG'}
-        %degre de la regression
+        if isfield(in,'kern');meta.kern=in.kern;else meta.kern=kern;end
+    case {'KRG','GKRG','InKRG','SVR','GSVR'}
+        %order of the polynomial basis used for regression
         if isfield(in,'deg');meta.deg=in.deg;else meta.deg=deg;end
-        %fonction de correlation
-        if isfield(in,'corr');meta.corr=['corr_' in.corr];else meta.corr=corr;end
+        %kernel function
+        if isfield(in,'kern');meta.kern=in.kern;else meta.kern=kern;end
         
     otherwise
 end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
 if isfield(in,'norm');meta.norm=in.norm;end
-%amelioration du conditionnement de la matrice de correlation
+%improve condition number of the matrix
 if isfield(in,'recond');meta.recond=in.recond;end
-%validation croisee
+%cross-validation
 if isfield(in,'cv');meta.cv=in.cv;end
-%calcul tous criteres CV
-if isfield(in,'cv_full');meta.cv_full=in.cv_full;end
-%affichage QQ plot CV
-if isfield(in,'cv_aff');meta.cv_aff=in.cv_aff;end
+%compute all CV criteria
+if isfield(in,'cv_full');meta.cv.full=in.cv.full;end
+%display QQ plot CV
+if isfield(in,'cv_disp');meta.cv.disp=in.cv.disp;end
 
-
-%%estimation parametre long (longueur de correlation)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% estimation parametre long (longueur de correlation)
 if isfield(in,'para');
-    % recherche de la longueur de correlation
+    % seek for best values of the internal parameters
     if isfield(in.para,'estim');meta.para.estim=in.para.estim;end
-    %prise en compte de l'anisotropie (longueur de correlation suivant chaque dimension)
+    % anisotropic model (one internal length per variable)
     if isfield(in.para,'aniso');meta.para.aniso=in.para.aniso;end
-    %affichage de la fonctionnelle a miniser pour obtenir le "meilleur" jeu de parametres
-    if isfield(in.para,'aff_estim');meta.para.aff_estim=in.para.aff_estim;end
-    %affichage iteration estimation parametres sur un graph (1D/2D)
-    if isfield(in.para,'aff_iter_graph');meta.para.aff_iter_graph=in.para.aff_iter_graph;end
-    %affichage iteration dans la console
-    if isfield(in.para,'aff_iter_cmd');meta.para.aff_iter_cmd=in.para.aff_iter_cmd;end
-    % methode de minimisation de la log-vraisemblance
+    % display objective function to be minimised
+    if isfield(in.para,'disp_estim');meta.para.disp_estim=in.para.disp_estim;end
+    % display iterations of the optimisation process on a figure (1D/2D)
+    if isfield(in.para,'disp_iter_graph');meta.para.disp_iter_graph=in.para.disp_iter_graph;end
+    % display iteration in the console
+    if isfield(in.para,'disp_iter_cmd');meta.para.disp_iter_cmd=in.para.disp_iter_cmd;end
+    % display convergence information on figures
+    if isfield(in.para,'disp_plot_algo');meta.para.disp_plot_algo=in.para.disp_plot_algo;end
+    % optimizer used for finding internal parameter
     if isfield(in.para,'method');meta.para.method=in.para.method;end
-    %strategie tirage population initiale algo GA '', 'LHS','IHS'...
+    % method used for the initial sampling for GA ('', 'LHS','IHS'...)
     if isfield(in.para,'popManu');meta.para.popManu=in.para.popManu;end
-    %population initiale algo GA
+   % number of sample points of the initial sampling for GA
     if isfield(in.para,'norpopInitm');meta.para.popInit=in.para.popInit;end
-    %critere arret algo optimisation
+    % Value of the stopping criterion of the optimizer
     if isfield(in.para,'crit_opti');meta.para.crit_opti=in.para.crit_opti;end
     if meta.para.estim
         if isfield(in.para,'long');
@@ -164,23 +180,28 @@ if isfield(in,'para');
         end
     end
 end
-%enrichissement (evaluation critere)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% infill strategy 
 if isfield(in,'enrich');
     if isfield(in.enrich,'on');meta.enrich.on=in.enrich.on;end
     if isfield(in.enrich,'para_wei');meta.enrich.para_wei=in.enrich.para_wei;end
     if isfield(in.enrich,'para_gei');meta.enrich.para_gei=in.enrich.para_gei;end
     if isfield(in.enrich,'para_lcb');meta.enrich.para_lcb=in.enrich.para_lcb;end
     
-    %Verification interpolation
+    % check interpolation
     if isfield(in,'verif');meta.verif=in.verif;end
 end
 
 if usejava('jvm')
-    %comptage du nombre de workers disponibles (pour parallelisme)
-    meta.worker_parallel=matlabpool('size');
+    %count number of available workers (for parallelism)
+    def_parallel=parcluster;
+    meta.worker_parallel=def_parallel.NumWorkers;
 else
     meta.worker_parallel=1;
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mesu_time(tMesu,tInit);
 fprintf('=========================================\n')

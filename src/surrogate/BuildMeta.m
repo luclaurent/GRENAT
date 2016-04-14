@@ -1,30 +1,30 @@
-%% fonction assurant la construction du metamodele (pas son evaluation)
+%% function for building surrogate model
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [ret]=const_meta(tirages,eval,grad_in,meta,num_fct)
+function [ret]=BuildMeta(sampling,resp,grad_in,meta,num_fct)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-fprintf('  >>> CONSTRUCTION METAMODELE <<<\n');
+fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
 [tMesu,tInit]=mesu_time;
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%prise en compte gradients ou pas
+%taking into account gradients or not
 if isempty(grad_in);pec_grad='Non';grad_in=[];else pec_grad='Oui';end
-fprintf('\n++ Gradients disponibles: %s\n',pec_grad);
+fprintf('\n++ Gradients are available: %s\n',pec_grad);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-% Generation du metamodele
+%% Start building
 textd='++ Type: ';
 textf='';
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%nombre de variables
-nb_var=size(tirages,2);
-%nombre de points
-nb_val=size(tirages,1);
+%number of variables
+nb_var=size(sampling,2);
+%number of sample points
+nb_val=size(sampling,1);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%mise en forme type de metamodele
+%for building many different surrogate models
 if ~iscell(meta.type)
     metype={meta.type};
 else
@@ -32,17 +32,17 @@ else
 end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%conditionnement pour InKRG (prise en compte donnees sous forme struct)
+%conditioning data for indirect gradient-enhanced approachs
 if nargin==5&&isstruct(grad_in)
     grad.eval=grad_in.eval{num_fct};
-    grad.tirages=grad_in.tirages{num_fct};
+    grad.sampling=grad_in.sampling{num_fct};
 else
     grad=grad_in;
 end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%Examen des donnees entrantes (traitement des donn�es manquantes
-[bilan_manq]=examen_in_data(tirages,eval,grad_in);
+%Check input data (find missing data)
+[bilan_manq]=CheckInputData(sampling,resp,grad_in);
 
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
@@ -61,7 +61,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Fonctions Shepard (SWF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            swf=meta_swf(tirages,eval,grad_in,meta);
+            swf=meta_swf(sampling,resp,grad_in,meta);
             out_meta=swf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -70,7 +70,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Radial Basis Functions (RBF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            rbf=meta_rbf(tirages,eval,[],meta,bilan_manq);
+            rbf=meta_rbf(sampling,resp,[],meta,bilan_manq);
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -79,7 +79,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Gradient-based Radial Basis Functions (GRBF)' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
-            rbf=meta_rbf(tirages,eval,grad_in,meta,bilan_manq);
+            rbf=meta_rbf(sampling,resp,grad_in,meta,bilan_manq);
             out_meta=rbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -88,7 +88,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            inkrg=meta_inkrg(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
+            inkrg=meta_inkrg(sampling,resp,grad,meta,bilan_manq); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
             out_meta=inkrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -97,7 +97,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            inrbf=meta_inrbf(tirages,eval,grad,meta,bilan_manq); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
+            inrbf=meta_inrbf(sampling,resp,grad,meta,bilan_manq); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
             out_meta=inrbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -106,7 +106,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'CoKrigeage' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \nNombre de points: %d\n',nb_var,nb_val)
-            ckrg=meta_krg_ckrg(tirages,eval,grad_in,meta,bilan_manq);
+            ckrg=meta_krg_ckrg(sampling,resp,grad_in,meta,bilan_manq);
             out_meta=ckrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -115,7 +115,7 @@ for type=metype
             fprintf('\n%s\n',[textd 'Krigeage' textf]);
             %affichage informations
             fprintf('Nombre de variables: %d \n Nombre de points: %d\n\n',nb_var,nb_val)
-            krg=meta_krg_ckrg(tirages,eval,[],meta,bilan_manq);
+            krg=meta_krg_ckrg(sampling,resp,[],meta,bilan_manq);
             out_meta=krg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -134,7 +134,7 @@ for type=metype
                         ub=meta.para.l_max.*ones(nb_var,1);
                 end
                 theta0=(ub-lb)./2;
-                [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0,lb,ub);
+                [dace.model,dace.perf]=dacefit(sampling,resp,meta.regr,meta.corr,theta0,lb,ub);
             else
                 switch meta.corr
                     case {'correxpg'}
@@ -142,7 +142,7 @@ for type=metype
                     otherwise
                         theta0=meta.para.l_val;
                 end
-                [dace.model,dace.perf]=dacefit(tirages,eval,meta.regr,meta.corr,theta0);
+                [dace.model,dace.perf]=dacefit(sampling,resp,meta.regr,meta.corr,theta0);
             end
             out_meta=dace;
             %%%%%%%%=================================%%%%%%%%
@@ -156,7 +156,7 @@ for type=metype
                 fprintf('Nombre de variables: %d \n Nombre de points: %d\n',nb_var,nb_val)
                 dd=['-- Degre du polynome \n',num2str(degre)];
                 fprintf(dd);
-                [prg.coef,prg.MSE]=meta_prg(tirages,eval,degre);
+                [prg.coef,prg.MSE]=meta_prg(sampling,resp,degre);
                 out_meta.prg{ite_prg}=prg;
                 ite_prg=ite_prg+1;
             end
@@ -182,8 +182,8 @@ for type=metype
     out_meta.type=type{1};
     out_meta.nb_var=nb_var;
     out_meta.nb_val=nb_val;
-    out_meta.tirages=tirages;
-    out_meta.eval=eval;
+    out_meta.tirages=sampling;
+    out_meta.eval=resp;
     out_meta.grad=grad_in;
     out_meta.enrich=meta.enrich;
     if numel(metype)==1

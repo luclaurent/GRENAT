@@ -1,7 +1,6 @@
 %% Script for starting & stopping workers (parallel)
 %% L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net
 
-
 function [ret]=exec_parallel(statut,options)
 
 global parallel
@@ -18,7 +17,7 @@ if usejava('jvm')
                 options.workers=[];
                 options.num_workers=[];
             end
-            %if missing or undefined optionssi options: load specific configuration
+            %if missing or undefined options load specific configuration
             if isfield(options,'on')
                 if isempty(options.on);options.on=false;end
             else
@@ -40,69 +39,72 @@ if usejava('jvm')
                     options.workers='auto';
                     fprintf(' >> Automatic definition of the number of workers\n');
                 end
-                % chargement config par defaut
-                def_parallel=findResource;
-                if matlabpool('size')~=0
+                % load default configuration
+                def_parallel=parcluster;
+                %load current runing configuration
+                cur_parallel=gcp('nocreate');
+                if sum(size(cur_parallel))~=0
                     switch options.workers
                         case 'auto'
-                            if matlabpool('size')>=def_parallel.ClusterSize
+                            if cur_parallel.NumWorkers>=def_parallel.NumWorkers
                                 arret=false;
                             else
                                 arret=true;
                             end
                         case 'manu'
-                            if matlabpool('size')~=options.num_workers&&options.num_workers~=0
+                            if cur_parallel.NumWorkers~=options.num_workers&&options.num_workers~=0
                                 arret=true;
                             end
                     end
                     if arret
-                        fprintf(' //!\\ MatLab parallel actif >>> ARRET\n');
-                        matlabpool('close','force')
+                        fprintf(' //!\\ Matlab parallel is active >>> STOP IT !!\n');
+                        parpool('close','force')
                         parallel.actif=false;
                         parallel.num=0;
                     else
-                        fprintf(' //!\\ MatLab parallel actif >>> POURSUITE\n');
+                        fprintf(' //!\\ Matlab parallel is active >>> CONTINUE !!\n');
                     end
                     
                 end
-                %si parallelisme actif
-                fprintf(' >>> Lancement workers MatLab Parallel <<<\n');
-                %si lancement automatique
+                %if parallelism is active
+                fprintf(' >>> Start workers <<<\n');
+                %if automatic staring
                 if strcmp(options.workers,'auto')
-                    %recuperation nombre de workers maxi
-                    options.num_workers=def_parallel.ClusterSize;
+                    %catch maximum number of workers
+                    options.num_workers=def_parallel.NumWorkers;
                 end
-                %si lancement manuel
+                %if manual loading
                 if strcmp(options.workers,'manu')
-                    fprintf(' >> Nombre de workers demandes/disponibles: %i/%i\n',options.num_workers,def_parallel.ClusterSize);
+                    fprintf(' >> Number of workers required/available: %i/%i\n',options.num_workers,def_parallel.ClusterSize);
                     %verification nombre de workers demandes
-                    if options.num_workers>def_parallel.ClusterSize;
-                        options.num_workers=def_parallel.ClusterSize;
+                    if options.num_workers>def_parallel.NumWorkers;
+                        options.num_workers=def_parallel.NumWorkers;
                     end
                 end
-                fprintf(' >> Demande de workers: %s\n',options.workers);
-                fprintf(' >> Nombre de workers: %i\n',options.num_workers);
-                %execution demande et lancement workers
+                fprintf(' >> Required workers: %s\n',options.workers);
+                fprintf(' >> Number of workers: %i\n',options.num_workers);
+                %execute starting/stopping and catch error
+                disp('la')
                 if arret
                     try
-                        matlabpool('open',options.num_workers);
+                        parpool(options.num_workers);
                         parallel.actif=true;
                         parallel.num=options.num_workers;
                     catch err
-                        fprintf('##>> Probleme initialisation parallele <<##\n');
-                        fprintf('##>> Lancement sans parallelisme <<##\n');
+                        fprintf('##>> Parallel starting issue <<##\n');
+                        fprintf('##>> Start without parallelism <<##\n');
                     end
                 end
             end
             
         case 'stop'
-            if options.on
-                if matlabpool('size')~=0
-                    fprintf(' >>> Arret workers MatLab Parallel <<<\n');
-                    matlabpool('close');
-                    parallel.actif=false;
-                    parallel.num=0;
-                end
+            %load current runing configuration
+            cur_parallel=gcp('nocreate');
+            if sum(size(cur_parallel))~=0
+                fprintf(' >>> Stop parallel workers <<<\n');
+                delete(gcp('nocreate'));
+                parallel.actif=false;
+                parallel.num=0;
             end
     end
 end

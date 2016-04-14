@@ -46,7 +46,7 @@ cellfun(@addpath,path_absolute);
 
 %if PSOt is available the PSOt files will be loaded
 if exist('init_PSOt','file')
-    init_PSOt([pathcustom '/routines/libs/PSOt']);
+    init_PSOt([pathcustom '/src/libs/PSOt']);
 end
 
 if nargin==2

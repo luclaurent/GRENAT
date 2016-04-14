@@ -12,9 +12,10 @@ if nargin==0
 end
 
 %absolute path
-absolute_path=cellfun(@(c)[pathcustom '/PSOt/' c],doss,'uni',false);
+absolute_path=cellfun(@(c)[pathcustom '/' c],doss,'uni',false);
 
 %add to the PATH
+absolute_path{1}
 cellfun(@addpath,absolute_path);
 
 end

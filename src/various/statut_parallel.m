@@ -1,5 +1,5 @@
 %% Petite routine de verification du statut parallele (actif ou non)
-%% L. LAURENT -- 24/01/2014 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 24/01/2014 -- luc.laurent@lecnam.net
 
 function [statut,num]=statut_parallel
 %statut

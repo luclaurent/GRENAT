@@ -1,5 +1,5 @@
 %%fonction permettant le calcul de l'erreur RMSE
-%%L. LAURENT   --  10/02/2012   --  luc.laurent@ens-cachan.fr
+%%L. LAURENT   --  10/02/2012   --  luc.laurent@lecnam.net
 
 %%Zex: correspond a  l'ensemble des valeurs obtenues par evalutions de la
 %%fonction objectif

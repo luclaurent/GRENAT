@@ -1,6 +1,6 @@
 %%evaluation de la fonction polynomiale
 
-%%L. LAURENT      luc.laurent@ens-cachan.fr
+%%L. LAURENT      luc.laurent@lecnam.net
 %% 10/03/2010
 
 

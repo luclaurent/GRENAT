@@ -1,5 +1,5 @@
 %%fonction de correlation exponentielle generalisee (KRG)
-%%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 11/05/2010 -- luc.laurent@lecnam.net
 % revision le 14/11/2012 + inclusion methode de Lockwood 2010
 
 % nd+1 parametres possible avec nd la dimension du pb

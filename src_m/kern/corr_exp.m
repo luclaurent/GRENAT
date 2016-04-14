@@ -1,5 +1,5 @@
 %%fonction de corrélation exponentielle (KRG)
-%%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 11/05/2010 -- luc.laurent@lecnam.net
 
 function [corr,dcorr,ddcorr]=corr_exp(xx,theta)
 

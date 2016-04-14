@@ -1,5 +1,5 @@
 %%Evaluation de la fonction et de ses gradients
-%% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function [eval,grad]=gene_eval(fct,X,type)
 

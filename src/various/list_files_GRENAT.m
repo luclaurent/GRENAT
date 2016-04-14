@@ -1,5 +1,5 @@
 %% Listage des fichiers de la Toolbox GRENAT
-%% L. LAURENT -- 07/02/2014 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
 
 
 %% A executer depuis la racine de la toolbox

@@ -1,5 +1,5 @@
 %%fonction de rfelation exponentielle generalisee (RBF)
-%%L. LAURENT -- 20/11/2012 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 20/11/2012 -- luc.laurent@lecnam.net
 
 % nd+1 parametres possible avec nd la dimension du pb
 % le parametre para(nd+1) ou para(end) doit être compris entre 1 et n

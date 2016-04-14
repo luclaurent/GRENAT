@@ -1,5 +1,5 @@
 %% Generation de l'espace de trace de la fonction 2D
-%% L. LAURENT -- 05/01/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
 
 function [XY,aff]=gene_aff(doe,aff)
 

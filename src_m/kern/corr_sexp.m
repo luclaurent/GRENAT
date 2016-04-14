@@ -1,5 +1,5 @@
 %%fonction de correlation exponentielle carree
-%%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 18/01/2012 -- luc.laurent@lecnam.net
 %revision du 13/11/2012
 %modification du 19/12/2012: changement longueur de correlation
 

@@ -1,5 +1,5 @@
 %%fonction a base radiale: Cauchy
-%%L. LAURENT      luc.laurent@ens-cachan.fr
+%%L. LAURENT      luc.laurent@lecnam.net
 %% 15/03/2010 modif le 12/04/2010
 
 function [G,dG,DddG]=rf_cauchy(xx,para)

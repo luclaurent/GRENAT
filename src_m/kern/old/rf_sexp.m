@@ -1,5 +1,5 @@
 %%fonction de base radiale exponentielle carree
-%%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 18/01/2012 -- luc.laurent@lecnam.net
 %revision du 13/11/2012
 
 %Rasmussen 2006 p. 83

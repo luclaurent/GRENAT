@@ -1,5 +1,5 @@
 %fonction permettant la construction des intervalles de confiance
-% 03/12/2010 -- L. LAURENT -- laurent@lmt.ens-cachan.fr
+% 03/12/2010 -- L. LAURENT -- luc.laurent@lecnam.net
 
 %parametre d'entree (prediction metamodele et variance)
 %sortie intervalles de confiance a 68%, 95% et 99%

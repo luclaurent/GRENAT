@@ -1,5 +1,5 @@
 %fonction Schwefel
-%L. LAURENT -- 26/01/2011 -- luc.laurent@ens-cachan.fr
+%L. LAURENT -- 26/01/2011 -- luc.laurent@lecnam.net
 %modif le 16/09/2011 -- modif ecriture input pour passage code a n
 %variables
 

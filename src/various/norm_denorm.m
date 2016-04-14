@@ -1,5 +1,5 @@
 %% fonction assurant la normalisation/denormalisation des donnees
-%% L. LAURENT -- 18/10/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 18/10/2011 -- luc.laurent@lecnam.net
 
 function [out,infos]=norm_denorm(in,type,infos)
 

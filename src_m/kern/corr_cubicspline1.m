@@ -1,5 +1,5 @@
 %%fonction de correlation Cubic Spline 1
-%%L. LAURENT -- 12/11/2012 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 12/11/2012 -- luc.laurent@lecnam.net
 
 function [corr,dcorr,ddcorr]=corr_cubicspline1(xx,long)
 

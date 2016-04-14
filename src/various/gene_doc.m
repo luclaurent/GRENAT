@@ -1,5 +1,5 @@
 %% Generation de la documentation (grace a m2html)
-%% L. LAURENT -- 07/02/2014 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
 
 %chargement des chemins
 doss=init_rep_GRENAT;

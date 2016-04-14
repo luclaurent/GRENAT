@@ -1,5 +1,5 @@
 %% Trace QQ plot (pour cross validation)
-%L. LAURENT -- 21/01/2012 -- laurent@lmt.ens-cachan.fr
+%L. LAURENT -- 21/01/2012 -- luc.laurent@lecnam.net
 
 function qq_plot(Zref,Zap,opt)
 

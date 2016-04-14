@@ -1,5 +1,5 @@
 %% Fonction assurant l'effacement de toutes les grandeurs et la fermeture des fenetres ouvertes
-%% L. LAURENT -- 30/01/2014 laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 30/01/2014 luc.laurent@lecnam.net
 
 function clean
 

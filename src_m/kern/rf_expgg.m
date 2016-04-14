@@ -1,5 +1,5 @@
 %%fonction de rfelation exponentielle generalisee G (KRG)
-%%L. LAURENT -- 20/11/2012 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 20/11/2012 -- luc.laurent@lecnam.net
 
 % 2*nd parametres possible avec nd la dimension du pb
 % les parametre para(nd+1:end) doit être compris entre 1 et n

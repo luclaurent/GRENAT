@@ -1,5 +1,5 @@
 %fonction Colville
-%L. LAURENT -- 16/09/2011 -- luc.laurent@ens-cachan.fr
+%L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
 
 %minimum global: f(x1,x2,x3,x4)=0 pour (x1,x2,x3,x4)=(1,1,1,1)
 

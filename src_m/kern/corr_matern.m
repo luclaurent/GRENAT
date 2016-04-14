@@ -1,5 +1,5 @@
 %%fonction de correlation Matern 
-%%L. LAURENT -- 06/02/2013 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 06/02/2013 -- luc.laurent@lecnam.net
 
 %parametres possibles nd+1 (nd: portees et 1: regularite
 

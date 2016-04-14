@@ -1,5 +1,5 @@
 %% Calcul des criteres d'erreur et affichage
-%% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function [err,errV,errNAME]=crit_err(Zap,Zref,donnees)
 

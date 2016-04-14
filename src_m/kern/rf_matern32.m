@@ -1,5 +1,5 @@
 %%fonction de correlation Matern (3/2)
-%%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 23/01/2011 -- luc.laurent@lecnam.net
 %revision du 12/11/2012 (issue de Lockwood 2010)
 %modification parametre le 19/12/2012
 

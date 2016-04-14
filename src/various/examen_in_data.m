@@ -1,5 +1,5 @@
 %% fonction assurant l'examen des donn�es entrante (en cas de donn�es manquantes)
-%% L. LAURENT -- 12/06/2012 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 12/06/2012 -- luc.laurent@lecnam.net
 
 function [ret]=examen_in_data(tirages,eval,grad)
 

@@ -1,5 +1,5 @@
 %%fonction permettant le calcul de 3 criteres de qualite
-%%L. LAURENT   --  22/10/2010   --  luc.laurent@ens-cachan.fr
+%%L. LAURENT   --  22/10/2010   --  luc.laurent@lecnam.net
 
 %%Zex: valeurs de la fonction objectif "exactes" obtenues par simulation
 %%Zap: valeurs approchees de la fonction objectif obtenues par le

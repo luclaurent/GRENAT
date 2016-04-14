@@ -2,7 +2,7 @@
 %base radiale
 % RBF: sans gradient
 % HBRBF: avec gradients
-%%L. LAURENT      luc.laurent@ens-cachan.fr
+%%L. LAURENT      luc.laurent@lecnam.net
 %% 15/03/2010 modif le 12/04/2010 puis le 15/01/2012
 
 function ret=meta_rbf(tirages,eval,grad,meta,manq)

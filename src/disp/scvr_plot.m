@@ -1,5 +1,5 @@
 %% Trace SCVR plot (pour cross validation)
-%L. LAURENT -- 16/02/2012 -- laurent@lmt.ens-cachan.fr
+%L. LAURENT -- 16/02/2012 -- luc.laurent@lecnam.net
 % cf. Jones 1998
 
 function scvr_plot(Zap,scvr,opt)

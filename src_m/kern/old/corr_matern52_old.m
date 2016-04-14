@@ -1,5 +1,5 @@
 %%fonction de correlation Matern (5/2)
-%%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 23/01/2011 -- luc.laurent@lecnam.net
 
 function [corr,dcorr,ddcorr]=corr_matern52_old(xx,long)
 

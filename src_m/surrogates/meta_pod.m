@@ -1,6 +1,6 @@
 %%fonction permettant de construire un metamodèle en utilisant la POD
 
-%%L. LAURENT      luc.laurent@ens-cachan.fr
+%%L. LAURENT      luc.laurent@lecnam.net
 %% 16/03/2010
 
 function S=meta_pod(tirages,xx,yy,eval,nb_vs)

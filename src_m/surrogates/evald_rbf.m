@@ -1,6 +1,6 @@
 %%fonction permettant d'évaluer le gradient du métamodèle RBF en un ensemble de pts donnés
 
-%%L. LAURENT      luc.laurent@ens-cachan.fr
+%%L. LAURENT      luc.laurent@lecnam.net
 %% 12/04/2010
 
 function [Grbf1,Grbf2]=evald_rbf(xx,yy,tirages,w,para,fct)

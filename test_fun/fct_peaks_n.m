@@ -1,5 +1,5 @@
 %fonction peaks normalisée
-%L. LAURENT -- 12/05/2010 -- luc.laurent@ens-cachan.fr
+%L. LAURENT -- 12/05/2010 -- luc.laurent@lecnam.net
 
 function [p,dp1,dp2]=fct_peaks_n(xx,yy)
 xx=xx*4;

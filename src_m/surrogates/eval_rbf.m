@@ -2,7 +2,7 @@
 % RBF: sans gradient
 % HBRF: avec gradients
 
-%%L. LAURENT      luc.laurent@ens-cachan.fr
+%%L. LAURENT      luc.laurent@lecnam.net
 %% 15/03/2010 reprise le 20/01/2012
 
 function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)

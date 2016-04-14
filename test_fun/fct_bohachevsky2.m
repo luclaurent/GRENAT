@@ -1,5 +1,5 @@
 %fonction Bohachevsky2
-%L. LAURENT -- 16/09/2011 -- luc.laurent@ens-cachan.fr
+%L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
 
 %minimum global: f(x1,x2)=0 pour (x1,x2)=(0,0)
 

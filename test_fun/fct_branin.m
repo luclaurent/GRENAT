@@ -1,5 +1,5 @@
 %fonction Branin rcos
-%L. LAURENT -- 13/12/2010 -- luc.laurent@ens-cachan.fr
+%L. LAURENT -- 13/12/2010 -- luc.laurent@lecnam.net
 %modif le 16/09/2011 -- modif �criture input pour passage code � n
 %variables
 

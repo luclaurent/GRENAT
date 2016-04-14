@@ -1,5 +1,5 @@
 %%fonction de corrélation sphérique (KRG)
-%%L. LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 11/05/2010 -- luc.laurent@lecnam.net
 
 function corr=corr_spherique(xx,theta,type)
 

@@ -1,5 +1,5 @@
 %% Fvonction assurant le calcul/la determination du nombre de points pour d�terminer la grille du metamodele (pour affichage ou v�rification)
-%% L.LAURENT -- 15/05/2012 -- laurent@lmt.ens-cachan.fr
+%% L.LAURENT -- 15/05/2012 -- luc.laurent@lecnam.net
 
 function nb_ele=gene_nbele(dim)
 

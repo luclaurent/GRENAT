@@ -1,5 +1,5 @@
 %%fonction de correlation exponentielle carree (gaussienne)
-%%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 18/01/2012 -- luc.laurent@lecnam.net
 %revision du 12/11/2012 (issue de Lockwood 2010)
 %Rasmussen 2006 p. 83
 

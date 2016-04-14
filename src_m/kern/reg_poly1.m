@@ -1,5 +1,5 @@
 %fonction assurant l'evaluation d'une fonction polynomiale de degre 1
-%L.LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
+%L.LAURENT -- 11/05/2010 -- luc.laurent@lecnam.net
 
 %% IN:
 %   -val: points d'évaluation (ligne: coordonnées d'un point, colonne: les

@@ -1,4 +1,4 @@
-%%% Preparing data for 'Shepard Weighting Functions' surrogate model
+%% Preparing data for 'Shepard Weighting Functions' surrogate model
 %% L. LAURENT -- 23/11/2011 -- luc.laurent@lecnam.net
 
 function swf=BuildSWF(sampling,resp,grad,meta)

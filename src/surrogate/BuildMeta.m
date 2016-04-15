@@ -28,13 +28,8 @@ else
 end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%conditioning data for indirect gradient-enhanced approachs
-if nargin==5&&isstruct(grad_in)
-    grad.eval=grad_in.eval{num_fct};
-    grad.sampling=grad_in.sampling{num_fct};
-else
-    grad=gradIn;
-end
+%check for indirect gradient-enhanced surrogate model
+InGE=CheckGE(metype);
 
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
@@ -89,10 +84,11 @@ for type=metype
             out_meta=BuildSWF(samplingN,respIn,grad_in,meta);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case 'RBF'
+        case {'RBF','InRBF','GRBF'}
+            [InD,GE]=CheckGE(type{1})
             %% construction du metamodele 'RBF' (Radial Basis Functions)
             fprintf('\n%s\n',[textd 'Radial Basis Functions (RBF)' textf]);
-            out_meta=meta_rbf(samplingN,respInN,[],meta,bilan_manq);
+            out_meta=BuildRBF(samplingN,respInN,[],meta,bilan_manq);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'GRBF'
@@ -200,3 +196,18 @@ end
 
 mesu_time(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+end
+
+%function for checking if the surrogate model is a classical
+%gradient-enhanced or indirect gradient-enhanced surrogate model
+function [Indirect,Classical]=CheckGE(typeSurrogate)
+Indirect=false;
+Classical=false;
+if 
+%check Indirect
+chkIn=finstr(typeSurrogate,'In');
+if chkIn(1)==1;Indirect=true;end
+%check gradient-enhanced
+chkGE=finstr(typeSurrogate,'G');
+if chkGE(1)==1;Classical=true;end
+end

@@ -1,26 +1,26 @@
-%% fonction assurant la normalisation/denormalisation des donnees
+%% Normalization and renormlization of the Data
 %% L. LAURENT -- 18/10/2011 -- luc.laurent@lecnam.net
 
-function [out,infos]=norm_denorm(in,type,infos)
+function [out,infoData]=NormRenorm(in,type,infoData)
 
-% nombre d'echantillons
+% number of sample points
 nbs=size(in,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %traitement de tous le cas de figure
 norm_data=false;norm_manq=false;
 if nargin==3
-    if isfield(infos,'moy')
-        if ~isempty(infos.moy)
+    if isfield(infoData,'moy')
+        if ~isempty(infoData.moy)
             norm_data=true;
         else
             calc_para_norm=false;
         end
-    elseif isfield(infos,'eval')
-        norm_manq=infos.eval.on;
+    elseif isfield(infoData,'eval')
+        norm_manq=infoData.eval.on;
         calc_para_norm=true;
-    elseif isfield(infos,'moy')&&isfield(infos,'eval')
-        if ~isempty(infos.moy)
+    elseif isfield(infoData,'moy')&&isfield(infoData,'eval')
+        if ~isempty(infoData.moy)
             norm_data=true;
         else
              calc_para_norm=false;
@@ -46,14 +46,14 @@ switch type
     case 'norm'
         %dans le cas de données manquantes, on retire les données à NaN
         if norm_manq
-            inm=in(infos.eval.ix_dispo);
+            inm=in(infoData.eval.ix_dispo);
         else
             inm=in;
         end
        
         if norm_data
-            moyy=infos.moy;
-            stdd=infos.std;
+            moyy=infoData.moy;
+            stdd=infoData.std;
             out=(in-moyy(ones(nbs,1),:))./stdd(ones(nbs,1),:);
             calc_para_norm=false;
         end
@@ -68,17 +68,17 @@ switch type
                 std_i(ind)=1;
             end
             if norm_manq
-                outm=(inm-moy_i(ones(infos.eval.nb,1),:))./...
-                    std_i(ones(infos.eval.nb,1),:);
+                outm=(inm-moy_i(ones(infoData.eval.nb,1),:))./...
+                    std_i(ones(infoData.eval.nb,1),:);
                 out=NaN*zeros(size(in));
-                out(infos.eval.ix_dispo)=outm;
+                out(infoData.eval.ix_dispo)=outm;
             else
                 out=(inm-moy_i(ones(nbs,1),:))./std_i(ones(nbs,1),:);
             end
             
             if extr_infos
-                infos.moy=moy_i;
-                infos.std=std_i;
+                infoData.moy=moy_i;
+                infoData.std=std_i;
             end
         end
         if ~calc_para_norm&&~norm_data
@@ -88,8 +88,8 @@ switch type
         %denormalisation
     case 'denorm'
         if norm_data
-            moyy=infos.moy;
-            stdd=infos.std;
+            moyy=infoData.moy;
+            stdd=infoData.std;
             out=stdd(ones(nbs,1),:).*in+moyy(ones(nbs,1),:);
         else
             out=in;
@@ -98,7 +98,7 @@ switch type
         %denormalisation d'une difference de valeurs normalisees
     case 'denorm_diff'
         if norm_data
-            stdd=infos.std;
+            stdd=infoData.std;
             out=stdd(ones(nbs,1),:).*in;
         else
             out=in;

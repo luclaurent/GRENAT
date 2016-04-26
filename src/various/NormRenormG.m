@@ -1,26 +1,26 @@
-%% fonction assurant la normalisation/denormalisation des donnees de type gradients
+%% normalization and renormalization of the gradient data
 %% L. LAURENT -- 19/10/2011 -- luc.laurent@lecnam.net
 
-function [out]=norm_denorm_g(in,type,infos)
+function [out]=NormRenormG(in,type,infoData)
 
-% nombre d'echantillons
+% number of sample points
 nbs=size(in,1);
-% normalisation des donnees
-if (nargin==3&&~isempty(infos.std_t))||nargin==2
+% normalisation of the data
+if (nargin==3&&~isempty(infoData.std_t))||nargin==2
     switch type
         case 'norm'
-            std_t=infos.std_t;
-            std_e=infos.std_e;
+            std_t=infoData.std_t;
+            std_e=infoData.std_e;
             out=in.*std_t(ones(nbs,1),:)./std_e;
-        case 'denorm'
-            std_t=infos.std_t;
-            out=in*infos.std_e./std_t(ones(nbs,1),:);
-        case 'denorm_concat'  %gradients concatenes en un vecteur colonne
-            correct=infos.std_e./infos.std_t;
-            nbv=numel(infos.std_t);
+        case 'renorm'
+            std_t=infoData.std_t;
+            out=in*infoData.std_e./std_t(ones(nbs,1),:);
+        case 'renorm_concat'  %concatenated gradients in a vector
+            correct=infoData.std_e./infoData.std_t;
+            nbv=numel(infoData.std_t);
             out=in.*repmat(correct(:),nbs/nbv,1);
         otherwise
-            error('Mauvais type de normalisation/denormalisation (cf. norm_denorm_g.m)')
+            error(['Wrong kind of normalisation/renormalisation (cf. ',mfilename,')'])
             
     end
 else

@@ -40,7 +40,7 @@ if meta.norm
     infoData.stdS=infoDataS.std;stdS=infoDataS.std;
     infoData.moyS=infoDataS.moy;moyS=infoDataS.moy;
     if avail_grad
-        gradN=NormRenormG(gradIn,'norm',infoData);
+        gradN=NormRenormG(gradIn,'norm',infoDataS,infoDataR);
     end
     %sauvegarde des calculs
     swf.norm.moyR=infoDataR.moy;

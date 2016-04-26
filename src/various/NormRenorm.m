@@ -4,7 +4,7 @@
 function [out,infoData]=NormRenorm(in,type,infoData)
 
 % number of sample points
-nbs=size(in,1);
+ns=size(in,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Dealing with all situations
@@ -54,7 +54,7 @@ switch type
         if NormData
             meanN=infoData.mean;
             stdN=infoData.std;
-            out=(in-meanN(ones(nbs,1),:))./stdN(ones(nbs,1),:);
+            out=(in-meanN(ones(ns,1),:))./stdN(ones(ns,1),:);
             CalcParaNorm=false;
         end
         %if calculation of the normalisation data
@@ -73,7 +73,7 @@ switch type
                 out=NaN*zeros(size(in));
                 out(infoData.eval.ix_dispo)=outm;
             else
-                out=(inm-meanI(ones(nbs,1),:))./stdI(ones(nbs,1),:);
+                out=(inm-meanI(ones(ns,1),:))./stdI(ones(ns,1),:);
             end
             %store normalisation data
             if infoDataAvail
@@ -90,7 +90,7 @@ switch type
         if NormData
             meanN=infoData.mean;
             stdN=infoData.std;
-            out=stdN(ones(nbs,1),:).*in+meanN(ones(nbs,1),:);
+            out=stdN(ones(ns,1),:).*in+meanN(ones(ns,1),:);
         else
             out=in;
         end
@@ -99,7 +99,7 @@ switch type
     case 'renorm_diff'
         if NormData
             stdN=infoData.std;
-            out=stdN(ones(nbs,1),:).*in;
+            out=stdN(ones(ns,1),:).*in;
         else
             out=in;
         end

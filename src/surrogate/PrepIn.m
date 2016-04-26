@@ -1,7 +1,7 @@
 %% Preparation for Indirect Gradient-Enhanced Surrogate Models
 %% L. LAURENT -- 26/04/2016 -- luc.laurent@lecnam.net
 
-function ret=PrepIn(samplingIn,respIn,gradIn,meta,manq)
+function ret=PrepIn(samplingIn,respIn,gradIn,meta,missData)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14,8 +14,8 @@ np=size(samplingIn,2);
 nbs_init=size(samplingIn,1);
 
 if ~nargin==5
-    manq.eval.on=false;
-    manq.grad.on=false;
+    missData.resp.on=false;
+    missData.grad.on=false;
 end  
 
 %en fonction du type de donnees en entree
@@ -56,8 +56,8 @@ if ~isstruct(gradIn)
     %%% la valeur de la reponse aux points proches sans la valeur de cette
     %%% reponse)
     pos_ev=[];
-    if manq.eval.on
-        pos_tmp=manq.eval.ix_manq;
+    if missData.eval.on
+        pos_tmp=missData.eval.ix_manq;
         fprintf(' >>> Supression informations (r�ponse(s) manquante(s)) a(aux) point(s):');
         fprintf(' %i',pos_ev);
         fprintf('\n');
@@ -69,8 +69,8 @@ if ~isstruct(gradIn)
     end
 
     pos_gr=[];
-    if manq.grad.on
-        pos_tmp=manq.grad.ix_manq;
+    if missData.grad.on
+        pos_tmp=missData.grad.ix_manq;
         pos_gr=(pos_tmp(:,1)-1)*(np+1)+1+pos_tmp(:,2);
     end
   
@@ -90,7 +90,7 @@ if ~isstruct(gradIn)
     dup_grad=repmat(reord_grad,np+1,[]);
     tmp=mat_pas_dup.*dup_grad;
     %si donnees manquantes, traitement specifiques pour eviter les NaN    
-    if manq.grad.on||manq.eval.on
+    if missData.grad.on||missData.eval.on
              IX=find(isnan(tmp(:)));
              tmp(IX)=0;
     end

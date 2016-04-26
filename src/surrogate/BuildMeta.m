@@ -16,8 +16,8 @@ fprintf('\n++ Gradients are available: %s\n',avail_grad);
 %number of design variables
 np=size(sampling,2);
 %number of sample points
-nbs=size(sampling,1);
-fprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n',np,nbs);
+ns=size(sampling,1);
+fprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n',np,ns);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %for building many different surrogate models
@@ -35,24 +35,10 @@ if meta.norm
     %normalization of the data
     [respN,infoDataR]=NormRenorm(respIn,'norm');
     [samplingN,infoDataS]=NormRenorm(sampling,'norm');
-    infoData.stdR=infoDataR.std;stdR=infoDataR.std;
-    infoData.moyR=infoDataR.moy;moyR=infoDataR.moy;
-    infoData.stdS=infoDataS.std;stdS=infoDataS.std;
-    infoData.moyS=infoDataS.moy;moyS=infoDataS.moy;
     if avail_grad
         gradN=NormRenormG(gradIn,'norm',infoDataS,infoDataR);
     end
-    %sauvegarde des calculs
-    swf.norm.moyR=infoDataR.moy;
-    swf.norm.stdR=infoDataR.std;
-    swf.norm.moyS=infoDataS.moy;
-    swf.norm.stdS=infoDataS.std;
-    swf.norm.on=true;
-    clear infos_e infos_t
-    clear infos
-    swf.norm.on=true;
 else
-    swf.norm.on=false;
     respN=respIn;
     samplingN=sampling;
     gradN=grad;
@@ -185,7 +171,7 @@ for type=metype
     out_meta.bilan_manq=missStatus;
     out_meta.type=type{1};
     out_meta.nb_var=np;
-    out_meta.nb_val=nbs;
+    out_meta.nb_val=ns;
     out_meta.tirages=sampling;
     out_meta.respN=respN;
     out_meta.gradN=gradN;

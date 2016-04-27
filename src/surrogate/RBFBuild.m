@@ -75,13 +75,13 @@ np=size(samplingIn,2);
 gradAvail=~isempty(gradIn);
 %check missing data
 if nargin==5
-    missResp=missData.eval.on;
+    missResp=missData.resp.on;
     missGrad=missData.grad.on;
     gradAvail=(~missData.grad.all&&missData.grad.on)||(gradAvail&&~missData.grad.on);
 else
-    missData.eval.on=false;
+    missData.resp.on=false;
     missData.grad.on=false;
-    missResp=missData.eval.on;
+    missResp=missData.resp.on;
     missGrad=missData.grad.on;
 end
 
@@ -184,12 +184,13 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %computation of the inter-distances
-dist=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
+distC=zeros(ns);
+distC(:)=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store varibales des grandeurs
 ret.in.sampling=samplingIn;
-ret.in.dist=dist;
+ret.in.dist=distC;
 ret.in.eval=respIn;
 ret.in.pres_grad=gradAvail;
 ret.in.grad=gradIn;

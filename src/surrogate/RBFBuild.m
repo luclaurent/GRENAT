@@ -327,7 +327,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building final elements of the RBF surrogate model (matrices, coefficients & CV)
 % by taking into account the values of hyperparameters obtained previously
-[~,block]=blocRBF(ret,metaData);
+[~,block]=RBFBloc(ret,metaData);
 %save information
 tmp=mergestruct(ret.build,block.build);
 ret.build=tmp;

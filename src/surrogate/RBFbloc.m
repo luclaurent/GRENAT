@@ -1,7 +1,7 @@
-%% Procedure de construction de la matrice RBF et de calcul de la validation croisee
-%% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
+%% Building of the RBF/GRBF matrix and computation of the CV criteria
+%% L. LAURENT -- 24/01/2012 -- luc.laurent@lecnam.net
 
-function [crit_min,ret]=bloc_rbf(data,meta,para,type)
+function [crit_min,ret]=RBFBloc(data,meta,para,type)
 
 % affichages warning ou non
 aff_warning=false;

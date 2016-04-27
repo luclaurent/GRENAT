@@ -1,267 +1,226 @@
-%%fonction permettant de construire un metamodele à l'aide de fonctions a
-%base radiale
-% RBF: sans gradient
-% HBRBF: avec gradients
-%%L. LAURENT      luc.laurent@ens-cachan.fr
-%% 15/03/2010 modif le 12/04/2010 puis le 15/01/2012
+%% Function for build Radial Basis Function surrogate medel
+%% RBF: w/o gradient
+%% GRBF: avec gradients
+%% L. LAURENT -- 15/03/2010 -- luc.laurent@lecnam.net
+%% change on 12/04/2010 and on 15/01/2012
 
-function ret=meta_rbf(tirages,eval,grad,meta,manq)
+function ret=BuildRBF(samplingIn,respIn,gradIn,metaData,missData)
+
+[tMesu,tInit]=mesuTime;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Affichage des informations de construction
-fprintf(' >> Construction : ');
-if ~isempty(grad);fprintf('GRBF \n');else fprintf('RBF \n');end
-fprintf('>> Fonction de base radiale: %s\n',meta.rbf);
-fprintf('>>> Normalisation: ');if meta.norm; fprintf('Oui\n');else fprintf('Non\n');end
-fprintf('>>> CV: ');if meta.cv; fprintf('Oui\n');else fprintf('Non\n');end
-fprintf('>>> Calcul tous criteres CV: ');if meta.cv_full; fprintf('Oui\n');else fprintf('Non\n');end
-fprintf('>> Affichage CV: ');if meta.cv_aff; fprintf('Oui\n');else fprintf('Non\n');end
-
-fprintf('>>> Estimation parametre: ');if meta.para.estim; fprintf('Oui\n');else fprintf('Non\n');end
-if meta.para.estim
-    fprintf('>> Algo estimation: %s\n',meta.para.method);
-    fprintf('>> Bornes recherche: [%d , %d]\n',meta.para.l_min,meta.para.l_max);
-    switch meta.rbf
-        case {'rf_expg','rf_expgg'}
-            fprintf('>> Bornes recherche puissance: [%d , %d]\n',meta.para.p_min,meta.para.p_max);
+% Display Building information
+textd='++ Type: ';
+textf='';
+fprintf('\n%s\n',[textd 'Radial Basis Function (RBF)' textf]);
+%
+fprintf('>>> Building : ');
+if ~isempty(gradIn);fprintf('GRBF \n');else fprintf('RBF \n');end
+fprintf('>>> Kernel function: %s\n',metaData.kern);
+%
+fprintf('>>> CV: ');if metaData.cv.on; fprintf('Yes\n');else fprintf('No\n');end
+fprintf('>> Computation all CV criteria: ');if metaData.cv.full; fprintf('Yes\n');else fprintf('No\n');end
+fprintf('>> Show CV: ');if metaData.cv.aff; fprintf('Yes\n');else fprintf('No\n');end
+%
+fprintf('>>> Estimation of the hyperparameters: ');if metaData.para.estim; fprintf('Yes\n');else fprintf('No\n');end
+if metaData.para.estim
+    fprintf('>> Algorithm for estimation: %s\n',metaData.para.method);
+    fprintf('>> Bounds: [%d , %d]\n',metaData.para.l.min,metaData.para.l.max);
+    switch metaData.kern
+        case {'expg','expgg'}
+            fprintf('>> Bounds for exponent: [%d , %d]\n',metaData.para.p.min,metaData.para.p.max);
+        case 'matern'
+            fprintf('>> Bounds for nu (Matern): [%d , %d]\n',metaData.para.nu.min,metaData.para.nu.max);
     end
-    fprintf('>> Anisotropie: ');if meta.para.aniso; fprintf('Oui\n');else fprintf('Non\n');end
-    fprintf('>> Affichage estimation console: ');if meta.para.aff_iter_cmd; fprintf('Oui\n');else fprintf('Non\n');end
-    fprintf('>> Affichage estimation graphique: ');if meta.para.aff_iter_graph; fprintf('Oui\n');else fprintf('Non\n');end
+    fprintf('>> Anisotropy: ');if metaData.para.aniso; fprintf('Yes\n');else fprintf('No\n');end
+    fprintf('>> Show estimation steps in console: ');if metaData.para.aff_iter_cmd; fprintf('Yes\n');else fprintf('No\n');end
+    fprintf('>> Plot estimation steps: ');if metaData.para.aff_iter_graph; fprintf('Yes\n');else fprintf('No\n');end
 else
-    fprintf('>> Valeur parametre: %d\n',meta.para.l_val);
-    switch meta.rbf
+    fprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
+    switch metaData.rbf
         case {'rf_expg','rf_expgg'}
-            fprintf('>> Bornes recherche puissance: [%d , %d]\n',meta.para.p_val);
+            fprintf('>> Value of the exponent: [%d , %d]\n',metaData.para.p.val);
+        case {'matern'}
+            fprintf('>> Value of nu (Matern): [%d , %d]\n',metaData.para.nu.val);
     end
 end
-fprintf('>> Critere enrichissement actif:');
-if meta.enrich.on;
-    fprintf('%s\n','Oui');
-    fprintf('>> Ponderation WEI: ')
-    fprintf('%d ',meta.enrich.para_wei);
+fprintf('>>> Infill criteria:');
+if metaData.enrich.on;
+    fprintf('%s\n','Yes');
+    fprintf('>> Balancing WEI: ')
+    fprintf('%d ',metaData.enrich.para_wei);
     fprintf('\n')
-    fprintf('>> Ponderation GEI: ')
-    fprintf('%d ',meta.enrich.para_gei);
+    fprintf('>> Balancing GEI: ')
+    fprintf('%d ',metaData.enrich.para_gei);
     fprintf('\n')
-    fprintf('>> Ponderation LCB: %d\n',meta.enrich.para_lcb);
+    fprintf('>> Balancing LCB: %d\n',metaData.enrich.para_lcb);
 else
-    fprintf('%s\n','non');
+    fprintf('%s\n','No');
 end
 fprintf('\n')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%chargement variables globales
+%load global variables
 global aff
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Initialisation of the variables
+%number of sample points
+ns=size(respIn,1);
+%number of design variables
+np=size(samplingIn,2);
 
-%initialisation tempo
-tic;
-tps_start=toc;
-
-%initialisation des variables
-%nombre d'evalutions
-nb_val=size(eval,1);
-%dimension du pb (nb de variables de conception)
-nb_var=size(tirages,2);
-
-%test presence des gradients
-pres_grad=~isempty(grad);
-%test donnees manquantes
+%check availability of the gradients
+gradAvail=~isempty(gradIn);
+%check missing data
 if nargin==5
-    manq_eval=manq.eval.on;
-    manq_grad=manq.grad.on;
-    pres_grad=(~manq.grad.all&&manq.grad.on)||(pres_grad&&~manq.grad.on);
+    missResp=missData.eval.on;
+    missGrad=missData.grad.on;
+    gradAvail=(~missData.grad.all&&missData.grad.on)||(gradAvail&&~missData.grad.on);
 else
-    manq.eval.on=false;
-    manq.grad.on=false;
-    manq_eval=manq.eval.on;
-    manq_grad=manq.grad.on;
+    missData.eval.on=false;
+    missData.grad.on=false;
+    missResp=missData.eval.on;
+    missGrad=missData.grad.on;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Normalisation
-if meta.norm
-    disp('Normalisation');
-    %normalisation des donnees
-    [evaln,infos_e]=norm_denorm(eval,'norm',manq);
-    [tiragesn,infos_t]=norm_denorm(tirages,'norm');
-    std_e=infos_e.std;moy_e=infos_e.moy;
-    std_t=infos_t.std;moy_t=infos_t.moy;
-    
-    %normalisation des gradients
-    if pres_grad
-        infos.std_e=infos_e.std;infos.moy_e=infos_e.moy;
-        infos.std_t=infos_t.std;infos.moy_t=infos_t.moy;
-        gradn=norm_denorm_g(grad,'norm',infos); clear infos
-    else
-        gradn=[];
-    end
-    
-    %sauvegarde des calculs
-    rbf.norm.moy_eval=infos_e.moy;
-    rbf.norm.std_eval=infos_e.std;
-    rbf.norm.moy_tirages=infos_t.moy;
-    rbf.norm.std_tirages=infos_t.std;
-    rbf.norm.on=true;
-    clear infos_e infos_t
-else
-    rbf.norm.on=false;
-    rbf.norm.moy_eval=[];
-    rbf.norm.std_eval=[];
-    rbf.norm.moy_tirages=[];
-    rbf.norm.std_tirages=[];
-    rbf.norm.on=false;
-    evaln=eval;
-    tiragesn=tirages;
-    if pres_grad
-        gradn=grad;
-    else
-        gradn=[];
-    end
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%evaluations et gradients aux points echantillonnes
+%Responses and gradients at sample points
 y=evaln;
-%suppression reponse(s) manquantes
-if manq_eval
-    y=y(manq.eval.ix_dispo);
+%remove missing response(s)
+if missResp
+    y=y(missData.eval.ix_dispo);
 end
-if pres_grad
+if gradAvail
     tmp=gradn';
     der=tmp(:);
-    %supression gradient(s) manquant(s)
-    if manq_grad
-        der=der(manq.grad.ixt_dispo_line);
+    %remove missing gradient(s)
+    if missGrad
+        der=der(missData.grad.ixt_dispo_line);
     end
     y=vertcat(y,der);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% construction systeme d'indices pour la construction de la matrice de
-% krigeage/cokrigeage
-if pres_grad
+% Building indexes system for building RBF/GRBF matrices
+if gradAvail    
+    size_matRc=(ns^2+ns)/2;
+    size_matRa=np*(ns^2+ns)/2;
+    size_matRi=np^2*(ns^2+ns)/2;
+    iXmat=zeros(size_matRc,1);
+    iXmatA=zeros(size_matRa,1);
+    iXmatAb=zeros(size_matRa,1);
+    iXmatI=zeros(size_matRi,1);
+    iXdev=zeros(size_matRa,1);
+    iXsampling=zeros(size_matRc,2);
     
-    taille_matRc=(nb_val^2+nb_val)/2;
-    taille_matRa=nb_var*(nb_val^2+nb_val)/2;
-    taille_matRi=nb_var^2*(nb_val^2+nb_val)/2;
-    ind_matrix=zeros(taille_matRc,1);
-    ind_matrixA=zeros(taille_matRa,1);
-    ind_matrixAb=zeros(taille_matRa,1);
-    ind_matrixI=zeros(taille_matRi,1);
-    ind_dev=zeros(taille_matRa,1);
-    ind_pts=zeros(taille_matRc,2);
-    
-    liste_tmp=zeros(taille_matRc,nb_var);
-    liste_tmp(:)=1:taille_matRc*nb_var;
+    tmpList=zeros(size_matRc,np);
+    tmpList(:)=1:size_matRc*np;
     
     ite=0;
     iteA=0;
     iteAb=0;
     pres=0;
-    %table indices pour les inter-distances (1), les reponses (1) et les
-    %derivees 1ere (2)
-    for ii=1:nb_val
+    %table of indexes for inter-lengths (1), responses (1) and 1st
+    %derivatives (2)
+    for ii=1:ns
         
-        ite=ite(end)+(1:(nb_val-ii+1));
-        ind_matrix(ite)=(nb_val+1)*ii-nb_val:ii*nb_val;
-        ind_pts(ite,:)=[ii(ones(nb_val-ii+1,1)) (ii:nb_val)'];        
-        iteAb=iteAb(end)+(1:((nb_val-ii+1)*nb_var));
+        ite=ite(end)+(1:(ns-ii+1));
+        iXmat(ite)=(ns+1)*ii-ns:ii*ns;
+        iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];        
+        iteAb=iteAb(end)+(1:((ns-ii+1)*np));
         
-        debb=(ii-1)*nb_var*nb_val+ii;
-        finb=nb_val^2*nb_var-(nb_val-ii);
-        lib=debb:nb_val:finb;
+        debb=(ii-1)*np*ns+ii;
+        finb=ns^2*np-(ns-ii);
+        lib=debb:ns:finb;
         
-        ind_matrixAb(iteAb)=lib;
+        iXmatAb(iteAb)=lib;
 
-        for jj=1:nb_var
-            iteA=iteA(end)+(1:(nb_val-ii+1));
-            decal=(ii-1);
-            deb=pres+decal;
-            li=deb + (1:(nb_val-ii+1));
-            ind_matrixA(iteA)=li;
+        for jj=1:np
+            iteA=iteA(end)+(1:(ns-ii+1));
+            shiftA=(ii-1);
+            deb=pres+shiftA;
+            li=deb + (1:(ns-ii+1));
+            iXmatA(iteA)=li;
             pres=li(end);
-            liste_tmpB=reshape(liste_tmp',[],1);
-            ind_dev(iteA)=liste_tmp(ite,jj);
-            ind_devb=liste_tmpB; 
+            liste_tmpB=reshape(tmpList',[],1);
+            iXdev(iteA)=tmpList(ite,jj);
+            iXdevb=liste_tmpB; 
         end
     end
-    %table indices derivees secondes
-    a=zeros(nb_val*nb_var,nb_var);
-    decal=0;
+    %table of indexes for second derivatives
+    a=zeros(ns*np,np);
+    shiftA=0;
     precI=0;
     iteI=0;
-    for ii=1:nb_val
-        li=1:nb_val*nb_var^2;
-        a(:)=decal+li;
-        decal=a(end);
+    for ii=1:ns
+        li=1:ns*np^2;
+        a(:)=shiftA+li;
+        shiftA=a(end);
         b=a';
         
-        iteI=precI+(1:(nb_var^2*(nb_val-(ii-1))));
+        iteI=precI+(1:(np^2*(ns-(ii-1))));
         
-        debb=(ii-1)*nb_var^2+1;
-        finb=nb_var^2*nb_val;
+        debb=(ii-1)*np^2+1;
+        finb=np^2*ns;
         iteb=debb:finb;
-        ind_matrixI(iteI)=b(iteb);
+        iXmatI(iteI)=b(iteb);
         precI=iteI(end);
     end
 else
-    %table indices pour les inter-distances (1), les reponses (1)
-    bmax=nb_val-1;
-    ind_matrix=zeros(nb_val*(nb_val-1)/2,1);
-    ind_pts=zeros(nb_val*(nb_val-1)/2,2);
+    %table of indexes for inter-lenghts  (1), responses (1)
+    bmax=ns-1;
+    iXmat=zeros(ns*(ns-1)/2,1);
+    iXsampling=zeros(ns*(ns-1)/2,2);
     ite=0;
     for ii=1:bmax
-        ite=ite(end)+(1:(nb_val-ii));
-        ind_matrix(ite)=(nb_val+1)*ii-nb_val+1:ii*nb_val;
-        ind_pts(ite,:)=[ii(ones(nb_val-ii,1)) (ii+1:nb_val)'];
+        ite=ite(end)+(1:(ns-ii));
+        iXmat(ite)=(ns+1)*ii-ns+1:ii*ns;
+        iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul distances inter-sites
-dist=tiragesn(ind_pts(:,1),:)-tiragesn(ind_pts(:,2),:);
+%computation of the inter-distances
+dist=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%stockage des grandeurs
-ret.in.tirages=tirages;
-ret.in.tiragesn=tiragesn;
+%store varibales des grandeurs
+ret.in.sampling=samplingIn;
 ret.in.dist=dist;
-ret.in.eval=eval;
-ret.in.evaln=evaln;
-ret.in.pres_grad=pres_grad;
-ret.in.grad=grad;
-ret.in.gradn=gradn;
-ret.in.nb_var=nb_var;
-ret.in.nb_val=nb_val;
-ret.ind.matrix=ind_matrix;
-ret.ind.pts=ind_pts;
-if pres_grad
-    ret.ind.matrixA=ind_matrixA;
-    ret.ind.matrixAb=ind_matrixAb;
-    ret.ind.matrixI=ind_matrixI;
-    ret.ind.dev=ind_dev;
-    ret.ind.devb=ind_devb;
+ret.in.eval=respIn;
+ret.in.pres_grad=gradAvail;
+ret.in.grad=gradIn;
+ret.in.np=np;
+ret.in.ns=ns;
+ret.ix.matrix=iXmat;
+ret.ix.sampling=iXsampling;
+if gradAvail
+    ret.ix.matrixA=iXmatA;
+    ret.ix.matrixAb=iXmatAb;
+    ret.ix.matrixI=iXmatI;
+    ret.ix.dev=iXdev;
+    ret.ix.devb=iXdevb;
 end
 ret.build.y=y;
 ret.norm=rbf.norm;
-ret.manq=manq;
+ret.manq=missData;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calcul de MSE par Cross-Validation
 %arret affichage CV si c'est le cas et activation CV si ca n'est pas le cas
-cv_old=meta.cv;
-aff_cv_old=meta.cv_aff;
-meta.cv_aff=false;
+cv_old=metaData.cv;
+aff_cv_old=metaData.cv_aff;
+metaData.cv_aff=false;
 
-if meta.para.estim&&meta.para.aff_estim
-    val_para=linspace(meta.para.l_min,meta.para.l_max,gene_nbele(nb_var));
+if metaData.para.estim&&metaData.para.aff_estim
+    val_para=linspace(metaData.para.l_min,metaData.para.l_max,gene_nbele(np));
     %dans le cas ou on considere de l'anisotropie (et si on a 2
     %variable de conception)
-    if meta.para.aniso&&nb_var==2
+    if metaData.para.aniso&&np==2
         %on genere la grille d'etude
         [val_X,val_Y]=meshgrid(val_para,val_para);
         %initialisation matrice de stockage des valeurs de la
@@ -272,7 +231,7 @@ if meta.para.estim&&meta.para.aff_estim
         for itli=1:numel(val_X)
             
             %calcul de la log-vraisemblance et stockage
-            val_msep(itli)=bloc_rbf(ret,meta,[val_X(itli) val_Y(itli)]);
+            val_msep(itli)=bloc_rbf(ret,metaData,[val_X(itli) val_Y(itli)]);
             %affichage barre attente
             if usejava('desktop')&&exist('h','var')
                 avance=(itli-1)/numel(val_X);
@@ -290,11 +249,11 @@ if meta.para.estim&&meta.para.aff_estim
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         %stockage de la figure au format LaTeX/TikZ
-        if meta.save
+        if metaData.save
             matlab2tikz([aff.doss '/logli.tex'])
         end
         
-    elseif ~meta.para.aniso||nb_var==1
+    elseif ~metaData.para.aniso||np==1
         %initialisation matrice de stockage des valeurs de la
         %log-vraisemblance
         val_msep=zeros(1,length(val_para));
@@ -305,7 +264,7 @@ if meta.para.estim&&meta.para.aff_estim
         for itli=1:length(val_para)
             val_para(itli)
             %calcul de la log-vraisemblance et stockage
-            [~,build_rbf]=bloc_rbf(ret,meta,val_para(itli),'etud');
+            [~,build_rbf]=bloc_rbf(ret,metaData,val_para(itli),'etud');
             rippa_bomp(itli)=build_rbf.cv.and.eloot;
             cv_moi(itli)=build_rbf.cv.then.eloot;
             %affichage barre attente
@@ -319,7 +278,7 @@ if meta.para.estim&&meta.para.aff_estim
         close(h)
         
         %stockage mse dans un fichier .dat
-        if meta.save
+        if metaData.save
             ss=[val_para' val_msep'];
             save([aff.doss '/logli.dat'],'ss','-ascii');
         end
@@ -338,7 +297,7 @@ if meta.para.estim&&meta.para.aff_estim
     end
     
     %stocke les courbes (si actif)
-    if aff.save&&(nb_val<=2)
+    if aff.save&&(ns<=2)
         fich=save_aff('fig_mse_cv',aff.doss);
         if aff.tex
             fid=fopen([aff.doss '/fig.tex'],'a+');
@@ -349,49 +308,48 @@ if meta.para.estim&&meta.para.aff_estim
     end
 end
 %rechargement config initiale si c'etait le cas avant la phase d'estimation
-meta.cv_aff=aff_cv_old;
-meta.cv=cv_old;
+metaData.cv_aff=aff_cv_old;
+metaData.cv=cv_old;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Construction des differents elements avec ou sans estimation des
-%%parametres sinon on propose une/des valeur(s) des parametres a partir des
+%%parametres siNo on propose une/des valeur(s) des parametres a partir des
 %%proposition de Hardy/Franke
-if meta.para.estim
-    para_estim=estim_para_rbf(ret,meta);
+if metaData.para.estim
+    para_estim=estim_para_rbf(ret,metaData);
     ret.build.para_estim=para_estim;
-    meta.para.l_val=para_estim.l_val;
-    meta.para.val=para_estim.l_val;
+    metaData.para.l_val=para_estim.l_val;
+    metaData.para.val=para_estim.l_val;
     if isfield(para_estim,'p_val')
-        meta.para.p_val=para_estim.p_val;
-        meta.para.val=[meta.para.val meta.para.p_val];
+        metaData.para.p_val=para_estim.p_val;
+        metaData.para.val=[metaData.para.val metaData.para.p_val];
     end
 else
-    meta.para.l_val=calc_para_rbf(tiragesn,meta);
-    switch meta.rbf
+    metaData.para.l_val=calc_para_rbf(tiragesn,metaData);
+    switch metaData.rbf
         case {'rf_expg','rf_expgg'}
-            meta.para.val=[meta.para.l_val meta.para.p_val];
+            metaData.para.val=[metaData.para.l_val metaData.para.p_val];
         otherwise
-            meta.para.val=meta.para.l_val;
+            metaData.para.val=metaData.para.l_val;
     end
-    fprintf('Definition parametre (%s), val=',meta.para.type);
-    fprintf(' %d',meta.para.val);
+    fprintf('Definition parametre (%s), val=',metaData.para.type);
+    fprintf(' %d',metaData.para.val);
     fprintf('\n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % construction elements finaux RBF (matrice, coefficients et CV) en tenant
 % compte des parametres obtenus par minimisation
-[~,block]=bloc_rbf(ret,meta);
+[~,block]=bloc_rbf(ret,metaData);
 %sauvegarde informations
 tmp=mergestruct(ret.build,block.build);
 ret.build=tmp;
 ret.cv=block.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-tps_stop=toc;
-ret.tps=tps_stop-tps_start;
-if pres_grad;txt='GRBF';else txt='RBF';end
-fprintf('\nExecution construction %s: %6.4d s\n',txt,tps_stop-tps_start);
+if gradAvail;txt='GRBF';else txt='RBF';end
+fprintf('\nExecution construction %s\n',txt);
+mesuTime(tMesu,tInit);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

@@ -5,7 +5,7 @@ function meta=init_meta(in)
 
 fprintf('=========================================\n')
 fprintf('  >>> INITIALIZATION Surrogate Model \n');
-[tMesu,tInit]=mesu_time;
+[tMesu,tInit]=mesuTime;
 
 %% default configuration
 %taking into account gradients
@@ -63,12 +63,12 @@ meta.para.nbSampInit=[];
 meta.para.crit_opti=10^-6;
 % bounds of the space on which internal parameters are looked for
 if meta.para.estim
-    meta.para.l_min=1e-4;
-    meta.para.l_max=50;
-    meta.para.p_max=2;
-    meta.para.p_min=1.001;
-    meta.para.nu_min=1e-3;
-    meta.para.nu_min=5;
+    meta.para.l.min=1e-4;
+    meta.para.l.max=50;
+    meta.para.p.max=2;
+    meta.para.p.min=1.001;
+    meta.para.nu.min=1e-3;
+    meta.para.nu.min=5;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -93,25 +93,25 @@ if isfield(in,'grad');meta.grad=in.grad;end
 if isfield(in,'type');meta.type=in.type;end
 %parameter of the kernel function
 if isfield(in,'para')
-    if isfield(in.para,'long');meta.para.l_val=in.para.long;end
+    if isfield(in.para,'long');meta.para.l.val=in.para.long;end
     if meta.para.estim
         if isfield(in,'long');
-            meta.para.l_max=in.para.long(2);
-            meta.para.l_min=in.para.long(1);
+            meta.para.l.max=in.para.long(2);
+            meta.para.l.min=in.para.long(1);
         end
     end
-    if isfield(in.para,'pow');meta.para.p_val=in.para.pow;end
+    if isfield(in.para,'pow');meta.para.p.val=in.para.pow;end
     if meta.para.estim
         if isfield(in,'pow');
-            meta.para.p_max=in.para.pow(2);
-            meta.para.p_min=in.para.pow(1);
+            meta.para.p.max=in.para.pow(2);
+            meta.para.p.min=in.para.pow(1);
         end
     end
-    if isfield(in.para,'nu');meta.para.nu_val=in.para.nu;end
+    if isfield(in.para,'nu');meta.para.nu.val=in.para.nu;end
     if meta.para.estim
         if isfield(in,'nu');
-            meta.para.nu_max=in.para.nu(2);
-            meta.para.nu_min=in.para.nu(1);
+            meta.para.nu.max=in.para.nu(2);
+            meta.para.nu.min=in.para.nu(1);
         end
     end
 end
@@ -175,8 +175,8 @@ if isfield(in,'para');
     if isfield(in.para,'crit_opti');meta.para.crit_opti=in.para.crit_opti;end
     if meta.para.estim
         if isfield(in.para,'long');
-            meta.para.l_max=in.para.long(2);
-            meta.para.l_min=in.para.long(1);
+            meta.para.l.max=in.para.long(2);
+            meta.para.l.min=in.para.long(1);
         end
     end
 end
@@ -203,5 +203,5 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-mesu_time(tMesu,tInit);
+mesuTime(tMesu,tInit);
 fprintf('=========================================\n')

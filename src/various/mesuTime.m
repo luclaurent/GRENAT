@@ -1,7 +1,7 @@
 %% Script dedicated to the initiailisation, the measure and the display of the spent time
 %% L.LAURENT -- 15/05/2012 -- luc.laurent@lecnam.net
 
-function [tictoc_compt,tInit]=mesu_time(compteur,tps_init)
+function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)
 
 if nargin==0
     %initialization tic-toc count

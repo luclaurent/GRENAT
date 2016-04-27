@@ -1,7 +1,7 @@
 %% Preparing data for 'Shepard Weighting Functions' surrogate model
 %% L. LAURENT -- 23/11/2011 -- luc.laurent@lecnam.net
 
-function swf=BuildSWF(sampling,resp,grad,meta)
+function swf=BuildSWF(samplingIn,respIn,gradIn,metaData)
 
 textd='++ Type: ';
 textf='';
@@ -11,40 +11,40 @@ fprintf('\n%s\n',[textd 'Shepard Weighting Functions (SWF)' textf]);
 [tMesu,tInit]=mesu_time;
 
 %number of sample points
-nbs=size(resp,1);
+ns=size(respIn,1);
 %number of design variables
-nbv=size(sampling,2);
+np=size(samplingIn,2);
 
 %check if gradients are available
-avail_grad=~isempty(grad);
+availGrad=~isempty(gradIn);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create vectors of sample points, responses and gradients
-swf.sampling=sampling;
-swf.eval=resp;
-swf.grad=grad;
+swf.sampling=samplingIn;
+swf.eval=respIn;
+swf.grad=gradIn;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %save data
-swf.nbs=nbs;
-swf.nbv=nbv;
-swf.para=meta.swf_para;	%radius of the hypershere of the weighting functions
-if avail_grad
-    tt=sampling';
-    stock=zeros(nbs*(nbv+1),1);
-    ind=1:(nbs*(nbv+1));
+swf.ns=ns;
+swf.np=np;
+swf.para=metaData.swf_para;	%radius of the hypershere of the weighting functions
+if availGrad
+    tt=samplingIn';
+    stock=zeros(ns*(np+1),1);
+    ind=1:(ns*(np+1));
     
-    rech=mod(ind,nbv+1);
+    rech=mod(ind,np+1);
     IX=find(rech==1);
     IXX=find(rech~=1);
     
     stock(IXX)=tt(:);
     swf.sample_colon=stock;    %conditioning of the sample points for dealing with gradients
     data=stock;
-    data(IX)=resp;
-    data(IXX)=grad;
+    data(IX)=respIn;
+    data(IXX)=gradIn;
     swf.F=data;             %conditioning of the responses dans gradients
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

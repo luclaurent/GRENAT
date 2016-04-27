@@ -1,7 +1,7 @@
 %% function for building surrogate model
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [ret]=BuildMeta(sampling,respIn,gradIn,meta,num_fct)
+function [ret]=BuildMeta(sampling,respIn,gradIn,metaData,num_fct)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
@@ -21,16 +21,16 @@ fprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n'
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %for building many different surrogate models
-if ~iscell(meta.type)
-    metype={meta.type};
+if ~iscell(metaData.type)
+    metype={metaData.type};
 else
-    metype=meta.type;
+    metype=metaData.type;
 end
 
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %Normalization of the input data
-if meta.norm
+if metaData.norm
     fprintf(' >> Normalization\n');
     %normalization of the data
     [respN,infoDataR]=NormRenorm(respIn,'norm');
@@ -54,14 +54,14 @@ end
 %check for indirect gradient-enhanced surrogate model
 InGE=CheckGE(metype);
 if InGE
-    InData=PrepIn()
+    InData=PrepIn(samplingN,respN,gradN,metaData,missStatus);
 end
 
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %%%%%%% Building various surrogate models
 %initialization of the storage
-ret=cell(length(meta.type),1);
+ret=cell(length(metaData.type),1);
 % Building of the surrogate models
 num_meta=1;
 for type=metype
@@ -71,80 +71,79 @@ for type=metype
         %%%%%%%%=================================%%%%%%%%
         case 'SWF'
             %% Building of the 'Shepard Weighting Functions' surrogate model
-            out_meta=BuildSWF(samplingN,respIn,grad_in,meta);
+            out_meta=BuildSWF(samplingN,respIn,grad_in,metaData);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'RBF','InRBF','GRBF'}
-            [InD,GE]=CheckGE(type{1})
             %% construction du metamodele 'RBF' (Radial Basis Functions)
             fprintf('\n%s\n',[textd 'Radial Basis Functions (RBF)' textf]);
-            out_meta=BuildRBF(samplingN,respN,[],meta,missStatus);
+            out_meta=BuildRBF(samplingN,respN,[],metaData,missStatus);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'GRBF'
             %% construction du metamodele 'GRBF' (Hermite-Birkhoff Radial Basis Functions)
             fprintf('\n%s\n',[textd 'Gradient-based Radial Basis Functions (GRBF)' textf]);
-            rbf=meta_rbf(samplingN,respIn,gradN,meta,missStatus);
+            rbf=meta_rbf(samplingN,respIn,gradN,metaData,missStatus);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'InKRG'
             %% Construction du metamodele de Krigeage Indirect
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
-            inkrg=meta_inkrg(samplingN,respN,gradN,meta,missStatus); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
+            inkrg=meta_inkrg(samplingN,respN,gradN,metaData,missStatus); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
             out_meta=inkrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'InRBF'
             %% Construction du metamodele de Krigeage Indirect
             fprintf('\n%s\n',[textd 'Krigeage indirect' textf]);
-            inrbf=meta_inrbf(samplingN,respN,gradN,meta,missStatus); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
+            inrbf=meta_inrbf(samplingN,respN,gradN,metaData,missStatus); %% cas particulier prise en compte des r�ponses pour gradients au lieu des gradients evalues)
             out_meta=inrbf;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'CKRG'
             %% Construction du metamodele de CoKrigeage
             fprintf('\n%s\n',[textd 'CoKrigeage' textf]);
-            ckrg=meta_krg_ckrg(samplingN,respN,gradN,meta,missStatus);
+            ckrg=meta_krg_ckrg(samplingN,respN,gradN,metaData,missStatus);
             out_meta=ckrg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'KRG'
             %% Construction du metamodele de Krigeage
             fprintf('\n%s\n',[textd 'Krigeage' textf]);
-            krg=meta_krg_ckrg(samplingN,respN,[],meta,missStatus);
+            krg=meta_krg_ckrg(samplingN,respN,[],metaData,missStatus);
             out_meta=krg;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'DACE'
             %% Construction du metamodele de Krigeage (DACE)
             fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
-            if meta.para.estim
-                switch meta.corr
+            if metaData.para.estim
+                switch metaData.corr
                     case {'correxpg'}
-                        lb=[meta.para.l_min.*ones(1,np), meta.para.p_min];
-                        ub=[meta.para.l_max.*ones(1,np), meta.para.p_max];
+                        lb=[metaData.para.l_min.*ones(1,np), metaData.para.p_min];
+                        ub=[metaData.para.l_max.*ones(1,np), metaData.para.p_max];
                     otherwise
-                        lb=meta.para.l_min.*ones(np,1);
-                        ub=meta.para.l_max.*ones(np,1);
+                        lb=metaData.para.l_min.*ones(np,1);
+                        ub=metaData.para.l_max.*ones(np,1);
                 end
                 theta0=(ub-lb)./2;
-                [dace.model,dace.perf]=dacefit(samplingN,respN,meta.regr,meta.corr,theta0,lb,ub);
+                [dace.model,dace.perf]=dacefit(samplingN,respN,metaData.regr,metaData.corr,theta0,lb,ub);
             else
-                switch meta.corr
+                switch metaData.corr
                     case {'correxpg'}
-                        theta0=[meta.para.l_val meta.para.p_val];
+                        theta0=[metaData.para.l_val metaData.para.p_val];
                     otherwise
-                        theta0=meta.para.l_val;
+                        theta0=metaData.para.l_val;
                 end
-                [dace.model,dace.perf]=dacefit(sampling,respIn,meta.regr,meta.corr,theta0);
+                [dace.model,dace.perf]=dacefit(sampling,respIn,metaData.regr,metaData.corr,theta0);
             end
             out_meta=dace;
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'PRG'
             ite_prg=1;
-            ret{num_meta}.prg=length(meta.deg);
-            for degre=meta.deg
+            ret{num_meta}.prg=length(metaData.deg);
+            for degre=metaData.deg
                 %% Construction du metamodele de Regression polynomiale
                 dd=['-- Degre du polynome \n',num2str(degre)];
                 fprintf(dd);
@@ -175,7 +174,7 @@ for type=metype
     out_meta.tirages=sampling;
     out_meta.respN=respN;
     out_meta.gradN=gradN;
-    out_meta.enrich=meta.enrich;
+    out_meta.enrich=metaData.enrich;
     if numel(metype)==1
         ret=out_meta;
     else

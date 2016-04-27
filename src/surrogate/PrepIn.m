@@ -1,7 +1,7 @@
 %% Preparation for Indirect Gradient-Enhanced Surrogate Models
 %% L. LAURENT -- 26/04/2016 -- luc.laurent@lecnam.net
 
-function ret=PrepIn(samplingIn,respIn,gradIn,meta,missData)
+function ret=PrepIn(samplingIn,respIn,gradIn,metaData,missData)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,17 +22,17 @@ end
 %with respect with the kind of gradient data
 if ~isstruct(gradIn)
     fprintf('>> Step of the Taylor expansion (manu):')
-    fprintf(' %d',meta.para.step_taylor);
+    fprintf(' %d',metaData.para.step_taylor);
     fprintf('\n')
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% Create new points (1 per direction)
     %manage Taylor's step
-    if numel(meta.para.step_taylor)~=np
-        stepTaylor=meta.para.step_taylor(1)*ones(1,np);
+    if numel(metaData.para.step_taylor)~=np
+        stepTaylor=metaData.para.step_taylor(1)*ones(1,np);
     else
-        stepTaylor=meta.para.step_taylor;
+        stepTaylor=metaData.para.step_taylor;
     end
     
     %Reordering sampled points and duplicates
@@ -94,7 +94,7 @@ if ~isstruct(gradIn)
              IX=find(isnan(tmp(:)));
              tmp(IX)=0;
     end
-        badord_ev=dup_ev+tmp;
+        badordS=dup_ev+tmp;
     %new responses
     tmpR=zeros((np+1)*ns_init,np);
     for ii=1:np

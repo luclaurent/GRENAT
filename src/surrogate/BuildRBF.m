@@ -88,10 +88,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Responses and gradients at sample points
-y=evaln;
+YY=evaln;
 %remove missing response(s)
 if missResp
-    y=y(missData.eval.ix_dispo);
+    YY=YY(missData.eval.ix_dispo);
 end
 if gradAvail
     tmp=gradn';
@@ -100,12 +100,12 @@ if gradAvail
     if missGrad
         der=der(missData.grad.ixt_dispo_line);
     end
-    y=vertcat(y,der);
+    YY=vertcat(YY,der);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building indexes system for building RBF/GRBF matrices
-if gradAvail    
+if gradAvail
     size_matRc=(ns^2+ns)/2;
     size_matRa=np*(ns^2+ns)/2;
     size_matRi=np^2*(ns^2+ns)/2;
@@ -129,7 +129,7 @@ if gradAvail
         
         ite=ite(end)+(1:(ns-ii+1));
         iXmat(ite)=(ns+1)*ii-ns:ii*ns;
-        iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];        
+        iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];
         iteAb=iteAb(end)+(1:((ns-ii+1)*np));
         
         debb=(ii-1)*np*ns+ii;
@@ -137,7 +137,7 @@ if gradAvail
         lib=debb:ns:finb;
         
         iXmatAb(iteAb)=lib;
-
+        
         for jj=1:np
             iteA=iteA(end)+(1:(ns-ii+1));
             shiftA=(ii-1);
@@ -147,7 +147,7 @@ if gradAvail
             pres=li(end);
             liste_tmpB=reshape(tmpList',[],1);
             iXdev(iteA)=tmpList(ite,jj);
-            iXdevb=liste_tmpB; 
+            iXdevb=liste_tmpB;
         end
     end
     %table of indexes for second derivatives
@@ -204,151 +204,138 @@ if gradAvail
     ret.ix.dev=iXdev;
     ret.ix.devb=iXdevb;
 end
-ret.build.y=y;
-ret.norm=rbf.norm;
+ret.build.y=YY;
 ret.manq=missData;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Calcul de MSE par Cross-Validation
-%arret affichage CV si c'est le cas et activation CV si ca n'est pas le cas
-cv_old=metaData.cv;
-aff_cv_old=metaData.cv_aff;
-metaData.cv_aff=false;
+%% Computation of the MSE of the  Cross-Validation
+%display CV is required
+CvOld=metaData.cv;
+dispCvOld=metaData.cv.disp;
+metaData.cv.disp=false;
 
-if metaData.para.estim&&metaData.para.aff_estim
-    val_para=linspace(metaData.para.l_min,metaData.para.l_max,gene_nbele(np));
-    %dans le cas ou on considere de l'anisotropie (et si on a 2
-    %variable de conception)
+if metaData.para.estim&&metaData.para.disp_estim
+    valPara=linspace(metaData.para.l.min,metaData.para.l.max,gene_nbele(np));
+    % load progress bar
+    cpb = ConsoleProgressBar();
+    minVal = 0;
+    maxVal = 100;
+    cpb.setMinimum(minVal);
+    cpb.setMaximum(maxVal);
+    cpb.setLength(20);
+    cpb.setRemainedTimeVisible(1);
+    cpb.setRemainedTimePosition('left');
+    %for anisotropy (with 2 design variables)
     if metaData.para.aniso&&np==2
-        %on genere la grille d'etude
-        [val_X,val_Y]=meshgrid(val_para,val_para);
-        %initialisation matrice de stockage des valeurs de la
-        %log-vraisemblance
-        val_msep=zeros(size(val_X));
-        %si affichage dispo
-        if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
-        for itli=1:numel(val_X)
-            
-            %calcul de la log-vraisemblance et stockage
-            val_msep(itli)=bloc_rbf(ret,metaData,[val_X(itli) val_Y(itli)]);
-            %affichage barre attente
-            if usejava('desktop')&&exist('h','var')
-                avance=(itli-1)/numel(val_X);
-                aff_av=avance*100;
-                mess=['Eval. en cours ' num2str(aff_av,3) '% ' num2str(itli) '/' num2str(numel(val_X)) ];
-                waitbar(avance,h,mess);
-            end
+        %building of the studied grid
+        [valX,valY]=meshgrid(valPara,valPara);
+        %initialize matrix for storing MSE
+        valMSEp=zeros(size(valX));
+        for itli=1:numel(valX)
+            %computation of the MSE and storage
+            valMSEp(itli)=blocRBF(ret,metaData,[valX(itli) valY(itli)]);
+            %show progress and time
+            cpb.setValue(itli/numel(valX));
         end
-        close(h)
-        %trace log-vraisemblance
+        cpb.stop();
+        %display MSE
         figure;
-        [C,h]=contourf(val_X,val_Y,val_msep);
+        [C,h]=contourf(valX,valY,valMSEp);
         text_handle = clabel(C,h);
         set(text_handle,'BackgroundColor',[1 1 .6],...
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
-        %stockage de la figure au format LaTeX/TikZ
+        %store figure in TeX/Tikz file
         if metaData.save
-            matlab2tikz([aff.doss '/logli.tex'])
+            matlab2tikz([aff.doss '/RBFmse.tex'])
         end
         
     elseif ~metaData.para.aniso||np==1
-        %initialisation matrice de stockage des valeurs de la
-        %log-vraisemblance
-        val_msep=zeros(1,length(val_para));
-        rippa_bomp=val_msep;
-        cv_moi=val_msep;
-        %si affichage dispo
-        if usejava('desktop');h = waitbar(0,'Evaluation critere .... ');end
-        for itli=1:length(val_para)
-            val_para(itli)
-            %calcul de la log-vraisemblance et stockage
-            [~,build_rbf]=bloc_rbf(ret,metaData,val_para(itli),'etud');
-            rippa_bomp(itli)=build_rbf.cv.and.eloot;
-            cv_moi(itli)=build_rbf.cv.then.eloot;
-            %affichage barre attente
-            if usejava('desktop')&&exist('h','var')
-                avance=(itli-1)/length(val_para);
-                aff_av=avance*100;
-                mess=['Eval. en cours ' num2str(aff_av,3) '% ' num2str(itli) '/' num2str(numel(val_para)) ];
-                waitbar(avance,h,mess);
-            end
+        %initialize matrix for storing MSE
+        valMSEp=zeros(1,length(valPara));
+        cvRippa=valMSEp;
+        cvCustom=valMSEp;
+        for itli=1:length(valPara)
+            %computation of the MSE and storage
+            [~,buildRBF]=blocRBF(ret,metaData,valPara(itli),'etud');
+            cvRippa(itli)=buildRBF.cv.and.eloot;
+            cvCustom(itli)=buildRBF.cv.then.eloot;
+            %show progress and time
+            cpb.setValue(itli/numel(valPara));
         end
-        close(h)
+        cpb.stop();
         
-        %stockage mse dans un fichier .dat
+        %store in .dat file
         if metaData.save
-            ss=[val_para' val_msep'];
-            save([aff.doss '/logli.dat'],'ss','-ascii');
+            ss=[valPara' valMSEp'];
+            save([aff.doss '/RBFmse.dat'],'ss','-ascii');
         end
         
-        %trace log-vraisemblance
+        %display MSE
         figure;
-        semilogy(val_para,rippa_bomp,'r');
+        semilogy(valPara,cvRippa,'r');
         hold on
-        semilogy(val_para,cv_moi,'k');
-        legend('Rippa (Bompard)','Moi');
+        semilogy(valPara,cvCustom,'k');
+        legend('Rippa (Bompard)','Custom');
         title('CV');
-        
-        %         semilogy(val_para,val_msep);
-        %         title('Evolution de MSE (CV)');
-        
     end
     
-    %stocke les courbes (si actif)
+    %store graphs (if active)
     if aff.save&&(ns<=2)
-        fich=save_aff('fig_mse_cv',aff.doss);
+        fileStore=save_aff('fig_mse_cv',aff.doss);
         if aff.tex
             fid=fopen([aff.doss '/fig.tex'],'a+');
-            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,'Vraisemblance',fich);
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'MSE',fileStore);
             %fprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
         end
     end
 end
-%rechargement config initiale si c'etait le cas avant la phase d'estimation
-metaData.cv_aff=aff_cv_old;
-metaData.cv=cv_old;
+%reload initial configurations
+metaData.cv_aff=dispCvOld;
+metaData.cv=CvOld;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Construction des differents elements avec ou sans estimation des
-%%parametres siNo on propose une/des valeur(s) des parametres a partir des
-%%proposition de Hardy/Franke
+%%Building of the various elements with and without estimation of the
+%%hyperparameters if no estimation the values of the hyperparameters are
+%%chosen using empirical choice of  Hardy/Franke
 if metaData.para.estim
-    para_estim=estim_para_rbf(ret,metaData);
-    ret.build.para_estim=para_estim;
-    metaData.para.l_val=para_estim.l_val;
-    metaData.para.val=para_estim.l_val;
-    if isfield(para_estim,'p_val')
-        metaData.para.p_val=para_estim.p_val;
-        metaData.para.val=[metaData.para.val metaData.para.p_val];
+    paraEstim=estimParaRBF(ret,metaData);
+    ret.build.para_estim=paraEstim;
+    metaData.para.l.val=paraEstim.l.val;
+    metaData.para.val=paraEstim.l.val;
+    if isfield(paraEstim,'p')
+        metaData.para.p.val=paraEstim.p.val;
+        metaData.para.val=[metaData.para.val metaData.para.p.val];
     end
 else
-    metaData.para.l_val=calc_para_rbf(tiragesn,metaData);
-    switch metaData.rbf
-        case {'rf_expg','rf_expgg'}
-            metaData.para.val=[metaData.para.l_val metaData.para.p_val];
+    metaData.para.l.val=computeParaRBF(SamplingIn,metaData);
+    switch metaData.kern
+        case {'expg','expgg'}
+            metaData.para.val=[metaData.para.l.val metaData.para.p.val];
+        case {'matern'}
+            metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
         otherwise
-            metaData.para.val=metaData.para.l_val;
+            metaData.para.val=metaData.para.l.val;
     end
-    fprintf('Definition parametre (%s), val=',metaData.para.type);
+    fprintf('Values of the hyperparameters (%s):',metaData.para.type);
     fprintf(' %d',metaData.para.val);
     fprintf('\n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% construction elements finaux RBF (matrice, coefficients et CV) en tenant
-% compte des parametres obtenus par minimisation
-[~,block]=bloc_rbf(ret,metaData);
-%sauvegarde informations
+% Building final elements of the RBF surrogate model (matrices, coefficients & CV)
+% by taking into account the values of hyperparameters obtained previously
+[~,block]=blocRBF(ret,metaData);
+%save information
 tmp=mergestruct(ret.build,block.build);
 ret.build=tmp;
 ret.cv=block.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if gradAvail;txt='GRBF';else txt='RBF';end
-fprintf('\nExecution construction %s\n',txt);
+fprintf('\nBuilding %s\n',txt);
 mesuTime(tMesu,tInit);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

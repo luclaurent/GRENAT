@@ -1,10 +1,10 @@
 %% Function for build Radial Basis Function surrogate medel
-%% RBF: w/o gradient
-%% GRBF: avec gradients
-%% L. LAURENT -- 15/03/2010 -- luc.laurent@lecnam.net
-%% change on 12/04/2010 and on 15/01/2012
+% RBF: w/o gradient
+% GRBF: avec gradients
+% L. LAURENT -- 15/03/2010 -- luc.laurent@lecnam.net
+% change on 12/04/2010 and on 15/01/2012
 
-function ret=BuildRBF(samplingIn,respIn,gradIn,metaData,missData)
+function ret=RBFBuild(samplingIn,respIn,gradIn,metaData,missData)
 
 [tMesu,tInit]=mesuTime;
 
@@ -234,7 +234,7 @@ if metaData.para.estim&&metaData.para.disp_estim
         valMSEp=zeros(size(valX));
         for itli=1:numel(valX)
             %computation of the MSE and storage
-            valMSEp(itli)=blocRBF(ret,metaData,[valX(itli) valY(itli)]);
+            valMSEp(itli)=RBFBloc(ret,metaData,[valX(itli) valY(itli)]);
             %show progress and time
             cpb.setValue(itli/numel(valX));
         end
@@ -258,7 +258,7 @@ if metaData.para.estim&&metaData.para.disp_estim
         cvCustom=valMSEp;
         for itli=1:length(valPara)
             %computation of the MSE and storage
-            [~,buildRBF]=blocRBF(ret,metaData,valPara(itli),'etud');
+            [~,buildRBF]=RBFbloc(ret,metaData,valPara(itli),'etud');
             cvRippa(itli)=buildRBF.cv.and.eloot;
             cvCustom(itli)=buildRBF.cv.then.eloot;
             %show progress and time
@@ -301,7 +301,7 @@ metaData.cv=CvOld;
 %%hyperparameters if no estimation the values of the hyperparameters are
 %%chosen using empirical choice of  Hardy/Franke
 if metaData.para.estim
-    paraEstim=estimParaRBF(ret,metaData);
+    paraEstim=RBFEstimPara(ret,metaData);
     ret.build.para_estim=paraEstim;
     metaData.para.l.val=paraEstim.l.val;
     metaData.para.val=paraEstim.l.val;
@@ -310,7 +310,7 @@ if metaData.para.estim
         metaData.para.val=[metaData.para.val metaData.para.p.val];
     end
 else
-    metaData.para.l.val=computeParaRBF(SamplingIn,metaData);
+    metaData.para.l.val=RBFComputePara(SamplingIn,metaData);
     switch metaData.kern
         case {'expg','expgg'}
             metaData.para.val=[metaData.para.l.val metaData.para.p.val];

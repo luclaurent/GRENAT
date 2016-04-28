@@ -1,7 +1,7 @@
-%% Generation de l'espace de trace de la fonction 2D
+%% Build space for plotting 2D function
 %% L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
 
-function [XY,aff]=gene_aff(doe,aff)
+function [XY,aff]=buildDisp(doe,aff)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('     >>> GENERATION AFFICHAGE <<<\n');

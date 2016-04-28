@@ -1,16 +1,15 @@
-%% Petite routine de verification du statut parallele (actif ou non)
+%% Function for checking the status of the parallelism
 %% L. LAURENT -- 24/01/2014 -- luc.laurent@lecnam.net
 
-function [statut,num]=statut_parallel
-%statut
-statut=false;
+function [statusP,num]=statusParallel
+%status
+statusP=false;
 num=0;
-%si la variable globale est disponible on vois ce qu'il y a dedans sinon
-%pas de parallelisme
-if ~isempty(whos('global','parallel_actif'));
-    global parallel_actif;
-    statut=parallel_actif;
-    if statut
+%check if the global variable is availbale, if not : no parallelism
+if ~isempty(whos('global','parallel'));
+    global parallel;
+    statusP=parallel.on;
+    if statusP
         num=Inf;
     end
 end

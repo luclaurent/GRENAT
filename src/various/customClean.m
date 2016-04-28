@@ -1,7 +1,7 @@
-%% Fonction assurant l'effacement de toutes les grandeurs et la fermeture des fenetres ouvertes
-%% L. LAURENT -- 30/01/2014 luc.laurent@lecnam.net
+%% Erase all variables and close all opened windows
+%% L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
-function clean
+function customClean
 
 clc;close all hidden; clear all;clear all global
 

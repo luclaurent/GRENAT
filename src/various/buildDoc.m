@@ -1,8 +1,8 @@
-%% Generation de la documentation (grace a m2html)
+%% Build documentation (using m2html library)
 %% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
 
-%chargement des chemins
-doss=init_rep_GRENAT;
+%load paths
+doss=init_di;
 
 %% generation de la documentation
 

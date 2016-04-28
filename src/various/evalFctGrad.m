@@ -1,67 +1,58 @@
-%%Evaluation de la fonction et de ses gradients
+%% Evaluation of the function and the gradients
 %% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function [eval,grad]=gene_eval(fct,X,type)
+function [eval,grad]=evalFctGrad(fct,X,type)
 
-
-[tMesu,tInit]=mesu_time;
-%test parallelisme
-numw=0;
-if ~isempty(whos('parallel','global'))
-    global parallel
-    numw=parallel.num;
-end
-% en fonction du type d'évaluation (calcul au points tirés ou calcul pour
-% affichage)
+[tMesu,tInit]=mesuTime;
+% depending on the kind of evaluations (computation at the sample points or
+% for displaying)
 switch type
-    %evaluations des pts tirées (X est une matrice: 1var par colonne)
+    %evaluate sample points (X is a matrix: 1var per column)
     case 'eval'
         fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-        fprintf('  >>>        EVALUATION FONCTION      <<<\n');
-        %% X matrice de tirages:
-        % colonnes: chaque dimension
-        % lignes: un jeu de paramètres
-        nb_var=size(X,2);
-        nb_val=size(X,1);
-        %X
+        fprintf('  >>>   EVALUATION of the FUNCTION  <<<\n');
+        %% X matrix of sample points:
+        % columns: each design parameters
+        % rows: one set of parameters
+        np=size(X,2);
+        ns=size(X,1);
+
+        %preparing set of sample points for evaluation
+        Xeval=zeros(ns,1,np);
         
-        %préparation jeu de données pour evaluation
-        X_eval=zeros(nb_val,1,nb_var);
-        
-        parfor (ii=1:nb_var,numw)
-            X_eval(:,:,ii)=X(:,ii);
+        for ii=1:np
+            Xeval(:,:,ii)=X(:,ii);
         end
-        %évaluation pour affichage (X est une matrice de matrice)
-    case 'aff'
+        %evalaution for display (X est a nd-array)
+    case 'disp'
         fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-        fprintf('  >>> EVALUATION FONCTION (affichage) <<<\n');
-        X_eval=X;
-        nb_var=size(X,3);
-        nb_val=size(X,1);
+        fprintf('  >>> EVALUATION of the FUNCTION (display) <<<\n');
+        Xeval=X;
+        np=size(X,3);
+        ns=size(X,1);
 end
 
-%evaluation fonction et gradients aux points x
+%evaluation of the function and gradients at sample points X
 if nargout==1
-    [eval]=feval(fct,X_eval);
+    [eval]=feval(fct,Xeval);
 elseif nargout==2
-    [eval,gradb]=feval(fct,X_eval);
-    % dans le cas des évaluations aux points tirés on reorganise les
-    % gradients
+    [eval,gradb]=feval(fct,Xeval);
+    % reordering in the case of evaluation
     if strcmp(type,'eval')
         grad=zeros(size(X));
-        parfor (ii=1:nb_var,numw)
+        for ii=1:np
            grad(:,ii)=gradb(:,:,ii); 
         end
     else
         grad=gradb;
     end
 else
-    fprintf('Mauvais nombre de paramètres de sortie (cf. gene_eval)');
+    error(['Wrong number of output parametersMauvais nombre de paramètres de sortie (cf.',mfilename,')']);
 end
 
-fprintf(' >> Evaluation de la fonction %s en %i pts (%iD)\n',fct,nb_val,nb_var);
-fprintf(' >> Calcul des gradients: ');
-if nargout==2;fprintf('Oui\n');else fprintf('Non\n');end
+fprintf(' >> Evaluation of the function %s in %i pts (%iD)\n',fct,ns,np);
+fprintf(' >> Computation of the gradients: ');
+if nargout==2;fprintf('Yes\n');else fprintf('No\n');end
 
 mesu_time(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

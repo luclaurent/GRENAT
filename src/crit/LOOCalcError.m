@@ -1,67 +1,67 @@
-%% Procedure de calcul des erreurs par LOO
-%% L. LAURENT -- 22/10/2012 -- laurent@lmt.ens-cahcan.fr
+%% Function for calculating error of LOO (Cross-Validation)
+%% L. LAURENT -- 22/10/2012 -- luc.laurent@lecnam.net
 
-function [ret]=calc_err_loo(Zref,Zap,variance,GZref,GZap,nb_val,nb_var,LOO_norm)
+function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)
 
-%test de presence des gradients de reference
-pres_grad=true;
+%check availability of the gradients
+availGrad=true;
 if isempty(GZref)
-    pres_grad=false;
+    availGrad=false;
 end
-%test calcul SCVR
-pres_var=true;
+%check calculation of SCVR
+availVar=true;
 if isempty(variance)
-    pres_var=false;
+    availVar=false;
 end
 
-%ecart reponses
-diff=Zap-Zref;
-if pres_grad
-    %ecart gradients
-    diffg=GZap-GZref;
+%diff responses
+diffZ=Zap-Zref;
+if availGrad
+    %diff gradients
+    diffG=GZap-GZref;
 end
-%ecart reponses (norme au choix)
+%diff responses (choice of the norm)
 switch LOO_norm
     case 'L1'
-        diffc=abs(diff);
+        diffC=abs(diffZ);
     case 'L2'
-        diffc=diff.^2;
+        diffC=diffZ.^2;
     case 'Linf'
-        diffc=max(diff(:));
+        diffC=max(diffZ(:));
 end
-%critere perso
+%Custom criterion
 somm=0.5*(Zap+Zref);
-ret.errp=1/nb_val*sum(abs(diff)./somm);
+ret.errp=1/ns*sum(abs(diffZ)./somm);
 %PRESS
-ret.press=sum(diffc);
-%biais moyen
-ret.bm=1/nb_val*sum(diff);
-if pres_grad
-    %ecart gradients (norme au choix)
+ret.press=sum(diffC);
+%mean bias
+ret.bm=1/ns*sum(diffZ);
+if availGrad
+    %diff gradients (choice of the norm)
     switch LOO_norm
         case 'L1'
-            diffgc=abs(diffg);
+            diffgc=abs(diffG);
         case 'L2'
-            diffgc=diff.^2;
+            diffgc=diffZ.^2;
         case 'Linf'
-            diffgc=max(diffg);
+            diffgc=max(diffG);
     end
-    %moyenne ecart reponses, gradients et mixte au carres
-    ret.eloor=1/nb_val*sum(diffc);
-    ret.eloog=1/(nb_val*nb_var)*sum(diffgc(:));
-    ret.eloot=1/(nb_val*(1+nb_var))*(sum(diffc)+sum(diffgc(:)));
+    %mean of the differences on responsesn gradients and both squared
+    ret.eloor=1/ns*sum(diffC);
+    ret.eloog=1/(ns*np)*sum(diffgc(:));
+    ret.eloot=1/(ns*(1+np))*(sum(diffC)+sum(diffgc(:)));
 else
-    %moyenne ecart reponses
-    ret.eloor=1/nb_val*sum(diffc);
+    %mean diff responses
+    ret.eloor=1/ns*sum(diffC);
     ret.eloot=ret.eloor;
 end
-if pres_var
-    %critere d'adequation (SCVR Keane 2005/Jones 1998)
-    ret.scvr=diff./variance;
+if availVar
+    %criterion of adequation (SCVR Keane 2005/Jones 1998)
+    ret.scvr=diffZ./variance;
     ret.scvr_min=min(ret.scvr(:));
     ret.scvr_max=max(ret.scvr(:));
     ret.scvr_mean=mean(ret.scvr(:));
-    %critere d'adequation (ATTENTION: a la norme!!!>> diff au carre)
-    diffa=diffc./variance;
-    ret.adequ=1/nb_val*sum(diffa);
+    %%criterion of adequation (CAUTION of the norm!!!>> squared difference)
+    diffA=diffC./variance;
+    ret.adequ=1/ns*sum(diffA);
 end

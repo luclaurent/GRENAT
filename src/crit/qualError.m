@@ -1,19 +1,20 @@
-%%fonction permettant le calcul de 3 criteres de qualite
+%% Function for computing 3 custom quality errors
 %%L. LAURENT   --  22/10/2010   --  luc.laurent@lecnam.net
 
-%%Zex: valeurs de la fonction objectif "exactes" obtenues par simulation
-%%Zap: valeurs approchees de la fonction objectif obtenues par le
-%%metamodele
+%%Zex: "exact" values of the function obtained by simulation
+%%Zap: approximated values given by the surrogate model
 
-function [q1,q2,q3]=qual(Zex,Zap)
+function [q1,q2,q3]=qualError(Zex,Zap)
 
-%%Calcul des ecarts 
+%%Compute differences
 ecart=(Zex-Zap).^2/max(max(Zex.^2));
-%Calcul du critere 1 (max des ecarts)
+%Compute criteria 1 (max of the differences)
 q1=max(ecart(:));
 
-%Calcul du critere 2 (somme des ecarts)
+%Compute criteria 2 (sum of the differences)
 q2=sum(ecart(:));
 
-%calcul du critere 3 (moyenne des ecarts)
+%Compute criteria 3 (mean of the differences)
 q3=q2/numel(Zex);
+
+end

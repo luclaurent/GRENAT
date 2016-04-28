@@ -1,12 +1,12 @@
-%%fonction permettant le calcul de l'erreur RMAE
+%% function for calculating RMAE (Relative Maximum Absolute Error)
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 
 % Jin 2000 "Comparative Studies Of Metamodeling Techniques under Multiple Modeling Criteria"
 
-%%Zex: valeurs de la fonction objectif "exactes" obtenues par simulation
-%%Zap: valeurs approchées de la fonction objectif obtenues par le
-%%métamodèle
-function rmae=rmae(Zex,Zap)
+%%Zex: "exact" values of the function obtained by simulation
+%%Zap: approximated values given by the surrogate model
+
+function rmae=calcRMAE(Zex,Zap)
 
 STD=std(Zap(:));
 vec=abs(Zex-Zap);

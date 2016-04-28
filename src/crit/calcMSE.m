@@ -1,11 +1,10 @@
-%%fonction permettant le calcul de l'erreur MSE
+%% function for calculating MSE
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 
-%%Zex: correspond a  l'ensemble des valeurs obtenues par evalutions de la
-%%fonction objectif
-%%Zap: correspond a  l'ensemble des valeurs
+%%Zex: "exact" values of the function obtained by simulation
+%%Zap: approximated values given by the surrogate model
 
-function emse=mse_p(Zex,Zap)
+function emse=calcMSE(Zex,Zap)
 
 diff=(Zex-Zap).^2;
 MSE=sum(diff(:));

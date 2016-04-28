@@ -1,34 +1,40 @@
-%%fonction permettant le calcul de l'erreur R2
+%% function for calculating R2 (correlation errors
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 %% Correction 20/03/2012 
-% -- Calcul du coefficient de correlation de Pearson et correlation ajustée
-% -- et coefficient de détermination et détermination ajustée
+% -- Computation of the Pearson's correlation coefficient and adjusted correlation
+% -- the squared correlation coefficient (and adjusted)
+% -- the Concordance Correlation Coefficient (Rccc)
 
-%%Zex: correspond a l'ensemble des valeurs obtenues par evalutions de la
-%%fonction objectif
-%%Zap: correspond a l'ensemble des valeurs
+% Rccc: Lawrence I-Kuei Lin, "A Concordance Correlation Coefficient to
+% Evaluate Reproducibility", Biometrics, Vol. 45, No. 1 (Mar., 1989), pp. 255-268
 
-function [r,radj,r2,r2adj]=fact_corr(Zex,Zap)
+%%Zex: "exact" values of the function obtained by simulation
+%%Zap: approximated values given by the surrogate model
+
+function [r,radj,r2,r2adj,rccc]=corrFact(Zex,Zap)
 
 Zex=Zex(:);Zap=Zap(:);
-nbs=length(Zex);
-%calcul des moyenn empirique
-moyZex=mean(Zex);
-moyZap=mean(Zap);
+nv=length(Zex);
+% computation of the empirical means
+meanZex=mean(Zex);
+meanZap=mean(Zap);
 
-%calcul covariance empirique
-covZexZap=sum(Zex.*Zap)-nbs*moyZex*moyZap;
+% computation of the empirical covariance
+covZexZap=1/nv*sum((Zex-meanZex).*(Zap-meanZap));
 
-%calcul variances empiriques
-VZex=sum(Zex.^2)-nbs*moyZex^2;
-VZap=sum(Zap.^2)-nbs*moyZap^2;
+% computation of the empirical variances
+VZex=1/nv*sum((Zex-meanZex).^2);
+VZap=1/nv*sum((Zap-meanZap).^2);
 
-%coefficient de corrélation de Pearson
+% Pearson's correlation coefficient
 r=covZexZap/sqrt(VZex*VZap);
-%coefficient de détermination
+%squared correlation coefficient
 r2=r^2;
-%coefficient de correlation ajusté
-radj=sqrt(1-(nbs-1)/(nbs-2)*(1-r2));
-%coefficient de détermination ajusté
+%adjusted correlation coefficinet
+radj=sqrt(1-(nv-1)/(nv-2)*(1-r2));
+%adjusted squared correlation coefficinet
 r2adj=radj^2;
+
+%Concordance Correlation Coefficient
+rccc=2*covZexZap/(VZex+VZex+(meanZex-meanZap)^2);
 end

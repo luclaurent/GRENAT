@@ -50,7 +50,7 @@ if KerMatrixD
         KKdd(dataIn.ix.matrixI)=ddev(:);
         %extract diagonal (process for avoiding duplicate terms)
         diago=0;   % //!!\\ corrections possible here
-        val_diag=spdiags(KKi,diago);
+        val_diag=spdiags(KKdd,diago);
         KKdd=KKdd+KKdd'-spdiags(val_diag,diago,zeros(size(KKdd))); %correction of the duplicated terms on the diagonal
     end
 else

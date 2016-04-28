@@ -11,7 +11,7 @@ fctMin='eloot'; %eloot/eloor/eloog
 %coefficient of reconditionning
 coef=eps;
 % chosen factorization for RBF matrix
-fact_KK='LU' ; %LU %QR %LL %None
+factKK='LU' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Load useful variables
@@ -61,78 +61,42 @@ if dataIn.in.pres_grad
     end
 end
 
-
-else
-    if metaData.worker_parallel>=2
-        %%%%%% PARALLEL %%%%%%
-        %matrice de RBF classique par bloc
-        KK=zeros(ns,ns);
-        parfor ii=1:ns
-            %distance 1 tirages aux autres (construction par colonne)
-            one_tir=samplingIn(ii,:);
-            dist=samplingIn-one_tir(ones(1,ns),:);
-            % evaluation de la fonction de correlation
-            [ev]=feval(fctKern,dist,valPara);
-            %morceau de la matrice issue du modele RBF classique
-            KK(:,ii)=ev;
-        end
-    else        
-        %matrice de RBF classique par matrice triangulaire inferieure
-        %sans diagonale
-        KK=zeros(ns,ns);
-        % evaluation de la fonction de correlation
-        [ev]=feval(metaData.rbf,dataIn.in.dist,valPara);
-        KK(dataIn.ind.matrix)=ev;
-        %Construction matrice complete
-        KK=KK+KK'+eye(ns);        
-    end
-    %si donnees manquantes
-    if dataIn.manq.eval.on
-        KK(dataIn.manq.eval.ix_manq,:)=[];
-        KK(:,dataIn.manq.eval.ix_manq)=[];
-    end
-end
-
-
-%passage en sparse
-%KK=sparse(KK);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%amelioration du conditionnement de la matrice de correlation
+%Improve condition number of the RBF/GRBF Matrix
 if metaData.recond
-    %cond_orig=condest(KK);
+    %origCond=condest(KK);
     KK=KK+coef*speye(size(KK));
-    %cond_new=condest(KK);
-%          fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-%              cond_orig,cond_new);
+    %newCond=condest(KK);
+%          fprintf('>>> Improving of the condition number: \n%g >> %g (%g) <<<\n',...
+%              origCond,newCond,abs(origCond-newCond)/origCond);
     
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%conditionnement de la matrice de correlation
-if nargin==2&&~exist('cond_new','var')   %en phase de construction
-    cond_new=condest(KK);
-elseif nargin==2&&exist('cond_new','var')
-    fprintf('Conditionnement R: %4.2e\n',cond_new)
+%condition number of the RBF/GRBF Matrix
+if nargin==2 % in the phase of building
+    newCond=condest(KK);
+    fprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond)
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%approche factorisee
-%attention cette factorisation n'est possible que sous condition
-%QR
-switch fact_KK
+%Factorization of the matrix
+switch factKK
     case 'QR'
+        %expensive
         [QKK,RKK,PKK]=qr(KK);
         iKK=PKK*(RKK\QKK');
         yQ=QKK'*dataIn.build.y;
         w=PKK*(RKK\yQ);
     case 'LU'
+        %
         [LKK,UKK,PKK]=lu(KK);
         iKK=UKK\(LKK\PKK);
         yL=LKK\PKK*dataIn.build.y;
         w=UKK\yL;
     case 'LL'
-        %%% A coder
+        %symetric definite-positive matrix
         LKK=chol(KK,'lower');
         iKK=LKK'\inv(LKK);
         yL=LKK\dataIn.build.y;
@@ -143,21 +107,20 @@ switch fact_KK
         %calcul du coefficient beta
         %%approche classique
         if ~dispWarning; warning off all;end
-        iKK=inv(KK);
+        w=KK\dataIn.build.y;
         if ~dispWarning; warning on all;end
-        w=iKK*dataIn.build.y;
+        
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
-if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
-if exist('cond_new','var');build_data.cond_new=cond_new;end
+if exist('origCond','var');build_data.origCond=origCond;end
+if exist('newCond','var');build_data.newCond=newCond;end
 if exist('QKK','var');build_data.QKK=QKK;end
 if exist('RKK','var');build_data.RKK=RKK;end
 if exist('LKK','var');build_data.LKK=LKK;end
 if exist('UKK','var');build_data.UKK=UKK;end
-if exist('iKK','var');build_data.iKK=iKK;end
 if exist('yQ','var');build_data.yQ=yQ;end
 build_data.w=w;
 build_data.KK=KK;
@@ -166,13 +129,10 @@ build_data.para=metaData.para;
 ret.build=build_data;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%Validation croisee (obligatoire pour affinage parametre)
-%%%%%Calcul des differentes erreurs
-if metaData.cv||metaData.para.estim
-    %tps_stop=toc;
-    [cv]=cross_validate_rbf(ret,dataIn,metaData,typeCV);
-    %tps_cv=toc;
-    %fprintf('Execution validation croisee RBF/HBRBF: %6.4d s\n\n',tps_cv-tps_stop);
+%%%%%Cross-Validation (mandatory for estimating the hyperparameters
+%%%%%Computation of various errors
+if metaData.cv.on||metaData.para.estim
+    [cv]=RBFCV(ret,dataIn,metaData,typeCV);
     if isfield(cv,fctMin)
         crit_min=cv.(fctMin);
     else

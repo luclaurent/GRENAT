@@ -32,12 +32,4 @@ m2html('mfiles',listFiles,...
     'download','off',...
     'graph','on')
 cd(analyseDir)
-
-
 %%%%%%
-
-
-%root matlab files
-%hh=dir('*.m');
-%dossiers/fichiers
-%list_files={'routines/','tirages',hh.name};

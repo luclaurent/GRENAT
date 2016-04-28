@@ -54,7 +54,7 @@ if KerMatrixD
         KKdd=KKdd+KKdd'-spdiags(val_diag,diago,zeros(size(KKdd))); %correction of the duplicated terms on the diagonal
     end
 else
-    if metaData.worker_parallel>=2
+    if parallelW>=2
         %%%%%% PARALLEL %%%%%%
         %classical kernel matrix by column
         KK=zeros(ns,ns);

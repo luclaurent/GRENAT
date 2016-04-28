@@ -1,58 +1,58 @@
-%% Listage des fichiers de la Toolbox GRENAT
-%% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
+%% List all files of the GRENAT Toolbox
+% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
 
 
-%% A executer depuis la racine de la toolbox
+% To be executed at the root position of the toolbox
 
 
-function list=list_files_GRENAT(dossier)
-list={};
-%parcours des dossiers listes dans la variable dossier
-for ii=1:numel(dossier)
-    %identification fichiers du dossier
-    filedoss=list_file_doss(dossier{ii});
-    %ajout nom dossier
-    fun=@(x) sprintf('%s/%s',dossier{ii},x);
-    filedoss_ok=cellfun(fun,filedoss,'UniformOutput',false);
-    %ajout a la liste complete
-    list={list{:},filedoss_ok{:}};
+function listF=listFilesToolbox(dirT)
+listF={};
+%process all directories in the directory 'dirT'
+for ii=1:numel(dirT)
+    %find files in directories
+    fileDir=listFileDir(dirT{ii});
+    %add name of the directory
+    fun=@(x) sprintf('%s/%s',dirT{ii},x);
+    fileDirOk=cellfun(fun,fileDir,'UniformOutput',false);
+    %add to the whole list
+    listF={listF{:},fileDirOk{:}};
 end
-%ajout de la racine de la toolbox
-filedoss_ok=list_file_doss('.');
-%ajout a la liste complete
-list={list{:},filedoss_ok{:}};
+%add the root directory of the Toolbox
+fileDirOk=listFileDir('.');
+%add to the whole list
+listF={listF{:},fileDirOk{:}};
 
 
-%on nettoye des fichiers a ne pas prendre en comtpe
+%Files to avoid
 blacklist={'.git',char(126),'m2html','.DS_Store',...
     'lightspeed','mmx','mtimesx','Multiprod',...
     'sqplab-0.4.5-distrib','toolbox','PSOt',...
     'base_monomes'};
 
 for jj=1:numel(blacklist)
-    %motif a verifier
-    verif=blacklist{jj};
-    %recherche du motif
-    kk=strfind(list,verif);
+    %pattern to check
+    checkF=blacklist{jj};
+    %seek the pattern
+    kk=strfind(listF,checkF);
     if ~isempty(kk)
-        %motif absent
+        %missing pattern
         hh=cellfun(@isempty,kk);
-        %retrait de la liste
+        %remove from the list
         IX=find(hh);
-        list={list{IX}};
+        listF={listF{IX}};
     end
 end
-%ajout manuel
-list{end+1}='routines/libs/PSOt/pso_Trelea_mod.m';
+%manually addition
+listF{end+1}='src/libs/PSOt/pso_Trelea_mod.m';
 end
 
 
-% listage fichier d'un dossier et identification fichiers
-function [filedossier]=list_file_doss(doss)
-%liste brute
-list_brut=dir(doss);
+% list files in a directory 
+function [filDir]=listFileDir(dirM)
+%rawlist
+rawList=dir(dirM);
 %flag file
-flag_file=~[list_brut.isdir];
-%liste fichiers du dossier
-filedossier={list_brut(flag_file).name};
+flag_file=~[rawList.isdir];
+%list of files in the directory
+filDir={rawList(flag_file).name};
 end

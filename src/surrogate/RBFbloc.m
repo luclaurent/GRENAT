@@ -17,7 +17,6 @@ factKK='LU' ; %LU %QR %LL %None
 %Load useful variables
 ns=dataIn.in.ns;
 np=dataIn.in.np;
-samplingIn=dataIn.in.sampling;
 fctKern=metaData.kern;
 ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,6 +77,9 @@ end
 if nargin==2 % in the phase of building
     newCond=condest(KK);
     fprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond)
+    if newCond>1e12
+        fprintf('+++ //!\\ Bad condition number\n');
+    end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

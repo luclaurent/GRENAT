@@ -2,28 +2,27 @@
 %% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
 
 %load paths
-doss=init_di;
+dirPath=init_di;
 
-%% generation de la documentation
+%% Builddocumentation
 
-
-%ajout de la config bash (pour chercher dot de graphviz)
+%add configurtation to bash (for finding 'dot' script of graphviz)
 setenv('BASH_ENV','~/.bash_profile');
 
-%dossier analyse
-dossier='GRENAT';
-%dossiers ignores
-%doss_ignore={'};
+%directory to be analysed
+analyseDir='GRENAT';
+%ignoring directory
+%ignDir={'};
 
-%liste des fichiers
-list_files=list_files_GRENAT(doss);
-%ajout chemin
-list_files=cellfun(@(x) sprintf('%s/%s',dossier,x),list_files,'UniformOutput',false);
+%listof files
+listFiles=listFilesToolbox(dirPath);
+%add path to all files
+listFiles=cellfun(@(x) sprintf('%s/%s',analyseDir,x),listFiles,'UniformOutput',false);
 
 cd ..
-%execution generation doc (Graphviz necessaire mais pas indispensable)
-m2html('mfiles',list_files,...
-    'htmldir',[dossier '/doc'],...
+%execute generation of the doc (Graphviz is optional)
+m2html('mfiles',listFiles,...
+    'htmldir',[analyseDir '/doc'],...
     'recursive','on',...
     'global','on',...
     'globalHypertextLinks','on',...
@@ -32,13 +31,13 @@ m2html('mfiles',list_files,...
     'index','menu',...
     'download','off',...
     'graph','on')
-cd(dossier)
+cd(analyseDir)
 
 
 %%%%%%
 
 
-%fichier matlab racines
+%root matlab files
 %hh=dir('*.m');
 %dossiers/fichiers
 %list_files={'routines/','tirages',hh.name};

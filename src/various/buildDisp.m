@@ -1,48 +1,47 @@
 %% Build space for plotting 2D function
 %% L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
 
-function [XY,aff]=buildDisp(doe,aff)
+function [XY,dispData]=buildDisp(doeData,dispData)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-fprintf('     >>> GENERATION AFFICHAGE <<<\n');
+fprintf('     >>> BUILD DISPLAY <<<\n');
 [tMesu,tInit]=mesu_time;
-%dimension de l'espace
-dim_esp=numel(doe.Xmin);
+%dimension of the sapce
+spaDim=numel(doeData.Xmin);
 
-% on genere la grille d'etude du metamodele en fonction du nb de variables
-% prises en compte.
+% the grid is built depending on the number of designa variables
 
-if dim_esp==1
-    XY=linspace(doe.Xmin,doe.Xmax,aff.nbele)';
+if spaDim==1
+    XY=linspace(doeData.Xmin,doeData.Xmax,dispData.nbv)';
     
-    % en 2D on definit une grille a partir de meshgrid
-elseif dim_esp==2
-    x=linspace(doe.Xmin(1),doe.Xmax(1),aff.nbele);
-    y=linspace(doe.Xmin(2),doe.Xmax(2),aff.nbele);
-    [grid_X,grid_Y]=meshgrid(x,y);
+    % in 2D the grid is defined using meshgrid
+elseif spaDim==2
+    x=linspace(doeData.Xmin(1),doeData.Xmax(1),dispData.nbv);
+    y=linspace(doeData.Xmin(2),doeData.Xmax(2),dispData.nbv);
+    [gridX,gridY]=meshgrid(x,y);
     
-    XY=zeros(size(grid_X,1),size(grid_X,2),2);
-    XY(:,:,1)=grid_X;
-    XY(:,:,2)=grid_Y;
+    XY=zeros(size(gridX,1),size(gridX,2),2);
+    XY(:,:,1)=gridX;
+    XY(:,:,2)=gridY;
     
 else
-    % en nD on utilise la fonction de generation de factoriel complet
-    grid=factorial_design(aff.nbele,doe.Xmin,doe.Xmax);
+    % in nD the full factorial function is used
+    grid=doeFactorial(dispData.nbv,doeData.Xmin,doeData.Xmax);
     
-    %reorganisation grille
-    XY=zeros(size(grid,1),1,dim_esp);
-    for ii=1:dim_esp
+    %reordering the grid
+    XY=zeros(size(grid,1),1,spaDim);
+    for ii=1:spaDim
         XY(:,:,ii)=grid(:,ii);
     end
     
     
 end
 
-%pas de la grille d'affichage selon les deux variables
-aff.pas=abs(doe.Xmax-doe.Xmin)./aff.nbele;
+%step of the grid 
+dispData.step=abs(doeData.Xmax-doeData.Xmin)./dispData.nbv;
 
-fprintf(' >> Nombre de points de la grille %i (%i',aff.nbele^dim_esp,aff.nbele);
-fprintf('x%i',aff.nbele*ones(1,dim_esp-1));fprintf(')\n');
+fprintf(' >> Number of points on the grid %i (%i',dispData.nbv^spaDim,dispData.nbv);
+fprintf('x%i',dispData.nbv*ones(1,spaDim-1));fprintf(')\n');
 
 mesu_time(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

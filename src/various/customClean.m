@@ -3,10 +3,14 @@
 
 function customClean
 
-clc;close all hidden; clear all;clear all global
+clc;
+close all hidden;
+clear all;
+clear all global
 
-%si pas affichage, on ferme les figures ouvertes
+%if display available, the windows have to be closed
 screenSize = get(0,'ScreenSize');
 if ~isequal(screenSize(3:4),[1 1])
  clf
+end
 end

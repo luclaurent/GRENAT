@@ -2,7 +2,7 @@
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
 
 
-function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)
+function fig_handle=displaySurrogate(grille,Z,tirages,eval,grad,aff)
 
 %% Parametres d'entree:
 %       - grille: grille de trace (meshgrid en 2D) sous la forme

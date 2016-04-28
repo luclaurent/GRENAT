@@ -1,124 +1,128 @@
-%% Evaluation du metamodele
-%% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
-% modif le 12/12/2011
+%% Evaluation of the surrogate model
+% L. LAURENT -- 04/12/2011 -- luc.laurent@lecnam.net
+% modification: 12/12/2011
 
-
-function [Z]=eval_meta(points,donnees,meta,verb)
-
+function [Z]=EvalMeta(evalSample,avaiData,metaData,Verb)
 
 [tMesu,tInit]=mesu_time;
 
-%reconditionnement donnees construction
-if ~iscell(donnees)
-    donnees_const={donnees};
+%reordering building data
+if ~iscell(avaiData)
+    buildData={avaiData};
     Z=struct;
 else
-    donnees_const=donnees;
-    if numel(donnees)~=1
-        Z=cell(size(donnees));
+    buildData=avaiData;
+    if numel(avaiData)~=1
+        Z=cell(size(avaiData));
     else
         Z=[];
     end
 end
-
-%parametre verbosite de la fonction
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%choose verbosity of the function
 if nargin==3
-    verb=true;
+    Verb=true;
 end
-
-%nombre de variables
-nb_var=donnees_const{1}.nb_var;
-%nombre de points
-nb_val=donnees_const{1}.nb_val;
-dim_ev(1)=size(points,1);
-dim_ev(2)=size(points,2);
-dim_ev(3)=size(points,3);
-
-%reconditionnement des points d'evaluations
-if nb_var>1
-    % si les points d'entree correspondent a une grille
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%number of design parameters
+np=buildData{1}.np;
+%number of initial sample poins
+ns=buildData{1}.ns;
+%size of the required non-sample points
+dim_ev=size(evalSample);
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%reordering non-sample points
+if np>1
+    % if the non-sample points corresponds to a grid
     if dim_ev(3)~=1
-        %alors on definit le nombre de points a evaluer
-        nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'evaluation du metamodele
-        ev_pts=zeros(nb_ev_pts,dim_ev(3));
+        %number a required evaluations
+        nbReqEval=prod(dim_ev(1:2));
+        reqResp=zeros(nbReqEval,dim_ev(3));
         for ll=1:dim_ev(3)
-            tmp=points(:,:,ll);
-            ev_pts(:,ll)=tmp(:);
+            tmp=evalSample(:,:,ll);
+            reqResp(:,ll)=tmp(:);
         end
     else
-        %sinon on definit le nombre de points a evaluer
-        nb_ev_pts=dim_ev(1);
-        ev_pts=points;
+        %if not the number a required evaluations is determined
+        nbReqEval=dim_ev(1);
+        reqResp=evalSample;
     end
 else
-    nb_ev_pts=prod(dim_ev(1:2)); %nb de points d'evaluation du metamodele
-    ev_pts=points(:);
+    nbReqEval=prod(dim_ev(1:2)); %number a required evaluations
+    reqResp=evalSample(:);
 end
-
-%variables de stockage
-if nb_var>1
-    var_rep=zeros(size(ev_pts,1),1);
-    rep=zeros(size(ev_pts,1),1);
-    GR=zeros(nb_ev_pts,nb_var);
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%variables for storage
+if np>1
+    varResp=zeros(size(reqResp,1),1);
+    valResp=zeros(size(reqResp,1),1);
+    valGrad=zeros(nbReqEval,np);
 else
-    var_rep=[];
-    rep=[];
-    GR=[];
+    varResp=[];
+    valResp=[];
+    valGrad=[];
 end
-if nb_ev_pts>1&&verb
-    fprintf('#########################################\n');
-    fprintf('  >>> EVALUATION METAMODELE <<<\n');
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+if nbReqEval>1&&Verb
+    fprintf('#############################################\n');
+    fprintf('  >>> EVALUATION of the surrogate model <<<\n');
 end
-%parallelisme
-numw=0;
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%parallel
+numWorkers=0;
 if ~isempty(whos('parallel','global'))
     global parallel
-    numw=parallel.num;
+    numWorkers=parallel.num;
 end
-%%%%%%% Evaluation de divers metamodeles
-% generation des metamodeles
-for num_meta=1:numel(donnees_const)
-    type=donnees_const{num_meta}.type;
-    meta_donnee=donnees_const{num_meta};
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%%%%%%% Evaluation of various surrogate models
+for numMeta=1:numel(buildData)
+    type=buildData{numMeta}.type;
+    metaBuild=buildData{numMeta};
     
-    %chargement variables
-    tirages=meta_donnee.tirages;
-    eval=meta_donnee.eval;
-    grad=meta_donnee.grad;
+    %load variables
+    tirages=metaBuild.tirages;
+    eval=metaBuild.eval;
+    grad=metaBuild.grad;
     
-    %si l'on souhaite verifier le metamodele a l'evaluation (verification
-    %de l'interpolation)
-    if meta.verif
-        Zverif=zeros(nb_val,1);varverif=zeros(nb_val,1);
-        GZverif=zeros(nb_val,nb_var);
+    %check or not the interpolation quality of the surrogate model
+    if metaData.check
+        checkZ=zeros(ns,1);
+        checkGZ=zeros(ns,np);
     end
     switch type
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
         case 'SWF'
-            %%	Evaluation du metamodele 'Shepard Weighting Functions'
-            for jj=1:nb_ev_pts
-                [rep(jj),G]=eval_swf(ev_pts(jj,:),meta_donnee);
-                GR(jj,:)=G;
+            %%	Evaluation of the 'Shepard Weighting Functions' surrogate model
+            for jj=1:nbReqEval
+                [valResp(jj),G]=SWFEval(reqResp(jj,:),metaBuild);
+                valGrad(jj,:)=G;
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'GRBF','RBF','InRBF'}
             %% Evaluation du metamodele de RBF/GRBF
-            parfor (jj=1:nb_ev_pts,numw)
-                
-                [rep(jj),G,var_rep(jj),det]=eval_rbf(ev_pts(jj,:),meta_donnee);
-                GR(jj,:)=G;
+            parfor (jj=1:nbReqEval,numWorkers)                
+                [valResp(jj),G,varResp(jj),det]=RBFEval(reqResp(jj,:),metaBuild);
+                valGrad(jj,:)=G;
             end
             %% verification interpolation
-            if meta.verif
-                parfor (jj=1:size(tirages,1),numw)
-                    [Zverif(jj),G]=eval_rbf(tirages(jj,:),meta_donnee);
-                    GZverif(jj,:)=G;
+            if metaData.verif
+                parfor (jj=1:size(tirages,1),numWorkers)
+                    [checkZ(jj),G]=eval_rbf(tirages(jj,:),metaBuild);
+                    checkGZ(jj,:)=G;
                 end
-                verif_interp(eval,Zverif,'rep')
-                if meta_donnee.in.pres_grad
-                    verif_interp(grad,GZverif,'grad')
+                verif_interp(eval,checkZ,'rep')
+                if metaBuild.in.pres_grad
+                    verif_interp(grad,checkGZ,'grad')
                 end
             end
             %%%%%%%%=================================%%%%%%%%
@@ -126,26 +130,26 @@ for num_meta=1:numel(donnees_const)
         case {'KRG','CKRG','InKRG'}
             
             %stockage specifique
-            Z_sto=rep;Z_reg=rep;
-            GR_reg=GR;GR_sto=GR;
+            Z_sto=valResp;Z_reg=valResp;
+            GR_reg=valGrad;GR_sto=valGrad;
             %% Evaluation du metamodele de Krigeage/CoKrigeage
-            parfor (jj=1:nb_ev_pts,numw)
-                [rep(jj),G,var_rep(jj),det]=eval_krg_ckrg(ev_pts(jj,:),meta_donnee);
-                GR(jj,:)=G;
+            parfor (jj=1:nbReqEval,numWorkers)
+                [valResp(jj),G,varResp(jj),det]=eval_krg_ckrg(reqResp(jj,:),metaBuild);
+                valGrad(jj,:)=G;
                 Z_sto(jj)=det.Z_sto;
                 Z_reg(jj)=det.Z_reg;
                 GR_reg(jj,:)=det.GZ_reg;
                 GR_sto(jj,:)=det.GZ_sto;
             end
             %% verification interpolation
-            if meta.verif
-                parfor (jj=1:size(tirages,1),numw)
-                    [Zverif(jj),G]=eval_krg_ckrg(tirages(jj,:),meta_donnee);
-                    GZverif(jj,:)=G;
+            if metaData.verif
+                parfor (jj=1:size(tirages,1),numWorkers)
+                    [checkZ(jj),G]=eval_krg_ckrg(tirages(jj,:),metaBuild);
+                    checkGZ(jj,:)=G;
                 end
-                verif_interp(eval,Zverif,'rep')
-                if meta_donnee.in.pres_grad
-                    verif_interp(grad,GZverif,'grad')
+                verif_interp(eval,checkZ,'rep')
+                if metaBuild.in.pres_grad
+                    verif_interp(grad,checkGZ,'grad')
                 end
             end
             
@@ -154,28 +158,28 @@ for num_meta=1:numel(donnees_const)
             
         case 'DACE'
             %% Evaluation du metamodele de Krigeage (DACE)
-            for jj=1:nb_ev_pts
-                [rep(jj),G,var_rep(jj)]=predictor(ev_pts(jj,:),meta_donnee.model);
-                GR(jj,:)=G;
+            for jj=1:nbReqEval
+                [valResp(jj),G,varResp(jj)]=predictor(reqResp(jj,:),metaBuild.model);
+                valGrad(jj,:)=G;
             end
             %% verification interpolation
-            if meta.verif
-                parfor (jj=1:size(tirages,1),numw)
-                    [Zverif(jj),G]=predictor(tirages(jj,:),meta_donnee.model);
-                    GZverif(jj,:)=G;
+            if metaData.verif
+                parfor (jj=1:size(tirages,1),numWorkers)
+                    [checkZ(jj),G]=predictor(tirages(jj,:),metaBuild.model);
+                    checkGZ(jj,:)=G;
                 end
-                verif_interp(eval,Zverif,'rep')
+                verif_interp(eval,checkZ,'rep')
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'PRG'
-            for degre=meta.deg
+            for degre=metaData.deg
                 %% Evaluation du metamodele de Regression
-                parfor (jj=1:nb_ev_pts,numw)
-                    rep(jj)=eval_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
+                parfor (jj=1:nbReqEval,numWorkers)
+                    valResp(jj)=eval_prg(metaBuild.prg.coef,reqResp(jj,1),evalSample(jj,2),metaBuild);
                     %evaluation des gradients du MT
-                    [GRG1,GRG2]=evald_prg(meta_donnee.prg.coef,ev_pts(jj,1),points(jj,2),meta_donnee);
-                    GR(jj,:)=[GRG1,GRG2];
+                    [GRG1,GRG2]=evald_prg(metaBuild.prg.coef,reqResp(jj,1),evalSample(jj,2),metaBuild);
+                    valGrad(jj,:)=[GRG1,GRG2];
                 end
             end
             %%%%%%%%=================================%%%%%%%%
@@ -183,8 +187,8 @@ for num_meta=1:numel(donnees_const)
         case 'ILIN'
             %% interpolation par fonction de base lineaire
             fprintf('\n%s\n',[textd  'Interpolation par fonction de base lin�aire' textf]);
-            parfor (jj=1:nb_ev_pts,numw)
-                [rep(jj),G]=interp_lin(ev_pts(jj,:),meta_donnee);
+            parfor (jj=1:nbReqEval,numWorkers)
+                [valResp(jj),G]=interp_lin(reqResp(jj,:),metaBuild);
                 GR1(jj,:)=G;
                 
             end
@@ -194,8 +198,8 @@ for num_meta=1:numel(donnees_const)
         case 'ILAG'
             %% interpolation par fonction polynomiale de Lagrange
             fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
-            parfor (jj=1:nb_ev_pts,numw)
-                [rep(jj),G]=interp_lag(ev_pts(jj,:),meta_donnee);
+            parfor (jj=1:nbReqEval,numWorkers)
+                [valResp(jj),G]=interp_lag(reqResp(jj,:),metaBuild);
                 GR1(jj,:)=G;
                 
             end
@@ -212,11 +216,11 @@ for num_meta=1:numel(donnees_const)
     wei=[];
     gei=[];
     lcb=[];
-    if meta.enrich.on&&exist('var_rep','var')
+    if metaData.enrich.on&&exist('var_rep','var')
         %reponse mini
-        eval_min=min(meta_donnee.eval);
+        eval_min=min(metaBuild.eval);
         %calcul criteres enrichissement
-        [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,rep,var_rep,meta.enrich);
+        [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,valResp,varResp,metaData.enrich);
     end
     
     %%%%%%%%=================================%%%%%%%%
@@ -224,7 +228,7 @@ for num_meta=1:numel(donnees_const)
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     %reconditionnement gradients
-    if nb_var>1
+    if np>1
         if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
             GZ_sto=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
             GZ_reg=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
@@ -232,7 +236,7 @@ for num_meta=1:numel(donnees_const)
         GZ=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
         if dim_ev(3)>1
             for ll=1:dim_ev(3)
-                tmp=GR(:,ll);
+                tmp=valGrad(:,ll);
                 GZ(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
             end
             if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
@@ -244,14 +248,14 @@ for num_meta=1:numel(donnees_const)
                 end
             end
         else
-            GZ=GR;
+            GZ=valGrad;
             if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
                 GZ_sto=GR_sto;
                 GZ_reg=GR_reg;
             end
         end
     else
-        GZ=GR;
+        GZ=valGrad;
         if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
             GZ_sto=GR_sto;
             GZ_reg=GR_reg;
@@ -262,15 +266,15 @@ for num_meta=1:numel(donnees_const)
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     %Stockage des evaluations
-    if numel(donnees_const)==1
-        if nb_var>1
+    if numel(buildData)==1
+        if np>1
             if dim_ev(3)==1
                 if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
                     Z.Z_sto=Z_sto;
                     Z.Z_reg=Z_reg;
                 end
-                Z.Z=rep;
-                if ~isempty(var_rep);Z.var=var_rep;end
+                Z.Z=valResp;
+                if ~isempty(varResp);Z.var=varResp;end
                 if exist('wei','var');if ~isempty(wei);Z.wei=wei;end, end
                 if exist('ei','var');if ~isempty(ei);Z.ei=ei;end, end
                 if exist('gei','var');if ~isempty(gei);Z.gei=gei;end, end
@@ -282,8 +286,8 @@ for num_meta=1:numel(donnees_const)
                     Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
                     Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
                 end
-                Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-                if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
+                Z.Z=reshape(valResp,dim_ev(1),dim_ev(2));
+                if ~isempty(varResp);Z.var=reshape(varResp,dim_ev(1),dim_ev(2));end
                 if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));end, end
                 if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
                 if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
@@ -296,8 +300,8 @@ for num_meta=1:numel(donnees_const)
                 Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
                 Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
             end
-            Z.Z=reshape(rep,dim_ev(1),dim_ev(2));
-            if ~isempty(var_rep);Z.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
+            Z.Z=reshape(valResp,dim_ev(1),dim_ev(2));
+            if ~isempty(varResp);Z.var=reshape(varResp,dim_ev(1),dim_ev(2));end
             if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));end, end
             if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
             if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
@@ -310,26 +314,26 @@ for num_meta=1:numel(donnees_const)
             Z.GZ_sto=GZ_sto;Z.GZ_reg=GZ_reg;
         end
     else
-        Z{num_meta}.Z=reshape(rep,dim_ev(1),dim_ev(2));
-        Z{num_meta}.GZ=GZ;
-        if ~isempty('var_rep');Z{num_meta}.var=reshape(var_rep,dim_ev(1),dim_ev(2));end
-        if exist('wei','var');if ~isempty(wei);Z{num_meta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));end, end
-        if exist('gei','var');if ~isempty(gei);Z{num_meta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
-        if exist('ei','var');if ~isempty(ei);Z{num_meta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
-        if exist('lcb','var');if ~isempty(lcb);Z{num_meta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
-        if exist('explor_EI','var');if ~isempty(explor_EI);Z{num_meta}.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
-        if exist('exploit_EI','var');if ~isempty(exploit_EI);Z{num_meta}.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
+        Z{numMeta}.Z=reshape(valResp,dim_ev(1),dim_ev(2));
+        Z{numMeta}.GZ=GZ;
+        if ~isempty('var_rep');Z{numMeta}.var=reshape(varResp,dim_ev(1),dim_ev(2));end
+        if exist('wei','var');if ~isempty(wei);Z{numMeta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));end, end
+        if exist('gei','var');if ~isempty(gei);Z{numMeta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
+        if exist('ei','var');if ~isempty(ei);Z{numMeta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
+        if exist('lcb','var');if ~isempty(lcb);Z{numMeta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
+        if exist('explor_EI','var');if ~isempty(explor_EI);Z{numMeta}.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
+        if exist('exploit_EI','var');if ~isempty(exploit_EI);Z{numMeta}.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
         if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
-            Z{num_meta}.GZ_sto=GZ_sto;Z{num_meta}.GZ_reg=GZ_reg;
+            Z{numMeta}.GZ_sto=GZ_sto;Z{numMeta}.GZ_reg=GZ_reg;
         end
         if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-            Z{num_meta}.Z_sto=Z_sto;Z{num_meta}.Z_reg=Z_reg;
+            Z{numMeta}.Z_sto=Z_sto;Z{numMeta}.Z_reg=Z_reg;
         end
     end
 end
 
-if nb_ev_pts>1&&verb
-    fprintf('++ Evaluation en %i points\n',nb_ev_pts);
+if nbReqEval>1&&Verb
+    fprintf('++ Evaluation en %i points\n',nbReqEval);
     mesu_time(tMesu,tInit);
     fprintf('#########################################\n');
 end

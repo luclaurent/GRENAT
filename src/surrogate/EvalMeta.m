@@ -88,7 +88,7 @@ for numMeta=1:numel(buildData)
     metaBuild=buildData{numMeta};
     
     %load variables
-    tirages=metaBuild.tirages;
+    sampling=metaBuild.sampling;
     eval=metaBuild.eval;
     grad=metaBuild.grad;
     
@@ -109,47 +109,46 @@ for numMeta=1:numel(buildData)
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'GRBF','RBF','InRBF'}
-            %% Evaluation du metamodele de RBF/GRBF
+            %% Evaluation of RBF/GRBF surrogate model
             parfor (jj=1:nbReqEval,numWorkers)                
                 [valResp(jj),G,varResp(jj),det]=RBFEval(reqResp(jj,:),metaBuild);
                 valGrad(jj,:)=G;
             end
-            %% verification interpolation
-            if metaData.verif
-                parfor (jj=1:size(tirages,1),numWorkers)
-                    [checkZ(jj),G]=eval_rbf(tirages(jj,:),metaBuild);
+            %% check interpolation
+            if metaData.check
+                parfor (jj=1:size(sampling,1),numWorkers)
+                    [checkZ(jj),G]=RBFEval(sampling(jj,:),metaBuild);
                     checkGZ(jj,:)=G;
                 end
-                verif_interp(eval,checkZ,'rep')
-                if metaBuild.in.pres_grad
-                    verif_interp(grad,checkGZ,'grad')
+                checkInterp(eval,checkZ,'resp')
+                if metaBuild.in.availGrad
+                    checkInterp(grad,checkGZ,'grad')
                 end
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case {'KRG','CKRG','InKRG'}
-            
-            %stockage specifique
-            Z_sto=valResp;Z_reg=valResp;
-            GR_reg=valGrad;GR_sto=valGrad;
-            %% Evaluation du metamodele de Krigeage/CoKrigeage
+        case {'KRG','GKRG','InKRG'}            
+            %specific storage
+            stoZ=valResp;trZ=valResp;
+            tzGZ=valGrad;stoGZ=valGrad;
+            %% Evaluation of KRG/GKRG surrogate model
             parfor (jj=1:nbReqEval,numWorkers)
-                [valResp(jj),G,varResp(jj),det]=eval_krg_ckrg(reqResp(jj,:),metaBuild);
+                [valResp(jj),G,varResp(jj),det]=KRGEval(reqResp(jj,:),metaBuild);
                 valGrad(jj,:)=G;
-                Z_sto(jj)=det.Z_sto;
-                Z_reg(jj)=det.Z_reg;
-                GR_reg(jj,:)=det.GZ_reg;
-                GR_sto(jj,:)=det.GZ_sto;
+                stoZ(jj)=det.stoZ;
+                trZ(jj)=det.trZ;
+                tzGZ(jj,:)=det.tzGZ;
+                stoGZ(jj,:)=det.stoGZ;
             end
-            %% verification interpolation
-            if metaData.verif
-                parfor (jj=1:size(tirages,1),numWorkers)
-                    [checkZ(jj),G]=eval_krg_ckrg(tirages(jj,:),metaBuild);
+            %% check interpolation
+            if metaData.check
+                parfor (jj=1:size(sampling,1),numWorkers)
+                    [checkZ(jj),G]=eval_krg_ckrg(sampling(jj,:),metaBuild);
                     checkGZ(jj,:)=G;
                 end
-                verif_interp(eval,checkZ,'rep')
+                checkInterp(eval,checkZ,'resp')
                 if metaBuild.in.pres_grad
-                    verif_interp(grad,checkGZ,'grad')
+                    checkInterp(grad,checkGZ,'grad')
                 end
             end
             
@@ -157,50 +156,46 @@ for numMeta=1:numel(buildData)
             %%%%%%%%=================================%%%%%%%%
             
         case 'DACE'
-            %% Evaluation du metamodele de Krigeage (DACE)
+            %% Evaluation of Kriging (DACE)
             for jj=1:nbReqEval
                 [valResp(jj),G,varResp(jj)]=predictor(reqResp(jj,:),metaBuild.model);
                 valGrad(jj,:)=G;
             end
-            %% verification interpolation
-            if metaData.verif
-                parfor (jj=1:size(tirages,1),numWorkers)
-                    [checkZ(jj),G]=predictor(tirages(jj,:),metaBuild.model);
+            %% check interpolation
+            if metaData.check
+                parfor (jj=1:size(sampling,1),numWorkers)
+                    [checkZ(jj),G]=predictor(sampling(jj,:),metaBuild.model);
                     checkGZ(jj,:)=G;
                 end
-                verif_interp(eval,checkZ,'rep')
+                checkInterp(eval,checkZ,'resp')
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'PRG'
             for degre=metaData.deg
-                %% Evaluation du metamodele de Regression
+                %% Evaluation of the polynomial regression surrogate model
                 parfor (jj=1:nbReqEval,numWorkers)
-                    valResp(jj)=eval_prg(metaBuild.prg.coef,reqResp(jj,1),evalSample(jj,2),metaBuild);
-                    %evaluation des gradients du MT
-                    [GRG1,GRG2]=evald_prg(metaBuild.prg.coef,reqResp(jj,1),evalSample(jj,2),metaBuild);
+                    valResp(jj)=LSEval(metaBuild.prg.coef,reqResp(jj,1),evalSample(jj,2),metaBuild);
+                    %calculation of the gradients
+                    [GRG1,GRG2]=LSEvalD(metaBuild.prg.coef,reqResp(jj,1),evalSample(jj,2),metaBuild);
                     valGrad(jj,:)=[GRG1,GRG2];
                 end
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'ILIN'
-            %% interpolation par fonction de base lineaire
-            fprintf('\n%s\n',[textd  'Interpolation par fonction de base linï¿½aire' textf]);
+            %% interpolation using linear shape functions
             parfor (jj=1:nbReqEval,numWorkers)
-                [valResp(jj),G]=interp_lin(reqResp(jj,:),metaBuild);
-                GR1(jj,:)=G;
-                
+                [valResp(jj),G]=LInterpEval(reqResp(jj,:),metaBuild);
+                valGrad(jj,:)=G;                
             end
-            
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case 'ILAG'
-            %% interpolation par fonction polynomiale de Lagrange
-            fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
+            %% interpolation using linear shape functions based on Lagrange polynoms
             parfor (jj=1:nbReqEval,numWorkers)
-                [valResp(jj),G]=interp_lag(reqResp(jj,:),metaBuild);
-                GR1(jj,:)=G;
+                [valResp(jj),G]=LagInterpEval(reqResp(jj,:),metaBuild);
+                valGrad(jj,:)=G;
                 
             end
             
@@ -209,29 +204,29 @@ for numMeta=1:numel(buildData)
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
-    % calcul des criteres d'enrichissement
-    explor_EI=[];
-    exploit_EI=[];
+    % compute infill criteria
+    explorEI=[];
+    exploitEI=[];
     ei=[];
     wei=[];
     gei=[];
     lcb=[];
-    if metaData.enrich.on&&exist('var_rep','var')
-        %reponse mini
-        eval_min=min(metaBuild.eval);
-        %calcul criteres enrichissement
-        [ei,wei,gei,lcb,exploit_EI,explor_EI]=crit_enrich(eval_min,valResp,varResp,metaData.enrich);
+    if metaData.infill.on&&exist('varResp','var')
+        %smallest response
+        respMin=min(metaBuild.eval);
+        %computation of infill criteria
+        [ei,wei,gei,lcb,exploitEI,explorEI]=InfillCrit(respMin,valResp,varResp,metaData.infill);
     end
     
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
-    %reconditionnement gradients
+    %reordering gradients
     if np>1
-        if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
-            GZ_sto=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
-            GZ_reg=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+        if exist('stoGZ','var')==1&&exist('trGZ','var')==1
+            stoGZFinal=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+            trGZFinal=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
         end
         GZ=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
         if dim_ev(3)>1
@@ -239,39 +234,39 @@ for numMeta=1:numel(buildData)
                 tmp=valGrad(:,ll);
                 GZ(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
             end
-            if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
+            if exist('stoGZ','var')==1&&exist('trGZ','var')==1
                 for ll=1:dim_ev(3)
-                    tmp=GR_sto(:,ll);
-                    tmp1=GR_reg(:,ll);
-                    GZ_sto(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
-                    GZ_reg(:,:,ll)=reshape(tmp1,dim_ev(1),dim_ev(2));
+                    tmp=stoGZ(:,ll);
+                    tmp1=tzGZ(:,ll);
+                    stoGZFinal(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
+                    trGZFinal(:,:,ll)=reshape(tmp1,dim_ev(1),dim_ev(2));
                 end
             end
         else
             GZ=valGrad;
-            if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
-                GZ_sto=GR_sto;
-                GZ_reg=GR_reg;
+            if exist('stoGZ','var')==1&&exist('trGZ','var')==1
+                stoGZFinal=stoGZ;
+                trGZFinal=tzGZ;
             end
         end
     else
         GZ=valGrad;
-        if exist('GR_sto','var')==1&&exist('GR_reg','var')==1
-            GZ_sto=GR_sto;
-            GZ_reg=GR_reg;
+        if exist('stoGZ','var')==1&&exist('trGZ','var')==1
+            stoGZFinal=stoGZ;
+            trGZFinal=tzGZ;
         end
     end
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
     %%%%%%%%=================================%%%%%%%%
-    %Stockage des evaluations
+    %Storage of evaluations
     if numel(buildData)==1
         if np>1
             if dim_ev(3)==1
-                if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-                    Z.Z_sto=Z_sto;
-                    Z.Z_reg=Z_reg;
+                if exist('stoZ','var')==1&&exist('Z_reg','var')==1
+                    Z.stoZ=stoZ;
+                    Z.trZ=trZ;
                 end
                 Z.Z=valResp;
                 if ~isempty(varResp);Z.var=varResp;end
@@ -279,12 +274,12 @@ for numMeta=1:numel(buildData)
                 if exist('ei','var');if ~isempty(ei);Z.ei=ei;end, end
                 if exist('gei','var');if ~isempty(gei);Z.gei=gei;end, end
                 if exist('lcb','var');if ~isempty(lcb);Z.lcb=lcb;end, end
-                if exist('explor_EI','var');if ~isempty(explor_EI);Z.explor_EI=explor_EI;end, end
-                if exist('exploit_EI','var');if ~isempty(exploit_EI);Z.exploit_EI=exploit_EI;end, end
+                if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=explorEI;end, end
+                if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=exploitEI;end, end
             else
-                if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-                    Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
-                    Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+                if exist('stoZ','var')==1&&exist('trZ','var')==1
+                    Z.stoZ=reshape(stoZ,dim_ev(1),dim_ev(2));
+                    Z.trZ=reshape(trZ,dim_ev(1),dim_ev(2));
                 end
                 Z.Z=reshape(valResp,dim_ev(1),dim_ev(2));
                 if ~isempty(varResp);Z.var=reshape(varResp,dim_ev(1),dim_ev(2));end
@@ -292,13 +287,13 @@ for numMeta=1:numel(buildData)
                 if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
                 if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
                 if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
-                if exist('explor_EI','var');if ~isempty(explor_EI);Z.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
-                if exist('exploit_EI','var');if ~isempty(exploit_EI);Z.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
+                if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,dim_ev(1),dim_ev(2));end, end
+                if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,dim_ev(1),dim_ev(2));end, end
             end
         else
-            if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-                Z.Z_sto=reshape(Z_sto,dim_ev(1),dim_ev(2));
-                Z.Z_reg=reshape(Z_reg,dim_ev(1),dim_ev(2));
+            if exist('stoZ','var')==1&&exist('trZ','var')==1
+                Z.stoZ=reshape(stoZ,dim_ev(1),dim_ev(2));
+                Z.trZ=reshape(trZ,dim_ev(1),dim_ev(2));
             end
             Z.Z=reshape(valResp,dim_ev(1),dim_ev(2));
             if ~isempty(varResp);Z.var=reshape(varResp,dim_ev(1),dim_ev(2));end
@@ -306,12 +301,12 @@ for numMeta=1:numel(buildData)
             if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
             if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
             if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
-            if exist('explor_EI','var');if ~isempty(explor_EI);Z.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
-            if exist('exploit_EI','var');if ~isempty(exploit_EI);Z.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
+            if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,dim_ev(1),dim_ev(2));end, end
+            if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,dim_ev(1),dim_ev(2));end, end
         end
         Z.GZ=GZ;
-        if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
-            Z.GZ_sto=GZ_sto;Z.GZ_reg=GZ_reg;
+        if exist('stoGZFinal','var')==1&&exist('trGZFinal','var')==1
+            Z.stoGZFinal=stoGZFinal;Z.trGZFinal=trGZFinal;
         end
     else
         Z{numMeta}.Z=reshape(valResp,dim_ev(1),dim_ev(2));
@@ -321,59 +316,59 @@ for numMeta=1:numel(buildData)
         if exist('gei','var');if ~isempty(gei);Z{numMeta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
         if exist('ei','var');if ~isempty(ei);Z{numMeta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
         if exist('lcb','var');if ~isempty(lcb);Z{numMeta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
-        if exist('explor_EI','var');if ~isempty(explor_EI);Z{numMeta}.explor_EI=reshape(explor_EI,dim_ev(1),dim_ev(2));end, end
-        if exist('exploit_EI','var');if ~isempty(exploit_EI);Z{numMeta}.exploit_EI=reshape(exploit_EI,dim_ev(1),dim_ev(2));end, end
-        if exist('GZ_sto','var')==1&&exist('GZ_reg','var')==1
-            Z{numMeta}.GZ_sto=GZ_sto;Z{numMeta}.GZ_reg=GZ_reg;
+        if exist('explorEI','var');if ~isempty(explorEI);Z{numMeta}.explorEI=reshape(explorEI,dim_ev(1),dim_ev(2));end, end
+        if exist('exploitEI','var');if ~isempty(exploitEI);Z{numMeta}.exploitEI=reshape(exploitEI,dim_ev(1),dim_ev(2));end, end
+        if exist('stoGZFinal','var')==1&&exist('trGZFinal','var')==1
+            Z{numMeta}.stoGZFinal=stoGZFinal;Z{numMeta}.trGZFinal=trGZFinal;
         end
-        if exist('Z_sto','var')==1&&exist('Z_reg','var')==1
-            Z{numMeta}.Z_sto=Z_sto;Z{numMeta}.Z_reg=Z_reg;
+        if exist('stoZ','var')==1&&exist('trZ','var')==1
+            Z{numMeta}.stoZ=stoZ;Z{numMeta}.trZ=trZ;
         end
     end
 end
 
 if nbReqEval>1&&Verb
-    fprintf('++ Evaluation en %i points\n',nbReqEval);
+    fprintf('++ Evaluation at %i points\n',nbReqEval);
     mesu_time(tMesu,tInit);
     fprintf('#########################################\n');
 end
 
 end
 
-%%% routine de vérification de l'interpolation
-function verif_interp(Ref,App,type)
-limite_rep=1e-4;
-limite_grad=1e-4;
+%%% function for checking interpolation
+function checkInterp(ZRef,ZApp,type)
+limitResp=1e-4;
+limitGrad=1e-4;
 switch type
-    case 'rep'
-        diffZ=abs(App-Ref);
-        IXZverif=find(diffZ>limite_rep);
-        if ~isempty(IXZverif)
-            fprintf('Pb d''interpolation (eval)\n')
-            fprintf('Num\t||DiffZ \t||Eval \t||Zverif\n');
-            conc=vertcat(IXZverif',diffZ(IXZverif)',Ref(IXZverif)',App(IXZverif)');
+    case 'resp'
+        diffZ=abs(ZApp-ZRef);
+        IXZcheck=find(diffZ>limitResp);
+        if ~isempty(IXZcheck)
+            fprintf('Interpolation issue (responses)\n')
+            fprintf('Num\t||DiffZ \t||Eval \t||Zcheck\n');
+            conc=vertcat(IXZcheck',diffZ(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
             fprintf('%d\t||%4.2e\t||%4.2e\t||%4.2e\n',conc(:))
         end
     case 'grad'
-        diffGZ=abs(App-Ref);
-        IXGZverif=find(diffGZ>limite_grad);
-        if ~isempty(IXGZverif)
-            [IXi,~]=ind2sub(size(diffGZ),IXGZverif);
+        diffGZ=abs(ZApp-ZRef);
+        IXGZcheck=find(diffGZ>limitGrad);
+        if ~isempty(IXGZcheck)
+            [IXi,~]=ind2sub(size(diffGZ),IXGZcheck);
             IXi=unique(IXi);
-            fprintf('Pb d''interpolation (grad)\n')
-            nb_var=size(App,2);
+            fprintf('Interpolation issue (gradient)\n')
+            nb_var=size(ZApp,2);
             tt=repmat('\t\t',1,nb_var);
-            fprintf(['Num\t||DiffGZ' tt '||Grad' tt '||GZverif\n']);
-            conc=[IXi,diffGZ(IXi,:),Ref(IXi,:),App(IXi,:)]';
+            fprintf(['Num\t||DiffGZ' tt '||Grad' tt '||GZcheck\n']);
+            conc=[IXi,diffGZ(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
             tt=repmat('%4.2e\t',1,nb_var);
             tt=['%d\t||' tt '||' tt '||' tt '\n'];
             fprintf(tt,conc(:))
             
         end
-        diffNG=abs(sqrt(sum(Ref.^2,2))-sqrt(sum(App.^2,2)));
-        IXNGZverif=find(diffNG>limite_grad);
+        diffNG=abs(sqrt(sum(ZRef.^2,2))-sqrt(sum(ZApp.^2,2)));
+        IXNGZverif=find(diffNG>limitGrad);
         if ~isempty(IXNGZverif)
-            fprintf('Pb d''interpolation (grad)\n')
+            fprintf('Interpolation issue (gradient)\n')
             fprintf('DiffNG\n')
             fprintf('%4.2e\n',diffNG(IXNGZverif))
         end

@@ -1,7 +1,7 @@
 %% Calcul critere EI/WEI/LCB
 %% L. LAURENt -- 04/05/2012 -- luc.laurent@cnam.fr
 
-function [EI,WEI,GEI,LCB,exploit_EI,explor_EI]=crit_enrich(eval_min,Z,variance,enrich)
+function [EI,WEI,GEI,LCB,exploit_EI,explor_EI]=InfillCrit(eval_min,Z,variance,enrich)
 
 %fprintf('  >>> Calculs criteres enrichissement\n');
 

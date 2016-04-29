@@ -1,7 +1,7 @@
 % Example of use of GRENAT without the sampling toolbox
 % L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
-init_dir_GRENAT();
+initDirGRENAT();
 clean;
 
 %display the date

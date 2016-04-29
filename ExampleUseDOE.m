@@ -1,7 +1,7 @@
 % Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir
 % L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
-init_rep_GRENAT([],'LMTir');
+initDirGRENAT([],'LMTir');
 clean;
 
 %affichage de la date

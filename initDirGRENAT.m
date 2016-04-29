@@ -1,7 +1,7 @@
 %%initialization of the directories (MATLAB's path)
 %%L. LAURENT -- 30/01/2014  -- luc.laurent@ens-cachan.fr
 
-function doss=init_dir_GRENAT(pathcustom,other)
+function doss=initDirGRENAT(pathcustom,other)
 
 
 % variable 'other' (optional) of type cell must constain the list of other

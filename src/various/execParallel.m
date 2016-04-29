@@ -94,7 +94,7 @@ if usejava('jvm')
                         parpool(options.numWorkers);
                         parallel.on=true;
                         parallel.num=options.numWorkers;
-                    catch err
+                    catch 
                         fprintf('##>> Parallel starting issue <<##\n');
                         fprintf('##>> Start without parallelism <<##\n');
                     end

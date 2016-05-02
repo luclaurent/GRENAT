@@ -1,5 +1,5 @@
 %% G�n�ration des monomes des polynomes (en fonction du degr� et du nb de variables)
-% L.LAURENT -- 25/02/2012 -- laurent@lmt.ens-cachan.Fr
+% L.LAURENT -- 25/02/2012 -- luc.laurent@cnam.fr
 
 clear all
 % degr�

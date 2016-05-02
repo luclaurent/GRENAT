@@ -1,5 +1,5 @@
 %fonction assurant l'evaluation d'une fonction polynomiale de degre 2
-%L.LAURENT -- 11/05/2010 -- luc.laurent@ens-cachan.fr
+%L.LAURENT -- 11/05/2010 -- luc.laurent@cnam.fr
 
 function [ret,dret]=reg_poly2(val)
 

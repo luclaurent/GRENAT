@@ -1,5 +1,5 @@
 %fonction assurant l'evaluation d'une fonction polynomiale de degre 3
-%L.LAURENT -- 13/12/2011 -- luc.laurent@ens-cachan.fr
+%L.LAURENT -- 13/12/2011 -- luc.laurent@cnam.fr
 
 function [ret,dret]=reg_poly3(val)
 

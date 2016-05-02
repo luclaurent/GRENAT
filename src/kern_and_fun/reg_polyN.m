@@ -1,5 +1,5 @@
 %fonction assurant l'evaluation d'une fonction polynomiale de degre N
-%L.LAURENT -- 24/02/2012 -- luc.laurent@ens-cachan.fr
+%L.LAURENT -- 24/02/2012 -- luc.laurent@cnam.fr
 
 function [ret,dret,ddret]=reg_polyN(val,deg)
 

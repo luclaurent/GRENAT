@@ -1,5 +1,5 @@
 %%fonction de correlation Matern (3/2)
-%%L. LAURENT -- 23/01/2011 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 23/01/2011 -- luc.laurent@cnam.fr
 %revision du 09/11/2012 (issue de Lockwood 2010)
 
 function [corr,dcorr,ddcorr]=corr_matern32_new(xx,long)

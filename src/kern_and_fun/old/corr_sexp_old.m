@@ -1,5 +1,5 @@
 %%fonction de base radiale exponentielle carr�e (RBF)
-%%L. LAURENT -- 18/01/2012 -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 18/01/2012 -- luc.laurent@cnam.fr
 
 %Rasmussen 2006 p. 83
 

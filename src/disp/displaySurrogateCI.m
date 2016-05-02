@@ -1,7 +1,7 @@
 %% Display confidence intervals
 % L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function displaySurrogateIC(Xpts,ic,aff,Z)
+function displaySurrogateCI(Xpts,ic,aff,Z)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load default configuration for display

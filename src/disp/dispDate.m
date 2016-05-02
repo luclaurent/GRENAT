@@ -14,7 +14,7 @@ else
         case 'date'
             fprintf('==============\n');
             fprintf('Date: %d/%d/%d\n',...
-                day(3), day(2), day(1),);
+                day(3), day(2), day(1));
             fprintf('==============\n');
         case 'time'
             fprintf('===============\n');

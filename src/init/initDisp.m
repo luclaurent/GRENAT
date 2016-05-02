@@ -1,36 +1,36 @@
 %% Initialization of display variables
 %% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function aff_def=init_aff()
+function dispDef=initDisp()
 
-    aff_def.scale=true;             %scale for displaying gradients
-    aff_def.tikz=false;             %save on tikz's format
-    aff_def.on=false;               %enable/disable display
-    aff_def.d3=false;               %3D display
-    aff_def.d2=false;               %2D display
-    aff_def.contour=false;          %display contour
-    aff_def.save=true;              %save display
-    aff_def.grad_approx=false;       %display gradients of the surrogate model 
-    aff_def.grad_real=false;        %display actual gradients
-    aff_def.ic.on=false;            %display confidence intervals (if available)
-    aff_def.ic.type='0';            %choose CI to dispaly
-    aff_def.newfig=true;            %display in new figure
-    aff_def.opt=[];                 %plot options
-    aff_def.uni=false;              %use uniform color
-    aff_def.color=[];               %choose display color   
-    aff_def.xlabel='x_1';           %X-axis label
-    aff_def.ylabel='x_2';           %Y-axis label
-    aff_def.zlabel='';              %Z-axis label
-    aff_def.title='';               %title of the figure
-    aff_def.render=false;           %enable/disable 3D rendering
-    aff_def.pts=false;              %display sample points
-    aff_def.num=0;                  %number of the display numérotation affichage
-    aff_def.tex=true;               %save data in TeX file
-    aff_def.bar=false;              %display using bar
-    aff_def.trans=false;            %display using transparency
-    aff_def.nv=Inf;                 %number of sample points on the reference grid
-    aff_def.steps=0;                 %number of steps on the reference grid 
+    dispDef.scale=true;             %scale for displaying gradients
+    dispDef.tikz=false;             %save on tikz's format
+    dispDef.on=false;               %enable/disable display
+    dispDef.d3=false;               %3D display
+    dispDef.d2=false;               %2D display
+    dispDef.contour=false;          %display contour
+    dispDef.save=true;              %save display
+    dispDef.grad_approx=false;       %display gradients of the surrogate model 
+    dispDef.grad_real=false;        %display actual gradients
+    dispDef.ic.on=false;            %display confidence intervals (if available)
+    dispDef.ic.type='0';            %choose CI to dispaly
+    dispDef.newfig=true;            %display in new figure
+    dispDef.opt=[];                 %plot options
+    dispDef.uni=false;              %use uniform color
+    dispDef.color=[];               %choose display color   
+    dispDef.xlabel='x_1';           %X-axis label
+    dispDef.ylabel='x_2';           %Y-axis label
+    dispDef.zlabel='';              %Z-axis label
+    dispDef.title='';               %title of the figure
+    dispDef.render=false;           %enable/disable 3D rendering
+    dispDef.pts=false;              %display sample points
+    dispDef.num=0;                  %number of the display numérotation affichage
+    dispDef.tex=true;               %save data in TeX file
+    dispDef.bar=false;              %display using bar
+    dispDef.trans=false;            %display using transparency
+    dispDef.nv=Inf;                 %number of sample points on the reference grid
+    dispDef.steps=0;                 %number of steps on the reference grid 
 if nargout==0
     global aff
-    aff=aff_def;
+    aff=dispDef;
 end

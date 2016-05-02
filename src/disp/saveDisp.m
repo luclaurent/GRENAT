@@ -8,13 +8,14 @@ if isempty(num)
     
     aff.num=aff.num+1;
     num=aff.num;
-else
-    if ischar(num)
-        nameFile=num;
-    else
-        nameFile=['fig_' num2str(num,'%04.0f')];
-    end
 end
+%egenrate filename
+if ischar(num)
+    nameFile=num;
+else
+    nameFile=['fig_' num2str(num,'%04.0f')];
+end
+
 
 
 set(gcf,'Renderer','painters')      %for saving figure in nodisplay mode

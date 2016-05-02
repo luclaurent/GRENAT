@@ -13,19 +13,19 @@ nbOut=nargout;
 
 %mode demo
 demo=false;
-moddemo=1;
+moddemo=2;
 if nbOut==0
     if moddemo==1
         nEDemo=300;
         X=linspace(-5,5,nEDemo);
         X=X';
-        metaParaD=[5/2 1];
+        metaParaD=[1 5/2];
     elseif moddemo==2
         nEDemo=50;
         X=linspace(-5,5,nEDemo);
-        [X,Y]=meshgrid(X);
-        X=[X(:) Y(:)];
-        metaParaD=[5/2 1 0.9];
+        [XX,YY]=meshgrid(X);
+        X=[XX(:) YY(:)];
+        metaParaD=[ 1 1 5/2];
     end
     if nargin==1
         metaPara=metaParaD;
@@ -72,7 +72,7 @@ if nbOut==1
     respK=prod(uniR,2);
 end
 
-%calculation of the response and first derivatives
+%calculation of the responses and first derivatives
 if nbOut==2
     uniR=zeros(nE,nV);
     duniR=zeros(nE,nV);
@@ -166,27 +166,27 @@ if demo
         subplot(231)
         Gp=zeros(nEDemo);
         Gp(:)=respK;
-        surfc(X,Y,Gp)
+        surfc(XX,YY,Gp)
         title('f(x,y)')
         subplot(232)
         Gp(:)=derK(:,1);
-        surfc(X,Y,Gp)
+        surfc(XX,YY,Gp)
         title('f''(x,y) (x)')
         subplot(233)
         Gp(:)=derK(:,2);
-        surfc(X,Y,Gp)
+        surfc(XX,YY,Gp)
         title('f''(x,y) (y)')
         subplot(234)
         Gp(:)=vertcat(dderK(1,1,:));
-        surfc(X,Y,Gp)
+        surfc(XX,YY,Gp)
         title('f''''(x,y) (x)')
         subplot(235)
         Gp(:)=vertcat(dderK(1,2,:));
-        surfc(X,Y,Gp)
+        surfc(XX,YY,Gp)
         title('f''''(x,y) (x,y)')
         subplot(236)
         Gp(:)=vertcat(dderK(2,2,:));
-        surfc(X,Y,Gp)
+        surfc(XX,YY,Gp)
         title('f''''(x,y) (y)')
     end
 end

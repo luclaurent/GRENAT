@@ -1,8 +1,16 @@
-%% Fonction: Cauchy
-%% L. LAURENT      luc.laurent@cnam.fr
-%% 15/03/2010 modif le 12/04/2010 // 31/08/2015
+%% Cauchy's function
+%% L. LAURENT -- 15/03/2010 -- luc.laurent@lecnam.net
+%%  modif on 12/04/2010 // 31/08/2015
 
-function [G,dG,ddG]=cauchy(xx,para)
+function [k,dk,ddk]=cauchy(xx,para)
+
+%number of output parameters
+nbOut=nargout;
+%check hyperparameters
+nP=size(para,2);
+if nP~=2
+    error(['Wrong number of hyperparameters (',mfilename,')']);
+end
 
 %evaluation de la fonction
 te=xx'*xx/para^2;

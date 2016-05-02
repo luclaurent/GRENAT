@@ -1,4 +1,4 @@
-%% exportation des fonctions en 1D pour tracés avec pgfplots
+%% exportation of the functions in 1D for plotting using pgfplots
 
 fct_kern='sexp';
 nbval=100;

@@ -80,7 +80,7 @@ if usejava('jvm')
                 %if manual loading
                 if strcmp(options.reqWorkers,'manu')
                     fprintf(' >> Number of workers required/available: %i/%i\n',options.numWorkers,defParallel.ClusterSize);
-                    %verification nombre de workers demandes
+                    %check required number of workers
                     if options.num_workers>defParallel.NumWorkers;
                         options.num_workers=defParallel.NumWorkers;
                     end

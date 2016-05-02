@@ -30,7 +30,7 @@ resp=C.samples.resp;
 %gradients at sample points
 grad=C.samples.grad;
 
-%%for diaplaying and comparing with the actual function
+%%for displaying and comparing with the actual function
 %regular grid
 grid_ref=C.ref.grid;
 %responses at the grid points

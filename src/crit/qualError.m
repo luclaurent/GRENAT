@@ -1,5 +1,5 @@
 %% Function for computing 3 custom quality errors
-%%L. LAURENT   --  22/10/2010   --  luc.laurent@lecnam.net
+%L. LAURENT   --  22/10/2010   --  luc.laurent@lecnam.net
 
 %%Zex: "exact" values of the function obtained by simulation
 %%Zap: approximated values given by the surrogate model

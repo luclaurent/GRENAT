@@ -1,5 +1,5 @@
 %% Evaluation of the function and the gradients
-%% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
+% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function [eval,grad]=evalFctGrad(fct,X,type)
 

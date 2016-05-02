@@ -1,5 +1,5 @@
 %% Function for calculating error of LOO (Cross-Validation)
-%% L. LAURENT -- 22/10/2012 -- luc.laurent@lecnam.net
+% L. LAURENT -- 22/10/2012 -- luc.laurent@lecnam.net
 
 function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)
 

@@ -1,6 +1,6 @@
 %% function for calculating R2 (correlation errors
 %%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
-%% Correction 20/03/2012 
+% Correction 20/03/2012 
 % -- Computation of the Pearson's correlation coefficient and adjusted correlation
 % -- the squared correlation coefficient (and adjusted)
 % -- the Concordance Correlation Coefficient (Rccc)

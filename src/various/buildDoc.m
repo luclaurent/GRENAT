@@ -1,10 +1,10 @@
 %% Build documentation (using m2html library)
-%% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
+% L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
 
 %load paths
 dirPath=init_di;
 
-%% Builddocumentation
+%% Build documentation
 
 %add configurtation to bash (for finding 'dot' script of graphviz)
 setenv('BASH_ENV','~/.bash_profile');

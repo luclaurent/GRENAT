@@ -1,5 +1,5 @@
 %% Build space for plotting 2D function
-%% L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
+% L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
 
 function [XY,dispData]=buildDisp(doeData,dispData)
 

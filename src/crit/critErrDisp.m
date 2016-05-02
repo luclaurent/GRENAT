@@ -1,5 +1,5 @@
 %% Compute error criteria and display
-%% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
+% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function [err,errV,errNAME]=critErrDisp(Zap,Zref,data)
 

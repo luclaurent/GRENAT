@@ -31,27 +31,27 @@ np=buildData{1}.np;
 %number of initial sample poins
 ns=buildData{1}.ns;
 %size of the required non-sample points
-dim_ev=size(evalSample);
+nbv=size(evalSample);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %reordering non-sample points
 if np>1
     % if the non-sample points corresponds to a grid
-    if dim_ev(3)~=1
+    if nbv(3)~=1
         %number a required evaluations
-        nbReqEval=prod(dim_ev(1:2));
-        reqResp=zeros(nbReqEval,dim_ev(3));
-        for ll=1:dim_ev(3)
+        nbReqEval=prod(nbv(1:2));
+        reqResp=zeros(nbReqEval,nbv(3));
+        for ll=1:nbv(3)
             tmp=evalSample(:,:,ll);
             reqResp(:,ll)=tmp(:);
         end
     else
         %if not the number a required evaluations is determined
-        nbReqEval=dim_ev(1);
+        nbReqEval=nbv(1);
         reqResp=evalSample;
     end
 else
-    nbReqEval=prod(dim_ev(1:2)); %number a required evaluations
+    nbReqEval=prod(nbv(1:2)); %number a required evaluations
     reqResp=evalSample(:);
 end
 %%%%%%%%=================================%%%%%%%%
@@ -225,21 +225,21 @@ for numMeta=1:numel(buildData)
     %reordering gradients
     if np>1
         if exist('stoGZ','var')==1&&exist('trGZ','var')==1
-            stoGZFinal=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
-            trGZFinal=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
+            stoGZFinal=zeros(nbv(1),nbv(2),nbv(3));
+            trGZFinal=zeros(nbv(1),nbv(2),nbv(3));
         end
-        GZ=zeros(dim_ev(1),dim_ev(2),dim_ev(3));
-        if dim_ev(3)>1
-            for ll=1:dim_ev(3)
+        GZ=zeros(nbv(1),nbv(2),nbv(3));
+        if nbv(3)>1
+            for ll=1:nbv(3)
                 tmp=valGrad(:,ll);
-                GZ(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
+                GZ(:,:,ll)=reshape(tmp,nbv(1),nbv(2));
             end
             if exist('stoGZ','var')==1&&exist('trGZ','var')==1
-                for ll=1:dim_ev(3)
+                for ll=1:nbv(3)
                     tmp=stoGZ(:,ll);
                     tmp1=tzGZ(:,ll);
-                    stoGZFinal(:,:,ll)=reshape(tmp,dim_ev(1),dim_ev(2));
-                    trGZFinal(:,:,ll)=reshape(tmp1,dim_ev(1),dim_ev(2));
+                    stoGZFinal(:,:,ll)=reshape(tmp,nbv(1),nbv(2));
+                    trGZFinal(:,:,ll)=reshape(tmp1,nbv(1),nbv(2));
                 end
             end
         else
@@ -263,7 +263,7 @@ for numMeta=1:numel(buildData)
     %Storage of evaluations
     if numel(buildData)==1
         if np>1
-            if dim_ev(3)==1
+            if nbv(3)==1
                 if exist('stoZ','var')==1&&exist('Z_reg','var')==1
                     Z.stoZ=stoZ;
                     Z.trZ=trZ;
@@ -278,46 +278,46 @@ for numMeta=1:numel(buildData)
                 if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=exploitEI;end, end
             else
                 if exist('stoZ','var')==1&&exist('trZ','var')==1
-                    Z.stoZ=reshape(stoZ,dim_ev(1),dim_ev(2));
-                    Z.trZ=reshape(trZ,dim_ev(1),dim_ev(2));
+                    Z.stoZ=reshape(stoZ,nbv(1),nbv(2));
+                    Z.trZ=reshape(trZ,nbv(1),nbv(2));
                 end
-                Z.Z=reshape(valResp,dim_ev(1),dim_ev(2));
-                if ~isempty(varResp);Z.var=reshape(varResp,dim_ev(1),dim_ev(2));end
-                if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));end, end
-                if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
-                if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
-                if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
-                if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,dim_ev(1),dim_ev(2));end, end
-                if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,dim_ev(1),dim_ev(2));end, end
+                Z.Z=reshape(valResp,nbv(1),nbv(2));
+                if ~isempty(varResp);Z.var=reshape(varResp,nbv(1),nbv(2));end
+                if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,nbv(1),nbv(2),size(wei,3));end, end
+                if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,nbv(1),nbv(2));end, end
+                if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,nbv(1),nbv(2),size(gei,3));end, end
+                if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,nbv(1),nbv(2));end, end
+                if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,nbv(1),nbv(2));end, end
+                if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,nbv(1),nbv(2));end, end
             end
         else
             if exist('stoZ','var')==1&&exist('trZ','var')==1
-                Z.stoZ=reshape(stoZ,dim_ev(1),dim_ev(2));
-                Z.trZ=reshape(trZ,dim_ev(1),dim_ev(2));
+                Z.stoZ=reshape(stoZ,nbv(1),nbv(2));
+                Z.trZ=reshape(trZ,nbv(1),nbv(2));
             end
-            Z.Z=reshape(valResp,dim_ev(1),dim_ev(2));
-            if ~isempty(varResp);Z.var=reshape(varResp,dim_ev(1),dim_ev(2));end
-            if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));end, end
-            if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
-            if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
-            if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
-            if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,dim_ev(1),dim_ev(2));end, end
-            if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,dim_ev(1),dim_ev(2));end, end
+            Z.Z=reshape(valResp,nbv(1),nbv(2));
+            if ~isempty(varResp);Z.var=reshape(varResp,nbv(1),nbv(2));end
+            if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,nbv(1),nbv(2),size(wei,3));end, end
+            if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,nbv(1),nbv(2));end, end
+            if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,nbv(1),nbv(2),size(gei,3));end, end
+            if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,nbv(1),nbv(2));end, end
+            if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,nbv(1),nbv(2));end, end
+            if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,nbv(1),nbv(2));end, end
         end
         Z.GZ=GZ;
         if exist('stoGZFinal','var')==1&&exist('trGZFinal','var')==1
             Z.stoGZFinal=stoGZFinal;Z.trGZFinal=trGZFinal;
         end
     else
-        Z{numMeta}.Z=reshape(valResp,dim_ev(1),dim_ev(2));
+        Z{numMeta}.Z=reshape(valResp,nbv(1),nbv(2));
         Z{numMeta}.GZ=GZ;
-        if ~isempty('var_rep');Z{numMeta}.var=reshape(varResp,dim_ev(1),dim_ev(2));end
-        if exist('wei','var');if ~isempty(wei);Z{numMeta}.wei=reshape(wei,dim_ev(1),dim_ev(2),size(wei,3));end, end
-        if exist('gei','var');if ~isempty(gei);Z{numMeta}.gei=reshape(gei,dim_ev(1),dim_ev(2),size(gei,3));end, end
-        if exist('ei','var');if ~isempty(ei);Z{numMeta}.ei=reshape(ei,dim_ev(1),dim_ev(2));end, end
-        if exist('lcb','var');if ~isempty(lcb);Z{numMeta}.lcb=reshape(lcb,dim_ev(1),dim_ev(2));end, end
-        if exist('explorEI','var');if ~isempty(explorEI);Z{numMeta}.explorEI=reshape(explorEI,dim_ev(1),dim_ev(2));end, end
-        if exist('exploitEI','var');if ~isempty(exploitEI);Z{numMeta}.exploitEI=reshape(exploitEI,dim_ev(1),dim_ev(2));end, end
+        if ~isempty('var_rep');Z{numMeta}.var=reshape(varResp,nbv(1),nbv(2));end
+        if exist('wei','var');if ~isempty(wei);Z{numMeta}.wei=reshape(wei,nbv(1),nbv(2),size(wei,3));end, end
+        if exist('gei','var');if ~isempty(gei);Z{numMeta}.gei=reshape(gei,nbv(1),nbv(2),size(gei,3));end, end
+        if exist('ei','var');if ~isempty(ei);Z{numMeta}.ei=reshape(ei,nbv(1),nbv(2));end, end
+        if exist('lcb','var');if ~isempty(lcb);Z{numMeta}.lcb=reshape(lcb,nbv(1),nbv(2));end, end
+        if exist('explorEI','var');if ~isempty(explorEI);Z{numMeta}.explorEI=reshape(explorEI,nbv(1),nbv(2));end, end
+        if exist('exploitEI','var');if ~isempty(exploitEI);Z{numMeta}.exploitEI=reshape(exploitEI,nbv(1),nbv(2));end, end
         if exist('stoGZFinal','var')==1&&exist('trGZFinal','var')==1
             Z{numMeta}.stoGZFinal=stoGZFinal;Z{numMeta}.trGZFinal=trGZFinal;
         end

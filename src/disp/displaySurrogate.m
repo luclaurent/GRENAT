@@ -126,130 +126,137 @@ if isfield(dispData,'missData')
     end
 end
 
-%Affichage actif
+%active display
 if dispData.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %affichage dans une nouvelle fenetre
+    %display graph in a new window
     if dispData.newFig
         figHandle=figure;
     else
         hold on
     end
     
-    %affichage 2D
-    if spa2D
-        
+    %display in 2D (2 design parameters)
+    if spa2D        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%mise a l'echelle des traces de gradients
+        %%scale gradients
         if dispData.metaGrad||dispData.actualGrad
-            %calcul norme gradient
+            %compute norm of the gradients
             ngr=zeros(size(GR1));
             for ii=1:size(GR1,1)*size(GR1,2)
                 ngr(ii)=norm([GR1(ii) GR2(ii)],2);
             end
-            %recherche du maxi de la norme du gradient
-            nm=max(max(ngr));
-            
+            %seek maximum norm of the gradients
+            nm=max(max(ngr));            
             n1=max(max(abs(GR1)));
             n2=max(max(abs(GR2)));
             
-            %definition de la taille mini de la grille d'affichage
+            %minimal size of the display grid
             gx=gridX-gridX(1);
-            ind= gx>0;
-            tailg(1)=min(min(gx(ind)));
+            ixG= gx>0;
+            sizeG(1)=min(min(gx(ixG)));
             gy=gridY-gridY(1);
-            ind= gy>0;
-            tailg(2)=min(min(gy(ind)));
+            ixG= gy>0;
+            sizeG(2)=min(min(gy(ixG)));            
             
+            %size of the biggest arrow  (used for displaying gradients)
+            paraAr=0.9;
+            sizeGfinal=paraAr*sizeG;            
             
-            %taille de la plus grande fleche
-            para_fl=0.9;
-            tailf=para_fl*tailg;
-            
-            
-            %echelle
-            % nm
-            %  tailf
-            ech=tailf./[n1 n2];
-            
-            
+            %scale factor
+            scaleFactor=sizeGfinal./[n1 n2];
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %affichage des surfaces 3D
+        %show 3D surface
         if dispData.d3
-            %affichage des contour
-            if dispData.contour
-                %affichage unicolor
+            %shwo contour
+            if dispData.contour                
                 surfc(gridX,gridY,vZ);
                 if dispData.uni
+                    %show surface with unique color
                     set(h,'FaceColor',dispData.color,'EdgeColor',dispData.color);
                 end
             else
                 h=surf(gridX,gridY,vZ);
-                if dispData.uni                    
+                if dispData.uni   
+                    %show surface with unique color
                     set(h,'FaceColor',dispData.color,'EdgeColor',dispData.color);
                 end
             end
             
+            %show sample points
             if dispData.samplePts
                 hold on
                 
-                %affichage des points d'evaluations
-                %affichage points ou toutes les infos sont connues
+                %show sample points on which all information is known
                 plot3(sampling(listPtsOk,1),sampling(listPtsOk,2),resp(listPtsOk),...
-                    '.','MarkerEdgeColor','k',...
+                    '.',...
+                    'MarkerEdgeColor','k',...
                     'MarkerFaceColor','k',...
                     'MarkerSize',15);
-                %affichage points il manque une/des reponse(s)
+                %show sample points on which response is missing
                 plot3(sampling(listMissResp,1),sampling(listMissResp,2),resp(listMissResp),...
-                    'rs','MarkerEdgeColor','r',...
+                    'rs',...
+                    'MarkerEdgeColor','r',...
                     'MarkerFaceColor','r',...
                     'MarkerSize',7);
-                %affichage points il manque un/des gradient(s)
+                 %show sample points on which gradient(s) is missing
                 plot3(sampling(listMissGrad,1),sampling(listMissGrad,2),resp(listMissGrad),...
-                    'v','MarkerEdgeColor','g',...
+                    'v',...
+                    'MarkerEdgeColor','g',...
                     'MarkerFaceColor','g',...
                     'MarkerSize',15);
-                %affichage points il manque un/des gradient(s) et un/des
-                %reponse(s) au m�me point
+%show sample points on which gradient(s) and response are missing
                 plot3(sampling(listMissBoth,1),sampling(listMissBoth,2),resp(listMissBoth),...
-                    'd','MarkerEdgeColor','r',...
+                    'd',...
+                    'MarkerEdgeColor','r',...
                     'MarkerFaceColor','r',...
                     'MarkerSize',15);
             end
             
-            %Affichage des gradients
+            %show gradients
             if dispData.actualGrad
-                %determination des vecteurs de plus grandes pentes (dans le
-                %sens de descente du gradient)
-                for ii=1:size(GR1,1)*size(GR1,2)
-                    vec.X(ii)=-GR1(ii);
-                    vec.Y(ii)=-GR2(ii);
-                    vec.Z(ii)=-GR1(ii)^2-GR2(ii)^2;
-                    %normalisation du vecteur de plus grande pente
-                    vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
-                    vec.Xn(ii)=vec.X(ii)/vec.N(ii);
-                    vec.Yn(ii)=vec.Y(ii)/vec.N(ii);
-                    vec.Zn(ii)=vec.Z(ii)/vec.N(ii);
-                end
-                hold on
+                %find vectors with biggest slopes (in the direction of
+                %descent of the gradient
                 
+                %%TO BE CHECK
+                vec.X=-GR1;
+                vec.Y=-GR2;
+                vec.Z=-GR1.^2-GR2.^2;
+                %normalization of the gradient with the biggest slopes
+                vec.N=sqrt(vec.X.^2+vec.Y.^2+vec.Z.^2);
+                vec.Xn=vec.X./vec.N;
+                vec.Yn=vec.Y./vec.N;
+                vec.Zn=vec.Z./vec.N;
+                
+                %%TO BE REMOVED IF OK                
+%                 for ii=1:size(GR1,1)*size(GR1,2)
+%                     vec.X(ii)=-GR1(ii);
+%                     vec.Y(ii)=-GR2(ii);
+%                     vec.Z(ii)=-GR1(ii)^2-GR2(ii)^2;
+%                     %normalisation du vecteur de plus grande pente
+%                     vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
+%                     vec.Xn(ii)=vec.X(ii)/vec.N(ii);
+%                     vec.Yn(ii)=vec.Y(ii)/vec.N(ii);
+%                     vec.Zn(ii)=vec.Z(ii)/vec.N(ii);
+%                 end
+%%%%%%%%%%%%%%%
+                
+                %maximal size of the design spacedimension maximale espace de conception
+                dimm=max(abs(max(max(gridX))-min(min(gridX))),...
+                    abs(max(max(gridY))-min(min(gridY))));
+                %size of the response space
+                dimr=abs(max(max(vZ))-min(min(vZ)));
+                %maximal norm of the gradients
+                nmax=max(max(vec.N));
+                hold on
                 %hcones =coneplot(X,Y,vZ,vec.X,vec.Y,vec.Z,0.1,'nointerp');
                 % hcones=coneplot(X,Y,vZ,GR1,GR2,-ones(size(GR1)),0.1,'nointerp');
                 % set(hcones,'FaceColor','red','EdgeColor','none')
-                
-                %hold on
-                %dimension maximale espace de conception
-                dimm=max(abs(max(max(gridX))-min(min(gridX))),...
-                    abs(max(max(gridY))-min(min(gridY))));
-                %dimension espace de reponse
-                dimr=abs(max(max(vZ))-min(min(vZ)));
-                %norme maxi du gradient
-                nmax=max(max(vec.N));
-                quiver3(gridX,gridY,vZ,ech*vec.X,ech*vec.Y,ech*vec.Z,...
+                quiver3(gridX,gridY,vZ,scaleFactor*vec.X,scaleFactor*vec.Y,scaleFactor*vec.Z,...
                     'b','MaxHeadSize',0.1*dimr/nmax,'AutoScale','off')
             end
             %axis([min(grille_X(:)) max(grille_X(:)) min(grille_Y(:)) max(grille_Y(:)) min(vZ(:)) max(vZ(:))])
@@ -258,89 +265,87 @@ if dispData.on
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %affichage des surfaces 2D (contours)
+        %show 2D surfaces (using contours)
         if dispData.d2
-            %affichage des contours
+            %display contours
             if dispData.contour
                 [C,h]=contourf(gridX,gridY,vZ);
                 text_handle = clabel(C,h);
                 set(text_handle,'BackgroundColor',[1 1 .6],...
                     'Edgecolor',[.7 .7 .7]);
                 set(h,'LineWidth',2);
-                %affichage des gradients
+                %display gradients
                 if dispData.metaGrad
                     hold on;
-                    %remise a� l'echelle
+                    %scaling the gradients
                     if dispData.scale
-                        %quiver(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2,'AutoScale','off','MaxHeadSize',0.0002);
-                        quiver(gridX,gridY,ech(1)*GR1,ech(2)*GR2,'Color','b','AutoScale','off','MaxHeadSize',0);
-                        %axis equal
-                        %ncquiverref(grille_X,grille_Y,ech(1)*GR1,ech(2)*GR2);
-                        %ech(1)*GR1
-                        %ech(2)*GR2
+                        quiver(gridX,gridY,scaleFactor(1)*GR1,scaleFactor(2)*GR2,'Color','b','AutoScale','off','MaxHeadSize',0);
                     else
                         quiver(gridX,gridY,GR1,GR2,'Color','b','AutoScale','off');
                     end
                 end
-                %affichage des points d'evaluation
+                %show sample points
                 if dispData.samplePts
                     hold on
-                    %affichage points ou toutes les infos sont connues
+                    %show sample points on which all information is known
                     plot(sampling(listPtsOk,1),sampling(listPtsOk,2),...
-                        'o','LineWidth',2,'MarkerEdgeColor','k',...
+                        'o',...
+                        'LineWidth',2,...
+                        'MarkerEdgeColor','k',...
                         'MarkerFaceColor','g',...
                         'MarkerSize',15);
-                    %affichage points il manque une/des reponse(s)
+                    %show sample points on which response is missing
                     plot(sampling(listMissResp,1),sampling(listMissResp,2),...
-                        'rs','LineWidth',2,'MarkerEdgeColor','k',...
+                        'rs',...
+                        'LineWidth',2,...
+                        'MarkerEdgeColor','k',...
                         'MarkerFaceColor','r',...
                         'MarkerSize',7);
-                    %affichage points il manque un/des gradient(s)
+                    %show sample points on which gradient(s) is missing
                     plot(sampling(listMissGrad,1),sampling(listMissGrad,2),...
-                        'v','LineWidth',2,'MarkerEdgeColor','k',...
+                        'v',...
+                        'LineWidth',2,...
+                        'MarkerEdgeColor','k',...
                         'MarkerFaceColor','r',...
                         'MarkerSize',15);
-                    %affichage points il manque un/des gradient(s) et un/des
-                    %reponse(s) au m�me point
+                    %show sample points on which gradient(s) and response are missing
                     plot(sampling(listMissBoth,1),sampling(listMissBoth,2),...
-                        'd','LineWidth',2,'MarkerEdgeColor','k',...
+                        'd',...
+                        'LineWidth',2,...
+                        'MarkerEdgeColor','k',...
                         'MarkerFaceColor','r',...
                         'MarkerSize',15);
                     
                 end
-                %affichage des gradients
+                %shwos gradients
                 if dispData.actualGrad&&availGrad
                     hold on;
-                    %remise a� l'echelle
+                    %scaling gradients
                     if dispData.scale
                         quiver(sampling(:,1),sampling(:,2),...
-                            ech(1)*grad(:,1),ech(2)*grad(:,2),...
-                            'Color','g','LineWidth',2,'AutoScale','off','MaxHeadSize',0);
-                        
+                            scaleFactor(1)*grad(:,1),scaleFactor(2)*grad(:,2),...
+                            'Color','g','LineWidth',2,'AutoScale','off','MaxHeadSize',0);                        
                     else
                         quiver(sampling(:,1),sampling(:,2),...
                             grad(:,1),grad(:,2),...
                             'Color','g','LineWidth',2,'AutoScale','off');
-                    end
-                    
+                    end                    
                 end
-                
-                
             end
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %rendu
+        %rendering
         if dispData.render
-            hlight=light;               % activ. eclairage
-            lighting('gouraud')         % type de rendu
-            lightangle(hlight,48,70)    % dir. eclairage
+            hlight=light;               % active light
+            lighting('gouraud')         % type of rendering
+            lightangle(hlight,48,70)    % direction of the light
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % affichage label
+        % show label
         title(dispData.title);
         xlabel(dispData.xlabel);
         ylabel(dispData.ylabel);
@@ -350,7 +355,7 @@ if dispData.on
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %affichage 1D
+        %display 1D
     elseif spa1D
         if dispData.metaGrad&&isfield(Z,'GZ')
             if ~isempty(dispData.color)
@@ -381,29 +386,32 @@ if dispData.on
                 end
             end
         end
-        %affichage des points d'evaluation
+        %show sample points
         if dispData.samplePts
             hold on
             if dispData.actualGrad;val_trac=grad;else val_trac=resp;end
-            %affichage points ou toutes les infos sont connues
+            %show sample points on which all information is known
             plot(sampling(listPtsOk),val_trac(listPtsOk),...
-                '.','MarkerEdgeColor','k',...
+                '.',...
+                'MarkerEdgeColor','k',...
                 'MarkerFaceColor','k',...
                 'MarkerSize',15);
-            %affichage points il manque une/des reponse(s)
+            %show sample points on which response is missing
             plot(sampling(listMissResp),val_trac(listMissResp),...
-                'rs','MarkerEdgeColor','r',...
+                'rs',...
+                'MarkerEdgeColor','r',...
                 'MarkerFaceColor','r',...
                 'MarkerSize',7);
-            %affichage points il manque un/des gradient(s)
+            %show sample points on which gradient(s) is missing
             plot(sampling(listMissGrad),val_trac(listMissGrad),...
-                'v','MarkerEdgeColor','r',...
+                'v',...
+                'MarkerEdgeColor','r',...
                 'MarkerFaceColor','r',...
                 'MarkerSize',7);
-            %affichage points il manque un/des gradient(s) et un/des
-            %reponse(s) au m�me point
+            %show sample points on which gradient(s) and response are missing
             plot(sampling(listMissBoth),val_trac(listMissBoth),...
-                'd','MarkerEdgeColor','r',...
+                'd',...
+                'MarkerEdgeColor','r',...
                 'MarkerFaceColor','r',...
                 'MarkerSize',7);
         end
@@ -414,11 +422,11 @@ if dispData.on
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %sauvegarde traces figure
+    %save figure and create 
     if dispData.save
         global num
         if isempty(num); num=1; else num=num+1; end
-        fich=save_aff(num,dispData.directory);
+        fich=saveDisp(num,dispData.directory);
         if dispData.tex
             fid=fopen([dispData.directory '/fig.tex'],'a+');
             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,dispData.title,fich);
@@ -429,15 +437,15 @@ if dispData.on
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Trace r�ponse nD
+    %Plot responses in nD
     if dispData.bar
         Zs=vZ(:);
-        nb_eval=numel(Zs);
+        nbv=numel(Zs);
         if ~isempty(dispData.color)
-            plot(1:nb_eval,Zs,'o','MarkerEdgeColor',dispData.color,'MarkerFaceColor',dispData.color,'Markersize',5);
+            plot(1:nbv,Zs,'o','MarkerEdgeColor',dispData.color,'MarkerFaceColor',dispData.color,'Markersize',5);
             %line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',dispData.color,'lineStyle','--')
         else
-            plot(1:nb_eval,Zs,'o','MarkerEdgeColor','k','MarkerFaceColor','k','Markersize',5);
+            plot(1:nbv,Zs,'o','MarkerEdgeColor','k','MarkerFaceColor','k','Markersize',5);
             %line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',[0. 0. .8],'lineStyle','--')
         end
         title(dispData.title);
@@ -447,12 +455,11 @@ if dispData.on
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %exportation tikz
+    %export using tikz
     if dispData.tikz
         nomfig=[dispData.directory '/fig_' num2str(dispData.num,'%04.0f') '.tex'];
         matlab2tikz(nomfig);
     end
-    
     
     hold off
 end

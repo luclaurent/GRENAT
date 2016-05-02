@@ -1,5 +1,5 @@
 %% save figure figure
-%% L. LAURENT -- 17/12/2010 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function fich=saveDisp(num,dossier)
 

@@ -5,7 +5,7 @@ function [ret]=BuildMeta(sampling,respIn,gradIn,metaData)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
-[tMesu,tInit]=mesu_time;
+[tMesu,tInit]=mesuTime;
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %taking into account gradients or not

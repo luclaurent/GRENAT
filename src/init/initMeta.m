@@ -1,7 +1,7 @@
 %% Initialization of the surrogate model
 %% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function meta=init_meta(in)
+function meta=initMeta(in)
 
 fprintf('=========================================\n')
 fprintf('  >>> INITIALIZATION Surrogate Model \n');

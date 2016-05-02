@@ -13,19 +13,19 @@ nbOut=nargout;
 
 %mode demo
 demo=false;
-moddemo=2;
+moddemo=1;
 if nbOut==0
     if moddemo==1
         nEDemo=300;
         X=linspace(-5,5,nEDemo);
         X=X';
-        metaParaD=[1 5/2];
+        metaParaD=initPara(kernelFun,moddemo);
     elseif moddemo==2
         nEDemo=50;
         X=linspace(-5,5,nEDemo);
         [XX,YY]=meshgrid(X);
         X=[XX(:) YY(:)];
-        metaParaD=[ 1 1 5/2];
+        metaParaD=initPara(kernelFun,moddemo);
     end
     if nargin==1
         metaPara=metaParaD;
@@ -189,5 +189,16 @@ if demo
         surfc(XX,YY,Gp)
         title('f''''(x,y) (y)')
     end
+end
+end
+
+%initialize hyperparameters for various kinds of kernel function
+function paraV=initPara(kernelFun,Dim)
+paraInit=[1 0.9];
+switch kernelFun
+    case 'matern'
+        paraV=[paraInit paraInit(1:Dim)];
+    otherwise
+        paraV=paraInit(1:Dim);
 end
 end

@@ -1,13 +1,13 @@
 dim=2;
-fct1='corrgauss';
-fct2='corr_sexp_m';
+fct1='matern';
+fct2='matern';
 pas=0.1;
 
 if dim==1
 
 x=-10:pas:10;
-[ev,dev,ddev]=feval(fct1,x',2);
-[evv,devv,ddevv]=feval(fct2,x',2);
+[ev,dev,ddev]=multiKern(fct1,x',2);
+[evv,devv,ddevv]=multiKern(fct2,x',2);
 
 figure
 hold on

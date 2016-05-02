@@ -1,114 +1,35 @@
-%% Fonctionn: Matern (5/2)
+%% Function: Matern (5/2)
 %% L. LAURENT -- 23/01/2011 -- luc.laurent@cnam.fr
-%revision du 12/11/2012 (issue de Lockwood 2010)
-%modification du 01/02/2013: changement longueur de correlation
-%revision 31/08/2015: changement nom fonction
+%revision of the 12/11/2012 (from Lockwood 2010)
+%change of the 01/02/2013: change correlation length
+%revision 31/08/2015: change name of the function
+%change of 02/05/2016: change to unidimensional function
 
-function [G,dG,ddG]=matern52(xx,long)
-
-%verification de la dimension du parametre interne
-lt=size(long);
-%nombre de points a  evaluer
-nb_pt=size(xx,1);
-%nombre de composantes
-nb_comp=size(xx,2);
-%nombre de sorties
-nb_out=nargout;
-
-%Le parametre interne est defini pour toutes les composantes de xx
-if lt(1)*lt(2)==1
-    long = long*ones(nb_pt,nb_comp);
-elseif lt(1)*lt(2)==nb_comp
-    long = long(ones(nb_pt,1),:);
-elseif lt(1)*lt(2)~=nb_comp
-    error('mauvaise dimension du parametre interne');
+function [k,dk,ddk]=matern52(xx,para)
+%number of output parameters
+nbOut=nargout;
+%check hyperparameters
+nP=size(para,2);
+if nP~=1
+    error(['Wrong number of hyperparameters (',mfilename,')']);
 end
 
-%calcul de la valeur de la fonction au point xx
-td=-abs(xx).*long*sqrt(5);
-%td=-abs(xx)./long*sqrt(5);
-etd=exp(td);
-co=1-td+5*xx.^2.*long.^2./3;
-%co=1-td+5*xx.^2./(3.*long.^2);
-pc=co.*etd;
+%extract length and smoothness hyperparameters
+lP=para(:,1);
 
-%nouvelle implementation issue de Lockwood 2010
-%calcul derivees premieres et seconde selon chaque dimension puis
-%combinaison
-if nb_out>0
-    %reponse
-    G=prod(pc,2);
-end
+%compute value of the function at point xx
+etd=exp(-abs(xx)./lP*sqrt(5));
+co=1-abs(xx)./lP*sqrt(5)+sqrt(5).*xx.^2./(3*lP);
+k=co.*etd;
 
-if nb_out>1
+%compute first derivatives
+if nbOut>1
     %calcul derivees premieres
-    %calcul derivees premieres
-    dk=-(5.*long.^2.*xx./3+5*sqrt(5).*long.^3.*xx.^2.*sign(xx)./3).*etd;
-    %dk=-(5./(3*long.^2).*xx+5*sqrt(5)./(3*long.^3).*xx.^2.*sign(xx)).*etd;
-    L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
-    U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
-    LdU=L.*U;
-    %derivees premieres
-    dG=LdU.*dk;
+    dk=-(5./(3*lP.^2).*xx+5*sqrt(5)./(3*lP.^3).*xx.^2.*sign(xx)).*etd;
 end
 
-if nb_out>2
-    
-    %calcul derivees secondes
-    %suivant la taille de l'evaluation demandee on stocke les derivees
-    %secondes de manieres differentes
-    ddk=-5/3.*long.^2.*(1+sqrt(5)*abs(xx).*long-5*xx.^2.*long.^2).*etd;
-    %ddk=-5./(3*long.^2).*(1+sqrt(5)*abs(xx)./long-5*xx.^2./long.^2).*etd;
-    %(-5./(3*long.^2)-5*sqrt(5)./(3*long.^3).*abs(xx)-25./(3*long.^4).*xx.^2).*etd;
-    
-    if nb_pt==1
-        % si un seul point d'evaluation (sortie derivees secondes sous la
-        % forme d'une matrice)
-        % signification U, L et M cf. Lockwood 2010
-        prd=dk'*dk;
-        prd(1:nb_comp+1:nb_comp^2)=ddk;
-        %
-        %pc=[1 pc]; %correction pc pour prise en compte dimension 1
-        if nb_comp>1;motif=[1 1];else motif=1;end
-        mm=[motif pc(2:nb_comp-1)];
-        
-        M=mm(ones(nb_comp,1),:);
-        M=triu(M,2)+tril(ones(nb_comp),1);
-        M=cumprod(M,2);
-        %
-        LUMt=triu(L'*U.*M,1);
-        LUM=LUMt+LUMt';
-        LUM(1:nb_comp+1:nb_comp^2)=LdU;
-        %derivees secondes
-        ddG=LUM.*prd;
-    else
-        % si plusieurs points alors on stocke les derivees secondes dans un
-        % vecteur de matrices
-        IX_diag=repmat(logical(eye(nb_comp)),[1 1 nb_pt]); %acces diatgonales des N-D array
-        %passage grandeur en ND-array
-        dk=reshape(dk',1,nb_comp,nb_pt);
-        Lr=reshape(L',nb_comp,1,nb_pt); % + transpose
-        Ur=reshape(U',1,nb_comp,nb_pt);
-        %
-        prd=multiTimes(dk,dk,2.1);
-        prd(IX_diag)=ddk';
-        if nb_comp>1;motif=[1 1];else motif=1;end
-        mm=[motif 3:nb_comp];
-        masq1=mm(ones(nb_comp,1),:); %decalage indice pour cause decalage ds pc
-        masq1=triu(masq1,2)+tril(ones(nb_comp),1);
-        %
-        pcc=reshape([ones(1,nb_pt);pc'],1,nb_comp+1,nb_pt);
-        M=reshape(pcc(1,masq1,:),nb_comp,nb_comp,nb_pt);
-        %
-        masq2=triu(ones(nb_comp));
-        M=cumprod(M,2);
-        M=M.*repmat(masq2,[1 1 nb_pt]);
-        LUMt=multiTimes(Lr,Ur,2).*M;
-        LUM=LUMt+multitransp(LUMt);
-        LUM(IX_diag)=LdU';
-        %derivees secondes
-        ddG=LUM.*prd;
-    end
-else
-    error('Mauvais argument de sortie de la fonction matern52.m');
+%compute second derivatives
+if nbOut>2
+    ddk=-5./(3*lP.^2).*(1+sqrt(5)*abs(xx)./lP-5*xx.^2./lP.^2).*etd;
+end
 end

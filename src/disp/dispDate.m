@@ -1,4 +1,4 @@
-% Display date and time
+%% Display date and time
 % L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
 function dispDate(type)

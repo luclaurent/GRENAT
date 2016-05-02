@@ -1,9 +1,9 @@
-%%fonction de correlation Matern 
-%%L. LAURENT -- 06/02/2013 -- luc.laurent@ens-cachan.fr
+%% Matern kernel function
+% L. LAURENT -- 06/02/2013 (r: 31/08/2015)-- luc.laurent@lecnam.net
 
-%parametres possibles nd+1 (nd: portees et 1: regularite
+%nd+1 hyperparameters (length + nd smoothness parameters)
 
-function [k,dk,ddk]=matern(xx,para)
+function [k,dk,ddk]=maternNew(xx,para)
 %number of output parameters
 nbOut=nargout;
 %check hyperparameters
@@ -11,40 +11,45 @@ nP=size(para,2);
 if nP~=2
     error(['Wrong number of hyperparameters (',mfilename,')']);
 end
-%number of evaluations
-nE=numel(xx);
 
 %extract length and smoothness hyperparameters
 lP=para(:,1);
 lS=para(:,2);
 
-%compute coefficients
-coefM=(2*lS)^.5./lP;
-coefS=lS./2.^(lS-1)*gamma(lS);
+%useful functions
+% sqrt(2*nu)*abs(x)/long
+nx=@(nu,ll,xx) sqrt(2*nu).*abs(xx)./ll;
+% first derivative
+dnx=@(nu,ll,xx) sqrt(2*nu).*sign(xx)./ll;
+% x^u*besselk
+xbessel=@(nu,xx) xx.^nu.*besselk(nu,xx);
+%first derivative of the previous function
+dxbessel=@(nu,xx) -xx.^nu.*besselk(nu-1,xx);
+%second derivative of the previous function
+ddxbessel=@(nu,xx) -xx.^(nu-1).*besselk(nu-1,xx)+xx.^nu.*besselk(nu-2,xx);
 
-%compute specific terms of the Matern function
-xxN=abs(xx)./lP;
-xxPN=abs(xx).^(-lS);
+%compute value of the function at points xx
+coefS=2.^(1-lS)./gamma(lS);
+xxN=nx(lS,lP,xx);
+k=coefS.*xbessel(lS,xxN);
 
 %check values close too zeros
-II=xxPN>eps;
+II=abs(xx)<1e-50;
+k(II)=1;
 
-%compute responses
-k=ones(nE,1);
-bess_nu=besselmx(double('K'),lS(1),xxN,0);
-k(II)=coefM(II).^lS.*coefS./xxPN(II).*bess_nu(II);
-
-if nbOut>2
-    %compute first derivatives
-    dk=zeros(nE,1);
-    dk(II)=-coefS.*coefM(II).^(lS+1)./xxPN(II).*...
-        besselmx(double('K'),lS(1)-1,xxPN(II),0).*sign(xx(II));
+%compute first derivatives
+if nbOut>1
+    dxxN=dnx(lS,lP,xx);
+    dk=coefS.*dxxN.*dxbessel(lS,xx);
+    %correction in 0
+    dk(II)=0;
 end
 
-if nbOut>3
-    %compute second derivatives
-    bess_num=besselmx(double('K'),nu-1,xx_n,0);
-    ddk=-coefS.*coefM.^(nu+1).*(abs(xx).^(nu-1).*bess_num-...
-        coefM.*abs(xx).^nu.*besselmx(double('K'),nu-2,xx_n,0));
+%compute second derivatives
+if nbOut>2
+    ddk=coefS.*dxxN.^2.*ddxbessel(lS,xxN);
+    %correction in 0
+    vdp=-lS(II).*gamma(lS(II)-1)./gamma(lS(II))./lP(II).^2;
+    ddk(II)=vdp;
 end
 end

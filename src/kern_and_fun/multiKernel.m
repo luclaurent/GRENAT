@@ -5,14 +5,39 @@
 
 % See Lockwood 2010 for an explanantion of U, L et M.
 
-function [respK,derK,dderK,infoOut]=multiKernel(kernelFun,X,metaPara)
+function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)
+
+
+%number of output variables
+nbOut=nargout;
+
+%mode demo
+demo=false;
+moddemo=1;
+if nbOut==0
+    if moddemo==1
+        nEDemo=300;
+        X=linspace(-5,5,nEDemo);
+        X=X';
+        metaParaD=[5/2 1];
+    elseif moddemo==2
+        nEDemo=50;
+        X=linspace(-5,5,nEDemo);
+        [X,Y]=meshgrid(X);
+        X=[X(:) Y(:)];
+        metaParaD=[5/2 1 0.9];
+    end
+    if nargin==1
+        metaPara=metaParaD;
+    end
+    demo=true;
+    nbOut=3;
+end
 
 %number of required evaluations
 nE=size(X,1);
 %number of variables
 nV=size(X,2);
-%number of output variables
-nbOut=nargout;
 
 %manage hyperparameters (depending in the kernel function)
 nP=numel(metaPara);
@@ -29,7 +54,7 @@ elseif nP==nV+1
     metaParaAOk=metaParaA(ones(nE,1),:);
     metaParaBOk=metaParaB*ones(nE*nV,1);
     metaParaOk=[metaParaAOk(:) metaParaBOk(:)];
-elseif nP=2*nV
+elseif nP==2*nV
     metaPara=metaPara(:)';
     metaParaA=metaPara(1:nV);
     metaParaB=metaPara(nV+1:end);
@@ -123,5 +148,46 @@ if nbOut>2
     end
 end
 
-
+%figure en mode demo
+if demo
+    figure
+    if moddemo==1
+        plot(X,respK,'r','LineWidth',2)
+        hold on
+        plot(X,derK,'b','LineWidth',2)
+        ddG=vertcat(dderK(:));
+        plot(X,ddG,'k','LineWidth',2)
+        hold off
+        ax = gca;
+        ax.XAxisLocation = 'origin';
+        ax.YAxisLocation = 'origin';
+        legend('h(r)','f''(r)','f''''(r)')
+    elseif moddemo==2
+        subplot(231)
+        Gp=zeros(nEDemo);
+        Gp(:)=respK;
+        surfc(X,Y,Gp)
+        title('f(x,y)')
+        subplot(232)
+        Gp(:)=derK(:,1);
+        surfc(X,Y,Gp)
+        title('f''(x,y) (x)')
+        subplot(233)
+        Gp(:)=derK(:,2);
+        surfc(X,Y,Gp)
+        title('f''(x,y) (y)')
+        subplot(234)
+        Gp(:)=vertcat(dderK(1,1,:));
+        surfc(X,Y,Gp)
+        title('f''''(x,y) (x)')
+        subplot(235)
+        Gp(:)=vertcat(dderK(1,2,:));
+        surfc(X,Y,Gp)
+        title('f''''(x,y) (x,y)')
+        subplot(236)
+        Gp(:)=vertcat(dderK(2,2,:));
+        surfc(X,Y,Gp)
+        title('f''''(x,y) (y)')
+    end
+end
 end

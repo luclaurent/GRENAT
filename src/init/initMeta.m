@@ -55,6 +55,8 @@ meta.para.dispIterCmd=false;
 meta.para.dispPlotAlgo=false;
 % optimizer used for finding internal parameter
 meta.para.method='pso';
+% initial samùpling or not
+meta.para.sampManuOn='IHS';
 % method used for the initial sampling for GA ('', 'LHS','IHS'...)
 meta.para.sampManu='IHS';
 % number of sample points of the initial sampling for GA
@@ -65,10 +67,13 @@ meta.para.critOpti=10^-6;
 if meta.para.estim
     meta.para.l.min=1e-4;
     meta.para.l.max=50;
+    meta.para.l.val=1;
     meta.para.p.max=2;
     meta.para.p.min=1.001;
+    meta.para.p.val=2;
     meta.para.nu.min=1e-3;
     meta.para.nu.min=5;
+    meta.para.nu.val=3/2;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

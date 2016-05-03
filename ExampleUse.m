@@ -40,7 +40,8 @@ respRef=C.ref.resp;
 %load surrogate model parameters
 meta=initMeta;
 meta.type='RBF';
-meta.cv_aff=true;
+meta.cv.disp=true;
+meta.para.estim=0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

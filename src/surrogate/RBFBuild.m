@@ -1,4 +1,4 @@
-%% Function for build Radial Basis Function surrogate medel
+%% Function for building Radial Basis Function surrogate model
 % RBF: w/o gradient
 % GRBF: avec gradients
 % L. LAURENT -- 15/03/2010 -- luc.laurent@lecnam.net
@@ -38,8 +38,8 @@ if metaData.para.estim
     fprintf('>> Plot estimation steps: ');if metaData.para.dispIterGraph; fprintf('Yes\n');else fprintf('No\n');end
 else
     fprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
-    switch metaData.rbf
-        case {'rf_expg','rf_expgg'}
+    switch metaData.kern
+        case {'expg','expgg'}
             fprintf('>> Value of the exponent: [%d , %d]\n',metaData.para.p.val);
         case {'matern'}
             fprintf('>> Value of nu (Matern): [%d , %d]\n',metaData.para.nu.val);
@@ -301,7 +301,7 @@ metaData.cv=CvOld;
 %%hyperparameters if no estimation the values of the hyperparameters are
 %%chosen using empirical choice of  Hardy/Franke
 if metaData.para.estim
-    paraEstim=RBFEstimPara(ret,metaData);
+    paraEstim=EstimPara(ret,metaData,'RBFBloc');
     ret.build.para_estim=paraEstim;
     metaData.para.l.val=paraEstim.l.val;
     metaData.para.val=paraEstim.l.val;
@@ -310,7 +310,7 @@ if metaData.para.estim
         metaData.para.val=[metaData.para.val metaData.para.p.val];
     end
 else
-    metaData.para.l.val=RBFComputePara(SamplingIn,metaData);
+    metaData.para.l.val=RBFComputePara(samplingIn,metaData);
     switch metaData.kern
         case {'expg','expgg'}
             metaData.para.val=[metaData.para.l.val metaData.para.p.val];

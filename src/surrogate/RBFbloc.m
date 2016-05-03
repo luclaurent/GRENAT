@@ -43,7 +43,7 @@ if dataIn.in.pres_grad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,valPara);
     KK=[KK KKa;-KKa' KKi];
 else
-    [KK]=KernMatrix(fctKern,dataIn.in.dist,valPara);
+    [KK]=KernMatrix(fctKern,dataIn,valPara);
 end
 %in the case of missing data
 %responses
@@ -117,18 +117,19 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stockage des grandeurs
-if exist('origCond','var');build_data.origCond=origCond;end
-if exist('newCond','var');build_data.newCond=newCond;end
-if exist('QKK','var');build_data.QKK=QKK;end
-if exist('RKK','var');build_data.RKK=RKK;end
-if exist('LKK','var');build_data.LKK=LKK;end
-if exist('UKK','var');build_data.UKK=UKK;end
-if exist('yQ','var');build_data.yQ=yQ;end
-build_data.w=w;
-build_data.KK=KK;
-build_data.fct=metaData.rbf;
-build_data.para=metaData.para;
-ret.build=build_data;
+if exist('origCond','var');buildData.origCond=origCond;end
+if exist('newCond','var');buildData.newCond=newCond;end
+if exist('QKK','var');buildData.QKK=QKK;end
+if exist('RKK','var');buildData.RKK=RKK;end
+if exist('LKK','var');buildData.LKK=LKK;end
+if exist('UKK','var');buildData.UKK=UKK;end
+if exist('iKK','var');buildData.iKK=iKK;end
+if exist('yQ','var');buildData.yQ=yQ;end
+buildData.w=w;
+buildData.KK=KK;
+buildData.kern=metaData.kern;
+buildData.para=metaData.para;
+ret.build=buildData;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%Cross-Validation (mandatory for estimating the hyperparameters

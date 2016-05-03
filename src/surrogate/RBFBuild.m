@@ -319,7 +319,6 @@ else
         otherwise
             metaData.para.val=metaData.para.l.val;
     end
-    fprintf('Values of the hyperparameters (%s):',metaData.para.type);
     fprintf(' %d',metaData.para.val);
     fprintf('\n');
 end

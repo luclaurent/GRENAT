@@ -21,7 +21,7 @@ fprintf('>>> Kernel function: %s\n',metaData.kern);
 %
 fprintf('>>> CV: ');if metaData.cv.on; fprintf('Yes\n');else fprintf('No\n');end
 fprintf('>> Computation all CV criteria: ');if metaData.cv.full; fprintf('Yes\n');else fprintf('No\n');end
-fprintf('>> Show CV: ');if metaData.cv.aff; fprintf('Yes\n');else fprintf('No\n');end
+fprintf('>> Show CV: ');if metaData.cv.disp; fprintf('Yes\n');else fprintf('No\n');end
 %
 fprintf('>>> Estimation of the hyperparameters: ');if metaData.para.estim; fprintf('Yes\n');else fprintf('No\n');end
 if metaData.para.estim
@@ -34,8 +34,8 @@ if metaData.para.estim
             fprintf('>> Bounds for nu (Matern): [%d , %d]\n',metaData.para.nu.min,metaData.para.nu.max);
     end
     fprintf('>> Anisotropy: ');if metaData.para.aniso; fprintf('Yes\n');else fprintf('No\n');end
-    fprintf('>> Show estimation steps in console: ');if metaData.para.aff_iter_cmd; fprintf('Yes\n');else fprintf('No\n');end
-    fprintf('>> Plot estimation steps: ');if metaData.para.aff_iter_graph; fprintf('Yes\n');else fprintf('No\n');end
+    fprintf('>> Show estimation steps in console: ');if metaData.para.dispIterCmd; fprintf('Yes\n');else fprintf('No\n');end
+    fprintf('>> Plot estimation steps: ');if metaData.para.dispIterGraph; fprintf('Yes\n');else fprintf('No\n');end
 else
     fprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
     switch metaData.rbf
@@ -46,15 +46,15 @@ else
     end
 end
 fprintf('>>> Infill criteria:');
-if metaData.enrich.on;
+if metaData.infill.on;
     fprintf('%s\n','Yes');
     fprintf('>> Balancing WEI: ')
-    fprintf('%d ',metaData.enrich.para_wei);
+    fprintf('%d ',metaData.infill.paraWEI);
     fprintf('\n')
     fprintf('>> Balancing GEI: ')
-    fprintf('%d ',metaData.enrich.para_gei);
+    fprintf('%d ',metaData.infill.paraGEI);
     fprintf('\n')
-    fprintf('>> Balancing LCB: %d\n',metaData.enrich.para_lcb);
+    fprintf('>> Balancing LCB: %d\n',metaData.infill.paraLCB);
 else
     fprintf('%s\n','No');
 end
@@ -88,17 +88,17 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Responses and gradients at sample points
-YY=evaln;
+YY=respIn;
 %remove missing response(s)
 if missResp
-    YY=YY(missData.eval.ix_dispo);
+    YY=YY(missData.eval.ixAvail);
 end
 if gradAvail
     tmp=gradn';
     der=tmp(:);
     %remove missing gradient(s)
     if missGrad
-        der=der(missData.grad.ixt_dispo_line);
+        der=der(missData.grad.ixtAvailLine);
     end
     YY=vertcat(YY,der);
 end
@@ -184,8 +184,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %computation of the inter-distances
-distC=zeros(ns);
-distC(:)=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
+distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store varibales des grandeurs
@@ -216,7 +215,7 @@ CvOld=metaData.cv;
 dispCvOld=metaData.cv.disp;
 metaData.cv.disp=false;
 
-if metaData.para.estim&&metaData.para.disp_estim
+if metaData.para.estim&&metaData.para.dispEstim
     valPara=linspace(metaData.para.l.min,metaData.para.l.max,gene_nbele(np));
     % load progress bar
     cpb = ConsoleProgressBar();

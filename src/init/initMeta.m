@@ -46,13 +46,13 @@ meta.para.estim=true;
 % anisotropic model (one internal length per variable)
 meta.para.aniso=true;
 % display objective function to be minimised
-meta.para.disp_estim=false;
+meta.para.dispEstim=false;
 % display iterations of the optimisation process on a figure (1D/2D)
-meta.para.disp_iter_graph=false;
+meta.para.dispIterGraph=false;
 % display iteration in the console
-meta.para.disp_iter_cmd=false;
+meta.para.dispIterCmd=false;
 % display convergence information on figures
-meta.para.disp_plot_algo=false;
+meta.para.dispPlotAlgo=false;
 % optimizer used for finding internal parameter
 meta.para.method='pso';
 % method used for the initial sampling for GA ('', 'LHS','IHS'...)
@@ -60,7 +60,7 @@ meta.para.sampManu='IHS';
 % number of sample points of the initial sampling for GA
 meta.para.nbSampInit=[];
 % Value of the stopping criterion of the optimizer
-meta.para.crit_opti=10^-6;
+meta.para.critOpti=10^-6;
 % bounds of the space on which internal parameters are looked for
 if meta.para.estim
     meta.para.l.min=1e-4;
@@ -75,9 +75,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% infill strategy 
 meta.infill.on=false;
-meta.infill.para_wei=0.5;
-meta.infill.para_gei=1;
-meta.infill.para_lcb=0.5;
+meta.infill.paraWEI=0.5;
+meta.infill.paraGEI=1;
+meta.infill.paraLCB=0.5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Check interpolation
 meta.verif=true;

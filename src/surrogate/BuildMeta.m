@@ -65,16 +65,21 @@ ret=cell(length(metaData.type),1);
 % Building of the surrogate models
 num_meta=1;
 for type=metype
-    %%in the case of Indirect-gradient-based approach 
-    if CheckGE(type)
+    [InGE,cGE]=CheckGE(metype);
+    %%in the case of Indirect-gradient-based approach
+    if InGE
         samplingOk=IndirectData.new.sampling;
         respOk=IndirectData.new.resp;
         gradOk=[];
         fprintf('\n%s\n',[textd 'Indirect gradient-enhanced approach' textf]);
-    else
+    elseif cGE
         samplingOk=samplingN;
         respOk=respN;
         gradOk=gradN;
+    else
+        samplingOk=samplingN;
+        respOk=respN;
+        gradOk=[];
     end
     %Building surrogate model
     switch type{1}
@@ -82,17 +87,17 @@ for type=metype
         %%%%%%%%=================================%%%%%%%%
         case 'SWF'
             %% Building of the 'Shepard Weighting Functions' surrogate model
-            outMeta=BuildSWF(samplingOk,respOk,gradOk,metaData);
+            outMeta=SWFBuild(samplingOk,respOk,gradOk,metaData);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'RBF','InRBF','GRBF'}
             %% Building of the (Gradient-Enhanced) Radial Basis Functions (RBF/GRBF)
-            outMeta=BuildRBF(samplingOk,respOk,gradOk,metaData,missStatus);
+            outMeta=RBFBuild(samplingOk,respOk,gradOk,metaData,missStatus);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'KRG','InKRG','GKRG'}
             %% Building of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
-            outMeta=BuildKRG(samplingOk,respOk,gradOk,metaData,missStatus);
+            outMeta=KRGBuild(samplingOk,respOk,gradOk,metaData,missStatus);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'DACE','InDACE'}
@@ -148,14 +153,14 @@ for type=metype
     
     
     %stockage des informations utiles
-    outMeta.bilan_manq=missStatus;
+    outMeta.missStatus=missStatus;
     outMeta.type=type{1};
-    outMeta.nb_var=np;
-    outMeta.nb_val=ns;
-    outMeta.tirages=sampling;
+    outMeta.np=np;
+    outMeta.ns=ns;
+    outMeta.sampling=sampling;
     outMeta.respN=respN;
     outMeta.gradN=gradN;
-    outMeta.enrich=metaData.enrich;
+    outMeta.infill=metaData.infill;
     if numel(metype)==1
         ret=outMeta;
     else
@@ -164,7 +169,7 @@ for type=metype
     num_meta=num_meta+1;
 end
 
-mesu_time(tMesu,tInit);
+mesuTime(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 end
 
@@ -173,8 +178,8 @@ end
 function [Indirect,Classical]=CheckGE(typeSurrogate)
 %check Indirect
 nn=regexp(typeSurrogate,'^In');
-Indirect=any(cellfun(@isempty,nn));
+Indirect=~all(cellfun(@isempty,nn));
 %check gradient-enhanced
 nn=regexp(typeSurrogate,'^G');
-Classical=any(cellfun(@isempty,nn));
+Classical=~all(cellfun(@isempty,nn));
 end

@@ -4,7 +4,7 @@
 
 function [Z]=EvalMeta(evalSample,avaiData,metaData,Verb)
 
-[tMesu,tInit]=mesu_time;
+[tMesu,tInit]=mesuTime;
 
 %reordering building data
 if ~iscell(avaiData)
@@ -88,9 +88,9 @@ for numMeta=1:numel(buildData)
     metaBuild=buildData{numMeta};
     
     %load variables
-    sampling=metaBuild.sampling;
-    eval=metaBuild.eval;
-    grad=metaBuild.grad;
+    sampling=metaBuild.inN.sampling;
+    resp=metaBuild.inN.resp;
+    grad=metaBuild.inN.grad;
     
     %check or not the interpolation quality of the surrogate model
     if metaData.check
@@ -101,7 +101,7 @@ for numMeta=1:numel(buildData)
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
         case 'SWF'
-            %%	Evaluation of the 'Shepard Weighting Functions' surrogate model
+            %% Evaluation of the 'Shepard Weighting Functions' surrogate model
             for jj=1:nbReqEval
                 [valResp(jj),G]=SWFEval(reqResp(jj,:),metaBuild);
                 valGrad(jj,:)=G;
@@ -109,9 +109,9 @@ for numMeta=1:numel(buildData)
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'GRBF','RBF','InRBF'}
-            %% Evaluation of RBF/GRBF surrogate model
-            parfor (jj=1:nbReqEval,numWorkers)                
-                [valResp(jj),G,varResp(jj),det]=RBFEval(reqResp(jj,:),metaBuild);
+            %% Evaluation of the (Gradient-Enhanced) Radial Basis Functions (RBF/GRBF)
+            parfor (jj=1:nbReqEval,numWorkers)
+                [valResp(jj),G,varResp(jj)]=RBFEval(reqResp(jj,:),metaBuild);
                 valGrad(jj,:)=G;
             end
             %% check interpolation
@@ -120,18 +120,18 @@ for numMeta=1:numel(buildData)
                     [checkZ(jj),G]=RBFEval(sampling(jj,:),metaBuild);
                     checkGZ(jj,:)=G;
                 end
-                checkInterp(eval,checkZ,'resp')
+                checkInterp(resp,checkZ,'resp')
                 if metaBuild.in.availGrad
                     checkInterp(grad,checkGZ,'grad')
                 end
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
-        case {'KRG','GKRG','InKRG'}            
+        case {'KRG','GKRG','InKRG'}
             %specific storage
             stoZ=valResp;trZ=valResp;
             tzGZ=valGrad;stoGZ=valGrad;
-            %% Evaluation of KRG/GKRG surrogate model
+            %% Evaluation of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
             parfor (jj=1:nbReqEval,numWorkers)
                 [valResp(jj),G,varResp(jj),det]=KRGEval(reqResp(jj,:),metaBuild);
                 valGrad(jj,:)=G;
@@ -146,7 +146,7 @@ for numMeta=1:numel(buildData)
                     [checkZ(jj),G]=eval_krg_ckrg(sampling(jj,:),metaBuild);
                     checkGZ(jj,:)=G;
                 end
-                checkInterp(eval,checkZ,'resp')
+                checkInterp(resp,checkZ,'resp')
                 if metaBuild.in.pres_grad
                     checkInterp(grad,checkGZ,'grad')
                 end
@@ -156,7 +156,7 @@ for numMeta=1:numel(buildData)
             %%%%%%%%=================================%%%%%%%%
             
         case 'DACE'
-            %% Evaluation of Kriging (DACE)
+            %% Evaluation du metamodele de Krigeage (DACE)
             for jj=1:nbReqEval
                 [valResp(jj),G,varResp(jj)]=predictor(reqResp(jj,:),metaBuild.model);
                 valGrad(jj,:)=G;
@@ -167,7 +167,7 @@ for numMeta=1:numel(buildData)
                     [checkZ(jj),G]=predictor(sampling(jj,:),metaBuild.model);
                     checkGZ(jj,:)=G;
                 end
-                checkInterp(eval,checkZ,'resp')
+                checkInterp(resp,checkZ,'resp')
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -187,7 +187,7 @@ for numMeta=1:numel(buildData)
             %% interpolation using linear shape functions
             parfor (jj=1:nbReqEval,numWorkers)
                 [valResp(jj),G]=LInterpEval(reqResp(jj,:),metaBuild);
-                valGrad(jj,:)=G;                
+                valGrad(jj,:)=G;
             end
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
@@ -329,7 +329,7 @@ end
 
 if nbReqEval>1&&Verb
     fprintf('++ Evaluation at %i points\n',nbReqEval);
-    mesu_time(tMesu,tInit);
+    mesuTime(tMesu,tInit);
     fprintf('#########################################\n');
 end
 
@@ -345,7 +345,7 @@ switch type
         IXZcheck=find(diffZ>limitResp);
         if ~isempty(IXZcheck)
             fprintf('Interpolation issue (responses)\n')
-            fprintf('Num\t||DiffZ \t||Eval \t||Zcheck\n');
+            fprintf('Num\t||DiffZ \t||Eval \t\t||Zcheck\n');
             conc=vertcat(IXZcheck',diffZ(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
             fprintf('%d\t||%4.2e\t||%4.2e\t||%4.2e\n',conc(:))
         end

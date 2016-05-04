@@ -39,7 +39,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Build of the RBF/GRBF matrix
-if dataIn.in.pres_grad
+if dataIn.in.availGrad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,valPara);
     KK=[KK KKa;-KKa' KKi];
 else
@@ -48,13 +48,13 @@ end
 %in the case of missing data
 %responses
 if dataIn.miss.resp.on
-    KK(dataIn.miss.eval.ix_miss,:)=[];
-    KK(:,dataIn.miss.eval.ix_miss)=[];
+    KK(dataIn.miss.resp.ix_miss,:)=[];
+    KK(:,dataIn.miss.resp.ix_miss)=[];
 end
 %gradients
-if dataIn.in.pres_grad
+if dataIn.in.availGrad
     if dataIn.miss.grad.on
-        rep_ev=ns-dataIn.miss.eval.nb;
+        rep_ev=ns-dataIn.miss.resp.nb;
         KK(rep_ev+dataIn.miss.grad.ixt_miss_line,:)=[];
         KK(:,rep_ev+dataIn.miss.grad.ixt_miss_line)=[];
     end

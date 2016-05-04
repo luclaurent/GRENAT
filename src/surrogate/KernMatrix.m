@@ -69,8 +69,7 @@ else
         %without diagonal
         KK=zeros(ns,ns);
         % evaluate kernel function
-        [ev]=feval(fctKern,dataIn.in.dist,paraVal);
-        keyboard
+        [ev]=multiKernel(fctKern,dataIn.in.dist,paraVal);
         KK(dataIn.ix.matrix)=ev;
         %Build full kernel matrix
         KK=KK+KK'+eye(ns);

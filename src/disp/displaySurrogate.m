@@ -49,7 +49,7 @@ fAvail=fieldnames(dispData);
 fMiss=setxor(fDef,fAvail);
 %adding missing options
 if ~isempty(fMiss)
-    fprintf('Some display options are missing (add its)\n');
+    fprintf('Some display options are missing (add its)\n');    
     for ii=1:numel(fMiss)
         fprintf('%s ',fMiss{ii});
         dispData.(fMiss{ii})=dispDef.(fMiss{ii});

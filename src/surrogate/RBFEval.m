@@ -1,161 +1,120 @@
-%%fonction permettant d'evaluer le metamodele RBF en un ensemble de pts donnes
-% RBF: sans gradient
-% HBRF: avec gradients
+%% function for evaluating the RBF surrogate model at many points
+% RBF: w/o gradient
+% GBRF: w/- gradients
+% L. LAURENT -- 15/03/2010 -- luc.laurent@lecnam.net
+% changes 20/01/2012
 
-%%L. LAURENT      luc.laurent@ens-cachan.fr
-%% 15/03/2010 reprise le 20/01/2012
-
-function [Z,GZ,variance,details]=eval_rbf(U,data,tir_part)
-% affichages warning ou non
-aff_warning=false;
-%Declaration des variables
-nb_val=data.in.nb_val;
-nb_var=data.in.nb_var;
+function [Z,GZ,variance]=RBFEval(U,data,specifSampling)
+% display warning or not
+dispWarning=false;
+%load varibales
+ns=data.in.ns;
+np=data.in.np;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul ou non des gradients (en fonction du nombre de variables de sortie)
+%computation of thr gradients or not (depending on the number of output variables)
 if nargout>=2
-    calc_grad=true;
+    calcGrad=true;
 else
-    calc_grad=false;
+    calcGrad=false;
 end
-% points de tirages particuliers
+% specific sampled points
 if nargin==3
-    tirages=tir_part;
+    sampling=specifSampling;
 else
-    tirages=data.in.tiragesn;
+    sampling=data.in.sampling;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-X=U(:)';    %correction (changement type d'element)
+X=U(:)';    %correction
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%normalisation
-if data.norm.on&&~isempty(data.norm.moy_tirages)
-    infos.moy=data.norm.moy_tirages;
-    infos.std=data.norm.std_tirages;
-    X=norm_denorm(X,'norm',infos);
-end
+%distance from evaluation point to sample points
+dist=repmat(X,ns,1)-sampling;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul de l'evaluation du metamodele au point considere
-%definition des dimensions des matrices/vecteurs selon RBF et HBRBF
-if data.in.pres_grad
-    tail_matvec=nb_val*(nb_var+1);
-else
-    tail_matvec=nb_val;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%vecteur de correlation aux points d'evaluations et vecteur de correlation
-%derive
-if calc_grad
-    dP=zeros(tail_matvec,nb_var);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%distance du point d'evaluation aux sites obtenus par DOE
-dist=repmat(X,nb_val,1)-tirages;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%RBF/HBRBF
-if data.in.pres_grad
-    if calc_grad  %si calcul des gradients
-        %evaluation de la fonction de base radiale
-        [ev,dev,ddev]=feval(data.build.fct,dist,data.build.para.l_val);
-        %intercallage reponses et gradients
+%RBF/GRBF
+if data.in.availGrad
+    if calcGrad  %if compute gradients
+        %evaluate kernel function
+        [ev,dev,ddev]=multiKernel(data.build.kern,dist,data.build.para.l.val);
+        %reordering responses and gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        P=[ev' reshape(dev',1,nb_val*nb_var)];
+        P=[ev' reshape(dev',1,ns*np)];
         
         %P=[ev;dda(:)];
-        %intercallage derivees premieres et secondes
+        %reordering first and second derivatives
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
         %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
-        %derivee du vecteur de correlation aux points d'evaluations
-        dP=[dev' reshape(ddev,nb_var,[])];
+        %derivatives of the vector of the evaluation of kernel function
+        dP=[dev' reshape(ddev,np,[])];
         
-        %si donnees manquantes
-        if data.manq.eval.on
-            P(data.manq.eval.ix_manq)=[];
-            dP(:,data.manq.eval.ix_manq)=[];
+        %if missing responses
+        if data.miss.resp.on
+            P(data.miss.resp.ixMiss)=[];
+            dP(:,data.miss.resp.ixMiss)=[];
         end
         
-        %si donnees manquantes
-        if data.manq.grad.on
-            rep_ev=data.in.nb_val-data.manq.eval.nb;
-            P(rep_ev+data.manq.grad.ixt_manq_line)=[];
-            dP(:,rep_ev+data.manq.grad.ixt_manq_line)=[];
+        %if missing gradients
+        if data.miss.grad.on
+            respEv=ns-data.miss.resp.nb;
+            P(respEv+data.miss.grad.ixtMissLine)=[];
+            dP(:,respEv+data.miss.grad.ixtMissLine)=[];
         end
         
-    else %sinon
-        %evaluation de la fonction de base radiale
-        [ev,dev]=feval(data.build.fct,dist,data.build.para.l_val);
-        %intercallage reponses et gradients
+    else %otherwise
+        %evaluate kernel function
+        [ev,dev]=multiKernel(data.build.kern,dist,data.build.para.l.val);
+        %reordering responses and gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        P=[ev' reshape(dev',1,nb_val*nb_var)];
-        %si donnees manquantes
-        if data.manq.eval.on
-            P(data.manq.eval.ix_manq)=[];
+        P=[ev' reshape(dev',1,ns*np)];
+        %if missing responses
+        if data.miss.resp.on
+            P(data.miss.resp.ixMiss)=[];
         end
     end
 else
-    if calc_grad  %si calcul des gradients
-        [P,dP]=feval(data.build.fct,dist,data.build.para.l_val);P=P';dP=dP';
-        %si donnees manquantes
-        if data.manq.eval.on
-            P(data.manq.eval.ix_manq)=[];
-            dP(:,data.manq.eval.ix_manq)=[];
+    if calcGrad  %if compute gradients        
+        [P,dP]=multiKernel(data.build.kern,dist,data.build.para.l.val);P=P';dP=dP';
+        %if missing responses
+        if data.miss.resp.on
+            P(data.miss.resp.ixMiss)=[];
+            dP(:,data.miss.resp.ixMiss)=[];
         end
-    else %sinon
+    else %otherwise
         P=feval(data.build.fct,dist,data.build.para.val);P=P';
-        %si donnees manquantes
-        if data.manq.eval.on
-            P(data.manq.eval.ix_manq)=[];
+        %%if missing responses
+        if data.miss.resp.on
+            P(data.miss.resp.ixMiss)=[];
         end
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Evaluation du metamodele au point X
+%Evaluation surrogate model at point X
 Z=P*data.build.w;
-if calc_grad
+if calcGrad
     GZ=dP*data.build.w;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul de la variance de prediction (Bompard 2011,Sobester 2005, Gibbs 1997)
+%compute variance of the surrogate model (Bompard 2011,Sobester 2005, Gibbs 1997)
 if nargout >=3
-    if ~aff_warning;warning off all;end
+    if ~dispWarning;warning off all;end
     Pb=P;
-    %correction pour prise en compte gradients (debug à faire....)
-    if data.in.pres_grad
-        Pb(nb_val+1:end)=-Pb(nb_val+1:end);
+    %correction for taking into account gradients (debug ....)
+    if data.in.availGrad
+        Pb(ns+1:end)=-Pb(ns+1:end);
     end
     variance=1-P*(data.build.KK\Pb');
     %if variance<0
-
+    
     %data.build.KK
-   % P*(data.build.KK\P')
+    % P*(data.build.KK\P')
     %variance
     %pause
     %end
-    if ~aff_warning;warning on all;end
+    if ~dispWarning;warning on all;end
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%normalisation
-if data.norm.on&&~isempty(data.norm.moy_tirages)
-    infos.moy=data.norm.moy_eval;
-    infos.std=data.norm.std_eval;
-    Z=norm_denorm(Z,'denorm',infos);
-    if calc_grad
-        infos.std_e=data.norm.std_eval;
-        infos.std_t=data.norm.std_tirages;
-        GZ=norm_denorm_g(GZ','denorm',infos); clear infos
-        GZ=GZ';
-    end
-end
-details=[];
-
 end

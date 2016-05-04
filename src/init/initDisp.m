@@ -10,10 +10,10 @@ function dispDef=initDisp()
     dispDef.d2=false;               %2D display
     dispDef.contour=false;          %display contour
     dispDef.save=true;              %save display
-    dispDef.grad_approx=false;       %display gradients of the surrogate model 
-    dispDef.grad_real=false;        %display actual gradients
-    dispDef.ic.on=false;            %display confidence intervals (if available)
-    dispDef.ic.type='0';            %choose CI to dispaly
+    dispDef.approxGrad=false;      %display gradients of the surrogate model 
+    dispDef.realGrad=false;        %display actual gradients
+    dispDef.ci.on=false;            %display confidence intervals (if available)
+    dispDef.ci.type='0';            %choose CI to dispaly
     dispDef.newfig=true;            %display in new figure
     dispDef.opt=[];                 %plot options
     dispDef.uni=false;              %use uniform color
@@ -29,7 +29,7 @@ function dispDef=initDisp()
     dispDef.bar=false;              %display using bar
     dispDef.trans=false;            %display using transparency
     dispDef.nv=Inf;                 %number of sample points on the reference grid
-    dispDef.steps=0;                 %number of steps on the reference grid 
+    dispDef.steps=0;                %number of steps on the reference grid 
 if nargout==0
     global aff
     aff=dispDef;

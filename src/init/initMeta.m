@@ -1,7 +1,11 @@
 %% Initialization of the surrogate model
 %% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function meta=initMeta(in)
+function meta=initMeta(in,parallelOn)
+
+if nargin<=1
+    parallelOn=false;
+end
 
 fprintf('=========================================\n')
 fprintf('  >>> INITIALIZATION Surrogate Model \n');
@@ -9,7 +13,7 @@ fprintf('  >>> INITIALIZATION Surrogate Model \n');
 
 %% default configuration
 %taking into account gradients
-meta.grad=false;
+meta.useGrad=false;
 %type of surrogate model
 meta.type='KRG';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -85,7 +89,7 @@ meta.infill.paraGEI=1;
 meta.infill.paraLCB=0.5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Check interpolation
-meta.verif=true;
+meta.check=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% chargement configuration particuliere
@@ -93,7 +97,7 @@ if nargin==0
     in=[];
 end
 %taking gradients into account
-if isfield(in,'grad');meta.grad=in.grad;end
+if isfield(in,'grad');meta.useGrad=in.useGrad;end
 %type of surrgate model KRG/GKRG/DACE/RBF/GRBF/SVR/GSVR...
 if isfield(in,'type');meta.type=in.type;end
 %parameter of the kernel function
@@ -150,10 +154,6 @@ if isfield(in,'norm');meta.norm=in.norm;end
 if isfield(in,'recond');meta.recond=in.recond;end
 %cross-validation
 if isfield(in,'cv');meta.cv=in.cv;end
-%compute all CV criteria
-if isfield(in,'cv_full');meta.cv.full=in.cv.full;end
-%display QQ plot CV
-if isfield(in,'cv_disp');meta.cv.disp=in.cv.disp;end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% estimation parametre long (longueur de correlation)
@@ -163,13 +163,13 @@ if isfield(in,'para');
     % anisotropic model (one internal length per variable)
     if isfield(in.para,'aniso');meta.para.aniso=in.para.aniso;end
     % display objective function to be minimised
-    if isfield(in.para,'disp_estim');meta.para.disp_estim=in.para.disp_estim;end
+    if isfield(in.para,'dispEstim');meta.para.dispEstim=in.para.dispEstim;end
     % display iterations of the optimisation process on a figure (1D/2D)
-    if isfield(in.para,'disp_iter_graph');meta.para.disp_iter_graph=in.para.disp_iter_graph;end
+    if isfield(in.para,'dispIterGraph');meta.para.dispIterGraph=in.para.dispIterGraph;end
     % display iteration in the console
-    if isfield(in.para,'disp_iter_cmd');meta.para.disp_iter_cmd=in.para.disp_iter_cmd;end
+    if isfield(in.para,'dispIterCmd');meta.para.dispIterCmd=in.para.dispIterCmd;end
     % display convergence information on figures
-    if isfield(in.para,'disp_plot_algo');meta.para.disp_plot_algo=in.para.disp_plot_algo;end
+    if isfield(in.para,'dispPlotAlgo');meta.para.dispPlotAlgo=in.para.dispPlotAlgo;end
     % optimizer used for finding internal parameter
     if isfield(in.para,'method');meta.para.method=in.para.method;end
     % method used for the initial sampling for GA ('', 'LHS','IHS'...)
@@ -177,7 +177,7 @@ if isfield(in,'para');
    % number of sample points of the initial sampling for GA
     if isfield(in.para,'norpopInitm');meta.para.popInit=in.para.popInit;end
     % Value of the stopping criterion of the optimizer
-    if isfield(in.para,'crit_opti');meta.para.crit_opti=in.para.crit_opti;end
+    if isfield(in.para,'critOpti');meta.para.critOpti=in.para.critOpti;end
     if meta.para.estim
         if isfield(in.para,'long');
             meta.para.l.max=in.para.long(2);
@@ -188,22 +188,22 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% infill strategy 
-if isfield(in,'enrich');
-    if isfield(in.enrich,'on');meta.enrich.on=in.enrich.on;end
-    if isfield(in.enrich,'para_wei');meta.enrich.para_wei=in.enrich.para_wei;end
-    if isfield(in.enrich,'para_gei');meta.enrich.para_gei=in.enrich.para_gei;end
-    if isfield(in.enrich,'para_lcb');meta.enrich.para_lcb=in.enrich.para_lcb;end
+if isfield(in,'infill');
+    if isfield(in.infill,'on');meta.infill.on=in.infill.on;end
+    if isfield(in.infill,'para_wei');meta.infill.para_wei=in.infill.para_wei;end
+    if isfield(in.infill,'para_gei');meta.infill.para_gei=in.infill.para_gei;end
+    if isfield(in.infill,'para_lcb');meta.infill.para_lcb=in.infill.para_lcb;end
     
     % check interpolation
-    if isfield(in,'verif');meta.verif=in.verif;end
+    if isfield(in,'check');meta.check=in.check;end
 end
 
-if usejava('jvm')
+if usejava('jvm')&&parallelOn
     %count number of available workers (for parallelism)
     def_parallel=parcluster;
-    meta.worker_parallel=def_parallel.NumWorkers;
+    meta.NumWorkers=def_parallel.NumWorkers;
 else
-    meta.worker_parallel=1;
+    meta.NumWorkers=1;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%

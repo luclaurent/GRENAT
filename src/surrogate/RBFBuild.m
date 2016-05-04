@@ -4,7 +4,7 @@
 % L. LAURENT -- 15/03/2010 -- luc.laurent@lecnam.net
 % change on 12/04/2010 and on 15/01/2012
 
-function ret=RBFBuild(samplingIn,respIn,gradIn,metaData,missData)
+function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)
 
 [tMesu,tInit]=mesuTime;
 
@@ -72,17 +72,17 @@ ns=size(respIn,1);
 np=size(samplingIn,2);
 
 %check availability of the gradients
-gradAvail=~isempty(gradIn);
+availGrad=~isempty(gradIn);
 %check missing data
-if nargin==5
-    missResp=missData.resp.on;
-    missGrad=missData.grad.on;
-    gradAvail=(~missData.grad.all&&missData.grad.on)||(gradAvail&&~missData.grad.on);
+if isfield(metaData,'miss')
+    missResp=metaData.miss.resp.on;
+    missGrad=metaData.miss.grad.on;
+    availGrad=(~metaData.miss.grad.all&&metaData.miss.grad.on)||(availGrad&&~metaData.miss.grad.on);
 else
-    missData.resp.on=false;
-    missData.grad.on=false;
+    metaData.miss.resp.on=false;
+    metaData.missmetaData.miss.grad.on=false;
     missResp=missData.resp.on;
-    missGrad=missData.grad.on;
+    missGrad=metaData.miss.grad.on;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -91,21 +91,21 @@ end
 YY=respIn;
 %remove missing response(s)
 if missResp
-    YY=YY(missData.eval.ixAvail);
+    YY=YY(metaData.miss.resp.ixAvail);
 end
-if gradAvail
+if availGrad
     tmp=gradn';
     der=tmp(:);
     %remove missing gradient(s)
     if missGrad
-        der=der(missData.grad.ixtAvailLine);
+        der=der(metaData.miss.grad.ixtAvailLine);
     end
     YY=vertcat(YY,der);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building indexes system for building RBF/GRBF matrices
-if gradAvail
+if availGrad
     size_matRc=(ns^2+ns)/2;
     size_matRa=np*(ns^2+ns)/2;
     size_matRi=np^2*(ns^2+ns)/2;
@@ -187,17 +187,17 @@ end
 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%store varibales des grandeurs
+%store variables
 ret.in.sampling=samplingIn;
 ret.in.dist=distC;
-ret.in.eval=respIn;
-ret.in.pres_grad=gradAvail;
+ret.in.resp=respIn;
+ret.in.availGrad=availGrad;
 ret.in.grad=gradIn;
 ret.in.np=np;
 ret.in.ns=ns;
 ret.ix.matrix=iXmat;
 ret.ix.sampling=iXsampling;
-if gradAvail
+if availGrad
     ret.ix.matrixA=iXmatA;
     ret.ix.matrixAb=iXmatAb;
     ret.ix.matrixI=iXmatI;
@@ -205,7 +205,7 @@ if gradAvail
     ret.ix.devb=iXdevb;
 end
 ret.build.y=YY;
-ret.manq=missData;
+ret.miss=metaData.miss;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -326,14 +326,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building final elements of the RBF surrogate model (matrices, coefficients & CV)
 % by taking into account the values of hyperparameters obtained previously
-[~,block]=RBFBloc(ret,metaData);
+[~,blocRBF]=RBFBloc(ret,metaData);
 %save information
-tmp=mergestruct(ret.build,block.build);
+tmp=mergestruct(ret.build,blocRBF.build);
 ret.build=tmp;
-ret.cv=block.cv;
+ret.cv=blocRBF.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if gradAvail;txt='GRBF';else txt='RBF';end
+if availGrad;txt='GRBF';else txt='RBF';end
 fprintf('\nBuilding %s\n',txt);
 mesuTime(tMesu,tInit);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

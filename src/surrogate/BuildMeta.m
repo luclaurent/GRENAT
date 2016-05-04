@@ -1,7 +1,7 @@
 %% function for building surrogate model
 %% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
 
-function [ret]=BuildMeta(sampling,respIn,gradIn,metaData)
+function [ret]=BuildMeta(samplingIn,respIn,gradIn,metaData)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
@@ -9,14 +9,14 @@ fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %taking into account gradients or not
-if isempty(gradIn);avail_grad='No';grad_in=[];else avail_grad='Yes';end
-fprintf('\n++ Gradients are available: %s\n',avail_grad);
+if isempty(gradIn);availGrad='No';gradIn=[];else availGrad='Yes';end
+fprintf('\n++ Gradients are available: %s\n',availGrad);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %number of design variables
-np=size(sampling,2);
+np=size(samplingIn,2);
 %number of sample points
-ns=size(sampling,1);
+ns=size(samplingIn,1);
 fprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n',np,ns);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
@@ -34,27 +34,27 @@ if metaData.norm
     fprintf(' >> Normalization: ');if metaData.norm; fprintf('Yes\n');else fprintf('No\n');end
     %normalization of the data
     [respN,infoDataR]=NormRenorm(respIn,'norm');
-    [samplingN,infoDataS]=NormRenorm(sampling,'norm');
-    if avail_grad
+    [samplingN,infoDataS]=NormRenorm(samplingIn,'norm');
+    if availGrad
         gradN=NormRenormG(gradIn,'norm',infoDataS,infoDataR);
     end
 else
     respN=respIn;
-    samplingN=sampling;
+    samplingN=samplingIn;
     gradN=grad;
 end
 
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %Check input data (find missing data)
-[missStatus]=CheckInputData(samplingN,respN,gradN);
+[metaData.miss]=CheckInputData(samplingN,respN,gradN);
 
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %check for indirect gradient-enhanced surrogate model
 InGE=CheckGE(metype);
 if InGE
-    IndirectData=PrepIn(samplingN,respN,gradN,metaData,missStatus);
+    IndirectData=PrepIn(samplingN,respN,gradN,metaData);
 end
 
 %%%%%%%%=================================%%%%%%%%
@@ -92,12 +92,12 @@ for type=metype
             %%%%%%%%=================================%%%%%%%%
         case {'RBF','InRBF','GRBF'}
             %% Building of the (Gradient-Enhanced) Radial Basis Functions (RBF/GRBF)
-            outMeta=RBFBuild(samplingOk,respOk,gradOk,metaData,missStatus);
+            outMeta=RBFBuild(samplingOk,respOk,gradOk,metaData);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'KRG','InKRG','GKRG'}
             %% Building of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
-            outMeta=KRGBuild(samplingOk,respOk,gradOk,metaData,missStatus);
+            outMeta=KRGBuild(samplingOk,respOk,gradOk,metaData);
             %%%%%%%%=================================%%%%%%%%
             %%%%%%%%=================================%%%%%%%%
         case {'DACE','InDACE'}
@@ -121,7 +121,7 @@ for type=metype
                     otherwise
                         theta0=metaData.para.l_val;
                 end
-                [dace.model,dace.perf]=dacefit(sampling,respIn,metaData.regr,metaData.corr,theta0);
+                [dace.model,dace.perf]=dacefit(samplingIn,respIn,metaData.regr,metaData.corr,theta0);
             end
             outMeta=dace;
             %%%%%%%%=================================%%%%%%%%
@@ -153,13 +153,15 @@ for type=metype
     
     
     %stockage des informations utiles
-    outMeta.missStatus=missStatus;
     outMeta.type=type{1};
     outMeta.np=np;
     outMeta.ns=ns;
-    outMeta.sampling=sampling;
-    outMeta.respN=respN;
-    outMeta.gradN=gradN;
+    outMeta.in.sampling=samplingIn;
+    outMeta.in.resp=respIn;
+    outMeta.in.grad=gradIn;
+    outMeta.inN.sampling=samplingN;
+    outMeta.inN.resp=respN;
+    outMeta.inN.grad=gradN;
     outMeta.infill=metaData.infill;
     if numel(metype)==1
         ret=outMeta;

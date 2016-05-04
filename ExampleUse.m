@@ -8,7 +8,7 @@ customClean;
 dispDate;
 
 %initialization of display variables
-aff=initDisp();
+dispData=initDisp();
 
 fprintf('++++++++++++++++++++++++++++++++++++++++++\n')
 fprintf('  >>>   Building surrogate model    <<<\n');
@@ -56,46 +56,46 @@ if isfield(K,'var');[ci68,ci95,ci99]=BuildCI(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display
 % default values
-aff.on=true;
-aff.newfig=false;
-aff.ci.on=true;
+dispData.on=true;
+dispData.newfig=false;
+dispData.ci.on=true;
 % display confidence intervals
-aff.render=true;
-aff.d3=true;
-aff.xlabel='x_1';
-aff.ylabel='x_2';
+dispData.render=true;
+dispData.d3=true;
+dispData.xlabel='x_1';
+dispData.ylabel='x_2';
 
 figure
 subplot(2,3,1)
-aff.titre='Reference function';
-displaySurrogate(gridRef,eval_ref,sampling,resp,grad,aff);
+dispData.titre='Reference function';
+displaySurrogate(gridRef,respRef,sampling,resp,grad,dispData);
 subplot(2,3,2)
-aff.titre='Approximate function';
-displaySurrogate(gridRef,K.Z,sampling,resp,grad,aff);
+dispData.titre='Approximate function';
+displaySurrogate(gridRef,K.Z,sampling,resp,grad,dispData);
 subplot(2,3,4)
-aff.title='';
-aff.render=false;
-aff.d3=false;
-aff.d2=true;
-aff.contour=true;
-aff.grad_eval=true;
+dispData.title='';
+dispData.render=false;
+dispData.d3=false;
+dispData.d2=true;
+dispData.contour=true;
+dispData.grad_eval=true;
 ref.Z=eval_ref;
-displaySurrogate(gridRef,ref,sampling,resp,grad,aff);
+displaySurrogate(gridRef,ref,sampling,resp,grad,dispData);
 subplot(2,3,5)
-displaySurrogate(gridRef,K,sampling,resp,grad,aff);
+displaySurrogate(gridRef,K,sampling,resp,grad,dispData);
 subplot(2,3,3)
-aff.d3=true;
-aff.d2=false;
-aff.contour=false;
-aff.grad_eval=false;
-aff.render=true;
-aff.title='Variance';
-displaySurrogate(gridRef,K.var,sampling,resp,grad,aff);
+dispData.d3=true;
+dispData.d2=false;
+dispData.contour=false;
+dispData.grad_eval=false;
+dispData.render=true;
+dispData.title='Variance';
+displaySurrogate(gridRef,K.var,sampling,resp,grad,dispData);
 subplot(2,3,6)
-aff.titre='I95% confidence interval';
-aff.trans=true;
-aff.uni=true;
-displaySurrogateIC(gridRef,ci95,aff,K.Z);
+dispData.titre='I95% confidence interval';
+dispData.trans=true;
+dispData.uni=true;
+displaySurrogateIC(gridRef,ci95,dispData,K.Z);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Computation and display of the errors

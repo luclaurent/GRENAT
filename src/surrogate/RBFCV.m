@@ -105,7 +105,7 @@ end
 cv.bm=1/ns*sum(esR);
 %display information
 if modDebug||modFinal
-    fprintf('=== CV-LOO using Rippa''s mthods (1999, extension by Bompard 2011)\n');
+    fprintf('=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');
     fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
     if availGrad
         fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
@@ -130,7 +130,7 @@ if modDebug
     cvGZ=zeros(ns,np);
     yy=data.build.y;
     KK=dataBloc.build.KK;
-    fct=dataBloc.build.fct;
+    fctKern=dataBloc.build.fct;
     para=dataBloc.build.para;
     sampling=data.in.sampling;
     grad=data.in.grad;
@@ -157,10 +157,10 @@ if modDebug
         %remove of the associated response
         dataCV.miss.grad.on=false;
         dataCV.miss.resp.on=true;
-        dataCV.miss.eval.ix_miss=itS;
+        dataCV.miss.resp.ix_miss=itS;
         
         %remove data
-        dataCV.build.fct=fct;
+        dataCV.build.fct=fctKern;
         dataCV.build.para=para;
         dataCV.build.w=cvW;
         dataCV.build.KK=cvKK;
@@ -199,13 +199,13 @@ if modDebug
                 dataCV.miss.grad.ixt_miss_line=pos-ns;
                 
                 %remove
-                dataCV.build.fct=fct;
+                dataCV.build.fct=fctKern;
                 dataCV.build.para=para;
                 dataCV.build.w=cvW;
                 dataCV.build.KK=cvKK;
                 dataCV.in.ns=ns;
-                dataCV.in.tirages=cvSampling;
-                dataCV.enrich.on=false;
+                dataCV.in.sampling=cvSampling;
+                dataCV.infill.on=false;
                 %evaluate response, gradients and variances on removed sample points
                 [~,GZ,~]=RBFEval(sampling(itS,:),dataCV);
                 cvGZ(itS,pos_gr)=GZ(pos_gr);
@@ -251,8 +251,8 @@ if modStudy||modDebug||metaData.cv_aff
     cvVar=zeros(ns,1);
     cvGZ=zeros(ns,np);
     yy=data.build.y;
-    KK=dataBloc.build.KK;
-    fct=dataBloc.build.fct;
+    KK=dataBloc.build.KK;    
+    fctKern=dataBloc.build.kern;
     para=dataBloc.build.para;
     sampling=data.in.sampling;
     grad=data.in.grad;
@@ -284,7 +284,7 @@ if modStudy||modDebug||metaData.cv_aff
         cvSampling=sampling;
         cvSampling(itS,:)=[];
         cvResp=resp;
-        if data.miss.eval.on||data.miss.grad.on
+        if data.miss.resp.on||data.miss.grad.on
             cvResp(itS)=[];
             if availGrad
                 cvGrad=grad;
@@ -296,12 +296,12 @@ if modStudy||modDebug||metaData.cv_aff
             dataCV.manq=retMiss;
         end
         
-        dataCV.build.fct=fct;
+        dataCV.build.kern=fctKern;
         dataCV.build.para=para;
         dataCV.build.w=cvW;
         dataCV.build.KK=cvKK;
         dataCV.in.ns=ns-1; %remove one sample point
-        dataCV.in.tirages=cvSampling;
+        dataCV.in.sampling=cvSampling;
         dataCV.infill.on=false;
         %evaluate response, gradient and variance at the remove sample point
         [Z,GZ,variance]=RBFEval(sampling(itS,:),dataCV);
@@ -389,7 +389,7 @@ if metaData.cv.disp||modDebug
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Compute errors
-    [cv.then]=LOOCalcError(resp,cv_zR,cvVarR,grad,cv_GZ,ns,np,normLOO);
+    [cv.then]=LOOCalcError(resp,cvZR,cvVarR,grad,cvGZ,ns,np,normLOO);
     %display information
     if modDebug||modFinal
         fprintf('=== CV-LOO with remove responses THEN the gradients\n');
@@ -459,7 +459,7 @@ if metaData.cv.disp&&modFinal
     figure
     subplot(3,1,1);
     opt.title='Original data (CV R)';
-    QQplot(data.in.resp,cv_zR,opt)
+    QQplot(data.in.resp,cvZR,opt)
     subplot(3,1,2);
     opt.title='Original data (CV F)';
     QQplot(data.in.resp,cvZ,opt)

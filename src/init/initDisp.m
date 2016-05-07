@@ -9,12 +9,13 @@ function dispDef=initDisp()
     dispDef.d3=false;               %3D display
     dispDef.d2=false;               %2D display
     dispDef.contour=false;          %display contour
-    dispDef.save=true;              %save display
-    dispDef.approxGrad=false;      %display gradients of the surrogate model 
-    dispDef.realGrad=false;        %display actual gradients
+    dispDef.save=false;              %save display
+    dispDef.directory='save';       %directory for saving figures
+    dispDef.gridGrad=false;         %display gradients at the points of the grid
+    dispDef.sampleGrad=false;       %display gradients at sample points
     dispDef.ci.on=false;            %display confidence intervals (if available)
     dispDef.ci.type='0';            %choose CI to dispaly
-    dispDef.newfig=true;            %display in new figure
+    dispDef.newFig=true;            %display in new figure
     dispDef.opt=[];                 %plot options
     dispDef.uni=false;              %use uniform color
     dispDef.color=[];               %choose display color   
@@ -23,7 +24,7 @@ function dispDef=initDisp()
     dispDef.zlabel='';              %Z-axis label
     dispDef.title='';               %title of the figure
     dispDef.render=false;           %enable/disable 3D rendering
-    dispDef.pts=false;              %display sample points
+    dispDef.samplePts=false;              %display sample points
     dispDef.num=0;                  %number of the display numérotation affichage
     dispDef.tex=true;               %save data in TeX file
     dispDef.bar=false;              %display using bar
@@ -31,6 +32,6 @@ function dispDef=initDisp()
     dispDef.nv=Inf;                 %number of sample points on the reference grid
     dispDef.steps=0;                %number of steps on the reference grid 
 if nargout==0
-    global aff
-    aff=dispDef;
+    global dispData
+    dispData=dispDef;
 end

@@ -1,27 +1,27 @@
 %% Display confidence intervals
 % L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function displaySurrogateCI(Xpts,ic,aff,Z)
+function displaySurrogateCI(Xpts,ic,dispData,Z)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load default configuration for display
 dispDef=initDisp;
 %deal with missing data 
 fDef=fieldnames(dispDef);
-fAvail=fieldnames(aff);
+fAvail=fieldnames(dispData);
 fMiss=setxor(fDef,fAvail);
 %add missing options
 if ~isempty(fMiss)
     fprintf('Missing display options (add)\n');
     for ii=1:numel(fMiss)
         fprintf('%s ',fMiss{ii});
-        aff.(fMiss{ii})=dispDef.(fMiss{ii});
+        dispData.(fMiss{ii})=dispDef.(fMiss{ii});
     end
     fprintf('\n')
 end
 
 %new figure or not
-if aff.newFig
+if dispData.newFig
     figure;
 end
 
@@ -57,23 +57,23 @@ elseif d2
         surf(XX,YY,vZ)
     end    
     hold off
-    title(aff.titre)
-    xlabel(aff.xlabel)
-    ylabel(aff.ylabel)
-    zlabel(aff.zlabel)
+    title(dispData.title)
+    xlabel(dispData.xlabel)
+    ylabel(dispData.ylabel)
+    zlabel(dispData.zlabel)
     
     %unique color
-    if aff.uni
+    if dispData.uni
         set(hs,'FaceColor','red');
         set(hi,'FaceColor','blue');
     end
     %opacity
-    if aff.opacity
+    if dispData.trans
         set(hs,'FaceAlpha',0.5);
         set(hi,'FaceAlpha',0.5);
     end
     %rendering
-    if aff.render
+    if dispData.render
         hlight=light;               % light on
         lighting('gouraud')         % type of rendering
         lightangle(hlight,48,70)    % direction of the light

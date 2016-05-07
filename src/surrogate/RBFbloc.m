@@ -47,16 +47,16 @@ else
 end
 %in the case of missing data
 %responses
-if dataIn.miss.resp.on
-    KK(dataIn.miss.resp.ix_miss,:)=[];
-    KK(:,dataIn.miss.resp.ix_miss)=[];
+if metaData.miss.resp.on
+    KK(metaData.miss.resp.ix_miss,:)=[];
+    KK(:,metaData.miss.resp.ix_miss)=[];
 end
 %gradients
 if dataIn.in.availGrad
-    if dataIn.miss.grad.on
-        rep_ev=ns-dataIn.miss.resp.nb;
-        KK(rep_ev+dataIn.miss.grad.ixt_miss_line,:)=[];
-        KK(:,rep_ev+dataIn.miss.grad.ixt_miss_line)=[];
+    if metaData.miss.grad.on
+        rep_ev=ns-metaData.miss.resp.nb;
+        KK(rep_ev+metaData.miss.grad.ixt_miss_line,:)=[];
+        KK(:,rep_ev+metaData.miss.grad.ixt_miss_line)=[];
     end
 end
 

@@ -5,7 +5,7 @@ function [err,errV,errNAME]=critErrDisp(Zap,Zref,data)
 
 fprintf('#########################################\n');
 fprintf('   >>> Compute error criteria <<<\n');
-[tMesu,tInit]=mesu_time;
+[tMesu,tInit]=mesuTime;
 
 %Reordering data
 if isa(Zap,'struct');Zap=Zap.Z;end
@@ -87,7 +87,7 @@ if nargin==3
         errNAME=TMPErrNAME;
     end
 end
-mesu_time(tMesu,tInit);
+mesuTime(tMesu,tInit);
 fprintf('#########################################\n');
 end
 

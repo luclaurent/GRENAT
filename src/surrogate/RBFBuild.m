@@ -45,7 +45,7 @@ else
             fprintf('>> Value of nu (Matern): [%d , %d]\n',metaData.para.nu.val);
     end
 end
-fprintf('>>> Infill criteria:');
+fprintf('>>> Infill criteria: ');
 if metaData.infill.on;
     fprintf('%s\n','Yes');
     fprintf('>> Balancing WEI: ')
@@ -58,11 +58,11 @@ if metaData.infill.on;
 else
     fprintf('%s\n','No');
 end
-fprintf('\n')
+fprintf('\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load global variables
-global aff
+global dispData
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Initialisation of the variables
@@ -205,8 +205,6 @@ if availGrad
     ret.ix.devb=iXdevb;
 end
 ret.build.y=YY;
-ret.miss=metaData.miss;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Computation of the MSE of the  Cross-Validation
@@ -248,7 +246,7 @@ if metaData.para.estim&&metaData.para.dispEstim
         set(h,'LineWidth',2)
         %store figure in TeX/Tikz file
         if metaData.save
-            matlab2tikz([aff.doss '/RBFmse.tex'])
+            matlab2tikz([dispData.doss '/RBFmse.tex'])
         end
         
     elseif ~metaData.para.aniso||np==1
@@ -269,7 +267,7 @@ if metaData.para.estim&&metaData.para.dispEstim
         %store in .dat file
         if metaData.save
             ss=[valPara' valMSEp'];
-            save([aff.doss '/RBFmse.dat'],'ss','-ascii');
+            save([dispData.doss '/RBFmse.dat'],'ss','-ascii');
         end
         
         %display MSE
@@ -282,10 +280,10 @@ if metaData.para.estim&&metaData.para.dispEstim
     end
     
     %store graphs (if active)
-    if aff.save&&(ns<=2)
-        fileStore=save_aff('fig_mse_cv',aff.doss);
-        if aff.tex
-            fid=fopen([aff.doss '/fig.tex'],'a+');
+    if dispData.save&&(ns<=2)
+        fileStore=saveDisp('fig_mse_cv',dispData.doss);
+        if dispData.tex
+            fid=fopen([dispData.doss '/fig.tex'],'a+');
             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'MSE',fileStore);
             %fprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
@@ -293,7 +291,7 @@ if metaData.para.estim&&metaData.para.dispEstim
     end
 end
 %reload initial configurations
-metaData.cv_aff=dispCvOld;
+metaData.cv.disp=dispCvOld;
 metaData.cv=CvOld;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -319,9 +317,8 @@ else
         otherwise
             metaData.para.val=metaData.para.l.val;
     end
-    fprintf(' %d',metaData.para.val);
-    fprintf('\n');
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building final elements of the RBF surrogate model (matrices, coefficients & CV)
@@ -330,7 +327,6 @@ end
 %save information
 tmp=mergestruct(ret.build,blocRBF.build);
 ret.build=tmp;
-ret.cv=blocRBF.cv;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if availGrad;txt='GRBF';else txt='RBF';end

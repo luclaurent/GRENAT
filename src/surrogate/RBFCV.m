@@ -242,7 +242,7 @@ end
 %%% at each sample point)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if modStudy||modDebug||metaData.cv_aff
+if modStudy||modDebug||metaData.cv.disp
     [tMesuDebug,tInitDebug]=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -284,7 +284,7 @@ if modStudy||modDebug||metaData.cv_aff
         cvSampling=sampling;
         cvSampling(itS,:)=[];
         cvResp=resp;
-        if data.miss.resp.on||data.miss.grad.on
+        if metaData.miss.resp.on||metaData.miss.grad.on
             cvResp(itS)=[];
             if availGrad
                 cvGrad=grad;
@@ -293,7 +293,10 @@ if modStudy||modDebug||metaData.cv_aff
                 cvGrad=[];
             end
             retMiss=CheckInputData(cvSampling,cvResp,cvGrad);
-            dataCV.manq=retMiss;
+            dataCV.miss=retMiss;
+        else
+            dataCV.miss.resp.on=false;
+            dataCV.miss.grad.on=false;
         end
         
         dataCV.build.kern=fctKern;
@@ -457,13 +460,13 @@ end
 if metaData.cv.disp&&modFinal
     opt.newfig=false;
     figure
-    subplot(3,1,1);
+    subplot(131);
     opt.title='Original data (CV R)';
     QQplot(data.in.resp,cvZR,opt)
-    subplot(3,1,2);
+    subplot(132);
     opt.title='Original data (CV F)';
     QQplot(data.in.resp,cvZ,opt)
-    subplot(3,1,3);
+    subplot(133);
     opt.title='SCVR';
     opt.xlabel='Predicted' ;
     opt.ylabel='SCVR';

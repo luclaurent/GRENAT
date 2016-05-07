@@ -1,5 +1,5 @@
 %% function for displaying response surfaces
-%%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
+%%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 
 
 function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)
@@ -16,10 +16,10 @@ function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)
 %       - resp: values at the sample points
 %       - grad: gradients at the sample points
 %       - dispData: structure that contains all options of the function
-%           * dispData.on: active display or not 
-%           * dispData.newFig: show in a new figure 
-%           * dispData.metaGrad: show gradients computed at grid points
-%           * dispData.actualGrad: show gradients computed at sample points
+%           * dispData.on: active display or not
+%           * dispData.newFig: show in a new figure
+%           * dispData.gridGrad=false: display gradients at the points of the grid
+%           * dispData.sampleGrad=false: display gradients at sample points
 %           * dispData.d3: show 3D plots (surf quiver3...)
 %           * dispData.d2: show 2D plots (plot quiver...)
 %           * dispData.contour: show isolines
@@ -49,7 +49,7 @@ fAvail=fieldnames(dispData);
 fMiss=setxor(fDef,fAvail);
 %adding missing options
 if ~isempty(fMiss)
-    fprintf('Some display options are missing (add its)\n');    
+    fprintf('Some display options are missing (add its)\n');
     for ii=1:numel(fMiss)
         fprintf('%s ',fMiss{ii});
         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
@@ -73,7 +73,7 @@ elseif size(sampling,2)==2
         gridX=gridXY(:,1);
         gridY=gridXY(:,2);
     end
-else    
+else
     dispData.bar=true;
 end
 %reodering responses
@@ -89,10 +89,10 @@ if isfield(Z,'GZ')&&spa2D
     GR2=Z.GZ(:,:,2);
 end
 
-if ~isfield(Z,'GZ');dispData.actualGrad=false;end
+if ~isfield(Z,'GZ');dispData.gridGrad=false;end
 
 %available gradients at sample points
-availGrad=~isempty(grad);
+dispData.sampleGrad=~isempty(grad)&&dispData.sampleGrad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %seeking and dealing with missing data
@@ -138,18 +138,18 @@ if dispData.on
     end
     
     %display in 2D (2 design parameters)
-    if spa2D        
+    if spa2D
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%scale gradients
-        if dispData.metaGrad||dispData.actualGrad
+        if dispData.gridGrad
             %compute norm of the gradients
             ngr=zeros(size(GR1));
             for ii=1:size(GR1,1)*size(GR1,2)
                 ngr(ii)=norm([GR1(ii) GR2(ii)],2);
             end
             %seek maximum norm of the gradients
-            nm=max(max(ngr));            
+            nm=max(max(ngr));
             n1=max(max(abs(GR1)));
             n2=max(max(abs(GR2)));
             
@@ -159,11 +159,11 @@ if dispData.on
             sizeG(1)=min(min(gx(ixG)));
             gy=gridY-gridY(1);
             ixG= gy>0;
-            sizeG(2)=min(min(gy(ixG)));            
+            sizeG(2)=min(min(gy(ixG)));
             
             %size of the biggest arrow  (used for displaying gradients)
             paraAr=0.9;
-            sizeGfinal=paraAr*sizeG;            
+            sizeGfinal=paraAr*sizeG;
             
             %scale factor
             scaleFactor=sizeGfinal./[n1 n2];
@@ -173,7 +173,7 @@ if dispData.on
         %show 3D surface
         if dispData.d3
             %shwo contour
-            if dispData.contour                
+            if dispData.contour
                 surfc(gridX,gridY,vZ);
                 if dispData.uni
                     %show surface with unique color
@@ -181,7 +181,7 @@ if dispData.on
                 end
             else
                 h=surf(gridX,gridY,vZ);
-                if dispData.uni   
+                if dispData.uni
                     %show surface with unique color
                     set(h,'FaceColor',dispData.color,'EdgeColor',dispData.color);
                 end
@@ -203,13 +203,13 @@ if dispData.on
                     'MarkerEdgeColor','r',...
                     'MarkerFaceColor','r',...
                     'MarkerSize',7);
-                 %show sample points on which gradient(s) is missing
+                %show sample points on which gradient(s) is missing
                 plot3(sampling(listMissGrad,1),sampling(listMissGrad,2),resp(listMissGrad),...
                     'v',...
                     'MarkerEdgeColor','g',...
                     'MarkerFaceColor','g',...
                     'MarkerSize',15);
-%show sample points on which gradient(s) and response are missing
+                %show sample points on which gradient(s) and response are missing
                 plot3(sampling(listMissBoth,1),sampling(listMissBoth,2),resp(listMissBoth),...
                     'd',...
                     'MarkerEdgeColor','r',...
@@ -218,7 +218,7 @@ if dispData.on
             end
             
             %show gradients
-            if dispData.actualGrad
+            if dispData.sampleGrad
                 %find vectors with biggest slopes (in the direction of
                 %descent of the gradient
                 
@@ -232,18 +232,18 @@ if dispData.on
                 vec.Yn=vec.Y./vec.N;
                 vec.Zn=vec.Z./vec.N;
                 
-                %%TO BE REMOVED IF OK                
-%                 for ii=1:size(GR1,1)*size(GR1,2)
-%                     vec.X(ii)=-GR1(ii);
-%                     vec.Y(ii)=-GR2(ii);
-%                     vec.Z(ii)=-GR1(ii)^2-GR2(ii)^2;
-%                     %normalisation du vecteur de plus grande pente
-%                     vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
-%                     vec.Xn(ii)=vec.X(ii)/vec.N(ii);
-%                     vec.Yn(ii)=vec.Y(ii)/vec.N(ii);
-%                     vec.Zn(ii)=vec.Z(ii)/vec.N(ii);
-%                 end
-%%%%%%%%%%%%%%%
+                %%TO BE REMOVED IF OK
+                %                 for ii=1:size(GR1,1)*size(GR1,2)
+                %                     vec.X(ii)=-GR1(ii);
+                %                     vec.Y(ii)=-GR2(ii);
+                %                     vec.Z(ii)=-GR1(ii)^2-GR2(ii)^2;
+                %                     %normalisation du vecteur de plus grande pente
+                %                     vec.N(ii)=sqrt(vec.X(ii)^2+vec.Y(ii)^2+vec.Z(ii)^2);
+                %                     vec.Xn(ii)=vec.X(ii)/vec.N(ii);
+                %                     vec.Yn(ii)=vec.Y(ii)/vec.N(ii);
+                %                     vec.Zn(ii)=vec.Z(ii)/vec.N(ii);
+                %                 end
+                %%%%%%%%%%%%%%%
                 
                 %maximal size of the design spacedimension maximale espace de conception
                 dimm=max(abs(max(max(gridX))-min(min(gridX))),...
@@ -270,12 +270,11 @@ if dispData.on
             %display contours
             if dispData.contour
                 [C,h]=contourf(gridX,gridY,vZ);
-                text_handle = clabel(C,h);
-                set(text_handle,'BackgroundColor',[1 1 .6],...
+                clabel(C,h,'BackgroundColor',[1 1 .6],...
                     'Edgecolor',[.7 .7 .7]);
                 set(h,'LineWidth',2);
                 %display gradients
-                if dispData.metaGrad
+                if dispData.gridGrad
                     hold on;
                     %scaling the gradients
                     if dispData.scale
@@ -318,18 +317,18 @@ if dispData.on
                     
                 end
                 %shwos gradients
-                if dispData.actualGrad&&availGrad
+                if dispData.sampleGrad&&availGrad
                     hold on;
                     %scaling gradients
                     if dispData.scale
                         quiver(sampling(:,1),sampling(:,2),...
                             scaleFactor(1)*grad(:,1),scaleFactor(2)*grad(:,2),...
-                            'Color','g','LineWidth',2,'AutoScale','off','MaxHeadSize',0);                        
+                            'Color','g','LineWidth',2,'AutoScale','off','MaxHeadSize',0);
                     else
                         quiver(sampling(:,1),sampling(:,2),...
                             grad(:,1),grad(:,2),...
                             'Color','g','LineWidth',2,'AutoScale','off');
-                    end                    
+                    end
                 end
             end
         end
@@ -357,7 +356,7 @@ if dispData.on
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %display 1D
     elseif spa1D
-        if dispData.metaGrad&&isfield(Z,'GZ')
+        if dispData.gridGrad&&isfield(Z,'GZ')
             if ~isempty(dispData.color)
                 if ~isempty(dispData.opt)
                     plot(gridXY,Z.GZ,dispData.opt,'Color',dispData.color);
@@ -389,7 +388,7 @@ if dispData.on
         %show sample points
         if dispData.samplePts
             hold on
-            if dispData.actualGrad;val_trac=grad;else val_trac=resp;end
+            if dispData.sampleGrad;val_trac=grad;else val_trac=resp;end
             %show sample points on which all information is known
             plot(sampling(listPtsOk),val_trac(listPtsOk),...
                 '.',...
@@ -422,7 +421,7 @@ if dispData.on
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %save figure and create 
+    %save figure and create
     if dispData.save
         global num
         if isempty(num); num=1; else num=num+1; end

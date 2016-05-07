@@ -2,15 +2,20 @@
 %% L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
 function customClean
+% display warning or not
+dispWarning=false;
 
-clc;
-close all hidden;
-clear all;
-clear all global
+if ~dispWarning; warning off all;end
 
 %if display available, the windows have to be closed
 screenSize = get(0,'ScreenSize');
 if ~isequal(screenSize(3:4),[1 1])
- clf
+    clf
 end
+
+clc;
+close all hidden;
+clear all;
+clear all global;
+
 end

@@ -33,7 +33,7 @@ swf_para=1;
 meta.kern='matern32';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalization
-meta.norm=true;
+meta.normOn=true;
 %improve condition number of matrix (kriging, RBF, SVR...)
 meta.recond=true;
 %cross-validation
@@ -149,7 +149,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %normalisation
-if isfield(in,'norm');meta.norm=in.norm;end
+if isfield(in,'normOn');meta.normOn=in.normOn;end
 %improve condition number of the matrix
 if isfield(in,'recond');meta.recond=in.recond;end
 %cross-validation

@@ -42,6 +42,7 @@ meta=initMeta;
 meta.type='RBF';
 meta.cv.disp=true;
 meta.para.estim=0;
+meta.normOn=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
@@ -57,20 +58,20 @@ if isfield(K,'var');[ci68,ci95,ci99]=BuildCI(K.Z,K.var);end
 % Display
 % default values
 dispData.on=true;
-dispData.newfig=false;
-dispData.ci.on=true;
-% display confidence intervals
-dispData.render=true;
+dispData.newFig=false;
+dispData.ci.on=true; % display confidence intervals
+dispData.render=false;
 dispData.d3=true;
+dispData.samplePts=true;
 dispData.xlabel='x_1';
 dispData.ylabel='x_2';
 
 figure
 subplot(2,3,1)
-dispData.titre='Reference function';
+dispData.title='Reference function';
 displaySurrogate(gridRef,respRef,sampling,resp,grad,dispData);
 subplot(2,3,2)
-dispData.titre='Approximate function';
+dispData.title='Approximate function';
 displaySurrogate(gridRef,K.Z,sampling,resp,grad,dispData);
 subplot(2,3,4)
 dispData.title='';
@@ -78,8 +79,8 @@ dispData.render=false;
 dispData.d3=false;
 dispData.d2=true;
 dispData.contour=true;
-dispData.grad_eval=true;
-ref.Z=eval_ref;
+dispData.gridGrad=true;
+ref.Z=respRef;
 displaySurrogate(gridRef,ref,sampling,resp,grad,dispData);
 subplot(2,3,5)
 displaySurrogate(gridRef,K,sampling,resp,grad,dispData);
@@ -87,15 +88,16 @@ subplot(2,3,3)
 dispData.d3=true;
 dispData.d2=false;
 dispData.contour=false;
-dispData.grad_eval=false;
-dispData.render=true;
+dispData.gridGrad=false;
+dispData.render=false;
 dispData.title='Variance';
+dispData.samplePts=false;
 displaySurrogate(gridRef,K.var,sampling,resp,grad,dispData);
 subplot(2,3,6)
-dispData.titre='I95% confidence interval';
+dispData.title='95% confidence interval';
 dispData.trans=true;
 dispData.uni=true;
-displaySurrogateIC(gridRef,ci95,dispData,K.Z);
+displaySurrogateCI(gridRef,ci95,dispData,K.Z);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Computation and display of the errors
@@ -106,6 +108,6 @@ fprintf('=====================================\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Stop workers
-execParallel('stop',parallel)
+execParallel('stop',parallel);
 
 mesuTime(tMesu,tInit);

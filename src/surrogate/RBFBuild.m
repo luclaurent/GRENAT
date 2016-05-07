@@ -331,7 +331,6 @@ ret.build=tmp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if availGrad;txt='GRBF';else txt='RBF';end
 fprintf('\nBuilding %s\n',txt);
-mesuTime(tMesu,tInit);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end

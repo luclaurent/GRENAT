@@ -3,9 +3,9 @@
 
 function [ret]=execParallel(statut,options)
 
-global parallel
-parallel.on=false;
-parallel.num=0;
+global parallelData
+parallelData.on=false;
+parallelData.num=0;
 
 if usejava('jvm')
     %depending on the status
@@ -63,8 +63,8 @@ if usejava('jvm')
                     if arret
                         fprintf(' //!\\ Matlab parallel is active >>> STOP IT !!\n');
                         parpool('close','force')
-                        parallel.actif=false;
-                        parallel.num=0;
+                        parallelData.actif=false;
+                        parallelData.num=0;
                     else
                         fprintf(' //!\\ Matlab parallel is active >>> CONTINUE !!\n');
                     end
@@ -92,8 +92,8 @@ if usejava('jvm')
                 if arret
                     try
                         parpool(options.numWorkers);
-                        parallel.on=true;
-                        parallel.num=options.numWorkers;
+                        parallelData.on=true;
+                        parallelData.num=options.numWorkers;
                     catch 
                         fprintf('##>> Parallel starting issue <<##\n');
                         fprintf('##>> Start without parallelism <<##\n');
@@ -107,10 +107,10 @@ if usejava('jvm')
             if sum(size(curParallel))~=0
                 fprintf(' >>> Stop parallel workers <<<\n');
                 delete(gcp('nocreate'));
-                parallel.on=false;
-                parallel.num=0;
+                parallelData.on=false;
+                parallelData.num=0;
             end
     end
     
-    ret=parallel;
+    ret=parallelData;
 end

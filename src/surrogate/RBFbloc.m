@@ -147,7 +147,7 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-ret.cv=cv;
+ret.build.cv=cv;
 modWarning([],statusWarning)
 end
 %

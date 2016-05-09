@@ -22,7 +22,7 @@ if KerMatrixD
         
         parfor ii=1:ns
             %Building by column & evaluation of the Kernel function
-            [ev,dev,ddev]=feval(fctKern,distC(:,ii),paraVal);
+            [ev,dev,ddev]=multiKernel(fctKern,distC(:,ii),paraVal);
             %classical part
             KK(:,ii)=ev;
             %part of the first derivatives
@@ -35,13 +35,13 @@ if KerMatrixD
         KKdd=vertcat(KKi{:});
     else
         %evaluation of the kernel function for all inter-points 
-        [ev,dev,ddev]=feval(fctKern,distC,paraVal);        
+        [ev,dev,ddev]=multiKernel(fctKern,distC,paraVal);        
         %various parts of the kernel Matrix
         KK=zeros(ns,ns);
         KKd=zeros(ns,np*ns);
         KKdd=zeros(ns*np,ns*np);
         %classical part
-        KK(dataIn.ind.matrix)=ev;
+        KK(dataIn.ix.matrix)=ev;
         %correction of the duplicated terms on the diagonal
         KK=KK+KK'-eye(dataIn.in.ns);
         %first and second derivatives of the kernel function
@@ -60,7 +60,7 @@ else
         KK=zeros(ns,ns);
         parfor ii=1:ns
             % evaluate kernel function
-            [ev]=feval(fctKern,distC(:,ii),paraVal);
+            [ev]=multiKernel(fctKern,distC(:,ii),paraVal);
             % kernel matrix by column
             KK(:,ii)=ev;
         end

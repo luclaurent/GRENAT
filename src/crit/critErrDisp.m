@@ -93,10 +93,17 @@ end
 
 %function for displaying existing errors
 function txt=dispERR(err,type,errName)
+%sizes of all names of errors
+sName=cellfun(@numel,errName);
+maxsN=max(sName);
+
 txt=[];
 for ite=1:numel(type)
     if isfield(err,type{ite})
-        txt=[txt sprintf('%s=%g\n',errName{ite},err.(type{ite}))];
+        %add spaces (calculate number of spaces
+        nbSpaces=maxsN-sName(ite)+2;
+        charSpace=' ';
+        txt=[txt sprintf('%s:%s%g\n',errName{ite},charSpace(ones(1,nbSpaces)),err.(type{ite}))];
     end
 end
 end

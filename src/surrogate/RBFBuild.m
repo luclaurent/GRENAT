@@ -94,7 +94,7 @@ if missResp
     YY=YY(metaData.miss.resp.ixAvail);
 end
 if availGrad
-    tmp=gradn';
+    tmp=gradIn';
     der=tmp(:);
     %remove missing gradient(s)
     if missGrad
@@ -333,6 +333,7 @@ if availGrad;txt='GRBF';else txt='RBF';end
 fprintf('\nBuilding %s\n',txt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+mesuTime(tMesu,tInit);
 end
 
 

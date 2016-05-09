@@ -39,7 +39,7 @@ respRef=C.ref.resp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 meta=initMeta;
-meta.type='RBF';
+meta.type='GRBF';
 meta.cv.disp=true;
 meta.para.estim=0;
 meta.normOn=false;
@@ -101,7 +101,7 @@ displaySurrogateCI(gridRef,ci95,dispData,K.Z);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Computation and display of the errors
-err=critErrDisp(K.Z,respRef,approx);
+err=critErrDisp(K.Z,respRef,approx.build);
 fprintf('=====================================\n');
 fprintf('=====================================\n');
 

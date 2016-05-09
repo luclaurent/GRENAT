@@ -1,5 +1,5 @@
 %%%%%%%
-%MOD Luc LAURENT (version no vectorise)
+%MOD Luc LAURENT (version w/o vector writing)
 
 
 % pso_Trelea_vectorized.m
@@ -97,7 +97,7 @@
 
 function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)
 
-fprintf('\n Algorithme PSOt\n')
+fprintf('\n Algorithm PSOt\n')
 
 rand('state',sum(100*clock));
 
@@ -277,7 +277,7 @@ pbest = pos;
 %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
 %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
 %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
-out=feval_non_vect(functname,pos);
+out=fevalNonVect(functname,pos);
 %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
 %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
 %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
@@ -343,7 +343,7 @@ for i=1:me  % start epoch loop (iterations)
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
-    out        = feval_non_vect(functname,[pos;gbest]);
+    out        = fevalNonVect(functname,[pos;gbest]);
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
@@ -641,13 +641,15 @@ OUT=[gbest';gbestval];
 varargout{1}=1:te;
 varargout{2}=tr(~isnan(tr));
 end
-%function non vectorise
-function out=feval_non_vect(functname,X)
-%si parallelisme
+
+%%% MOD LUC LAURENT
+%function w/o vectorization
+function out=fevalNonVect(functname,X)
+%if parallel
 numw=0;
 if ~isempty(whos('parallel','global'))
-    global parallel
-    numw=parallel.num;
+    global parallelData
+    numw=parallelData.num;
 end
 out =zeros(size(X,1),1);
 parfor (itemod=1:size(X,1),numw)

@@ -38,15 +38,15 @@ respRef=C.ref.resp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
-meta=initMeta;
-meta.type='GRBF';
-meta.cv.disp=true;
-meta.para.estim=0;
-meta.normOn=false;
+metaData=initMeta;
+metaData.type='RBF';
+metaData.cv.disp=true;
+metaData.para.estim=true;
+metaData.normOn=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
-[approx]=BuildMeta(sampling,resp,grad,meta);
+[approx]=BuildMeta(sampling,resp,grad,metaData);
 %evaluation of the surrogate model at the grid points
 [K]=EvalMeta(gridRef,approx);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,9 +102,6 @@ displaySurrogateCI(gridRef,ci95,dispData,K.Z);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Computation and display of the errors
 err=critErrDisp(K.Z,respRef,approx.build);
-fprintf('=====================================\n');
-fprintf('=====================================\n');
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Stop workers

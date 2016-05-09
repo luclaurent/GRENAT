@@ -50,11 +50,12 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Manual definition of the initial population using LHS/IHS (GA)
+nbSampInit=10*nbPOptim;
 sampManuOn=dataMeta.para.sampManuOn;
 if sampManuOn
     nbSampleSpecif=false;
     if isfield(dataMeta.para,'nbSampInit');if ~isempty(dataMeta.para.nbSampInit);nbSampleSpecif=false;end, end
-    if nbSampleSpecif;nbSampInit=dataMeta.para.nbSampInit;else nbSampInit=10*nbPOptim; end
+    if nbSampleSpecif;nbSampInit=dataMeta.para.nbSampInit;end
 end
 %definition valeur de depart de la variable
 x0=0.1*(ub-lb);
@@ -108,7 +109,7 @@ PSOseed = 0;    % if=1 then can input particle starting positions, if= 0 then al
 % starting particle positions (first 20 at zero, just for an example)
 PSOTplot=[];
 PSOTsampling = [];
-PSOT_mv=4; %maximum speed of the particles (=4 def)
+PSOTmv=4; %maximum speed of the particles (=4 def)
 shw=0;      %update display at each iteration (0 for no display)
 ps=nbSampInit; %nb of particules
 errGoal=NaN;    %cible minimisation
@@ -190,7 +191,7 @@ if sampleMinOk
     [fval1,IX]=min(critS);
     x0=samplePop(IX,:);
 end
-%manual definition of the initial population for GA
+%manual definition of the initial population for GA or PSOt
 if ~isempty(sampManuOn)&&sampleMinOk
     doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSampInit;doePop.disp=false;doePop.type=dataMeta.para.popManu;
     samplePop=gene_doe(doePop);
@@ -343,7 +344,7 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'pso'
         fprintf('||PSOt|| Initialisation with sampling %s:\n',sampManuOn);
-        if ~dispWarning;warning off all;end
+        if ~dispWarning;warning off all;end        
         %vectorized version of PSOt
         [pso_out,...    %minimum point and associated responses
             tr,...      %minimum point at each iteration
@@ -351,7 +352,7 @@ switch methodOptim
             ]=pso_Trelea_mod(...
             fun,...             %function
             nbP,...         %number variables
-            PSOT_mv,...         %maximal speed particles (def. 4)
+            PSOTmv,...         %maximal speed particles (def. 4)
             PSOTVarRange,...   %matrix of the range of the parameters
             PSOTMinMax,...     %minimization (=0 def), maximization (=1) or other (=2)
             PSOTOptions,...    %vector of options
@@ -385,4 +386,16 @@ fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
 
 %store obtained value of the hyperparameters obtained with the minimization
 paraEstim.val=x;
+%deal with various kind of kernel functions
+paraEstim.l.val=x(1:nbP);
+paraEstim.p.val=NaN;
+paraEstim.nu.val=NaN;
+switch dataMeta.kern
+    case 'matern'
+        paraEstim.nu.val=x(end);
+    case 'expg'
+        paraEstim.nu.val=x(end);
+    case 'expgg'
+        paraEstim.nu.val=x(nbP+1:end);
+end
 end

@@ -106,7 +106,7 @@ end
 cv.bm=1/ns*sum(esR);
 %display information
 if modDebug||modFinal
-    fprintf('=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');
+    fprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');
     fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
     if availGrad
         fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
@@ -121,7 +121,7 @@ end
 %%% Classical CV method (successively removing of responses and gradients))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if modDebug
+if modDebug    
     [tMesuDebug,tInitDebug]=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -219,7 +219,7 @@ if modDebug
     [cv.then]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
     %display information
     if modDebug||modFinal
-        fprintf('=== CV-LOO with remove responses THEN the gradients (debug)\n');
+        fprintf('\n=== CV-LOO with remove responses THEN the gradients (debug)\n');
         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
         if availGrad
             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
@@ -243,7 +243,8 @@ end
 %%% at each sample point)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if (modStudy||modDebug||metaData.cv.disp)
+if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
+    
     [tMesuDebug,tInitDebug]=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -320,7 +321,7 @@ if (modStudy||modDebug||metaData.cv.disp)
     [cv.and]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
     %display informations
     if modDebug||modFinal
-        fprintf('=== CV-LOO with remove responses AND the gradients\n');
+        fprintf('\n=== CV-LOO with remove responses AND the gradients\n');
         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
         if availGrad
             fprintf('+++ Error on responses %4.2e\n',cv.and.eloor);
@@ -342,7 +343,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Compute variance of prediction at sample points + check calculation on responses and gradients (for CV)
 %%%CAUTION: not functioning for missing data
-if (metaData.cv.disp||modDebug)
+if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
     %
     [tMesuDebug,tInitDebug]=mesuTime;
     %
@@ -396,7 +397,7 @@ if (metaData.cv.disp||modDebug)
     [cv.then]=LOOCalcError(resp,cvZR,cvVarR,grad,cvGZ,ns,np,normLOO);
     %display information
     if modDebug||modFinal
-        fprintf('=== CV-LOO with remove responses THEN the gradients\n');
+        fprintf('\n=== CV-LOO with remove responses THEN the gradients\n');
         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
         if availGrad
             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
@@ -447,7 +448,7 @@ if modFinal
     cv.then.scvr_mean=cv.final.scvr_mean;
     %display information
     if modDebug||modFinal
-        fprintf('=== CV-LOO SCVR\n');
+        fprintf('\n=== CV-LOO SCVR\n');
         fprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);
         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);

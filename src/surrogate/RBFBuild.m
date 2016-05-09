@@ -299,13 +299,15 @@ metaData.cv=CvOld;
 %%hyperparameters if no estimation the values of the hyperparameters are
 %%chosen using empirical choice of  Hardy/Franke
 if metaData.para.estim
-    paraEstim=EstimPara(ret,metaData,'RBFBloc');
+    paraEstim=EstimPara(ret,metaData,'RBFBloc');    
     ret.build.para_estim=paraEstim;
     metaData.para.l.val=paraEstim.l.val;
-    metaData.para.val=paraEstim.l.val;
+    metaData.para.val=paraEstim.val;
     if isfield(paraEstim,'p')
         metaData.para.p.val=paraEstim.p.val;
-        metaData.para.val=[metaData.para.val metaData.para.p.val];
+    end
+    if isfield(paraEstim,'nu')
+        metaData.para.nu.val=paraEstim.nu.val;
     end
 else
     metaData.para.l.val=RBFComputePara(samplingIn,metaData);

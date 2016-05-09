@@ -27,6 +27,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %various situations
 modDebug=debugP;modStudy=metaData.cv.full;modFinal=false;
+
 if nargin==4
     switch type
         case 'debug' %debug mode (display criteria)
@@ -242,7 +243,7 @@ end
 %%% at each sample point)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if modStudy||modDebug||metaData.cv.disp
+if (modStudy||modDebug||metaData.cv.disp)
     [tMesuDebug,tInitDebug]=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -341,7 +342,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Compute variance of prediction at sample points + check calculation on responses and gradients (for CV)
 %%%CAUTION: not functioning for missing data
-if metaData.cv.disp||modDebug
+if (metaData.cv.disp||modDebug)
     %
     [tMesuDebug,tInitDebug]=mesuTime;
     %
@@ -460,17 +461,30 @@ end
 if metaData.cv.disp&&modFinal
     opt.newfig=false;
     figure
-    subplot(131);
-    opt.title='Original data (CV R)';
+    subplot(1,3,1);
+    opt.title='Normalized data (CV R)';
     QQplot(data.in.resp,cvZR,opt)
-    subplot(132);
-    opt.title='Original data (CV F)';
+    subplot(1,3,2);
+    opt.title='Normalized data (CV F)';
     QQplot(data.in.resp,cvZ,opt)
-    subplot(133);
-    opt.title='SCVR';
+    subplot(1,3,3);
+    opt.title='SCVR (Normalized)';
     opt.xlabel='Predicted' ;
     opt.ylabel='SCVR';
     SCVRplot(cvZR,cv.final.scvr,opt)
+    
+%     % original data
+%     subplot(2,3,4);
+%     opt.title='Original data (CV R)';
+%     QQplot(data.in.resp,cvZR,opt)
+%     subplot(2,3,5);
+%     opt.title='Original data (CV F)';
+%     QQplot(data.in.resp,cvZ,opt)
+%     subplot(2,3,6);
+%     opt.title='SCVR (Normalized)';
+%     opt.xlabel='Predicted' ;
+%     opt.ylabel='SCVR';
+%     SCVRplot(cvZR,cv.final.scvr,opt)
 end
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

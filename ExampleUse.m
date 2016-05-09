@@ -48,7 +48,7 @@ meta.normOn=false;
 %building of the surrogate model
 [approx]=BuildMeta(sampling,resp,grad,meta);
 %evaluation of the surrogate model at the grid points
-[K]=EvalMeta(gridRef,approx,meta);
+[K]=EvalMeta(gridRef,approx);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %computation of the confidence intervals

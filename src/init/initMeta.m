@@ -25,7 +25,7 @@ meta.para.p_val=2;
 %smoothness
 meta.para.nu_val=0.6;
 %order polynomial 
-meta.para.polyorder=0;
+meta.para.polyOrder=0;
 %parameter for SWF
 swf_para=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,14 +133,14 @@ switch meta.type
     case 'DACE'
         fctp='regpoly';
         %regression function
-        if isfield(in,'para');if isfield(in.para,'polyorder');meta.regr=[fctp num2str(in.polyorder,'%d')];else meta.regr=[fctp num2str(meta.para.polyorder,'%d')];end;end
+        if isfield(in,'para');if isfield(in,'polyOrder');meta.regr=[fctp num2str(in.polyorder,'%d')];else meta.regr=[fctp num2str(meta.polyorder,'%d')];end;end
         %correlation function
         if isfield(in,'corr');meta.corr=['corr' in.corr];else meta.corr=corr;end
     case {'RBF','GRBF','InRBF'}
         if isfield(in,'kern');meta.kern=in.kern;end
     case {'KRG','GKRG','InKRG','SVR','GSVR'}
         %order of the polynomial basis used for regression
-        if isfield(in,'para');if isfield(in.para,'polyorder');meta.para.polyorder=in.para.polyorder;end; end
+        if isfield(in,'para');if isfield(in.para,'polyOrder');meta.polyOrder=in.polyOrder;end; end
         %kernel function
         if isfield(in,'kern');meta.kern=in.kern;end
         

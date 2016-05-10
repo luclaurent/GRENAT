@@ -39,7 +39,7 @@ respRef=C.ref.resp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='GRBF';
+metaData.type='KRG';
 metaData.kern='matern32';
 metaData.cv.disp=true;
 metaData.para.estim=true;

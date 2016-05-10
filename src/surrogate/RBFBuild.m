@@ -6,14 +6,12 @@
 
 function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)
 
-[tMesu,tInit]=mesuTime;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display Building information
 textd='++ Type: ';
 textf='';
-fprintf('\n%s\n',[textd 'Radial Basis Function (RBF)' textf]);
+fprintf('\n%s\n',[textd 'Radial Basis Function ((G)RBF)' textf]);
 %
 fprintf('>>> Building : ');
 if ~isempty(gradIn);fprintf('GRBF \n');else fprintf('RBF \n');end
@@ -22,6 +20,8 @@ fprintf('>>> Kernel function: %s\n',metaData.kern);
 fprintf('>>> CV: ');if metaData.cv.on; fprintf('Yes\n');else fprintf('No\n');end
 fprintf('>> Computation all CV criteria: ');if metaData.cv.full; fprintf('Yes\n');else fprintf('No\n');end
 fprintf('>> Show CV: ');if metaData.cv.disp; fprintf('Yes\n');else fprintf('No\n');end
+%
+fprintf('>> Correction of matrix condition:');if metaData.recond; fprintf('Yes\n');else fprintf('No\n');end
 %
 fprintf('>>> Estimation of the hyperparameters: ');if metaData.para.estim; fprintf('Yes\n');else fprintf('No\n');end
 if metaData.para.estim
@@ -47,6 +47,7 @@ else
             fprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.val);
     end
 end
+%
 fprintf('>>> Infill criteria: ');
 if metaData.infill.on;
     fprintf('%s\n','Yes');
@@ -82,7 +83,7 @@ if isfield(metaData,'miss')
     availGrad=(~metaData.miss.grad.all&&metaData.miss.grad.on)||(availGrad&&~metaData.miss.grad.on);
 else
     metaData.miss.resp.on=false;
-    metaData.missmetaData.miss.grad.on=false;
+    metaData.miss.grad.on=false;
     missResp=missData.resp.on;
     missGrad=metaData.miss.grad.on;
 end
@@ -108,18 +109,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building indexes system for building RBF/GRBF matrices
 if availGrad
-    size_matRc=(ns^2+ns)/2;
-    size_matRa=np*(ns^2+ns)/2;
-    size_matRi=np^2*(ns^2+ns)/2;
-    iXmat=zeros(size_matRc,1);
-    iXmatA=zeros(size_matRa,1);
-    iXmatAb=zeros(size_matRa,1);
-    iXmatI=zeros(size_matRi,1);
-    iXdev=zeros(size_matRa,1);
-    iXsampling=zeros(size_matRc,2);
+    sizeMatRc=(ns^2+ns)/2;
+    sizeMatRa=np*(ns^2+ns)/2;
+    sizeMatRi=np^2*(ns^2+ns)/2;
+    iXmat=zeros(sizeMatRc,1);
+    iXmatA=zeros(sizeMatRa,1);
+    iXmatAb=zeros(sizeMatRa,1);
+    iXmatI=zeros(sizeMatRi,1);
+    iXdev=zeros(sizeMatRa,1);
+    iXsampling=zeros(sizeMatRc,2);
     
-    tmpList=zeros(size_matRc,np);
-    tmpList(:)=1:size_matRc*np;
+    tmpList=zeros(sizeMatRc,np);
+    tmpList(:)=1:sizeMatRc*np;
     
     ite=0;
     iteA=0;
@@ -239,7 +240,7 @@ if metaData.para.estim&&metaData.para.dispEstim
             cpb.setValue(itli/numel(valX));
         end
         cpb.stop();
-        %display MSE
+        %plot MSE
         figure;
         [C,h]=contourf(valX,valY,valMSEp);
         text_handle = clabel(C,h);
@@ -269,10 +270,10 @@ if metaData.para.estim&&metaData.para.dispEstim
         %store in .dat file
         if metaData.save
             ss=[valPara' valMSEp'];
-            save([dispData.doss '/RBFmse.dat'],'ss','-ascii');
+            save([dispData.directory '/RBFmse.dat'],'ss','-ascii');
         end
         
-        %display MSE
+        %plot MSE
         figure;
         semilogy(valPara,cvRippa,'r');
         hold on
@@ -283,9 +284,9 @@ if metaData.para.estim&&metaData.para.dispEstim
     
     %store graphs (if active)
     if dispData.save&&(ns<=2)
-        fileStore=saveDisp('fig_mse_cv',dispData.doss);
+        fileStore=saveDisp('fig_mse_cv',dispData.directory);
         if dispData.tex
-            fid=fopen([dispData.doss '/fig.tex'],'a+');
+            fid=fopen([dispData.directory '/fig.tex'],'a+');
             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'MSE',fileStore);
             %fprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
@@ -301,8 +302,8 @@ metaData.cv=CvOld;
 %%hyperparameters if no estimation the values of the hyperparameters are
 %%chosen using empirical choice of  Hardy/Franke
 if metaData.para.estim
-    paraEstim=EstimPara(ret,metaData,'RBFBloc');    
-    ret.build.para_estim=paraEstim;
+    paraEstim=EstimPara(ret,metaData,'RBFBloc');
+    ret.build.paraEstim=paraEstim;
     metaData.para.l.val=paraEstim.l.val;
     metaData.para.val=paraEstim.val;
     if isfield(paraEstim,'p')
@@ -316,7 +317,7 @@ else
     if numel(valL)==1;
         metaData.para.l.val=valL*ones(1,np);
     else
-         metaData.para.l.val=valL;
+        metaData.para.l.val=valL;
     end
     switch metaData.kern
         case {'expg','expgg'}
@@ -324,7 +325,7 @@ else
         case {'matern'}
             metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
         otherwise
-            metaData.para.val=metaData.para.l.val;           
+            metaData.para.val=metaData.para.l.val;
     end
 end
 
@@ -342,7 +343,6 @@ if availGrad;txt='GRBF';else txt='RBF';end
 fprintf('\n >> END Building %s\n',txt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-mesuTime(tMesu,tInit);
 end
 
 

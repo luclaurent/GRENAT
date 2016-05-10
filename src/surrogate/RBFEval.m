@@ -8,8 +8,8 @@ function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)
 % display warning or not
 dispWarning=false;
 %load varibales
-ns=metaData.in.ns;
-np=metaData.in.np;
+ns=metaData.used.ns;
+np=metaData.used.np;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -23,7 +23,7 @@ end
 if nargin==3
     sampling=specifSampling;
 else
-    sampling=metaData.in.sampling;
+    sampling=metaData.used.sampling;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +35,7 @@ dist=repmat(X,ns,1)-sampling;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %RBF/GRBF
-if metaData.in.availGrad
+if metaData.used.availGrad
     if calcGrad  %if compute gradients
         %evaluate kernel function
         [ev,dev,ddev]=multiKernel(metaData.build.kern,dist,metaData.build.para.l.val);
@@ -104,7 +104,7 @@ if nargout >=3
     if ~dispWarning;warning off all;end
     Pb=P;
     %correction for taking into account gradients (debug ....)
-    if metaData.in.availGrad
+    if metaData.used.availGrad
         Pb(ns+1:end)=-Pb(ns+1:end);
     end
     variance=1-P*(metaData.build.KK\Pb');

@@ -20,7 +20,7 @@ fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
 % Number of hyperparameters to estimate
 %anisotropy
 if dataMeta.para.aniso
-    nbP=dataProb.in.np;
+    nbP=dataProb.used.np;
     nbPOptim=nbP;
 else
     nbP=1;
@@ -179,7 +179,7 @@ end
 % if SampleMin_ than a sampling is achieved for finding a initialization
 % point of the algorithm
 if sampleMinOk
-    nbSample=nbP*10;
+    nbSample=nbPOptim*10;
     samplingType='LHS_O1';
     fprintf('||SampleMin + opti||  Sampling %s on %i points\n',samplingType,nbSample);
     doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSample;doePop.disp=false;doePop.type=samplingType;
@@ -343,15 +343,15 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'pso'
-        fprintf('||PSOt|| Initialisation with sampling %s:\n',sampManuOn);
-        if ~dispWarning;warning off all;end        
+        if sampManuOn;fprintf('||PSOt|| Initialisation with sampling %s:\n',sampManuOn);end
+        if ~dispWarning;warning off all;end
         %vectorized version of PSOt
-        [pso_out,...    %minimum point and associated responses
+        [psoOut,...    %minimum point and associated responses
             tr,...      %minimum point at each iteration
             te...       %epoch iterations
             ]=pso_Trelea_mod(...
             fun,...             %function
-            nbP,...         %number variables
+            nbPOptim,...         %number variables
             PSOTmv,...         %maximal speed particles (def. 4)
             PSOTVarRange,...   %matrix of the range of the parameters
             PSOTMinMax,...     %minimization (=0 def), maximization (=1) or other (=2)
@@ -360,8 +360,8 @@ switch methodOptim
             PSOTsampling);     %initial random sampling (=0) other iuser defined  (=1)
         
         %store information of algorithm
-        Xmin=pso_out(1:end-1)';
-        Zmin=pso_out(end);
+        Xmin=psoOut(1:end-1)';
+        Zmin=psoOut(end);
         exitflag=[];
         output.tr=tr;
         output.te=te;
@@ -381,8 +381,7 @@ switch methodOptim
 end
 
 
-mesuTime(tMesu,tInit);
-fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+
 
 %store obtained value of the hyperparameters obtained with the minimization
 paraEstim.val=x;
@@ -390,12 +389,33 @@ paraEstim.val=x;
 paraEstim.l.val=x(1:nbP);
 paraEstim.p.val=NaN;
 paraEstim.nu.val=NaN;
+
 switch dataMeta.kern
     case 'matern'
         paraEstim.nu.val=x(end);
     case 'expg'
-        paraEstim.nu.val=x(end);
+        paraEstim.p.val=x(end);
     case 'expgg'
-        paraEstim.nu.val=x(nbP+1:end);
+        paraEstim.p.val=x(nbP+1:end);
 end
+%display values of HyperParameters
+fprintf(' >>> Optimal HyperParameters\n');
+dispHyperParameter('l ',paraEstim.l.val)
+if ~isnan(paraEstim.p.val);dispHyperParameter('p ',paraEstim.p.val);end
+if ~isnan(paraEstim.nu.val);dispHyperParameter('nu',paraEstim.nu.val);end
+%
+mesuTime(tMesu,tInit);
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+end
+
+%function for displaying hyperparameters in the command window
+function dispHyperParameter(nameHP,valHP)
+fprintf(' >> %s:',nameHP);
+if numel(valHP)==1
+    fprintf(' %g',valHP);
+else
+    fprintf(' %g |',valHP(1:end-1));
+    fprintf(' %g',valHP(end));
+end    
+fprintf('\n');
 end

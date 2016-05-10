@@ -76,7 +76,7 @@ if meta.para.estim
     meta.para.p.min=1.001;
     meta.para.p.val=2;
     meta.para.nu.min=1e-3;
-    meta.para.nu.min=5;
+    meta.para.nu.max=5;
     meta.para.nu.val=3/2;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%

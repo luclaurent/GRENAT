@@ -18,9 +18,9 @@ end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %number of design parameters
-np=avaiData.in.np;
+np=avaiData.used.np;
 %number of initial sample poins
-ns=avaiData.in.ns;
+ns=avaiData.used.ns;
 %size of the required non-sample points
 nv=size(evalSample);
 %%%%%%%%=================================%%%%%%%%
@@ -47,9 +47,17 @@ else
 end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
+%normalisation of the sample points
+if avaiData.norm.on
+    reqRespN=NormRenorm(reqResp,'norm',avaiData.norm.sampling);
+else
+    reqRespN=reqResp;
+end
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
 %variables for storage
 if np>1
-    varResp=zeros(size(reqResp,1),1);
+    varResp=zeros(size(reqRespN,1),1);
     valRespN=varResp;
     valGrad=zeros(nbReqEval,np);
     valGradN=valGrad;
@@ -78,14 +86,19 @@ end
 %%%%%%% Evaluation of the surrogate model
 
 %load used initial data (sampling, responses and gradients)
+%U: used data (normalized if normlization is active)
+%I: initial data (w/o normlization)
 samplingU=avaiData.used.sampling;
 respU=avaiData.used.resp;
 gradU=avaiData.used.grad;
+samplingI=avaiData.in.sampling;
+respI=avaiData.in.resp;
+gradI=avaiData.in.grad;
 
 %check or not the interpolation quality of the surrogate model
 if avaiData.check
-    checkZ=zeros(ns,1);
-    checkGZ=zeros(ns,np);
+    checkZN=zeros(ns,1);
+    checkGZN=zeros(ns,np);
 end
 %depending of the type of surrogate model
 switch avaiData.type
@@ -94,7 +107,7 @@ switch avaiData.type
     case 'SWF'
         %% Evaluation of the 'Shepard Weighting Functions' surrogate model
         for jj=1:nbReqEval
-            [valRespN(jj),G]=SWFEval(reqResp(jj,:),avaiData);
+            [valRespN(jj),G]=SWFEval(reqRespN(jj,:),avaiData);
             valGradN(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
@@ -102,18 +115,28 @@ switch avaiData.type
     case {'GRBF','RBF','InRBF'}
         %% Evaluation of the (Gradient-Enhanced) Radial Basis Functions (RBF/GRBF)
         parfor (jj=1:nbReqEval,numWorkers)
-            [valRespN(jj),G,varResp(jj)]=RBFEval(reqResp(jj,:),avaiData);
+            [valRespN(jj),G,varResp(jj)]=RBFEval(reqRespN(jj,:),avaiData);
             valGradN(jj,:)=G;
         end
         %% check interpolation
         if avaiData.check
             parfor (jj=1:size(samplingU,1),numWorkers)
-                [checkZ(jj),G]=RBFEval(samplingU(jj,:),avaiData);
-                checkGZ(jj,:)=G;
+                [checkZN(jj),G]=RBFEval(samplingU(jj,:),avaiData);
+                checkGZN(jj,:)=G;
             end
-            checkInterp(respU,checkZ,'resp')
-            if avaiData.in.availGrad
-                checkInterp(gradU,checkGZ,'grad')
+            if avaiData.normOn;
+                checkZ=NormRenorm(checkZN,'renorm',avaiData.norm.resp);
+            else
+                checkZ=checkZN;
+            end
+            checkInterp(respI,checkZ,'resp')
+            if avaiData.used.availGrad
+                if avaiData.normOn;
+                    checkGZ=NormRenormG(checkGZN,'renorm',avaiData.norm.sampling,avaiData.norm.resp);
+                else
+                    checkGZ=checkGZN;
+                end
+                checkInterp(gradI,checkGZ,'grad')
             end
         end
         %%%%%%%%=================================%%%%%%%%
@@ -124,7 +147,7 @@ switch avaiData.type
         tzGZN=valGradN;stoGZN=valGradN;
         %% Evaluation of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
         parfor (jj=1:nbReqEval,numWorkers)
-            [valRespN(jj),G,varResp(jj),det]=KRGEval(reqResp(jj,:),avaiData);
+            [valRespN(jj),G,varResp(jj),det]=KRGEval(reqRespN(jj,:),avaiData);
             valGradN(jj,:)=G;
             stoZN(jj)=det.stoZ;
             trZN(jj)=det.trZ;
@@ -134,12 +157,12 @@ switch avaiData.type
         %% check interpolation
         if avaiData.check
             parfor (jj=1:size(samplingU,1),numWorkers)
-                [checkZ(jj),G]=eval_krg_ckrg(samplingU(jj,:),avaiData);
-                checkGZ(jj,:)=G;
+                [checkZN(jj),G]=eval_krg_ckrg(samplingU(jj,:),avaiData);
+                checkGZN(jj,:)=G;
             end
-            checkInterp(respU,checkZ,'resp')
+            checkInterp(respU,checkZN,'resp')
             if avaiData.in.pres_grad
-                checkInterp(gradU,checkGZ,'grad')
+                checkInterp(gradU,checkGZN,'grad')
             end
         end
         
@@ -149,16 +172,16 @@ switch avaiData.type
     case 'DACE'
         %% Evaluation du metamodele de Krigeage (DACE)
         for jj=1:nbReqEval
-            [valRespN(jj),G,varResp(jj)]=predictor(reqResp(jj,:),avaiData.model);
+            [valRespN(jj),G,varResp(jj)]=predictor(reqRespN(jj,:),avaiData.model);
             valGradN(jj,:)=G;
         end
         %% check interpolation
         if avaiData.check
             parfor (jj=1:size(samplingU,1),numWorkers)
-                [checkZ(jj),G]=predictor(samplingU(jj,:),avaiData.model);
-                checkGZ(jj,:)=G;
+                [checkZN(jj),G]=predictor(samplingU(jj,:),avaiData.model);
+                checkGZN(jj,:)=G;
             end
-            checkInterp(respU,checkZ,'resp')
+            checkInterp(respU,checkZN,'resp')
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
@@ -166,9 +189,9 @@ switch avaiData.type
         for degre=avaiData.deg
             %% Evaluation of the polynomial regression surrogate model
             parfor (jj=1:nbReqEval,numWorkers)
-                valRespN(jj)=LSEval(avaiData.prg.coef,reqResp(jj,1),evalSample(jj,2),avaiData);
+                valRespN(jj)=LSEval(avaiData.prg.coef,reqRespN(jj,1),evalSample(jj,2),avaiData);
                 %calculation of the gradients
-                [GRG1,GRG2]=LSEvalD(avaiData.prg.coef,reqResp(jj,1),evalSample(jj,2),avaiData);
+                [GRG1,GRG2]=LSEvalD(avaiData.prg.coef,reqRespN(jj,1),evalSample(jj,2),avaiData);
                 valGradN(jj,:)=[GRG1,GRG2];
             end
         end
@@ -177,7 +200,7 @@ switch avaiData.type
     case 'ILIN'
         %% interpolation using linear shape functions
         parfor (jj=1:nbReqEval,numWorkers)
-            [valRespN(jj),G]=LInterpEval(reqResp(jj,:),avaiData);
+            [valRespN(jj),G]=LInterpEval(reqRespN(jj,:),avaiData);
             valGradN(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
@@ -185,7 +208,7 @@ switch avaiData.type
     case 'ILAG'
         %% interpolation using linear shape functions based on Lagrange polynoms
         parfor (jj=1:nbReqEval,numWorkers)
-            [valRespN(jj),G]=LagInterpEval(reqResp(jj,:),avaiData);
+            [valRespN(jj),G]=LagInterpEval(reqRespN(jj,:),avaiData);
             valGradN(jj,:)=G;
             
         end
@@ -217,20 +240,18 @@ end
 % Renormalization of the data
 % responses
 if avaiData.norm.on
-    valResp=NormRenorm(valRespN,'renorm',avaiData.norm);
+    valResp=NormRenorm(valRespN,'renorm',avaiData.norm.resp);
     %specific components
     if exist('stoZN','var')&&exist('trZN','var')
-        stoZ=NormRenorm(stoZN,'renorm',avaiData.norm);
-        trZ=NormRenorm(trZN,'renorm',avaiData.norm);
+        stoZ=NormRenorm(stoZN,'renorm',avaiData.norm.resp);
+        trZ=NormRenorm(trZN,'renorm',avaiData.norm.resp);
     end
-    %gradient
+    %gradients
     if exist('valGradN','var')
-        infos.std_e=donnees.norm.std_eval;
-        infos.std_t=donnees.norm.std_tirages;
-        valGrad=NormRenormG(valGradN,'renorm',infos);
+        valGrad=NormRenormG(valGradN,'renorm',avaiData.norm.sampling,avaiData.norm.resp);
         if exist('stoGZN','var')&&exist('trGZN','var')
-            stoGZ=NormRenormG(stoGZN,'renorm',infos);
-            trGZ=NormRenormG(trGZN,'renorm',infos);
+            stoGZ=NormRenormG(stoGZN,'renorm',avaiData.norm.sampling,avaiData.norm.resp);
+            trGZ=NormRenormG(trGZN,'renorm',avaiData.norm.sampling,avaiData.norm.resp);
         end
     end
 else
@@ -239,7 +260,7 @@ else
         stoZ=stoZN;
         trZ=trZN;
     end
-    %gradient
+    %gradients
     if exist('valGradN','var')
         valGrad=valGradN;
         if exist('stoGZN','var')&&exist('trGZN','var')

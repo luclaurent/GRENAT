@@ -147,8 +147,8 @@ outMeta.used.grad=gradOk;
 outMeta=mergestruct(outMeta,metaData);
 outMeta.norm.on=metaData.normOn;
 if metaData.normOn
-    outMeta.norm=mergestruct(outMeta.norm,infoDataR);
-    outMeta.norm=mergestruct(outMeta.norm,infoDataS);
+    outMeta.norm.resp=infoDataR;
+    outMeta.norm.sampling=infoDataS;
 end
 
 mesuTime(tMesu,tInit);

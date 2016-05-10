@@ -40,9 +40,11 @@ else
     fprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
     switch metaData.kern
         case {'expg','expgg'}
-            fprintf('>> Value of the exponent: [%d , %d]\n',metaData.para.p.val);
+            fprintf('>> Value of the exponent:')
+            fprintf(' %d',metaData.para.p.val);
+            fprintf('\n');
         case {'matern'}
-            fprintf('>> Value of nu (Matern): [%d , %d]\n',metaData.para.nu.val);
+            fprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.val);
     end
 end
 fprintf('>>> Infill criteria: ');
@@ -188,13 +190,13 @@ distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store variables
-ret.in.sampling=samplingIn;
-ret.in.dist=distC;
-ret.in.resp=respIn;
-ret.in.availGrad=availGrad;
-ret.in.grad=gradIn;
-ret.in.np=np;
-ret.in.ns=ns;
+ret.used.sampling=samplingIn;
+ret.used.dist=distC;
+ret.used.resp=respIn;
+ret.used.availGrad=availGrad;
+ret.used.grad=gradIn;
+ret.used.np=np;
+ret.used.ns=ns;
 ret.ix.matrix=iXmat;
 ret.ix.sampling=iXsampling;
 if availGrad
@@ -310,14 +312,19 @@ if metaData.para.estim
         metaData.para.nu.val=paraEstim.nu.val;
     end
 else
-    metaData.para.l.val=RBFComputePara(samplingIn,metaData);
+    valL=RBFComputePara(samplingIn,metaData);
+    if numel(valL)==1;
+        metaData.para.l.val=valL*ones(1,np);
+    else
+         metaData.para.l.val=valL;
+    end
     switch metaData.kern
         case {'expg','expgg'}
             metaData.para.val=[metaData.para.l.val metaData.para.p.val];
         case {'matern'}
             metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
         otherwise
-            metaData.para.val=metaData.para.l.val;
+            metaData.para.val=metaData.para.l.val;           
     end
 end
 
@@ -332,7 +339,7 @@ ret.build=tmp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if availGrad;txt='GRBF';else txt='RBF';end
-fprintf('\nBuilding %s\n',txt);
+fprintf('\n >> END Building %s\n',txt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 mesuTime(tMesu,tInit);

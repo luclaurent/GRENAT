@@ -47,9 +47,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chargement des grandeurs
-np=data.in.np;
-ns=data.in.ns;
-availGrad=data.in.availGrad;
+np=data.used.np;
+ns=data.used.ns;
+availGrad=data.used.availGrad;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,9 +133,9 @@ if modDebug
     KK=dataBloc.build.KK;
     fctKern=dataBloc.build.fct;
     para=dataBloc.build.para;
-    sampling=data.in.sampling;
-    grad=data.in.grad;
-    resp=data.in.resp;
+    sampling=data.used.sampling;
+    grad=data.used.grad;
+    resp=data.used.resp;
     %along the sample points
     parfor (itS=1:ns,numWorkers)
         %remove responeses
@@ -165,8 +165,8 @@ if modDebug
         dataCV.build.para=para;
         dataCV.build.w=cvW;
         dataCV.build.KK=cvKK;
-        dataCV.in.ns=ns;
-        dataCV.in.sampling=cvSampling;
+        dataCV.used.ns=ns;
+        dataCV.used.sampling=cvSampling;
         dataCV.infill.on=false;
         %evaluate response, gradients and variances on removed sample points
         [Z,~,variance]=RBFEval(sampling(itS,:),dataCV);
@@ -256,9 +256,9 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
     KK=dataBloc.build.KK;    
     fctKern=dataBloc.build.kern;
     para=dataBloc.build.para;
-    sampling=data.in.sampling;
-    grad=data.in.grad;
-    resp=data.in.resp;
+    sampling=data.used.sampling;
+    grad=data.used.grad;
+    resp=data.used.resp;
     %along the sample points
     parfor (itS=1:ns,numWorkers)
         %load data
@@ -305,8 +305,8 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         dataCV.build.para=para;
         dataCV.build.w=cvW;
         dataCV.build.KK=cvKK;
-        dataCV.in.ns=ns-1; %remove one sample point
-        dataCV.in.sampling=cvSampling;
+        dataCV.used.ns=ns-1; %remove one sample point
+        dataCV.used.sampling=cvSampling;
         dataCV.infill.on=false;
         %evaluate response, gradient and variance at the remove sample point
         [Z,GZ,variance]=RBFEval(sampling(itS,:),dataCV);
@@ -352,8 +352,8 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
     cvGZ=zeros(ns,np);
     KK=dataBloc.build.KK;
     yy=data.build.y;
-    grad=data.in.grad;
-    resp=data.in.resp;
+    grad=data.used.grad;
+    resp=data.used.resp;
     for itS=1:ns
         %remove only responses
         pos=itS;
@@ -464,10 +464,10 @@ if metaData.cv.disp&&modFinal
     figure
     subplot(1,3,1);
     opt.title='Normalized data (CV R)';
-    QQplot(data.in.resp,cvZR,opt)
+    QQplot(data.used.resp,cvZR,opt)
     subplot(1,3,2);
     opt.title='Normalized data (CV F)';
-    QQplot(data.in.resp,cvZ,opt)
+    QQplot(data.used.resp,cvZ,opt)
     subplot(1,3,3);
     opt.title='SCVR (Normalized)';
     opt.xlabel='Predicted' ;
@@ -477,10 +477,10 @@ if metaData.cv.disp&&modFinal
 %     % original data
 %     subplot(2,3,4);
 %     opt.title='Original data (CV R)';
-%     QQplot(data.in.resp,cvZR,opt)
+%     QQplot(data.used.resp,cvZR,opt)
 %     subplot(2,3,5);
 %     opt.title='Original data (CV F)';
-%     QQplot(data.in.resp,cvZ,opt)
+%     QQplot(data.used.resp,cvZ,opt)
 %     subplot(2,3,6);
 %     opt.title='SCVR (Normalized)';
 %     opt.xlabel='Predicted' ;

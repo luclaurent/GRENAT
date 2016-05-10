@@ -7,9 +7,9 @@ if nargin<4;parallelW=1;end
 %kernel derivatives matrices required
 if nargout>1;KerMatrixD=true;else KerMatrixD=false;end
 %extract data
-distC=dataIn.in.dist;
-ns=dataIn.in.ns;
-np=dataIn.in.np;
+distC=dataIn.used.dist;
+ns=dataIn.used.ns;
+np=dataIn.used.np;
 %if derivatives required
 if KerMatrixD
     %if parallel workers are available
@@ -43,7 +43,7 @@ if KerMatrixD
         %classical part
         KK(dataIn.ix.matrix)=ev;
         %correction of the duplicated terms on the diagonal
-        KK=KK+KK'-eye(dataIn.in.ns);
+        KK=KK+KK'-eye(dataIn.used.ns);
         %first and second derivatives of the kernel function
         KKd(dataIn.ix.matrixA)=-dev(dataIn.ix.dev);
         KKd(dataIn.ix.matrixAb)=dev(dataIn.ix.devb);
@@ -69,7 +69,7 @@ else
         %without diagonal
         KK=zeros(ns,ns);
         % evaluate kernel function
-        [ev]=multiKernel(fctKern,dataIn.in.dist,paraVal);
+        [ev]=multiKernel(fctKern,distC,paraVal);
         KK(dataIn.ix.matrix)=ev;
         %Build full kernel matrix
         KK=KK+KK'+eye(ns);

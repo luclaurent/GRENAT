@@ -68,16 +68,16 @@ switch type
                 stdI(ind)=1;
             end
             if MissNorm
-                outm=(inm-meanI(ones(infoData.eval.nb,1),:))./...
-                    stdI(ones(infoData.eval.nb,1),:);
+                outm=(inm-meanI(ones(infoData.resp.nb,1),:))./...
+                    stdI(ones(infoData.resp.nb,1),:);
                 out=NaN*zeros(size(in));
-                out(infoData.eval.ix_dispo)=outm;
+                out(infoData.resp.iXavail)=outm;
             else
                 out=(inm-meanI(ones(ns,1),:))./stdI(ones(ns,1),:);
             end
             %store normalisation data
             if infoDataAvail
-                infoData.moy=meanI;
+                infoData.mean=meanI;
                 infoData.std=stdI;
             end
         end

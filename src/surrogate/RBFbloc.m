@@ -15,8 +15,8 @@ factKK='LU' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Load useful variables
-ns=dataIn.in.ns;
-np=dataIn.in.np;
+ns=dataIn.used.ns;
+np=dataIn.used.np;
 fctKern=metaData.kern;
 ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,7 +39,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Build of the RBF/GRBF matrix
-if dataIn.in.availGrad
+if dataIn.used.availGrad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,valPara);
     KK=[KK KKa;-KKa' KKi];
 else
@@ -52,7 +52,7 @@ if metaData.miss.resp.on
     KK(:,metaData.miss.resp.ix_miss)=[];
 end
 %gradients
-if dataIn.in.availGrad
+if dataIn.used.availGrad
     if metaData.miss.grad.on
         rep_ev=ns-metaData.miss.resp.nb;
         KK(rep_ev+metaData.miss.grad.ixt_miss_line,:)=[];

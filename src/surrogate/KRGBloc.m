@@ -1,6 +1,7 @@
 %% Building of the KRG/GKRG matrix and computation of the log-likelihood
 % L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
 
+% the kernel matrix K can be also designetd as the correlation matrix
 
 function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn)
 
@@ -181,43 +182,43 @@ switch factKK
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %QR factorization
-        [Qrcc,Rrcc,Prcc]=qr(KK);
-        Qtrcc=Qrcc';
-        yQ=Qtrcc*dataIn.build.y;
-        fctQ=Qtrcc*dataIn.build.fct;
-        fcR=dataIn.build.fc*Prcc/Rrcc;
+        [QK,RK,PK]=qr(KK);
+        QtK=QK';
+        yQ=QtK*dataIn.build.y;
+        fctQ=QtK*dataIn.build.fct;
+        fcK=dataIn.build.fc*PK/RK;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute beta coefficient
-        fcCfct=fcR*fctQ;
-        block2=fcR*yQ;
+        fcCfct=fcK*fctQ;
+        block2=fcK*yQ;
         beta=fcCfct\block2;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute gamma coefficient
-        gamma=Prcc*(Rrcc\(yQ-fctQ*beta));
+        gamma=PK*(RK\(yQ-fctQ*beta));
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %save variables
         buildData.yQ=yQ;
         buildData.fctQ=fctQ;
-        buildData.fcR=fcR;
+        buildData.fcK=fcK;
         buildData.fcCfct=fcCfct;
-        buildData.Rrcc=Rrcc;
-        buildData.Qrcc=Qrcc;
-        buildData.Qtrcc=Qtrcc;
-        buildData.Prcc=Prcc;
+        buildData.RK=RK;
+        buildData.QK=QK;
+        buildData.QtK=QtK;
+        buildData.PK=PK;
         
     case 'LU'
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %LU factorization
-        [Lrcc,Urcc,Prcc]=lu(KK,'vector');
-        yP=dataIn.build.y(Prcc,:);
-        fctP=dataIn.build.fct(Prcc,:);
-        yL=Lrcc\yP;
-        fctL=Lrcc\fctP;
-        fcU=dataIn.build.fc/Urcc;
+        [LK,UK,PK]=lu(KK,'vector');
+        yP=dataIn.build.y(PK,:);
+        fctP=dataIn.build.fct(PK,:);
+        yL=LK\yP;
+        fctL=LK\fctP;
+        fcU=dataIn.build.fc/UK;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute beta coefficient
@@ -227,7 +228,7 @@ switch factKK
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute gamma coefficient
-        gamma=Urcc\(yL-fctL*beta);
+        gamma=UK\(yL-fctL*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %save variables
@@ -235,19 +236,19 @@ switch factKK
         buildData.fcU=fcU;
         buildData.fctL=fctL;
         buildData.fcCfct=fcCfct;
-        buildData.Lrcc=Lrcc;
-        buildData.Urcc=Urcc;
-        buildData.Prcc=Prcc;
+        buildData.LL=LK;
+        buildData.UK=UK;
+        buildData.PK=PK;
     case 'LL'
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Cholesky's fatorization
         %%% to be degugged
-        Lrcc=chol(KK,'lower');
-        Ltrcc=Lrcc';
-        yL=Lrcc\dataIn.build.y;
-        fctL=Lrcc\dataIn.build.fct;
-        fcL=dataIn.build.fc/Ltrcc;
+        LK=chol(KK,'lower');
+        LtK=LK';
+        yL=LK\dataIn.build.y;
+        fctL=LK\dataIn.build.fct;
+        fcL=dataIn.build.fc/LtK;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute beta coefficient
@@ -257,7 +258,7 @@ switch factKK
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute gamma coefficient
-        gamma=Ltrcc\(yL-fctL*beta);
+        gamma=LtK\(yL-fctL*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %save variables
@@ -265,8 +266,8 @@ switch factKK
         buildData.fcL=fcL;
         buildData.fctL=fctL;
         buildData.fcCfct=fcCfct;
-        buildData.Ltrcc=Ltrcc;
-        buildData.Lrcc=Lrcc;
+        buildData.LtK=LtK;
+        buildData.LK=LK;
     otherwise
         %classical approach
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,7 +287,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%store de donnees
+%store variables
 if exist('origCond','var');buildData.origCond=origCond;end
 if exist('newCond','var');buildData.newCond=newCond;end
 

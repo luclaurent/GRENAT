@@ -106,8 +106,7 @@ switch factKK
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient beta
-        %%approche classique
+        %classical approach
         if ~dispWarning; warning off all;end
         w=KK\dataIn.build.y;
         if ~dispWarning; warning on all;end
@@ -116,7 +115,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%stockage des grandeurs
+%store variables
 if exist('origCond','var');buildData.origCond=origCond;end
 if exist('newCond','var');buildData.newCond=newCond;end
 if exist('QKK','var');buildData.QKK=QKK;end

@@ -1,8 +1,8 @@
-%% Fonction assurant le calcul de diverses erreurs par validation croisee dans le cas du Krigeage/CoKrigeage
+%% Function for computing various Cross-Validation criteria for KRG/GKRG
 %L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
 %nouvelle version du 19/10/2012
 
-function cv=cross_validate_krg_ckrg(data_block,meta,type)
+function cv=KRGCV(data_block,meta,type)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% OPTIONS

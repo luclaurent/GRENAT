@@ -381,7 +381,7 @@ ret.build.lilog=lilog;
 if metaData.cv
     [tMesu,tInit]=mesuTime;
     [ret.cv]=KRGCV(ret,meta);    
-    fprintf(' > Execution validation croisee\n');
+    fprintf(' > Computation CV\n');
     mesuTime(tMesu,tInit);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

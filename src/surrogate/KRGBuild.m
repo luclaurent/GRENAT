@@ -1,5 +1,7 @@
 %% function for building kriging and cokriging surrogate model
-%% L. LAURENT -- 12/12/2011 -- luc.laurent@lecnam.net
+% KRG: kriging
+% GKRG: cokriging w/- gradients
+% L. LAURENT -- 12/12/2011 -- luc.laurent@lecnam.net
 
 function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)
 
@@ -375,13 +377,12 @@ ret.build=tmp;
 ret.build.lilog=lilog;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%Validation croisee
-%%%%%Calcul des differentes erreurs
+%% Cross-validation (compute various errors)
 if metaData.cv
-    id=tic;
-    [ret.cv]=KRGCV(ret,meta);
-    tpsCV=toc(id);
-    fprintf('Execution validation croisee %s: %6.4d s\n\n',txt,tpsCV);
+    [tMesu,tInit]=mesuTime;
+    [ret.cv]=KRGCV(ret,meta);    
+    fprintf(' > Execution validation croisee\n');
+    mesuTime(tMesu,tInit);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

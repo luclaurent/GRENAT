@@ -1,7 +1,7 @@
 %% Building of the RBF/GRBF matrix and computation of the CV criteria
 % L. LAURENT -- 24/01/2012 -- luc.laurent@lecnam.net
 
-function [crit_min,ret]=RBFBloc(dataIn,metaData,paraVal,type)
+function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)
 
 % display warning(s) or not
 dispWarning=false;
@@ -9,7 +9,7 @@ statusWarning=modWarning([],[]);
 % function to be minimised for finding hyperparameters
 fctMin='eloot'; %eloot/eloor/eloog
 %coefficient of reconditionning
-coef=eps;
+coefRecond=eps;
 % chosen factorization for RBF matrix
 factKK='LU' ; %LU %QR %LL %None
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -23,14 +23,14 @@ ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %if the hyperparameter is defined 
 if nargin>=3
-    valPara=paraVal;
+    paraVal=paraValIn;
     %in this case, the single required criterion is computed (estimation)
     typeCV='estim';
 else
-    valPara=metaData.para.val;
+    paraVal=metaData.para.val;
     typeCV='final';
 end
-metaData.para.l.val=valPara;
+metaData.para.l.val=paraVal;
 
 if nargin==4
     if strcmp(type,'etud');typeCV=type;end
@@ -40,10 +40,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Build of the RBF/GRBF matrix
 if dataIn.used.availGrad
-    [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,valPara);
+    [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,paraVal);
     KK=[KK KKa;-KKa' KKi];
 else
-    [KK]=KernMatrix(fctKern,dataIn,valPara);
+    [KK]=KernMatrix(fctKern,dataIn,paraVal);
 end
 %in the case of missing data
 %responses
@@ -65,7 +65,7 @@ end
 %Improve condition number of the RBF/GRBF Matrix
 if metaData.recond
     %origCond=condest(KK);
-    KK=KK+coef*speye(size(KK));
+    KK=KK+coefRecond*speye(size(KK));
     %newCond=condest(KK);
 %          fprintf('>>> Improving of the condition number: \n%g >> %g (%g) <<<\n',...
 %              origCond,newCond,abs(origCond-newCond)/origCond);
@@ -77,7 +77,7 @@ end
 if nargin==2 % in the phase of building
     newCond=condest(KK);
     fprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond)
-    if newCond>1e12
+    if newCond>1e16
         fprintf('+++ //!\\ Bad condition number\n');
     end
 end
@@ -137,13 +137,13 @@ ret.build=buildData;
 if metaData.cv.on||metaData.para.estim
     [cv]=RBFCV(ret,dataIn,metaData,typeCV);
     if isfield(cv,fctMin)
-        crit_min=cv.(fctMin);
+        critMin=cv.(fctMin);
     else
-        crit_min=cv.eloot;
+        critMin=cv.eloot;
     end
 else
     cv=[];
-    crit_min=[];
+    critMin=[];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

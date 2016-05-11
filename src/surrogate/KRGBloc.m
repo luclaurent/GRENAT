@@ -1,304 +1,321 @@
-%% Construction des blocs du Krigeage
-%%L. LAURENT -- 05/01/2011 -- laurent@lmt.ens-cachan.fr
+%% Building of the KRG/GKRG matrix and computation of the log-likelihood
+% L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
 
 
-function [lilog,ret]=bloc_krg_ckrg(donnees,meta,para)
+function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn)
 
-%coefficient de reconditionnement
-coef=(10+size(donnees.build.fct,1))*eps;
-% type de factorisation de la matrice de correlation
-if strcmp(meta.type,'CKRG')
-    fact_rcc='LU';
+%coefficient for reconditionning (co)kriging matrix
+coefRecond=(10+size(dataIn.build.fct,1))*eps;
+% chosen factorization for (G)KRG matrix
+if strcmp(metaData.type,'CKRG')
+    factKK='LU';
 else
-    fact_rcc='LU' ; %LU %QR %LL %None
+    factKK='LU' ; %LU %QR %LL %None
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%chargement grandeurs utiles
-nb_val=donnees.in.nb_val;
-nb_var=donnees.in.nb_var;
-tiragesn=donnees.in.tiragesn;
-fct_corr=meta.corr;
+%Load useful variables
+ns=dataIn.in.nb_val;
+np=dataIn.in.nb_var;
+fctKern=metaData.kern;
+ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%si para defini alors on charge cette nouvelle valeur
+%if the hyperparameter is defined
 final=false;
 if nargin==3
-    para_val=para;
+    paraVal=paraValIn;
 else
-    para_val=meta.para.val;
+    paraVal=metaData.para.val;
     final=true;
 end
-ret=[];
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%creation matrice de correlation
-if donnees.in.pres_grad
-    %si parallelisme actif ou non
-    if meta.worker_parallel>=2
-        %%%%%% PARALLEL %%%%%%
-        %morceaux de la matrice GKRG
-        rc=zeros(nb_val,nb_val);
-        rca=cell(1,nb_val);
-        rci=cell(1,nb_val);
-        parfor ii=1:nb_val
-            %distance 1 tirages aux autres (construction par colonne)
-            one_tir=tiragesn(ii,:);
-            dist=one_tir(ones(1,nb_val),:)-tiragesn;
-            % evaluation de la fonction de correlation
-            [ev,dev,ddev]=feval(fct_corr,dist,para_val);
-            %morceau de la matrice issue du modele KRG classique
-            rc(:,ii)=ev;
-            %morceau des derivees premieres
-            rca{ii}=dev;
-            %matrice des derivees secondes
-            rci{ii}=-reshape(ddev,nb_var,nb_val*nb_var);
-        end
-        %%construction des matrices completes
-        rcaC=horzcat(rca{:});
-        rciC=vertcat(rci{:});
-        %Matrice de complete
-        rcc=[rc rcaC;rcaC' rciC];
-    else
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %evaluation de la fonction de correlation pour les differents
-        %intersites
-        [ev,dev,ddev]=feval(fct_corr,donnees.in.dist,para_val);        
-        
-        %morceau de la matrice issu du krigeage
-        rc=zeros(nb_val,nb_val);
-        rca=zeros(nb_val,nb_var*nb_val);
-        rci=zeros(nb_val*nb_var,nb_val*nb_var);
-        
-        rc(donnees.ind.matrix)=ev;
-        rc=rc+rc'-eye(donnees.in.nb_val);
-        
-        rca(donnees.ind.matrixA)=dev(donnees.ind.dev);
-        rca(donnees.ind.matrixAb)=-dev(donnees.ind.devb);
-        rci(donnees.ind.matrixI)=-ddev(:);
-        %extraction de la diagonale (procedure pour eviter les doublons)
-        diago=0;   % //!!\\ corrections envisageables ici
-        val_diag=spdiags(rci,diago);
-        rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
-
-        %Matrice de correlation du Cokrigeage
-        rcc=[rc rca;rca' rci];
-    end
-    %si donnees manquantes
-    if donnees.manq.eval.on
-        rcc(donnees.manq.eval.ix_manq,:)=[];
-        rcc(:,donnees.manq.eval.ix_manq)=[];
-    end
-    
-    %si donnees manquantes
-    if donnees.manq.grad.on
-        rep_ev=nb_val-donnees.manq.eval.nb;
-        rcc(rep_ev+donnees.manq.grad.ixt_manq_line,:)=[];
-        rcc(:,rep_ev+donnees.manq.grad.ixt_manq_line)=[];
-    end
+%Build of the KRG/GRKG matrix
+if dataIn.used.availGrad
+    [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,paraVal);
+    KK=[KK KKa;KKa' KKi];
 else
-    
-    if meta.worker_parallel>=2
-        %%%%%% PARALLEL %%%%%%
-        %matrice de KRG classique par bloc
-        rcc=zeros(nb_val,nb_val);
-        parfor ii=1:nb_val
-            %distance 1 tirages aux autres (construction par colonne)
-            one_tir=tiragesn(ii,:);
-            dist=one_tir(ones(1,nb_val),:)-tiragesn;
-            % evaluation de la fonction de correlation
-            [ev]=feval(fct_corr,dist,para_val);
-            %morceau de la matrice issue du modele RBF classique
-            rcc(:,ii)=ev;
-        end
-    else        
-        %matrice de correlation du Krigeage par matrice triangulaire inferieure
-        %sans diagonale
-        rcc=zeros(nb_val,nb_val);
-        % evaluation de la fonction de correlation        
-        [ev]=feval(fct_corr,donnees.in.dist,para_val);
-        rcc(donnees.ind.matrix)=ev;
-        %Construction matrice complete
-        rcc=rcc+rcc'+eye(nb_val);
-    end
-    %toc
-    %si donnees manquantes
-    if donnees.manq.eval.on
-        rcc(donnees.manq.eval.ix_manq,:)=[];
-        rcc(:,donnees.manq.eval.ix_manq)=[];
+    [KK]=KernMatrix(fctKern,dataIn,paraVal);
+end
+%in the case of missing data
+%responses
+if metaData.miss.resp.on
+    KK(metaData.miss.resp.ix_miss,:)=[];
+    KK(:,metaData.miss.resp.ix_miss)=[];
+end
+%gradients
+if dataIn.used.availGrad
+    if metaData.miss.grad.on
+        rep_ev=ns-metaData.miss.resp.nb;
+        KK(rep_ev+metaData.miss.grad.ixt_miss_line,:)=[];
+        KK(:,rep_ev+metaData.miss.grad.ixt_miss_line)=[];
     end
 end
 
-%passage en sparse
-%rcc=sparse(rcc);
+% if dataIn.in.pres_grad
+%     %si parallelisme actif ou non
+%     if metaData.worker_parallel>=2
+%         %%%%%% PARALLEL %%%%%%
+%         %morceaux de la matrice GKRG
+%         rc=zeros(ns,ns);
+%         rca=cell(1,ns);
+%         rci=cell(1,ns);
+%         parfor ii=1:ns
+%             %distance 1 tirages aux autres (construction par colonne)
+%             one_tir=tiragesn(ii,:);
+%             dist=one_tir(ones(1,ns),:)-tiragesn;
+%             % evaluation de la fonction de correlation
+%             [ev,dev,ddev]=feval(fctKern,dist,paraVal);
+%             %morceau de la matrice issue du modele KRG classique
+%             rc(:,ii)=ev;
+%             %morceau des derivees premieres
+%             rca{ii}=dev;
+%             %matrice des derivees secondes
+%             rci{ii}=-reshape(ddev,np,ns*np);
+%         end
+%         %%construction des matrices completes
+%         rcaC=horzcat(rca{:});
+%         rciC=vertcat(rci{:});
+%         %Matrice de complete
+%         rcc=[rc rcaC;rcaC' rciC];
+%     else
+% 
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         %evaluation de la fonction de correlation pour les differents
+%         %intersites
+%         [ev,dev,ddev]=feval(fctKern,dataIn.in.dist,paraVal);        
+%         
+%         %morceau de la matrice issu du krigeage
+%         rc=zeros(ns,ns);
+%         rca=zeros(ns,np*ns);
+%         rci=zeros(ns*np,ns*np);
+%         
+%         rc(dataIn.ind.matrix)=ev;
+%         rc=rc+rc'-eye(dataIn.in.nb_val);
+%         
+%         rca(dataIn.ind.matrixA)=dev(dataIn.ind.dev);
+%         rca(dataIn.ind.matrixAb)=-dev(dataIn.ind.devb);
+%         rci(dataIn.ind.matrixI)=-ddev(:);
+%         %extraction de la diagonale (procedure pour eviter les doublons)
+%         diago=0;   % //!!\\ corrections envisageables ici
+%         val_diag=spdiags(rci,diago);
+%         rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
+% 
+%         %Matrice de correlation du Cokrigeage
+%         rcc=[rc rca;rca' rci];
+%     end
+%     %si donnees manquantes
+%     if dataIn.manq.eval.on
+%         rcc(dataIn.manq.eval.ix_manq,:)=[];
+%         rcc(:,dataIn.manq.eval.ix_manq)=[];
+%     end
+%     
+%     %si donnees manquantes
+%     if dataIn.manq.grad.on
+%         rep_ev=ns-dataIn.manq.eval.nb;
+%         rcc(rep_ev+dataIn.manq.grad.ixt_manq_line,:)=[];
+%         rcc(:,rep_ev+dataIn.manq.grad.ixt_manq_line)=[];
+%     end
+% else
+%     
+%     if metaData.worker_parallel>=2
+%         %%%%%% PARALLEL %%%%%%
+%         %matrice de KRG classique par bloc
+%         rcc=zeros(ns,ns);
+%         parfor ii=1:ns
+%             %distance 1 tirages aux autres (construction par colonne)
+%             one_tir=tiragesn(ii,:);
+%             dist=one_tir(ones(1,ns),:)-tiragesn;
+%             % evaluation de la fonction de correlation
+%             [ev]=feval(fctKern,dist,paraVal);
+%             %morceau de la matrice issue du modele RBF classique
+%             rcc(:,ii)=ev;
+%         end
+%     else        
+%         %matrice de correlation du Krigeage par matrice triangulaire inferieure
+%         %sans diagonale
+%         rcc=zeros(ns,ns);
+%         % evaluation de la fonction de correlation        
+%         [ev]=feval(fctKern,dataIn.in.dist,paraVal);
+%         rcc(dataIn.ind.matrix)=ev;
+%         %Construction matrice complete
+%         rcc=rcc+rcc'+eye(ns);
+%     end
+%     %toc
+%     %si donnees manquantes
+%     if dataIn.manq.eval.on
+%         rcc(dataIn.manq.eval.ix_manq,:)=[];
+%         rcc(:,dataIn.manq.eval.ix_manq)=[];
+%     end
+% end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%amelioration du conditionnement de la matrice de correlation
-if meta.recond
-    %cond_orig=condest(rcc);
-    rcc=rcc+coef*speye(size(rcc));
-    %cond_new=condest(rcc);
-    %fprintf('>>> Amelioration conditionnement: \n%g >> %g  <<<\n',...
-    %    cond_orig,cond_new);
+%Improve condition number of the RBF/GRBF Matrix
+if metaData.recond
+    %origCond=condest(rcc);
+    KK=KK+coefRecond*speye(size(KK));
+    %newCond=condest(rcc);
+    %fprintf('>>> Improving of the condition number: \n%g >> %g  <<<\n',...
+    %    origCond,newCond);
     
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%conditionnement de la matrice de correlation
-if final   %en phase de construction
-    cond_new=condest(rcc);
-    fprintf('Conditionnement R: %6.5e\n',cond_new)
+%condition number of the KRG/GKRG Matrix
+if final   % in the phase of building
+    newCond=condest(KK);
+    fprintf('Condition number KRG/GKRG matrix: %4.2e\n',newCond)
+    if newCond>1e16
+        fprintf('+++ //!\\ Bad condition number\n');
+    end
 end
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%approche factorisee
-switch fact_rcc
+%Factorization of the matrix
+switch factKK
     case 'QR'
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %factorisation QR de la matrice de covariance
-        [Qrcc,Rrcc,Prcc]=qr(rcc);
+        %QR factorization
+        [Qrcc,Rrcc,Prcc]=qr(KK);
         Qtrcc=Qrcc';
-        yQ=Qtrcc*donnees.build.y;
-        fctQ=Qtrcc*donnees.build.fct;
-        fcR=donnees.build.fc*Prcc/Rrcc;
+        yQ=Qtrcc*dataIn.build.y;
+        fctQ=Qtrcc*dataIn.build.fct;
+        fcR=dataIn.build.fc*Prcc/Rrcc;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient beta
-        %%approche classique
+        %compute beta coefficient
         fcCfct=fcR*fctQ;
         block2=fcR*yQ;
         beta=fcCfct\block2;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient gamma
+        %compute gamma coefficient
         gamma=Prcc*(Rrcc\(yQ-fctQ*beta));
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %sauvegarde variables
-        build_data.yQ=yQ;
-        build_data.fctQ=fctQ;
-        build_data.fcR=fcR;
-        build_data.fcCfct=fcCfct;
-        build_data.Rrcc=Rrcc;
-        build_data.Qrcc=Qrcc;
-        build_data.Qtrcc=Qtrcc;
-        build_data.Prcc=Prcc;
+        %save variables
+        buildData.yQ=yQ;
+        buildData.fctQ=fctQ;
+        buildData.fcR=fcR;
+        buildData.fcCfct=fcCfct;
+        buildData.Rrcc=Rrcc;
+        buildData.Qrcc=Qrcc;
+        buildData.Qtrcc=Qtrcc;
+        buildData.Prcc=Prcc;
         
     case 'LU'
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %factorisation LU de la matrice de covariance
-        [Lrcc,Urcc,Prcc]=lu(rcc,'vector');
-        yP=donnees.build.y(Prcc,:);
-        fctP=donnees.build.fct(Prcc,:);
+        %LU factorization
+        [Lrcc,Urcc,Prcc]=lu(KK,'vector');
+        yP=dataIn.build.y(Prcc,:);
+        fctP=dataIn.build.fct(Prcc,:);
         yL=Lrcc\yP;
         fctL=Lrcc\fctP;
-        fcU=donnees.build.fc/Urcc;
+        fcU=dataIn.build.fc/Urcc;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient beta
-        %%approche classique
+        %compute beta coefficient
         fcCfct=fcU*fctL;
         block2=fcU*yL;
         beta=fcCfct\block2;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient gamma
+        %compute gamma coefficient
         gamma=Urcc\(yL-fctL*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %sauvegarde variables
-        build_data.yL=yL;
-        build_data.fcU=fcU;
-        build_data.fctL=fctL;
-        build_data.fcCfct=fcCfct;
-        build_data.Lrcc=Lrcc;
-        build_data.Urcc=Urcc;
-        build_data.Prcc=Prcc;
+        %save variables
+        buildData.yL=yL;
+        buildData.fcU=fcU;
+        buildData.fctL=fctL;
+        buildData.fcCfct=fcCfct;
+        buildData.Lrcc=Lrcc;
+        buildData.Urcc=Urcc;
+        buildData.Prcc=Prcc;
     case 'LL'
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %factorisation Cholesky de la matrice de covariance
-        %%% A debugguer
-        Lrcc=chol(rcc,'lower');
+        %Cholesky's fatorization
+        %%% to be degugged
+        Lrcc=chol(KK,'lower');
         Ltrcc=Lrcc';
-        yL=Lrcc\donnees.build.y;
-        fctL=Lrcc\donnees.build.fct;
-        fcL=donnees.build.fc/Ltrcc;
+        yL=Lrcc\dataIn.build.y;
+        fctL=Lrcc\dataIn.build.fct;
+        fcL=dataIn.build.fc/Ltrcc;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient beta
+        %compute beta coefficient
         fcCfct=fcL*fctL;
         block2=fcL*yL;
         beta=fcCfct\block2;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul du coefficient gamma
+        %compute gamma coefficient
         gamma=Ltrcc\(yL-fctL*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %sauvegarde variables
-        build_data.yL=yL;
-        build_data.fcL=fcL;
-        build_data.fctL=fctL;
-        build_data.fcCfct=fcCfct;
-        build_data.Ltrcc=Ltrcc;
-        build_data.Lrcc=Lrcc;
+        %save variables
+        buildData.yL=yL;
+        buildData.fcL=fcL;
+        buildData.fctL=fctL;
+        buildData.fcCfct=fcCfct;
+        buildData.Ltrcc=Ltrcc;
+        buildData.Lrcc=Lrcc;
     otherwise
-        
+        %classical approach
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %calcul des coefficients beta et gamma
-        %%approche classique
-        fcC=donnees.build.fc/rcc;
-        fcCfct=fcC*donnees.build.fct;
-        block2=((donnees.build.fc/rcc)*donnees.build.y);
+        %compute gamma and beta coefficients
+        fcC=dataIn.build.fc/KK;
+        fcCfct=fcC*dataIn.build.fct;
+        block2=((dataIn.build.fc/KK)*dataIn.build.y);
         beta=fcCfct\block2;
-        gamma=rcc\(donnees.build.y-donnees.build.fct*beta);
+        gamma=KK\(dataIn.build.y-dataIn.build.fct*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %sauvegarde variables
-        build_data.fcC=fcC;
-        build_data.fcCfct=fcCfct;
+        %save variables
+        buildData.fcC=fcC;
+        buildData.fcCfct=fcCfct;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%sauvegarde de donnees
-if exist('cond_orig','var');build_data.cond_orig=cond_orig;end
-if exist('cond_new','var');build_data.cond_new=cond_new;end
+%store de donnees
+if exist('origCond','var');buildData.origCond=origCond;end
+if exist('newCond','var');buildData.newCond=newCond;end
 
-build_data.beta=beta;
-build_data.gamma=gamma;
-build_data.rcc=rcc;
-build_data.deg=meta.deg;
-build_data.para=meta.para;
-build_data.fact_rcc=fact_rcc;
-ret.build=build_data;
+buildData.beta=beta;
+buildData.gamma=gamma;
+buildData.KK=KK;
+buildData.polyOrder=metaData.polyOrder;
+buildData.para=metaData.para;
+buildData.kern=metaData.kern;
+buildData.factKK=factKK;
+ret.build=buildData;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%variance de prediction
-ret.build.sig2=1/size(rcc,1)*...
-    ((donnees.build.y-donnees.build.fct*ret.build.beta)'*ret.build.gamma);
+%variance of the Gaussian process
+ret.build.sig2=1/size(KK,1)*...
+    ((dataIn.build.y-dataIn.build.fct*ret.build.beta)'*ret.build.gamma);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Maximum de vraisemblance
-[ret.lilog,ret.li]=likelihood(ret);
-lilog=ret.lilog;
+%compute of the Likelihood (and log-likelihood)
+[lilog,ret.li]=KRGLikelihood(ret);
+ret.lilog=lilog;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %denormalisation sigma^2
-if meta.norm&&~isempty(donnees.norm.std_eval)
-    ret.build.sig2=ret.build.sig2*donnees.norm.std_eval^2;
+if metaData.normOn&&~isempty(dataIn.norm.resp.std)
+    ret.build.sig2=ret.build.sig2*dataIn.norm.resp.std^2;
 else
     ret.build.sig2=ret.build.sig2;
 end
-
-
+%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

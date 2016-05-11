@@ -1,5 +1,5 @@
 %% Interpolation par fonction polynomiale de Lagrange
-%% L. LAURENT -- 06/06/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 06/06/2011 -- luc.laurent@lecnam.net
 
 function [Z,GZ]=interp_lag(x,tirages,eval)
 

@@ -1,5 +1,5 @@
 %% Function for computing various Cross-Validation criteria for KRG/GKRG
-%L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
+%L. LAURENT -- 14/12/2011 -- luc.laurent@lecnam.net
 %nouvelle version du 19/10/2012
 
 function cv=KRGCV(data_block,meta,type)

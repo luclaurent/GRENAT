@@ -1,5 +1,5 @@
 %%fonction realisant l'affichage des surfaces de reponse
-%%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
+%%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 
 
 function fig_handle=affichage(grille,Z,tirages,eval,grad,aff)

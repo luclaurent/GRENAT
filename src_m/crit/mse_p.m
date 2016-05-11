@@ -1,5 +1,5 @@
 %%fonction permettant le calcul de l'erreur MSE
-%%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
+%%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 
 %%Zex: correspond a  l'ensemble des valeurs obtenues par evalutions de la
 %%fonction objectif

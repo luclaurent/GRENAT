@@ -1,5 +1,5 @@
 %%fonction permettant le calcul de l'erreur R2
-%%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
+%%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 %% Correction 20/03/2012 
 % -- Calcul du coefficient de correlation de Pearson et correlation ajustée
 % -- et coefficient de détermination et détermination ajustée

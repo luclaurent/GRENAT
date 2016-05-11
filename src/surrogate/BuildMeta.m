@@ -1,5 +1,5 @@
 %% function for building surrogate model
-%% L. LAURENT -- 04/12/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 04/12/2011 -- luc.laurent@lecnam.net
 
 function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)
 

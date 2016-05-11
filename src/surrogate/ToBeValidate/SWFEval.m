@@ -1,5 +1,5 @@
 %%% Fonction assurant l'evaluation du metamodele 'Shepard Weighting Functions'
-%% L. LAURENT -- 23/11/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 23/11/2011 -- luc.laurent@lecnam.net
 
 function [Z,GZ]=eval_swf(U,swf)
 

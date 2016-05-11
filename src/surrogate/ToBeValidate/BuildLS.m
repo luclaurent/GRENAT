@@ -1,7 +1,7 @@
 %%fonction permettant d'etablir une regression polynomiale à partir d'un
 %%ensemble de points
 
-%%L. LAURENT      luc.laurent@ens-cachan.fr
+%%L. LAURENT      luc.laurent@lecnam.net
 %% 10/03/2010
 
 

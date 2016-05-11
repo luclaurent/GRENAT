@@ -1,5 +1,5 @@
 %% Function for estimating hyperparameters
-% L. LAURENT -- 24/01/2012 -- laurent@lmt.ens-cachan.fr
+% L. LAURENT -- 24/01/2012 -- luc.laurent@lecnam.net
 
 function paraEstim=EstimPara(dataProb,dataMeta,funObj)
 % display warning or not

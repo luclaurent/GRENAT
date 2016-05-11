@@ -1,5 +1,5 @@
 %%fonction permettant le calcul de l'erreur RMAE
-%%L. LAURENT   --  22/03/2010   --  luc.laurent@ens-cachan.fr
+%%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net
 
 % Jin 2000 "Comparative Studies Of Metamodeling Techniques under Multiple Modeling Criteria"
 

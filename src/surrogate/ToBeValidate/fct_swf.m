@@ -1,5 +1,5 @@
 %%% Calcul des fonctions de ponderation au point considere et ses gradients
-%% L. LAURENT -- 23/11/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 23/11/2011 -- luc.laurent@lecnam.net
 
 function [W,Wm,dW,dWm]=fct_swf(point,tirages,para)
 

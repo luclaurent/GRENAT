@@ -1,5 +1,5 @@
 %% procedure de calcul automatique du param�tre RBF
-% L. LAURENT -- 23/02/2012 -- laurent@lmt.ens-cachan.fr
+% L. LAURENT -- 23/02/2012 -- luc.laurent@lecnam.net
 
 function para=calc_para_rbf(tirages,data)
 

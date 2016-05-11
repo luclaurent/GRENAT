@@ -1,5 +1,5 @@
 %% Fonction assurant l'arret de la procedure d'optimisation
-%% L. LAURENT -- 07/01/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 07/01/2011 -- luc.laurent@lecnam.net
 
 function stop=stopEstim(x,optimValues,state)
 

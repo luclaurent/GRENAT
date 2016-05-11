@@ -1,5 +1,5 @@
 %% Fonction assurant l'evaluation du metamodele de Krigeage ou de Cokrigeage
-% L. LAURENT -- 15/12/2011 -- laurent@lmt.ens-cachan.fr
+% L. LAURENT -- 15/12/2011 -- luc.laurent@lecnam.net
 
 function [Z,GZ,variance,details]=eval_krg_ckrg(U,donnees,tir_part)
 % affichages warning ou non

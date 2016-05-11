@@ -1,5 +1,5 @@
 %% Fonction assurant l'estimation des parametres (longueur de correlation)
-% L. LAURENT -- 14/12/2011 -- laurent@lmt.ens-cachan.fr
+% L. LAURENT -- 14/12/2011 -- luc.laurent@lecnam.net
 
 function para_estim=estim_para_krg_ckrg(donnees,meta)
 % affichages warning ou non

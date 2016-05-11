@@ -1,5 +1,5 @@
 %%initialization of the directories (MATLAB's path)
-%%L. LAURENT -- 30/01/2014  -- luc.laurent@ens-cachan.fr
+%%L. LAURENT -- 30/01/2014  -- luc.laurent@lecnam.net
 
 function doss=initDirGRENAT(pathcustom,other)
 

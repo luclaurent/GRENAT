@@ -1,5 +1,5 @@
 %% Interpolation par fonction de base lineaire
-%% L. LAURENT -- 30/05/2011 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 30/05/2011 -- luc.laurent@lecnam.net
 
 function [Z,GZ]=interp_lin(x,tirages,eval)
 

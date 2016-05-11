@@ -1,5 +1,5 @@
 %% fonction assurant la construction du RBF a gradients indirect
-%% L. LAURENT -- 25/05/2012 -- laurent@lmt.ens-cachan.fr
+%% L. LAURENT -- 25/05/2012 -- luc.laurent@lecnam.net
 
 function ret=meta_inrbf(tirages,eval,grad,meta,manq)
 

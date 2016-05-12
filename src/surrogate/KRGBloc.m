@@ -81,21 +81,21 @@ end
 %         %Matrice de complete
 %         rcc=[rc rcaC;rcaC' rciC];
 %     else
-% 
+%
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %         %evaluation de la fonction de correlation pour les differents
 %         %intersites
-%         [ev,dev,ddev]=feval(fctKern,dataIn.in.dist,paraVal);        
-%         
+%         [ev,dev,ddev]=feval(fctKern,dataIn.in.dist,paraVal);
+%
 %         %morceau de la matrice issu du krigeage
 %         rc=zeros(ns,ns);
 %         rca=zeros(ns,np*ns);
 %         rci=zeros(ns*np,ns*np);
-%         
+%
 %         rc(dataIn.ind.matrix)=ev;
 %         rc=rc+rc'-eye(dataIn.in.nb_val);
-%         
+%
 %         rca(dataIn.ind.matrixA)=dev(dataIn.ind.dev);
 %         rca(dataIn.ind.matrixAb)=-dev(dataIn.ind.devb);
 %         rci(dataIn.ind.matrixI)=-ddev(:);
@@ -103,7 +103,7 @@ end
 %         diago=0;   % //!!\\ corrections envisageables ici
 %         val_diag=spdiags(rci,diago);
 %         rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
-% 
+%
 %         %Matrice de correlation du Cokrigeage
 %         rcc=[rc rca;rca' rci];
 %     end
@@ -112,7 +112,7 @@ end
 %         rcc(dataIn.manq.eval.ix_manq,:)=[];
 %         rcc(:,dataIn.manq.eval.ix_manq)=[];
 %     end
-%     
+%
 %     %si donnees manquantes
 %     if dataIn.manq.grad.on
 %         rep_ev=ns-dataIn.manq.eval.nb;
@@ -120,7 +120,7 @@ end
 %         rcc(:,rep_ev+dataIn.manq.grad.ixt_manq_line)=[];
 %     end
 % else
-%     
+%
 %     if metaData.worker_parallel>=2
 %         %%%%%% PARALLEL %%%%%%
 %         %matrice de KRG classique par bloc
@@ -134,11 +134,11 @@ end
 %             %morceau de la matrice issue du modele RBF classique
 %             rcc(:,ii)=ev;
 %         end
-%     else        
+%     else
 %         %matrice de correlation du Krigeage par matrice triangulaire inferieure
 %         %sans diagonale
 %         rcc=zeros(ns,ns);
-%         % evaluation de la fonction de correlation        
+%         % evaluation de la fonction de correlation
 %         [ev]=feval(fctKern,dataIn.in.dist,paraVal);
 %         rcc(dataIn.ind.matrix)=ev;
 %         %Construction matrice complete

@@ -144,14 +144,14 @@ switch avaiData.type
     case {'KRG','GKRG','InKRG'}
         %specific storage
         stoZN=valRespN;trZN=valRespN;
-        tzGZN=valGradN;stoGZN=valGradN;
+        trGZN=valGradN;stoGZN=valGradN;
         %% Evaluation of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
         parfor (jj=1:nbReqEval,numWorkers)
             [valRespN(jj),G,varResp(jj),det]=KRGEval(reqRespN(jj,:),avaiData);
             valGradN(jj,:)=G;
             stoZN(jj)=det.stoZ;
             trZN(jj)=det.trZ;
-            tzGZN(jj,:)=det.tzGZ;
+            trGZN(jj,:)=det.trGZ;
             stoGZN(jj,:)=det.stoGZ;
         end
         %% check interpolation
@@ -369,6 +369,8 @@ end
 
 end
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% function for checking interpolation
 function checkInterp(ZRef,ZApp,type)
 limitResp=1e-4;

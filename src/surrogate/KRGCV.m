@@ -45,9 +45,9 @@ if modFinal;[tMesu,tInit]=mesuTime;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load variables
-np=dataBloc.use.nb_var;
-ns=dataBloc.in.nb_val;
-availGrad=dataBloc.in.availGrad;
+np=dataBloc.used.np;
+ns=dataBloc.used.ns;
+availGrad=dataBloc.used.availGrad;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,7 +57,7 @@ availGrad=dataBloc.in.availGrad;
 %coefficient of (co)Kriging
 coefKRG=dataBloc.build.gamma;
 %partial extraction of the diagonal of the inverse of the kernel matrix
-switch dataBloc.build.fact_rcc
+switch dataBloc.build.factKK
     case 'QR'
         fcC=dataBloc.build.fcK*dataBloc.build.QtK;
         diagMK=diag(dataBloc.build.RK\dataBloc.build.QtK)-...
@@ -155,9 +155,9 @@ if modDebug
     tiragesn=dataBloc.in.tiragesn;
     grad=dataBloc.in.grad;
     resp=dataBloc.in.eval;
-    dimC=dataBloc.build.dim_fc;
-     %along the sample points
-   parfor (itS=1:ns,numWorkers)
+    dimC=dataBloc.build.sizeFc;
+    %along the sample points
+    parfor (itS=1:ns,numWorkers)
         %Load data
         dataCV=dataBloc;
         %remove data
@@ -169,7 +169,7 @@ if modDebug
         cvFcCfct=cvFcc*cvFct;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-      %compute coefficients
+        %compute coefficients
         modWarning(dispWarning);
         dataCV.build.factKK='None';
         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
@@ -188,7 +188,7 @@ if modDebug
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if metaData.norm.on
+        if metaData.normOn
             dataCV.build.sig2=sig2*metaData.norm.resp.std^2;
         else
             dataCV.build.sig2=sig2;
@@ -212,7 +212,7 @@ if modDebug
         [Z,~,variance]=KRGEval(sampling(itS,:),dataCV);
         cvZ(itS)=Z;
         cvVar(itS)=variance;
-         %remove gradients
+        %remove gradients
         if availGrad
             for posGr=1:np
                 %load data
@@ -245,11 +245,11 @@ if modDebug
                 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if metaData.norm.on
-            sig2=sig2*metaData.norm.resp.std^2;
-        end
-            dataCV.build.sig2=sig2;
-        
+                if metaData.normOn
+                    sig2=sig2*metaData.norm.resp.std^2;
+                end
+                dataCV.build.sig2=sig2;
+                
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %store data
@@ -292,7 +292,7 @@ if modDebug
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
-     mesuTime(tMesuDebugA,tInitDebugA);
+    mesuTime(tMesuDebugA,tInitDebugA);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -315,9 +315,9 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
     sampling=dataBloc.used.sampling;
     grad=dataBloc.used.grad;
     resp=dataBloc.used.resp;
-    dimC=dataBloc.build.dim_fc;
+    dimC=dataBloc.build.sizeFc;
     %along the sample points
-    parfor (itS=1:ns,numWorkers)
+  parfor (itS=1:ns,numWorkers)
         %load data
         dataCV=dataBloc;
         %remove data
@@ -341,10 +341,10 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         cvFcCfct=cvFcc*cvFct;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %compute coefficients        
+        %compute coefficients
         dataCV.build.factKK='None';
         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
-        coefKRG=cviMKrg\[cvY;zeros(dimC,1)];
+        coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -355,13 +355,14 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         
         %compute variance of the gaussian process
         sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);
-        modWarning(~dispWarning);        
+        modWarning(~dispWarning);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if metaData.norm.on
+
+        if metaData.normOn
             sig2=sig2*metaData.norm.resp.std^2;
         end
-            dataCV.build.sig2=sig2;
+        dataCV.build.sig2=sig2;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -382,9 +383,9 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  %% Compute errors
+    %% Compute errors
     [cv.and]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
-     %display informations
+    %display informations
     if modDebug||modFinal
         fprintf('\n=== CV-LOO with remove responses AND the gradients\n');
         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
@@ -419,7 +420,7 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
     KK=dataBloc.build.rcc;
     grad=dataBloc.used.grad;
     resp=dataBloc.used.resp;
-    dimC=dataBloc.build.dim_fc;
+    dimC=dataBloc.build.sizeFc;
     for itS=1:ns
         %load data and remove responses
         PP=[KK(itS,:) fct(itS,:)];
@@ -432,24 +433,23 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute coefficients
         modWarning(dispWarning);
-        cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
-        cviMKrg=inv(cvMKrg);
-        coefKRG=cviMKrg\[cvY;zeros(dimC,1)];
+        cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];        
+        coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %extraction of the beta and gamma coefficients
         beta=coefKRG((end-dimC+1):end);
         gamma=coefKRG(1:(end-dimC));
-        %compute 
+        %compute
         sig2=1/size(cvKK,1)*((cvY-cvFct*beta)'*gamma);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if metaData.norm.on
+        if metaData.normOn
             sig2=sig2*metaData.norm.resp.std^2;
         end
-            dataCV.build.sig2=sig2;
+        dataCV.build.sig2=sig2;
         %compute variance at the removed point
-        cvVarR(itS)=sig2*(1-PP*(cviMKrg*PP'));
+        cvVarR(itS)=sig2*(1-PP*(cvMKrg\PP'));
         
         %compute response
         cvZR(itS)=PP*coefKRG;
@@ -508,7 +508,7 @@ if modFinal
     yy=dataBloc.build.y;
     fct=dataBloc.build.fct;
     KK=dataBloc.build.KK;
-    dimC=dataBloc.build.dim_fc;
+    dimC=dataBloc.build.sizeFc;
     %
     parfor (itS=1:ns,numWorkers)
         
@@ -523,7 +523,7 @@ if modFinal
         %compute coefficients
         modWarning(dispWarning);
         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
-        coefKRG=cviMKrg\[cvY;zeros(dimC,1)];
+        coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %extraction of the beta coefficient
@@ -533,12 +533,11 @@ if modFinal
         sig2=1/size(cvKK,1)*((cvY-cvFct*beta)'/cvKK)*(cvY-cvFct*beta);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        if metaData.norm.on
+        if metaData.normOn
             sig2=sig2*metaData.norm.resp.std^2;
         end
-            dataCV.build.sig2=sig2;
         %comute variance at the removed sample point
-        cvVarR(itS)=sig2*(1-PP*(cviMKrg*PP'));
+        cvVarR(itS)=sig2*(1-PP*(cviMKrg\PP'));
         modWarning(~dispWarning);
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -555,7 +554,7 @@ if modFinal
         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
     end
-    mesuTime(tMesuDebugC,tInitDebugC);
+    mesuTime(tMesuDebugD,tInitDebugD);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -576,18 +575,18 @@ if metaData.cv.disp&&modFinal
     opt.ylabel='SCVR';
     SCVRplot(cvZR,cv.final.scvr,opt)
     
-%     % original data
-%     subplot(2,3,4);
-%     opt.title='Original data (CV R)';
-%     QQplot(data.used.resp,cvZR,opt)
-%     subplot(2,3,5);
-%     opt.title='Original data (CV F)';
-%     QQplot(data.used.resp,cvZ,opt)
-%     subplot(2,3,6);
-%     opt.title='SCVR (Normalized)';
-%     opt.xlabel='Predicted' ;
-%     opt.ylabel='SCVR';
-%     SCVRplot(cvZR,cv.final.scvr,opt)
+    %     % original data
+    %     subplot(2,3,4);
+    %     opt.title='Original data (CV R)';
+    %     QQplot(data.used.resp,cvZR,opt)
+    %     subplot(2,3,5);
+    %     opt.title='Original data (CV F)';
+    %     QQplot(data.used.resp,cvZ,opt)
+    %     subplot(2,3,6);
+    %     opt.title='SCVR (Normalized)';
+    %     opt.xlabel='Predicted' ;
+    %     opt.ylabel='SCVR';
+    %     SCVRplot(cvZR,cv.final.scvr,opt)
 end
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

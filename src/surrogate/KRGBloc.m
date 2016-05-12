@@ -3,7 +3,11 @@
 
 % the kernel matrix K can be also designetd as the correlation matrix
 
-function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn)
+%this function can be used as an objective function for finding
+%hyperparameters via optimization
+
+
+function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)
 
 %coefficient for reconditionning (co)kriging matrix
 coefRecond=(10+size(dataIn.build.fct,1))*eps;
@@ -16,15 +20,15 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Load useful variables
-ns=dataIn.in.nb_val;
-np=dataIn.in.nb_var;
+ns=dataIn.used.ns;
+np=dataIn.used.np;
 fctKern=metaData.kern;
 ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %if the hyperparameter is defined
 final=false;
-if nargin==3
+if nargin>=3
     paraVal=paraValIn;
 else
     paraVal=metaData.para.val;
@@ -54,7 +58,7 @@ if dataIn.used.availGrad
     end
 end
 
-% if dataIn.in.pres_grad
+% if datain.used.pres_grad
 %     %si parallelisme actif ou non
 %     if metaData.worker_parallel>=2
 %         %%%%%% PARALLEL %%%%%%
@@ -86,19 +90,19 @@ end
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %         %evaluation de la fonction de correlation pour les differents
 %         %intersites
-%         [ev,dev,ddev]=feval(fctKern,dataIn.in.dist,paraVal);
+%         [ev,dev,ddev]=feval(fctKern,datain.used.dist,paraVal);
 %
 %         %morceau de la matrice issu du krigeage
 %         rc=zeros(ns,ns);
 %         rca=zeros(ns,np*ns);
 %         rci=zeros(ns*np,ns*np);
 %
-%         rc(dataIn.ind.matrix)=ev;
-%         rc=rc+rc'-eye(dataIn.in.nb_val);
+%         rc(datain.usedd.matrix)=ev;
+%         rc=rc+rc'-eye(datain.used.nb_val);
 %
-%         rca(dataIn.ind.matrixA)=dev(dataIn.ind.dev);
-%         rca(dataIn.ind.matrixAb)=-dev(dataIn.ind.devb);
-%         rci(dataIn.ind.matrixI)=-ddev(:);
+%         rca(datain.usedd.matrixA)=dev(datain.usedd.dev);
+%         rca(datain.usedd.matrixAb)=-dev(datain.usedd.devb);
+%         rci(datain.usedd.matrixI)=-ddev(:);
 %         %extraction de la diagonale (procedure pour eviter les doublons)
 %         diago=0;   % //!!\\ corrections envisageables ici
 %         val_diag=spdiags(rci,diago);
@@ -139,8 +143,8 @@ end
 %         %sans diagonale
 %         rcc=zeros(ns,ns);
 %         % evaluation de la fonction de correlation
-%         [ev]=feval(fctKern,dataIn.in.dist,paraVal);
-%         rcc(dataIn.ind.matrix)=ev;
+%         [ev]=feval(fctKern,datain.used.dist,paraVal);
+%         rcc(datain.usedd.matrix)=ev;
 %         %Construction matrice complete
 %         rcc=rcc+rcc'+eye(ns);
 %     end
@@ -236,7 +240,7 @@ switch factKK
         buildData.fcU=fcU;
         buildData.fctL=fctL;
         buildData.fcCfct=fcCfct;
-        buildData.LL=LK;
+        buildData.LK=LK;
         buildData.UK=UK;
         buildData.PK=PK;
     case 'LL'
@@ -296,7 +300,6 @@ buildData.gamma=gamma;
 buildData.KK=KK;
 buildData.polyOrder=metaData.polyOrder;
 buildData.para=metaData.para;
-buildData.kern=metaData.kern;
 buildData.factKK=factKK;
 ret.build=buildData;
 
@@ -313,10 +316,8 @@ ret.lilog=lilog;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %denormalisation sigma^2
-if metaData.normOn&&~isempty(dataIn.norm.resp.std)
-    ret.build.sig2=ret.build.sig2*dataIn.norm.resp.std^2;
-else
-    ret.build.sig2=ret.build.sig2;
+if metaData.normOn&&~isempty(metaData.norm.resp.std)
+    ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
 end
 %
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

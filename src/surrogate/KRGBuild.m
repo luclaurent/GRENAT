@@ -16,7 +16,7 @@ fprintf('>>> Building : ');
 if ~isempty(gradIn);fprintf('GKRG \n');else fprintf('KRG \n');end
 fprintf('>>> Kernel function: %s\n',metaData.kern);
 fprintf('>> Deg : %i ',metaData.polyOrder);
-if metaData.deg==0; fprintf('(Ordinary)\n');else fprintf('(Universal)\n');end;
+if metaData.polyOrder==0; fprintf('(Ordinary)\n');else fprintf('(Universal)\n');end;
 %
 fprintf('>>> CV: ');if metaData.cv.on; fprintf('Yes\n');else fprintf('No\n');end
 fprintf('>> Computation all CV criteria: ');if metaData.cv.full; fprintf('Yes\n');else fprintf('No\n');end
@@ -266,7 +266,6 @@ ret.build.sizeFc=size(valFunPoly,2);
 ret.build.y=YY;
 ret.build.funPoly=funPoly;
 ret.build.kern=metaData.kern;
-ret.miss=missData;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Compute log-likelihood for estimating parameters
@@ -367,7 +366,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building final elements of the RBF surrogate model (matrices, coefficients & log-likelihood)
 % by taking into account the values of hyperparameters obtained previously
-[lilog,blocKRG]=KRGBloc(ret,meta);
+[lilog,blocKRG]=KRGBloc(ret,metaData);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -378,7 +377,7 @@ ret.build.lilog=lilog;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Cross-validation (compute various errors)
-if metaData.cv
+if metaData.cv.on
     [tMesu,tInit]=mesuTime;
     [ret.cv]=KRGCV(ret,metaData);
     fprintf(' > Computation CV\n');

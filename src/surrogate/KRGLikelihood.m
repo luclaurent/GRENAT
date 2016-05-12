@@ -7,7 +7,7 @@
 function [logLi,Li,liSack]=KRGLikelihood(dataKRG)
 
 %size of the kernel matrix
-sizeK=size(dataKRG.build.K,1);
+sizeK=size(dataKRG.build.KK,1);
 
 %computation of the log-likelihood (Jones 1993 / Leary 2004)
 switch dataKRG.build.factKK

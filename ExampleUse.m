@@ -42,7 +42,7 @@ metaData=initMeta;
 metaData.type='KRG';
 metaData.kern='matern32';
 metaData.cv.disp=true;
-metaData.para.estim=true;
+metaData.para.estim=false;
 metaData.normOn=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

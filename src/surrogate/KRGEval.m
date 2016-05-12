@@ -37,7 +37,7 @@ distS=repmat(X,ns,1)-sampling;
 %% KRG/GKRG
 %%compute response provided by the metamodel at the non sample point
 %definition des dimensions of the matrix/vector for KRG or GKRG
-if metaData.in.pres_grad
+if metaData.used.availGrad
     sizeMatVec=ns*(np+1);
 else
     sizeMatVec=ns;
@@ -50,7 +50,7 @@ if calcGrad
 end
 
 %KRG/GKRG
-if metaData.in.availGrad
+if metaData.used.availGrad
     if calcGrad  %if compute gradients
         %evaluate kernel function
         [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);

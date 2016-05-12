@@ -33,8 +33,10 @@ else
     respN=respIn;
     samplingN=samplingIn;
     gradN=gradIn;
-    infoDataR=[];
-    infoDataS=[];
+    infoDataR.std=[];
+    infoDataR.mean=[];
+    infoDataS.std=[];
+    infoDataS.mean=[];
 end
 
 %%%%%%%%=================================%%%%%%%%
@@ -66,6 +68,20 @@ else
     respOk=respN;
     gradOk=[];
 end
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%concatenate data
+outMeta.used.sampling=samplingOk;
+outMeta.used.resp=respOk;
+outMeta.used.grad=gradOk;
+if metaData.normOn
+    metaData.norm.resp=infoDataR;
+    metaData.norm.sampling=infoDataS;
+end
+outMeta=mergestruct(outMeta,metaData);
+outMeta.norm.on=metaData.normOn;
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
 %Building surrogate model
 switch typeMeta
     %%%%%%%%=================================%%%%%%%%
@@ -141,15 +157,7 @@ end
 outMeta.in.sampling=samplingIn;
 outMeta.in.resp=respIn;
 outMeta.in.grad=gradIn;
-outMeta.used.sampling=samplingOk;
-outMeta.used.resp=respOk;
-outMeta.used.grad=gradOk;
-outMeta=mergestruct(outMeta,metaData);
-outMeta.norm.on=metaData.normOn;
-if metaData.normOn
-    outMeta.norm.resp=infoDataR;
-    outMeta.norm.sampling=infoDataS;
-end
+
 
 mesuTime(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

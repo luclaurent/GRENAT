@@ -1,6 +1,9 @@
 %% Building of the RBF/GRBF matrix and computation of the CV criteria
 % L. LAURENT -- 24/01/2012 -- luc.laurent@lecnam.net
 
+%this function can be used as an objective function for finding
+%hyperparameters via optimization
+
 function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)
 
 % display warning(s) or not

@@ -149,8 +149,6 @@ end
 ret.build.cv=cv;
 modWarning([],statusWarning)
 end
-%
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function for stopping the display of the warning and restoring initial

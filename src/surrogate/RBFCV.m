@@ -3,7 +3,7 @@
 %new version: 31/05/2012
 
 function [cv]=RBFCV(dataBloc,data,metaData,type)
-[tMesu,tInit]=mesuTime;
+
 %%DEBUG: procedure for missing data has to be coded
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,10 +43,10 @@ if nargin==4
 else
     modFinal=true;
 end
-
+if modFinal;[tMesu,tInit]=mesuTime;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%chargement des grandeurs
+%load variables
 np=data.used.np;
 ns=data.used.ns;
 availGrad=data.used.availGrad;
@@ -122,7 +122,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if modDebug    
-    [tMesuDebug,tInitDebug]=mesuTime;
+    [tMesuDebugA,tInitDebugA]=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %store response at removed point
@@ -138,7 +138,7 @@ if modDebug
     resp=data.used.resp;
     %along the sample points
     parfor (itS=1:ns,numWorkers)
-        %remove responeses
+        %remove responses
         %Load data
         dataCV=data;
         
@@ -151,9 +151,9 @@ if modDebug
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute coefficients
-        if ~dispWarning; warning off all;end
+        modWarning(dispWarning)
         cvW=cvKK\cvY;
-        if ~dispWarning; warning on all;end
+        modWarning(~dispWarning)
         cvSampling=sampling;
         %remove of the associated response
         dataCV.miss.grad.on=false;
@@ -168,21 +168,20 @@ if modDebug
         dataCV.used.ns=ns;
         dataCV.used.sampling=cvSampling;
         dataCV.infill.on=false;
-        %evaluate response, gradients and variances on removed sample points
+        %evaluate response and variances on removed sample points
         [Z,~,variance]=RBFEval(sampling(itS,:),dataCV);
         cvZ(itS)=Z;
         cvVar(itS)=variance;
         
         %remove gradients
         if availGrad
-            for pos_gr=1:np
+            for posGr=1:np
                 %load data
-                dataCV=data;
-                
+                dataCV=data;                
                 %remove data
                 cvY=yy;
                 cvKK=KK;
-                pos=ns+(itS-1)*np+pos_gr;
+                pos=ns+(itS-1)*np+posGr;
                 cvY(pos,:)=[];
                 cvKK(:,pos)=[];
                 cvKK(pos,:)=[];
@@ -190,9 +189,9 @@ if modDebug
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %ccompute coefficients
-                if ~dispWarning; warning off all;end
+                modWarning(dispWarning)
                 cvW=cvKK\cvY;
-                if ~dispWarning; warning on all;end
+                modWarning(~dispWarning)
                 cvSampling=sampling;
                 %remove associated gradient
                 dataCV.miss.grad.on=true;
@@ -207,9 +206,9 @@ if modDebug
                 dataCV.in.ns=ns;
                 dataCV.in.sampling=cvSampling;
                 dataCV.infill.on=false;
-                %evaluate response, gradients and variances on removed sample points
+                %evaluate gradients on removed sample points
                 [~,GZ,~]=RBFEval(sampling(itS,:),dataCV);
-                cvGZ(itS,pos_gr)=GZ(pos_gr);
+                cvGZ(itS,posGr)=GZ(posGr);
             end
         end
     end
@@ -234,7 +233,7 @@ if modDebug
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
-    mesuTime(tMesuDebug,tInitDebug);
+    mesuTime(tMesuDebugA,tInitDebugA);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -245,7 +244,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
     
-    [tMesuDebug,tInitDebug]=mesuTime;
+    [tMesuDebugB,tInitDebugB]=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %store response of the surrogate model at remove sample point
@@ -280,9 +279,9 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute coefficients
-        if ~dispWarning; warning off all;end
+        modWarning(dispWarning)
         cvW=cvKK\cvY;
-        if ~dispWarning; warning on all;end
+        modWarning(~dispWarning)
         cvSampling=sampling;
         cvSampling(itS,:)=[];
         cvResp=resp;
@@ -336,7 +335,7 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.and.adequ);
     end
-    mesuTime(tMesuDebug,tInitDebug);
+    mesuTime(tMesuDebugB,tInitDebugB);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -345,7 +344,7 @@ end
 %%%CAUTION: not functioning for missing data
 if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
     %
-    [tMesuDebug,tInitDebug]=mesuTime;
+    [tMesuDebugC,tInitDebugC]=mesuTime;
     %
     cvVarR=zeros(ns,1);
     cvZR=zeros(ns,1);
@@ -365,16 +364,16 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
         retKK(:,pos)=[];
         retY(pos)=[];
         PP(pos)=[];
-        if ~dispWarning; warning off all;end
+        modWarning(dispWarning)
         cvVarR(itS)=1-PP*(retKK\PP');
         %compute response
         cvZR(itS)=PP*(retKK\retY);
-        if ~dispWarning; warning on all;end
+        modWarning(~dispWarning)
         %remove gradients
         if availGrad
-            for pos_gr=1:np
+            for posGr=1:np
                 %load data
-                pos=ns+(itS-1)*np+pos_gr;
+                pos=ns+(itS-1)*np+posGr;
                 %extract vecteur
                 dPP=KK(pos,:);
                 %remove data
@@ -386,7 +385,7 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
                 dPP(pos)=[];
                 %compute gradients
                 GZ=dPP*(retKK\retY);
-                cvGZ(itS,pos_gr)=GZ;
+                cvGZ(itS,posGr)=GZ;
             end
         end
     end
@@ -412,7 +411,7 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
-    mesuTime(tMesuDebug,tInitDebug);
+    mesuTime(tMesuDebugC,tInitDebugC);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -421,22 +420,22 @@ end
 %%%CAUTION: not functioning for missing data
 if modFinal
     %
-    [tMesuDebug,tInitDebug]=mesuTime;
+    [tMesuDebugD,tInitDebugD]=mesuTime;
     %
     cvVarR=zeros(ns,1);
     KK=dataBloc.build.KK;
     parfor (itS=1:ns,numWorkers)
-        %retrait des reponses seules
+        %remove only responses
         pos=itS;
-        %extraction vecteur et calcul de la variance
+        %extract vector and compute variance
         PP=KK(itS,:);
         retKK=KK;
         retKK(pos,:)=[];
         retKK(:,pos)=[];
         PP(pos)=[];
-        if ~dispWarning; warning off all;end
+        modWarning(dispWarning)
         cvVarR(itS)=1-PP*(retKK\PP');
-        if ~dispWarning; warning on all;end
+        modWarning(~dispWarning)
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -453,7 +452,7 @@ if modFinal
         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
     end
-    mesuTime(tMesuDebug,tInitDebug);
+    mesuTime(tMesuDebugC,tInitDebugC);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -492,4 +491,22 @@ end
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if modFinal;mesuTime(tMesu,tInit);end
+end
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% function for stopping the display of the warning and restoring initial
+% state
+function retStatus=modWarning(requireStatus,oldStatus)
+if nargin==1
+    if ~requireStatus
+        warning off all
+    end
+else
+    if isempty(oldStatus)
+        retStatus=warning;
+    else
+        warning(oldStatus)
+    end
+end
 end

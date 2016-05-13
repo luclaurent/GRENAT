@@ -68,18 +68,12 @@ else
     respOk=respN;
     gradOk=[];
 end
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-%concatenate data
-outMeta.used.sampling=samplingOk;
-outMeta.used.resp=respOk;
-outMeta.used.grad=gradOk;
+
 if metaData.normOn
     metaData.norm.resp=infoDataR;
     metaData.norm.sampling=infoDataS;
 end
-outMeta=mergestruct(outMeta,metaData);
-outMeta.norm.on=metaData.normOn;
+
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %Building surrogate model
@@ -152,12 +146,17 @@ switch typeMeta
         %%%%%%%%=================================%%%%%%%%
 end
 
-
-%stockage des informations utiles
+%%%%%%%%=================================%%%%%%%%
+%%%%%%%%=================================%%%%%%%%
+%concatenate data
+outMeta.used.sampling=samplingOk;
+outMeta.used.resp=respOk;
+outMeta.used.grad=gradOk;
 outMeta.in.sampling=samplingIn;
 outMeta.in.resp=respIn;
 outMeta.in.grad=gradIn;
-
+outMeta=mergestruct(outMeta,metaData);
+outMeta.norm.on=metaData.normOn;
 
 mesuTime(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

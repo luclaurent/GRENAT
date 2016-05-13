@@ -158,7 +158,7 @@ if modDebug
         %remove of the associated response
         dataCV.miss.grad.on=false;
         dataCV.miss.resp.on=true;
-        dataCV.miss.resp.ix_miss=itS;
+        dataCV.miss.resp.ixMiss=itS;
         
         %remove data
         dataCV.build.fct=fctKern;
@@ -196,7 +196,7 @@ if modDebug
                 %remove associated gradient
                 dataCV.miss.grad.on=true;
                 dataCV.miss.resp.on=false;
-                dataCV.miss.grad.ixt_miss_line=pos-ns;
+                dataCV.miss.grad.ixtMissLine=pos-ns;
                 
                 %remove
                 dataCV.build.fct=fctKern;

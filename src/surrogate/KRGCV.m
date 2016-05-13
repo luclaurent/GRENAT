@@ -266,7 +266,7 @@ if modDebug
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %evaluate gradients on removed sample points
-                [~,GZ,~]=eval_krg_ckrg(sampling(itS,:),dataCV);
+                [~,GZ,~]=KRGEval(sampling(itS,:),dataCV);
                 cvGZ(itS,posGr)=GZ(posGr);
             end
         end
@@ -301,7 +301,7 @@ end
 %%% at each sample point)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
+if (modStudy||modDebug)||(modFinal&&metaData.cv.disp)
     [tMesuDebugB,tInitDebugB]=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -316,8 +316,9 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
     grad=dataBloc.used.grad;
     resp=dataBloc.used.resp;
     dimC=dataBloc.build.sizeFc;
+    
     %along the sample points
-  parfor (itS=1:ns,numWorkers)
+    parfor (itS=1:ns,numWorkers)
         %load data
         dataCV=dataBloc;
         %remove data
@@ -353,12 +354,13 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         dataCV.build.gamma=coefKRG(1:(end-dimC));
         dataCV.build.KK=cvKK;
         
+        
         %compute variance of the gaussian process
         sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);
         modWarning(~dispWarning);
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+        
         if metaData.normOn
             sig2=sig2*metaData.norm.resp.std^2;
         end
@@ -373,6 +375,9 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         dataCV.build.fc=cvFct';
         dataCV.build.fcCfct=cvFcCfct;
         dataCV.infill.on=false;
+        %remove of the associated response
+        dataCV.miss.grad.on=false;
+        dataCV.miss.resp.on=false;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %evaluate response, gradient and variance at the remove sample point
@@ -408,7 +413,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Compute variance of prediction at sample points + check calculation on responses and gradients (for CV)
 %%%CAUTION: not functioning for missing data
-if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
+if modStudy||metaData.cv.disp
     %
     [tMesuDebugC,tInitDebugC]=mesuTime;
     %%
@@ -417,7 +422,7 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
     cvGZ=zeros(ns,np);
     yy=dataBloc.build.y;
     fct=dataBloc.build.fct;
-    KK=dataBloc.build.rcc;
+    KK=dataBloc.build.KK;
     grad=dataBloc.used.grad;
     resp=dataBloc.used.resp;
     dimC=dataBloc.build.sizeFc;
@@ -433,7 +438,7 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %compute coefficients
         modWarning(dispWarning);
-        cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];        
+        cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -537,7 +542,7 @@ if modFinal
             sig2=sig2*metaData.norm.resp.std^2;
         end
         %comute variance at the removed sample point
-        cvVarR(itS)=sig2*(1-PP*(cviMKrg\PP'));
+        cvVarR(itS)=sig2*(1-PP*(cvMKrg\PP'));
         modWarning(~dispWarning);
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -565,10 +570,10 @@ if metaData.cv.disp&&modFinal
     figure
     subplot(1,3,1);
     opt.title='Normalized data (CV R)';
-    QQplot(data.used.resp,cvZR,opt)
+    QQplot(dataBloc.used.resp,cvZR,opt)
     subplot(1,3,2);
     opt.title='Normalized data (CV F)';
-    QQplot(data.used.resp,cvZ,opt)
+    QQplot(dataBloc.used.resp,cvZ,opt)
     subplot(1,3,3);
     opt.title='SCVR (Normalized)';
     opt.xlabel='Predicted' ;
@@ -578,10 +583,10 @@ if metaData.cv.disp&&modFinal
     %     % original data
     %     subplot(2,3,4);
     %     opt.title='Original data (CV R)';
-    %     QQplot(data.used.resp,cvZR,opt)
+    %     QQplot(dataBloc.used.resp,cvZR,opt)
     %     subplot(2,3,5);
     %     opt.title='Original data (CV F)';
-    %     QQplot(data.used.resp,cvZ,opt)
+    %     QQplot(dataBloc.used.resp,cvZ,opt)
     %     subplot(2,3,6);
     %     opt.title='SCVR (Normalized)';
     %     opt.xlabel='Predicted' ;

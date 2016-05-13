@@ -379,7 +379,7 @@ ret.build.lilog=lilog;
 %% Cross-validation (compute various errors)
 if metaData.cv.on
     [tMesu,tInit]=mesuTime;
-    [ret.cv]=KRGCV(ret,metaData);
+    [ret.build.cv]=KRGCV(ret,metaData);
     fprintf(' > Computation CV\n');
     mesuTime(tMesu,tInit);
 end

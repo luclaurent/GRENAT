@@ -4,3 +4,6 @@
 [submodule "src/libs/lmtir"]
 	path = src/libs/lmtir
 	url = git@bitbucket.org:guuk/lmtir.git
+[submodule "src/libs/MultiDOE"]
+	path = src/libs/MultiDOE
+	url = git@bitbucket.org:guuk/multidoe.git

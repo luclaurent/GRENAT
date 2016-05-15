@@ -6,18 +6,19 @@ function initMatlab2tikz(pathcustom)
 %directories in the matlab2tikz toolbox
 folderToolbox={'src'};
 
-%if no specified directory
-if nargin==0
-    pathcustom=pwd;
+if exist(pathCustom,'dir')
+    %if no specified directory
+    if nargin==0
+        pathcustom=pwd;
+    end
+    
+    %absolute path
+    absolutePath=cellfun(@(c)[pathcustom '/matlab2tikz/' c],folderToolbox,'uni',false);
+    
+    %add to the PATH
+    cellfun(@addpath,absolutePath);
+    
+    %display
+    fprintf(' ## Toolbox: matlab2tikz loaded\n');
 end
-
-%absolute path
-absolutePath=cellfun(@(c)[pathcustom '/matlab2tikz/' c],folderToolbox,'uni',false);
-
-%add to the PATH
-cellfun(@addpath,absolutePath);
-
-%display
-fprintf(' ## Toolbox: matlab2tikz loaded\n');
-
 end

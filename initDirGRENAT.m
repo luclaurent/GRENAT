@@ -1,5 +1,5 @@
-%%initialization of the directories (MATLAB's path)
-%%L. LAURENT -- 30/01/2014  -- luc.laurent@lecnam.net
+%% Initialization of the directories (MATLAB's path)
+%% L. LAURENT -- 30/01/2014  -- luc.laurent@lecnam.net
 
 function foldersLoad=initDirGRENAT(pathcustom,other)
 
@@ -24,7 +24,7 @@ foldersLoad={'test_fun',...
     'src/libs/PSOt',...
     'src/libs/matlab2tikz'};
 
-%depending on the paramters
+%depending on the parameters
 specifDir=true;
 if nargin==0
     specifDir=false;
@@ -57,7 +57,7 @@ if nargin==2
     %add to the PATH
     cellfun(@addpath,pathAbsolute);    
     %add other toolbox to the PATH
-    name_fct=cellfun(@(c)['init_dir_' c],other,'uni',false);
-    cellfun(@feval,name_fct,pathAbsolute,'uni',false)
+    namFun=cellfun(@(c)['initDir' c],other,'uni',false);
+    cellfun(@feval,namFun,pathAbsolute,'uni',false)
 end
 end

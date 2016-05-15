@@ -14,7 +14,7 @@ if exist(pathCustom,'dir')
     end
     
     %absolute path
-    absolutePath=cellfun(@(c)[pathCustom '/' c],folderToolbox,'uni',false);
+    absolutePath=cellfun(@(c)[pathCustom '/PSOt/' c],folderToolbox,'uni',false);
     
     %add to the PATH
     cellfun(@addpath,absolutePath);

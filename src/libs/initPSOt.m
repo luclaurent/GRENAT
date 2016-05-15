@@ -1,10 +1,10 @@
 %%initialization of the PSOt's files (MATLAB's path)
 %%L. LAURENT -- 31/01/2014  -- luc.laurent@lecnam.net
 
-function init_PSOt(pathcustom)
+function initPSOt(pathcustom)
 
 %directories in the PSOt toolbox
-doss={'hiddenutils','nnet','testfunctions'};
+folderToolbox={'hiddenutils','nnet','testfunctions'};
 
 %if no specified directory
 if nargin==0
@@ -12,10 +12,11 @@ if nargin==0
 end
 
 %absolute path
-absolute_path=cellfun(@(c)[pathcustom '/' c],doss,'uni',false);
+absolutePath=cellfun(@(c)[pathcustom '/' c],folderToolbox,'uni',false);
 
 %add to the PATH
-absolute_path{1}
-cellfun(@addpath,absolute_path);
+cellfun(@addpath,absolutePath);
 
+%display
+fprintf(' ## Toolbox: PSOt loaded\n');
 end

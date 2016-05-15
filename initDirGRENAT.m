@@ -45,7 +45,7 @@ pathAbsolute=cellfun(@(c)[pathcustom '/' c],foldersLoad,'uni',false);
 cellfun(@addpath,pathAbsolute);
 
 %if PSOt is available the PSOt files will be loaded
-if exist('init_PSOt','file')
+if exist('initPSOt','file')
     initPSOt([pathcustom '/src/libs/PSOt']);
 end
 

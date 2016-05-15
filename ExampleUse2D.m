@@ -22,7 +22,7 @@ execParallel('start',parallel);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Load of a set of 2D data
-C=load('src/various/example_doe.mat');
+C=load('src/various/example2D.mat');
 %sampling points
 sampling=C.samples.sampling;
 %responses at sample points
@@ -42,7 +42,7 @@ metaData=initMeta;
 metaData.type='KRG';
 metaData.kern='matern32';
 metaData.cv.disp=true;
-metaData.para.estim=false;
+metaData.para.estim=true;
 metaData.normOn=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

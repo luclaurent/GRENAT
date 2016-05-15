@@ -1,127 +1,125 @@
-% Exemple d'utilisation de la Toolbox GRENAT couplee avec LMTir
+% Example of use of the GRENAToolbox with the LMTir one
 % L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
 initDirGRENAT([],'LMTir');
 clean;
 
-%affichage de la date
-aff_date;
+%display the date
+dispDate;
 
-%initialisation des variables d'affichage
-global aff
-aff=init_aff();
+%initialization of display variables
+dispData=initDisp();
 
-fprintf('=========================================\n')
-fprintf('  >>> PROCEDURE ETUDE METAMODELES  <<<\n');
-[tMesu,tInit]=mesu_time;
 
-%execution parallele (option et lancement des workers)
+fprintf('++++++++++++++++++++++++++++++++++++++++++\n')
+fprintf('  >>>   Building surrogate model    <<<\n');
+[tMesu,tInit]=mesuTime;
+
+%parallel execution (options and starting of the workers)
 parallel.on=false;
 parallel.workers='auto';
-exec_parallel('start',parallel);
+execParallel('start',parallel);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%fonction etudiee
-fct='mystery';
+%studied function
+funTEST='mystery';
 %beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
 %dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
 %sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-dim_pb=2;
+dimPB=2;
 %esp=[0 15];
 esp=[];
-%%Definition de l'espace de conception
-[doe]=init_doe(dim_pb,esp,fct);
-%nombre d'element pas dimension (pour le trace)
-aff.nbele=gene_nbele(doe.dim_pb);%max([3 floor((30^2)^(1/doe.dim_pb))]);
-%type de tirage
+%%Definition of the design space
+[doe]=initDOE(dimPB,esp,funTEST);
+%number of steps per dimensions (for plotting)
+dispData.nbSteps=initNbSteps(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+%kind of sampling
 doe.type='IHS';
-%nb d'echantillons
-doe.nb_samples=35;
-%execution tirages
-tir=gene_doe(doe);
-tirages=tir.tri;
-%evaluations de la fonction aux points
-[eval,grad]=gene_eval(doe.fct,tirages,'eval');
-%Trace de la fonction de la fonction etudiee et des gradients
-[grid_ref,aff]=gene_aff(doe,aff);
-[eval_ref,grad_ref]=gene_eval(doe.fct,grid_ref,'aff');
+%number of sample points
+doe.ns=35;
+%execute sampling
+sampling=BuildDOE(doe);
+samplePts=sampling.sorted;
+%evaluate function at sample points
+[eval,grad]=buildResp(doe.fct,samplePts,'eval');
+%Data for plotting functions
+[gridRef,dispData]=gene_aff(doe,dispData);
+[respRef,gradRef]=buildResp(doe.funTest,gridRef,'aff');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%chargement des parametres metamodele
+%load parameters of the surrogate model
 data.type='GRBF';
 data.rbf='matern32';
-meta=init_meta(data);
-meta.cv_aff=true;
+metaData=initMeta(data);
+metaData.cv.disp=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Construction et evaluation du metamodele aux points souhaites
-[approx]=const_meta(tirages,eval,grad,meta);
-%evaluation du metamodele aux points de la grille
-[K]=eval_meta(grid_ref,approx,meta);
+%%building of the surrogate model
+[approx]=BuildMeta(samplePts,eval,grad,metaData);
+%evaluation of the surrogate model at the grid points
+[K]=EvalMeta(gridRef,approx);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%generation des differents intervalles de confiance
-if isfield(K,'var');[ic68,ic95,ic99]=const_ic(K.Z,K.var);end
+%computation of the confidence intervals
+if isfield(K,'var');[ci68,ci95,ci99]=BuildCI(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%affichage
-%valeur par defaut
-aff.on=true;
-aff.newfig=false;
-aff.ic.on=true;
-%affichage de l'intervalle de confiance
-aff.rendu=true;
-aff.d3=true;
-aff.xlabel='x_1';
-aff.ylabel='x_2';
+%%%display
+%defaults parameters
+dispData.on=true;
+dispData.newFig=false;
+dispData.ci.on=true;% display confidence intervals
+dispData.render=true;
+dispData.d3=true;
+dispData.xlabel='x_1';
+dispData.ylabel='x_2';
 
 figure
 subplot(2,3,1)
-aff.titre='Fonction de reference';
-affichage(grid_ref,eval_ref,tirages,eval,grad,aff);
+dispData.titre='Reference function';
+displaySurrogate(gridRef,respRef,samplePts,eval,grad,dispData);
 subplot(2,3,2)
-aff.titre='Fonction approchee';
-affichage(grid_ref,K.Z,tirages,eval,grad,aff);
+dispData.titre='Approximate function';
+displaySurrogate(gridRef,K.Z,samplePts,eval,grad,dispData);
 subplot(2,3,4)
-aff.titre='';
-aff.rendu=false;
-aff.d3=false;
-aff.d2=true;
-aff.contour=true;
-aff.grad_eval=true;
-aff.grad_meta=true;
-ref.Z=eval_ref;ref.GZ=grad_ref;
-affichage(grid_ref,ref,tirages,eval,grad,aff);
+dispData.title='';
+dispData.render=false;
+dispData.d3=false;
+dispData.d2=true;
+dispData.contour=true;
+dispData.gridGrad=true;
+dispData.sampleGrad=true;
+ref.Z=respRef;ref.GZ=gradRef;
+displaySurrogate(gridRef,ref,samplePts,eval,grad,dispData);
 subplot(2,3,5)
-affichage(grid_ref,K,tirages,eval,grad,aff);
+displaySurrogate(gridRef,K,samplePts,eval,grad,dispData);
 subplot(2,3,3)
-aff.d3=true;
-aff.d2=false;
-aff.contour=false;
-aff.grad_meta=false;
-aff.grad_eval=false;
-aff.rendu=true;
-aff.titre='Variance';
-affichage(grid_ref,K.var,tirages,eval,grad,aff);
+dispData.d3=true;
+dispData.d2=false;
+dispData.contour=false;
+dispData.gridGrad=false;
+dispData.sampleGrad=false;
+dispData.render=true;
+dispData.title='Variance';
+displaySurrogate(gridRef,K.var,samplePts,eval,grad,dispData);
 subplot(2,3,6)
-aff.titre='Intervalle de confiance a 95%';
-aff.trans=true;
-aff.uni=true;
- affichage_ic(grid_ref,ic95,aff,K.Z);
+dispData.title='Confidence intervals at 95%';
+dispData.trans=true;
+dispData.uni=true;
+ displaySurrogateCI(gridRef,ic95,dispData,K.Z);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%calcul et affichage des criteres d'erreur
-err=crit_err(K.Z,eval_ref,approx);
+%%Computation and display of the errors
+err=critErrDisp(K.Z,respRef,approx);
 fprintf('=====================================\n');
 fprintf('=====================================\n');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%arret workers
-exec_parallel('stop',parallel)
+%stop workers
+execParallel('stop',parallel)
 
-mesu_time(tMesu,tInit);
-fprintf('=========================================\n')
+mesuTime(tMesu,tInit);

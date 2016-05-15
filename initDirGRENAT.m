@@ -1,7 +1,7 @@
 %%initialization of the directories (MATLAB's path)
 %%L. LAURENT -- 30/01/2014  -- luc.laurent@lecnam.net
 
-function doss=initDirGRENAT(pathcustom,other)
+function foldersLoad=initDirGRENAT(pathcustom,other)
 
 
 % variable 'other' (optional) of type cell must constain the list of other
@@ -11,7 +11,7 @@ function doss=initDirGRENAT(pathcustom,other)
 % the directories must be loaded
 
 %folders of the GRENAToolbox
-doss={'test_fun',...
+foldersLoad={'test_fun',...
     'src',...
     'src/disp',...
     'src/various',...
@@ -25,39 +25,39 @@ doss={'test_fun',...
     'src/libs/matlab2tikz'};
 
 %depending on the paramters
-specif_dir=true;
+specifDir=true;
 if nargin==0
-    specif_dir=false;
+    specifDir=false;
 elseif nargin>1
     if isempty(pathcustom)
-        specif_dir=false;
+        specifDir=false;
     end
 end
 %if no specified directory
-if ~specif_dir
+if ~specifDir
     pathcustom=pwd;
 end
 
 %absolute paths
-path_absolute=cellfun(@(c)[pathcustom '/' c],doss,'uni',false);
+pathAbsolute=cellfun(@(c)[pathcustom '/' c],foldersLoad,'uni',false);
 
 %add to the PATH
-cellfun(@addpath,path_absolute);
+cellfun(@addpath,pathAbsolute);
 
 %if PSOt is available the PSOt files will be loaded
 if exist('init_PSOt','file')
-    init_PSOt([pathcustom '/src/libs/PSOt']);
+    initPSOt([pathcustom '/src/libs/PSOt']);
 end
 
 if nargin==2
     %Load other toolbox
     if ~iscell(other);other={other};end
     %absolute paths
-    path_absolute=cellfun(@(c)[pathcustom '/../' c],other,'uni',false);
+    pathAbsolute=cellfun(@(c)[pathcustom '/../' c],other,'uni',false);
     %add to the PATH
-    cellfun(@addpath,path_absolute);    
+    cellfun(@addpath,pathAbsolute);    
     %add other toolbox to the PATH
     name_fct=cellfun(@(c)['init_dir_' c],other,'uni',false);
-    cellfun(@feval,name_fct,path_absolute,'uni',false)
+    cellfun(@feval,name_fct,pathAbsolute,'uni',false)
 end
 end

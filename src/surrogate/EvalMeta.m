@@ -150,7 +150,6 @@ switch availData.type
 for jj=1:nbReqEval
             [valRespN(jj),G,varResp(jj),detKRG]=KRGEval(reqRespN(jj,:),availData);
             valGradN(jj,:)=G;
-keyboard
             stoZN(jj)=detKRG.stoZ;
             trZN(jj)=detKRG.trZ;
             trGZN(jj,:)=detKRG.trGZ;

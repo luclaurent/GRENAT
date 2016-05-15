@@ -118,8 +118,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluation of the surrogate model at point X
 trZ=ff*metaData.build.beta;
-stroZ=rr'*metaData.build.gamma;
-Z=trZ+stroZ;
+stoZ=rr'*metaData.build.gamma;
+Z=trZ+stoZ;
 if calcGrad
     %%verif in 2D+
     trGZ=jf*metaData.build.beta;
@@ -163,9 +163,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %extraction details
 if nargout==4
-    details.Z_reg=trZ;
-    details.Z_sto=stroZ;
-    details.GZ_reg=trGZ;
-    details.GZ_sto=stoGZ;
+    details.trZ=trZ;
+    details.stoZ=stoZ;
+    details.trGZ=trGZ;
+    details.stoGZ=stoGZ;
 end
 end

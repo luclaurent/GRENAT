@@ -43,6 +43,13 @@ if d1
     hi=area(Xpts,ic.inf,min(ic.inf));
     set(hs(1),'Facecolor',[0.8 0.8 0.8],'EdgeColor','none')
     set(hi(1),'FaceColor',[1 1 1],'EdgeColor','none')
+    plot(Xpts,ic.sup,'k')
+    plot(Xpts,ic.inf,'k')
+    %display response if available
+    if nargin==4
+        if isa(Z,'struct');vZ=Z.Z;else vZ=Z;end
+        plot(Xpts,vZ,'b','LineWidth',2)
+    end   
     hold off
     %dimension 2
 elseif d2

@@ -2,7 +2,7 @@
 % L. LAURENT -- 07/02/2014 -- luc.laurent@lecnam.net
 
 %load paths
-dirPath=initDir;
+dirPath=initDirGRENAT;
 
 %% Build documentation
 

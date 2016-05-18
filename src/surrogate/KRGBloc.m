@@ -39,7 +39,7 @@ end
 %Build of the KRG/GRKG matrix
 if dataIn.used.availGrad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,paraVal);
-    KK=[KK KKa;KKa' KKi];
+    KK=[KK -KKa;-KKa' -KKi];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
 end

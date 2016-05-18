@@ -388,7 +388,7 @@ if dispData.on
         %show sample points
         if dispData.samplePts
             hold on
-            if dispData.sampleGrad;valPlot=grad;else valPlot=resp;end
+            if dispData.gridGrad&&isfield(Z,'GZ');valPlot=grad;else valPlot=resp;end
             %show sample points on which all information is known
             plot(sampling(listPtsOk),valPlot(listPtsOk),...
                 'rs',...
@@ -423,9 +423,9 @@ if dispData.on
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %save figure and create
     if dispData.save
-        global num
-        if isempty(num); num=1; else num=num+1; end
-        fich=saveDisp(num,dispData.directory);
+        global numPlot
+        if isempty(numPlot); numPlot=1; else numPlot=numPlot+1; end
+        fich=saveDisp(numPlot,dispData.directory);
         if dispData.tex
             fid=fopen([dispData.directory '/fig.tex'],'a+');
             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,dispData.title,fich);
@@ -461,5 +461,6 @@ if dispData.on
     end
     
     hold off
+end
 end
 

@@ -83,7 +83,7 @@ if metaData.used.availGrad
     else %otherwise
         [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
         rr(1:ns)=ev;
-        rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
+        rr(ns+1:sizeMatVec)=reshape(dev',1,ns*np);
         %if missing data
         if metaData.miss.resp.on
             rr(metaData.miss.resp.ixMiss)=[];

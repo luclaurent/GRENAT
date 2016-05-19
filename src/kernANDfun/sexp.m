@@ -17,7 +17,7 @@ if nP~=1
 end
 
 %extract length and smoothness hyperparameters
-lP=para(:,1);
+lP=1./para(:,1);
 
 %compute value of the function at point xx
 td=-xx.^2./lP.^2/2;

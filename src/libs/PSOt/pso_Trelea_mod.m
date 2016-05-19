@@ -194,7 +194,7 @@ errgoal = P(11);
 trelea  = P(12);
 PSOseed = P(13);
 
-fprintf(' >> %i particules\n',ps);
+fprintf(' >> %i particles\n',ps);
 
 % used with trainpso, for neural net training
 if strcmp(functname,'pso_neteval')
@@ -265,6 +265,7 @@ if PSOseed == 1         % initial positions user input, see comments above
     tmpsz                      = size(PSOseedValue);    
     pos(1:tmpsz(1),1:tmpsz(2)) = PSOseedValue;
 end
+
 
 % construct initial random velocities between -mv,mv
 vel(1:ps,1:D) = normmat(rand([ps,D]),...
@@ -357,8 +358,9 @@ for i=1:me  % start epoch loop (iterations)
     %assignin('base','bestpos',bestpos(i,1:D+1));
     %------------------------------------------------------------------------
     % this section does the plots during iterations
-    if (mod(i,10)==0)|| (i==1)     %correction Luc: affichage ts les 5 iterations
-        fprintf(message,i,gbestval);
+    %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
+    if (mod(i,10)==0)|| (i==1)     %correction Luc: display every 5 iterations
+        fprintf(message,i,gbestval);        
     end
     if plotflg==1
         if (rem(i,df) == 0 ) | (i==me) | (i==1)

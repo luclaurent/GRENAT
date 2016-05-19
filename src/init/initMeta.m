@@ -43,6 +43,7 @@ meta.cv.full=false;
 %display QQ plot CV
 meta.cv.disp=false;
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% internal parameters estimation
 % seek for best values of the internal parameters
@@ -51,6 +52,8 @@ meta.para.estim=true;
 meta.para.aniso=true;
 % display objective function to be minimised
 meta.para.dispEstim=false;
+%save evolution function to be minimized
+meta.para.save=false;
 % display iterations of the optimisation process on a figure (1D/2D)
 meta.para.dispIterGraph=false;
 % display iteration in the console
@@ -69,8 +72,8 @@ meta.para.nbSampInit=[];
 meta.para.critOpti=10^-6;
 % bounds of the space on which internal parameters are looked for
 if meta.para.estim
-    meta.para.l.min=1;
-    meta.para.l.max=1e4;
+    meta.para.l.min=1e-2;
+    meta.para.l.max=1e3;
     meta.para.l.val=1;
     meta.para.p.max=2;
     meta.para.p.min=1.001;

@@ -103,8 +103,8 @@ ac      = [2.1,2.1];% acceleration constants, only used for modl=0
 Iwt     = [0.9,0.6];  % intertia weights, only used for modl=0
 epoch   = 2000; % max iterations
 wtEnd  = 100; % iterations it takes to go from Iwt(1) to Iwt(2), only for modl=0
-errGrad = 1e-25;   % lowest error gradient tolerance
-errGradIter=150; % max # of epochs without error change >= errgrad
+errGrad = 1e-5;   % lowest error gradient tolerance
+errGradIter=50; % max # of epochs without error change >= errgrad
 PSOseed = 0;    % if=1 then can input particle starting positions, if= 0 then all random
 % starting particle positions (first 20 at zero, just for an example)
 PSOTplot=[];
@@ -182,19 +182,19 @@ if sampleMinOk
     nbSample=nbPOptim*10;
     samplingType='LHS_O1';
     fprintf('||SampleMin + opti||  Sampling %s on %i points\n',samplingType,nbSample);
-    doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSample;doePop.disp=false;doePop.type=samplingType;
+    doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSample;doePop.disp=false;doePop.type=samplingType;
     samplePop=buildDOE(doePop);
     critS=zeros(1,nbSample);
-    parfor tir=1:nbSample
-        critS(tir)=fun(samplePop(tir,:));
+    for tir=1:nbSample
+        critS(tir)=fun(samplePop.sorted(tir,:));
     end
     [fval1,IX]=min(critS);
-    x0=samplePop(IX,:);
+    x0=samplePop.sorted(IX,:);
 end
 %manual definition of the initial population for GA or PSOt
-if ~isempty(sampManuOn)&&sampleMinOk
-    doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSampInit;doePop.disp=false;doePop.type=dataMeta.para.popManu;
-    samplePop=gene_doe(doePop);
+if sampManuOn&&sampleMinOk
+    doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSampInit;doePop.disp=false;doePop.type=dataMeta.para.sampManu;
+    samplePop=buildDOE(doePop);
     optionsGA=gaoptimset(optionsGA,'PopulationSize',nbSampInit,'InitialPopulation',samplePop);
     %PSOt
     PSOTsampling=samplePop;

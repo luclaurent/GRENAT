@@ -39,10 +39,22 @@ dispData.nbSteps=initNbPts(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 %kind of sampling
 doe.type='IHS';
 %number of sample points
-doe.ns=35;
+doe.ns=30;
 %execute sampling
 sampling=buildDOE(doe);
 samplePts=sampling.sorted;
+%samplePts=[
+%      3.5000    2.5000
+%     2.5000    3.5000
+%     2.0000    2.0000
+%     1.0000    3.0000
+%     3.0000    5.0000
+%     4.0000    1.0000
+%     4.5000    4.5000
+%     5.0000    4.0000
+%     1.5000    0.5000
+%     0.5000    1.5000
+%     ];
 %evaluate function at sample points
 [eval,grad]=evalFunGrad(doe.funT,samplePts,'eval');
 %Data for plotting functions
@@ -51,12 +63,13 @@ samplePts=sampling.sorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load parameters of the surrogate model
-data.type='GKRG';
-data.rbf='matern32';
+data.type='KRG';
+data.kern='matern32';
 metaData=initMeta(data);
 metaData.cv.disp=true;
+metaData.normOn=true;
 metaData.para.estim=1;
-metaData.para.l.val=[1 1];
+metaData.para.dispEstim=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%building of the surrogate model

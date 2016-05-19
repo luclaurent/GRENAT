@@ -24,25 +24,25 @@ execParallel('start',parallel);
 %%Load of a set of 2D data
 
 %sampling points
-sampling=[1 4 7.5 9 14]';
+sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
 %responses and gradients at sample points
 [resp,grad]=funManu(sampling);
 
 
 %%for displaying and comparing with the actual function
 %regular grid
-gridRef=linspace(0,15,300)';
+gridRef=linspace(-2,15,300)';
 %responses at the grid points
 [respRef,gradRef]=funManu(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='RBF';
-metaData.kern='matern32';
-metaData.cv.disp=false;
-metaData.para.estim=false;
-metaData.normOn=true;
+metaData.type='GKRG';
+metaData.kern='matern52';
+metaData.cv.disp=true;
+metaData.para.estim=true;
+metaData.para.dispPlotAlgo=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

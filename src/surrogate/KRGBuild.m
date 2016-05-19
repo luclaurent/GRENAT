@@ -22,7 +22,7 @@ fprintf('>>> CV: ');if metaData.cv.on; fprintf('Yes\n');else fprintf('No\n');end
 fprintf('>> Computation all CV criteria: ');if metaData.cv.full; fprintf('Yes\n');else fprintf('No\n');end
 fprintf('>> Show CV: ');if metaData.cv.disp; fprintf('Yes\n');else fprintf('No\n');end
 %
-fprintf('>> Correction of matrix condition:');if metaData.recond; fprintf('Yes\n');else fprintf('No\n');end
+fprintf('>> Correction of matrix condition: ');if metaData.recond; fprintf('Yes\n');else fprintf('No\n');end
 %
 fprintf('>>> Estimation of the hyperparameters: ');if metaData.para.estim; fprintf('Yes\n');else fprintf('No\n');end
 if metaData.para.estim
@@ -270,7 +270,7 @@ ret.build.kern=metaData.kern;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Compute log-likelihood for estimating parameters
 if metaData.para.estim&&metaData.para.dispEstim
-    valPara=linspace(metaData.para.l.min,metaData.para.l.max,30);
+    valPara=linspace(metaData.para.l.min,metaData.para.l.max,100);
     % load progress bar
     cpb = ConsoleProgressBar();
     minVal = 0;
@@ -280,6 +280,7 @@ if metaData.para.estim&&metaData.para.dispEstim
     cpb.setLength(20);
     cpb.setRemainedTimeVisible(1);
     cpb.setRemainedTimePosition('left');
+    cpb.start();
     %for anisotropy (with 2 design variables)
     if metaData.para.aniso&&np==2
         %building of the studied grid
@@ -290,8 +291,9 @@ if metaData.para.estim&&metaData.para.dispEstim
             %compute log-likelihood and storage
             valLik(itli)=KRGBloc(ret,metaData,[valX(itli) valY(itli)]);
             %show progress and time
-            cpb.setValue(itli/numel(valX));
+            cpb.setValue(itli/numel(valX)*100);
         end
+        fprintf('\n');
         cpb.stop();
         %plot log-vraisemblance
         figure;
@@ -301,7 +303,7 @@ if metaData.para.estim&&metaData.para.dispEstim
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         %store figure in TeX/Tikz file
-        if metaData.save
+        if metaData.para.save
             matlab2tikz([aff.doss '/KRGlogli.tex'])
         end
         
@@ -310,11 +312,14 @@ if metaData.para.estim&&metaData.para.dispEstim
         valLik=zeros(1,length(valPara));
         for itli=1:length(valPara)
             %compute log-likelihood and storage
-            valLik(itli)=KRGBloc(ret,metaDat,valPara(itli));
+            valLik(itli)=KRGBloc(ret,metaData,valPara(itli));
+            cpb.setValue(itli/numel(valPara)*100);
         end
+        fprintf('\n');
+        cpb.stop();
         
         %store in .dat file
-        if metaData.save
+        if metaData.para.save
             ss=[valPara' valLik'];
             save([aff.directory '/KRGlogli.dat'],'ss','-ascii');
         end
@@ -325,10 +330,11 @@ if metaData.para.estim&&metaData.para.dispEstim
         title('Evolution of the log-likelihood');
     end
     
+    global dispData
     %store graphs (if active)
     if dispData.save&&(ns<=2)
         fileStore=saveDisp('fig_likelihood',dispData.directory);
-        if aff.tex
+        if dispData.tex
             fid=fopen([dispData.directory '/fig.tex'],'a+');
             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
             %fprintf(fid,'\\verb{%s}\n',fich);

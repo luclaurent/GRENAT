@@ -32,7 +32,7 @@ function dispDef=initDisp()
     dispDef.nv=Inf;                 %number of sample points on the reference grid
     dispDef.nbSteps=0;              %number of steps on the reference grid 
     dispDef.step=[];                %size of the step of the grid 
-if nargout==0
+    %declare as a global variable
     global dispData
     dispData=dispDef;
 end

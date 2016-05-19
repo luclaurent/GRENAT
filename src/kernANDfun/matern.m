@@ -13,7 +13,7 @@ if nP~=2
 end
 
 %extract length and smoothness hyperparameters
-lP=para(:,1);
+lP=1./para(:,1);
 lS=para(:,2);
 
 %useful functions

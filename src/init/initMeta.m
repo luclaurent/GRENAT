@@ -97,7 +97,7 @@ if nargin==0
     in=[];
 end
 %taking gradients into account
-if isfield(in,'grad');meta.useGrad=in.useGrad;end
+if isfield(in,'useGrad');meta.useGrad=in.useGrad;end
 %type of surrgate model KRG/GKRG/DACE/RBF/GRBF/SVR/GSVR...
 if isfield(in,'type');meta.type=in.type;end
 %parameter of the kernel function

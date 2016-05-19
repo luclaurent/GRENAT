@@ -35,6 +35,8 @@ grad=C.samples.grad;
 gridRef=C.ref.grid;
 %responses at the grid points
 respRef=C.ref.resp;
+%responses at the grid points
+gradRef=C.ref.grad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
@@ -82,6 +84,7 @@ dispData.d2=true;
 dispData.contour=true;
 dispData.gridGrad=true;
 ref.Z=respRef;
+ref.GZ=gradRef;
 displaySurrogate(gridRef,ref,sampling,resp,grad,dispData);
 subplot(2,3,5)
 displaySurrogate(gridRef,K,sampling,resp,grad,dispData);

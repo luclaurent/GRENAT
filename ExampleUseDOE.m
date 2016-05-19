@@ -1,8 +1,8 @@
 % Example of use of the GRENAToolbox with the LMTir one
 % L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
-initDirGRENAT([],'LMTir');
-clean;
+initDirGRENAT();
+customClean;
 
 %display the date
 dispDate;
@@ -16,17 +16,17 @@ fprintf('  >>>   Building surrogate model    <<<\n');
 [tMesu,tInit]=mesuTime;
 
 %parallel execution (options and starting of the workers)
-parallel.on=false;
-parallel.workers='auto';
-execParallel('start',parallel);
+parallelStatus.on=false;
+parallelStatus.workers='auto';
+execParallel('start',parallelStatus);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %studied function
-funTEST='mystery';
-%beale(2),bohachevky1/2/3(2),booth(2),branin(2),coleville(4)
-%dixon(n),gold(2),michalewicz(n),mystery(2),peaks(2),rosenbrock(n)
-%sixhump(2),schwefel(n),sphere(n),sumsquare(n),AHE(n),cste(n),dejong(n)
+funTEST='Mystery';
+%Beale(2),Bohachevky1/2/3(2),Booth(2),Branin(2),Coleville(4)
+%Dixon(n),Gold(2),Michalewicz(n),mystery(2),Peaks(2),Rosenbrock(n)
+%Sixhump(2),Schwefel(n),Sphere(n),SumsSuare(n),AHE(n),Cst(n),Dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
 dimPB=2;
@@ -35,19 +35,19 @@ esp=[];
 %%Definition of the design space
 [doe]=initDOE(dimPB,esp,funTEST);
 %number of steps per dimensions (for plotting)
-dispData.nbSteps=initNbSteps(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);
+dispData.nbSteps=initNbPts(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 %kind of sampling
 doe.type='IHS';
 %number of sample points
 doe.ns=35;
 %execute sampling
-sampling=BuildDOE(doe);
+sampling=buildDOE(doe);
 samplePts=sampling.sorted;
 %evaluate function at sample points
-[eval,grad]=buildResp(doe.fct,samplePts,'eval');
+[eval,grad]=evalFunGrad(doe.funT,samplePts,'eval');
 %Data for plotting functions
-[gridRef,dispData]=gene_aff(doe,dispData);
-[respRef,gradRef]=buildResp(doe.funTest,gridRef,'aff');
+[gridRef,dispData]=buildDisp(doe,dispData);
+[respRef,gradRef]=evalFunGrad(doe.funT,gridRef,'disp');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load parameters of the surrogate model
@@ -79,10 +79,10 @@ dispData.ylabel='x_2';
 
 figure
 subplot(2,3,1)
-dispData.titre='Reference function';
+dispData.title='Reference function';
 displaySurrogate(gridRef,respRef,samplePts,eval,grad,dispData);
 subplot(2,3,2)
-dispData.titre='Approximate function';
+dispData.title='Approximate function';
 displaySurrogate(gridRef,K.Z,samplePts,eval,grad,dispData);
 subplot(2,3,4)
 dispData.title='';
@@ -109,7 +109,7 @@ subplot(2,3,6)
 dispData.title='Confidence intervals at 95%';
 dispData.trans=true;
 dispData.uni=true;
- displaySurrogateCI(gridRef,ic95,dispData,K.Z);
+ displaySurrogateCI(gridRef,ci95,dispData,K.Z);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Computation and display of the errors
@@ -120,6 +120,6 @@ fprintf('=====================================\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %stop workers
-execParallel('stop',parallel)
+execParallel('stop',parallelStatus)
 
 mesuTime(tMesu,tInit);

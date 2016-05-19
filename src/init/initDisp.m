@@ -30,7 +30,8 @@ function dispDef=initDisp()
     dispDef.bar=false;              %display using bar
     dispDef.trans=false;            %display using transparency
     dispDef.nv=Inf;                 %number of sample points on the reference grid
-    dispDef.steps=0;                %number of steps on the reference grid 
+    dispDef.nbSteps=0;              %number of steps on the reference grid 
+    dispDef.step=[];                %size of the step of the grid 
 if nargout==0
     global dispData
     dispData=dispDef;

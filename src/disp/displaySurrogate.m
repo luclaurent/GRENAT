@@ -316,8 +316,8 @@ if dispData.on
                         'MarkerSize',15);
                     
                 end
-                %shwos gradients
-                if dispData.sampleGrad&&availGrad
+                %shows gradients
+                if dispData.sampleGrad
                     hold on;
                     %scaling gradients
                     if dispData.scale

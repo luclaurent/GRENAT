@@ -1,7 +1,7 @@
 %% Evaluation of the function and the gradients
 % L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function [eval,grad]=evalFctGrad(fct,X,type)
+function [eval,grad]=evalFunGrad(fct,X,type)
 
 [tMesu,tInit]=mesuTime;
 % depending on the kind of evaluations (computation at the sample points or
@@ -47,12 +47,12 @@ elseif nargout==2
         grad=gradb;
     end
 else
-    error(['Wrong number of output parametersMauvais nombre de paramètres de sortie (cf.',mfilename,')']);
+    error(['Wrong number of output parameters (cf. ',mfilename,')']);
 end
 
-fprintf(' >> Evaluation of the function %s in %i pts (%iD)\n',fct,ns,np);
+fprintf(' >> Evaluation of the function %s at %i pts (%iD)\n',fct,ns,np);
 fprintf(' >> Computation of the gradients: ');
 if nargout==2;fprintf('Yes\n');else fprintf('No\n');end
 
-mesu_time(tMesu,tInit);
+mesuTime(tMesu,tInit);
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

@@ -452,7 +452,7 @@ if modFinal
         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
     end
-    mesuTime(tMesuDebugC,tInitDebugC);
+    mesuTime(tMesuDebugD,tInitDebugD);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

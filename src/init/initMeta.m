@@ -25,7 +25,7 @@ meta.para.p_val=2;
 %smoothness
 meta.para.nu_val=0.6;
 %order polynomial 
-meta.polyOrder=0;
+meta.polyOrder=1;
 %parameter for SWF
 swf_para=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,12 +73,12 @@ meta.para.critOpti=10^-6;
 % bounds of the space on which internal parameters are looked for
 if meta.para.estim
     meta.para.l.min=1e-2;
-    meta.para.l.max=1e3;
+    meta.para.l.max=10;
     meta.para.l.val=1;
     meta.para.p.max=2;
     meta.para.p.min=1.001;
     meta.para.p.val=2;
-    meta.para.nu.min=1e-3;
+    meta.para.nu.min=1.5;
     meta.para.nu.max=5;
     meta.para.nu.val=3/2;
 end

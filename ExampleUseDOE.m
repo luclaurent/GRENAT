@@ -23,7 +23,7 @@ execParallel('start',parallelStatus);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %studied function
-funTEST='Mystery';
+funTEST='SixHump';
 %Beale(2),Bohachevky1/2/3(2),Booth(2),Branin(2),Coleville(4)
 %Dixon(n),Gold(2),Michalewicz(n),mystery(2),Peaks(2),Rosenbrock(n)
 %Sixhump(2),Schwefel(n),Sphere(n),SumsSuare(n),AHE(n),Cst(n),Dejong(n)
@@ -37,9 +37,9 @@ esp=[];
 %number of steps per dimensions (for plotting)
 dispData.nbSteps=initNbPts(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 %kind of sampling
-doe.type='IHS';
+doe.type='IHS_manu';
 %number of sample points
-doe.ns=35;
+doe.ns=30;
 %execute sampling
 sampling=buildDOE(doe);
 samplePts=sampling.sorted;
@@ -56,7 +56,8 @@ data.rbf='matern32';
 metaData=initMeta(data);
 metaData.cv.disp=true;
 metaData.para.estim=1;
-metaData.para.l.val=[1 1];
+metaData.para.l.val=[0.1439 0.0711];
+metaData.para.dispEstim=true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%building of the surrogate model
@@ -104,6 +105,7 @@ dispData.d2=false;
 dispData.contour=false;
 dispData.gridGrad=false;
 dispData.sampleGrad=false;
+dispData.samplePts=false;
 dispData.render=true;
 dispData.title='Variance';
 displaySurrogate(gridRef,K.var,samplePts,eval,grad,dispData);

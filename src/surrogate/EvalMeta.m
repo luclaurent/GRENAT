@@ -147,7 +147,7 @@ switch availData.type
         trGZN=valGradN;stoGZN=valGradN;
         %% Evaluation of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
         %parfor (jj=1:nbReqEval,numWorkers)
-for jj=1:nbReqEval
+        for jj=1:nbReqEval
             [valRespN(jj),G,varResp(jj),detKRG]=KRGEval(reqRespN(jj,:),availData);
             valGradN(jj,:)=G;
             stoZN(jj)=detKRG.stoZ;
@@ -176,7 +176,18 @@ for jj=1:nbReqEval
                 checkInterp(gradI,checkGZ,'grad')
             end
         end
-        
+    case {'SVR','InSVR','GSVR'}
+        %% Evaluation of the (Gradient-Enhanced) SVR (SVR/GSVR)
+        %parfor (jj=1:nbReqEval,numWorkers)
+        for jj=1:nbReqEval
+           % [valRespN(jj),G,varResp(jj),detKRG]=KRGEval(reqRespN(jj,:),availData);
+            [valRespN(jj),G]=SVREval(reqRespN(jj,:),availData);
+            valGradN(jj,:)=G;
+%             stoZN(jj)=detKRG.stoZ;
+%             trZN(jj)=detKRG.trZ;
+%             trGZN(jj,:)=detKRG.trGZ;
+%             stoGZN(jj,:)=detKRG.stoGZ;
+        end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
         
@@ -223,6 +234,8 @@ for jj=1:nbReqEval
             valGradN(jj,:)=G;
             
         end
+    otherwise
+        error(['Wrong type of surrogate model (see. on ',mfilename,')']);
         
 end
 %%%%%%%%=================================%%%%%%%%

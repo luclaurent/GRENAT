@@ -106,7 +106,7 @@ if availGrad
         dYY=dYY(missData.grad.ixt_dispo_line);
     end
     %add gradients to the vectors of responses
-    cYY=[cYY:-dYY;dYY];
+    cYY=[cYY;-dYY;dYY];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -314,23 +314,7 @@ ret.build.kern=metaData.kern;
 %             metaData.para.val=metaData.para.l.val;
 %     end
 % end
-metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
-e=0.01;
-ek=e;
-%C=1e4;
-%Ck=C;
-C=1e4;
-Ck=1e4;%max(abs(mean(dYYYn)+3*std(dYYYn)),abs(mean(dYYYn)-3*std(dYYYn)));
-xi=1e-6;
-taui=xi;
-sigma=0.8;
 
-metaData.para.e0=e;
-metaData.para.ek=e;
-metaData.para.c0=C;
-metaData.para.ck=Ck;
-metaData.para.xi=xi;
-metaData.para.taui=taui;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building final elements of the SVR surrogate model (matrices, coefficients)
@@ -340,21 +324,21 @@ metaData.para.taui=taui;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store informations
-tmp=mergestruct(ret.build,blocKRG.build);
+tmp=mergestruct(ret.build,blocSVR.build);
 ret.build=tmp;
-ret.build.lilog=lilog;
+%ret.build.lilog=lilog;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Cross-validation (compute various errors)
-if metaData.cv.on
-    [tMesu,tInit]=mesuTime;
-    [ret.build.cv]=KRGCV(ret,metaData);
-    fprintf(' > Computation CV\n');
-    mesuTime(tMesu,tInit);
-end
+% if metaData.cv.on
+%     [tMesu,tInit]=mesuTime;
+%     [ret.build.cv]=KRGCV(ret,metaData);
+%     fprintf(' > Computation CV\n');
+%     mesuTime(tMesu,tInit);
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if availGrad;txt='GKRG';else txt='KRG';end
+if availGrad;txt='GSVR';else txt='SVR';end
 fprintf('\n >> END Building %s\n',txt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

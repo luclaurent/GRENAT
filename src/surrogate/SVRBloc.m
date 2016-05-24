@@ -1,4 +1,4 @@
-%% Building of the SVR/GSVR matrix 
+%% Building of the nu-SVR/GSVR matrix
 % L. LAURENT -- 24/05/2016 -- luc.laurent@lecnam.net
 
 %this function can be used as an objective function for finding
@@ -46,6 +46,7 @@ else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
     PsiT=[KK -KK;-KK KK];
 end
+PsiT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% rewrite this part
@@ -173,7 +174,7 @@ end
 %     %newCond=condest(rcc);
 %     %fprintf('>>> Improving of the condition number: \n%g >> %g  <<<\n',...
 %     %    origCond,newCond);
-%     
+%
 % end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,17 +196,12 @@ if dataIn.used.availGrad
     ek=ek(:);
     vE=[vE ek];
 end
-CC=YYY+vE;
+CC=YYY;
+YYY
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Build constrained conditions
-Aeq=[ones(1,ns) -ones(1,ns)];
-beq=0;
-if dataIn.used.availGrad
-    Aeq=[Aeq zeros(1,ns) zeros(1,ns)];
-end
-
 %Bounds of the dual variables
 lb=zeros(2*ns,1);
 c0=metaData.para.c0/ns*ones(2*ns,1);
@@ -216,7 +212,25 @@ if dataIn.used.availGrad
     ck=ck(:);
     ub=[ub ck'];
 end
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Build equality constraints
+Aeq=[ones(1,ns) -ones(1,ns)];
+beq=0;
+if dataIn.used.availGrad
+    Aeq=[Aeq zeros(1,ns) zeros(1,ns)];
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Build inequality constraints
+AA=ones(1,2*ns);
+bb=metaData.para.c0*metaData.para.nuSVR;
+if dataIn.used.availGrad
+    bb=[bb;ck(:)*meta.para.nuGSVR];
+    AA=[AA zeros(1,ns*np);repmat(eye(np),1,ns)];
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %starting point for optimizer
 x0=zeros(2*ns,1);
 if dataIn.used.availGrad
@@ -227,28 +241,35 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Solving the Convex Constrained Quadaratic Optimization problem
 opts = optimoptions('quadprog','Diagnostics','off','Display','iter');
-solQP=quadprog(PsiT,CC,[],[],Aeq,beq,lb,ub,x0,opts);
-
+solQP=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Extract result of optimization
+alphaRAW=solQP(1:2*ns);
 alphaPM=solQP(1:ns)-solQP(ns+1:2*ns);
 
 %find support vectors
 svI=find(abs(alphaPM)>metaData.para.xi);
-[svMid,svMidIX]=min(abs(abs(alphaPM)-c0(1:ns)/(2*ns)));
+[svMidP,svMidPIX]=min(abs(abs(alphaRAW(1:ns))-ub(1:ns)/2));
+[svMidM,svMidMIX]=min(abs(abs(alphaRAW(ns+1:2*ns))-ub(ns+1:2*ns)/2));
+
+%compute epsilon
+e=0.5*(dataIn.used.resp(svMidPIX)-dataIn.used.resp(svMidMIX)...
+    -alphaPM(svI)'*PsiT(svI,svMidPIX)...
+    +alphaPM(svI)'*PsiT(svI,svMidMIX));
 
 %compute the base term
-SVRmu=YYY(svMidIX)...
-    -metaData.para.e0*sign(alphaPM(svMidIX))...
-    -alphaPM(svI)'*PsiT(svI,svMidIX);
+SVRmu=dataIn.used.resp(svMidPIX)...
+    -e*sign(alphaPM(svMidPIX))...
+    -alphaPM(svI)'*PsiT(svI,svMidPIX);
 
 %in the case of gradient-based approach
 lambdaPM=[];
 if dataIn.used.availGrad
     lambdaPM=solQP(2*ns+1:(np+1)*ns)-solQP((np+1)*ns+1:end);
     svDI=find(abs(lambdaPM)>metaData.para.taui);
-    [svMidd,svMiddIX]=min(abs(abs(lambdaPM)-c0(1:np*ns)/(2*ns)));
+    [svMiddP,svMiddPIX]=min(abs(abs(lambdaPM(1:ns*np)-ub(2*ns+1:np*ns)/2)));
+    [svMiddM,svMiddMIX]=min(abs(abs(lambdaPM(ns*np+1:2*ns*np)-ub(ns+np+1:2*np*ns)/2)));
     %compute the base term
     SVRmu=YYY(svMidIX)-e*sign(alphaPM(svMidIX))...
         -alphaPM(svI)'*PsiT(svI,svMidIX)...
@@ -291,7 +312,7 @@ end
 %         buildData.QK=QK;
 %         buildData.QtK=QtK;
 %         buildData.PK=PK;
-%         
+%
 %     case 'LU'
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -377,4 +398,5 @@ if exist('newCond','var');buildData.newCond=newCond;end
 buildData.PsiT=PsiT;
 buildData.SVRmu=SVRmu;
 buildData.para=metaData.para;
+buildData.alphaPM=alphaPM;
 ret.build=buildData;

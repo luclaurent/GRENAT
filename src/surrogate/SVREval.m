@@ -1,9 +1,11 @@
-%% function for evaluating the (co)Kriging surrogate model at many points
-% KRG: w/o gradient
-% GKRG: w/- gradients
-% L. LAURENT -- 15/12/2011 -- luc.laurent@lecnam.net
+%% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points
+% SVR: w/o gradient
+% GSVR: w/- gradients
+% L. LAURENT -- 24/05/2016 -- luc.laurent@lecnam.net
 
-function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)
+%function [Z,GZ,variance,details]=SVREval(U,metaData,specifSampling)
+function [Z,GZ]=SVREval(U,metaData,specifSampling)
+
 % display warning or not
 dispWarning=false;
 %load varibales
@@ -34,9 +36,9 @@ dimX=size(X,1);
 distS=repmat(X,ns,1)-sampling;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% KRG/GKRG
+%% SVR/GSVR
 %%compute response provided by the metamodel at the non sample point
-%definition des dimensions of the matrix/vector for KRG or GKRG
+%definition des dimensions of the matrix/vector for SVR or GSVR
 if metaData.used.availGrad
     sizeMatVec=ns*(np+1);
 else
@@ -49,7 +51,7 @@ if calcGrad
     jr=zeros(sizeMatVec,np);
 end
 
-%KRG/GKRG
+%SVR/GSVR
 if metaData.used.availGrad
     if calcGrad  %if compute gradients
         %evaluate kernel function
@@ -97,7 +99,7 @@ else
     if calcGrad  %if the gradients will be computed
         [rr,jr]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
     else %otherwise
-        rr=feval(metaData.build.corr,distS,metaData.build.para.val);
+        rr=feval(metaData.build.kern,distS,metaData.build.para.val);
     end
     %if missing data
     if metaData.miss.resp.on
@@ -107,65 +109,43 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%regression matrix at the non-sample points
-if calcGrad
-    [ff,~,jf,~]=feval(metaData.build.funPoly,X);
-    jf=vertcat(jf{:});
-else
-    ff=feval(metaData.build.funPoly,X);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluation of the surrogate model at point X
-trZ=ff*metaData.build.beta;
-stoZ=rr'*metaData.build.gamma;
-Z=trZ+stoZ;
+Z=metaData.build.SVRmu+metaData.build.alphaPM'*rr;
 if calcGrad
-    %%verif in 2D+
-    trGZ=jf*metaData.build.beta;
-    stoGZ=jr'*metaData.build.gamma;
-    GZ=trGZ+stoGZ;
+    GZ=metaData.build.alphaPM'*jr;
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%compute the prediction variance (MSE) (Lophaven, Nielsen & Sondergaard
-%2004 / Marcelet 2008 / Chauvet 1999)
-if nargout >=3
-    if ~dispWarning;warning off all;end
-    %depending on the factorization
-    switch metaData.build.factKK
-        case 'QR'
-            rrP=rr'*metaData.build.PK;
-            Qrr=metaData.build.QtK*rr;
-            u=metaData.build.fcR*Qrr-ff';
-            variance=metaData.build.sig2*(ones(dimX,1)-(rrP/metaData.build.RK)*Qrr+...
-                u'/metaData.build.fcCfct*u);
-        case 'LU'
-            rrP=rr(metaData.build.PK,:);
-            Lrr=metaData.build.LK\rrP;
-            u=metaData.build.fcU*Lrr-ff';
-            variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.UK)*Lrr+...
-                u'/metaData.build.fcCfct*u);
-        case 'LL'
-            Lrr=metaData.build.LK\rr;
-            u=metaData.build.fcL*Lrr-ff';
-            variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.LtK)*Lrr+...
-                u'/metaData.build.fcCfct*u);
-        otherwise
-            rKrr=metaData.build.KK \ rr;
-            u=metaData.build.fc*rKrr-ff';
-            variance=metaData.build.sig2*(ones(dimX,1)+u'/metaData.build.fcCfct*u - rr'*rKrr);
-    end
-    if ~dispWarning;warning on all;end
-    
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%extraction details
-if nargout==4
-    details.trZ=trZ;
-    details.stoZ=stoZ;
-    details.trGZ=trGZ;
-    details.stoGZ=stoGZ;
-end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %compute the prediction variance (MSE) (Lophaven, Nielsen & Sondergaard
+% %2004 / Marcelet 2008 / Chauvet 1999)
+% if nargout >=3
+%     if ~dispWarning;warning off all;end
+%     %depending on the factorization
+%     switch metaData.build.factKK
+%         case 'QR'
+%             rrP=rr'*metaData.build.PK;
+%             Qrr=metaData.build.QtK*rr;
+%             u=metaData.build.fcR*Qrr-ff';
+%             variance=metaData.build.sig2*(ones(dimX,1)-(rrP/metaData.build.RK)*Qrr+...
+%                 u'/metaData.build.fcCfct*u);
+%         case 'LU'
+%             rrP=rr(metaData.build.PK,:);
+%             Lrr=metaData.build.LK\rrP;
+%             u=metaData.build.fcU*Lrr-ff';
+%             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.UK)*Lrr+...
+%                 u'/metaData.build.fcCfct*u);
+%         case 'LL'
+%             Lrr=metaData.build.LK\rr;
+%             u=metaData.build.fcL*Lrr-ff';
+%             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.LtK)*Lrr+...
+%                 u'/metaData.build.fcCfct*u);
+%         otherwise
+%             rKrr=metaData.build.KK \ rr;
+%             u=metaData.build.fc*rKrr-ff';
+%             variance=metaData.build.sig2*(ones(dimX,1)+u'/metaData.build.fcCfct*u - rr'*rKrr);
+%     end
+%     if ~dispWarning;warning on all;end
+%
+% end
+
 end

@@ -149,6 +149,8 @@ switch typeMeta
         fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
+    otherwise
+        error(['Wrong type of surrogate model (see. on ',mfilename,')']);
 end
 
 %%%%%%%%=================================%%%%%%%%

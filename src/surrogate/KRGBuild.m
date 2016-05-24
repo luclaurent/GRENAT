@@ -189,7 +189,7 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul distances inter-sites
+%compute distances between sample points
 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -369,7 +369,7 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Building final elements of the RBF surrogate model (matrices, coefficients & log-likelihood)
+% Building final elements of the KRG surrogate model (matrices, coefficients & log-likelihood)
 % by taking into account the values of hyperparameters obtained previously
 [lilog,blocKRG]=KRGBloc(ret,metaData);
 

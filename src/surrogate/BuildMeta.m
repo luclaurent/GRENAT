@@ -23,7 +23,7 @@ fprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n'
 %Normalization of the input data
 fprintf(' >> Normalization: ');if metaData.normOn; fprintf('Yes\n');else fprintf('No\n');end
 if metaData.normOn
-        %normalization of the data
+    %normalization of the data
     [respN,infoDataR]=NormRenorm(respIn,'norm');
     [samplingN,infoDataS]=NormRenorm(samplingIn,'norm');
     if availGrad
@@ -93,6 +93,11 @@ switch typeMeta
     case {'KRG','InKRG','GKRG'}
         %% Building of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
         outMeta=KRGBuild(samplingOk,respOk,gradOk,metaData);
+        %%%%%%%%=================================%%%%%%%%
+        %%%%%%%%=================================%%%%%%%%
+    case {'SVR','InSVR','GSVR'}
+        %% Building of the (Gradient-Enhanced) SVR (SVR/GSVR)
+        outMeta=SVRBuild(samplingOk,respOk,gradOk,metaData);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case {'DACE','InDACE'}

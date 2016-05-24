@@ -95,7 +95,8 @@ YY=respIn;
 if missResp
     YY=YY(metaData.miss.resp.ixAvail);
 end
-%
+%vector of the responses
+cYY=[-YY;YY];
 
 if availGrad
     tmp=gradIn';
@@ -104,11 +105,12 @@ if availGrad
     if missGrad
         dYY=dYY(missData.grad.ixt_dispo_line);
     end
-    YY=vertcat(YY,dYY);
+    %add gradients to the vectors of responses
+    cYY=[cYY:-dYY;dYY];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Building indexes system for building KRG/GKRG matrices
+% Building indexes system for building SVR/GSVR matrices
 if availGrad
     
     sizeMatRc=(ns^2+ns)/2;
@@ -188,58 +190,8 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%calcul distances inter-sites
+%compute distance between sample points
 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Build regression matrix (for the trend model)
-%choose polynomial function
-funPoly=['mono_' num2str(metaData.polyOrder,'%02i') '_' num2str(np,'%03i')];
-
-%depending on the availability of the gradients
-if ~availGrad
-    valFunPoly=feval(funPoly,samplingIn);
-    if missResp
-        %remove missing response(s)
-        valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
-    end
-else
-    %GKRG
-    [Reg,nbMonomialTerms,DReg,~]=feval(funPoly,samplingIn);
-    if missResp||missGrad
-        sizeResp=ns-missData.resp.nb;
-        sizeGrad=ns*np-missData.grad.nb;
-        sizeTotal=sizeResp+sizeGrad;
-    else
-        sizeResp=ns;
-        sizeGrad=ns*np;
-        sizeTotal=sizeResp+sizeGrad;
-    end
-    %initialize regression matrix
-    valFunPoly=zeros(sizeTotal,nbMonomialTerms);
-    if missResp
-        %remove missing response(s)
-        Reg=Reg(metaData.miss.resp.ixAvail,:);
-    end
-    %load monomial terms of the polynomial regression
-    valFunPoly(1:sizeResp,:)=Reg;
-    %load derivatives of the monomial terms
-    if iscell(DReg)
-        tmp=horzcat(DReg{:})';
-        tmp=reshape(tmp,nbMonomialTerms,[])';
-    else
-        tmp=DReg';
-        tmp=tmp(:);
-    end
-    
-    if missGrad
-        %remove missing gradient(s)
-        tmp=tmp(missData.grad.ixt_dispo_line,:);
-    end
-    %add derivatives to the regression matrix
-    valFunPoly(sizeResp+1:end,:)=tmp;
-end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store variables
@@ -259,118 +211,131 @@ if availGrad
     ret.ix.dev=iXdev;
     ret.ix.devb=iXdevb;
 end
-ret.build.fct=valFunPoly;
-ret.build.fc=valFunPoly';
-ret.build.sizeFc=size(valFunPoly,2);
-ret.build.y=YY;
-ret.build.funPoly=funPoly;
+ret.build.y=cYY;
 ret.build.kern=metaData.kern;
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% Estimation parameters
+% if metaData.para.estim&&metaData.para.dispEstim
+%     valPara=linspace(metaData.para.l.min,metaData.para.l.max,100);
+%     % load progress bar
+%     cpb = ConsoleProgressBar();
+%     minVal = 0;
+%     maxVal = 100;
+%     cpb.setMinimum(minVal);
+%     cpb.setMaximum(maxVal);
+%     cpb.setLength(20);
+%     cpb.setRemainedTimeVisible(1);
+%     cpb.setRemainedTimePosition('left');
+%     cpb.start();
+%     %for anisotropy (with 2 design variables)
+%     if metaData.para.aniso&&np==2
+%         %building of the studied grid
+%         [valX,valY]=meshgrid(valPara,valPara);
+%         %initialize matrix for storing log-likelihood
+%         valLik=zeros(size(valX));
+%         for itli=1:numel(valX)
+%             %compute log-likelihood and storage
+%             valLik(itli)=KRGBloc(ret,metaData,[valX(itli) valY(itli)]);
+%             %show progress and time
+%             cpb.setValue(itli/numel(valX)*100);
+%         end
+%         fprintf('\n');
+%         cpb.stop();
+%         %plot log-vraisemblance
+%         figure;
+%         [C,h]=contourf(valX,valY,valLik);
+%         text_handle = clabel(C,h);
+%         set(text_handle,'BackgroundColor',[1 1 .6],...
+%             'Edgecolor',[.7 .7 .7])
+%         set(h,'LineWidth',2)
+%         %store figure in TeX/Tikz file
+%         if metaData.para.save
+%             matlab2tikz([aff.doss '/KRGlogli.tex'])
+%         end
+%         
+%     elseif ~metaData.para.aniso||np==1
+%         %initialize matrix for storing log-likelihood
+%         valLik=zeros(1,length(valPara));
+%         for itli=1:length(valPara)
+%             %compute log-likelihood and storage
+%             valLik(itli)=KRGBloc(ret,metaData,valPara(itli));
+%             cpb.setValue(itli/numel(valPara)*100);
+%         end
+%         fprintf('\n');
+%         cpb.stop();
+%         
+%         %store in .dat file
+%         if metaData.para.save
+%             ss=[valPara' valLik'];
+%             save([aff.directory '/KRGlogli.dat'],'ss','-ascii');
+%         end
+%         
+%         %plot log-vraisemblance
+%         figure;
+%         plot(valPara,valLik);
+%         title('Evolution of the log-likelihood');
+%     end
+%     
+%     %store graphs (if active)
+%     if dispData.save&&(ns<=2)
+%         fileStore=saveDisp('fig_likelihood',dispData.directory);
+%         if dispData.tex
+%             fid=fopen([dispData.directory '/fig.tex'],'a+');
+%             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
+%             %fprintf(fid,'\\verb{%s}\n',fich);
+%             fclose(fid);
+%         end
+%     end
+% end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% Building of the various elements with and without estimation of the
+% % hyperparameters
+% if metaData.para.estim
+%     paraEstim=EstimPara(ret,metaData,'KRGBloc');
+%     ret.build.paraEstim=paraEstim;
+%     metaData.para.l.val=paraEstim.l.val;
+%     metaData.para.val=paraEstim.val;
+%     if isfield(paraEstim,'p')
+%         metaData.para.p.val=paraEstim.p.val;
+%     end
+%     if isfield(paraEstim,'nu')
+%         metaData.para.nu.val=paraEstim.nu.val;
+%     end
+% else
+%     %w/o estimation, the initial values of hyperparameters are chosen
+%     switch metaData.kern
+%         case {'expg','expgg'}
+%             metaData.para.val=[metaData.para.l.val metaData.para.p.val];
+%         case {'matern'}
+%             metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
+%         otherwise
+%             metaData.para.val=metaData.para.l.val;
+%     end
+% end
+metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
+e=0.01;
+ek=e;
+%C=1e4;
+%Ck=C;
+C=1e4;
+Ck=1e4;%max(abs(mean(dYYYn)+3*std(dYYYn)),abs(mean(dYYYn)-3*std(dYYYn)));
+xi=1e-6;
+taui=xi;
+sigma=0.8;
+
+metaData.para.e0=e;
+metaData.para.ek=e;
+metaData.para.c0=C;
+metaData.para.ck=Ck;
+metaData.para.xi=xi;
+metaData.para.taui=taui;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Compute log-likelihood for estimating parameters
-if metaData.para.estim&&metaData.para.dispEstim
-    valPara=linspace(metaData.para.l.min,metaData.para.l.max,100);
-    % load progress bar
-    cpb = ConsoleProgressBar();
-    minVal = 0;
-    maxVal = 100;
-    cpb.setMinimum(minVal);
-    cpb.setMaximum(maxVal);
-    cpb.setLength(20);
-    cpb.setRemainedTimeVisible(1);
-    cpb.setRemainedTimePosition('left');
-    cpb.start();
-    %for anisotropy (with 2 design variables)
-    if metaData.para.aniso&&np==2
-        %building of the studied grid
-        [valX,valY]=meshgrid(valPara,valPara);
-        %initialize matrix for storing log-likelihood
-        valLik=zeros(size(valX));
-        for itli=1:numel(valX)
-            %compute log-likelihood and storage
-            valLik(itli)=KRGBloc(ret,metaData,[valX(itli) valY(itli)]);
-            %show progress and time
-            cpb.setValue(itli/numel(valX)*100);
-        end
-        fprintf('\n');
-        cpb.stop();
-        %plot log-vraisemblance
-        figure;
-        [C,h]=contourf(valX,valY,valLik);
-        text_handle = clabel(C,h);
-        set(text_handle,'BackgroundColor',[1 1 .6],...
-            'Edgecolor',[.7 .7 .7])
-        set(h,'LineWidth',2)
-        %store figure in TeX/Tikz file
-        if metaData.para.save
-            matlab2tikz([aff.doss '/KRGlogli.tex'])
-        end
-        
-    elseif ~metaData.para.aniso||np==1
-        %initialize matrix for storing log-likelihood
-        valLik=zeros(1,length(valPara));
-        for itli=1:length(valPara)
-            %compute log-likelihood and storage
-            valLik(itli)=KRGBloc(ret,metaData,valPara(itli));
-            cpb.setValue(itli/numel(valPara)*100);
-        end
-        fprintf('\n');
-        cpb.stop();
-        
-        %store in .dat file
-        if metaData.para.save
-            ss=[valPara' valLik'];
-            save([aff.directory '/KRGlogli.dat'],'ss','-ascii');
-        end
-        
-        %plot log-vraisemblance
-        figure;
-        plot(valPara,valLik);
-        title('Evolution of the log-likelihood');
-    end
-    
-    %store graphs (if active)
-    if dispData.save&&(ns<=2)
-        fileStore=saveDisp('fig_likelihood',dispData.directory);
-        if dispData.tex
-            fid=fopen([dispData.directory '/fig.tex'],'a+');
-            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
-            %fprintf(fid,'\\verb{%s}\n',fich);
-            fclose(fid);
-        end
-    end
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Building of the various elements with and without estimation of the
-% hyperparameters
-if metaData.para.estim
-    paraEstim=EstimPara(ret,metaData,'KRGBloc');
-    ret.build.paraEstim=paraEstim;
-    metaData.para.l.val=paraEstim.l.val;
-    metaData.para.val=paraEstim.val;
-    if isfield(paraEstim,'p')
-        metaData.para.p.val=paraEstim.p.val;
-    end
-    if isfield(paraEstim,'nu')
-        metaData.para.nu.val=paraEstim.nu.val;
-    end
-else
-    %w/o estimation, the initial values of hyperparameters are chosen
-    switch metaData.kern
-        case {'expg','expgg'}
-            metaData.para.val=[metaData.para.l.val metaData.para.p.val];
-        case {'matern'}
-            metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
-        otherwise
-            metaData.para.val=metaData.para.l.val;
-    end
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Building final elements of the RBF surrogate model (matrices, coefficients & log-likelihood)
+% Building final elements of the SVR surrogate model (matrices, coefficients)
 % by taking into account the values of hyperparameters obtained previously
-[lilog,blocKRG]=KRGBloc(ret,metaData);
+[blocSVR]=SVRBloc(ret,metaData);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

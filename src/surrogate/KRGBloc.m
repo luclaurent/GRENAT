@@ -1,7 +1,7 @@
 %% Building of the KRG/GKRG matrix and computation of the log-likelihood
 % L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net
 
-% the kernel matrix K can be also designetd as the correlation matrix
+% the kernel matrix K can be also designated as the correlation matrix
 
 %this function can be used as an objective function for finding
 %hyperparameters via optimization
@@ -12,7 +12,7 @@ function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)
 %coefficient for reconditionning (co)kriging matrix
 coefRecond=(10+size(dataIn.build.fct,1))*eps;
 % chosen factorization for (G)KRG matrix
-if strcmp(metaData.type,'CKRG')
+if strcmp(metaData.type,'GKRG')
     factKK='LU';
 else
     factKK='LU' ; %LU %QR %LL %None
@@ -158,7 +158,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Improve condition number of the RBF/GRBF Matrix
+%Improve condition number of the KRG/GKRG Matrix
 if metaData.recond
     %origCond=condest(rcc);
     KK=KK+coefRecond*speye(size(KK));

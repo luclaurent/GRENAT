@@ -217,7 +217,7 @@ dispCvOld=metaData.cv.disp;
 metaData.cv.disp=false;
 
 if metaData.para.estim&&metaData.para.dispEstim
-    valPara=linspace(metaData.para.l.min,metaData.para.l.max,gene_nbele(np));
+    valPara=linspace(metaData.para.l.min,metaData.para.l.max,50);
     % load progress bar
     cpb = ConsoleProgressBar();
     minVal = 0;
@@ -227,6 +227,7 @@ if metaData.para.estim&&metaData.para.dispEstim
     cpb.setLength(20);
     cpb.setRemainedTimeVisible(1);
     cpb.setRemainedTimePosition('left');
+    cpb.start();
     %for anisotropy (with 2 design variables)
     if metaData.para.aniso&&np==2
         %building of the studied grid
@@ -237,7 +238,7 @@ if metaData.para.estim&&metaData.para.dispEstim
             %computation of the MSE and storage
             valMSEp(itli)=RBFBloc(ret,metaData,[valX(itli) valY(itli)]);
             %show progress and time
-            cpb.setValue(itli/numel(valX));
+            cpb.setValue(itli/numel(valX)*100);
         end
         cpb.stop();
         %plot MSE
@@ -248,7 +249,7 @@ if metaData.para.estim&&metaData.para.dispEstim
             'Edgecolor',[.7 .7 .7])
         set(h,'LineWidth',2)
         %store figure in TeX/Tikz file
-        if metaData.save
+        if dispData.save
             matlab2tikz([dispData.doss '/RBFmse.tex'])
         end
         

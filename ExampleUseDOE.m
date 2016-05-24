@@ -51,8 +51,8 @@ samplePts=sampling.sorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load parameters of the surrogate model
-data.type='GKRG';
-data.rbf='matern32';
+data.type='SVR';
+data.kern='matern52';
 metaData=initMeta(data);
 metaData.cv.disp=true;
 metaData.para.estim=1;

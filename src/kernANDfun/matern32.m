@@ -19,8 +19,9 @@ end
 lP=1./para(:,1);
 
 %compute value of the function at point xx
-etd=exp(-abs(xx)./lP*sqrt(3));
-co=1+sqrt(3)./lP.*abs(xx);
+xxN=abs(xx)./lP*sqrt(3);
+etd=exp(-xxN);
+co=1+xxN;
 k=co.*etd;
 
 %compute first derivatives
@@ -31,6 +32,6 @@ end
 
 %compute second derivatives
 if nbOut>2
-    ddk=3./lP.^2.*(sqrt(3)./lP.*abs(xx)-1).*etd;
+    ddk=3./lP.^2.*(xxN-1).*etd;
 end
 end

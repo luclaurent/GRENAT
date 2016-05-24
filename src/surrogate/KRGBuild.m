@@ -330,7 +330,6 @@ if metaData.para.estim&&metaData.para.dispEstim
         title('Evolution of the log-likelihood');
     end
     
-    global dispData
     %store graphs (if active)
     if dispData.save&&(ns<=2)
         fileStore=saveDisp('fig_likelihood',dispData.directory);

@@ -29,6 +29,22 @@ meta.polyOrder=1;
 %parameter for SWF
 swf_para=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% internal parameters for SVR/GSVR
+meta.para.e0=1e-2; %thickness of the tube (not used for nu-SVR)
+meta.para.ek=1e-2; %thickness of the tube of gradient (not used for nu-SVR)
+%constant for trade off between flatness of the function and the amount up to 
+%which deviations larger to e0 are tolerated
+meta.para.c0=1e4;
+%same trade off constant as before 
+meta.para.ck=1e4;
+%slack variables associated to the respones
+meta.para.xi=1e-6;
+%slack variables associated to the gradients
+meta.para.taui=1e-6;
+%parameter of the nu-SVR/nu-GSVR (nu in [0,1])
+meta.para.nuSVR=0.8; 
+meta.para.nuGSVR=0.8;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% kernel function
 meta.kern='matern32';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%

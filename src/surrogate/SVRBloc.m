@@ -22,16 +22,24 @@ ns=dataIn.used.ns;
 np=dataIn.used.np;
 fctKern=metaData.kern;
 YYY=dataIn.build.y;
+c0=metaData.para.c0;
+ck=metaData.para.ck;
 ret=[];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Conditioning data for  gradient-based approach
+if numel(ck)==1
+    ck=ck(:,ones(1,np));
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %if the hyperparameter is defined
-final=false;
+finalStatus=false;
 if nargin>=3
     paraVal=paraValIn;
 else
     paraVal=metaData.para.val;
-    final=true;
+    finalStatus=true;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,7 +54,6 @@ else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
     PsiT=[KK -KK;-KK KK];
 end
-PsiT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% rewrite this part
@@ -176,29 +183,11 @@ PsiT
 %     %    origCond,newCond);
 %
 % end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%condition number of the SVR/GSVR Matrix
-if final   % in the phase of building
-    newCond=condest(PsiT);
-    fprintf('Condition number SVR/GSVR matrix: %4.2e\n',newCond)
-    if newCond>1e16
-        fprintf('+++ //!\\ Bad condition number\n');
-    end
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Build terms of the convex constrained quadratic optimization
-vE=metaData.para.e0*ones(2*ns,1);
-if dataIn.used.availGrad
-    ek=metaData.para.ek(ones(1,np),:);
-    ek=ek(:);
-    vE=[vE ek];
-end
 CC=YYY;
-YYY
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -207,10 +196,10 @@ lb=zeros(2*ns,1);
 c0=metaData.para.c0/ns*ones(2*ns,1);
 ub=c0;
 if dataIn.used.availGrad
-    lb=[lb zeros(2*np*ns,1)];
-    ck=metaData.para.ck(ones(2*np,1),:);
-    ck=ck(:);
-    ub=[ub ck'];
+    lb=[lb;zeros(2*np*ns,1)];
+    ckV=ck(:,ones(1,2*np*ns))/ns;
+    ckV=ckV(:);
+    ub=[ub;ckV];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -226,8 +215,9 @@ end
 AA=ones(1,2*ns);
 bb=metaData.para.c0*metaData.para.nuSVR;
 if dataIn.used.availGrad
-    bb=[bb;ck(:)*meta.para.nuGSVR];
-    AA=[AA zeros(1,ns*np);repmat(eye(np),1,ns)];
+    bb=[bb;ck(:)*metaData.para.nuGSVR];
+    AA=[AA zeros(1,2*ns*np);
+        zeros(np,2*ns) repmat(eye(np),1,2*ns)];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -246,15 +236,16 @@ solQP=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Extract result of optimization
 alphaRAW=solQP(1:2*ns);
-alphaPM=solQP(1:ns)-solQP(ns+1:2*ns);
-
+alphaPM=alphaRAW(1:ns)-alphaRAW(ns+1:2*ns);
+FullAlphaLambdaPM=alphaPM;
 %find support vectors
 svI=find(abs(alphaPM)>metaData.para.xi);
 [svMidP,svMidPIX]=min(abs(abs(alphaRAW(1:ns))-ub(1:ns)/2));
 [svMidM,svMidMIX]=min(abs(abs(alphaRAW(ns+1:2*ns))-ub(ns+1:2*ns)/2));
 
 %compute epsilon
-e=0.5*(dataIn.used.resp(svMidPIX)-dataIn.used.resp(svMidMIX)...
+e=0.5*(dataIn.used.resp(svMidPIX)...
+    -dataIn.used.resp(svMidMIX)...
     -alphaPM(svI)'*PsiT(svI,svMidPIX)...
     +alphaPM(svI)'*PsiT(svI,svMidMIX));
 
@@ -266,14 +257,26 @@ SVRmu=dataIn.used.resp(svMidPIX)...
 %in the case of gradient-based approach
 lambdaPM=[];
 if dataIn.used.availGrad
-    lambdaPM=solQP(2*ns+1:(np+1)*ns)-solQP((np+1)*ns+1:end);
+    lambdaRAW=solQP(2*ns+1:end);
+    lambdaPM=lambdaRAW(1:ns*np)-lambdaRAW(ns*np+1:end);
+    FullAlphaLambdaPM=[alphaPM;lambdaPM];
+    %find support vectors dedicated to gradients
     svDI=find(abs(lambdaPM)>metaData.para.taui);
-    [svMiddP,svMiddPIX]=min(abs(abs(lambdaPM(1:ns*np)-ub(2*ns+1:np*ns)/2)));
-    [svMiddM,svMiddMIX]=min(abs(abs(lambdaPM(ns*np+1:2*ns*np)-ub(ns+np+1:2*np*ns)/2)));
+    [svMiddP,svMiddPIX]=min(abs(abs(lambdaRAW(1:ns*np)-ub(2*ns+1:ns*(np+2))/2)));
+    [svMiddM,svMiddMIX]=min(abs(abs(lambdaRAW(ns*np+1:2*ns*np)-ub(ns*(np+2)+1:2*ns*(1+np))/2)));
+    
+    %compute epsilon
+    e=0.5*(dataIn.used.resp(svMidPIX)...
+        -dataIn.used.resp(svMidMIX)...
+        -alphaPM(svI)'*Psi(svI,svMidPIX)...
+        -lambdaPM(svI)'*PsiDo(svMidPIX,svI)'...
+        +alphaPM(svI)'*Psi(svI,svMidMIX)...
+        +lambdaPM(svI)'*PsiDo(svMidMIX,svI)');
     %compute the base term
-    SVRmu=YYY(svMidIX)-e*sign(alphaPM(svMidIX))...
-        -alphaPM(svI)'*PsiT(svI,svMidIX)...
-        -lambdaPM(svI)'*PsiDo(svMidIX,svI)';
+    SVRmu=dataIn.used.resp(svMidPIX)...
+        -e*sign(alphaPM(svMidPIX))...
+        -alphaPM(svI)'*Psi(svI,svMidPIX)...
+        -lambdaPM(svI)'*PsiDo(svMidPIX,svI)';
 end
 
 
@@ -398,5 +401,5 @@ if exist('newCond','var');buildData.newCond=newCond;end
 buildData.PsiT=PsiT;
 buildData.SVRmu=SVRmu;
 buildData.para=metaData.para;
-buildData.alphaPM=alphaPM;
+buildData.alphaLambdaPM=FullAlphaLambdaPM;
 ret.build=buildData;

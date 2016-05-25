@@ -43,36 +43,13 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='SVR';
+metaData.type='GSVR';
 metaData.kern='matern32';
 metaData.cv.disp=true;
 metaData.para.estim=false;
 metaData.para.nu.val=3;
 metaData.para.l.val=1/0.6;
 metaData.para.dispPlotAlgo=false;
-
-
-metaData.para.val=[metaData.para.l.val];% metaData.para.nu.val];
-e=0.01;
-ek=e;
-%C=1e4;
-%Ck=C;
-C=1e4;
-Ck=1e4;%max(abs(mean(dYYYn)+3*std(dYYYn)),abs(mean(dYYYn)-3*std(dYYYn)));
-xi=1e-6;
-taui=xi;
-sigma=0.8;
-nu=0.8;
-nuk=nu;
-metaData.para.e0=e;
-metaData.para.ek=e;
-metaData.para.c0=C;
-metaData.para.ck=Ck;
-metaData.para.xi=xi;
-metaData.para.nuSVR=nu;
-metaData.para.nuGSVR=nu;
-metaData.para.taui=taui;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

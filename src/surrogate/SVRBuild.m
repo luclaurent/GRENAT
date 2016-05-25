@@ -288,32 +288,32 @@ ret.build.kern=metaData.kern;
 %         end
 %     end
 % end
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %% Building of the various elements with and without estimation of the
-% % hyperparameters
-% if metaData.para.estim
-%     paraEstim=EstimPara(ret,metaData,'KRGBloc');
-%     ret.build.paraEstim=paraEstim;
-%     metaData.para.l.val=paraEstim.l.val;
-%     metaData.para.val=paraEstim.val;
-%     if isfield(paraEstim,'p')
-%         metaData.para.p.val=paraEstim.p.val;
-%     end
-%     if isfield(paraEstim,'nu')
-%         metaData.para.nu.val=paraEstim.nu.val;
-%     end
-% else
-%     %w/o estimation, the initial values of hyperparameters are chosen
-%     switch metaData.kern
-%         case {'expg','expgg'}
-%             metaData.para.val=[metaData.para.l.val metaData.para.p.val];
-%         case {'matern'}
-%             metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
-%         otherwise
-%             metaData.para.val=metaData.para.l.val;
-%     end
-% end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Building of the various elements with and without estimation of the
+% hyperparameters
+if metaData.para.estim
+    paraEstim=EstimPara(ret,metaData,'KRGBloc');
+    ret.build.paraEstim=paraEstim;
+    metaData.para.l.val=paraEstim.l.val;
+    metaData.para.val=paraEstim.val;
+    if isfield(paraEstim,'p')
+        metaData.para.p.val=paraEstim.p.val;
+    end
+    if isfield(paraEstim,'nu')
+        metaData.para.nu.val=paraEstim.nu.val;
+    end
+else
+    %w/o estimation, the initial values of hyperparameters are chosen
+    switch metaData.kern
+        case {'expg','expgg'}
+            metaData.para.val=[metaData.para.l.val metaData.para.p.val];
+        case {'matern'}
+            metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
+        otherwise
+            metaData.para.val=metaData.para.l.val;
+    end
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

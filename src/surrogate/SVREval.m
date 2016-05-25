@@ -110,9 +110,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %evaluation of the surrogate model at point X
-Z=metaData.build.SVRmu+metaData.build.alphaPM'*rr;
+Z=metaData.build.SVRmu+metaData.build.alphaLambdaPM'*rr;
 if calcGrad
-    GZ=metaData.build.alphaPM'*jr;
+    GZ=metaData.build.alphaLambdaPM'*jr;
 end
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

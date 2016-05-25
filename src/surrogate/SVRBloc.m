@@ -207,7 +207,7 @@ end
 Aeq=[ones(1,ns) -ones(1,ns)];
 beq=0;
 if dataIn.used.availGrad
-    Aeq=[Aeq zeros(1,ns) zeros(1,ns)];
+    Aeq=[Aeq zeros(1,2*ns*np)];
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -218,13 +218,6 @@ if dataIn.used.availGrad
     bb=[bb;ck(:)*metaData.para.nuGSVR];
     AA=[AA zeros(1,2*ns*np);
         zeros(np,2*ns) repmat(eye(np),1,2*ns)];
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%starting point for optimizer
-x0=zeros(2*ns,1);
-if dataIn.used.availGrad
-    x0=[x0 zeros(2*np*ns,1)];
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -41,7 +41,7 @@ gradRef=C.ref.grad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='SVR';
+metaData.type='GSVR';
 metaData.kern='matern32';
 metaData.cv.disp=true;
 metaData.para.estim=false;

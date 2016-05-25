@@ -3,8 +3,7 @@
 % GSVR: w/- gradients
 % L. LAURENT -- 24/05/2016 -- luc.laurent@lecnam.net
 
-%function [Z,GZ,variance,details]=SVREval(U,metaData,specifSampling)
-function [Z,GZ]=SVREval(U,metaData,specifSampling)
+function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)
 
 % display warning or not
 dispWarning=false;
@@ -114,38 +113,28 @@ Z=metaData.build.SVRmu+metaData.build.alphaLambdaPM'*rr;
 if calcGrad
     GZ=metaData.build.alphaLambdaPM'*jr;
 end
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %compute the prediction variance (MSE) (Lophaven, Nielsen & Sondergaard
-% %2004 / Marcelet 2008 / Chauvet 1999)
-% if nargout >=3
-%     if ~dispWarning;warning off all;end
-%     %depending on the factorization
-%     switch metaData.build.factKK
-%         case 'QR'
-%             rrP=rr'*metaData.build.PK;
-%             Qrr=metaData.build.QtK*rr;
-%             u=metaData.build.fcR*Qrr-ff';
-%             variance=metaData.build.sig2*(ones(dimX,1)-(rrP/metaData.build.RK)*Qrr+...
-%                 u'/metaData.build.fcCfct*u);
-%         case 'LU'
-%             rrP=rr(metaData.build.PK,:);
-%             Lrr=metaData.build.LK\rrP;
-%             u=metaData.build.fcU*Lrr-ff';
-%             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.UK)*Lrr+...
-%                 u'/metaData.build.fcCfct*u);
-%         case 'LL'
-%             Lrr=metaData.build.LK\rr;
-%             u=metaData.build.fcL*Lrr-ff';
-%             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.LtK)*Lrr+...
-%                 u'/metaData.build.fcCfct*u);
-%         otherwise
-%             rKrr=metaData.build.KK \ rr;
-%             u=metaData.build.fc*rKrr-ff';
-%             variance=metaData.build.sig2*(ones(dimX,1)+u'/metaData.build.fcCfct*u - rr'*rKrr);
-%     end
-%     if ~dispWarning;warning on all;end
-%
-% end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%compute the prediction variance (Bompard 2011, Gao et al. 2002)
+if nargout >=3
+    %intrinsic variance
+    c0=metaData.build.c0;
+    e0=metaData.build.e0;
+    varianceI=2/c0^+1/3*e0^2*(3+e0*c0)/(e0*c0+1);
+    
+    %reduction to the unbounded support vectors
+    %depending on gradient- or none-gradient-based GSVR
+    iXsvI=metaData.build.svI;
+    if metaData.used.availGrad
+        liNp=1:np;
+        iXDsvI=ns+liNp(ones(numel(iXsvI),:),:)+iXsvI(:,ones(np,1));
+        iXsvI=[iXsvI iXDsvI(:)];
+    end
+    rrUSV=rr(iXsvI);
+    PsiUSV=metaData.build.PsiR(iXsvI,iXsvI);
+    %variance due to the approximation
+    varianceS=1-rrUSV'/PsiUSV*rrUSV;
+    variance=varianceI+varianceS;
+end
 
 end

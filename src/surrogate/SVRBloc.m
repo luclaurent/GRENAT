@@ -50,9 +50,11 @@ if dataIn.used.availGrad
     PsiDo=-[KKa -KKa; -KKa KKa];
     PsiDDo=-[KKi -KKi;-KKi KKi];
     PsiT=[Psi PsiDo;PsiDo' PsiDDo];
+    PsiR=[KK -KKa;-KKa -KKi];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
     PsiT=[KK -KK;-KK KK];
+    PsiR=KK;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -272,10 +274,6 @@ if dataIn.used.availGrad
         -lambdaPM(svI)'*PsiDo(svMidPIX,svI)';
 end
 
-
-
-%
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store variables
@@ -283,6 +281,11 @@ if exist('origCond','var');buildData.origCond=origCond;end
 if exist('newCond','var');buildData.newCond=newCond;end
 
 buildData.PsiT=PsiT;
+buildData.PsiR=PsiR;
+buildData.svI=svI;
+buildData.e0=e;
+buildData.c0=metaData.para.c0;
+buildData.ck=metaData.para.ck;
 buildData.SVRmu=SVRmu;
 buildData.para=metaData.para;
 buildData.alphaLambdaPM=FullAlphaLambdaPM;

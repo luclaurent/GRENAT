@@ -180,13 +180,8 @@ switch availData.type
         %% Evaluation of the (Gradient-Enhanced) SVR (SVR/GSVR)
         %parfor (jj=1:nbReqEval,numWorkers)
         for jj=1:nbReqEval
-           % [valRespN(jj),G,varResp(jj),detKRG]=KRGEval(reqRespN(jj,:),availData);
-            [valRespN(jj),G]=SVREval(reqRespN(jj,:),availData);
+            [valRespN(jj),G,varResp(jj)]=SVREval(reqRespN(jj,:),availData);
             valGradN(jj,:)=G;
-%             stoZN(jj)=detKRG.stoZ;
-%             trZN(jj)=detKRG.trZ;
-%             trGZN(jj,:)=detKRG.trGZ;
-%             stoGZN(jj,:)=detKRG.stoGZ;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%

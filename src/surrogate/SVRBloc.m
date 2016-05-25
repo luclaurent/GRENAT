@@ -47,9 +47,9 @@ end
 if dataIn.used.availGrad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,paraVal);
     Psi=[KK -KK;-KK KK];
-    PsiDo=[KKa -KKa; -KKa KKa];
-    PsiDDo=[KKi -KKi;-KKi KKi];
-    PsiT=[Psi -PsiDo;-PsiDo' -PsiDDo];
+    PsiDo=-[KKa -KKa; -KKa KKa];
+    PsiDDo=-[KKi -KKi;-KKi KKi];
+    PsiT=[Psi PsiDo;PsiDo' PsiDDo];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
     PsiT=[KK -KK;-KK KK];
@@ -281,7 +281,23 @@ end
 
 
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%store variables
+if exist('origCond','var');buildData.origCond=origCond;end
+if exist('newCond','var');buildData.newCond=newCond;end
+
+buildData.PsiT=PsiT;
+buildData.SVRmu=SVRmu;
+buildData.para=metaData.para;
+buildData.alphaLambdaPM=FullAlphaLambdaPM;
+ret.build=buildData;
+
+
+
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %Factorization of the matrix
 % switch factKK
@@ -391,15 +407,3 @@ end
 %         buildData.fcC=fcC;
 %         buildData.fcCfct=fcCfct;
 % end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%store variables
-if exist('origCond','var');buildData.origCond=origCond;end
-if exist('newCond','var');buildData.newCond=newCond;end
-
-buildData.PsiT=PsiT;
-buildData.SVRmu=SVRmu;
-buildData.para=metaData.para;
-buildData.alphaLambdaPM=FullAlphaLambdaPM;
-ret.build=buildData;

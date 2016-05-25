@@ -9,8 +9,13 @@ fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %taking into account gradients or not
-if isempty(gradIn);availGrad='No';gradIn=[];else availGrad='Yes';end
-fprintf('\n++ Gradients are available: %s\n',availGrad);
+availGrad=false;
+availGradTxt='No';
+if  ~isempty(gradIn);
+    availGrad=true;
+    availGradTxt='Yes';
+end
+fprintf('\n++ Gradients are available: %s\n',availGradTxt);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %number of design variables

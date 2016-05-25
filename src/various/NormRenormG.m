@@ -6,7 +6,7 @@ function [out]=NormRenormG(in,type,infoDataS,infoDataR)
 % number of sample points
 ns=size(in,1);
 % normalisation of the data
-if (nargin==3&&~isempty(infoDataS.std))||nargin==2
+if (nargin>=3&&~isempty(infoDataS.std))||nargin==2
     switch type
         case 'norm'
             stdS=infoDataS.std;

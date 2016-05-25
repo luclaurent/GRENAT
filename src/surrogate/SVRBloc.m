@@ -49,7 +49,7 @@ if dataIn.used.availGrad
     Psi=[KK -KK;-KK KK];
     PsiDo=[KKa -KKa; -KKa KKa];
     PsiDDo=[KKi -KKi;-KKi KKi];
-    PsiT=[Psi PsiDo;PsiDo' PsiDDo];
+    PsiT=[Psi -PsiDo;-PsiDo' -PsiDDo];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
     PsiT=[KK -KK;-KK KK];

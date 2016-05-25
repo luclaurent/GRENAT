@@ -42,8 +42,8 @@ meta.para.xi=1e-6;
 %slack variables associated to the gradients
 meta.para.taui=1e-6;
 %parameter of the nu-SVR/nu-GSVR (nu in [0,1])
-meta.para.nuSVR=0.8; 
-meta.para.nuGSVR=0.8;
+meta.para.nuSVR=0.6; 
+meta.para.nuGSVR=0.6;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% kernel function
 meta.kern='matern32';

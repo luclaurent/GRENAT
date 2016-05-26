@@ -232,30 +232,39 @@ opts = optimoptions('quadprog','Diagnostics','off','Display','iter');
 %Extract result of optimization
 alphaRAW=solQP(1:2*ns);
 alphaPM=alphaRAW(1:ns)-alphaRAW(ns+1:2*ns);
+alphaPP=alphaRAW(1:ns)+alphaRAW(ns+1:2*ns);
 FullAlphaLambdaPM=alphaPM;
+FullAlphaLambdaPP=alphaPP;
 %find support vectors
 svI=find(abs(alphaPM)>metaData.para.xi);
 [svMidP,svMidPIX]=min(abs(abs(alphaRAW(1:ns))-ub(1:ns)/2));
 [svMidM,svMidMIX]=min(abs(abs(alphaRAW(ns+1:2*ns))-ub(ns+1:2*ns)/2));
 
 %compute epsilon
-e=0.5*(dataIn.used.resp(svMidPIX)...
+eM=0.5*(dataIn.used.resp(svMidPIX)...
     -dataIn.used.resp(svMidMIX)...
     -alphaPM(svI)'*PsiT(svI,svMidPIX)...
     +alphaPM(svI)'*PsiT(svI,svMidMIX));
 
 %compute the base term
-SVRmu=dataIn.used.resp(svMidPIX)...
-    -e*sign(alphaPM(svMidPIX))...
+SVRmuM=dataIn.used.resp(svMidPIX)...
+    -eM*sign(alphaPM(svMidPIX))...
     -alphaPM(svI)'*PsiT(svI,svMidPIX);
+
+%lagrange multipliers give the values of mu and epsilon
+e=lmQP.ineqlin(1);
+SVRmu=lmQP.eqlin;
 
 %in the case of gradient-based approach
 lambdaPM=[];
+lambdaPP=[];
 iXsvI=svI;
 if dataIn.used.availGrad
     lambdaRAW=solQP(2*ns+1:end);
     lambdaPM=lambdaRAW(1:ns*np)-lambdaRAW(ns*np+1:end);
+    lambdaPP=lambdaRAW(1:ns*np)+lambdaRAW(ns*np+1:end);
     FullAlphaLambdaPM=[alphaPM;lambdaPM];
+    FullAlphaLambdaPP=[alphaPP;lambdaPP];
     %compute indexes of the the gradients associated to the support vectors
     liNp=1:np;
     repI=ones(np,1);
@@ -268,17 +277,19 @@ if dataIn.used.availGrad
     [svMiddM,svMiddMIX]=min(abs(abs(lambdaRAW(ns*np+1:2*ns*np)-ub(ns*(np+2)+1:2*ns*(1+np))/2)));
     
     %compute epsilon
-    e=0.5*(dataIn.used.resp(svMidPIX)...
+    eM=0.5*(dataIn.used.resp(svMidPIX)...
         -dataIn.used.resp(svMidMIX)...
         -alphaPM(svI)'*Psi(svI,svMidPIX)...
         -lambdaPM(svI)'*PsiDo(svMidPIX,svI)'...
         +alphaPM(svI)'*Psi(svI,svMidMIX)...
         +lambdaPM(svI)'*PsiDo(svMidMIX,svI)');
     %compute the base term
-    SVRmu=dataIn.used.resp(svMidPIX)...
-        -e*sign(alphaPM(svMidPIX))...
+    SVRmuM=dataIn.used.resp(svMidPIX)...
+        -eM*sign(alphaPM(svMidPIX))...
         -alphaPM(svI)'*Psi(svI,svMidPIX)...
         -lambdaPM(svI)'*PsiDo(svMidPIX,svI)';
+    e=eM;
+    SVRmu=SVRmuM;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -290,19 +301,26 @@ buildData.PsiT=PsiT;
 buildData.PsiR=PsiR;
 buildData.svI=svI;
 buildData.iXsvI=iXsvI;
+buildData.xiTau=lmQP.lower;%lmQP.upper(1:ns)-lmQP.upper(ns+1:2*ns);
 buildData.e0=e;
 buildData.c0=metaData.para.c0;
 buildData.ck=metaData.para.ck;
 buildData.SVRmu=SVRmu;
 buildData.para=metaData.para;
+buildData.alphaPM=alphaPM;
+buildData.lambdaPM=lambdaPM;
+buildData.lambdaPP=lambdaPP;
 buildData.alphaLambdaPM=FullAlphaLambdaPM;
+buildData.alphaPP=alphaPP;
+buildData.lambdaPP=lambdaPP;
+buildData.alphaLambdaPP=FullAlphaLambdaPP;
 ret.build=buildData;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute of the Likelihood (and log-likelihood)
 [spanBound]=SVRSB(ret);
-ret.spanBound=spanBound;
+ret.build.spanBound=spanBound;
 
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

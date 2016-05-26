@@ -2,7 +2,7 @@
 %L. LAURENT -- 26/05/206 -- luc.laurent@lecnam.net
 
 
-function spanBound=SVRSB(dataBloc,metaData,type)
+function spanBound=SVRSB(dataBloc)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% OPTIONS
@@ -44,10 +44,8 @@ end
 % if modFinal;[tMesu,tInit]=mesuTime;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%load variables
-np=dataBloc.used.np;
-ns=dataBloc.used.ns;
-availGrad=dataBloc.used.availGrad;
+%size of the kernel matrix
+sizePsi=size(dataBloc.build.PsiR,1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -56,12 +54,15 @@ iXsvI=dataBloc.build.iXsvI;
 %remove bounded supports vectors
 PsiUSV=dataBloc.build.PsiR(iXsvI(:),iXsvI(:));
 %compute inverse of PsiUSV
-iPsiUSV=inverse(PsiUSV);
+iPsiUSV=inv(PsiUSV);
 %compute St^2
 St2=diag(iPsiUSV);
 
-Sp=1/ns*(St2*dataBloc.build.alphaPM);
-
+spanBound=1/sizePsi...
+    *(St2'*dataBloc.build.alphaLambdaPP(iXsvI(:))...
+    +sum(dataBloc.build.xiTau))...
+    +dataBloc.build.e0;
+spanBound
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -611,7 +612,7 @@ Sp=1/ns*(St2*dataBloc.build.alphaPM);
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if modFinal;mesuTime(tMesu,tInit);end
+%if modFinal;mesuTime(tMesu,tInit);end
 end
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

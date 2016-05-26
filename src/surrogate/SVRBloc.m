@@ -50,7 +50,7 @@ if dataIn.used.availGrad
     PsiDo=-[KKa -KKa; -KKa KKa];
     PsiDDo=-[KKi -KKi;-KKi KKi];
     PsiT=[Psi PsiDo;PsiDo' PsiDDo];
-    PsiR=[KK -KKa;-KKa -KKi];
+    PsiR=[KK -KKa;-KKa' -KKi];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
     PsiT=[KK -KK;-KK KK];
@@ -226,7 +226,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Solving the Convex Constrained Quadaratic Optimization problem
 opts = optimoptions('quadprog','Diagnostics','off','Display','iter');
-solQP=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub);
+[solQP,fval,exitflag,infoIPM,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Extract result of optimization
@@ -251,10 +251,17 @@ SVRmu=dataIn.used.resp(svMidPIX)...
 
 %in the case of gradient-based approach
 lambdaPM=[];
+iXsvI=svI;
 if dataIn.used.availGrad
     lambdaRAW=solQP(2*ns+1:end);
     lambdaPM=lambdaRAW(1:ns*np)-lambdaRAW(ns*np+1:end);
     FullAlphaLambdaPM=[alphaPM;lambdaPM];
+    %compute indexes of the the gradients associated to the support vectors
+    liNp=1:np;
+    repI=ones(np,1);
+    iXDsvI=ns+liNp(ones(numel(svI),1),:)+np*(svI(:,repI)-1);
+    iXsvI=[svI iXDsvI];
+
     %find support vectors dedicated to gradients
     svDI=find(abs(lambdaPM)>metaData.para.taui);
     [svMiddP,svMiddPIX]=min(abs(abs(lambdaRAW(1:ns*np)-ub(2*ns+1:ns*(np+2))/2)));
@@ -279,10 +286,10 @@ end
 %store variables
 if exist('origCond','var');buildData.origCond=origCond;end
 if exist('newCond','var');buildData.newCond=newCond;end
-
 buildData.PsiT=PsiT;
 buildData.PsiR=PsiR;
 buildData.svI=svI;
+buildData.iXsvI=iXsvI;
 buildData.e0=e;
 buildData.c0=metaData.para.c0;
 buildData.ck=metaData.para.ck;
@@ -291,6 +298,11 @@ buildData.para=metaData.para;
 buildData.alphaLambdaPM=FullAlphaLambdaPM;
 ret.build=buildData;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%compute of the Likelihood (and log-likelihood)
+[spanBound]=SVRSB(ret);
+ret.spanBound=spanBound;
 
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

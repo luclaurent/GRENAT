@@ -213,87 +213,87 @@ if availGrad
 end
 ret.build.y=cYY;
 ret.build.kern=metaData.kern;
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %% Estimation parameters
-% if metaData.para.estim&&metaData.para.dispEstim
-%     valPara=linspace(metaData.para.l.min,metaData.para.l.max,100);
-%     % load progress bar
-%     cpb = ConsoleProgressBar();
-%     minVal = 0;
-%     maxVal = 100;
-%     cpb.setMinimum(minVal);
-%     cpb.setMaximum(maxVal);
-%     cpb.setLength(20);
-%     cpb.setRemainedTimeVisible(1);
-%     cpb.setRemainedTimePosition('left');
-%     cpb.start();
-%     %for anisotropy (with 2 design variables)
-%     if metaData.para.aniso&&np==2
-%         %building of the studied grid
-%         [valX,valY]=meshgrid(valPara,valPara);
-%         %initialize matrix for storing log-likelihood
-%         valLik=zeros(size(valX));
-%         for itli=1:numel(valX)
-%             %compute log-likelihood and storage
-%             valLik(itli)=KRGBloc(ret,metaData,[valX(itli) valY(itli)]);
-%             %show progress and time
-%             cpb.setValue(itli/numel(valX)*100);
-%         end
-%         fprintf('\n');
-%         cpb.stop();
-%         %plot log-vraisemblance
-%         figure;
-%         [C,h]=contourf(valX,valY,valLik);
-%         text_handle = clabel(C,h);
-%         set(text_handle,'BackgroundColor',[1 1 .6],...
-%             'Edgecolor',[.7 .7 .7])
-%         set(h,'LineWidth',2)
-%         %store figure in TeX/Tikz file
-%         if metaData.para.save
-%             matlab2tikz([aff.doss '/KRGlogli.tex'])
-%         end
-%         
-%     elseif ~metaData.para.aniso||np==1
-%         %initialize matrix for storing log-likelihood
-%         valLik=zeros(1,length(valPara));
-%         for itli=1:length(valPara)
-%             %compute log-likelihood and storage
-%             valLik(itli)=KRGBloc(ret,metaData,valPara(itli));
-%             cpb.setValue(itli/numel(valPara)*100);
-%         end
-%         fprintf('\n');
-%         cpb.stop();
-%         
-%         %store in .dat file
-%         if metaData.para.save
-%             ss=[valPara' valLik'];
-%             save([aff.directory '/KRGlogli.dat'],'ss','-ascii');
-%         end
-%         
-%         %plot log-vraisemblance
-%         figure;
-%         plot(valPara,valLik);
-%         title('Evolution of the log-likelihood');
-%     end
-%     
-%     %store graphs (if active)
-%     if dispData.save&&(ns<=2)
-%         fileStore=saveDisp('fig_likelihood',dispData.directory);
-%         if dispData.tex
-%             fid=fopen([dispData.directory '/fig.tex'],'a+');
-%             fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
-%             %fprintf(fid,'\\verb{%s}\n',fich);
-%             fclose(fid);
-%         end
-%     end
-% end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Estimation parameters
+if metaData.para.estim&&metaData.para.dispEstim
+    valPara=linspace(metaData.para.l.min,metaData.para.l.max,100);
+    % load progress bar
+    cpb = ConsoleProgressBar();
+    minVal = 0;
+    maxVal = 100;
+    cpb.setMinimum(minVal);
+    cpb.setMaximum(maxVal);
+    cpb.setLength(20);
+    cpb.setRemainedTimeVisible(1);
+    cpb.setRemainedTimePosition('left');
+    cpb.start();
+    %for anisotropy (with 2 design variables)
+    if metaData.para.aniso&&np==2
+        %building of the studied grid
+        [valX,valY]=meshgrid(valPara,valPara);
+        %initialize matrix for storing log-likelihood
+        valLoo=zeros(size(valX));
+        for itli=1:numel(valX)
+            %compute the estimation of the LOO and storage
+            valLoo(itli)=SVRBloc(ret,metaData,[valX(itli) valY(itli)]);
+            %show progress and time
+            cpb.setValue(itli/numel(valX)*100);
+        end
+        fprintf('\n');
+        cpb.stop();
+        %plot LOO
+        figure;
+        [C,h]=contourf(valX,valY,valLoo);
+        text_handle = clabel(C,h);
+        set(text_handle,'BackgroundColor',[1 1 .6],...
+            'Edgecolor',[.7 .7 .7])
+        set(h,'LineWidth',2)
+        %store figure in TeX/Tikz file
+        if metaData.para.save
+            matlab2tikz([aff.doss '/KRGlogli.tex'])
+        end
+        
+    elseif ~metaData.para.aniso||np==1
+        %initialize matrix for storing log-likelihood
+        valLoo=zeros(1,length(valPara));
+        for itli=1:length(valPara)
+            %compute the estimation of the LOO and storage
+            valLoo(itli)=KRGBloc(ret,metaData,valPara(itli));
+            cpb.setValue(itli/numel(valPara)*100);
+        end
+        fprintf('\n');
+        cpb.stop();
+        
+        %store in .dat file
+        if metaData.para.save
+            ss=[valPara' valLoo'];
+            save([aff.directory '/SVRLoo.dat'],'ss','-ascii');
+        end
+        
+        %plot log-vraisemblance
+        figure;
+        plot(valPara,valLoo);
+        title('Evolution of the Leave-One-Out error');
+    end
+    
+    %store graphs (if active)
+    if dispData.save&&(ns<=2)
+        fileStore=saveDisp('fig_loo',dispData.directory);
+        if dispData.tex
+            fid=fopen([dispData.directory '/fig.tex'],'a+');
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'LOO',fileStore);
+            %fprintf(fid,'\\verb{%s}\n',fich);
+            fclose(fid);
+        end
+    end
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Building of the various elements with and without estimation of the
 % hyperparameters
 if metaData.para.estim
-    paraEstim=EstimPara(ret,metaData,'KRGBloc');
+    paraEstim=EstimPara(ret,metaData,'SVRBloc');
     ret.build.paraEstim=paraEstim;
     metaData.para.l.val=paraEstim.l.val;
     metaData.para.val=paraEstim.val;
@@ -319,14 +319,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building final elements of the SVR surrogate model (matrices, coefficients)
 % by taking into account the values of hyperparameters obtained previously
-[blocSVR]=SVRBloc(ret,metaData);
+[spanBound,blocSVR]=SVRBloc(ret,metaData);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store informations
 tmp=mergestruct(ret.build,blocSVR.build);
 ret.build=tmp;
-%ret.build.lilog=lilog;
+ret.build.lilog=spanBound;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Cross-validation (compute various errors)

@@ -3,6 +3,7 @@
 
 initDirGRENAT();
 %customClean;
+close all
 
 %display the date
 dispDate;
@@ -25,11 +26,11 @@ execParallel('start',parallel);
 
 %sampling points
 sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
-sampling=linspace(-2,15,20)';
-nns=6;
+%sampling=linspace(-2,15,20)';
+nns=10;
 
 
-sampling=linspace(0,15,nns)';
+%sampling=linspace(0,15,nns)';
 %responses and gradients at sample points
 [resp,grad]=funManu(sampling);
 
@@ -43,9 +44,10 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='GSVR';
+metaData.type='SVR';
 metaData.kern='matern32';
 metaData.cv.disp=true;
+metaData.normOn=0;
 metaData.para.estim=false;
 metaData.para.nu.val=3;
 metaData.para.l.val=1/0.8;
@@ -53,15 +55,62 @@ metaData.para.dispPlotAlgo=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
-paraV=logspace(-2,4,100);
+clear paraV loo sp loof bb 
+paraV=logspace(-2,1,100);
+%paraV=linspace(0.1,100,100);
 for ii=1:numel(paraV)
-    metaData.para.l.val=1/paraV(ii);
+    metaData.para.l.val=paraV(ii);
     [approx]=BuildMeta(sampling,resp,grad,metaData);
+    [KR]=EvalMeta(gridRef,approx);
     sp(ii)=approx.build.spanBound;
+    spb(ii)=approx.build.spanBoundb;
+    bb(ii)=approx.build.Bound;
+    loof(ii)=approx.build.loo;
+    respLOO=[];
+    for jj=1:numel(sampling)
+        sampTMP=sampling;
+        respTMP=resp;
+        sampTMP(jj)=[];
+        respTMP(jj)=[];
+        [approx]=BuildMeta(sampTMP,respTMP,[],metaData);
+        [K]=EvalMeta(sampling(jj),approx);
+        respLOO(jj)=K.Z;
+    end
+    loo(ii)=1/numel(sampling)*sum((respLOO(:)-resp(:)).^2);
+    RMSE(ii)=1/numel(gridRef)*sum((KR.Z(:)-respRef(:)).^2);
 end
 sp
-figure;plot(paraV,sp)
-figure;loglog(paraV,sp)
+figure;
+subplot(3,3,1)
+plot(paraV(),sp(:))
+title('sp')
+subplot(3,3,2)
+semilogx(paraV(:),sp(:))
+title('sp')
+subplot(3,3,3)
+plot(paraV(:),loo(:))
+title('loo')
+subplot(3,3,4)
+semilogx(paraV(:),loo(:))
+title('loo')
+subplot(3,3,5)
+semilogx(paraV(:),loof(:))
+title('loof')
+subplot(3,3,6)
+semilogx(paraV(:),bb(:));
+title('bb')
+subplot(3,3,7)
+plot(paraV(),spb(:))
+title('spb')
+subplot(3,3,5)
+semilogx(paraV(:),spb(:))
+title('spb')
+subplot(3,3,7)
+plot(paraV(),RMSE(:))
+title('RMSE')
+subplot(3,3,8)
+semilogx(paraV(:),RMSE(:))
+title('RMSE')
 stop
 
 %evaluation of the surrogate model at the grid points

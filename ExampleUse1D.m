@@ -43,12 +43,12 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='GSVR';
+metaData.type='SVR';
 metaData.kern='matern32';
 metaData.cv.disp=true;
-metaData.para.estim=false;
+metaData.para.estim=true;
 metaData.para.nu.val=3;
-metaData.para.l.val=1/0.8;
+metaData.para.l.val=0.5;
 metaData.para.dispPlotAlgo=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

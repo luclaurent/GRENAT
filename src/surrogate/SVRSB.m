@@ -2,7 +2,7 @@
 %L. LAURENT -- 26/05/206 -- luc.laurent@lecnam.net
 
 
-function spanBound=SVRSB(dataBloc)
+function [spanBound,Bound,spanBoundb]=SVRSB(dataBloc,dataIn,metaData)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%% OPTIONS
@@ -50,19 +50,100 @@ sizePsi=size(dataBloc.build.PsiR,1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Compute St
-iXsvI=dataBloc.build.iXsvI;
+iXsvI=find(dataBloc.build.alphaLambdaPP>0&dataBloc.build.alphaLambdaPP<dataBloc.build.c0/sizePsi);% dataBloc.build.iXsvI;
+nbSVI=numel(iXsvI);
+iXsvII=find(dataBloc.build.alphaLambdaPP>=dataBloc.build.c0/sizePsi);
+nbSVII=numel(iXsvII);
 %remove bounded supports vectors
 PsiUSV=dataBloc.build.PsiR(iXsvI(:),iXsvI(:));
+KSV=[PsiUSV ones(nbSVI,1);ones(1,nbSVI) 0];
 %compute inverse of PsiUSV
 iPsiUSV=inv(PsiUSV);
+iKSV=inv(KSV);
+DiKSV=diag(inv(KSV));
 %compute St^2
-St2=diag(iPsiUSV);
+St2=1./diag(iPsiUSV);
+St2b=zeros(nbSVI+nbSVII,1);
+St2b(iXsvI)=1./DiKSV(1:nbSVI);
+if nbSVII~=0;
+    Vb=[dataBloc.build.PsiR(iXsvI,iXsvII); ones(1,nbSVII)];
+    St2b(iXsvII)=diag(dataBloc.build.PsiR(iXsvII,iXsvII))-diag(Vb'*iKSV*Vb);
+end;
 
-spanBound=1/sizePsi...
-    *(St2'*dataBloc.build.alphaLambdaPP(iXsvI(:))...
+
+
+%spanBound=1/sizePsi...
+ %   *(St2'*dataBloc.build.alphaLambdaPM...
+%    +sum(dataBloc.build.xiTau))...
+ %   +dataBloc.build.e0;
+
+spanBoundb=1/sizePsi...
+    *(St2b'*dataBloc.build.alphaLambdaPP...
     +sum(dataBloc.build.xiTau))...
     +dataBloc.build.e0;
-spanBound
+
+
+spanBound=0;
+%spanBoundb
+
+
+%%
+eta=0.00001;
+lambdaregul=1e-7;
+ns=dataIn.used.ns;
+e=dataBloc.build.e0;
+PsiR=dataBloc.build.PsiR;
+alphaRAW=dataBloc.build.alphaRAW;
+alphaPP=dataBloc.build.alphaPP;
+SVRmu=dataBloc.build.SVRmu;
+
+nbsvaux=length(alphaRAW);
+AlphaStarTemp=alphaRAW(1:ns);
+AlphaTemp=-alphaRAW(ns+1:end);
+newpos=find(alphaRAW(1:ns)>0|alphaRAW(ns+1:2*ns)> 0);
+k=dataBloc.build.PsiR(newpos,newpos) + 1/metaData.para.c0*eye(length(newpos));
+D=(eta./(AlphaTemp(newpos)-AlphaStarTemp(newpos)));
+ksvaux=[k ones(length(newpos),1)];
+ksvaux=[ksvaux; [ones(1,length(newpos)) 0]];
+ksvaux=ksvaux+diag([D;0]);
+sp2aux=1./diag(inv(ksvaux+lambdaregul*eye(size(ksvaux))));
+sp2aux=sp2aux(1:length(newpos))-D;
+Bound=1/ns*(AlphaStarTemp(newpos)-AlphaTemp(newpos))'*sp2aux+e;
+
+%%%%
+output= dataIn.used.resp.*(PsiR*(alphaPP.*dataIn.used.resp)+SVRmu);
+
+epsM=1e-5;
+sv1=find(alphaPP>max(alphaPP)*epsM & alphaPP < metaData.para.c0*(1-epsM));
+sv2=find(alphaPP > metaData.para.c0*(1-epsM));
+
+
+if isempty(sv1)
+    loo=mean(output<0);
+    return
+end;
+
+
+ell=length(sv1);
+KSV=[PsiR(sv1,sv1) ones(ell,1);[ones(1,ell) 0]];
+invKSV=inv(KSV+diag(1e-12*[ones(1,ell) 0]));
+
+n=length(PsiR);
+span=zeros(n,1);
+tmp=diag(invKSV);
+
+span(sv1)=1./tmp(1:ell);
+
+if ~isempty(sv2);
+    V=[K(sv1,sv2); ones(1,length(sv2))];
+    span(sv2)=diag(K(sv2,sv2))-diag(V'*invKSV*V);
+end;
+
+%loo=mean(output-alphaPP.*span < 0);
+loo=mean(output-alphaPP'*span);
+
+Bound 
+loo
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

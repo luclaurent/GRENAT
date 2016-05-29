@@ -5,7 +5,7 @@
 %hyperparameters via optimization
 
 
-function [ret]=SVRBloc(dataIn,metaData,paraValIn,type)
+function [critMin,ret]=SVRBloc(dataIn,metaData,paraValIn,type)
 
 %coefficient for reconditionning (G)SVR matrix
 coefRecond=eps;
@@ -225,7 +225,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Solving the Convex Constrained Quadaratic Optimization problem
-opts = optimoptions('quadprog','Diagnostics','off','Display','iter');
+opts = optimoptions('quadprog','Diagnostics','off','Display','none');
 [solQP,fval,exitflag,infoIPM,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -235,8 +235,10 @@ alphaPM=alphaRAW(1:ns)-alphaRAW(ns+1:2*ns);
 alphaPP=alphaRAW(1:ns)+alphaRAW(ns+1:2*ns);
 FullAlphaLambdaPM=alphaPM;
 FullAlphaLambdaPP=alphaPP;
+FullAlphaLambdaRAW=solQP;
 %find support vectors
 svI=find(abs(alphaPM)>metaData.para.xi);
+svII=find(abs(alphaPM)<metaData.para.xi);
 [svMidP,svMidPIX]=min(abs(abs(alphaRAW(1:ns))-ub(1:ns)/2));
 [svMidM,svMidMIX]=min(abs(abs(alphaRAW(ns+1:2*ns))-ub(ns+1:2*ns)/2));
 
@@ -258,7 +260,9 @@ SVRmu=lmQP.eqlin;
 %in the case of gradient-based approach
 lambdaPM=[];
 lambdaPP=[];
+lambdaRAW=[];
 iXsvI=svI;
+iXsvII=svII;
 if dataIn.used.availGrad
     lambdaRAW=solQP(2*ns+1:end);
     lambdaPM=lambdaRAW(1:ns*np)-lambdaRAW(ns*np+1:end);
@@ -301,6 +305,8 @@ buildData.PsiT=PsiT;
 buildData.PsiR=PsiR;
 buildData.svI=svI;
 buildData.iXsvI=iXsvI;
+buildData.svII=svII;
+buildData.iXsvII=iXsvII;
 buildData.xiTau=lmQP.lower;%lmQP.upper(1:ns)-lmQP.upper(ns+1:2*ns);
 buildData.e0=e;
 buildData.c0=metaData.para.c0;
@@ -310,17 +316,26 @@ buildData.para=metaData.para;
 buildData.alphaPM=alphaPM;
 buildData.lambdaPM=lambdaPM;
 buildData.lambdaPP=lambdaPP;
-buildData.alphaLambdaPM=FullAlphaLambdaPM;
 buildData.alphaPP=alphaPP;
-buildData.lambdaPP=lambdaPP;
+buildData.alphaRAW=alphaRAW;
+buildData.lambdaRAW=lambdaRAW;
+buildData.alphaLambdaPM=FullAlphaLambdaPM;
+buildData.FullAlphaLambdaRAW=FullAlphaLambdaRAW;
 buildData.alphaLambdaPP=FullAlphaLambdaPP;
 ret.build=buildData;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute of the Likelihood (and log-likelihood)
-[spanBound]=SVRSB(ret);
+[spanBound]=SVRSB(ret,dataIn,metaData);
+
+
+
+%ret.build.spanBoundb=spanBoundb;
 ret.build.spanBound=spanBound;
+critMin=spanBound;
+%ret.build.Bound=Bound;
+%ret.build.loo=loo;
 
 
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

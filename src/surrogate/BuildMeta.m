@@ -33,6 +33,8 @@ if metaData.normOn
     [samplingN,infoDataS]=NormRenorm(samplingIn,'norm');
     if availGrad
         gradN=NormRenormG(gradIn,'norm',infoDataS,infoDataR);
+    else
+        gradN=[];
     end
 else
     respN=respIn;

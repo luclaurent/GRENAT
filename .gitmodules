@@ -1,9 +1,3 @@
 [submodule "src/libs/matlab2tikz"]
 	path = src/libs/matlab2tikz
 	url = https://github.com/matlab2tikz/matlab2tikz.git
-[submodule "src/libs/lmtir"]
-	path = src/libs/lmtir
-	url = git@bitbucket.org:luclaurent/lmtir.git
-[submodule "src/libs/MultiDOE"]
-	path = src/libs/MultiDOE
-	url = git@bitbucket.org:luclaurent/multidoe.git

@@ -34,13 +34,9 @@ meta.para.e0=1e-2; %thickness of the tube (not used for nu-SVR)
 meta.para.ek=1e-2; %thickness of the tube of gradient (not used for nu-SVR)
 %constant for trade off between flatness of the function and the amount up to 
 %which deviations larger to e0 are tolerated
-meta.para.c0=1e4;
+meta.para.c0=1e6;
 %same trade off constant as before 
-meta.para.ck=1e4;
-%slack variables associated to the respones
-meta.para.xi=1e-6;
-%slack variables associated to the gradients
-meta.para.taui=1e-6;
+meta.para.ck=1e6;
 %parameter of the nu-SVR/nu-GSVR (nu in [0,1])
 meta.para.nuSVR=0.6; 
 meta.para.nuGSVR=0.6;
@@ -88,8 +84,8 @@ meta.para.nbSampInit=[];
 meta.para.critOpti=10^-6;
 % bounds of the space on which internal parameters are looked for
 if meta.para.estim
-    meta.para.l.min=1e-2;
-    meta.para.l.max=10;
+    meta.para.l.min=1e-1;
+    meta.para.l.max=30;
     meta.para.l.val=1;
     meta.para.p.max=2;
     meta.para.p.min=1.001;

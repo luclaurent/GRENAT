@@ -9,12 +9,8 @@ function [critMin,ret]=SVRBloc(dataIn,metaData,paraValIn,type)
 
 %coefficient for reconditionning (G)SVR matrix
 coefRecond=eps;
-% chosen factorization for (G)KRG matrix
-if strcmp(metaData.type,'GSVR')
-    factKK='LU';
-else
-    factKK='LU' ; %LU %QR %LL %None
-end
+%coefficients for detecting Support vector
+epsM=eps;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Load useful variables
@@ -56,135 +52,6 @@ else
     PsiT=[KK -KK;-KK KK];
     PsiR=KK;
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% rewrite this part
-% %in the case of missing data
-% %responses
-% if metaData.miss.resp.on
-%     KK(metaData.miss.resp.ix_miss,:)=[];
-%     KK(:,metaData.miss.resp.ix_miss)=[];
-% end
-% %gradients
-% if dataIn.used.availGrad
-%     if metaData.miss.grad.on
-%         rep_ev=ns-metaData.miss.resp.nb;
-%         KK(rep_ev+metaData.miss.grad.ixt_miss_line,:)=[];
-%         KK(:,rep_ev+metaData.miss.grad.ixt_miss_line)=[];
-%     end
-% end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% if datain.used.pres_grad
-%     %si parallelisme actif ou non
-%     if metaData.worker_parallel>=2
-%         %%%%%% PARALLEL %%%%%%
-%         %morceaux de la matrice GKRG
-%         rc=zeros(ns,ns);
-%         rca=cell(1,ns);
-%         rci=cell(1,ns);
-%         parfor ii=1:ns
-%             %distance 1 tirages aux autres (construction par colonne)
-%             one_tir=tiragesn(ii,:);
-%             dist=one_tir(ones(1,ns),:)-tiragesn;
-%             % evaluation de la fonction de correlation
-%             [ev,dev,ddev]=feval(fctKern,dist,paraVal);
-%             %morceau de la matrice issue du modele KRG classique
-%             rc(:,ii)=ev;
-%             %morceau des derivees premieres
-%             rca{ii}=dev;
-%             %matrice des derivees secondes
-%             rci{ii}=-reshape(ddev,np,ns*np);
-%         end
-%         %%construction des matrices completes
-%         rcaC=horzcat(rca{:});
-%         rciC=vertcat(rci{:});
-%         %Matrice de complete
-%         rcc=[rc rcaC;rcaC' rciC];
-%     else
-%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %evaluation de la fonction de correlation pour les differents
-%         %intersites
-%         [ev,dev,ddev]=feval(fctKern,datain.used.dist,paraVal);
-%
-%         %morceau de la matrice issu du krigeage
-%         rc=zeros(ns,ns);
-%         rca=zeros(ns,np*ns);
-%         rci=zeros(ns*np,ns*np);
-%
-%         rc(datain.usedd.matrix)=ev;
-%         rc=rc+rc'-eye(datain.used.nb_val);
-%
-%         rca(datain.usedd.matrixA)=dev(datain.usedd.dev);
-%         rca(datain.usedd.matrixAb)=-dev(datain.usedd.devb);
-%         rci(datain.usedd.matrixI)=-ddev(:);
-%         %extraction de la diagonale (procedure pour eviter les doublons)
-%         diago=0;   % //!!\\ corrections envisageables ici
-%         val_diag=spdiags(rci,diago);
-%         rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons
-%
-%         %Matrice de correlation du Cokrigeage
-%         rcc=[rc rca;rca' rci];
-%     end
-%     %si donnees manquantes
-%     if dataIn.manq.eval.on
-%         rcc(dataIn.manq.eval.ix_manq,:)=[];
-%         rcc(:,dataIn.manq.eval.ix_manq)=[];
-%     end
-%
-%     %si donnees manquantes
-%     if dataIn.manq.grad.on
-%         rep_ev=ns-dataIn.manq.eval.nb;
-%         rcc(rep_ev+dataIn.manq.grad.ixt_manq_line,:)=[];
-%         rcc(:,rep_ev+dataIn.manq.grad.ixt_manq_line)=[];
-%     end
-% else
-%
-%     if metaData.worker_parallel>=2
-%         %%%%%% PARALLEL %%%%%%
-%         %matrice de KRG classique par bloc
-%         rcc=zeros(ns,ns);
-%         parfor ii=1:ns
-%             %distance 1 tirages aux autres (construction par colonne)
-%             one_tir=tiragesn(ii,:);
-%             dist=one_tir(ones(1,ns),:)-tiragesn;
-%             % evaluation de la fonction de correlation
-%             [ev]=feval(fctKern,dist,paraVal);
-%             %morceau de la matrice issue du modele RBF classique
-%             rcc(:,ii)=ev;
-%         end
-%     else
-%         %matrice de correlation du Krigeage par matrice triangulaire inferieure
-%         %sans diagonale
-%         rcc=zeros(ns,ns);
-%         % evaluation de la fonction de correlation
-%         [ev]=feval(fctKern,datain.used.dist,paraVal);
-%         rcc(datain.usedd.matrix)=ev;
-%         %Construction matrice complete
-%         rcc=rcc+rcc'+eye(ns);
-%     end
-%     %toc
-%     %si donnees manquantes
-%     if dataIn.manq.eval.on
-%         rcc(dataIn.manq.eval.ix_manq,:)=[];
-%         rcc(:,dataIn.manq.eval.ix_manq)=[];
-%     end
-% end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Improve condition number of the SVR/GSVR Matrix
-% if metaData.recond
-%     %origCond=condest(rcc);
-%     KK=KK+coefRecond*speye(size(KK));
-%     %newCond=condest(rcc);
-%     %fprintf('>>> Improving of the condition number: \n%g >> %g  <<<\n',...
-%     %    origCond,newCond);
-%
-% end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,29 +96,41 @@ opts = optimoptions('quadprog','Diagnostics','off','Display','none');
 [solQP,fval,exitflag,infoIPM,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Extract result of optimization
+%Specific data for none-gradient-based SVR
 alphaRAW=solQP(1:2*ns);
 alphaPM=alphaRAW(1:ns)-alphaRAW(ns+1:2*ns);
 alphaPP=alphaRAW(1:ns)+alphaRAW(ns+1:2*ns);
+
+%Full data
 FullAlphaLambdaPM=alphaPM;
 FullAlphaLambdaPP=alphaPP;
 FullAlphaLambdaRAW=solQP;
-%find support vectors
-svI=find(abs(alphaPM)>metaData.para.xi);
-svII=find(abs(alphaPM)<metaData.para.xi);
+
+%find support vectors with specific property
+svPM=find(abs(alphaPM)>lb(1:ns)+epsM);
+svPP=find(alphaPP>lb(1:ns)+epsM);
+
+%Unbounded SV's or free SV's
+svUSV=find(alphaPP>lb(1:ns)+epsM & alphaPP<ub(1:ns)-epsM);
+%Bounded SV's
+svBSV=find(alphaPP<lb(1:ns)+epsM | alphaPP>ub(1:ns)-epsM);
+
+
+%finding SV's corresponding to value of alpha situated in the middle of
+%[lb,ub]
 [svMidP,svMidPIX]=min(abs(abs(alphaRAW(1:ns))-ub(1:ns)/2));
 [svMidM,svMidMIX]=min(abs(abs(alphaRAW(ns+1:2*ns))-ub(ns+1:2*ns)/2));
 
 %compute epsilon
 eM=0.5*(dataIn.used.resp(svMidPIX)...
     -dataIn.used.resp(svMidMIX)...
-    -alphaPM(svI)'*PsiT(svI,svMidPIX)...
-    +alphaPM(svI)'*PsiT(svI,svMidMIX));
+    -alphaPM(svPM)'*PsiT(svPM,svMidPIX)...
+    +alphaPM(svPM)'*PsiT(svPM,svMidMIX));
 
 %compute the base term
 SVRmuM=dataIn.used.resp(svMidPIX)...
     -eM*sign(alphaPM(svMidPIX))...
-    -alphaPM(svI)'*PsiT(svI,svMidPIX);
+    -alphaPM(svPM)'*PsiT(svPM,svMidPIX);
 
 %lagrange multipliers give the values of mu and epsilon
 e=lmQP.ineqlin(1);
@@ -261,8 +140,12 @@ SVRmu=lmQP.eqlin;
 lambdaPM=[];
 lambdaPP=[];
 lambdaRAW=[];
-iXsvI=svI;
-iXsvII=svII;
+iXsv=svPM;
+iXsvPM=svPM;
+iXsvPP=svPP;
+iXsvUSV=svUSV;
+iXsvBSV=svBSV;
+%
 if dataIn.used.availGrad
     lambdaRAW=solQP(2*ns+1:end);
     lambdaPM=lambdaRAW(1:ns*np)-lambdaRAW(ns*np+1:end);
@@ -272,8 +155,8 @@ if dataIn.used.availGrad
     %compute indexes of the the gradients associated to the support vectors
     liNp=1:np;
     repI=ones(np,1);
-    iXDsvI=ns+liNp(ones(numel(svI),1),:)+np*(svI(:,repI)-1);
-    iXsvI=[svI iXDsvI];
+    iXDsvI=ns+liNp(ones(numel(svPM),1),:)+np*(svPM(:,repI)-1);
+    iXsv=[svPM iXDsvI];
 
     %find support vectors dedicated to gradients
     svDI=find(abs(lambdaPM)>metaData.para.taui);
@@ -283,18 +166,31 @@ if dataIn.used.availGrad
     %compute epsilon
     eM=0.5*(dataIn.used.resp(svMidPIX)...
         -dataIn.used.resp(svMidMIX)...
-        -alphaPM(svI)'*Psi(svI,svMidPIX)...
-        -lambdaPM(svI)'*PsiDo(svMidPIX,svI)'...
-        +alphaPM(svI)'*Psi(svI,svMidMIX)...
-        +lambdaPM(svI)'*PsiDo(svMidMIX,svI)');
+        -alphaPM(svPM)'*Psi(svPM,svMidPIX)...
+        -lambdaPM(svPM)'*PsiDo(svMidPIX,svPM)'...
+        +alphaPM(svPM)'*Psi(svPM,svMidMIX)...
+        +lambdaPM(svPM)'*PsiDo(svMidMIX,svPM)');
     %compute the base term
     SVRmuM=dataIn.used.resp(svMidPIX)...
         -eM*sign(alphaPM(svMidPIX))...
-        -alphaPM(svI)'*Psi(svI,svMidPIX)...
-        -lambdaPM(svI)'*PsiDo(svMidPIX,svI)';
+        -alphaPM(svPM)'*Psi(svPM,svMidPIX)...
+        -lambdaPM(svPM)'*PsiDo(svMidPIX,svPM)';
     e=eM;
     SVRmu=SVRmuM;
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Number of Unbounded and Bounded SVs
+nbUSV=numel(iXsvUSV);
+nbBSV=numel(iXsvBSV);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Build matrices
+%remove bounded supports vectors
+PsiUSV=PsiR(iXsvUSV(:),iXsvUSV(:));
+KUSV=[PsiUSV ones(nbUSV,1);ones(1,nbUSV) 0];
+iKUSV=inv(KUSV);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -303,10 +199,15 @@ if exist('origCond','var');buildData.origCond=origCond;end
 if exist('newCond','var');buildData.newCond=newCond;end
 buildData.PsiT=PsiT;
 buildData.PsiR=PsiR;
-buildData.svI=svI;
-buildData.iXsvI=iXsvI;
-buildData.svII=svII;
-buildData.iXsvII=iXsvII;
+buildData.PsiUSV=PsiUSV;
+buildData.KUSV=KUSV;
+buildData.iKUSV=iKUSV;
+buildData.iXsvPM=iXsvPM;
+buildData.iXsvPP=iXsvPP;
+buildData.iXsvUSV=iXsvUSV;
+buildData.iXsvBSV=iXsvBSV;
+buildData.nbUSV=nbUSV;
+buildData.nbBSV=nbBSV;
 buildData.xiTau=lmQP.lower;%lmQP.upper(1:ns)-lmQP.upper(ns+1:2*ns);
 buildData.e0=e;
 buildData.c0=metaData.para.c0;
@@ -327,8 +228,8 @@ ret.build=buildData;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute of the Likelihood (and log-likelihood)
+%[spanBound,Bound,loo,spanBoundb]=SVRSB(ret,dataIn,metaData);
 [spanBound]=SVRSB(ret,dataIn,metaData);
-
 
 
 %ret.build.spanBoundb=spanBoundb;

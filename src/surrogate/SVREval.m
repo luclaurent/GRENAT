@@ -124,10 +124,10 @@ if nargout >=3
     
     %reduction to the unbounded support vectors
     %depending on gradient- or none-gradient-based GSVR
-    iXsvI=metaData.build.iXsvI;
+    iXsvUSV=metaData.build.iXsvUSV;
     %remove bounded supports vectors
-    rrUSV=rr(iXsvI(:));
-    PsiUSV=metaData.build.PsiR(iXsvI(:),iXsvI(:));
+    rrUSV=rr(iXsvUSV(:));
+    PsiUSV=metaData.build.PsiR(iXsvUSV(:),iXsvUSV(:));
     %variance due to the approximation
     varianceS=1-rrUSV'/PsiUSV*rrUSV;
     variance=varianceI+varianceS;

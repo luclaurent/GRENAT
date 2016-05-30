@@ -48,7 +48,7 @@ metaData.kern='matern32';
 metaData.cv.disp=true;
 metaData.para.estim=true;
 metaData.para.nu.val=3;
-metaData.para.l.val=0.5;
+metaData.para.l.val=0.01;
 metaData.para.dispPlotAlgo=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

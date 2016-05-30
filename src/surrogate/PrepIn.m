@@ -22,17 +22,17 @@ end
 %with respect with the kind of gradient data
 if ~isstruct(gradIn)
     fprintf('>> Step of the Taylor expansion (manu):')
-    fprintf(' %d',metaData.para.step_taylor);
+    fprintf(' %d',metaData.para.stepTaylor);
     fprintf('\n')
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% Create new points (1 per direction)
     %manage Taylor's step
-    if numel(metaData.para.step_taylor)~=np
-        stepTaylor=metaData.para.step_taylor(1)*ones(1,np);
+    if numel(metaData.para.stepTaylor)~=np
+        stepTaylor=metaData.para.stepTaylor(1)*ones(1,np);
     else
-        stepTaylor=metaData.para.step_taylor;
+        stepTaylor=metaData.para.stepTaylor;
     end
     
     %Reordering sampled points and duplicates

@@ -1,7 +1,8 @@
 %% Evaluation of the function and the gradients
 % L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net
 
-function [eval,grad]=evalFunGrad(fct,X,type)
+function [eval,grad]=evalFunGrad(funR,X,type)
+
 
 [tMesu,tInit]=mesuTime;
 % depending on the kind of evaluations (computation at the sample points or
@@ -32,11 +33,14 @@ switch type
         ns=size(X,1);
 end
 
+%fix fun name
+funT=[funR];
+
 %evaluation of the function and gradients at sample points X
 if nargout==1
-    [eval]=feval(fct,Xeval);
+    [eval]=feval(funT,Xeval);
 elseif nargout==2
-    [eval,gradb]=feval(fct,Xeval);
+    [eval,gradb]=feval(funT,Xeval);
     % reordering in the case of evaluation
     if strcmp(type,'eval')
         grad=zeros(size(X));
@@ -50,7 +54,7 @@ else
     error(['Wrong number of output parameters (cf. ',mfilename,')']);
 end
 
-fprintf(' >> Evaluation of the function %s at %i pts (%iD)\n',fct,ns,np);
+fprintf(' >> Evaluation of the function %s at %i pts (%iD)\n',funT,ns,np);
 fprintf(' >> Computation of the gradients: ');
 if nargout==2;fprintf('Yes\n');else fprintf('No\n');end
 

@@ -16,6 +16,8 @@ fprintf('  >>> INITIALIZATION Surrogate Model \n');
 meta.useGrad=false;
 %type of surrogate model
 meta.type='KRG';
+%Taylor's step for indirect gradient-based
+meta.para.stepTaylor=10^2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% internal parameters
 %length 

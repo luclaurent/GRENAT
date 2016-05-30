@@ -26,7 +26,7 @@ elseif spaDim==2
     
 else
     % in nD the full factorial function is used
-    grid=doeFactorial(dispData.nbSteps,doeData.Xmin,doeData.Xmax);
+    grid=fullFactDOE(dispData.nbSteps,doeData.Xmin,doeData.Xmax);
     
     %reordering the grid
     XY=zeros(size(grid,1),1,spaDim);

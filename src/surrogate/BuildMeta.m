@@ -62,10 +62,11 @@ typeMeta=metaData.type;
 [InGE,cGE]=CheckGE(typeMeta);
 %%in the case of Indirect-gradient-based approach
 if InGE
+    IndirectData=PrepIn(samplingIn,respIn,gradIn,metaData,metaData.miss);
     samplingOk=IndirectData.new.sampling;
     respOk=IndirectData.new.resp;
     gradOk=[];
-    fprintf('\n%s\n',[textd 'Indirect gradient-enhanced approach' textf]);
+    fprintf('\n%s\n',['>> Indirect gradient-enhanced approach']);
 elseif cGE
     samplingOk=samplingN;
     respOk=respN;

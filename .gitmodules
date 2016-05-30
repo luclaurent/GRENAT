@@ -1,3 +1,6 @@
 [submodule "src/libs/matlab2tikz"]
 	path = src/libs/matlab2tikz
 	url = https://github.com/matlab2tikz/matlab2tikz.git
+[submodule "MultiDOE"]
+	path = src/libs/multidoe
+	url = git@bitbucket.org:luclaurent/multidoe.git

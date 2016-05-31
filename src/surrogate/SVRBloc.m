@@ -159,7 +159,7 @@ if dataIn.used.availGrad
     iXsv=[svPM iXDsvI];
 
     %find support vectors dedicated to gradients
-    svDI=find(abs(lambdaPM)>metaData.para.taui);
+    svDI=find(abs(lambdaPM)>epsM);
     [svMiddP,svMiddPIX]=min(abs(abs(lambdaRAW(1:ns*np)-ub(2*ns+1:ns*(np+2))/2)));
     [svMiddM,svMiddMIX]=min(abs(abs(lambdaRAW(ns*np+1:2*ns*np)-ub(ns*(np+2)+1:2*ns*(1+np))/2)));
     

@@ -8,7 +8,7 @@
 
 %domaine d'etude -500<xi<500
 
-function [p,dp,infos]=fct_schwefel(xx,dim)
+function [p,dp,infos]=funSchwefel(xx,dim)
 
 coef=418.9829;
 % pour demonstration
@@ -39,6 +39,7 @@ if ~isempty(xx)
             p=coef*nbvar-cal;
             if nargout==2||dem
                 dp(:,:,1)=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
+                
                 dp(:,:,2)=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
             end
         end
@@ -49,6 +50,7 @@ if ~isempty(xx)
         
         if nargout==2||dem
             dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
+            iXZ=find(xx<eps);dp(iXZ)=0;
         end
         
     end

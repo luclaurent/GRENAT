@@ -3,7 +3,7 @@
 %modif le 16/09/2011 -- modif ecriture input pour passage code a n
 %variables
 
-function [p,dp,infos] = fct_rosenbrock(xx,dim)
+function [p,dp,infos] = funRosenbrock(xx,dim)
 
 % pour demonstration
 dem=false;

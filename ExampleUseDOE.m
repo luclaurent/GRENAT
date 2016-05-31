@@ -23,13 +23,13 @@ execParallel('start',parallelStatus);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %studied function
-funTEST='Rosenbrock';
+funTEST='Schwefel';
 %Beale(2),Bohachevky1/2/3(2),Booth(2),Branin(2),Coleville(4)
 %Dixon(n),Gold(2),Michalewicz(n),mystery(2),Peaks(2),Rosenbrock(n)
 %Sixhump(2),Schwefel(n),Sphere(n),SumsSuare(n),AHE(n),Cst(n),Dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-dimPB=5;
+dimPB=2;
 %esp=[0 15];
 esp=[];
 %%Definition of the design space
@@ -39,7 +39,7 @@ dispData.nbSteps=initNbPts(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 %kind of sampling
 doe.type='IHS_manu';
 %number of sample points
-doe.ns=30;
+doe.ns=10;
 %execute sampling
 sampling=buildDOE(doe);
 samplePts=sampling.sorted;
@@ -51,7 +51,7 @@ samplePts=sampling.sorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load parameters of the surrogate model
-data.type='InKRG';
+data.type='GSVR';
 data.kern='matern32';
 metaData=initMeta(data);
 metaData.cv.disp=true;

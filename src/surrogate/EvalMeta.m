@@ -23,6 +23,7 @@ np=availData.used.np;
 ns=availData.used.ns;
 %size of the required non-sample points
 nv=size(evalSample);
+nv(3)=size(evalSample,3);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %reordering non-sample points

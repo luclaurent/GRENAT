@@ -70,7 +70,7 @@ if ~isstruct(gradIn)
 
     posG=[];
     if missData.grad.on
-        pos_tmp=missData.grad.ix_miss;
+        pos_tmp=missData.grad.ixMiss;
         posG=(pos_tmp(:,1)-1)*(np+1)+1+pos_tmp(:,2);
     end
   

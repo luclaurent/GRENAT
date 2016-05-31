@@ -103,7 +103,7 @@ if availGrad
     der=tmp(:);
     %remove missing gradient(s)
     if missGrad
-        der=der(missData.grad.ixt_dispo_line);
+        der=der(missData.grad.ixAvailLine);
     end
     YY=vertcat(YY,der);
 end

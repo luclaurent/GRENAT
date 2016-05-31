@@ -23,13 +23,13 @@ execParallel('start',parallelStatus);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %studied function
-funTEST='SixHump';
+funTEST='Rosenbrock';
 %Beale(2),Bohachevky1/2/3(2),Booth(2),Branin(2),Coleville(4)
 %Dixon(n),Gold(2),Michalewicz(n),mystery(2),Peaks(2),Rosenbrock(n)
 %Sixhump(2),Schwefel(n),Sphere(n),SumsSuare(n),AHE(n),Cst(n),Dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-dimPB=2;
+dimPB=5;
 %esp=[0 15];
 esp=[];
 %%Definition of the design space
@@ -51,8 +51,8 @@ samplePts=sampling.sorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load parameters of the surrogate model
-data.type='InSVR';
-data.kern='matern52';
+data.type='InKRG';
+data.kern='matern32';
 metaData=initMeta(data);
 metaData.cv.disp=true;
 metaData.para.estim=1;

@@ -419,3 +419,11 @@ else
 end    
 fprintf('\n');
 end
+
+function ret=optimset(varargin)
+ret=[];
+end
+
+function ret=gaoptimset(varargin)
+ret=[];
+end

@@ -17,7 +17,7 @@ meta.useGrad=false;
 %type of surrogate model
 meta.type='KRG';
 %Taylor's step for indirect gradient-based
-meta.para.stepTaylor=10^2;
+meta.para.stepTaylor=10^-2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% internal parameters
 %length 
@@ -106,7 +106,7 @@ meta.infill.paraGEI=1;
 meta.infill.paraLCB=0.5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Check interpolation
-meta.check=true;
+meta.check=false;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% chargement configuration particuliere

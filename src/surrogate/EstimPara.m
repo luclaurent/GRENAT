@@ -426,7 +426,7 @@ function varargout=optimsetMOD(varargin)
 if exist('optimset','file')
     [varargout{1:nargout}] = optimset( varargin{:} );
 else
-    varargout={};
+    varargout{1}=[];
 end
 end
 
@@ -434,6 +434,6 @@ function varargout=gaoptimsetMOD(varargin)
 if exist('gaoptimset','file')
     [varargout{1:nargout}] = gaoptimset( varargin{:} );
 else
-    varargout={};
+    varargout{1}=[];
 end
 end

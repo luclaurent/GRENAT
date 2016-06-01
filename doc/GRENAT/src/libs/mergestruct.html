@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mergestruct</title>
+  <meta name="keywords" content="mergestruct">
+  <meta name="description" content="MERGESTRUCT Merge structures with unique fields.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html libs -->
+<h1>mergestruct
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>MERGESTRUCT Merge structures with unique fields.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function sout = mergestruct(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">MERGESTRUCT Merge structures with unique fields.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/surrogate/BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li><li><a href="../../../GRENAT/src/surrogate/KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="../../../GRENAT/src/surrogate/RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="../../../GRENAT/src/surrogate/SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function sout = mergestruct(varargin)</a>
+0002 <span class="comment">%MERGESTRUCT Merge structures with unique fields.</span>
+0003 
+0004 <span class="comment">%   Copyright 2009 The MathWorks, Inc.</span>
+0005 
+0006 <span class="comment">% Start with collecting fieldnames, checking implicitly</span>
+0007 <span class="comment">% that inputs are structures.</span>
+0008 fn = [];
+0009 <span class="keyword">for</span> k = 1:nargin
+0010     <span class="keyword">try</span>
+0011         fn = [fn ; fieldnames(varargin{k})];
+0012     <span class="keyword">catch</span> MEstruct
+0013         throw(MEstruct)
+0014     <span class="keyword">end</span>
+0015 <span class="keyword">end</span>
+0016 
+0017 <span class="comment">% Make sure the field names are unique.</span>
+0018 <span class="keyword">if</span> length(fn) ~= length(unique(fn))
+0019     error(<span class="string">'mergestruct:FieldsNotUnique'</span>,<span class="keyword">...</span>
+0020         <span class="string">'Field names must be unique'</span>);
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="comment">% Now concatenate the data from each struct.  Can't use</span>
+0024 <span class="comment">% structfun since input structs may not be scalar.</span>
+0025 c = [];
+0026 <span class="keyword">for</span> k = 1:nargin
+0027     <span class="keyword">try</span>
+0028         c = [c ; struct2cell(varargin{k})];
+0029     <span class="keyword">catch</span> MEdata
+0030         throw(MEdata);
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">% Construct the output.</span>
+0035 sout = cell2struct(c, fn, 1);</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

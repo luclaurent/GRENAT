@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mono_00_016</title>
+  <meta name="keywords" content="mono_00_016">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html kernANDfun --><!-- menu.html monomial_basis -->
+<h1>mono_00_016
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=mono_00_016(X) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=mono_00_016(X)</a>
+0002 
+0003 derprem=false;dersecond=false;
+0004 <span class="keyword">if</span> nargout&gt;=4;derprem=true;<span class="keyword">end</span>
+0005 <span class="keyword">if</span> nargout==6;dersecond=true;<span class="keyword">end</span>
+0006 
+0007 nb_val=size(X,1);
+0008 nb_var=size(X,2);
+0009 
+0010 MatX=ones(nb_val,1);
+0011 nbmono=1;
+0012 
+0013 <span class="keyword">if</span> derprem
+0014 MatDX=cell(1,nb_var);
+0015 
+0016 <span class="keyword">for</span> ii=1:nb_var
+0017     MatDX{ii}=zeros(nb_val,1);
+0018 <span class="keyword">end</span>
+0019 
+0020 CoefDX=zeros(1,nb_var);
+0021 
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> dersecond
+0025 MatDDX=cell(nb_var,nb_var);
+0026 
+0027 <span class="keyword">for</span> ii=1:nb_var^2
+0028     MatDDX{ii}=zeros(nb_val,1);
+0029 <span class="keyword">end</span>
+0030 
+0031 CoefDDX=zeros(1,nb_var);
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="keyword">end</span>
+0035</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

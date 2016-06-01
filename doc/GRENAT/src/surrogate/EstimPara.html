@@ -1,0 +1,505 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of EstimPara</title>
+  <meta name="keywords" content="EstimPara">
+  <meta name="description" content="% Function for estimating hyperparameters">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>EstimPara
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Function for estimating hyperparameters</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function paraEstim=EstimPara(dataProb,dataMeta,funObj) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Function for estimating hyperparameters
+ L. LAURENT -- 24/01/2012 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>	%%%%%%</li><li><a href="stopEstim.html" class="code" title="function stop=stopEstim(x,optimValues,state)">stopEstim</a>	% Fonction assurant l'arret de la procedure d'optimisation</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function dispHyperParameter(nameHP,valHP)</a></li><li><a href="#_sub2" class="code">function varargout=optimsetMOD(varargin)</a></li><li><a href="#_sub3" class="code">function varargout=gaoptimsetMOD(varargin)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Function for estimating hyperparameters</span>
+0002 <span class="comment">% L. LAURENT -- 24/01/2012 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <a name="_sub0" href="#_subfunctions" class="code">function paraEstim=EstimPara(dataProb,dataMeta,funObj)</a>
+0022 <span class="comment">% display warning or not</span>
+0023 dispWarning=false;
+0024 
+0025 <span class="comment">%value of the criteria for stopping minimization</span>
+0026 critOpti=dataMeta.para.critOpti;
+0027 
+0028 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0030 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0031 fprintf(<span class="string">'    &gt; Estimation of hyperparameters &lt;\n'</span>);
+0032 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0033 [tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0034 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0035 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0036 <span class="comment">% Definition of the parameters for minimization</span>
+0037 <span class="comment">% Number of hyperparameters to estimate</span>
+0038 <span class="comment">%anisotropy</span>
+0039 <span class="keyword">if</span> dataMeta.para.aniso
+0040     nbP=dataProb.used.np;
+0041     nbPOptim=nbP;
+0042 <span class="keyword">else</span>
+0043     nbP=1;
+0044     nbPOptim=nbP;
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">%definition the bounds of the space</span>
+0048 <span class="comment">% deal with specific cases (depending on the kernel function)</span>
+0049 <span class="keyword">switch</span> dataMeta.kern
+0050     <span class="keyword">case</span> <span class="string">'matern'</span>
+0051         lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.nu.min];
+0052         ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.nu.max];
+0053         nbPOptim=nbP+1;
+0054     <span class="keyword">case</span> <span class="string">'expg'</span>
+0055         lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.p.min];
+0056         ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.p.max];
+0057         nbPOptim=nbP+1;
+0058     <span class="keyword">case</span> <span class="string">'expgg'</span>
+0059         lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.p.min*ones(1,nbP)];
+0060         ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.p.max*ones(1,nbP)];
+0061         nbPOptim=2*nbP;
+0062     <span class="keyword">otherwise</span>
+0063         lb=dataMeta.para.l.min*ones(1,nbP);
+0064         ub=dataMeta.para.l.max*ones(1,nbP);
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0068 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0069 <span class="comment">%Manual definition of the initial population using LHS/IHS (GA)</span>
+0070 nbSampInit=10*nbPOptim;
+0071 sampManuOn=dataMeta.para.sampManuOn;
+0072 <span class="keyword">if</span> sampManuOn
+0073     nbSampleSpecif=false;
+0074     <span class="keyword">if</span> isfield(dataMeta.para,<span class="string">'nbSampInit'</span>);<span class="keyword">if</span> ~isempty(dataMeta.para.nbSampInit);nbSampleSpecif=false;<span class="keyword">end</span>, <span class="keyword">end</span>
+0075     <span class="keyword">if</span> nbSampleSpecif;nbSampInit=dataMeta.para.nbSampInit;<span class="keyword">end</span>
+0076 <span class="keyword">end</span>
+0077 <span class="comment">%definition valeur de depart de la variable</span>
+0078 x0=0.1*(ub-lb);
+0079 <span class="comment">%function to minimised</span>
+0080 fun=@(para)feval(funObj,dataProb,dataMeta,para,<span class="string">'estim'</span>);
+0081 <span class="comment">%options depending on the algorithm</span>
+0082 optionsFmincon = <a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(<span class="keyword">...</span>
+0083     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %display evolution</span>
+0084     <span class="string">'Algorithm'</span>,<span class="string">'interior-point'</span>,<span class="keyword">...</span><span class="comment"> %choice of the type of algorithm</span>
+0085     <span class="string">'OutputFcn'</span>,@<a href="stopEstim.html" class="code" title="function stop=stopEstim(x,optimValues,state)">stopEstim</a>,<span class="keyword">...</span><span class="comment">      %function used for following the algorithm and dealing with the various status of it</span>
+0086     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %check value of the function (Nan,Inf)</span>
+0087     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0088     <span class="string">'PlotFcns'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0089     <span class="string">'TolFun'</span>,critOpti);
+0090 optionsSQP = <a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(<span class="keyword">...</span>
+0091     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %display evolution</span>
+0092     <span class="string">'Algorithm'</span>,<span class="string">'sqp'</span>,<span class="keyword">...</span><span class="comment"> %choice of the type of algorithm</span>
+0093     <span class="string">'OutputFcn'</span>,@<a href="stopEstim.html" class="code" title="function stop=stopEstim(x,optimValues,state)">stopEstim</a>,<span class="keyword">...</span><span class="comment">      %function used for following the algorithm and dealing with the various status of it</span>
+0094     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %check value of the function (Nan,Inf)</span>
+0095     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0096     <span class="string">'PlotFcns'</span>,<span class="string">''</span>,<span class="keyword">...</span><span class="comment">   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}</span>
+0097     <span class="string">'TolFun'</span>,critOpti);
+0098 optionsFminbnd = <a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(<span class="keyword">...</span>
+0099     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %display evolution</span>
+0100     <span class="string">'OutputFcn'</span>,@stop_estim,<span class="keyword">...</span><span class="comment">      %function used for following the algorithm and dealing with the various status of it</span>
+0101     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %check value of the function (Nan,Inf)</span>
+0102     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0103     <span class="string">'PlotFcns'</span>,<span class="string">''</span>);
+0104 optionsGA = <a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(<span class="keyword">...</span>
+0105     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %display evolution</span>
+0106     <span class="string">'OutputFcn'</span>,<span class="string">''</span>,<span class="keyword">...</span><span class="comment">      %function used for following the algorithm and dealing with the various status of it</span>
+0107     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
+0108     <span class="string">'PopInitRange'</span>,[lb(:)';ub(:)'],<span class="keyword">...</span><span class="comment">  %definition area of the initial population</span>
+0109     <span class="string">'PlotFcns'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0110     <span class="string">'TolFun'</span>,critOpti,<span class="keyword">...</span>
+0111     <span class="string">'StallGenLimit'</span>,20);
+0112 optionsFminsearch = <a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(<span class="keyword">...</span>
+0113     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %display evolution    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it</span>
+0114     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %check value of the function (Nan,Inf)</span>
+0115     <span class="string">'TolFun'</span>,critOpti,<span class="keyword">...</span>
+0116     <span class="string">'PlotFcns'</span>,<span class="string">''</span>);
+0117 <span class="comment">%%%%% PSOt</span>
+0118 <span class="comment">%options of the PSO algorithm from the PSOt toolbox</span>
+0119 ac      = [2.1,2.1];<span class="comment">% acceleration constants, only used for modl=0</span>
+0120 Iwt     = [0.9,0.6];  <span class="comment">% intertia weights, only used for modl=0</span>
+0121 epoch   = 2000; <span class="comment">% max iterations</span>
+0122 wtEnd  = 100; <span class="comment">% iterations it takes to go from Iwt(1) to Iwt(2), only for modl=0</span>
+0123 errGrad = eps;   <span class="comment">% lowest error gradient tolerance</span>
+0124 errGradIter=100; <span class="comment">% max # of epochs without error change &gt;= errgrad</span>
+0125 PSOseed = 0;    <span class="comment">% if=1 then can input particle starting positions, if= 0 then all random</span>
+0126 <span class="comment">% starting particle positions (first 20 at zero, just for an example)</span>
+0127 PSOTplot=[];
+0128 PSOTsampling = [];
+0129 PSOTmv=4; <span class="comment">%maximum speed of the particles (=4 def)</span>
+0130 shw=0;      <span class="comment">%update display at each iteration (0 for no display)</span>
+0131 ps=nbSampInit; <span class="comment">%nb of particules</span>
+0132 errGoal=NaN;    <span class="comment">%cible minimisation</span>
+0133 modl=3;         <span class="comment">%type of PSO</span>
+0134 <span class="comment">%                   0 = Common PSO w/intertia (default)</span>
+0135 <span class="comment">%                 1,2 = Trelea types 1,2</span>
+0136 <span class="comment">%                 3   = Clerc's Constricted PSO, Type 1&quot;</span>
+0137 
+0138 PSOTOptions=<span class="keyword">...</span>
+0139     [shw epoch ps ac(1) ac(2) Iwt(1) Iwt(2) <span class="keyword">...</span>
+0140     wtEnd errGrad errGradIter errGoal modl PSOseed];
+0141 <span class="comment">%range of the parameters</span>
+0142 PSOTVarRange=[lb(:) ub(:)];
+0143 <span class="comment">%minimization</span>
+0144 PSOTMinMax=0;
+0145 
+0146 <span class="comment">%%%%%</span>
+0147 
+0148 <span class="comment">%display iterations</span>
+0149 <span class="keyword">if</span> ~dataMeta.para.dispIterGraph
+0150     optionsFmincon=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFmincon,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0151     optionsSQP=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsSQP,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0152     optionsFminbnd=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0153     optionsFminsearch=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0154     optionsGA=<a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(optionsGA,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
+0155 <span class="keyword">else</span>
+0156     figure
+0157 <span class="keyword">end</span>
+0158 
+0159 <span class="keyword">if</span> ~dataMeta.para.dispIterCmd
+0160     optionsFmincon=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFmincon,<span class="string">'Display'</span>,<span class="string">'final'</span>);
+0161     optionsSQP=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsSQP,<span class="string">'Display'</span>, <span class="string">'final'</span>);
+0162     optionsFminbnd=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'Display'</span>,<span class="string">'final'</span>);
+0163     optionsFminsearch=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'Display'</span>, <span class="string">'final'</span>);
+0164     optionsGA=<a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(optionsGA,<span class="string">'Display'</span>,<span class="string">'final'</span>);
+0165 <span class="keyword">end</span>
+0166 
+0167 <span class="comment">%display information of the algorithm on a graph</span>
+0168 <span class="keyword">if</span> dataMeta.para.dispPlotAlgo
+0169     optionsFmincon=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFmincon,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
+0170         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+0171     optionsSQP=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsSQP,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
+0172         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+0173     optionsFminbnd=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
+0174         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
+0175     optionsGA=<a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(optionsGA,<span class="string">'PlotFcns'</span>,{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,<span class="keyword">...</span>
+0176         @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,<span class="keyword">...</span>
+0177         @gaplotscorediversity,@gaplotscores,@gaplotstopping});
+0178     <span class="comment">%%PSOT</span>
+0179     PSOTplot=<span class="string">'goplotpso_perso1'</span>;
+0180     PSOTOptions(1)=10;
+0181 <span class="keyword">end</span>
+0182 
+0183 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0184 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0185 <span class="comment">%% Deal with 'SampleMin_xxxx' strategies</span>
+0186 <span class="comment">%look for the 'SampleMin_' pattern</span>
+0187 patternS=<span class="string">'SampleMin_'</span>;
+0188 [wordFind]=strfind(dataMeta.para.method,patternS);
+0189 <span class="keyword">if</span> isempty(wordFind)
+0190     methodOptim=dataMeta.para.method;
+0191     sampleMinOk=false;
+0192 <span class="keyword">else</span>
+0193     methodOptim=dataMeta.para.method((wordFind+numel(patternS)):end);
+0194     sampleMinOk=true;
+0195 <span class="keyword">end</span>
+0196 <span class="comment">% if SampleMin_ than a sampling is achieved for finding a initialization</span>
+0197 <span class="comment">% point of the algorithm</span>
+0198 <span class="keyword">if</span> sampleMinOk
+0199     nbSample=nbPOptim*10;
+0200     samplingType=<span class="string">'LHS_O1'</span>;
+0201     fprintf(<span class="string">'||SampleMin + opti||  Sampling %s on %i points\n'</span>,samplingType,nbSample);
+0202     doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSample;doePop.disp=false;doePop.type=samplingType;
+0203     samplePop=buildDOE(doePop);
+0204     critS=zeros(1,nbSample);
+0205     <span class="keyword">for</span> tir=1:nbSample
+0206         critS(tir)=fun(samplePop.sorted(tir,:));
+0207     <span class="keyword">end</span>
+0208     [fval1,IX]=min(critS);
+0209     x0=samplePop.sorted(IX,:);
+0210 <span class="keyword">end</span>
+0211 <span class="comment">%manual definition of the initial population for GA or PSOt</span>
+0212 <span class="keyword">if</span> sampManuOn&amp;&amp;sampleMinOk
+0213     doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSampInit;doePop.disp=false;doePop.type=dataMeta.para.sampManu;
+0214     samplePop=buildDOE(doePop);
+0215     optionsGA=<a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(optionsGA,<span class="string">'PopulationSize'</span>,nbSampInit,<span class="string">'InitialPopulation'</span>,samplePop);
+0216     <span class="comment">%PSOt</span>
+0217     PSOTsampling=samplePop;
+0218     PSOTOptions(13)=1;
+0219 <span class="keyword">end</span>
+0220 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0221 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0222 <span class="comment">%minimisation of the chosen objective function</span>
+0223 <span class="keyword">switch</span> methodOptim
+0224     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0225     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0226     <span class="keyword">case</span> <span class="string">'simplex'</span>  <span class="comment">%simplix method</span>
+0227         fprintf(<span class="string">'||Simplex|| Starting point:\n'</span>);
+0228         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0229         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0230         [x, fmax, nf] = nmsmax(fun, x0, [], []);
+0231         <span class="comment">%store results from the algorithm</span>
+0232         paraEstim.outAlgo.fmax=fmax;
+0233         paraEstim.outAlgo.nf=nf;
+0234         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0235         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0236         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0237         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0238         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0239     <span class="keyword">case</span> <span class="string">'SampleMin'</span>
+0240         nbSample=nbP*50;
+0241         samplingType=<span class="string">'LHS_O1'</span>;
+0242         fprintf(<span class="string">'||SampleMin||  Sample %s on %i points\n'</span>,samplingType,nbSample);
+0243         doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSample;doePop.disp=false;doePop.type=samplingType;
+0244         samplePop=buildDOE(doePop);
+0245         critS=zeros(1,nbSample);
+0246         parfor itSample=1:nbSample
+0247             critS(itSample)=fun(samplePop(itSample,:));
+0248         <span class="keyword">end</span>
+0249         [fval,IX]=min(critS);
+0250         x=samplePop(IX,:);
+0251         
+0252         <span class="comment">%store results from the algorithm</span>
+0253         paraEstim.outAlgo.fval=fval;
+0254         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0255         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0256         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0257         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0258     <span class="keyword">case</span> <span class="string">'sqp'</span>
+0259         fprintf(<span class="string">'||Fmincon (SQP)|| Starting point:\n'</span>);
+0260         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0261         <span class="comment">%deal with undefined starting point</span>
+0262         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0263         <span class="comment">%minimization</span>
+0264         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsSQP);
+0265         <span class="comment">%stop minimiszation</span>
+0266         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0267             disp(<span class="string">'Stop'</span>)
+0268             paraEstim.outAlgo=output;
+0269             paraEstim.outAlgo.fval=fval;
+0270             paraEstim.outAlgo.exitflag=exitflag;
+0271             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0272         <span class="keyword">elseif</span> exitflag==-2
+0273             fprintf(<span class="string">'Issue SQP\n'</span>);
+0274         <span class="keyword">end</span>
+0275         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0276         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0277         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0278         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0279         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0280     <span class="keyword">case</span> <span class="string">'fminbnd'</span>
+0281         fprintf(<span class="string">'||Fminbnd|| Starting point:\n'</span>);
+0282         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0283         <span class="comment">%minimization</span>
+0284         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0285         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsFminbnd);
+0286         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0287         <span class="comment">%stop minimization</span>
+0288         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0289             disp(<span class="string">'Stop'</span>)
+0290             paraEstim.outAlgo=output;
+0291             paraEstim.outAlgo.fval=fval;
+0292             paraEstim.outAlgo.exitflag=exitflag;
+0293             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0294         <span class="keyword">elseif</span> exitflag==-2
+0295             fprintf(<span class="string">'Issue SQP\n'</span>);
+0296         <span class="keyword">end</span>
+0297         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0298         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0299         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0300         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0301     <span class="keyword">case</span> <span class="string">'fminsearch'</span>
+0302         fprintf(<span class="string">'||Fminsearch|| Starting point:\n'</span>);
+0303         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0304         <span class="comment">%minimization</span>
+0305         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
+0306         <span class="comment">%stop minimization</span>
+0307         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0308             disp(<span class="string">'Stop'</span>)
+0309             paraEstim.outAlgo=output;
+0310             paraEstim.outAlgo.fval=fval;
+0311             paraEstim.outAlgo.exitflag=exitflag;
+0312             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0313         <span class="keyword">elseif</span> exitflag==-2
+0314             fprintf(<span class="string">'Issue Fminsearch\n'</span>);
+0315         <span class="keyword">end</span>
+0316         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0317         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0318         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0319         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0320     <span class="keyword">case</span> <span class="string">'fmincon'</span>
+0321         fprintf(<span class="string">'||Fmincon|| Starting point:\n'</span>);
+0322         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0323         <span class="comment">%deal with undefined starting point</span>
+0324         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0325         <span class="comment">%minimization</span>
+0326         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsFmincon);
+0327         <span class="comment">%stop minimization</span>
+0328         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0329             disp(<span class="string">'Stop'</span>)
+0330             paraEstim.outAlgo=output;
+0331             paraEstim.outAlgo.fval=fval;
+0332             paraEstim.outAlgo.exitflag=exitflag;
+0333             <span class="keyword">if</span> exist(fval1,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0334         <span class="keyword">elseif</span> exitflag==-2
+0335             fprintf(<span class="string">'Issue Fmincon\n'</span>);
+0336         <span class="keyword">end</span>
+0337         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0338         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0339         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0340         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0341         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0342     <span class="keyword">case</span> <span class="string">'ga'</span>
+0343         fprintf(<span class="string">'||Ga|| Initialisation with sampling %s:\n'</span>,sampManuOn);
+0344         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0345         [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsGA);
+0346         <span class="comment">%stop minimization</span>
+0347         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0348             disp(<span class="string">'Stop'</span>)
+0349             paraEstim.outAlgo=output;
+0350             paraEstim.outAlgo.fval=fval;
+0351             paraEstim.outAlgo.exitflag=exitflag;
+0352             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0353         <span class="keyword">elseif</span> exitflag==-2
+0354             fprintf(<span class="string">'Issue Ga\n'</span>);
+0355         <span class="keyword">end</span>
+0356         
+0357         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0358         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0359         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0360         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0361         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0362     <span class="keyword">case</span> <span class="string">'pso'</span>
+0363         <span class="keyword">if</span> sampManuOn;fprintf(<span class="string">'||PSOt|| Initialisation with sampling %s:\n'</span>,sampManuOn);<span class="keyword">end</span>
+0364         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0365         <span class="comment">%vectorized version of PSOt</span>
+0366         [psoOut,<span class="keyword">...</span><span class="comment">    %minimum point and associated responses</span>
+0367             tr,<span class="keyword">...</span><span class="comment">      %minimum point at each iteration</span>
+0368             te<span class="keyword">...</span><span class="comment">       %epoch iterations</span>
+0369             ]=<a href="../../../GRENAT/src/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>(<span class="keyword">...</span>
+0370             fun,<span class="keyword">...</span><span class="comment">             %function</span>
+0371             nbPOptim,<span class="keyword">...</span><span class="comment">         %number variables</span>
+0372             PSOTmv,<span class="keyword">...</span><span class="comment">         %maximal speed particles (def. 4)</span>
+0373             PSOTVarRange,<span class="keyword">...</span><span class="comment">   %matrix of the range of the parameters</span>
+0374             PSOTMinMax,<span class="keyword">...</span><span class="comment">     %minimization (=0 def), maximization (=1) or other (=2)</span>
+0375             PSOTOptions,<span class="keyword">...</span><span class="comment">    %vector of options</span>
+0376             PSOTplot,<span class="keyword">...</span><span class="comment">       %plotting function (optional)</span>
+0377             PSOTsampling);     <span class="comment">%initial random sampling (=0) other iuser defined  (=1)</span>
+0378         
+0379         <span class="comment">%store information of algorithm</span>
+0380         Xmin=psoOut(1:end-1)';
+0381         Zmin=psoOut(end);
+0382         exitflag=[];
+0383         output.tr=tr;
+0384         output.te=te;
+0385         disp(<span class="string">'Stop'</span>)
+0386         paraEstim.outAlgo=output;
+0387         paraEstim.outAlgo.xval=Xmin;
+0388         paraEstim.outAlgo.fval=Zmin;
+0389         paraEstim.outAlgo.exitflag=exitflag;
+0390         x=Xmin;
+0391         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0392         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0393         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0394         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0395         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0396     <span class="keyword">otherwise</span>
+0397         error([<span class="string">'Wrong kind of minimization method ('</span>,mfilename,<span class="string">')'</span>]);
+0398 <span class="keyword">end</span>
+0399 
+0400 
+0401 
+0402 
+0403 <span class="comment">%store obtained value of the hyperparameters obtained with the minimization</span>
+0404 paraEstim.val=x;
+0405 <span class="comment">%deal with various kind of kernel functions</span>
+0406 paraEstim.l.val=x(1:nbP);
+0407 paraEstim.p.val=NaN;
+0408 paraEstim.nu.val=NaN;
+0409 
+0410 <span class="keyword">switch</span> dataMeta.kern
+0411     <span class="keyword">case</span> <span class="string">'matern'</span>
+0412         paraEstim.nu.val=x(end);
+0413     <span class="keyword">case</span> <span class="string">'expg'</span>
+0414         paraEstim.p.val=x(end);
+0415     <span class="keyword">case</span> <span class="string">'expgg'</span>
+0416         paraEstim.p.val=x(nbP+1:end);
+0417 <span class="keyword">end</span>
+0418 <span class="comment">%display values of HyperParameters</span>
+0419 fprintf(<span class="string">' &gt;&gt;&gt; Optimal HyperParameters\n'</span>);
+0420 <a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'l '</span>,paraEstim.l.val)
+0421 <span class="keyword">if</span> ~isnan(paraEstim.p.val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'p '</span>,paraEstim.p.val);<span class="keyword">end</span>
+0422 <span class="keyword">if</span> ~isnan(paraEstim.nu.val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'nu'</span>,paraEstim.nu.val);<span class="keyword">end</span>
+0423 <span class="comment">%</span>
+0424 <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
+0425 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0426 <span class="keyword">end</span>
+0427 
+0428 <span class="comment">%function for displaying hyperparameters in the command window</span>
+0429 <a name="_sub1" href="#_subfunctions" class="code">function dispHyperParameter(nameHP,valHP)</a>
+0430 fprintf(<span class="string">' &gt;&gt; %s:'</span>,nameHP);
+0431 <span class="keyword">if</span> numel(valHP)==1
+0432     fprintf(<span class="string">' %g'</span>,valHP);
+0433 <span class="keyword">else</span>
+0434     fprintf(<span class="string">' %g |'</span>,valHP(1:end-1));
+0435     fprintf(<span class="string">' %g'</span>,valHP(end));
+0436 <span class="keyword">end</span>
+0437 fprintf(<span class="string">'\n'</span>);
+0438 <span class="keyword">end</span>
+0439 
+0440 <span class="comment">%wrapper to optimset and gaoptimset function (actual functions requires the</span>
+0441 <span class="comment">%Matlab's optimization toolbox)</span>
+0442 <a name="_sub2" href="#_subfunctions" class="code">function varargout=optimsetMOD(varargin)</a>
+0443 <span class="keyword">if</span> exist(<span class="string">'optimset'</span>,<span class="string">'file'</span>)
+0444     [varargout{1:nargout}] = optimset( varargin{:} );
+0445 <span class="keyword">else</span>
+0446     varargout{1}=[];
+0447 <span class="keyword">end</span>
+0448 <span class="keyword">end</span>
+0449 
+0450 <a name="_sub3" href="#_subfunctions" class="code">function varargout=gaoptimsetMOD(varargin)</a>
+0451 <span class="keyword">if</span> exist(<span class="string">'gaoptimset'</span>,<span class="string">'file'</span>)
+0452     [varargout{1:nargout}] = gaoptimset( varargin{:} );
+0453 <span class="keyword">else</span>
+0454     varargout{1}=[];
+0455 <span class="keyword">end</span>
+0456 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

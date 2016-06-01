@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of InfillCrit</title>
+  <meta name="keywords" content="InfillCrit">
+  <meta name="description" content="% Compute infill criteria EI/WEI/LCB">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html crit -->
+<h1>InfillCrit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Compute infill criteria EI/WEI/LCB</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [EI,WEI,GEI,LCB,exploitEI,explorEI]=InfillCrit(respMin,Z,varZ,infillData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Compute infill criteria EI/WEI/LCB
+ L. LAURENT -- 04/05/2012 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/surrogate/EvalMeta.html" class="code" title="function [Z]=EvalMeta(evalSample,availData,Verb)">EvalMeta</a>	% Evaluation of the surrogate model</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Compute infill criteria EI/WEI/LCB</span>
+0002 <span class="comment">% L. LAURENT -- 04/05/2012 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <a name="_sub0" href="#_subfunctions" class="code">function [EI,WEI,GEI,LCB,exploitEI,explorEI]=InfillCrit(respMin,Z,varZ,infillData)</a>
+0022 
+0023 <span class="comment">%fprintf('  &gt;&gt;&gt; Compute infill criteria\n');</span>
+0024 
+0025 <span class="comment">%depending on the kind of infill criteria to be computed</span>
+0026 calcEI=false;
+0027 calcWEI=false;
+0028 calcGEI=false;
+0029 calcLCB=false;
+0030 calcExploit=false;
+0031 calcExplor=false;
+0032 
+0033 <span class="comment">%initialize outuput variables</span>
+0034 EI=[];
+0035 WEI=[];
+0036 GEI=[];
+0037 LCB=[];
+0038 exploitEI=[];
+0039 explorEI=[];
+0040 
+0041 <span class="keyword">if</span> isfield(infillData,<span class="string">'crit'</span>)
+0042     <span class="keyword">if</span> ~isempty(infillData.crit)
+0043     <span class="keyword">if</span> ismember(<span class="string">'EI'</span>,infillData.crit);calcEI=true;calcExploit=true;calcExplor=true;<span class="keyword">end</span>
+0044     <span class="keyword">if</span> ismember(<span class="string">'WEI'</span>,infillData.crit);calcWEI=true;calcExploit=true;calcExplor=true;<span class="keyword">end</span>
+0045     <span class="keyword">if</span> ismember(<span class="string">'GEI'</span>,infillData.crit);calcGEI=true;calcExploit=true;calcExplor=true;<span class="keyword">end</span>
+0046     <span class="keyword">if</span> ismember(<span class="string">'LCB'</span>,infillData.crit);calcLCB=true;<span class="keyword">end</span>
+0047     <span class="keyword">if</span> ismember(<span class="string">'exploitEI'</span>,infillData.crit);calcExploit=true;<span class="keyword">end</span>
+0048     <span class="keyword">if</span> ismember(<span class="string">'explorEI'</span>,infillData.crit);calcExplor=true;<span class="keyword">end</span>
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">else</span>
+0051     calcEI=true;
+0052     calcWEI=true;
+0053     calcGEI=true;
+0054     calcLCB=true;
+0055     calcExploit=true;
+0056     calcExplor=true;
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="comment">%dimensions</span>
+0060 nbv=size(Z);
+0061 
+0062 <span class="comment">%check variance</span>
+0063 ixInf=find(varZ&lt;0);
+0064 <span class="keyword">if</span> ~isempty(ixInf)
+0065     fprintf(<span class="string">'Issue: variance lower than zero at %i points \n'</span>,numel(ixInf))
+0066     disp(varZ(ixInf))
+0067     fprintf(<span class="string">'&gt; Correction to zero\n'</span>)
+0068     varZ(ixInf)=0;
+0069 <span class="keyword">end</span>
+0070 ixInf=find(varZ&lt;eps);
+0071 <span class="keyword">if</span> ~isempty(ixInf)
+0072     fprintf(<span class="string">'Issue: variance close to zero at %i points \n'</span>,numel(ixInf))
+0073     fprintf(<span class="string">'&gt; Correction to zero\n'</span>)
+0074     varZ(ixInf)=0;
+0075 <span class="keyword">end</span>
+0076 
+0077 
+0078 <span class="comment">%compute standard deviation</span>
+0079 respStd=sqrt(varZ);
+0080 
+0081 <span class="comment">%minimal response</span>
+0082 diffEI=(respMin-Z);
+0083 u=diffEI./respStd;
+0084 
+0085 <span class="comment">%for computation of the Expected Improvement (Schonlau 1997/Jones 1999/Bompard</span>
+0086 <span class="comment">%2011/Sobester 2005...)</span>
+0087 <span class="comment">%exploration (using probabilty density)</span>
+0088 densProb=1/sqrt(2*pi)*exp(-0.5*u.^2); <span class="comment">%normpdf</span>
+0089 <span class="keyword">if</span> calcExplor || calcEI || calcWEI
+0090     explorEI=respStd.*densProb;
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="comment">%exploitation (cumulative distribution function)</span>
+0094 cumDist=0.5*(1+erf(u/sqrt(2))); <span class="comment">%cdf</span>
+0095 <span class="keyword">if</span> calcExploit || calcEI || calcWEI
+0096     exploitEI=diffEI.*cumDist;
+0097 <span class="keyword">end</span>
+0098 
+0099 <span class="comment">%deal with specific case: variance lower than 0 or close to 0</span>
+0100 <span class="keyword">if</span> ~isempty(ixInf)
+0101     u(ixInf)=0;
+0102     <span class="keyword">if</span> calcExplor || calcEI || calcWEI
+0103         explorEI(ixInf)=0;
+0104     <span class="keyword">end</span>
+0105     <span class="keyword">if</span> calcExploit || calcEI || calcWEI
+0106         exploitEI(ixInf)=0;
+0107     <span class="keyword">end</span>
+0108 <span class="keyword">end</span>
+0109 
+0110 <span class="comment">%Weigthed Expected Improvement (Sobester 2005)</span>
+0111 <span class="keyword">if</span> calcWEI
+0112     nbParaWEI=numel(infillData.paraWEI);
+0113     <span class="keyword">if</span> nbParaWEI~=1
+0114         paraWEI=reshape(infillData.para_wei,1,1,nbParaWEI);
+0115         paraWEI=repmat(paraWEI,[nbv(1),nbv(2),1]);
+0116         WEI=paraWEI.*repmat(exploitEI,[1 1 nbParaWEI])<span class="keyword">...</span>
+0117             +(1-paraWEI).*repmat(explorEI,[1 1 nbParaWEI]);
+0118     <span class="keyword">else</span>
+0119         WEI=infillData.paraWEI.*exploitEI+(1-infillData.para_wei)*explorEI;
+0120     <span class="keyword">end</span>
+0121 <span class="keyword">end</span>
+0122 
+0123 <span class="comment">%Expected Improvement (Schonlau 1997)</span>
+0124 <span class="keyword">if</span> calcEI
+0125     EI=exploitEI+explorEI;
+0126 <span class="keyword">end</span>
+0127 
+0128 <span class="comment">%Lower Confidence Bound (Cox et John 1997)</span>
+0129 <span class="keyword">if</span> calcLCB
+0130     LCB=Z-infillData.para_lcb*respStd;
+0131     <span class="comment">%deal with specific case: variance lower than 0 or close to 0</span>
+0132     <span class="keyword">if</span> ~isempty(ixInf)
+0133         LCB(ixInf)=0;
+0134     <span class="keyword">end</span>
+0135 <span class="keyword">end</span>
+0136 
+0137 <span class="comment">% Generalized Expected Improvement (Schonlau 1997)</span>
+0138 <span class="comment">% if the parameter is equal to 1 &gt;&gt; Expectied Improvement</span>
+0139 <span class="keyword">if</span> calcGEI
+0140     g=max(infillData.paraGEI);
+0141     t=zeros(nbv(1),nbv(2),g);
+0142     GEI=zeros(nbv(1),nbv(2),g+1);
+0143     <span class="keyword">if</span> respStd~=0
+0144         <span class="keyword">if</span> g&gt;=0
+0145             t(:,:,1)=cumDist;
+0146         <span class="keyword">end</span>
+0147         <span class="keyword">if</span> g&gt;=1
+0148             t(:,:,2)=-densProb;
+0149         <span class="keyword">end</span>
+0150         <span class="keyword">if</span> g&gt;=2
+0151             <span class="keyword">for</span> kk=3:g+1
+0152                 t(:,:,kk)=u.^(kk-1).*t(1)+(kk-1).*t(kk-2);
+0153             <span class="keyword">end</span>
+0154         <span class="keyword">end</span>
+0155         
+0156         <span class="comment">%compute various terms for calculating GEI</span>
+0157         <span class="keyword">for</span> cg=0:g
+0158             kIte=reshape(0:cg,[1,1,cg+1]);
+0159             <span class="comment">%coefficent</span>
+0160             coefGEI=(-1).^kIte;
+0161             <span class="comment">%variance to the power</span>
+0162             varG=respStd.^cg;
+0163             <span class="comment">% binomail coefficeent</span>
+0164             binomialC=factorial(cg)./(factorial(kIte).*factorial(cg-kIte)); <span class="comment">%faster than nchoosek (10 times faster)</span>
+0165             <span class="comment">% u to the power</span>
+0166             pow=cg-kIte;
+0167             uEG=bsxfun(@power,u,pow);
+0168             <span class="comment">%compute terms of the sum</span>
+0169             coefF=coefGEI.*binomialC;
+0170             prodA=bsxfun(@times,coefF,uEG.*t(:,:,1:cg+1));
+0171             s=sum(prodA,3);
+0172             <span class="comment">%computer GEI criteria</span>
+0173             GEI(:,:,cg+1)=varG.*sum_tmp;
+0174         <span class="keyword">end</span>
+0175     <span class="keyword">end</span>
+0176 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

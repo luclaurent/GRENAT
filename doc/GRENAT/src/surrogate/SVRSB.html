@@ -1,0 +1,776 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SVRSB</title>
+  <meta name="keywords" content="SVRSB">
+  <meta name="description" content="% Function for computing the Span Bound of the LOO error for SVR/GSVR">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>SVRSB
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Function for computing the Span Bound of the LOO error for SVR/GSVR</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [spanBound]=SVRSB(dataBloc,dataIn,metaData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Function for computing the Span Bound of the LOO error for SVR/GSVR
+L. LAURENT -- 26/05/206 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SVRBloc.html" class="code" title="function [critMin,ret]=SVRBloc(dataIn,metaData,paraValIn,type)">SVRBloc</a>	% Building of the nu-SVR/GSVR matrix</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function retStatus=modWarning(requireStatus,oldStatus)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Function for computing the Span Bound of the LOO error for SVR/GSVR</span>
+0002 <span class="comment">%L. LAURENT -- 26/05/206 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 
+0022 <span class="comment">%function [spanBound,Bound,loo,spanBoundb]=SVRSB(dataBloc,dataIn,metaData)</span>
+0023 <a name="_sub0" href="#_subfunctions" class="code">function [spanBound]=SVRSB(dataBloc,dataIn,metaData)</a>
+0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0025 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0026 <span class="comment">%%%%%%%%%% OPTIONS</span>
+0027 <span class="comment">%choice of the norma for LOO error</span>
+0028 <span class="comment">%MSE: L2-norm</span>
+0029 normLOO=<span class="string">'L2'</span>;
+0030 <span class="comment">%debug</span>
+0031 debugP=false;
+0032 
+0033 <span class="comment">% display warning or not</span>
+0034 dispWarning=false;
+0035 statusWarning=<a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>([],[]);
+0036 
+0037 <span class="comment">%parallel</span>
+0038 numWorkers=0;
+0039 <span class="keyword">if</span> ~isempty(whos(<span class="string">'parallel'</span>,<span class="string">'global'</span>))
+0040     <span class="keyword">global</span> parallel
+0041     numWorkers=parallel.num;
+0042 <span class="keyword">end</span>
+0043 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0044 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0045 <span class="comment">% %various situations</span>
+0046 <span class="comment">% modDebug=debugP;modStudy=metaData.cv.full;modFinal=false;</span>
+0047 <span class="comment">% if nargin==3</span>
+0048 <span class="comment">%     switch type</span>
+0049 <span class="comment">%         case 'debug'  %debug mode (display criteria)</span>
+0050 <span class="comment">%             fprintf('+++ CV KRG in DEBUG mode\n');</span>
+0051 <span class="comment">%             modDebug=true;</span>
+0052 <span class="comment">%         case 'study'  %study mode (use both methods for calculating criteria)</span>
+0053 <span class="comment">%             modStudy=true;</span>
+0054 <span class="comment">%         case 'estim'  %estimation mode</span>
+0055 <span class="comment">%             modStudy=false;</span>
+0056 <span class="comment">%         case 'final'    %final mode (compute variances)</span>
+0057 <span class="comment">%             modFinal=true;</span>
+0058 <span class="comment">%     end</span>
+0059 <span class="comment">% else</span>
+0060 <span class="comment">%     modFinal=true;</span>
+0061 <span class="comment">% end</span>
+0062 <span class="comment">% if modFinal;[tMesu,tInit]=mesuTime;end</span>
+0063 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0064 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0065 <span class="comment">%size of the kernel matrix</span>
+0066 sizePsi=size(dataBloc.build.PsiR,1);
+0067 <span class="comment">%Load data</span>
+0068 PsiR=dataBloc.build.PsiR;
+0069 iKUSV=dataBloc.build.iKUSV;
+0070 iXsvPM=dataBloc.build.iXsvPM;
+0071 iXsvPP=dataBloc.build.iXsvPP;
+0072 iXsvUSV=dataBloc.build.iXsvUSV;
+0073 nbUSV=dataBloc.build.nbUSV;
+0074 iXsvBSV=dataBloc.build.iXsvBSV;
+0075 nbBSV=dataBloc.build.nbBSV;
+0076 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0077 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0078 <span class="comment">%% Compute St</span>
+0079 <span class="comment">%extract inverse of KUSV</span>
+0080 iKUSV=dataBloc.build.iKUSV;
+0081 <span class="comment">%diagonal</span>
+0082 DiKSV=diag(iKUSV);
+0083 <span class="comment">%compute St^2</span>
+0084 St2b=zeros(sizePsi,1);
+0085 St2b(iXsvUSV)=1./DiKSV(1:nbUSV);
+0086  <span class="keyword">if</span> nbBSV&gt;0;
+0087      PsiBSV=PsiR(iXsvBSV(:),iXsvBSV(:));
+0088      Vb=[PsiR(iXsvUSV,iXsvBSV); ones(1,nbBSV)];
+0089      St2b(iXsvBSV)=diag(PsiBSV)-diag(Vb'*iKUSV*Vb);
+0090  <span class="keyword">end</span>;
+0091 
+0092 spanBound=1/sizePsi<span class="keyword">...</span>
+0093     *(St2b'*dataBloc.build.alphaLambdaPP<span class="keyword">...</span>
+0094     +sum(dataBloc.build.xiTau))<span class="keyword">...</span>
+0095     +dataBloc.build.e0;
+0096 
+0097 
+0098 <span class="comment">% spanBoundb=0;</span>
+0099 <span class="comment">% %spanBoundb</span>
+0100 <span class="comment">%</span>
+0101 <span class="comment">%</span>
+0102 <span class="comment">% %%</span>
+0103 <span class="comment">% eta=0.00001;</span>
+0104 <span class="comment">% lambdaregul=1e-7;</span>
+0105 <span class="comment">% ns=dataIn.used.ns;</span>
+0106 <span class="comment">% e=dataBloc.build.e0;</span>
+0107 <span class="comment">% PsiR=dataBloc.build.PsiR;</span>
+0108 <span class="comment">% alphaRAW=dataBloc.build.alphaRAW;</span>
+0109 <span class="comment">% alphaPP=dataBloc.build.alphaPP;</span>
+0110 <span class="comment">% SVRmu=dataBloc.build.SVRmu;</span>
+0111 <span class="comment">%</span>
+0112 <span class="comment">% nbsvaux=length(alphaRAW);</span>
+0113 <span class="comment">% AlphaStarTemp=alphaRAW(1:ns);</span>
+0114 <span class="comment">% AlphaTemp=-alphaRAW(ns+1:end);</span>
+0115 <span class="comment">% newpos=find(alphaRAW(1:ns)&gt;0|alphaRAW(ns+1:2*ns)&gt; 0);</span>
+0116 <span class="comment">% k=dataBloc.build.PsiR(newpos,newpos) + 1/metaData.para.c0*eye(length(newpos));</span>
+0117 <span class="comment">% D=(eta./(AlphaTemp(newpos)-AlphaStarTemp(newpos)));</span>
+0118 <span class="comment">% ksvaux=[k ones(length(newpos),1)];</span>
+0119 <span class="comment">% ksvaux=[ksvaux; [ones(1,length(newpos)) 0]];</span>
+0120 <span class="comment">% ksvaux=ksvaux+diag([D;0]);</span>
+0121 <span class="comment">% sp2aux=1./diag(inv(ksvaux+lambdaregul*eye(size(ksvaux))));</span>
+0122 <span class="comment">% sp2aux=sp2aux(1:length(newpos))-D;</span>
+0123 <span class="comment">% Bound=1/ns*(AlphaStarTemp(newpos)-AlphaTemp(newpos))'*sp2aux+e;</span>
+0124 <span class="comment">%</span>
+0125 <span class="comment">% %%%%</span>
+0126 <span class="comment">% output= dataIn.used.resp.*(PsiR*(alphaPP.*dataIn.used.resp)+SVRmu);</span>
+0127 <span class="comment">%</span>
+0128 <span class="comment">% epsM=1e-5;</span>
+0129 <span class="comment">% sv1=find(alphaPP&gt;max(alphaPP)*epsM &amp; alphaPP &lt; metaData.para.c0*(1-epsM));</span>
+0130 <span class="comment">% sv2=find(alphaPP &gt; metaData.para.c0*(1-epsM));</span>
+0131 <span class="comment">%</span>
+0132 <span class="comment">%</span>
+0133 <span class="comment">% if isempty(sv1)</span>
+0134 <span class="comment">%     loo=mean(output&lt;0);</span>
+0135 <span class="comment">%     return</span>
+0136 <span class="comment">% end;</span>
+0137 <span class="comment">%</span>
+0138 <span class="comment">%</span>
+0139 <span class="comment">% ell=length(sv1);</span>
+0140 <span class="comment">% KUSV=[PsiR(sv1,sv1) ones(ell,1);[ones(1,ell) 0]];</span>
+0141 <span class="comment">% invKSV=inv(KUSV+diag(1e-12*[ones(1,ell) 0]));</span>
+0142 <span class="comment">%</span>
+0143 <span class="comment">% n=length(PsiR);</span>
+0144 <span class="comment">% span=zeros(n,1);</span>
+0145 <span class="comment">% tmp=diag(invKSV);</span>
+0146 <span class="comment">%</span>
+0147 <span class="comment">% span(sv1)=1./tmp(1:ell);</span>
+0148 <span class="comment">%</span>
+0149 <span class="comment">% if ~isempty(sv2);</span>
+0150 <span class="comment">%     V=[K(sv1,sv2); ones(1,length(sv2))];</span>
+0151 <span class="comment">%     span(sv2)=diag(K(sv2,sv2))-diag(V'*invKSV*V);</span>
+0152 <span class="comment">% end;</span>
+0153 <span class="comment">%</span>
+0154 <span class="comment">% %loo=mean(output-alphaPP.*span &lt; 0);</span>
+0155 <span class="comment">% loo=mean(output-alphaPP'*span);</span>
+0156 
+0157 <span class="comment">%Bound</span>
+0158 <span class="comment">%loo</span>
+0159 
+0160 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0161 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0162 <span class="comment">% %%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)</span>
+0163 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0164 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0165 <span class="comment">% %coefficient of (co)Kriging</span>
+0166 <span class="comment">% coefKRG=dataBloc.build.gamma;</span>
+0167 <span class="comment">% %partial extraction of the diagonal of the inverse of the kernel matrix</span>
+0168 <span class="comment">% switch dataBloc.build.factKK</span>
+0169 <span class="comment">%     case 'QR'</span>
+0170 <span class="comment">%         fcC=dataBloc.build.fcK*dataBloc.build.QtK;</span>
+0171 <span class="comment">%         diagMK=diag(dataBloc.build.RK\dataBloc.build.QtK)-...</span>
+0172 <span class="comment">%             diag(fcC'*(dataBloc.build.fcCfct\fcC));</span>
+0173 <span class="comment">%     case 'LU'</span>
+0174 <span class="comment">%         fcC=dataBloc.build.fcU/dataBloc.build.LK;</span>
+0175 <span class="comment">%         diagMK=diag(dataBloc.build.UK\inv(dataBloc.build.LK))-...</span>
+0176 <span class="comment">%             diag(fcC'*(dataBloc.build.fcCfct\fcC));</span>
+0177 <span class="comment">%     case 'LL'</span>
+0178 <span class="comment">%         fcC=dataBloc.build.fcL/dataBloc.build.LK;</span>
+0179 <span class="comment">%         diagMK=diag(dataBloc.build.LK\inv(dataBloc.build.LK))-...</span>
+0180 <span class="comment">%             diag(fcC'*(dataBloc.build.fcCfct\fcC));</span>
+0181 <span class="comment">%     otherwise</span>
+0182 <span class="comment">%         diagMK=diag(inv(dataBloc.build.KK))-...</span>
+0183 <span class="comment">%             diag(dataBloc.build.fcC'*(dataBloc.build.fcCfct\dataBloc.build.fcC));</span>
+0184 <span class="comment">%</span>
+0185 <span class="comment">% end</span>
+0186 <span class="comment">% %vectors of the distances on removed sample points (reponses et gradients)</span>
+0187 <span class="comment">% esI=coefKRG./diagMK;</span>
+0188 <span class="comment">% esR=esI(1:ns);</span>
+0189 <span class="comment">% if availGrad;esG=esI(ns+1:end);end</span>
+0190 <span class="comment">%</span>
+0191 <span class="comment">% %computation of the LOO criteria (various norms)</span>
+0192 <span class="comment">% switch normLOO</span>
+0193 <span class="comment">%     case 'L1'</span>
+0194 <span class="comment">%         cv.then.press=esI'*esI;</span>
+0195 <span class="comment">%         cv.then.eloot=1/numel(esI)*sum(abs(esI));</span>
+0196 <span class="comment">%         cv.press=cv.then.press;</span>
+0197 <span class="comment">%         cv.eloot=cv.then.eloot;</span>
+0198 <span class="comment">%         if availGrad</span>
+0199 <span class="comment">%             cv.then.eloor=1/ns*sum(abs(esR));</span>
+0200 <span class="comment">%             cv.then.eloog=1/(ns*np)*sum(abs(esG));</span>
+0201 <span class="comment">%             cv.eloor=cv.then.eloor;</span>
+0202 <span class="comment">%             cv.eloog=cv.then.eloog;</span>
+0203 <span class="comment">%         end</span>
+0204 <span class="comment">%</span>
+0205 <span class="comment">%     case 'L2' %MSE</span>
+0206 <span class="comment">%         cv.then.press=esI'*esI;</span>
+0207 <span class="comment">%         cv.then.eloot=1/numel(esI)*(cv.then.press);</span>
+0208 <span class="comment">%         cv.press=cv.then.press;</span>
+0209 <span class="comment">%         cv.eloot=cv.then.eloot;</span>
+0210 <span class="comment">%         if availGrad</span>
+0211 <span class="comment">%             cv.then.press=esR'*esR;</span>
+0212 <span class="comment">%             cv.then.eloor=1/ns*(cv.then.press);</span>
+0213 <span class="comment">%             cv.then.eloog=1/(ns*np)*(esG'*esG);</span>
+0214 <span class="comment">%             cv.press=cv.then.press;</span>
+0215 <span class="comment">%             cv.eloor=cv.then.eloor;</span>
+0216 <span class="comment">%             cv.eloog=cv.then.eloog;</span>
+0217 <span class="comment">%         end</span>
+0218 <span class="comment">%     case 'Linf'</span>
+0219 <span class="comment">%         cv.then.press=esI'*esI;</span>
+0220 <span class="comment">%         cv.then.eloot=1/numel(esI)*max(esI(:));</span>
+0221 <span class="comment">%         cv.press=cv.then.press;</span>
+0222 <span class="comment">%         cv.eloot=cv.then.eloot;</span>
+0223 <span class="comment">%         if availGrad</span>
+0224 <span class="comment">%             cv.then.press=esR'*esR;</span>
+0225 <span class="comment">%             cv.then.eloor=1/ns*max(esR(:));</span>
+0226 <span class="comment">%             cv.then.eloog=1/(ns*np)*max(esG(:));</span>
+0227 <span class="comment">%             cv.press=cv.then.press;</span>
+0228 <span class="comment">%             cv.eloor=cv.then.eloor;</span>
+0229 <span class="comment">%             cv.eloog=cv.then.eloog;</span>
+0230 <span class="comment">%         end</span>
+0231 <span class="comment">% end</span>
+0232 <span class="comment">% %mean of bias</span>
+0233 <span class="comment">% cv.bm=1/ns*sum(esR);</span>
+0234 <span class="comment">% %display information</span>
+0235 <span class="comment">% if modDebug||modFinal</span>
+0236 <span class="comment">%     fprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');</span>
+0237 <span class="comment">%     fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0238 <span class="comment">%     if availGrad</span>
+0239 <span class="comment">%         fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
+0240 <span class="comment">%         fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
+0241 <span class="comment">%     end</span>
+0242 <span class="comment">%     fprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
+0243 <span class="comment">%     fprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
+0244 <span class="comment">% end</span>
+0245 <span class="comment">%</span>
+0246 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0247 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0248 <span class="comment">% %%% Classical CV method (successively removing of responses and gradients))</span>
+0249 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0250 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0251 <span class="comment">% if modDebug</span>
+0252 <span class="comment">%     [tMesuDebugA,tInitDebugA]=mesuTime;</span>
+0253 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0254 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0255 <span class="comment">%     %store response at removed point</span>
+0256 <span class="comment">%     cvZ=zeros(ns,1);</span>
+0257 <span class="comment">%     cvVar=zeros(ns,1);</span>
+0258 <span class="comment">%     cvGZ=zeros(ns,np);</span>
+0259 <span class="comment">%     yy=dataBloc.build.y;</span>
+0260 <span class="comment">%     fct=dataBloc.build.fct;</span>
+0261 <span class="comment">%     KK=dataBloc.build.KK;</span>
+0262 <span class="comment">%     sampling=dataBloc.used.sampling;</span>
+0263 <span class="comment">%     tiragesn=dataBloc.in.tiragesn;</span>
+0264 <span class="comment">%     grad=dataBloc.in.grad;</span>
+0265 <span class="comment">%     resp=dataBloc.in.eval;</span>
+0266 <span class="comment">%     dimC=dataBloc.build.sizeFc;</span>
+0267 <span class="comment">%     %along the sample points</span>
+0268 <span class="comment">%     parfor (itS=1:ns,numWorkers)</span>
+0269 <span class="comment">%         %Load data</span>
+0270 <span class="comment">%         dataCV=dataBloc;</span>
+0271 <span class="comment">%         %remove data</span>
+0272 <span class="comment">%         cvY=yy([1:(itS-1) (itS+1):end]');</span>
+0273 <span class="comment">%         cvKK=KK([1:(itS-1) (itS+1):end],[1:(itS-1) (itS+1):end]);</span>
+0274 <span class="comment">%         cvFct=fct([1:(itS-1) (itS+1):end],:);</span>
+0275 <span class="comment">%</span>
+0276 <span class="comment">%         cvFcc=cvFct'/cvKK;</span>
+0277 <span class="comment">%         cvFcCfct=cvFcc*cvFct;</span>
+0278 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0279 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0280 <span class="comment">%         %compute coefficients</span>
+0281 <span class="comment">%         modWarning(dispWarning);</span>
+0282 <span class="comment">%         dataCV.build.factKK='None';</span>
+0283 <span class="comment">%         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];</span>
+0284 <span class="comment">%         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];</span>
+0285 <span class="comment">%</span>
+0286 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0287 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0288 <span class="comment">%         %extract beta and gamma coefficients</span>
+0289 <span class="comment">%         dataCV.build.beta=coefKRG((end-dimC+1):end);</span>
+0290 <span class="comment">%         dataCV.build.gamma=coefKRG(1:(end-dimC));</span>
+0291 <span class="comment">%         dataCV.build.rcc=cvKK;</span>
+0292 <span class="comment">%</span>
+0293 <span class="comment">%         %compute variance of the gaussian process</span>
+0294 <span class="comment">%         sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);</span>
+0295 <span class="comment">%         modWarning(~dispWarning);</span>
+0296 <span class="comment">%</span>
+0297 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0298 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0299 <span class="comment">%         if metaData.normOn</span>
+0300 <span class="comment">%             dataCV.build.sig2=sig2*metaData.norm.resp.std^2;</span>
+0301 <span class="comment">%         else</span>
+0302 <span class="comment">%             dataCV.build.sig2=sig2;</span>
+0303 <span class="comment">%         end</span>
+0304 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0305 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0306 <span class="comment">%         %store variables</span>
+0307 <span class="comment">%         dataCV.used.sampling=sampling;</span>
+0308 <span class="comment">%         dataCV.used.ns=ns;  %remove one sample point</span>
+0309 <span class="comment">%         dataCV.build.fct=cvFct;</span>
+0310 <span class="comment">%         dataCV.build.fc=cvFct';</span>
+0311 <span class="comment">%         dataCV.build.fcCfct=cvFcCfct;</span>
+0312 <span class="comment">%         dataCV.infill.on=false;</span>
+0313 <span class="comment">%         %remove associate response</span>
+0314 <span class="comment">%         dataCV.miss.grad.on=false;</span>
+0315 <span class="comment">%         dataCV.miss.resp.on=true;</span>
+0316 <span class="comment">%         dataCV.miss.resp.ixMiss=itS;</span>
+0317 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0318 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0319 <span class="comment">%         %evaluate response and variances on removed sample points</span>
+0320 <span class="comment">%         [Z,~,variance]=KRGEval(sampling(itS,:),dataCV);</span>
+0321 <span class="comment">%         cvZ(itS)=Z;</span>
+0322 <span class="comment">%         cvVar(itS)=variance;</span>
+0323 <span class="comment">%         %remove gradients</span>
+0324 <span class="comment">%         if availGrad</span>
+0325 <span class="comment">%             for posGr=1:np</span>
+0326 <span class="comment">%                 %load data</span>
+0327 <span class="comment">%                 dataCV=dataBloc;</span>
+0328 <span class="comment">%                 pos=ns+(itS-1)*np+posGr;</span>
+0329 <span class="comment">%                 %remove data</span>
+0330 <span class="comment">%                 cvY=yy([1:(pos-1) (pos+1):end]');</span>
+0331 <span class="comment">%                 cvKK=KK([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);</span>
+0332 <span class="comment">%                 cvFct=fct([1:(pos-1) (pos+1):end],:);</span>
+0333 <span class="comment">%                 cvFcc=cvFct'/cvKK;</span>
+0334 <span class="comment">%                 cvFcCfct=cvFcc*cvFct;</span>
+0335 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0336 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0337 <span class="comment">%                 %ccompute coefficients</span>
+0338 <span class="comment">%                 modWarning(dispWarning);</span>
+0339 <span class="comment">%                 dataCV.build.factKK='None';</span>
+0340 <span class="comment">%                 cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];</span>
+0341 <span class="comment">%                 coefKRG=cvMKrg\[cvY;zeros(dimC,1)];</span>
+0342 <span class="comment">%</span>
+0343 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0344 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0345 <span class="comment">%                 %extraction beta and gamma coefficients</span>
+0346 <span class="comment">%                 dataCV.build.beta=coefKRG((end-dimC+1):end);</span>
+0347 <span class="comment">%                 dataCV.build.gamma=coefKRG(1:(end-dimC));</span>
+0348 <span class="comment">%                 dataCV.build.rcc=cvKK;</span>
+0349 <span class="comment">%</span>
+0350 <span class="comment">%                 %compute variance of the gaussian process</span>
+0351 <span class="comment">%                 sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);</span>
+0352 <span class="comment">%                 modWarning(~dispWarning);</span>
+0353 <span class="comment">%</span>
+0354 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0355 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0356 <span class="comment">%                 if metaData.normOn</span>
+0357 <span class="comment">%                     sig2=sig2*metaData.norm.resp.std^2;</span>
+0358 <span class="comment">%                 end</span>
+0359 <span class="comment">%                 dataCV.build.sig2=sig2;</span>
+0360 <span class="comment">%</span>
+0361 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0362 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0363 <span class="comment">%                 %store data</span>
+0364 <span class="comment">%                 dataCV.used.sampling=sampling;</span>
+0365 <span class="comment">%                 dataCV.used.ns=ns;  %remove one sample point</span>
+0366 <span class="comment">%                 dataCV.build.fct=cvFct;</span>
+0367 <span class="comment">%                 dataCV.build.fc=cvFct';</span>
+0368 <span class="comment">%                 dataCV.build.fcCfct=cvFcCfct;</span>
+0369 <span class="comment">%                 dataCV.infill.on=false;</span>
+0370 <span class="comment">%                 %remove the associated gradient</span>
+0371 <span class="comment">%                 dataCV.miss.grad.on=true;</span>
+0372 <span class="comment">%                 dataCV.miss.resp.on=false;</span>
+0373 <span class="comment">%                 dataCV.miss.grad.ixtMissLine=pos-ns;</span>
+0374 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0375 <span class="comment">%                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0376 <span class="comment">%                 %evaluate gradients on removed sample points</span>
+0377 <span class="comment">%                 [~,GZ,~]=KRGEval(sampling(itS,:),dataCV);</span>
+0378 <span class="comment">%                 cvGZ(itS,posGr)=GZ(posGr);</span>
+0379 <span class="comment">%             end</span>
+0380 <span class="comment">%         end</span>
+0381 <span class="comment">%     end</span>
+0382 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0383 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0384 <span class="comment">%     %% compute errors</span>
+0385 <span class="comment">%     [cv.then]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);</span>
+0386 <span class="comment">%     %display information</span>
+0387 <span class="comment">%     if modDebug||modFinal</span>
+0388 <span class="comment">%         fprintf('\n=== CV-LOO with remove responses THEN the gradients (debug)\n');</span>
+0389 <span class="comment">%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0390 <span class="comment">%         if availGrad</span>
+0391 <span class="comment">%             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
+0392 <span class="comment">%             fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
+0393 <span class="comment">%         end</span>
+0394 <span class="comment">%         fprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
+0395 <span class="comment">%         fprintf('+++ Mean bias %4.2e\n',cv.then.bm);</span>
+0396 <span class="comment">%         fprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
+0397 <span class="comment">%         fprintf('+++ Custom error %4.2e\n',cv.then.errp);</span>
+0398 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);</span>
+0399 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);</span>
+0400 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);</span>
+0401 <span class="comment">%         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);</span>
+0402 <span class="comment">%     end</span>
+0403 <span class="comment">%     mesuTime(tMesuDebugA,tInitDebugA);</span>
+0404 <span class="comment">% end</span>
+0405 <span class="comment">%</span>
+0406 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0407 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0408 <span class="comment">% %%% Classical CV method (remove simultaneously response and gradient</span>
+0409 <span class="comment">% %%% at each sample point)</span>
+0410 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0411 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0412 <span class="comment">% if (modStudy||modDebug)||(modFinal&amp;&amp;metaData.cv.disp)</span>
+0413 <span class="comment">%     [tMesuDebugB,tInitDebugB]=mesuTime;</span>
+0414 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0415 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0416 <span class="comment">%     %store response of the surrogate model at remove sample point</span>
+0417 <span class="comment">%     cvZ=zeros(ns,1);</span>
+0418 <span class="comment">%     cvVar=zeros(ns,1);</span>
+0419 <span class="comment">%     cvGZ=zeros(ns,np);</span>
+0420 <span class="comment">%     yy=dataBloc.build.y;</span>
+0421 <span class="comment">%     fct=dataBloc.build.fct;</span>
+0422 <span class="comment">%     KK=dataBloc.build.KK;</span>
+0423 <span class="comment">%     sampling=dataBloc.used.sampling;</span>
+0424 <span class="comment">%     grad=dataBloc.used.grad;</span>
+0425 <span class="comment">%     resp=dataBloc.used.resp;</span>
+0426 <span class="comment">%     dimC=dataBloc.build.sizeFc;</span>
+0427 <span class="comment">%</span>
+0428 <span class="comment">%     %along the sample points</span>
+0429 <span class="comment">%     parfor (itS=1:ns,numWorkers)</span>
+0430 <span class="comment">%         %load data</span>
+0431 <span class="comment">%         dataCV=dataBloc;</span>
+0432 <span class="comment">%         %remove data</span>
+0433 <span class="comment">%         if availGrad</span>
+0434 <span class="comment">%             pos=[itS ns+(itS-1)*np+(1:np)];</span>
+0435 <span class="comment">%             IXi=1:((np+1)*ns);</span>
+0436 <span class="comment">%         else</span>
+0437 <span class="comment">%             pos=itS;</span>
+0438 <span class="comment">%             IXi=1:(ns);</span>
+0439 <span class="comment">%         end</span>
+0440 <span class="comment">%         %complement to the intial indexes</span>
+0441 <span class="comment">%         IXc=IXi(end)+(1:dimC);</span>
+0442 <span class="comment">%         %indexes of the removed data</span>
+0443 <span class="comment">%         IXe=setxor(IXi,pos);</span>
+0444 <span class="comment">%</span>
+0445 <span class="comment">%         modWarning(dispWarning);</span>
+0446 <span class="comment">%         cvY=yy(IXe');</span>
+0447 <span class="comment">%         cvKK=KK(IXe,IXe);</span>
+0448 <span class="comment">%         cvFct=fct(IXe,:);</span>
+0449 <span class="comment">%         cvFcc=cvFct'/cvKK;</span>
+0450 <span class="comment">%         cvFcCfct=cvFcc*cvFct;</span>
+0451 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0452 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0453 <span class="comment">%         %compute coefficients</span>
+0454 <span class="comment">%         dataCV.build.factKK='None';</span>
+0455 <span class="comment">%         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];</span>
+0456 <span class="comment">%         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];</span>
+0457 <span class="comment">%</span>
+0458 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0459 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0460 <span class="comment">%         %extraction of the beta and gamma coefficients</span>
+0461 <span class="comment">%         dataCV.build.beta=coefKRG((end-dimC+1):end);</span>
+0462 <span class="comment">%         dataCV.build.gamma=coefKRG(1:(end-dimC));</span>
+0463 <span class="comment">%         dataCV.build.KK=cvKK;</span>
+0464 <span class="comment">%</span>
+0465 <span class="comment">%</span>
+0466 <span class="comment">%         %compute variance of the gaussian process</span>
+0467 <span class="comment">%         sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);</span>
+0468 <span class="comment">%         modWarning(~dispWarning);</span>
+0469 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0470 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0471 <span class="comment">%</span>
+0472 <span class="comment">%         if metaData.normOn</span>
+0473 <span class="comment">%             sig2=sig2*metaData.norm.resp.std^2;</span>
+0474 <span class="comment">%         end</span>
+0475 <span class="comment">%         dataCV.build.sig2=sig2;</span>
+0476 <span class="comment">%</span>
+0477 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0478 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0479 <span class="comment">%         %store variables</span>
+0480 <span class="comment">%         dataCV.used.sampling=sampling([1:(itS-1) (itS+1):end],:);</span>
+0481 <span class="comment">%         dataCV.used.ns=ns-1;  %remove one sample point</span>
+0482 <span class="comment">%         dataCV.build.fct=cvFct;</span>
+0483 <span class="comment">%         dataCV.build.fc=cvFct';</span>
+0484 <span class="comment">%         dataCV.build.fcCfct=cvFcCfct;</span>
+0485 <span class="comment">%         dataCV.infill.on=false;</span>
+0486 <span class="comment">%         %remove of the associated response</span>
+0487 <span class="comment">%         dataCV.miss.grad.on=false;</span>
+0488 <span class="comment">%         dataCV.miss.resp.on=false;</span>
+0489 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0490 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0491 <span class="comment">%         %evaluate response, gradient and variance at the remove sample point</span>
+0492 <span class="comment">%         [Z,GZ,variance]=KRGEval(sampling(itS,:),dataCV);</span>
+0493 <span class="comment">%         cvZ(itS)=Z;</span>
+0494 <span class="comment">%         cvGZ(itS,:)=GZ;</span>
+0495 <span class="comment">%         cvVar(itS)=variance;</span>
+0496 <span class="comment">%     end</span>
+0497 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0498 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0499 <span class="comment">%     %% Compute errors</span>
+0500 <span class="comment">%     [cv.and]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);</span>
+0501 <span class="comment">%     %display informations</span>
+0502 <span class="comment">%     if modDebug||modFinal</span>
+0503 <span class="comment">%         fprintf('\n=== CV-LOO with remove responses AND the gradients\n');</span>
+0504 <span class="comment">%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0505 <span class="comment">%         if availGrad</span>
+0506 <span class="comment">%             fprintf('+++ Error on responses %4.2e\n',cv.and.eloor);</span>
+0507 <span class="comment">%             fprintf('+++ Error on gradients %4.2e\n',cv.and.eloog);</span>
+0508 <span class="comment">%         end</span>
+0509 <span class="comment">%         fprintf('+++ Total error %4.2e\n',cv.and.eloot);</span>
+0510 <span class="comment">%         fprintf('+++ Mean bias %4.2e\n',cv.and.bm);</span>
+0511 <span class="comment">%         fprintf('+++ PRESS %4.2e\n',cv.and.press);</span>
+0512 <span class="comment">%         fprintf('+++ Custom error %4.2e\n',cv.and.errp);</span>
+0513 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.and.scvr_min);</span>
+0514 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.and.scvr_max);</span>
+0515 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);</span>
+0516 <span class="comment">%         fprintf('+++ Adequation %4.2e\n',cv.and.adequ);</span>
+0517 <span class="comment">%     end</span>
+0518 <span class="comment">%     mesuTime(tMesuDebugB,tInitDebugB);</span>
+0519 <span class="comment">% end</span>
+0520 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0521 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0522 <span class="comment">% %%Compute variance of prediction at sample points + check calculation on responses and gradients (for CV)</span>
+0523 <span class="comment">% %%%CAUTION: not functioning for missing data</span>
+0524 <span class="comment">% if modStudy||metaData.cv.disp</span>
+0525 <span class="comment">%     %</span>
+0526 <span class="comment">%     [tMesuDebugC,tInitDebugC]=mesuTime;</span>
+0527 <span class="comment">%     %%</span>
+0528 <span class="comment">%     cvVarR=zeros(ns,1);</span>
+0529 <span class="comment">%     cvZR=zeros(ns,1);</span>
+0530 <span class="comment">%     cvGZ=zeros(ns,np);</span>
+0531 <span class="comment">%     yy=dataBloc.build.y;</span>
+0532 <span class="comment">%     fct=dataBloc.build.fct;</span>
+0533 <span class="comment">%     KK=dataBloc.build.KK;</span>
+0534 <span class="comment">%     grad=dataBloc.used.grad;</span>
+0535 <span class="comment">%     resp=dataBloc.used.resp;</span>
+0536 <span class="comment">%     dimC=dataBloc.build.sizeFc;</span>
+0537 <span class="comment">%     for itS=1:ns</span>
+0538 <span class="comment">%         %load data and remove responses</span>
+0539 <span class="comment">%         PP=[KK(itS,:) fct(itS,:)];</span>
+0540 <span class="comment">%         PP(itS)=[];</span>
+0541 <span class="comment">%         cvY=yy([1:(itS-1) (itS+1):end]');</span>
+0542 <span class="comment">%         cvKK=KK([1:(itS-1) (itS+1):end],[1:(itS-1) (itS+1):end]);</span>
+0543 <span class="comment">%         cvFct=fct([1:(itS-1) (itS+1):end],:);</span>
+0544 <span class="comment">%</span>
+0545 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0546 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0547 <span class="comment">%         %compute coefficients</span>
+0548 <span class="comment">%         modWarning(dispWarning);</span>
+0549 <span class="comment">%         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];</span>
+0550 <span class="comment">%         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];</span>
+0551 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0552 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0553 <span class="comment">%         %extraction of the beta and gamma coefficients</span>
+0554 <span class="comment">%         beta=coefKRG((end-dimC+1):end);</span>
+0555 <span class="comment">%         gamma=coefKRG(1:(end-dimC));</span>
+0556 <span class="comment">%         %compute</span>
+0557 <span class="comment">%         sig2=1/size(cvKK,1)*((cvY-cvFct*beta)'*gamma);</span>
+0558 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0559 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0560 <span class="comment">%         if metaData.normOn</span>
+0561 <span class="comment">%             sig2=sig2*metaData.norm.resp.std^2;</span>
+0562 <span class="comment">%         end</span>
+0563 <span class="comment">%         dataCV.build.sig2=sig2;</span>
+0564 <span class="comment">%         %compute variance at the removed point</span>
+0565 <span class="comment">%         cvVarR(itS)=sig2*(1-PP*(cvMKrg\PP'));</span>
+0566 <span class="comment">%</span>
+0567 <span class="comment">%         %compute response</span>
+0568 <span class="comment">%         cvZR(itS)=PP*coefKRG;</span>
+0569 <span class="comment">%         modWarning(~dispWarning);</span>
+0570 <span class="comment">%         %remove gradients</span>
+0571 <span class="comment">%         if availGrad</span>
+0572 <span class="comment">%             for posGr=1:np</span>
+0573 <span class="comment">%                 pos=ns+(itS-1)*np+posGr;</span>
+0574 <span class="comment">%                 %remove data</span>
+0575 <span class="comment">%                 cvKK=KK([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);</span>
+0576 <span class="comment">%                 cvFct=fct([1:(pos-1) (pos+1):end],:);</span>
+0577 <span class="comment">%                 cvY=yy([1:(pos-1) (pos+1):end]');</span>
+0578 <span class="comment">%                 cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];</span>
+0579 <span class="comment">%                 %extraction of the vector</span>
+0580 <span class="comment">%                 dPP=[KK(pos,:) fct(pos,:)];</span>
+0581 <span class="comment">%                 dPP(pos)=[];</span>
+0582 <span class="comment">%                 %compute gradients</span>
+0583 <span class="comment">%                 GZ=dPP*(cvMKrg\[cvY;zeros(dimC,1)]);</span>
+0584 <span class="comment">%                 cvGZ(itS,posGr)=GZ;</span>
+0585 <span class="comment">%             end</span>
+0586 <span class="comment">%         end</span>
+0587 <span class="comment">%     end</span>
+0588 <span class="comment">%</span>
+0589 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0590 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0591 <span class="comment">%     %% Compute errors</span>
+0592 <span class="comment">%     [cv.then]=LOOCalcError(resp,cvZR,cvVarR,grad,cvGZ,ns,np,normLOO);</span>
+0593 <span class="comment">%     %display information</span>
+0594 <span class="comment">%     if modDebug||modFinal</span>
+0595 <span class="comment">%         fprintf('\n=== CV-LOO with remove responses THEN the gradients\n');</span>
+0596 <span class="comment">%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0597 <span class="comment">%         if availGrad</span>
+0598 <span class="comment">%             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
+0599 <span class="comment">%             fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
+0600 <span class="comment">%         end</span>
+0601 <span class="comment">%         fprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
+0602 <span class="comment">%         fprintf('+++ Mean bias %4.2e\n',cv.then.bm);</span>
+0603 <span class="comment">%         fprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
+0604 <span class="comment">%         fprintf('+++ Custom error %4.2e\n',cv.then.errp);</span>
+0605 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);</span>
+0606 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);</span>
+0607 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);</span>
+0608 <span class="comment">%         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);</span>
+0609 <span class="comment">%     end</span>
+0610 <span class="comment">%     mesuTime(tMesuDebugC,tInitDebugC);</span>
+0611 <span class="comment">% end</span>
+0612 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0613 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0614 <span class="comment">% %%Compute variance of prediction at the sample points (for CV)</span>
+0615 <span class="comment">% %%%CAUTION: not functioning for missing data</span>
+0616 <span class="comment">% if modFinal</span>
+0617 <span class="comment">%     %</span>
+0618 <span class="comment">%     [tMesuDebugD,tInitDebugD]=mesuTime;</span>
+0619 <span class="comment">%     %</span>
+0620 <span class="comment">%     cvVarR=zeros(ns,1);</span>
+0621 <span class="comment">%     yy=dataBloc.build.y;</span>
+0622 <span class="comment">%     fct=dataBloc.build.fct;</span>
+0623 <span class="comment">%     KK=dataBloc.build.KK;</span>
+0624 <span class="comment">%     dimC=dataBloc.build.sizeFc;</span>
+0625 <span class="comment">%     %</span>
+0626 <span class="comment">%     parfor (itS=1:ns,numWorkers)</span>
+0627 <span class="comment">%</span>
+0628 <span class="comment">%         %extraction data</span>
+0629 <span class="comment">%         PP=[KK(itS,:) fct(itS,:)];</span>
+0630 <span class="comment">%         PP(itS)=[];</span>
+0631 <span class="comment">%         cvKK=KK([1:(itS-1) (itS+1):end],[1:(itS-1) (itS+1):end]);</span>
+0632 <span class="comment">%         cvFct=fct([1:(itS-1) (itS+1):end],:);</span>
+0633 <span class="comment">%         cvY=yy([1:(itS-1) (itS+1):end]');</span>
+0634 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0635 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0636 <span class="comment">%         %compute coefficients</span>
+0637 <span class="comment">%         modWarning(dispWarning);</span>
+0638 <span class="comment">%         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];</span>
+0639 <span class="comment">%         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];</span>
+0640 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0641 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0642 <span class="comment">%         %extraction of the beta coefficient</span>
+0643 <span class="comment">%         beta=coefKRG((end-dimC+1):end);</span>
+0644 <span class="comment">%</span>
+0645 <span class="comment">%         %compute variance of the gaussian process</span>
+0646 <span class="comment">%         sig2=1/size(cvKK,1)*((cvY-cvFct*beta)'/cvKK)*(cvY-cvFct*beta);</span>
+0647 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0648 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0649 <span class="comment">%         if metaData.normOn</span>
+0650 <span class="comment">%             sig2=sig2*metaData.norm.resp.std^2;</span>
+0651 <span class="comment">%         end</span>
+0652 <span class="comment">%         %comute variance at the removed sample point</span>
+0653 <span class="comment">%         cvVarR(itS)=sig2*(1-PP*(cvMKrg\PP'));</span>
+0654 <span class="comment">%         modWarning(~dispWarning);</span>
+0655 <span class="comment">%     end</span>
+0656 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0657 <span class="comment">%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0658 <span class="comment">%     %% Compute errors</span>
+0659 <span class="comment">%     [cv.final]=LOOCalcError(zeros(size(esR)),-esR,cvVarR,[],[],ns,np,normLOO);</span>
+0660 <span class="comment">%     cv.then.scvr_min=cv.final.scvr_min;</span>
+0661 <span class="comment">%     cv.then.scvr_max=cv.final.scvr_max;</span>
+0662 <span class="comment">%     cv.then.scvr_mean=cv.final.scvr_mean;</span>
+0663 <span class="comment">%     %display information</span>
+0664 <span class="comment">%     if modDebug||modFinal</span>
+0665 <span class="comment">%         fprintf('\n=== CV-LOO SCVR\n');</span>
+0666 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);</span>
+0667 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);</span>
+0668 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);</span>
+0669 <span class="comment">%     end</span>
+0670 <span class="comment">%     mesuTime(tMesuDebugD,tInitDebugD);</span>
+0671 <span class="comment">% end</span>
+0672 <span class="comment">%</span>
+0673 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0674 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0675 <span class="comment">% %%Show QQ-plot</span>
+0676 <span class="comment">% if metaData.cv.disp&amp;&amp;modFinal</span>
+0677 <span class="comment">%     opt.newfig=false;</span>
+0678 <span class="comment">%     figure</span>
+0679 <span class="comment">%     subplot(1,3,1);</span>
+0680 <span class="comment">%     opt.title='Normalized data (CV R)';</span>
+0681 <span class="comment">%     QQplot(dataBloc.used.resp,cvZR,opt)</span>
+0682 <span class="comment">%     subplot(1,3,2);</span>
+0683 <span class="comment">%     opt.title='Normalized data (CV F)';</span>
+0684 <span class="comment">%     QQplot(dataBloc.used.resp,cvZ,opt)</span>
+0685 <span class="comment">%     subplot(1,3,3);</span>
+0686 <span class="comment">%     opt.title='SCVR (Normalized)';</span>
+0687 <span class="comment">%     opt.xlabel='Predicted' ;</span>
+0688 <span class="comment">%     opt.ylabel='SCVR';</span>
+0689 <span class="comment">%     SCVRplot(cvZR,cv.final.scvr,opt)</span>
+0690 <span class="comment">%</span>
+0691 <span class="comment">%     %     % original data</span>
+0692 <span class="comment">%     %     subplot(2,3,4);</span>
+0693 <span class="comment">%     %     opt.title='Original data (CV R)';</span>
+0694 <span class="comment">%     %     QQplot(dataBloc.used.resp,cvZR,opt)</span>
+0695 <span class="comment">%     %     subplot(2,3,5);</span>
+0696 <span class="comment">%     %     opt.title='Original data (CV F)';</span>
+0697 <span class="comment">%     %     QQplot(dataBloc.used.resp,cvZ,opt)</span>
+0698 <span class="comment">%     %     subplot(2,3,6);</span>
+0699 <span class="comment">%     %     opt.title='SCVR (Normalized)';</span>
+0700 <span class="comment">%     %     opt.xlabel='Predicted' ;</span>
+0701 <span class="comment">%     %     opt.ylabel='SCVR';</span>
+0702 <span class="comment">%     %     SCVRplot(cvZR,cv.final.scvr,opt)</span>
+0703 <span class="comment">% end</span>
+0704 <span class="comment">%</span>
+0705 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0706 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0707 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0708 <span class="comment">%if modFinal;mesuTime(tMesu,tInit);end</span>
+0709 <span class="keyword">end</span>
+0710 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0711 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0712 <span class="comment">% function for stopping the display of the warning and restoring initial</span>
+0713 <span class="comment">% state</span>
+0714 <a name="_sub1" href="#_subfunctions" class="code">function retStatus=modWarning(requireStatus,oldStatus)</a>
+0715 <span class="keyword">if</span> nargin==1
+0716     <span class="keyword">if</span> ~requireStatus
+0717         warning off all
+0718     <span class="keyword">end</span>
+0719 <span class="keyword">else</span>
+0720     <span class="keyword">if</span> isempty(oldStatus)
+0721         retStatus=warning;
+0722     <span class="keyword">else</span>
+0723         warning(oldStatus)
+0724     <span class="keyword">end</span>
+0725 <span class="keyword">end</span>
+0726 <span class="keyword">end</span>
+0727</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

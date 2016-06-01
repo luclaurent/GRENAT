@@ -1,0 +1,7 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  initDisp [URL="initDisp.html"];
+  initMeta [URL="initMeta.html"];
+  initNbPts [URL="initNbPts.html"];
+}

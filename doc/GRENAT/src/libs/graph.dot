@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  ConsoleProgressBar -> ConsoleProgressBar;
+
+  ConsoleProgressBar [URL="ConsoleProgressBar.html"];
+  initMatlab2tikz [URL="initMatlab2tikz.html"];
+  matlab2tikz [URL="matlab2tikz.html"];
+  mergestruct [URL="mergestruct.html"];
+  multiTimes [URL="multiTimes.html"];
+  multiprod [URL="multiprod.html"];
+  multitransp [URL="multitransp.html"];
+}

@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CHANGELOG</title>
+  <meta name="keywords" content="CHANGELOG">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html libs --><!-- menu.html matlab2tikz -->
+<h1>CHANGELOG
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 # 2015-06-15 Version 1.0.0 [Egon Geerardyn](egon.geerardyn@gmail.com)
+0002 
+0003  * Added support <span class="keyword">for</span>:
+0004       - Annotations (except arrows) in R2014b (#534)
+0005       - `Histogram` in R2014b (#525)
+0006       - Filled contour plots in R2014b (#379, #500)
+0007       - Contour plots with color maps in R2014b (#380, #500)
+0008       - Axes background color and overlap (#6, #509, #510)
+0009       - Horizontal/Vertical text alignment (#491)
+0010  * Extra requirements:
+0011       - Patch plots now require `\usepgfplotslibrary{patchplots}` (#386, #497)
+0012  * Bug fixes:
+0013       - Pgfplots 1.12 (`row sep=crcr`) in combination with `externalData==true` (#548)
+0014       - Updater has been fixed (#502)
+0015       - 3D plot sizing takes viewing angle into account (#560, #630, #631)
+0016       - Alpha channel (transparency) in images (#561)
+0017       - Colorbar labels in R2014b (#429, #488)
+0018       - Scaling of color data at axes level (#486)
+0019       - Text formatting (<span class="keyword">for</span> `TeX` parser) is improved (#417)
+0020       - Support <span class="keyword">for</span> `|` character in labels (#587, #589)
+0021       - Legends <span class="keyword">for</span> `stairs` and `area` plots (#601, #602)
+0022       - `cleanfigure()` removes points outside of the axes <span class="keyword">for</span> `stairs` plots (#226, #533)
+0023       - `cleanfigure()` removes points outside of the axes better (#392, #400, #547)
+0024       - Support `&gt;` and `&lt;` in text (#522)
+0025       - Better text positioning (#518)
+0026       - Text boxes on 3D graphs (#528)
+0027       - File closing is more robust (#496, #555)
+0028       - TikZ picture output, i.e.`imageAsPng==false`, improved (#581, #596)
+0029       - `standalone==true` sets the font and input encoding in LaTeX (#590)
+0030       - Legend text alignment in Octave (#668)
+0031       - Improved Octave legend <span class="keyword">if</span> not all lines have an entry (#607, #619, #653)
+0032       - Legend without a drawn box in R2014b+ (#652)
+0033       - Misc. fixes: #426, #513, #520, #665
+0034  * For developers:
+0035       - The testing framework has been revamped (see also `test/README.md`)
+0036       - A lot of the tests have been updated (#604, #614, #638, <span class="keyword">...</span><span class="comment">)</span>
+0037       - Cyclomatic complexity of the code has been reduced (#391)
+0038       - Repository has been moved to [<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>](https://github.com/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>)
+0039       - Extra files have been pruned (#616)
+0040 
+0041 # 2014-11-02 Version 0.6.0 [Nico Schlömer](nico.schloemer@gmail.com)
+0042 
+0043  * Annotation support in R2014a and earlier
+0044  * New subplot positioning approach (by Klaus Broelemann) that uses absolute instead of relative positions.
+0045  * Support stacked bar plots and others in the same axes (needs pgfplots 1.11).
+0046  * Support legends with multiline entries.
+0047  * Support <span class="keyword">for</span> the alpha channel in PNG output.
+0048  * Test framework updated and doesn't display figures by default.
+0049  * Major code clean-up and code complexity checks.
+0050  * Bug fixes:
+0051      - Cycle paths only when needed (#317, #49, #404)
+0052      - Don't use infinite xmin/max, etc. (#436)
+0053      - Warn about the `noSize` parameter (#431)
+0054      - Images aren't flipped anymore (#401)
+0055      - No scientific notation in width/height (#396)
+0056      - Axes with custom colors (#376)
+0057      - Mesh plots are exported properly (#382)
+0058      - Legend colors are handled better (#389)
+0059      - Handle Z axis properties <span class="keyword">for</span> quiver3 (#406)
+0060      - Better text handling, e.g. degrees (#402)
+0061      - Don't output absolute paths into TikZ by default
+0062      - <span class="keyword">...</span>
+0063 
+0064 # 2014-10-20 Version 0.5.0 [Nico Schlömer](nico.schloemer@gmail.com)
+0065 
+0066  * Support <span class="keyword">for</span> MATLAB 2014b (with it's substantial graphics changes).
+0067    All credit goes to Egon Geerardyn.
+0068  * Bugfixes:
+0069      - single bar width
+0070      - invisible bar plots
+0071      - surface options
+0072      - patch plots and cycling
+0073      - patches with literal colors
+0074 
+0075 # 2014-03-07 Version 0.4.7 [Nico Schlömer](nico.schloemer@gmail.com)
+0076 
+0077  * Acid tests: Remove MATLAB-based `eps2pdf`.
+0078  * Bugfixes:
+0079      - multiple patches
+0080      - log plot with nonzero baseline
+0081      - marker options <span class="keyword">for</span> scatter plots
+0082      - table data formatting
+0083      - several fixes <span class="keyword">for</span> Octave
+0084 
+0085 # 2014-02-07 Version 0.4.6 [Nico Schlömer](nico.schloemer@gmail.com)
+0086 
+0087  * Set `externalData` default to `false`.
+0088  * Properly check <span class="keyword">for</span> required Pgfplots version.
+0089  * Marker scaling in scatter plots.
+0090 
+0091 # 2014-02-02 Version 0.4.5 [Nico Schlömer](nico.schloemer@gmail.com)
+0092 
+0093  * Arrange data in tables.
+0094  * Optionally define custom colors.
+0095  * Allow <span class="keyword">for</span> strict setting of font sizes.
+0096  * Bugfixes:
+0097      - tick labels <span class="keyword">for</span> log plots
+0098      - tick labels with commas
+0099 
+0100 # 2014-01-02 Version 0.4.4 [Nico Schlömer](nico.schloemer@gmail.com)
+0101 
+0102  * Support <span class="keyword">for</span> color maps with scatter plots.
+0103  * Support <span class="keyword">for</span> different-length up-down error bars.
+0104  * Input options validation.
+0105  * Bugfixes:
+0106      - legends <span class="keyword">for</span> both area and line plots
+0107      - invisible text fields
+0108 
+0109 # 2013-10-20 Version 0.4.3 [Nico Schlömer](nico.schloemer@gmail.com)
+0110 
+0111  * Support <span class="keyword">for</span> 3D quiver plots.
+0112  * Extended support <span class="keyword">for</span> colorbar axis options.
+0113  * New logo!
+0114  * Bugfixes:
+0115      - text generation
+0116      - extraCode option
+0117      - join strings
+0118      - <span class="keyword">...</span>
+0119 
+0120 # 2013-09-12 Version 0.4.2 [Nico Schlömer](nico.schloemer@gmail.com)
+0121 
+0122  * Support <span class="keyword">for</span> explicit color specification in 3D plots.
+0123  * Better color handling <span class="keyword">for</span> patch plots.
+0124  * Support <span class="keyword">for</span> various unicode characters.
+0125  * Bugfixes:
+0126      - edge colors <span class="keyword">for</span> bar plots
+0127      - multiple color bars
+0128      - <span class="keyword">...</span>
+0129 
+0130 # 2013-08-14 Version 0.4.1 [Nico Schlömer](nico.schloemer@gmail.com)
+0131 
+0132  * Replaced option `extraTikzpictureCode` by `extraCode`
+0133    <span class="keyword">for</span> inserting code at the beginning of the file.
+0134  * Support <span class="keyword">for</span> relative text positioning.
+0135  * Improved documentation.
+0136  * Code cleanup: moved all figure manipulations over to cleanfigure()
+0137  * Bugfixes:
+0138      - error bars
+0139      - empty tick labels
+0140      - <span class="keyword">...</span>
+0141 
+0142 # 2013-06-26 Version 0.4.0 [Nico Schlömer](nico.schloemer@gmail.com)
+0143 
+0144  * Added `cleanfigure()` <span class="keyword">for</span> removing unwanted entities from a plot
+0145    before conversion
+0146  * Add option `floatFormat` to allow <span class="keyword">for</span> custom specification of the format
+0147    of float numbers
+0148  * Bugfixes:
+0149      - linewidth <span class="keyword">for</span> patches
+0150      - <span class="keyword">...</span>
+0151 
+0152 # 2013-04-13 Version 0.3.3 [Nico Schlömer](nico.schloemer@gmail.com)
+0153 
+0154  * Support <span class="keyword">for</span>:
+0155      - pictures in LaTeX subfloats
+0156  * Bugfixes:
+0157      - axes labels
+0158      - extra* options
+0159      - logscaled axes
+0160      - <span class="keyword">...</span>
+0161 
+0162 # 2013-03-14 Version 0.3.2 [Nico Schlömer](nico.schloemer@gmail.com)
+0163 
+0164  * Support <span class="keyword">for</span>:
+0165      - waterfall plots
+0166  * Bugfixes:
+0167      - axis locations
+0168      - color handling
+0169      - stacked bars
+0170      - <span class="keyword">...</span>
+0171 
+0172 # 2013-02-15 Version 0.3.1 [Nico Schlömer](nico.schloemer@gmail.com)
+0173 
+0174  * Use `table{}` <span class="keyword">for</span> plots <span class="keyword">for</span> cleaner output files.
+0175  * Support <span class="keyword">for</span>:
+0176      - hg transformations
+0177      - pcolor plots
+0178  * Removed command line options:
+0179      - `minimumPointsDistance`
+0180  * Bugfixes:
+0181      - legend positioning and alignment
+0182      - tick labels
+0183      - a bunch of fixed <span class="keyword">for</span> Octave
+0184      - line width <span class="keyword">for</span> markers
+0185      - axis labels <span class="keyword">for</span> color bars
+0186      - image trimming
+0187      - subplots with bars
+0188      - <span class="keyword">...</span>
+0189 
+0190 # 2012-11-19 Version 0.3.0 [Nico Schlömer](nico.schloemer@gmail.com)
+0191 
+0192  * Support <span class="keyword">for</span>:
+0193      - area plots
+0194      - legend position
+0195      - inner color bars
+0196      - log-scaled color bars
+0197  * New command line options:
+0198      - `standalone` (create compilable TeX file)
+0199      - `checkForUpdates`
+0200  * `mlint` cleanups.
+0201  * Removed deprecated options.
+0202  * Bugfixes:
+0203      - colorbar-axis association
+0204      - option parsing
+0205      - automatic updater
+0206      - unit <span class="string">'px'</span>
+0207      - <span class="keyword">...</span>
+0208 
+0209 # 2012-09-01 Version 0.2.3 [Nico Schlömer](nico.schloemer@gmail.com)
+0210 
+0211  * Multiline text <span class="keyword">for</span> all entities.
+0212  * Support <span class="keyword">for</span> logical images.
+0213  * Support <span class="keyword">for</span> multiple legends (legends in subplots).
+0214  * Fixed version check bug.
+0215  * Fix `minimumPointsDistance`.
+0216 
+0217 # 2012-07-19 Version 0.2.2 [Nico Schlömer](nico.schloemer@gmail.com)
+0218 
+0219  * Support <span class="keyword">for</span> multiline titles and axis labels.
+0220  * Respect log-scaled axes <span class="keyword">for</span> `minimumPointsDistance`.
+0221  * Add support <span class="keyword">for</span> automatic graph labels via new option.
+0222  * About 5 bugfixes.
+0223 
+0224 # 2012-05-04 Version 0.2.1 [Nico Schlömer](nico.schloemer@gmail.com)
+0225 
+0226  * Support <span class="keyword">for</span> color maps.
+0227  * Support <span class="keyword">for</span> native color bars.
+0228  * Partial support <span class="keyword">for</span> hist3 plots.
+0229  * Support <span class="keyword">for</span> spectrogram plots.
+0230  * Support <span class="keyword">for</span> rotated text.
+0231  * Native handling of `Inf`s and `NaN`s.
+0232  * Better info text.
+0233  * <a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a> version checking.
+0234  * Line plotting code cleanup.
+0235  * About 10 bugfixes.
+0236 
+0237 # 2012-03-17 Version 0.2.0 [Nico Schlömer](nico.schloemer@gmail.com)
+0238 
+0239  * Greatly overhauled text handling. (Burkhart Lingner)
+0240  * Added option `tikzFileComment`.
+0241  * Added option `parseStrings`.
+0242  * Added option `extraTikzpictureSettings`.
+0243  * Added proper documetion (<span class="keyword">for</span> `help matlab2tikz`).
+0244  * Improved legend positioning, orientation.
+0245  * Support <span class="keyword">for</span> horizontal bar plots.
+0246  * Get bar widths right.
+0247  * Doubles are plottet with 15-digit precision now.
+0248  * Support <span class="keyword">for</span> rectangle objects.
+0249  * Better color handling.
+0250  * Testing framework improvements.
+0251  * Several bugfixes:
+0252      - ticks handled more concisely
+0253      - line splitting bugs
+0254      - <span class="keyword">...</span>
+0255 
+0256 # 2011-11-22 Version 0.1.4 [Nico Schlömer](nico.schloemer@gmail.com)
+0257 
+0258  * Support <span class="keyword">for</span> scatter 3D plots.
+0259  * Support <span class="keyword">for</span> 3D parameter curves.
+0260  * Support <span class="keyword">for</span> 3D patches.
+0261  * Support <span class="keyword">for</span> minor ticks.
+0262  * Add option `interpretTickLabelsAsTex` (default `false`).
+0263  * Several bugfixes:
+0264      - `<span class="comment">%` sign in annotations</span>
+0265      - fixed `\omega` and friends in annotations
+0266      - proper legend <span class="keyword">for</span> bar plots
+0267      - don't override PNG files <span class="keyword">if</span> there is more than one image plot
+0268      - don't always close patch paths
+0269 
+0270 # 2011-08-22 Version 0.1.3 [Nico Schlömer](nico.schloemer@gmail.com)
+0271 
+0272  * Greatly overhauled text handling.
+0273  * Better Octave compatibility.
+0274  * Several bugfixes:
+0275      - subplot order
+0276      - environment detection
+0277 
+0278 
+0279 # 2011-06-02 Version 0.1.2 [Nico Schlömer](nico.schloemer@gmail.com)
+0280 
+0281  * Support <span class="keyword">for</span> logscaled color bar.
+0282  * Support <span class="keyword">for</span> truecolor images.
+0283  * Initial support <span class="keyword">for</span> text handles.
+0284  * Speed up processing <span class="keyword">for</span> line plots.
+0285  * Several bugfixes:
+0286      - axis labels, tick labels, etc. <span class="keyword">for</span> z-axis
+0287      - marker handling <span class="keyword">for</span> scatter plots
+0288      - fix <span class="keyword">for</span> unicolor scatter plots
+0289 
+0290 # 2011-04-06 Version 0.1.1 [Nico Schlömer](nico.schloemer@gmail.com)
+0291 
+0292  * Improved Octave compatibility.
+0293  * Several bugfixes:
+0294      - input parser
+0295 
+0296 # 2011-01-31 Version 0.1.0 [Nico Schlömer](nico.schloemer@gmail.com)
+0297 
+0298  * Basic Octave compatibility.
+0299  * Several bugfixes:
+0300      - bar plots fix (thanks to Christoph Rüdiger)
+0301      - fix legends with split graphs
+0302 
+0303 # 2010-09-10 Version 0.0.7 [Nico Schlömer](nico.schloemer@gmail.com)
+0304 
+0305  * Compatibility fixes <span class="keyword">for</span> older MATLAB installations.
+0306  * Several bugfixes:
+0307      - line plots with only one point
+0308      - certain surface plots
+0309      - orientation of triangle markers (`&lt;` vs. `&gt;`)
+0310      - display of the color `purple`
+0311 
+0312 # 2010-05-06 Version 0.0.6 [Nico Schlömer](nico.schloemer@gmail.com)
+0313 
+0314  * Support <span class="keyword">for</span> scatter plots.
+0315  * Preliminary support <span class="keyword">for</span> surface plots; thanks to Pooya.
+0316  * Large changes in the codebase:
+0317      - next to `matlab2tikz.m`, the file `pgfplotsEnvironment.m` is now needed as well; it provides a much better structured approach to storing and writing environments when parsing the MATLAB(R) figure
+0318  * proper MATLAB(R) version check
+0319  * lots of small fixes
+0320 
+0321 # 2009-12-21 Version 0.0.5 [Nico Schlömer](nico.schloemer@ua.ac.be)
+0322 
+0323  * Improvements in axis handling:
+0324      - colored axes
+0325      - allow different left and right ordinates
+0326  * Improvements <span class="keyword">for</span> line plots:
+0327      - far outliers are moved toward the plot,
+0328      avoiding `Dimension too large`-type errors in LaTeX
+0329      - optional point reduction by new option `minimumPointsDistance`
+0330  * Improvements <span class="keyword">for</span> image handling:
+0331      - creation of a PNG file, added by `\addplot graphics`
+0332      - fixed axis orientation bug
+0333  * Bugfixes <span class="keyword">for</span>:
+0334      - multiple axes
+0335      - CMYK colors
+0336      - legend text alignment (thanks Dragan Mitrevski)
+0337      - transparent patches (thanks Carlos Russo)
+0338  * Added support <span class="keyword">for</span>:
+0339      - background color
+0340      - Bode plots
+0341      - zplane plots
+0342      - freqz plots
+0343 
+0344 # 2009-06-09 Version 0.0.4 [Nico Schlömer](nico.schloemer@ua.ac.be)
+0345 
+0346  * Added support <span class="keyword">for</span>:
+0347      - error bars (thanks Robert Whittlesey <span class="keyword">for</span> the suggestion)
+0348  * Improvents in:
+0349      - legends (thanks Theo Markettos <span class="keyword">for</span> the patch),
+0350      - images,
+0351      - quiver plots (thanks Robert <span class="keyword">for</span> spotting this).
+0352  * Improved options handling.
+0353  * Allow <span class="keyword">for</span> custom file encoding (thanks Donghua Wang <span class="keyword">for</span> the suggestion).
+0354  * Numerous bugfixes (thanks Andreas Gäb).
+0355 
+0356 # 2009-03-08 Version 0.0.3 [Nico Schlömer](nico.schloemer@ua.ac.be)
+0357 
+0358  * Added support <span class="keyword">for</span>:
+0359      - subplots
+0360      - reverse axes
+0361  * Completed support <span class="keyword">for</span>:
+0362      - images
+0363 
+0364 # 2009-01-08 Version 0.0.2 [Nico Schlömer](nico.schloemer@ua.ac.be)
+0365 
+0366  * Added support <span class="keyword">for</span>:
+0367      - quiver (arrow) plots
+0368      - bar plots
+0369      - stem plots
+0370      - stairs plots
+0371  * Added preliminary support <span class="keyword">for</span>:
+0372      - images
+0373      - rose plots
+0374      - compass plots
+0375      - polar plots
+0376  * Moreover, large code improvement have been introduced, notably:
+0377      - aspect ratio handling
+0378      - color handling
+0379      - plot options handling
+0380 
+0381 # 2008-11-07 Version 0.0.1 [Nico Schlömer](nico.schloemer@ua.ac.be)
+0382 
+0383  * Initial version</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

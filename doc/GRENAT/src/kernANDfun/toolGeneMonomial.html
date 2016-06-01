@@ -1,0 +1,380 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of toolGeneMonomial</title>
+  <meta name="keywords" content="toolGeneMonomial">
+  <meta name="description" content="% Build MATLAB's functions of monomial basis (depending on the order and the number of variables)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html kernANDfun -->
+<h1>toolGeneMonomial
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Build MATLAB's functions of monomial basis (depending on the order and the number of variables)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Build MATLAB's functions of monomial basis (depending on the order and the number of variables)
+ L.LAURENT -- 25/02/2012 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Build MATLAB's functions of monomial basis (depending on the order and the number of variables)</span>
+0002 <span class="comment">% L.LAURENT -- 25/02/2012 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 clear all
+0022 <span class="comment">% order</span>
+0023 orderMin=1;
+0024 orderMax=2;
+0025 <span class="comment">% nb of ariables</span>
+0026 npMin=1;
+0027 npMax=10;
+0028 
+0029 <span class="comment">%directory of storage</span>
+0030 dirMB=<span class="string">'monomial_basis'</span>;
+0031 <span class="keyword">if</span> exist(dirMB,<span class="string">'dir'</span>)~=7
+0032     unix([<span class="string">'mkdir '</span> dirMB])
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%fichier de stockage</span>
+0036 file=<span class="string">'mono'</span>;
+0037 ext=<span class="string">'.m'</span>;
+0038 
+0039 <span class="comment">%stockage</span>
+0040 mono1=cell(orderMax,npMax);
+0041 monod1=mono1;
+0042 monod2=mono1;
+0043 cmonod1=mono1;
+0044 cmonod2=mono1;
+0045 <span class="comment">%matlabpool(8)</span>
+0046 <span class="keyword">for</span> deg=orderMin:orderMax
+0047     <span class="keyword">for</span> nbv=npMin:npMax
+0048         fprintf(<span class="string">'deg = %i  dim = %i\n'</span>,deg,nbv)
+0049         <span class="comment">%valeurs pour chaques variables</span>
+0050         val_var=cell(nbv,1);
+0051         <span class="keyword">for</span> ii=1:nbv
+0052             val_var{ii}=uint8(0:deg);
+0053             
+0054         <span class="keyword">end</span>
+0055         nb_tir=(deg+1)*ones(1,nbv);
+0056         
+0057         <span class="comment">% generation de la matrice des tirages</span>
+0058         <span class="comment">% parcours des variables</span>
+0059         
+0060         <span class="keyword">for</span> ii=1:nbv
+0061             <span class="keyword">if</span> ii&gt;1
+0062                 nb_ter_pre=prod(nb_tir(1:ii-1));
+0063             <span class="keyword">else</span>
+0064                 nb_ter_pre=1;
+0065             <span class="keyword">end</span>
+0066             <span class="comment">%parcours des valeurs par variables</span>
+0067             temp1=[];
+0068             <span class="keyword">for</span> jj=1:length(val_var{ii})
+0069                 temp=repmat(val_var{ii}(jj),nb_ter_pre,1);
+0070                 temp1=uint8([temp1;temp]);
+0071             <span class="keyword">end</span>
+0072             temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
+0073             clear temp1 temp
+0074             combinaison(:,ii)=temp2;
+0075             clear temp2;
+0076         <span class="keyword">end</span>
+0077         combinaison=uint8(combinaison);
+0078         
+0079         <span class="comment">% génération combinaison</span>
+0080         <span class="comment">%levels=(deg+1)*ones(1,nbv,'uint8');</span>
+0081         <span class="comment">%combinaison=sparse(fullfact(levels)-1);</span>
+0082         <span class="comment">%suppression ligne td sum term&gt;deg</span>
+0083         ind=[];
+0084         
+0085         parfor cc=1:size(combinaison,1)
+0086             <span class="keyword">if</span> sum(combinaison(cc,:))&gt;deg
+0087                 ind=[ind cc];
+0088             <span class="keyword">end</span>
+0089         <span class="keyword">end</span>
+0090         <span class="comment">%[ind]=find(sum(combinaison,2)&gt;deg);</span>
+0091         monomes_pow=combinaison;
+0092         
+0093         clear combinaison
+0094         <span class="comment">%puissance monomes</span>
+0095         
+0096         monomes_pow(ind,:)=[];
+0097         nbMono=size(monomes_pow,1);
+0098         clear ind
+0099         <span class="comment">%coef derivées première et monomes dérivées premières</span>
+0100         coef_der1=monomes_pow;
+0101         monomes_der1=repmat(monomes_pow,1,nbv);
+0102         <span class="keyword">for</span> pp=1:nbv
+0103             monomes_der1(:,(pp-1)*nbv+pp)=monomes_der1(:,(pp-1)*nbv+pp)-1;
+0104         <span class="keyword">end</span>
+0105         
+0106         <span class="comment">%for cc=1:numel(monomes_der1)</span>
+0107         <span class="comment">%    if monomes_der1(cc)&lt;0</span>
+0108         <span class="comment">%        monomes_der1(cc)=0;</span>
+0109         <span class="comment">%    end</span>
+0110         <span class="comment">%end</span>
+0111         <span class="comment">%[ind]=find(monomes_der1&lt;0);</span>
+0112         <span class="comment">%monomes_der1(ind)=0;</span>
+0113         clear ind
+0114         <span class="comment">%coef derivées secondes et monomes dérivées secondes</span>
+0115         tt=[];
+0116         <span class="keyword">for</span> hh=1:size(coef_der1,2)
+0117             tt=[tt repmat(coef_der1(:,hh),1,nbv)];
+0118         <span class="keyword">end</span>
+0119 <span class="comment">%                 tt</span>
+0120 <span class="comment">%         tmp=repmat(tt,1,nbv);</span>
+0121 <span class="comment">%         tmp</span>
+0122 <span class="comment">%         tmp=reshape(tmp,nbMono,nbv*nbv);</span>
+0123 <span class="comment">%         tmp</span>
+0124 <span class="comment">%         monomes_der1</span>
+0125         coef_der2=monomes_der1.*tt;
+0126         monomes_der2=int8(repmat(monomes_der1,1,nbv));
+0127         <span class="keyword">for</span> pp=1:nbv
+0128             <span class="keyword">for</span> oo=1:nbv
+0129                 indd=(oo-1)*nbv+(pp-1)*nbv^2+pp;   
+0130                 monomes_der2(:,indd)=monomes_der2(:,indd)-1;
+0131                 
+0132             <span class="keyword">end</span>
+0133         <span class="keyword">end</span>
+0134         <span class="comment">%coef_der2=reshape(monomes_der2,,nbv)</span>
+0135         parfor cc=1:numel(monomes_der2)
+0136             <span class="keyword">if</span> monomes_der2(cc)&lt;0
+0137                 monomes_der2(cc)=0;
+0138             <span class="keyword">end</span>
+0139         <span class="keyword">end</span>
+0140         <span class="comment">%[ind]=find(monomes_der2&lt;0);</span>
+0141         <span class="comment">%monomes_der2(ind)=0;</span>
+0142         clear ind
+0143         <span class="comment">%sauvegarde résultats</span>
+0144         mono1{deg,nbv}=monomes_pow;
+0145         monod1{deg,nbv}=monomes_der1;
+0146         monod2{deg,nbv}=monomes_der2;
+0147         cmonod1{deg,nbv}=coef_der1;
+0148         cmonod2{deg,nbv}=coef_der2;
+0149         clear combinaison comb_mod temp temp1 temp2 ind indd
+0150         clear monomes_pow monomes_der1 monomes_der2 coef_der2 coef_der1
+0151     <span class="keyword">end</span>
+0152 <span class="keyword">end</span>
+0153 
+0154 
+0155 <span class="comment">%stockage des monomes</span>
+0156 <span class="keyword">for</span> ii=orderMin:orderMax
+0157     <span class="keyword">for</span> jj=npMin:npMax
+0158         fonction=[file <span class="string">'_'</span> num2str(ii,<span class="string">'%02i'</span>) <span class="string">'_'</span> num2str(jj,<span class="string">'%03i'</span>)];
+0159         fichier=[dirMB <span class="string">'/'</span> fonction ext];
+0160         fid=fopen(fichier,<span class="string">'w'</span>);
+0161         fprintf(fid,<span class="string">'%s\n\n'</span>,[<span class="string">'function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]='</span> fonction <span class="string">'(X)'</span>]);
+0162         fprintf(fid,<span class="string">'derprem=false;dersecond=false;\n'</span>);
+0163         fprintf(fid,<span class="string">'if nargout&gt;=4;derprem=true;end\n'</span>);
+0164         fprintf(fid,<span class="string">'if nargout==6;dersecond=true;end\n\n'</span>);
+0165         fprintf(fid,<span class="string">'nb_val=size(X,1);\n nb_var=size(X,2);\n\n'</span>);
+0166         fprintf(fid,<span class="string">'Vones=ones(nb_val,1);\n'</span>);
+0167         fprintf(fid,<span class="string">'Vzeros=zeros(nb_val,1);\n\n'</span>);
+0168         fprintf(fid,<span class="string">'MatX=[\n'</span>);
+0169         mat=mono1{ii,jj};
+0170         <span class="comment">%balayage des puissances du monome et construction de la matrice</span>
+0171         <span class="comment">%associée</span>
+0172         indic=true;
+0173         <span class="keyword">for</span> mm=1:size(mat,1)
+0174             <span class="keyword">if</span> sum(mat(mm,:))==0
+0175                 fprintf(fid,<span class="string">' Vones ...\n'</span>);
+0176             <span class="keyword">else</span>
+0177                 indic=false;
+0178                 <span class="keyword">for</span> ll=1:size(mat(mm,:),2)
+0179                     <span class="keyword">if</span> ll~=1
+0180                         <span class="keyword">if</span> mat(mm,ll-1)~=0&amp;&amp;mat(mm,ll)~=0
+0181                             fprintf(fid,<span class="string">'.*'</span>);
+0182                         <span class="keyword">elseif</span> mat(mm,ll)~=0&amp;&amp;indic
+0183                             fprintf(fid,<span class="string">'.*'</span>);
+0184                             indic=false;
+0185                         <span class="keyword">end</span>
+0186                     <span class="keyword">end</span>
+0187                     <span class="keyword">if</span> mat(mm,ll)~=0
+0188                         <span class="keyword">if</span> mat(mm,ll)~=1
+0189                             fprintf(fid,<span class="string">'X(:,%i).^%i'</span>,ll,mat(mm,ll));
+0190                         <span class="keyword">else</span>
+0191                             fprintf(fid,<span class="string">'X(:,%i)'</span>,ll);
+0192                         <span class="keyword">end</span>
+0193                         indic=true;
+0194                     <span class="keyword">end</span>
+0195                 <span class="keyword">end</span>
+0196                 <span class="keyword">if</span> mm~=size(mat,1)
+0197                     fprintf(fid,<span class="string">' ...\n'</span>);
+0198                 <span class="keyword">else</span>
+0199                     fprintf(fid,<span class="string">'\n'</span>);
+0200                 <span class="keyword">end</span>
+0201             <span class="keyword">end</span>
+0202         <span class="keyword">end</span>
+0203         fprintf(fid,<span class="string">'];\n'</span>);
+0204         fprintf(fid,<span class="string">'nbmono=%i;\n\n'</span>,size(mat,1));
+0205         <span class="comment">%ecriture dérivée première</span>
+0206         fprintf(fid,<span class="string">'if derprem\n'</span>);
+0207         fprintf(fid,<span class="string">'MatDX=cell(1,nb_var);\n\n'</span>);
+0208         matD=monod1{ii,jj};
+0209         matC=cmonod1{ii,jj};
+0210         <span class="keyword">for</span> nn=1:jj
+0211             fprintf(fid,<span class="string">'MatDX{%i}=[\n'</span>,nn);
+0212             mat=matD(:,[jj*(nn-1)+1:jj*nn]);
+0213             coef=matC(:,nn);
+0214             <span class="keyword">for</span> mm=1:size(mat,1)
+0215                 <span class="keyword">if</span> sum(mat(mm,:))==0&amp;&amp;coef(mm)~=0
+0216                     <span class="keyword">if</span> coef(mm)~=1
+0217                         fprintf(fid,<span class="string">'%g.*'</span>,coef(mm));
+0218                         
+0219                     <span class="keyword">end</span>
+0220                         fprintf(fid,<span class="string">'Vones ...\n'</span>);
+0221                 <span class="keyword">elseif</span> coef(mm)==0
+0222                     fprintf(fid,<span class="string">'Vzeros ...\n'</span>);
+0223                 <span class="keyword">else</span>
+0224                     <span class="keyword">if</span> coef(mm)~=1
+0225                         fprintf(fid,<span class="string">'%g.*'</span>,coef(mm));
+0226                     <span class="keyword">end</span>
+0227                 
+0228                     indic=false;
+0229                     <span class="keyword">for</span> ll=1:size(mat(mm,:),2)
+0230                         <span class="keyword">if</span> ll~=1
+0231                             <span class="keyword">if</span> mat(mm,ll-1)~=0&amp;&amp;mat(mm,ll)~=0
+0232                                 fprintf(fid,<span class="string">'.*'</span>);
+0233                             <span class="keyword">elseif</span> mat(mm,ll)~=0&amp;&amp;indic
+0234                                 fprintf(fid,<span class="string">'.*'</span>);
+0235                                 indic=false;
+0236                             <span class="keyword">end</span>
+0237                         <span class="keyword">end</span>
+0238                         <span class="keyword">if</span> mat(mm,ll)~=0
+0239                             <span class="keyword">if</span> mat(mm,ll)~=1
+0240                                 fprintf(fid,<span class="string">'X(:,%i).^%i'</span>,ll,mat(mm,ll));
+0241                             <span class="keyword">else</span>
+0242                                 fprintf(fid,<span class="string">'X(:,%i)'</span>,ll);
+0243                             <span class="keyword">end</span>
+0244                             indic=true;
+0245                         <span class="keyword">end</span>
+0246                     <span class="keyword">end</span>
+0247                     <span class="keyword">if</span> mm~=size(mat,1)
+0248                         fprintf(fid,<span class="string">' ...\n'</span>);
+0249                     <span class="keyword">else</span>
+0250                         fprintf(fid,<span class="string">'\n'</span>);
+0251                     <span class="keyword">end</span>
+0252                 <span class="keyword">end</span>
+0253             <span class="keyword">end</span>
+0254             fprintf(fid,<span class="string">'];\n\n'</span>);
+0255         <span class="keyword">end</span>
+0256         
+0257         <span class="comment">%ecriture coefficients dérivée première</span>
+0258         
+0259         fprintf(fid,<span class="string">'CoefDX=[\n'</span>);
+0260         mat=cmonod1{ii,jj}';
+0261         <span class="keyword">for</span> ll=1:size(mat,1);
+0262             fprintf(fid,<span class="string">'%i '</span>,mat(ll,:));
+0263             fprintf(fid,<span class="string">'\n'</span>);
+0264         <span class="keyword">end</span>
+0265         fprintf(fid,<span class="string">'];\n'</span>);
+0266         <span class="comment">%ecriture dérivée seconde</span>
+0267         fprintf(fid,<span class="string">'end\n\n'</span>);
+0268         fprintf(fid,<span class="string">'if dersecond\n'</span>);
+0269         fprintf(fid,<span class="string">'MatDDX=cell(nb_var,nb_var);\n\n'</span>);
+0270         matDD=monod2{ii,jj};
+0271         matCC=cmonod2{ii,jj};
+0272         <span class="keyword">for</span> nn=1:jj*jj
+0273             fprintf(fid,<span class="string">'MatDDX{%i}=[\n'</span>,nn);
+0274             mat=matDD(:,jj*(nn-1)+1:jj*nn);
+0275             coef=matCC(:,nn);
+0276             <span class="keyword">for</span> mm=1:size(mat,1)
+0277                 <span class="keyword">if</span> sum(mat(mm,:))==0&amp;&amp;coef(mm)~=0
+0278                     <span class="keyword">if</span> coef(mm)~=1
+0279                         fprintf(fid,<span class="string">'%g.*'</span>,coef(mm));
+0280                         
+0281                     <span class="keyword">end</span>
+0282                         fprintf(fid,<span class="string">'Vones ...\n'</span>);
+0283                 <span class="keyword">elseif</span> coef(mm)==0||any(mat(mm,:)&lt;0)
+0284                     fprintf(fid,<span class="string">'Vzeros ...\n'</span>);
+0285                 <span class="keyword">else</span>
+0286                     <span class="keyword">if</span> coef(mm)~=1
+0287                         fprintf(fid,<span class="string">'%g.*'</span>,coef(mm));
+0288                     <span class="keyword">end</span>
+0289                 
+0290                     indic=false;
+0291                     <span class="keyword">for</span> ll=1:size(mat(mm,:),2)
+0292                         <span class="keyword">if</span> ll~=1
+0293                             <span class="keyword">if</span> mat(mm,ll-1)~=0&amp;&amp;mat(mm,ll)~=0
+0294                                 fprintf(fid,<span class="string">'.*'</span>);
+0295                             <span class="keyword">elseif</span> mat(mm,ll)~=0&amp;&amp;indic
+0296                                 fprintf(fid,<span class="string">'.*'</span>);
+0297                                 indic=false;
+0298                             <span class="keyword">end</span>
+0299                         <span class="keyword">end</span>
+0300                         <span class="keyword">if</span> mat(mm,ll)~=0
+0301                             <span class="keyword">if</span> mat(mm,ll)~=1
+0302                                 fprintf(fid,<span class="string">'X(:,%i).^%i'</span>,ll,mat(mm,ll));
+0303                             <span class="keyword">else</span>
+0304                                 fprintf(fid,<span class="string">'X(:,%i)'</span>,ll);
+0305                             <span class="keyword">end</span>
+0306                             indic=true;
+0307                         <span class="keyword">end</span>
+0308                     <span class="keyword">end</span>
+0309                     <span class="keyword">if</span> mm~=size(mat,1)
+0310                         fprintf(fid,<span class="string">' ...\n'</span>);
+0311                     <span class="keyword">else</span>
+0312                         fprintf(fid,<span class="string">'\n'</span>);
+0313                     <span class="keyword">end</span>
+0314                 <span class="keyword">end</span>
+0315             <span class="keyword">end</span>
+0316             fprintf(fid,<span class="string">'];\n\n'</span>);
+0317         <span class="keyword">end</span>
+0318         <span class="comment">%ecriture coefficients dérivée seconde</span>
+0319         fprintf(fid,<span class="string">'CoefDDX=[\n'</span>);
+0320         mat=cmonod2{ii,jj}';
+0321         <span class="keyword">for</span> ll=1:size(mat,1);
+0322             fprintf(fid,<span class="string">'%i '</span>,mat(ll,:));
+0323             fprintf(fid,<span class="string">'\n'</span>);
+0324         <span class="keyword">end</span>
+0325         fprintf(fid,<span class="string">'];\n'</span>);
+0326         <span class="comment">%fprintf(fid,'cmonod2=cmonod2'';\n');</span>
+0327         fprintf(fid,<span class="string">'end\n\n'</span>);
+0328         fprintf(fid,<span class="string">'end\n\n'</span>);
+0329         
+0330         fclose(fid);
+0331     <span class="keyword">end</span>
+0332     
+0333 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

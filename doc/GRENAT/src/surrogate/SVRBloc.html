@@ -1,0 +1,296 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SVRBloc</title>
+  <meta name="keywords" content="SVRBloc">
+  <meta name="description" content="% Building of the nu-SVR/GSVR matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>SVRBloc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Building of the nu-SVR/GSVR matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [critMin,ret]=SVRBloc(dataIn,metaData,paraValIn,type) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Building of the nu-SVR/GSVR matrix
+ L. LAURENT -- 24/05/2016 -- luc.laurent@lecnam.net
+
+this function can be used as an objective function for finding
+hyperparameters via optimization</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="SVRSB.html" class="code" title="function [spanBound]=SVRSB(dataBloc,dataIn,metaData)">SVRSB</a>	% Function for computing the Span Bound of the LOO error for SVR/GSVR</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Building of the nu-SVR/GSVR matrix</span>
+0002 <span class="comment">% L. LAURENT -- 24/05/2016 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%this function can be used as an objective function for finding</span>
+0005 <span class="comment">%hyperparameters via optimization</span>
+0006 
+0007 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0008 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0009 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0012 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0013 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0014 <span class="comment">%     (at your option) any later version.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0017 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0018 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0019 <span class="comment">%     GNU General Public License for more details.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0022 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0023 
+0024 
+0025 <a name="_sub0" href="#_subfunctions" class="code">function [critMin,ret]=SVRBloc(dataIn,metaData,paraValIn,type)</a>
+0026 
+0027 <span class="comment">%coefficient for reconditionning (G)SVR matrix</span>
+0028 coefRecond=eps;
+0029 <span class="comment">%coefficients for detecting Support vector</span>
+0030 epsM=eps;
+0031 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0032 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0033 <span class="comment">%Load useful variables</span>
+0034 ns=dataIn.used.ns;
+0035 np=dataIn.used.np;
+0036 fctKern=metaData.kern;
+0037 YYY=dataIn.build.y;
+0038 c0=metaData.para.c0;
+0039 ck=metaData.para.ck;
+0040 ret=[];
+0041 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0042 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0043 <span class="comment">%Conditioning data for  gradient-based approach</span>
+0044 <span class="keyword">if</span> numel(ck)==1
+0045     ck=ck(:,ones(1,np));
+0046 <span class="keyword">end</span>
+0047 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0048 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0049 <span class="comment">%if the hyperparameter is defined</span>
+0050 finalStatus=false;
+0051 <span class="keyword">if</span> nargin&gt;=3
+0052     paraVal=paraValIn;
+0053 <span class="keyword">else</span>
+0054     paraVal=metaData.para.val;
+0055     finalStatus=true;
+0056 <span class="keyword">end</span>
+0057 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0058 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0059 <span class="comment">%Build of the SVR/GSVR matrix</span>
+0060 <span class="keyword">if</span> dataIn.used.availGrad
+0061     [KK,KKa,KKi]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0062     Psi=[KK -KK;-KK KK];
+0063     PsiDo=-[KKa -KKa; -KKa KKa];
+0064     PsiDDo=-[KKi -KKi;-KKi KKi];
+0065     PsiT=[Psi PsiDo;PsiDo' PsiDDo];
+0066     PsiR=[KK -KKa;-KKa' -KKi];
+0067 <span class="keyword">else</span>
+0068     [KK]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0069     PsiT=[KK -KK;-KK KK];
+0070     PsiR=KK;
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0074 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0075 <span class="comment">%Build terms of the convex constrained quadratic optimization</span>
+0076 CC=YYY;
+0077 
+0078 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0079 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0080 <span class="comment">%Bounds of the dual variables</span>
+0081 lb=zeros(2*ns,1);
+0082 c0=metaData.para.c0/ns*ones(2*ns,1);
+0083 ub=c0;
+0084 <span class="keyword">if</span> dataIn.used.availGrad
+0085     lb=[lb;zeros(2*np*ns,1)];
+0086     ckV=ck(:,ones(1,2*np*ns))/ns;
+0087     ckV=ckV(:);
+0088     ub=[ub;ckV];
+0089 <span class="keyword">end</span>
+0090 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0091 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0092 <span class="comment">%Build equality constraints</span>
+0093 Aeq=[ones(1,ns) -ones(1,ns)];
+0094 beq=0;
+0095 <span class="keyword">if</span> dataIn.used.availGrad
+0096     Aeq=[Aeq zeros(1,2*ns*np)];
+0097 <span class="keyword">end</span>
+0098 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0099 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0100 <span class="comment">%Build inequality constraints</span>
+0101 AA=ones(1,2*ns);
+0102 bb=metaData.para.c0*metaData.para.nuSVR;
+0103 <span class="keyword">if</span> dataIn.used.availGrad
+0104     bb=[bb;ck(:)*metaData.para.nuGSVR];
+0105     AA=[AA zeros(1,2*ns*np);
+0106         zeros(np,2*ns) repmat(eye(np),1,2*ns)];
+0107 <span class="keyword">end</span>
+0108 
+0109 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0110 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0111 <span class="comment">%Solving the Convex Constrained Quadaratic Optimization problem</span>
+0112 opts = optimoptions(<span class="string">'quadprog'</span>,<span class="string">'Diagnostics'</span>,<span class="string">'off'</span>,<span class="string">'Display'</span>,<span class="string">'none'</span>);
+0113 [solQP,fval,exitflag,infoIPM,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
+0114 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0115 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0116 <span class="comment">%Specific data for none-gradient-based SVR</span>
+0117 alphaRAW=solQP(1:2*ns);
+0118 alphaPM=alphaRAW(1:ns)-alphaRAW(ns+1:2*ns);
+0119 alphaPP=alphaRAW(1:ns)+alphaRAW(ns+1:2*ns);
+0120 
+0121 <span class="comment">%Full data</span>
+0122 FullAlphaLambdaPM=alphaPM;
+0123 FullAlphaLambdaPP=alphaPP;
+0124 FullAlphaLambdaRAW=solQP;
+0125 
+0126 <span class="comment">%find support vectors with specific property</span>
+0127 svPM=find(abs(alphaPM)&gt;lb(1:ns)+epsM);
+0128 svPP=find(alphaPP&gt;lb(1:ns)+epsM);
+0129 
+0130 <span class="comment">%Unbounded SV's or free SV's</span>
+0131 svUSV=find(alphaPP&gt;lb(1:ns)+epsM &amp; alphaPP&lt;ub(1:ns)-epsM);
+0132 <span class="comment">%Bounded SV's</span>
+0133 svBSV=find(alphaPP&lt;lb(1:ns)+epsM | alphaPP&gt;ub(1:ns)-epsM);
+0134 
+0135 <span class="comment">%finding SV's corresponding to value of alpha situated in the middle of</span>
+0136 <span class="comment">%[lb,ub]</span>
+0137 [svMidP,svMidPIX]=min(abs(abs(alphaRAW(1:ns))-ub(1:ns)/2));
+0138 [svMidM,svMidMIX]=min(abs(abs(alphaRAW(ns+1:2*ns))-ub(ns+1:2*ns)/2));
+0139 
+0140 <span class="comment">%in the case of gradient-based approach</span>
+0141 lambdaPM=[];
+0142 lambdaPP=[];
+0143 lambdaRAW=[];
+0144 iXsvT=svPM;
+0145 iXsvPM=svPM;
+0146 iXsvPP=svPP;
+0147 iXsvUSV=svUSV;
+0148 iXsvBSV=svBSV;
+0149 <span class="comment">%</span>
+0150 <span class="keyword">if</span> dataIn.used.availGrad
+0151     lambdaRAW=solQP(2*ns+1:end);
+0152     lambdaPM=lambdaRAW(1:ns*np)-lambdaRAW(ns*np+1:end);
+0153     lambdaPP=lambdaRAW(1:ns*np)+lambdaRAW(ns*np+1:end);
+0154     FullAlphaLambdaPM=[alphaPM;lambdaPM];
+0155     FullAlphaLambdaPP=[alphaPP;lambdaPP];
+0156     <span class="comment">%compute indexes of the the gradients associated to the support vectors</span>
+0157     liNp=1:np;
+0158     repI=ones(np,1);
+0159     iXDsvI=liNp(ones(numel(iXsvT),1),:)+np*(iXsvT(:,repI)-1);
+0160     iXDsvI=iXDsvI';
+0161     iXsvT=[svPM;ns+iXDsvI(:)];
+0162     
+0163     <span class="comment">%find support vectors dedicated to gradients</span>
+0164     svDI=find(abs(lambdaPM)&gt;epsM);
+0165     [svMiddP,svMiddPIX]=min(abs(abs(lambdaRAW(1:ns*np)-ub(2*ns+1:ns*(np+2))/2)));
+0166     [svMiddM,svMiddMIX]=min(abs(abs(lambdaRAW(ns*np+1:2*ns*np)-ub(ns*(np+2)+1:2*ns*(1+np))/2)));
+0167     
+0168 <span class="keyword">end</span>
+0169 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0170 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0171 <span class="comment">%compute epsilon</span>
+0172 <span class="comment">% eM=0.5*(dataIn.used.resp(svMidPIX)...</span>
+0173 <span class="comment">%     -dataIn.used.resp(svMidMIX)...</span>
+0174 <span class="comment">%     -FullAlphaLambdaPM(iXsvT)'*PsiR(svMidPIX,iXsvT)'...</span>
+0175 <span class="comment">%     +FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidMIX));</span>
+0176 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0177 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0178 <span class="comment">%compute the base term</span>
+0179 <span class="comment">% SVRmuM=dataIn.used.resp(svMidPIX)...</span>
+0180 <span class="comment">%     -eM*sign(alphaPM(svMidPIX))...</span>
+0181 <span class="comment">%     -FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidPIX);</span>
+0182 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0183 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0184 <span class="comment">%lagrange multipliers give the values of mu and epsilon</span>
+0185 e=lmQP.ineqlin(1);
+0186 SVRmu=lmQP.eqlin;
+0187 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0188 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0189 <span class="comment">%Number of Unbounded and Bounded SVs</span>
+0190 nbUSV=numel(iXsvUSV);
+0191 nbBSV=numel(iXsvBSV);
+0192 
+0193 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0194 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0195 <span class="comment">%Build matrices</span>
+0196 <span class="comment">%remove bounded supports vectors</span>
+0197 PsiUSV=PsiR(iXsvUSV(:),iXsvUSV(:));
+0198 KUSV=[PsiUSV ones(nbUSV,1);ones(1,nbUSV) 0];
+0199 iKUSV=inv(KUSV);
+0200 
+0201 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0202 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0203 <span class="comment">%store variables</span>
+0204 <span class="keyword">if</span> exist(<span class="string">'origCond'</span>,<span class="string">'var'</span>);buildData.origCond=origCond;<span class="keyword">end</span>
+0205 <span class="keyword">if</span> exist(<span class="string">'newCond'</span>,<span class="string">'var'</span>);buildData.newCond=newCond;<span class="keyword">end</span>
+0206 buildData.PsiT=PsiT;
+0207 buildData.PsiR=PsiR;
+0208 buildData.PsiUSV=PsiUSV;
+0209 buildData.KUSV=KUSV;
+0210 buildData.iKUSV=iKUSV;
+0211 buildData.iXsvPM=iXsvPM;
+0212 buildData.iXsvPP=iXsvPP;
+0213 buildData.iXsvUSV=iXsvUSV;
+0214 buildData.iXsvBSV=iXsvBSV;
+0215 buildData.nbUSV=nbUSV;
+0216 buildData.nbBSV=nbBSV;
+0217 buildData.xiTau=lmQP.lower;<span class="comment">%lmQP.upper(1:ns)-lmQP.upper(ns+1:2*ns);</span>
+0218 buildData.e0=e;
+0219 buildData.c0=metaData.para.c0;
+0220 buildData.ck=metaData.para.ck;
+0221 buildData.SVRmu=SVRmu;
+0222 buildData.para=metaData.para;
+0223 buildData.alphaPM=alphaPM;
+0224 buildData.lambdaPM=lambdaPM;
+0225 buildData.lambdaPP=lambdaPP;
+0226 buildData.alphaPP=alphaPP;
+0227 buildData.alphaRAW=alphaRAW;
+0228 buildData.lambdaRAW=lambdaRAW;
+0229 buildData.alphaLambdaPM=FullAlphaLambdaPM;
+0230 buildData.FullAlphaLambdaRAW=FullAlphaLambdaRAW;
+0231 buildData.alphaLambdaPP=FullAlphaLambdaPP;
+0232 ret.build=buildData;
+0233 
+0234 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0235 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0236 <span class="comment">%compute of the Likelihood (and log-likelihood)</span>
+0237 <span class="comment">%[spanBound,Bound,loo,spanBoundb]=SVRSB(ret,dataIn,metaData);</span>
+0238 [spanBound]=<a href="SVRSB.html" class="code" title="function [spanBound]=SVRSB(dataBloc,dataIn,metaData)">SVRSB</a>(ret,dataIn,metaData);
+0239 
+0240 
+0241 <span class="comment">%ret.build.spanBoundb=spanBoundb;</span>
+0242 ret.build.spanBound=spanBound;
+0243 critMin=spanBound;
+0244 <span class="comment">%ret.build.Bound=Bound;</span>
+0245 <span class="comment">%ret.build.loo=loo;</span>
+0246</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

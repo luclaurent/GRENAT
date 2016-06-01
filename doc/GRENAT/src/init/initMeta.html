@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of initMeta</title>
+  <meta name="keywords" content="initMeta">
+  <meta name="description" content="% Initialization of the surrogate model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html init -->
+<h1>initMeta
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Initialization of the surrogate model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function meta=initMeta(in,parallelOn) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Initialization of the surrogate model
+ L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Initialization of the surrogate model</span>
+0002 <span class="comment">% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <a name="_sub0" href="#_subfunctions" class="code">function meta=initMeta(in,parallelOn)</a>
+0022 
+0023 <span class="keyword">if</span> nargin&lt;=1
+0024     parallelOn=false;
+0025 <span class="keyword">end</span>
+0026 
+0027 fprintf(<span class="string">'=========================================\n'</span>)
+0028 fprintf(<span class="string">'  &gt;&gt;&gt; INITIALIZATION Surrogate Model \n'</span>);
+0029 [tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0030 
+0031 <span class="comment">%% default configuration</span>
+0032 <span class="comment">%taking into account gradients</span>
+0033 meta.useGrad=false;
+0034 <span class="comment">%type of surrogate model</span>
+0035 meta.type=<span class="string">'KRG'</span>;
+0036 <span class="comment">%Taylor's step for indirect gradient-based</span>
+0037 meta.para.stepTaylor=10^-2;
+0038 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0039 <span class="comment">%% internal parameters</span>
+0040 <span class="comment">%length</span>
+0041 meta.para.l_val=1;
+0042 <span class="comment">%power</span>
+0043 meta.para.p_val=2;
+0044 <span class="comment">%smoothness</span>
+0045 meta.para.nu_val=0.6;
+0046 <span class="comment">%order polynomial</span>
+0047 meta.polyOrder=1;
+0048 <span class="comment">%parameter for SWF</span>
+0049 swf_para=1;
+0050 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0051 <span class="comment">% internal parameters for SVR/GSVR</span>
+0052 meta.para.e0=1e-2; <span class="comment">%thickness of the tube (not used for nu-SVR)</span>
+0053 meta.para.ek=1e-2; <span class="comment">%thickness of the tube of gradient (not used for nu-SVR)</span>
+0054 <span class="comment">%constant for trade off between flatness of the function and the amount up to</span>
+0055 <span class="comment">%which deviations larger to e0 are tolerated</span>
+0056 meta.para.c0=1e6;
+0057 <span class="comment">%same trade off constant as before</span>
+0058 meta.para.ck=1e6;
+0059 <span class="comment">%parameter of the nu-SVR/nu-GSVR (nu in [0,1])</span>
+0060 meta.para.nuSVR=0.6; 
+0061 meta.para.nuGSVR=0.6;
+0062 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0063 <span class="comment">%% kernel function</span>
+0064 meta.kern=<span class="string">'matern32'</span>;
+0065 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0066 <span class="comment">%normalization</span>
+0067 meta.normOn=true;
+0068 <span class="comment">%improve condition number of matrix (kriging, RBF, SVR...)</span>
+0069 meta.recond=true;
+0070 <span class="comment">%cross-validation</span>
+0071 meta.cv.on=true;
+0072 <span class="comment">%compute all CV criteria</span>
+0073 meta.cv.full=false;
+0074 <span class="comment">%display QQ plot CV</span>
+0075 meta.cv.disp=false;
+0076 
+0077 
+0078 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0079 <span class="comment">%% internal parameters estimation</span>
+0080 <span class="comment">% seek for best values of the internal parameters</span>
+0081 meta.para.estim=true;
+0082 <span class="comment">% anisotropic model (one internal length per variable)</span>
+0083 meta.para.aniso=true;
+0084 <span class="comment">% display objective function to be minimised</span>
+0085 meta.para.dispEstim=false;
+0086 <span class="comment">%save evolution function to be minimized</span>
+0087 meta.para.save=false;
+0088 <span class="comment">% display iterations of the optimisation process on a figure (1D/2D)</span>
+0089 meta.para.dispIterGraph=false;
+0090 <span class="comment">% display iteration in the console</span>
+0091 meta.para.dispIterCmd=false;
+0092 <span class="comment">% display convergence information on figures</span>
+0093 meta.para.dispPlotAlgo=false;
+0094 <span class="comment">% optimizer used for finding internal parameter</span>
+0095 meta.para.method=<span class="string">'pso'</span>;
+0096 <span class="comment">% initial sampling or not</span>
+0097 meta.para.sampManuOn=0;
+0098 <span class="comment">% method used for the initial sampling for GA ('', 'LHS','IHS'...)</span>
+0099 meta.para.sampManu=<span class="string">'IHS'</span>;
+0100 <span class="comment">% number of sample points of the initial sampling for GA</span>
+0101 meta.para.nbSampInit=[];
+0102 <span class="comment">% Value of the stopping criterion of the optimizer</span>
+0103 meta.para.critOpti=10^-6;
+0104 <span class="comment">% bounds of the space on which internal parameters are looked for</span>
+0105 <span class="keyword">if</span> meta.para.estim
+0106     meta.para.l.min=1e-1;
+0107     meta.para.l.max=30;
+0108     meta.para.l.val=1;
+0109     meta.para.p.max=2;
+0110     meta.para.p.min=1.001;
+0111     meta.para.p.val=2;
+0112     meta.para.nu.min=1.5;
+0113     meta.para.nu.max=5;
+0114     meta.para.nu.val=3/2;
+0115 <span class="keyword">end</span>
+0116 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0117 
+0118 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0119 <span class="comment">%% infill strategy</span>
+0120 meta.infill.on=false;
+0121 meta.infill.paraWEI=0.5;
+0122 meta.infill.paraGEI=1;
+0123 meta.infill.paraLCB=0.5;
+0124 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0125 <span class="comment">%% Check interpolation</span>
+0126 meta.check=true;
+0127 
+0128 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0129 <span class="comment">%% chargement configuration particuliere</span>
+0130 <span class="keyword">if</span> nargin==0
+0131     in=[];
+0132 <span class="keyword">end</span>
+0133 <span class="comment">%taking gradients into account</span>
+0134 <span class="keyword">if</span> isfield(in,<span class="string">'useGrad'</span>);meta.useGrad=in.useGrad;<span class="keyword">end</span>
+0135 <span class="comment">%type of surrgate model KRG/GKRG/DACE/RBF/GRBF/SVR/GSVR...</span>
+0136 <span class="keyword">if</span> isfield(in,<span class="string">'type'</span>);meta.type=in.type;<span class="keyword">end</span>
+0137 <span class="comment">%parameter of the kernel function</span>
+0138 <span class="keyword">if</span> isfield(in,<span class="string">'para'</span>)
+0139     <span class="keyword">if</span> isfield(in.para,<span class="string">'long'</span>);meta.para.l.val=in.para.long;<span class="keyword">end</span>
+0140     <span class="keyword">if</span> meta.para.estim
+0141         <span class="keyword">if</span> isfield(in,<span class="string">'long'</span>);
+0142             meta.para.l.max=in.para.long(2);
+0143             meta.para.l.min=in.para.long(1);
+0144         <span class="keyword">end</span>
+0145     <span class="keyword">end</span>
+0146     <span class="keyword">if</span> isfield(in.para,<span class="string">'pow'</span>);meta.para.p.val=in.para.pow;<span class="keyword">end</span>
+0147     <span class="keyword">if</span> meta.para.estim
+0148         <span class="keyword">if</span> isfield(in,<span class="string">'pow'</span>);
+0149             meta.para.p.max=in.para.pow(2);
+0150             meta.para.p.min=in.para.pow(1);
+0151         <span class="keyword">end</span>
+0152     <span class="keyword">end</span>
+0153     <span class="keyword">if</span> isfield(in.para,<span class="string">'nu'</span>);meta.para.nu.val=in.para.nu;<span class="keyword">end</span>
+0154     <span class="keyword">if</span> meta.para.estim
+0155         <span class="keyword">if</span> isfield(in,<span class="string">'nu'</span>);
+0156             meta.para.nu.max=in.para.nu(2);
+0157             meta.para.nu.min=in.para.nu(1);
+0158         <span class="keyword">end</span>
+0159     <span class="keyword">end</span>
+0160 <span class="keyword">end</span>
+0161 
+0162 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0163 <span class="comment">%% depending on the type of surrogate model</span>
+0164 <span class="keyword">switch</span> meta.type
+0165     <span class="keyword">case</span> <span class="string">'SWF'</span>
+0166         <span class="keyword">if</span> isfield(in,<span class="string">'swf_para'</span>);meta.swf_para=in.swf_para;<span class="keyword">else</span> meta.swf_para=swf_para;<span class="keyword">end</span>
+0167     <span class="keyword">case</span> <span class="string">'DACE'</span>
+0168         fctp=<span class="string">'regpoly'</span>;
+0169         <span class="comment">%regression function</span>
+0170         <span class="keyword">if</span> isfield(in,<span class="string">'polyOrder'</span>);meta.regr=[fctp num2str(in.polyOrder,<span class="string">'%d'</span>)];<span class="keyword">else</span> meta.regr=[fctp num2str(meta.polyOrder,<span class="string">'%d'</span>)];<span class="keyword">end</span>
+0171         <span class="comment">%correlation function</span>
+0172         <span class="keyword">if</span> isfield(in,<span class="string">'corr'</span>);meta.corr=[<span class="string">'corr'</span> in.corr];<span class="keyword">else</span> meta.corr=corr;<span class="keyword">end</span>
+0173     <span class="keyword">case</span> {<span class="string">'RBF'</span>,<span class="string">'GRBF'</span>,<span class="string">'InRBF'</span>}
+0174         <span class="keyword">if</span> isfield(in,<span class="string">'kern'</span>);meta.kern=in.kern;<span class="keyword">end</span>
+0175     <span class="keyword">case</span> {<span class="string">'KRG'</span>,<span class="string">'GKRG'</span>,<span class="string">'InKRG'</span>,<span class="string">'SVR'</span>,<span class="string">'GSVR'</span>}
+0176         <span class="comment">%order of the polynomial basis used for regression</span>
+0177         <span class="keyword">if</span> isfield(in,<span class="string">'polyOrder'</span>);meta.polyOrder=in.polyOrder;<span class="keyword">end</span>; 
+0178         <span class="comment">%kernel function</span>
+0179         <span class="keyword">if</span> isfield(in,<span class="string">'kern'</span>);meta.kern=in.kern;<span class="keyword">end</span>
+0180         
+0181     <span class="keyword">otherwise</span>
+0182 <span class="keyword">end</span>
+0183 
+0184 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0185 <span class="comment">%normalisation</span>
+0186 <span class="keyword">if</span> isfield(in,<span class="string">'normOn'</span>);meta.normOn=in.normOn;<span class="keyword">end</span>
+0187 <span class="comment">%improve condition number of the matrix</span>
+0188 <span class="keyword">if</span> isfield(in,<span class="string">'recond'</span>);meta.recond=in.recond;<span class="keyword">end</span>
+0189 <span class="comment">%cross-validation</span>
+0190 <span class="keyword">if</span> isfield(in,<span class="string">'cv'</span>);meta.cv=in.cv;<span class="keyword">end</span>
+0191 
+0192 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0193 <span class="comment">%% estimation parametre long (longueur de correlation)</span>
+0194 <span class="keyword">if</span> isfield(in,<span class="string">'para'</span>);
+0195     <span class="comment">% seek for best values of the internal parameters</span>
+0196     <span class="keyword">if</span> isfield(in.para,<span class="string">'estim'</span>);meta.para.estim=in.para.estim;<span class="keyword">end</span>
+0197     <span class="comment">% anisotropic model (one internal length per variable)</span>
+0198     <span class="keyword">if</span> isfield(in.para,<span class="string">'aniso'</span>);meta.para.aniso=in.para.aniso;<span class="keyword">end</span>
+0199     <span class="comment">% display objective function to be minimised</span>
+0200     <span class="keyword">if</span> isfield(in.para,<span class="string">'dispEstim'</span>);meta.para.dispEstim=in.para.dispEstim;<span class="keyword">end</span>
+0201     <span class="comment">% display iterations of the optimisation process on a figure (1D/2D)</span>
+0202     <span class="keyword">if</span> isfield(in.para,<span class="string">'dispIterGraph'</span>);meta.para.dispIterGraph=in.para.dispIterGraph;<span class="keyword">end</span>
+0203     <span class="comment">% display iteration in the console</span>
+0204     <span class="keyword">if</span> isfield(in.para,<span class="string">'dispIterCmd'</span>);meta.para.dispIterCmd=in.para.dispIterCmd;<span class="keyword">end</span>
+0205     <span class="comment">% display convergence information on figures</span>
+0206     <span class="keyword">if</span> isfield(in.para,<span class="string">'dispPlotAlgo'</span>);meta.para.dispPlotAlgo=in.para.dispPlotAlgo;<span class="keyword">end</span>
+0207     <span class="comment">% optimizer used for finding internal parameter</span>
+0208     <span class="keyword">if</span> isfield(in.para,<span class="string">'method'</span>);meta.para.method=in.para.method;<span class="keyword">end</span>
+0209     <span class="comment">% method used for the initial sampling for GA ('', 'LHS','IHS'...)</span>
+0210     <span class="keyword">if</span> isfield(in.para,<span class="string">'popManu'</span>);meta.para.popManu=in.para.popManu;<span class="keyword">end</span>
+0211    <span class="comment">% number of sample points of the initial sampling for GA</span>
+0212     <span class="keyword">if</span> isfield(in.para,<span class="string">'norpopInitm'</span>);meta.para.popInit=in.para.popInit;<span class="keyword">end</span>
+0213     <span class="comment">% Value of the stopping criterion of the optimizer</span>
+0214     <span class="keyword">if</span> isfield(in.para,<span class="string">'critOpti'</span>);meta.para.critOpti=in.para.critOpti;<span class="keyword">end</span>
+0215     <span class="keyword">if</span> meta.para.estim
+0216         <span class="keyword">if</span> isfield(in.para,<span class="string">'long'</span>);
+0217             meta.para.l.max=in.para.long(2);
+0218             meta.para.l.min=in.para.long(1);
+0219         <span class="keyword">end</span>
+0220     <span class="keyword">end</span>
+0221 <span class="keyword">end</span>
+0222 
+0223 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0224 <span class="comment">%% infill strategy</span>
+0225 <span class="keyword">if</span> isfield(in,<span class="string">'infill'</span>);
+0226     <span class="keyword">if</span> isfield(in.infill,<span class="string">'on'</span>);meta.infill.on=in.infill.on;<span class="keyword">end</span>
+0227     <span class="keyword">if</span> isfield(in.infill,<span class="string">'para_wei'</span>);meta.infill.para_wei=in.infill.para_wei;<span class="keyword">end</span>
+0228     <span class="keyword">if</span> isfield(in.infill,<span class="string">'para_gei'</span>);meta.infill.para_gei=in.infill.para_gei;<span class="keyword">end</span>
+0229     <span class="keyword">if</span> isfield(in.infill,<span class="string">'para_lcb'</span>);meta.infill.para_lcb=in.infill.para_lcb;<span class="keyword">end</span>
+0230     
+0231     <span class="comment">% check interpolation</span>
+0232     <span class="keyword">if</span> isfield(in,<span class="string">'check'</span>);meta.check=in.check;<span class="keyword">end</span>
+0233 <span class="keyword">end</span>
+0234 
+0235 <span class="keyword">if</span> usejava(<span class="string">'jvm'</span>)&amp;&amp;parallelOn
+0236     <span class="comment">%count number of available workers (for parallelism)</span>
+0237     def_parallel=parcluster;
+0238     meta.NumWorkers=def_parallel.NumWorkers;
+0239 <span class="keyword">else</span>
+0240     meta.NumWorkers=1;
+0241 <span class="keyword">end</span>
+0242 
+0243 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0244 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0245 <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
+0246 fprintf(<span class="string">'=========================================\n'</span>)</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

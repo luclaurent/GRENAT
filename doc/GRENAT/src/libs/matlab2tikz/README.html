@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of README</title>
+  <meta name="keywords" content="README">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html libs --><!-- menu.html matlab2tikz -->
+<h1>README
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 **The updater in <a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a> 0.6.0 (and older) no longer works.**
+0002 **Please [update manually](http://www.mathworks.com/matlabcentral/fileexchange/22022-<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>-matlab2tikz?download=true) <span class="keyword">if</span> you are not using <a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a> 1.0.0 or newer!**
+0003 
+0004 [![Build Status](https://travis-ci.org/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/matlab2tikz.svg?branch=master)](https://travis-ci.org/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>) [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.18605.svg)](http://dx.doi.org/10.5281/zenodo.18605)
+0005 ![<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>](https://raw.githubusercontent.com/wiki/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/matlab2tikz.png)
+0006 
+0007 `matlab2tikz` is a MATLAB(R) script to convert native MATLAB(R) figures to TikZ/Pgfplots figures that integrate seamlessly in LaTeX documents.
+0008 
+0009 To download the official releases and rate `matlab2tikz`, please visit its page on [FileExchange](http://www.mathworks.com/matlabcentral/fileexchange/22022).
+0010 
+0011 `matlab2tikz` converts most MATLAB(R) figures, including 2D and 3D plots. 
+0012 For plots constructed with third-party packages, however, your mileage may vary.
+0013 
+0014 Installation
+0015 ============
+0016 
+0017 Place the `matlab2tikz` functions (contents of `src/` folder) somewhere where MATLAB(R) can find them: either your working directory or add `src/` to the path using `addpath`.
+0018 
+0019 Make sure that your LaTeX installation is up-to-date and includes:
+0020 
+0021 * [TikZ/PGF](http://www.ctan.org/pkg/pgf) version 3.0 or higher
+0022 * [Pgfplots](http://www.ctan.org/pkg/pgfplots) version 1.12.1 or higher
+0023 * [Amsmath](https://www.ctan.org/pkg/amsmath) version 2.14 or higher
+0024 * [Standalone](http://www.ctan.org/pkg/standalone) (optional)
+0025 
+0026 It is recommended to use the latest stable version of these packages.
+0027 Older versions may work depending on the actual MATLAB(R) figure you are converting.
+0028 
+0029 Usage
+0030 =====
+0031 
+0032 Typical usage of `matlab2tikz` consists of converting your MATLAB plot to a TikZ/LaTeX file and then running a LaTeX compiler to produce your document.
+0033 
+0034 MATLAB
+0035 ------
+0036   1. Generate your plot in MATLAB(R).
+0037 
+0038   2. Run `matlab2tikz`, e.g. using
+0039 
+0040 ```matlab
+0041 <a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>(<span class="string">'myfile.tex'</span>);
+0042 ```
+0043 
+0044 LaTeX
+0045 -----
+0046 Add the contents of `myfile.tex` into your LaTeX source code, <span class="keyword">for</span> example using `\input{myfile.tex}`. 
+0047 Make sure that the required packages (such as `pgfplots`) are loaded in the preamble of your document as in the example:
+0048 
+0049 ```latex
+0050 \documentclass{article}
+0051 
+0052   \usepackage{pgfplots}
+0053   \pgfplotsset{compat=newest}
+0054   <span class="comment">%% the following commands are sometimes needed</span>
+0055   \usetikzlibrary{plotmarks}
+0056   \usepackage{grffile}
+0057   \usepackage{amsmath}
+0058   <span class="comment">%% you may also want the following commands</span>
+0059   <span class="comment">%\pgfplotsset{plot coordinates/math parser=false}</span>
+0060   <span class="comment">%\newlength\figureheight</span>
+0061   <span class="comment">%\newlength\figurewidth</span>
+0062 
+0063 \begin{document}
+0064   \input{myfile.tex}
+0065 \end{document}
+0066 ```
+0067 
+0068 Remarks
+0069 -------
+0070 Most functions accept numerous options; you can check them out by inspecting their help:
+0071 
+0072 ```matlab
+0073 help <a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>
+0074 ```
+0075 
+0076 Sometimes, MATLAB(R) plots contain some features that impede conversion to LaTeX; e.g. points that are far outside of the actual bounding box.
+0077 You can invoke the `cleanfigure` <span class="keyword">function</span> to remove such unwanted entities before calling `matlab2tikz`:
+0078 
+0079 ```matlab
+0080 cleanfigure;
+0081 <a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>(<span class="string">'myfile.tex'</span>);
+0082 ```
+0083 
+0084 More information
+0085 ================
+0086 
+0087 * For more information about `matlab2tikz`, have a look at our [GitHub repository](https://github.com/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>). If you are a good MATLAB(R) programmer or LaTeX writer, you are always welcome to help improving `matlab2tikz`!
+0088 * Some common problems and pit-falls are documented in our [wiki](https://github.com/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/wiki/Common-problems).
+0089 * If you experience (other) bugs or would like to request a feature, please visit our [issue tracker](https://github.com/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="../../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>/issues).</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

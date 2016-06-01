@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of BuildCI</title>
+  <meta name="keywords" content="BuildCI">
+  <meta name="description" content="% function for building confidence intervals (CI)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html crit -->
+<h1>BuildCI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% function for building confidence intervals (CI)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [ci68,ci95,ci99]=BuildCI(ZZ,var) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function for building confidence intervals (CI)
+ L. LAURENT -- 03/12/2010 -- luc.laurent@lecnam.net
+
+ input variables: predication and variance provided by the surrogate model
+ outputs: 68%, 95% and 99.7% CI</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% function for building confidence intervals (CI)</span>
+0002 <span class="comment">% L. LAURENT -- 03/12/2010 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% input variables: predication and variance provided by the surrogate model</span>
+0005 <span class="comment">% outputs: 68%, 95% and 99.7% CI</span>
+0006 
+0007 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0008 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0009 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0012 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0013 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0014 <span class="comment">%     (at your option) any later version.</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0017 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0018 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0019 <span class="comment">%     GNU General Public License for more details.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0022 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0023 
+0024 <a name="_sub0" href="#_subfunctions" class="code">function [ci68,ci95,ci99]=BuildCI(ZZ,var)</a>
+0025 
+0026 <span class="comment">% numerical problem of negative variance</span>
+0027 <span class="keyword">if</span> any(var&lt;0)
+0028     fprintf(<span class="string">' &gt;&gt; Negative variance (changed to absolute value)\n'</span>);
+0029 <span class="keyword">end</span>
+0030 v=abs(var);
+0031 
+0032 <span class="comment">%  68% CI</span>
+0033 ci68.sup=ZZ+sqrt(v);
+0034 ci68.inf=ZZ-sqrt(v);
+0035 <span class="comment">% 95% CI</span>
+0036 <span class="keyword">if</span> nargout&gt;=2
+0037     ci95.sup=ZZ+2*sqrt(v);
+0038     ci95.inf=ZZ-2*sqrt(v);
+0039 <span class="keyword">end</span>
+0040 <span class="comment">% 99.7% CI</span>
+0041 <span class="keyword">if</span> nargout==3
+0042     ci99.sup=ZZ+3*sqrt(v);
+0043     ci99.inf=ZZ-3*sqrt(v);
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

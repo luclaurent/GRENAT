@@ -1,0 +1,14 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  matern [URL="matern.html"];
+  matern32 [URL="matern32.html"];
+  matern52 [URL="matern52.html"];
+  multiKernel [URL="multiKernel.html"];
+  multiqua [URL="multiqua.html"];
+  sexp [URL="sexp.html"];
+  toolBenchmarkFct [URL="toolBenchmarkFct.html"];
+  toolCheckKernelFct [URL="toolCheckKernelFct.html"];
+  toolExportFct [URL="toolExportFct.html"];
+  toolGeneMonomial [URL="toolGeneMonomial.html"];
+}

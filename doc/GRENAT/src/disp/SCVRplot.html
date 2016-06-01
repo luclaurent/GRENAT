@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SCVRplot</title>
+  <meta name="keywords" content="SCVRplot">
+  <meta name="description" content="% Plot SCVR (for cross validation)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html disp -->
+<h1>SCVRplot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Plot SCVR (for cross validation)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function SCVRplot(Zap,scvr,opt) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Plot SCVR (for cross validation)
+L. LAURENT -- 16/02/2012 -- luc.laurent@lecnam.net
+ cf. Jones 1998</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/surrogate/KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>	% Function for computing various Cross-Validation criteria for KRG/GKRG</li><li><a href="../../../GRENAT/src/surrogate/RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Plot SCVR (for cross validation)</span>
+0002 <span class="comment">%L. LAURENT -- 16/02/2012 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">% cf. Jones 1998</span>
+0004 
+0005 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0006 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0007 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0010 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0011 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0012 <span class="comment">%     (at your option) any later version.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0015 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0016 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0017 <span class="comment">%     GNU General Public License for more details.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0020 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0021 
+0022 <a name="_sub0" href="#_subfunctions" class="code">function SCVRplot(Zap,scvr,opt)</a>
+0023 
+0024 <span class="comment">%% chosen bounds of the SCVR</span>
+0025 boundSCVR=3;
+0026 
+0027 <span class="comment">% initialization</span>
+0028 scvr=scvr(:);Zap=Zap(:);
+0029 <span class="comment">%bound of the graph</span>
+0030 xMin=min(Zap);
+0031 xMax=max(Zap);
+0032 yMin=min([-boundSCVR-1;scvr]);
+0033 yMax=max([boundSCVR+1;scvr]);
+0034 
+0035 
+0036 <span class="comment">% points inside and outside the bounds</span>
+0037 ixOut=find(abs(scvr)&gt;boundSCVR);
+0038 ixIn=find(abs(scvr)&lt;boundSCVR);
+0039 
+0040 <span class="comment">%build vector for displaying bounds</span>
+0041 Xp=[xMin;xMax;xMax;xMin;xMin];
+0042 Yp=[boundSCVR;boundSCVR;-boundSCVR;-boundSCVR;boundSCVR];
+0043 
+0044 <span class="comment">%if options</span>
+0045 newFig=true;
+0046 defTitle=<span class="string">'SCVR plot'</span>;
+0047 defX=<span class="string">'Predicted responses'</span>;
+0048 defY=<span class="string">'SCVR'</span>;
+0049 <span class="keyword">if</span> nargin==3
+0050     <span class="keyword">if</span> isfield(opt,<span class="string">'newfig'</span>)
+0051         newFig=opt.newfig;
+0052     <span class="keyword">end</span>
+0053     <span class="keyword">if</span> isfield(opt,<span class="string">'title'</span>)
+0054         defTitle=opt.title;
+0055     <span class="keyword">end</span>
+0056     <span class="keyword">if</span> isfield(opt,<span class="string">'xlabel'</span>)
+0057         defX=opt.xlabel;
+0058     <span class="keyword">end</span>
+0059     <span class="keyword">if</span> isfield(opt,<span class="string">'ylabel'</span>)
+0060         defY=opt.ylabel;
+0061     <span class="keyword">end</span>
+0062     
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="comment">%graph</span>
+0066 <span class="keyword">if</span> newFig
+0067     figure;
+0068 <span class="keyword">end</span>
+0069 hold on
+0070 fill(Xp,Yp,[0 0.9 0.99])
+0071 plot([xMin xMax],[0 0],<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,1.5)
+0072 
+0073 plot([xMin xMax],[boundSCVR boundSCVR],<span class="string">'b'</span>,<span class="string">'LineWidth'</span>,1.5,<span class="string">'lineStyle'</span>,<span class="string">'--'</span>)
+0074 plot([xMin xMax],[-boundSCVR -boundSCVR],<span class="string">'b'</span>,<span class="string">'LineWidth'</span>,1.5,<span class="string">'lineStyle'</span>,<span class="string">'--'</span>)
+0075 <span class="comment">% inside the bounds</span>
+0076 plot(Zap(ixIn),scvr(ixIn),<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="string">'Markersize'</span>,10)
+0077 <span class="comment">% outside the bounds</span>
+0078 plot(Zap(ixOut),scvr(ixOut),<span class="string">'o'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="string">'Markersize'</span>,10)
+0079 title(defTitle)
+0080 xlabel(defX)
+0081 ylabel(defY)
+0082 axis([xMin xMax yMin yMax])
+0083 hold off
+0084 
+0085 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

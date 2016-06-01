@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of funManu</title>
+  <meta name="keywords" content="funManu">
+  <meta name="description" content="GRENAT - GRadient ENhanced Approximation Toolbox">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GRENAT --><!-- menu.html funTest -->
+<h1>funManu
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GRENAT - GRadient ENhanced Approximation Toolbox</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [fct,dfct,infos,ddfct]=funManu(x,~) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">     GRENAT - GRadient ENhanced Approximation Toolbox
+     A toolbox for generating and exploiting gradient-enhanced surrogate models
+     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;
+
+     This program is free software: you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation, either version 3 of the License, or
+     (at your option) any later version.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License
+     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0002 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0003 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0006 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0007 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0008 <span class="comment">%     (at your option) any later version.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0011 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0012 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0013 <span class="comment">%     GNU General Public License for more details.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0016 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0017 
+0018 <a name="_sub0" href="#_subfunctions" class="code">function [fct,dfct,infos,ddfct]=funManu(x,~)</a>
+0019 v=2;
+0020 
+0021 
+0022 <span class="comment">%prepare for demo mode</span>
+0023 dem=false;
+0024 <span class="keyword">if</span> nargin==0
+0025     x=linspace(-5,15,300);
+0026     dem=true;
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">if</span> v==1
+0030     fct=15*cos(x)+20;
+0031     <span class="keyword">if</span> nargout&gt;=2||dem
+0032         dfct=-15*sin(x);
+0033     <span class="keyword">end</span>
+0034     <span class="comment">%information about the function</span>
+0035     <span class="keyword">if</span> nargout&gt;=3
+0036         <span class="comment">%on [-1,15]</span>
+0037         pts=[1;3]*pi;
+0038         infos.min_loc.X=pts;
+0039         infos.min_loc.Z=15*cos(pts)+20;
+0040         infos.min_glob.X=infos.min_loc.X;
+0041         infos.min_glob.Z=infos.min_loc.Z;
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">elseif</span> v==2
+0044     a=10;
+0045     b=0;
+0046     fct=exp(-x/a).*cos(x)+1/a*x+b;
+0047     <span class="keyword">if</span> nargout&gt;=2||dem
+0048         dfct=-exp(-x/a).*(sin(x)+1/a.*cos(x))+1/a;
+0049     <span class="keyword">end</span>
+0050     <span class="keyword">if</span> nargout==4
+0051         ddfct=exp(-x/a).*(-cos(x)+2.*sin(x)./a+1/a^2.*cos(x));
+0052     <span class="keyword">end</span>
+0053     <span class="comment">%information about the function</span>
+0054     <span class="keyword">if</span> nargout&gt;=3
+0055         <span class="comment">%on [-1,15]</span>
+0056         infos.min_glob.Z=-0.436559;
+0057         infos.min_glob.X=2.9844;
+0058         infos.min_loc.Z=[-0.436559;0.528402];
+0059         infos.min_loc.X=[2.9844;9.07593];
+0060     <span class="keyword">end</span>
+0061 <span class="keyword">elseif</span> v==3
+0062     fct=cos(4*x);
+0063     <span class="keyword">if</span> nargout&gt;=2||dem
+0064         dfct=-4*sin(4*x);
+0065     <span class="keyword">end</span>
+0066     <span class="comment">%information about the function</span>
+0067     <span class="keyword">if</span> nargout&gt;=3
+0068         <span class="comment">%on [-1,15]</span>
+0069         pts=[1;3;5;7;9;11;13;15;17;19]*pi/4;
+0070         infos.min_glob.Z=cos(4*pts);
+0071         infos.min_glob.X=pts;
+0072         infos.min_loc.Z=infos.min_glob.Z;
+0073         infos.min_loc.X=pts;
+0074     <span class="keyword">end</span>
+0075 <span class="keyword">elseif</span> v==4
+0076     fct=x.^2;
+0077     <span class="keyword">if</span> nargout&gt;=2||dem
+0078         dfct=2*x;
+0079     <span class="keyword">end</span>
+0080     <span class="comment">%information about the function</span>
+0081     <span class="keyword">if</span> nargout&gt;=3
+0082         <span class="comment">%on [-1,15]</span>
+0083         <span class="comment">%pts=[1;3;5;7;9;11;13;15;17;19]*pi/4;</span>
+0084         <span class="comment">%infos.min_glob.Z=cos(4*pts);</span>
+0085         <span class="comment">% infos.min_glob.X=pts;</span>
+0086         <span class="comment">%infos.min_loc.Z=infos.min_glob.Z;</span>
+0087         infos.min_loc.X=[];<span class="comment">%pts;</span>
+0088     <span class="keyword">end</span>
+0089     
+0090 <span class="keyword">elseif</span> v==5
+0091     a=10;
+0092     b=0;
+0093     c=5;
+0094     
+0095     fct=exp(-x/a).*cos(c*x)+1/a*x+b;
+0096     
+0097     <span class="keyword">if</span> nargout&gt;=2||dem
+0098         dfct=-exp(-x/a).*(sin(x)+1/a.*cos(x))+1/a;
+0099     <span class="keyword">end</span>
+0100     <span class="comment">%information about the function</span>
+0101     <span class="keyword">if</span> nargout&gt;=3
+0102         <span class="comment">%on [-1,15]</span>
+0103         <span class="comment">%pts=[1;3;5;7;9;11;13;15;17;19]*pi/4;</span>
+0104         <span class="comment">%infos.min_glob.Z=cos(4*pts);</span>
+0105         <span class="comment">% infos.min_glob.X=pts;</span>
+0106         <span class="comment">%infos.min_loc.Z=infos.min_glob.Z;</span>
+0107         infos.min_loc.X=[];<span class="comment">%pts;</span>
+0108     <span class="keyword">end</span>
+0109 <span class="keyword">end</span>
+0110 <span class="comment">%demo</span>
+0111 <span class="keyword">if</span> dem
+0112     figure
+0113     subplot(1,2,1)
+0114     plot(x,fct)
+0115     title(<span class="string">'Manu'</span>);
+0116     subplot(1,2,2)
+0117     plot(x,dfct)
+0118     title(<span class="string">'D Manu'</span>);
+0119 <span class="keyword">end</span>
+0120 
+0121 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

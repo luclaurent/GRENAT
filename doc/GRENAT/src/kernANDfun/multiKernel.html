@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of multiKernel</title>
+  <meta name="keywords" content="multiKernel">
+  <meta name="description" content="% function for evaluating multidimensional kernel function">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html kernANDfun -->
+<h1>multiKernel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% function for evaluating multidimensional kernel function</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function for evaluating multidimensional kernel function
+ this function will call unidimensional kernel function (that give
+ response, first and second derivatives)
+ L. LAURENT -- 02/05/2016 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>	Matrix multiply each submatrix of two 3D arrays without looping.</li><li><a href="../../../GRENAT/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>	MULTITRANSP  Transposing arrays of matrices.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/surrogate/KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="../../../GRENAT/src/surrogate/KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="../../../GRENAT/src/surrogate/RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/surrogate/SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function paraV=initPara(kernelFun,Dim)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% function for evaluating multidimensional kernel function</span>
+0002 <span class="comment">% this function will call unidimensional kernel function (that give</span>
+0003 <span class="comment">% response, first and second derivatives)</span>
+0004 <span class="comment">% L. LAURENT -- 02/05/2016 -- luc.laurent@lecnam.net</span>
+0005 
+0006 <span class="comment">% See Lockwood 2010 for an explanantion of U, L et M.</span>
+0007 
+0008 <a name="_sub0" href="#_subfunctions" class="code">function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)</a>
+0009 
+0010 
+0011 <span class="comment">%number of output variables</span>
+0012 nbOut=nargout;
+0013 
+0014 <span class="comment">%mode demo</span>
+0015 demo=false;
+0016 moddemo=1;
+0017 <span class="keyword">if</span> nbOut==0
+0018     <span class="keyword">if</span> moddemo==1
+0019         nEDemo=300;
+0020         X=linspace(-5,5,nEDemo);
+0021         X=X';
+0022         metaParaD=<a href="#_sub1" class="code" title="subfunction paraV=initPara(kernelFun,Dim)">initPara</a>(kernelFun,moddemo);
+0023     <span class="keyword">elseif</span> moddemo==2
+0024         nEDemo=50;
+0025         X=linspace(-5,5,nEDemo);
+0026         [XX,YY]=meshgrid(X);
+0027         X=[XX(:) YY(:)];
+0028         metaParaD=<a href="#_sub1" class="code" title="subfunction paraV=initPara(kernelFun,Dim)">initPara</a>(kernelFun,moddemo);
+0029     <span class="keyword">end</span>
+0030     <span class="keyword">if</span> nargin==1
+0031         metaPara=metaParaD;
+0032     <span class="keyword">end</span>
+0033     demo=true;
+0034     nbOut=3;
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">%number of required evaluations</span>
+0038 nE=size(X,1);
+0039 <span class="comment">%number of variables</span>
+0040 nV=size(X,2);
+0041 
+0042 <span class="comment">%manage hyperparameters (depending in the kernel function)</span>
+0043 nP=numel(metaPara);
+0044 <span class="keyword">if</span> nP==1
+0045     metaParaOk=metaPara*ones(nE*nV,1);
+0046 <span class="keyword">elseif</span> nP==nV
+0047     metaPara=metaPara(:)';
+0048     metaParaOk=metaPara(ones(nE,1),:);
+0049     metaParaOk=metaParaOk(:);
+0050 <span class="keyword">elseif</span> nP==nV+1
+0051     metaPara=metaPara(:)';
+0052     metaParaA=metaPara(1:end-1);
+0053     metaParaB=metaPara(end);
+0054     metaParaAOk=metaParaA(ones(nE,1),:);
+0055     metaParaBOk=metaParaB*ones(nE*nV,1);
+0056     metaParaOk=[metaParaAOk(:) metaParaBOk(:)];
+0057 <span class="keyword">elseif</span> nP==2*nV
+0058     metaPara=metaPara(:)';
+0059     metaParaA=metaPara(1:nV);
+0060     metaParaB=metaPara(nV+1:end);
+0061     metaParaAOk=metaParaA(ones(nE,1),:);
+0062     metaParaBOk=metaParaB(ones(nE,1),:);
+0063     metaParaOk=[metaParaAOk(:) metaParaBOk(:)];
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">%%depending on the output variables</span>
+0067 <span class="comment">%calculation of the response</span>
+0068 <span class="keyword">if</span> nbOut==1
+0069     uniR=zeros(nE,nV);
+0070     uniR(:)=feval(kernelFun,X(:),metaParaOk);
+0071     <span class="comment">%response</span>
+0072     respK=prod(uniR,2);
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="comment">%calculation of the responses and first derivatives</span>
+0076 <span class="keyword">if</span> nbOut==2
+0077     uniR=zeros(nE,nV);
+0078     duniR=zeros(nE,nV);
+0079     [uniR(:),duniR(:)]=feval(kernelFun,X(:),metaParaOk);
+0080     <span class="comment">%response</span>
+0081     respK=prod(uniR,2);
+0082     <span class="comment">%first derivatives</span>
+0083     L=[ones(nE,1) cumprod(uniR(:,1:end-1),2)];
+0084     U=cumprod(uniR(:,end:-1:2),2);
+0085     U=[U(:,end:-1:1) ones(nE,1)];
+0086     derK=L.*U.*duniR;
+0087 <span class="keyword">end</span>
+0088 
+0089 <span class="comment">%calculation of the response and first and second derivatives</span>
+0090 <span class="keyword">if</span> nbOut&gt;2
+0091     uniR=zeros(nE,nV);
+0092     duniR=zeros(nE,nV);
+0093     dduniR=zeros(nE,nV);
+0094     [uniR(:),duniR(:),dduniR(:)]=feval(kernelFun,X(:),metaParaOk);
+0095     <span class="comment">%response</span>
+0096     respK=prod(uniR,2);
+0097     <span class="comment">%first derivatives</span>
+0098     L=[ones(nE,1) cumprod(uniR(:,1:end-1),2)];
+0099     U=cumprod(uniR(:,end:-1:2),2);
+0100     U=[U(:,end:-1:1) ones(nE,1)];
+0101     LdU=L.*U;
+0102     derK=LdU.*duniR;
+0103     <span class="comment">%second derivatives (depending of the number of required evaluations</span>
+0104     <span class="keyword">if</span> nE==1
+0105         <span class="comment">% if only 1 evaluation is required the seconde derivative is given</span>
+0106         <span class="comment">% using a matrix</span>
+0107         prd=duniR'*duniR;
+0108         prd(1:nV+1:nV^2)=dduniR;
+0109         <span class="comment">%</span>
+0110         <span class="keyword">if</span> nV&gt;1;maskM=[1 1];<span class="keyword">else</span> maskM=1;<span class="keyword">end</span>
+0111         mm=[maskM uniR(2:nV-1)];
+0112         <span class="comment">%</span>
+0113         M=mm(ones(nb_comp,1),:);
+0114         M=triu(M,2)+tril(ones(nV),1);
+0115         M=cumprod(M,2);
+0116         <span class="comment">%</span>
+0117         LUMt=triu(L'*U.*M,1);
+0118         LUM=LUMt+LUMt';
+0119         LUM(1:nV+1:nV^2)=LdU;
+0120         <span class="comment">%second derivatives</span>
+0121         dderK=LUM.*prd;
+0122     <span class="keyword">else</span>
+0123         <span class="comment">% if many evaluation are required the second derivatives are given using an nD-array</span>
+0124         ixDiag=repmat(logical(eye(nV)),[1 1 nE]); <span class="comment">%access to the diagonals of the nD-array</span>
+0125         <span class="comment">%change to nD-array</span>
+0126         duniR=reshape(duniR',1,nV,nE);
+0127         Lr=reshape(L',nV,1,nE); <span class="comment">% + transpose</span>
+0128         Ur=reshape(U',1,nV,nE);
+0129         <span class="comment">%</span>
+0130         prd=<a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(duniR,duniR,2.1);
+0131         prd(ixDiag)=dduniR';
+0132         <span class="keyword">if</span> nV&gt;1;maskM=[1 1];<span class="keyword">else</span> maskM=1;<span class="keyword">end</span>
+0133         mm=[maskM 3:nV];
+0134         mask1=mm(ones(nV,1),:); <span class="comment">%shift indexes</span>
+0135         mask1=triu(mask1,2)+tril(ones(nV),1);
+0136         <span class="comment">%</span>
+0137         pcc=reshape([ones(1,nE);uniR'],1,nV+1,nE);
+0138         M=reshape(pcc(1,mask1,:),nV,nV,nE);
+0139         <span class="comment">%</span>
+0140         mask2=triu(ones(nV));
+0141         M=cumprod(M,2);
+0142         M=M.*repmat(mask2,[1 1 nE]);
+0143         LUMt=<a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(Lr,Ur,2).*M;
+0144         LUM=LUMt+<a href="../../../GRENAT/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>(LUMt);        
+0145         LUM(ixDiag)=LdU';
+0146         <span class="comment">%second derivatives</span>
+0147         dderK=LUM.*prd;
+0148     <span class="keyword">end</span>
+0149 <span class="keyword">end</span>
+0150 
+0151 <span class="comment">%figure en mode demo</span>
+0152 <span class="keyword">if</span> demo
+0153     figure
+0154     <span class="keyword">if</span> moddemo==1
+0155         plot(X,respK,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2)
+0156         hold on
+0157         plot(X,derK,<span class="string">'b'</span>,<span class="string">'LineWidth'</span>,2)
+0158         ddG=vertcat(dderK(:));
+0159         plot(X,ddG,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2)
+0160         hold off
+0161         ax = gca;
+0162         ax.XAxisLocation = <span class="string">'origin'</span>;
+0163         ax.YAxisLocation = <span class="string">'origin'</span>;
+0164         legend(<span class="string">'h(r)'</span>,<span class="string">'f''(r)'</span>,<span class="string">'f''''(r)'</span>)
+0165     <span class="keyword">elseif</span> moddemo==2
+0166         subplot(231)
+0167         Gp=zeros(nEDemo);
+0168         Gp(:)=respK;
+0169         surfc(XX,YY,Gp)
+0170         title(<span class="string">'f(x,y)'</span>)
+0171         subplot(232)
+0172         Gp(:)=derK(:,1);
+0173         surfc(XX,YY,Gp)
+0174         title(<span class="string">'f''(x,y) (x)'</span>)
+0175         subplot(233)
+0176         Gp(:)=derK(:,2);
+0177         surfc(XX,YY,Gp)
+0178         title(<span class="string">'f''(x,y) (y)'</span>)
+0179         subplot(234)
+0180         Gp(:)=vertcat(dderK(1,1,:));
+0181         surfc(XX,YY,Gp)
+0182         title(<span class="string">'f''''(x,y) (x)'</span>)
+0183         subplot(235)
+0184         Gp(:)=vertcat(dderK(1,2,:));
+0185         surfc(XX,YY,Gp)
+0186         title(<span class="string">'f''''(x,y) (x,y)'</span>)
+0187         subplot(236)
+0188         Gp(:)=vertcat(dderK(2,2,:));
+0189         surfc(XX,YY,Gp)
+0190         title(<span class="string">'f''''(x,y) (y)'</span>)
+0191     <span class="keyword">end</span>
+0192 <span class="keyword">end</span>
+0193 <span class="keyword">end</span>
+0194 
+0195 <span class="comment">%initialize hyperparameters for various kinds of kernel function</span>
+0196 <a name="_sub1" href="#_subfunctions" class="code">function paraV=initPara(kernelFun,Dim)</a>
+0197 paraInit=[1 0.9];
+0198 <span class="keyword">switch</span> kernelFun
+0199     <span class="keyword">case</span> <span class="string">'matern'</span>
+0200         paraV=[paraInit paraInit(1:Dim)];
+0201     <span class="keyword">otherwise</span>
+0202         paraV=paraInit(1:Dim);
+0203 <span class="keyword">end</span>
+0204 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

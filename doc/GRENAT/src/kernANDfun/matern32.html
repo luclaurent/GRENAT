@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of matern32</title>
+  <meta name="keywords" content="matern32">
+  <meta name="description" content="% Function : Matern (3/2)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html kernANDfun -->
+<h1>matern32
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Function : Matern (3/2)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [k,dk,ddk]=matern32(xx,para) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Function : Matern (3/2)
+%L. LAURENT -- 23/01/2011 -- luc.laurent@cnam.fr
+revision of the 12/11/2012 (from Lockwood 2010)
+change of the 19/12/2012: change correlation length
+revision of the 31/08/2015: change function name
+change of the 02/05/2016: change to unidimensional function</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Function : Matern (3/2)</span>
+0002 <span class="comment">%%L. LAURENT -- 23/01/2011 -- luc.laurent@cnam.fr</span>
+0003 <span class="comment">%revision of the 12/11/2012 (from Lockwood 2010)</span>
+0004 <span class="comment">%change of the 19/12/2012: change correlation length</span>
+0005 <span class="comment">%revision of the 31/08/2015: change function name</span>
+0006 <span class="comment">%change of the 02/05/2016: change to unidimensional function</span>
+0007 
+0008 <a name="_sub0" href="#_subfunctions" class="code">function [k,dk,ddk]=matern32(xx,para)</a>
+0009 
+0010 <span class="comment">%number of output parameters</span>
+0011 nbOut=nargout;
+0012 <span class="comment">%check hyperparameters</span>
+0013 nP=size(para,2);
+0014 <span class="keyword">if</span> nP~=1
+0015     error([<span class="string">'Wrong number of hyperparameters ('</span>,mfilename,<span class="string">')'</span>]);
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="comment">%extract length and smoothness hyperparameters</span>
+0019 lP=1./para(:,1);
+0020 
+0021 <span class="comment">%compute value of the function at point xx</span>
+0022 xxN=abs(xx)./lP*sqrt(3);
+0023 etd=exp(-xxN);
+0024 co=1+xxN;
+0025 k=co.*etd;
+0026 
+0027 <span class="comment">%compute first derivatives</span>
+0028 <span class="keyword">if</span> nbOut&gt;1
+0029     <span class="comment">%calcul derivees premieres</span>
+0030     dk=-3./lP.^2.*xx.*etd;
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">%compute second derivatives</span>
+0034 <span class="keyword">if</span> nbOut&gt;2
+0035     ddk=3./lP.^2.*(xxN-1).*etd;
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

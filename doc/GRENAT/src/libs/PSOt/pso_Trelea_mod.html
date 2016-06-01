@@ -1,0 +1,711 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pso_Trelea_mod</title>
+  <meta name="keywords" content="pso_Trelea_mod">
+  <meta name="description" content="%%%%%%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html libs --><!-- menu.html PSOt -->
+<h1>pso_Trelea_mod
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>%%%%%%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%%%%%%
+MOD Luc LAURENT (version w/o vector writing)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/src/surrogate/EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function out=fevalNonVect(functname,X)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%%%%%%</span>
+0002 <span class="comment">%MOD Luc LAURENT (version w/o vector writing)</span>
+0003 
+0004 
+0005 <span class="comment">% pso_Trelea_vectorized.m</span>
+0006 <span class="comment">% a generic particle swarm optimizer</span>
+0007 <span class="comment">% to find the minimum or maximum of any</span>
+0008 <span class="comment">% MISO matlab function</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Implements Common, Trelea type 1 and 2, and Clerc's class 1&quot;. It will</span>
+0011 <span class="comment">% also automatically try to track to a changing environment (with varied</span>
+0012 <span class="comment">% success - BKB 3/18/05)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% This vectorized version removes the for loop associated with particle</span>
+0015 <span class="comment">% number. It also *requires* that the cost function have a single input</span>
+0016 <span class="comment">% that represents all dimensions of search (i.e., for a function that has 2</span>
+0017 <span class="comment">% inputs then make a wrapper that passes a matrix of ps x 2 as a single</span>
+0018 <span class="comment">% variable)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Usage:</span>
+0021 <span class="comment">%  [optOUT]=PSO(functname,D)</span>
+0022 <span class="comment">% or:</span>
+0023 <span class="comment">%  [optOUT,tr,te]=...</span>
+0024 <span class="comment">%        PSO(functname,D,mv,VarRange,minmax,PSOparams,plotfcn,PSOseedValue)</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Inputs:</span>
+0027 <span class="comment">%    functname - string of matlab function to optimize</span>
+0028 <span class="comment">%    D - # of inputs to the function (dimension of problem)</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% Optional Inputs:</span>
+0031 <span class="comment">%    mv - max particle velocity, either a scalar or a vector of length D</span>
+0032 <span class="comment">%           (this allows each component to have it's own max velocity),</span>
+0033 <span class="comment">%           default = 4, set if not input or input as NaN</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%    VarRange - matrix of ranges for each input variable,</span>
+0036 <span class="comment">%      default -100 to 100, of form:</span>
+0037 <span class="comment">%       [ min1 max1</span>
+0038 <span class="comment">%         min2 max2</span>
+0039 <span class="comment">%            ...</span>
+0040 <span class="comment">%         minD maxD ]</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">%    minmax = 0, funct minimized (default)</span>
+0043 <span class="comment">%           = 1, funct maximized</span>
+0044 <span class="comment">%           = 2, funct is targeted to P(12) (minimizes distance to errgoal)</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">%    PSOparams - PSO parameters</span>
+0047 <span class="comment">%      P(1) - Epochs between updating display, default = 100. if 0,</span>
+0048 <span class="comment">%             no display</span>
+0049 <span class="comment">%      P(2) - Maximum number of iterations (epochs) to train, default = 2000.</span>
+0050 <span class="comment">%      P(3) - population size, default = 24</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">%      P(4) - acceleration const 1 (local best influence), default = 2</span>
+0053 <span class="comment">%      P(5) - acceleration const 2 (global best influence), default = 2</span>
+0054 <span class="comment">%      P(6) - Initial inertia weight, default = 0.9</span>
+0055 <span class="comment">%      P(7) - Final inertia weight, default = 0.4</span>
+0056 <span class="comment">%      P(8) - Epoch when inertial weight at final value, default = 1500</span>
+0057 <span class="comment">%      P(9)- minimum global error gradient,</span>
+0058 <span class="comment">%                 if abs(Gbest(i+1)-Gbest(i)) &lt; gradient over</span>
+0059 <span class="comment">%                 certain length of epochs, terminate run, default = 1e-25</span>
+0060 <span class="comment">%      P(10)- epochs before error gradient criterion terminates run,</span>
+0061 <span class="comment">%                 default = 150, if the SSE does not change over 250 epochs</span>
+0062 <span class="comment">%                               then exit</span>
+0063 <span class="comment">%      P(11)- error goal, if NaN then unconstrained min or max, default=NaN</span>
+0064 <span class="comment">%      P(12)- type flag (which kind of PSO to use)</span>
+0065 <span class="comment">%                 0 = Common PSO w/intertia (default)</span>
+0066 <span class="comment">%                 1,2 = Trelea types 1,2</span>
+0067 <span class="comment">%                 3   = Clerc's Constricted PSO, Type 1&quot;</span>
+0068 <span class="comment">%      P(13)- PSOseed, default=0</span>
+0069 <span class="comment">%               = 0 for initial positions all random</span>
+0070 <span class="comment">%               = 1 for initial particles as user input</span>
+0071 <span class="comment">%</span>
+0072 <span class="comment">%    plotfcn - optional name of plotting function, default 'goplotpso',</span>
+0073 <span class="comment">%              make your own and put here</span>
+0074 <span class="comment">%</span>
+0075 <span class="comment">%    PSOseedValue - initial particle position, depends on P(13), must be</span>
+0076 <span class="comment">%                   set if P(13) is 1 or 2, not used for P(13)=0, needs to</span>
+0077 <span class="comment">%                   be nXm where n&lt;=ps, and m&lt;=D</span>
+0078 <span class="comment">%                   If n&lt;ps and/or m&lt;D then remaining values are set random</span>
+0079 <span class="comment">%                   on Varrange</span>
+0080 <span class="comment">% Outputs:</span>
+0081 <span class="comment">%    optOUT - optimal inputs and associated min/max output of function, of form:</span>
+0082 <span class="comment">%        [ bestin1</span>
+0083 <span class="comment">%          bestin2</span>
+0084 <span class="comment">%            ...</span>
+0085 <span class="comment">%          bestinD</span>
+0086 <span class="comment">%          bestOUT ]</span>
+0087 <span class="comment">%</span>
+0088 <span class="comment">% Optional Outputs:</span>
+0089 <span class="comment">%    tr    - Gbest at every iteration, traces flight of swarm</span>
+0090 <span class="comment">%    te    - epochs to train, returned as a vector 1:endepoch</span>
+0091 <span class="comment">%</span>
+0092 <span class="comment">% Example:  out=pso_Trelea_vectorized('f6',2)</span>
+0093 
+0094 <span class="comment">% Brian Birge</span>
+0095 <span class="comment">% Rev 3.3</span>
+0096 <span class="comment">% 2/18/06</span>
+0097 
+0098 <a name="_sub0" href="#_subfunctions" class="code">function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)</a>
+0099 
+0100 fprintf(<span class="string">'\n Algorithm PSOt\n'</span>)
+0101 
+0102 rand(<span class="string">'state'</span>,sum(100*clock));
+0103 
+0104 <span class="keyword">if</span> nargin &lt; 2
+0105     error(<span class="string">'Not enough arguments.'</span>);
+0106 <span class="keyword">end</span>
+0107 
+0108 <span class="comment">% PSO PARAMETERS</span>
+0109 <span class="keyword">if</span> nargin == 2      <span class="comment">% only specified functname and D</span>
+0110     VRmin=ones(D,1)*-100;
+0111     VRmax=ones(D,1)*100;
+0112     VR=[VRmin,VRmax];
+0113     minmax = 0;
+0114     P = [];
+0115     mv = 4;
+0116     plotfcn=<span class="string">'goplotpso'</span>;
+0117 <span class="keyword">elseif</span> nargin == 3  <span class="comment">% specified functname, D, and mv</span>
+0118     VRmin=ones(D,1)*-100;
+0119     VRmax=ones(D,1)*100;
+0120     VR=[VRmin,VRmax];
+0121     minmax = 0;
+0122     mv=varargin{1};
+0123     <span class="keyword">if</span> isnan(mv)
+0124         mv=4;
+0125     <span class="keyword">end</span>
+0126     P = [];
+0127     plotfcn=<span class="string">'goplotpso'</span>;
+0128 <span class="keyword">elseif</span> nargin == 4  <span class="comment">% specified functname, D, mv, Varrange</span>
+0129     mv=varargin{1};
+0130     <span class="keyword">if</span> isnan(mv)
+0131         mv=4;
+0132     <span class="keyword">end</span>
+0133     VR=varargin{2};
+0134     minmax = 0;
+0135     P = [];
+0136     plotfcn=<span class="string">'goplotpso'</span>;
+0137 <span class="keyword">elseif</span> nargin == 5  <span class="comment">% Functname, D, mv, Varrange, and minmax</span>
+0138     mv=varargin{1};
+0139     <span class="keyword">if</span> isnan(mv)
+0140         mv=4;
+0141     <span class="keyword">end</span>
+0142     VR=varargin{2};
+0143     minmax=varargin{3};
+0144     P = [];
+0145     plotfcn=<span class="string">'goplotpso'</span>;
+0146 <span class="keyword">elseif</span> nargin == 6  <span class="comment">% Functname, D, mv, Varrange, minmax, and psoparams</span>
+0147     mv=varargin{1};
+0148     <span class="keyword">if</span> isnan(mv)
+0149         mv=4;
+0150     <span class="keyword">end</span>
+0151     VR=varargin{2};
+0152     minmax=varargin{3};
+0153     P = varargin{4}; <span class="comment">% psoparams</span>
+0154     plotfcn=<span class="string">'goplotpso'</span>;
+0155 <span class="keyword">elseif</span> nargin == 7  <span class="comment">% Functname, D, mv, Varrange, minmax, and psoparams, plotfcn</span>
+0156     mv=varargin{1};
+0157     <span class="keyword">if</span> isnan(mv)
+0158         mv=4;
+0159     <span class="keyword">end</span>
+0160     VR=varargin{2};
+0161     minmax=varargin{3};
+0162     P = varargin{4}; <span class="comment">% psoparams</span>
+0163     plotfcn = varargin{5};
+0164 <span class="keyword">elseif</span> nargin == 8  <span class="comment">% Functname, D, mv, Varrange, minmax, and psoparams, plotfcn, PSOseedValue</span>
+0165     mv=varargin{1};
+0166     <span class="keyword">if</span> isnan(mv)
+0167         mv=4;
+0168     <span class="keyword">end</span>
+0169     VR=varargin{2};
+0170     minmax=varargin{3};
+0171     P = varargin{4}; <span class="comment">% psoparams</span>
+0172     plotfcn = varargin{5};
+0173     PSOseedValue = varargin{6};
+0174 <span class="keyword">else</span>
+0175     error(<span class="string">'Wrong # of input arguments.'</span>);
+0176 <span class="keyword">end</span>
+0177 
+0178 <span class="comment">% sets up default pso params</span>
+0179 Pdef = [100 2000 24 2 2 0.9 0.4 1500 1e-25 250 NaN 0 0];
+0180 Plen = length(P);
+0181 P    = [P,Pdef(Plen+1:end)];
+0182 
+0183 df      = P(1);
+0184 me      = P(2);
+0185 ps      = P(3);
+0186 ac1     = P(4);
+0187 ac2     = P(5);
+0188 iw1     = P(6);
+0189 iw2     = P(7);
+0190 iwe     = P(8);
+0191 ergrd   = P(9);
+0192 ergrdep = P(10);
+0193 errgoal = P(11);
+0194 trelea  = P(12);
+0195 PSOseed = P(13);
+0196 
+0197 fprintf(<span class="string">' &gt;&gt; %i particles\n'</span>,ps);
+0198 
+0199 <span class="comment">% used with trainpso, for neural net training</span>
+0200 <span class="keyword">if</span> strcmp(functname,<span class="string">'pso_neteval'</span>)
+0201     net = evalin(<span class="string">'caller'</span>,<span class="string">'net'</span>);
+0202     Pd = evalin(<span class="string">'caller'</span>,<span class="string">'Pd'</span>);
+0203     Tl = evalin(<span class="string">'caller'</span>,<span class="string">'Tl'</span>);
+0204     Ai = evalin(<span class="string">'caller'</span>,<span class="string">'Ai'</span>);
+0205     Q = evalin(<span class="string">'caller'</span>,<span class="string">'Q'</span>);
+0206     TS = evalin(<span class="string">'caller'</span>,<span class="string">'TS'</span>);
+0207 <span class="keyword">end</span>
+0208 
+0209 
+0210 <span class="comment">% error checking</span>
+0211 <span class="keyword">if</span> ((minmax==2) &amp; isnan(errgoal))
+0212     error(<span class="string">'minmax= 2, errgoal= NaN: choose an error goal or set minmax to 0 or 1'</span>);
+0213 <span class="keyword">end</span>
+0214 
+0215 <span class="keyword">if</span> ( (PSOseed==1) &amp; ~exist(<span class="string">'PSOseedValue'</span>) )
+0216     error(<span class="string">'PSOseed flag set but no PSOseedValue was input'</span>);
+0217 <span class="keyword">end</span>
+0218 
+0219 <span class="keyword">if</span> exist(<span class="string">'PSOseedValue'</span>)
+0220     tmpsz=size(PSOseedValue);
+0221     <span class="keyword">if</span> D &lt; tmpsz(2)
+0222         error(<span class="string">'PSOseedValue column size must be D or less'</span>);
+0223     <span class="keyword">end</span>
+0224     <span class="keyword">if</span> ps &lt; tmpsz(1)
+0225         error(<span class="string">'PSOseedValue row length must be # of particles or less'</span>);
+0226     <span class="keyword">end</span>
+0227 <span class="keyword">end</span>
+0228 
+0229 <span class="comment">% set plotting flag</span>
+0230 <span class="keyword">if</span> (P(1))~=0
+0231     plotflg=1;
+0232 <span class="keyword">else</span>
+0233     plotflg=0;
+0234 <span class="keyword">end</span>
+0235 
+0236 <span class="comment">% preallocate variables for speed up</span>
+0237 tr = ones(1,me)*NaN;
+0238 
+0239 <span class="comment">% take care of setting max velocity and position params here</span>
+0240 <span class="keyword">if</span> length(mv)==1
+0241     velmaskmin = -mv*ones(ps,D);     <span class="comment">% min vel, psXD matrix</span>
+0242     velmaskmax = mv*ones(ps,D);      <span class="comment">% max vel</span>
+0243 <span class="keyword">elseif</span> length(mv)==D
+0244     velmaskmin = repmat(forcerow(-mv),ps,1); <span class="comment">% min vel</span>
+0245     velmaskmax = repmat(forcerow( mv),ps,1); <span class="comment">% max vel</span>
+0246 <span class="keyword">else</span>
+0247     error(<span class="string">'Max vel must be either a scalar or same length as prob dimension D'</span>);
+0248 <span class="keyword">end</span>
+0249 
+0250 posmaskmin  = repmat(VR(1:D,1)',ps,1);  <span class="comment">% min pos, psXD matrix</span>
+0251 posmaskmax  = repmat(VR(1:D,2)',ps,1);  <span class="comment">% max pos</span>
+0252 posmaskmeth = 3; <span class="comment">% 3=bounce method (see comments below inside epoch loop)</span>
+0253 
+0254 <span class="comment">% PLOTTING</span>
+0255 message = sprintf(<span class="string">'PSO: %%g/%g iter., GBest = %%20.20g.\n'</span>,me);
+0256 
+0257 <span class="comment">% INITIALIZE INITIALIZE INITIALIZE INITIALIZE INITIALIZE INITIALIZE</span>
+0258 
+0259 <span class="comment">% initialize population of particles and their velocities at time zero,</span>
+0260 <span class="comment">% format of pos= (particle#, dimension)</span>
+0261 <span class="comment">% construct random population positions bounded by VR</span>
+0262 pos(1:ps,1:D) = normmat(rand([ps,D]),VR',1);
+0263 
+0264 <span class="keyword">if</span> PSOseed == 1         <span class="comment">% initial positions user input, see comments above</span>
+0265     tmpsz                      = size(PSOseedValue);    
+0266     pos(1:tmpsz(1),1:tmpsz(2)) = PSOseedValue;
+0267 <span class="keyword">end</span>
+0268 
+0269 
+0270 <span class="comment">% construct initial random velocities between -mv,mv</span>
+0271 vel(1:ps,1:D) = normmat(rand([ps,D]),<span class="keyword">...</span>
+0272     [forcecol(-mv),forcecol(mv)]',1);
+0273 
+0274 <span class="comment">% initial pbest positions vals</span>
+0275 pbest = pos;
+0276 
+0277 <span class="comment">% VECTORIZE THIS, or at least vectorize cost funct call</span>
+0278 <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0279 <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0280 <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0281 out=<a href="#_sub1" class="code" title="subfunction out=fevalNonVect(functname,X)">fevalNonVect</a>(functname,pos);
+0282 <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0283 <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0284 <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0285 <span class="comment">%---------------------------</span>
+0286 
+0287 pbestval=out;   <span class="comment">% initially, pbest is same as pos</span>
+0288 
+0289 <span class="comment">% assign initial gbest here also (gbest and gbestval)</span>
+0290 <span class="keyword">if</span> minmax==1
+0291     <span class="comment">% this picks gbestval when we want to maximize the function</span>
+0292     [gbestval,idx1] = max(pbestval);
+0293 <span class="keyword">elseif</span> minmax==0
+0294     <span class="comment">% this works for straight minimization</span>
+0295     [gbestval,idx1] = min(pbestval);
+0296 <span class="keyword">elseif</span> minmax==2
+0297     <span class="comment">% this works when you know target but not direction you need to go</span>
+0298     <span class="comment">% good for a cost function that returns distance to target that can be either</span>
+0299     <span class="comment">% negative or positive (direction info)</span>
+0300     [temp,idx1] = min((pbestval-ones(size(pbestval))*errgoal).^2);
+0301     gbestval    = pbestval(idx1);
+0302 <span class="keyword">end</span>
+0303 
+0304 <span class="comment">% preallocate a variable to keep track of gbest for all iters</span>
+0305 bestpos        = zeros(me,D+1)*NaN;
+0306 gbest          = pbest(idx1,:);  <span class="comment">% this is gbest position</span>
+0307 <span class="comment">% used with trainpso, for neural net training</span>
+0308 <span class="comment">% assign gbest to net at each iteration, these interim assignments</span>
+0309 <span class="comment">% are for plotting mostly</span>
+0310 <span class="keyword">if</span> strcmp(functname,<span class="string">'pso_neteval'</span>)
+0311     net=setx(net,gbest);
+0312 <span class="keyword">end</span>
+0313 <span class="comment">%tr(1)          = gbestval;       % save for output</span>
+0314 bestpos(1,1:D) = gbest;
+0315 
+0316 <span class="comment">% this part used for implementing Carlisle and Dozier's APSO idea</span>
+0317 <span class="comment">% slightly modified, this tracks the global best as the sentry whereas</span>
+0318 <span class="comment">% their's chooses a different point to act as sentry</span>
+0319 <span class="comment">% see &quot;Tracking Changing Extremea with Adaptive Particle Swarm Optimizer&quot;,</span>
+0320 <span class="comment">% part of the WAC 2002 Proceedings, June 9-13, http://wacong.com</span>
+0321 sentryval = gbestval;
+0322 sentry    = gbest;
+0323 
+0324 <span class="keyword">if</span> (trelea == 3)
+0325     <span class="comment">% calculate Clerc's constriction coefficient chi to use in his form</span>
+0326     kappa   = 1; <span class="comment">% standard val = 1, change for more or less constriction</span>
+0327     <span class="keyword">if</span> ( (ac1+ac2) &lt;=4 )
+0328         chi = kappa;
+0329     <span class="keyword">else</span>
+0330         psi     = ac1 + ac2;
+0331         chi_den = abs(2-psi-sqrt(psi^2 - 4*psi));
+0332         chi_num = 2*kappa;
+0333         chi     = chi_num/chi_den;
+0334     <span class="keyword">end</span>
+0335 <span class="keyword">end</span>
+0336 
+0337 <span class="comment">% INITIALIZE END INITIALIZE END INITIALIZE END INITIALIZE END</span>
+0338 rstflg = 0; <span class="comment">% for dynamic environment checking</span>
+0339 <span class="comment">% start PSO iterative procedures</span>
+0340 cnt    = 0; <span class="comment">% counter used for updating display according to df in the options</span>
+0341 cnt2   = 0; <span class="comment">% counter used for the stopping subroutine based on error convergence</span>
+0342 iwt(1) = iw1;
+0343 <span class="keyword">for</span> i=1:me  <span class="comment">% start epoch loop (iterations)</span>
+0344     <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0345     <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0346     <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0347     out        = <a href="#_sub1" class="code" title="subfunction out=fevalNonVect(functname,X)">fevalNonVect</a>(functname,[pos;gbest]);
+0348     <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0349     <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0350     <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0351     outbestval = out(<span class="keyword">end</span>,:);
+0352     out        = out(1:end-1,:);
+0353     
+0354     tr(i+1)          = gbestval; <span class="comment">% keep track of global best val</span>
+0355     te               = i; <span class="comment">% returns epoch number to calling program when done</span>
+0356     bestpos(i,1:D+1) = [gbest,gbestval];
+0357     
+0358     <span class="comment">%assignin('base','bestpos',bestpos(i,1:D+1));</span>
+0359     <span class="comment">%------------------------------------------------------------------------</span>
+0360     <span class="comment">% this section does the plots during iterations</span>
+0361     <span class="comment">%%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD</span>
+0362     <span class="keyword">if</span> (mod(i,10)==0)|| (i==1)     <span class="comment">%correction Luc: display every 5 iterations</span>
+0363         fprintf(message,i,gbestval);        
+0364     <span class="keyword">end</span>
+0365     <span class="keyword">if</span> plotflg==1
+0366         <span class="keyword">if</span> (rem(i,df) == 0 ) | (i==me) | (i==1)
+0367             cnt = cnt+1; <span class="comment">% count how many times we display (useful for movies)</span>
+0368             
+0369             eval(plotfcn); <span class="comment">% defined at top of script</span>
+0370             
+0371         <span class="keyword">end</span>  <span class="comment">% end update display every df if statement</span>
+0372     <span class="keyword">end</span> <span class="comment">% end plotflg if statement</span>
+0373     
+0374     <span class="comment">% check for an error space that changes wrt time/iter</span>
+0375     <span class="comment">% threshold value that determines dynamic environment</span>
+0376     <span class="comment">% sees if the value of gbest changes more than some threshold value</span>
+0377     <span class="comment">% for the same location</span>
+0378     chkdyn = 1;
+0379     rstflg = 0; <span class="comment">% for dynamic environment checking</span>
+0380     
+0381     <span class="keyword">if</span> chkdyn==1
+0382         threshld = 0.05;  <span class="comment">% percent current best is allowed to change, .05 = 5% etc</span>
+0383         letiter  = 5; <span class="comment">% # of iterations before checking environment, leave at least 3 so PSO has time to converge</span>
+0384         outorng  = abs( 1- (outbestval/gbestval) ) &gt;= threshld;
+0385         samepos  = (max( sentry == gbest ));
+0386         
+0387         <span class="keyword">if</span> (outorng &amp; samepos) &amp; rem(i,letiter)==0
+0388             rstflg=1;
+0389             <span class="comment">% disp('New Environment: reset pbest, gbest, and vel');</span>
+0390             <span class="comment">%% reset pbest and pbestval if warranted</span>
+0391             <span class="comment">%        outpbestval = feval( functname,[pbest] );</span>
+0392             <span class="comment">%        Poutorng    = abs( 1-(outpbestval./pbestval) ) &gt; threshld;</span>
+0393             <span class="comment">%        pbestval    = pbestval.*~Poutorng + outpbestval.*Poutorng;</span>
+0394             <span class="comment">%        pbest       = pbest.*repmat(~Poutorng,1,D) + pos.*repmat(Poutorng,1,D);</span>
+0395             
+0396             pbest     = pos; <span class="comment">% reset personal bests to current positions</span>
+0397             pbestval  = out;
+0398             vel       = vel*10; <span class="comment">% agitate particles a little (or a lot)</span>
+0399             
+0400             <span class="comment">% recalculate best vals</span>
+0401             <span class="keyword">if</span> minmax == 1
+0402                 [gbestval,idx1] = max(pbestval);
+0403             <span class="keyword">elseif</span> minmax==0
+0404                 [gbestval,idx1] = min(pbestval);
+0405             <span class="keyword">elseif</span> minmax==2 <span class="comment">% this section needs work</span>
+0406                 [temp,idx1] = min((pbestval-ones(size(pbestval))*errgoal).^2);
+0407                 gbestval    = pbestval(idx1);
+0408             <span class="keyword">end</span>
+0409             
+0410             gbest  = pbest(idx1,:);
+0411             
+0412             <span class="comment">% used with trainpso, for neural net training</span>
+0413             <span class="comment">% assign gbest to net at each iteration, these interim assignments</span>
+0414             <span class="comment">% are for plotting mostly</span>
+0415             <span class="keyword">if</span> strcmp(functname,<span class="string">'pso_neteval'</span>)
+0416                 net=setx(net,gbest);
+0417             <span class="keyword">end</span>
+0418         <span class="keyword">end</span>  <span class="comment">% end if outorng</span>
+0419         
+0420         sentryval = gbestval;
+0421         sentry    = gbest;
+0422         
+0423     <span class="keyword">end</span> <span class="comment">% end if chkdyn</span>
+0424     
+0425     <span class="comment">% find particles where we have new pbest, depending on minmax choice</span>
+0426     <span class="comment">% then find gbest and gbestval</span>
+0427     <span class="comment">%[size(out),size(pbestval)]</span>
+0428     <span class="keyword">if</span> rstflg == 0
+0429         <span class="keyword">if</span> minmax == 0
+0430             [tempi]            = find(pbestval&gt;=out); <span class="comment">% new min pbestvals</span>
+0431             pbestval(tempi,1)  = out(tempi);   <span class="comment">% update pbestvals</span>
+0432             pbest(tempi,:)     = pos(tempi,:); <span class="comment">% update pbest positions</span>
+0433             
+0434             [iterbestval,idx1] = min(pbestval);
+0435             
+0436             <span class="keyword">if</span> gbestval &gt;= iterbestval
+0437                 gbestval = iterbestval;
+0438                 gbest    = pbest(idx1,:);
+0439                 <span class="comment">% used with trainpso, for neural net training</span>
+0440                 <span class="comment">% assign gbest to net at each iteration, these interim assignments</span>
+0441                 <span class="comment">% are for plotting mostly</span>
+0442                 <span class="keyword">if</span> strcmp(functname,<span class="string">'pso_neteval'</span>)
+0443                     net=setx(net,gbest);
+0444                 <span class="keyword">end</span>
+0445             <span class="keyword">end</span>
+0446         <span class="keyword">elseif</span> minmax == 1
+0447             [tempi,dum]        = find(pbestval&lt;=out); <span class="comment">% new max pbestvals</span>
+0448             pbestval(tempi,1)  = out(tempi,1); <span class="comment">% update pbestvals</span>
+0449             pbest(tempi,:)     = pos(tempi,:); <span class="comment">% update pbest positions</span>
+0450             
+0451             [iterbestval,idx1] = max(pbestval);
+0452             <span class="keyword">if</span> gbestval &lt;= iterbestval
+0453                 gbestval = iterbestval;
+0454                 gbest    = pbest(idx1,:);
+0455                 <span class="comment">% used with trainpso, for neural net training</span>
+0456                 <span class="comment">% assign gbest to net at each iteration, these interim assignments</span>
+0457                 <span class="comment">% are for plotting mostly</span>
+0458                 <span class="keyword">if</span> strcmp(functname,<span class="string">'pso_neteval'</span>)
+0459                     net=setx(net,gbest);
+0460                 <span class="keyword">end</span>
+0461             <span class="keyword">end</span>
+0462         <span class="keyword">elseif</span> minmax == 2  <span class="comment">% this won't work as it is, fix it later</span>
+0463             egones            = errgoal*ones(ps,1); <span class="comment">% vector of errgoals</span>
+0464             sqrerr2           = ((pbestval-egones).^2);
+0465             sqrerr1           = ((out-egones).^2);
+0466             [tempi,dum]       = find(sqerr1 &lt;= sqrerr2); <span class="comment">% find particles closest to targ</span>
+0467             pbestval(tempi,1) = out(tempi,1); <span class="comment">% update pbestvals</span>
+0468             pbest(tempi,:)    = pos(tempi,:); <span class="comment">% update pbest positions</span>
+0469             
+0470             sqrerr            = ((pbestval-egones).^2); <span class="comment">% need to do this to reflect new pbests</span>
+0471             [temp,idx1]       = min(sqrerr);
+0472             iterbestval       = pbestval(idx1);
+0473             
+0474             <span class="keyword">if</span> (iterbestval-errgoal)^2 &lt;= (gbestval-errgoal)^2
+0475                 gbestval = iterbestval;
+0476                 gbest    = pbest(idx1,:);
+0477                 <span class="comment">% used with trainpso, for neural net training</span>
+0478                 <span class="comment">% assign gbest to net at each iteration, these interim assignments</span>
+0479                 <span class="comment">% are for plotting mostly</span>
+0480                 <span class="keyword">if</span> strcmp(functname,<span class="string">'pso_neteval'</span>)
+0481                     net=setx(net,gbest);
+0482                 <span class="keyword">end</span>
+0483             <span class="keyword">end</span>
+0484         <span class="keyword">end</span>
+0485     <span class="keyword">end</span>
+0486     
+0487     
+0488     <span class="comment">%   % build a simple predictor 10th order, for gbest trajectory</span>
+0489     <span class="comment">%   if i&gt;500</span>
+0490     <span class="comment">%    for dimcnt=1:D</span>
+0491     <span class="comment">%      pred_coef  = polyfit(i-250:i,(bestpos(i-250:i,dimcnt))',20);</span>
+0492     <span class="comment">%     % pred_coef  = polyfit(200:i,(bestpos(200:i,dimcnt))',20);</span>
+0493     <span class="comment">%      gbest_pred(i,dimcnt) = polyval(pred_coef,i+1);</span>
+0494     <span class="comment">%    end</span>
+0495     <span class="comment">%    else</span>
+0496     <span class="comment">%       gbest_pred(i,:) = zeros(size(gbest));</span>
+0497     <span class="comment">%    end</span>
+0498     
+0499     <span class="comment">%gbest_pred(i,:)=gbest;</span>
+0500     <span class="comment">%assignin('base','gbest_pred',gbest_pred);</span>
+0501     
+0502     <span class="comment">%   % convert to non-inertial frame</span>
+0503     <span class="comment">%    gbestoffset = gbest - gbest_pred(i,:);</span>
+0504     <span class="comment">%    gbest = gbest - gbestoffset;</span>
+0505     <span class="comment">%    pos   = pos + repmat(gbestoffset,ps,1);</span>
+0506     <span class="comment">%    pbest = pbest + repmat(gbestoffset,ps,1);</span>
+0507     
+0508     <span class="comment">%PSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSO</span>
+0509     
+0510     <span class="comment">% get new velocities, positions (this is the heart of the PSO algorithm)</span>
+0511     <span class="comment">% each epoch get new set of random numbers</span>
+0512     rannum1 = rand([ps,D]); <span class="comment">% for Trelea and Clerc types</span>
+0513     rannum2 = rand([ps,D]);
+0514     <span class="keyword">if</span>     trelea == 2
+0515         <span class="comment">% from Trelea's paper, parameter set 2</span>
+0516         vel = 0.729.*vel<span class="keyword">...</span><span class="comment">                              % prev vel</span>
+0517             +1.494.*rannum1.*(pbest-pos)<span class="keyword">...</span><span class="comment">            % independent</span>
+0518             +1.494.*rannum2.*(repmat(gbest,ps,1)-pos); <span class="comment">% social</span>
+0519     <span class="keyword">elseif</span> trelea == 1
+0520         <span class="comment">% from Trelea's paper, parameter set 1</span>
+0521         vel = 0.600.*vel<span class="keyword">...</span><span class="comment">                              % prev vel</span>
+0522             +1.700.*rannum1.*(pbest-pos)<span class="keyword">...</span><span class="comment">            % independent</span>
+0523             +1.700.*rannum2.*(repmat(gbest,ps,1)-pos); <span class="comment">% social</span>
+0524     <span class="keyword">elseif</span> trelea ==3
+0525         <span class="comment">% Clerc's Type 1&quot; PSO</span>
+0526         vel = chi*(vel<span class="keyword">...</span><span class="comment">                                % prev vel</span>
+0527             +ac1.*rannum1.*(pbest-pos)<span class="keyword">...</span><span class="comment">              % independent</span>
+0528             +ac2.*rannum2.*(repmat(gbest,ps,1)-pos)) ; <span class="comment">% social</span>
+0529     <span class="keyword">else</span>
+0530         <span class="comment">% common PSO algo with inertia wt</span>
+0531         <span class="comment">% get inertia weight, just a linear funct w.r.t. epoch parameter iwe</span>
+0532         <span class="keyword">if</span> i&lt;=iwe
+0533             iwt(i) = ((iw2-iw1)/(iwe-1))*(i-1)+iw1;
+0534         <span class="keyword">else</span>
+0535             iwt(i) = iw2;
+0536         <span class="keyword">end</span>
+0537         <span class="comment">% random number including acceleration constants</span>
+0538         ac11 = rannum1.*ac1;    <span class="comment">% for common PSO w/inertia</span>
+0539         ac22 = rannum2.*ac2;
+0540         
+0541         vel = iwt(i).*vel<span class="keyword">...</span><span class="comment">                             % prev vel</span>
+0542             +ac11.*(pbest-pos)<span class="keyword">...</span><span class="comment">                      % independent</span>
+0543             +ac22.*(repmat(gbest,ps,1)-pos);           <span class="comment">% social</span>
+0544     <span class="keyword">end</span>
+0545     
+0546     <span class="comment">% limit velocities here using masking</span>
+0547     vel = ( (vel &lt;= velmaskmin).*velmaskmin ) + ( (vel &gt; velmaskmin).*vel );
+0548     vel = ( (vel &gt;= velmaskmax).*velmaskmax ) + ( (vel &lt; velmaskmax).*vel );
+0549     
+0550     <span class="comment">% update new position (PSO algo)</span>
+0551     pos = pos + vel;
+0552     
+0553     <span class="comment">% position masking, limits positions to desired search space</span>
+0554     <span class="comment">% method: 0) no position limiting, 1) saturation at limit,</span>
+0555     <span class="comment">%         2) wraparound at limit , 3) bounce off limit</span>
+0556     minposmask_throwaway = pos &lt;= posmaskmin;  <span class="comment">% these are psXD matrices</span>
+0557     minposmask_keep      = pos &gt;  posmaskmin;
+0558     maxposmask_throwaway = pos &gt;= posmaskmax;
+0559     maxposmask_keep      = pos &lt;  posmaskmax;
+0560     
+0561     <span class="keyword">if</span>     posmaskmeth == 1
+0562         <span class="comment">% this is the saturation method</span>
+0563         pos = ( minposmask_throwaway.*posmaskmin ) + ( minposmask_keep.*pos );
+0564         pos = ( maxposmask_throwaway.*posmaskmax ) + ( maxposmask_keep.*pos );
+0565     <span class="keyword">elseif</span> posmaskmeth == 2
+0566         <span class="comment">% this is the wraparound method</span>
+0567         pos = ( minposmask_throwaway.*posmaskmax ) + ( minposmask_keep.*pos );
+0568         pos = ( maxposmask_throwaway.*posmaskmin ) + ( maxposmask_keep.*pos );
+0569     <span class="keyword">elseif</span> posmaskmeth == 3
+0570         <span class="comment">% this is the bounce method, particles bounce off the boundaries with -vel</span>
+0571         pos = ( minposmask_throwaway.*posmaskmin ) + ( minposmask_keep.*pos );
+0572         pos = ( maxposmask_throwaway.*posmaskmax ) + ( maxposmask_keep.*pos );
+0573         
+0574         vel = (vel.*minposmask_keep) + (-vel.*minposmask_throwaway);
+0575         vel = (vel.*maxposmask_keep) + (-vel.*maxposmask_throwaway);
+0576     <span class="keyword">else</span>
+0577         <span class="comment">% no change, this is the original Eberhart, Kennedy method,</span>
+0578         <span class="comment">% it lets the particles grow beyond bounds if psoparams (P)</span>
+0579         <span class="comment">% especially Vmax, aren't set correctly, see the literature</span>
+0580     <span class="keyword">end</span>
+0581     
+0582     <span class="comment">%PSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSOPSO</span>
+0583     <span class="comment">% check for stopping criterion based on speed of convergence to desired</span>
+0584     <span class="comment">% error</span>
+0585     tmp1 = abs(tr(i) - gbestval);
+0586     <span class="keyword">if</span> tmp1 &gt; ergrd
+0587         cnt2 = 0;
+0588     <span class="keyword">elseif</span> tmp1 &lt;= ergrd
+0589         cnt2 = cnt2+1;
+0590         <span class="keyword">if</span> cnt2 &gt;= ergrdep
+0591             fprintf(message,i,gbestval);
+0592             disp(<span class="string">' '</span>);
+0593             disp([<span class="string">'--&gt; Solution likely, GBest hasn''t changed by at least '</span>,<span class="keyword">...</span>
+0594                 num2str(ergrd),<span class="string">' for '</span>,<span class="keyword">...</span>
+0595                 num2str(cnt2),<span class="string">' epochs.'</span>]);
+0596             <span class="keyword">if</span> plotflg == 1
+0597                 eval(plotfcn);
+0598             <span class="keyword">end</span>
+0599             <span class="keyword">break</span>
+0600         <span class="keyword">end</span>
+0601     <span class="keyword">end</span>
+0602     
+0603     <span class="comment">% this stops if using constrained optimization and goal is reached</span>
+0604     <span class="keyword">if</span> ~isnan(errgoal)
+0605         <span class="keyword">if</span> ((gbestval&lt;=errgoal) &amp; (minmax==0)) | ((gbestval&gt;=errgoal) &amp; (minmax==1))
+0606             fprintf(message,i,gbestval);
+0607             disp(<span class="string">' '</span>);
+0608             disp([<span class="string">'--&gt; Error Goal reached, successful termination!'</span>]);
+0609             <span class="keyword">if</span> plotflg == 1
+0610                 eval(plotfcn);
+0611             <span class="keyword">end</span>
+0612             <span class="keyword">break</span>
+0613         <span class="keyword">end</span>
+0614         
+0615         <span class="comment">% this is stopping criterion for constrained from both sides</span>
+0616         <span class="keyword">if</span> minmax == 2
+0617             <span class="keyword">if</span> ((tr(i)&lt;errgoal) &amp; (gbestval&gt;=errgoal)) | ((tr(i)&gt;errgoal) <span class="keyword">...</span>
+0618                     &amp; (gbestval &lt;= errgoal))
+0619                 fprintf(message,i,gbestval);
+0620                 disp(<span class="string">' '</span>);
+0621                 disp([<span class="string">'--&gt; Error Goal reached, successful termination!'</span>]);
+0622                 <span class="keyword">if</span> plotflg == 1
+0623                     eval(plotfcn);
+0624                 <span class="keyword">end</span>
+0625                 <span class="keyword">break</span>
+0626             <span class="keyword">end</span>
+0627         <span class="keyword">end</span> <span class="comment">% end if minmax==2</span>
+0628     <span class="keyword">end</span>  <span class="comment">% end ~isnan if</span>
+0629     
+0630     <span class="comment">%    % convert back to inertial frame</span>
+0631     <span class="comment">%     pos = pos - repmat(gbestoffset,ps,1);</span>
+0632     <span class="comment">%     pbest = pbest - repmat(gbestoffset,ps,1);</span>
+0633     <span class="comment">%     gbest = gbest + gbestoffset;</span>
+0634     
+0635     
+0636 <span class="keyword">end</span>  <span class="comment">% end epoch loop</span>
+0637 
+0638 <span class="comment">%% clear temp outputs</span>
+0639 <span class="comment">% evalin('base','clear temp_pso_out temp_te temp_tr;');</span>
+0640 
+0641 <span class="comment">% output &amp; return</span>
+0642 OUT=[gbest';gbestval];
+0643 varargout{1}=1:te;
+0644 varargout{2}=tr(~isnan(tr));
+0645 <span class="keyword">end</span>
+0646 
+0647 <span class="comment">%%% MOD LUC LAURENT</span>
+0648 <span class="comment">%function w/o vectorization</span>
+0649 <a name="_sub1" href="#_subfunctions" class="code">function out=fevalNonVect(functname,X)</a>
+0650 <span class="comment">%if parallel</span>
+0651 numw=0;
+0652 <span class="keyword">if</span> ~isempty(whos(<span class="string">'parallel'</span>,<span class="string">'global'</span>))
+0653     <span class="keyword">global</span> parallelData
+0654     numw=parallelData.num;
+0655 <span class="keyword">end</span>
+0656 out =zeros(size(X,1),1);
+0657 parfor (itemod=1:size(X,1),numw)
+0658     out(itemod) = feval(functname,X(itemod,:));  <span class="comment">% returns column of cost values (1 for each particle)</span>
+0659 <span class="keyword">end</span>
+0660 <span class="keyword">end</span>
+0661 
+0662 <span class="comment">%return</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

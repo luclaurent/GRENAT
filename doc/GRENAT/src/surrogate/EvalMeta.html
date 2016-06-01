@@ -1,0 +1,523 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of EvalMeta</title>
+  <meta name="keywords" content="EvalMeta">
+  <meta name="description" content="% Evaluation of the surrogate model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>EvalMeta
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Evaluation of the surrogate model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Z]=EvalMeta(evalSample,availData,Verb) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Evaluation of the surrogate model
+ L. LAURENT -- 04/12/2011 -- luc.laurent@lecnam.net
+ modification: 12/12/2011</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/crit/InfillCrit.html" class="code" title="function [EI,WEI,GEI,LCB,exploitEI,explorEI]=InfillCrit(respMin,Z,varZ,infillData)">InfillCrit</a>	% Compute infill criteria EI/WEI/LCB</li><li><a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li><li><a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>	% Normalization and renormalization of the Data</li><li><a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>	% normalization and renormalization of the gradient data</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function checkInterp(ZRef,ZApp,type)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Evaluation of the surrogate model</span>
+0002 <span class="comment">% L. LAURENT -- 04/12/2011 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">% modification: 12/12/2011</span>
+0004 
+0005 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0006 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0007 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0010 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0011 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0012 <span class="comment">%     (at your option) any later version.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0015 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0016 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0017 <span class="comment">%     GNU General Public License for more details.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0020 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0021 
+0022 <a name="_sub0" href="#_subfunctions" class="code">function [Z]=EvalMeta(evalSample,availData,Verb)</a>
+0023 
+0024 [tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0025 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0026 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0027 <span class="comment">%output variable</span>
+0028 Z=struct;
+0029 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0030 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0031 <span class="comment">%choose verbosity of the function</span>
+0032 <span class="keyword">if</span> nargin==2
+0033     Verb=true;
+0034 <span class="keyword">end</span>
+0035 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0036 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0037 <span class="comment">%number of design parameters</span>
+0038 np=availData.used.np;
+0039 <span class="comment">%number of initial sample poins</span>
+0040 ns=availData.used.ns;
+0041 <span class="comment">%size of the required non-sample points</span>
+0042 nv=size(evalSample);
+0043 nv(3)=size(evalSample,3);
+0044 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0045 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0046 <span class="comment">%reordering non-sample points</span>
+0047 <span class="keyword">if</span> np&gt;1
+0048     <span class="comment">% if the non-sample points corresponds to a grid</span>
+0049     <span class="keyword">if</span> nv(3)~=1
+0050         <span class="comment">%number a required evaluations</span>
+0051         nbReqEval=prod(nv(1:2));
+0052         reqResp=zeros(nbReqEval,nv(3));
+0053         <span class="keyword">for</span> ll=1:nv(3)
+0054             tmp=evalSample(:,:,ll);
+0055             reqResp(:,ll)=tmp(:);
+0056         <span class="keyword">end</span>
+0057     <span class="keyword">else</span>
+0058         <span class="comment">%if not the number a required evaluations is determined</span>
+0059         nbReqEval=nv(1);
+0060         reqResp=evalSample;
+0061     <span class="keyword">end</span>
+0062 <span class="keyword">else</span>
+0063     nbReqEval=prod(nv(1:2)); <span class="comment">%number a required evaluations</span>
+0064     reqResp=evalSample(:);
+0065 <span class="keyword">end</span>
+0066 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0067 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0068 <span class="comment">%normalisation of the sample points</span>
+0069 <span class="keyword">if</span> availData.norm.on
+0070     reqRespN=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(reqResp,<span class="string">'norm'</span>,availData.norm.sampling);
+0071 <span class="keyword">else</span>
+0072     reqRespN=reqResp;
+0073 <span class="keyword">end</span>
+0074 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0075 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0076 <span class="comment">%variables for storage</span>
+0077 <span class="keyword">if</span> np&gt;1
+0078     varResp=zeros(size(reqRespN,1),1);
+0079     valRespN=varResp;
+0080     valGrad=zeros(nbReqEval,np);
+0081     valGradN=valGrad;
+0082 <span class="keyword">else</span>
+0083     varResp=[];
+0084     valRespN=[];
+0085     valGrad=[];
+0086     valGradN=[];
+0087 <span class="keyword">end</span>
+0088 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0089 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0090 <span class="keyword">if</span> nbReqEval&gt;1&amp;&amp;Verb
+0091     fprintf(<span class="string">'#############################################\n'</span>);
+0092     fprintf(<span class="string">'  &gt;&gt;&gt; EVALUATION of the surrogate model &lt;&lt;&lt;\n'</span>);
+0093 <span class="keyword">end</span>
+0094 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0095 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0096 <span class="comment">%parallel</span>
+0097 numWorkers=0;
+0098 <span class="keyword">if</span> ~isempty(whos(<span class="string">'parallel'</span>,<span class="string">'global'</span>))
+0099     <span class="keyword">global</span> parallelData
+0100     numWorkers=parallelData.num;
+0101 <span class="keyword">end</span>
+0102 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0103 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0104 <span class="comment">%%%%%%% Evaluation of the surrogate model</span>
+0105 
+0106 <span class="comment">%load used initial data (sampling, responses and gradients)</span>
+0107 <span class="comment">%U: used data (normalized if normlization is active)</span>
+0108 <span class="comment">%I: initial data (w/o normlization)</span>
+0109 samplingU=availData.used.sampling;
+0110 respU=availData.used.resp;
+0111 gradU=availData.used.grad;
+0112 samplingI=availData.in.sampling;
+0113 respI=availData.in.resp;
+0114 gradI=availData.in.grad;
+0115 
+0116 <span class="comment">%check or not the interpolation quality of the surrogate model</span>
+0117 <span class="keyword">if</span> availData.check
+0118     checkZN=zeros(ns,1);
+0119     checkGZN=zeros(ns,np);
+0120 <span class="keyword">end</span>
+0121 <span class="comment">%depending of the type of surrogate model</span>
+0122 <span class="keyword">switch</span> availData.type
+0123     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0124     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0125     <span class="keyword">case</span> <span class="string">'SWF'</span>
+0126         <span class="comment">%% Evaluation of the 'Shepard Weighting Functions' surrogate model</span>
+0127         <span class="keyword">for</span> jj=1:nbReqEval
+0128             [valRespN(jj),G]=SWFEval(reqRespN(jj,:),availData);
+0129             valGradN(jj,:)=G;
+0130         <span class="keyword">end</span>
+0131         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0132         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0133     <span class="keyword">case</span> {<span class="string">'GRBF'</span>,<span class="string">'RBF'</span>,<span class="string">'InRBF'</span>}
+0134         <span class="comment">%% Evaluation of the (Gradient-Enhanced) Radial Basis Functions (RBF/GRBF)</span>
+0135         parfor (jj=1:nbReqEval,numWorkers)
+0136             [valRespN(jj),G,varResp(jj)]=<a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>(reqRespN(jj,:),availData);
+0137             valGradN(jj,:)=G;
+0138         <span class="keyword">end</span>
+0139         <span class="comment">%% check interpolation</span>
+0140         <span class="keyword">if</span> availData.check
+0141             parfor (jj=1:size(samplingU,1),numWorkers)
+0142                 [checkZN(jj),G]=<a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>(samplingU(jj,:),availData);
+0143                 checkGZN(jj,:)=G;
+0144             <span class="keyword">end</span>
+0145             <span class="keyword">if</span> availData.normOn;
+0146                 checkZ=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(checkZN,<span class="string">'renorm'</span>,availData.norm.resp);
+0147             <span class="keyword">else</span>
+0148                 checkZ=checkZN;
+0149             <span class="keyword">end</span>
+0150             <a href="#_sub1" class="code" title="subfunction checkInterp(ZRef,ZApp,type)">checkInterp</a>(respI,checkZ,<span class="string">'resp'</span>)
+0151             <span class="keyword">if</span> availData.used.availGrad
+0152                 <span class="keyword">if</span> availData.normOn;
+0153                     checkGZ=<a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>(checkGZN,<span class="string">'renorm'</span>,availData.norm.sampling,availData.norm.resp);
+0154                 <span class="keyword">else</span>
+0155                     checkGZ=checkGZN;
+0156                 <span class="keyword">end</span>
+0157                 <a href="#_sub1" class="code" title="subfunction checkInterp(ZRef,ZApp,type)">checkInterp</a>(gradI,checkGZ,<span class="string">'grad'</span>)
+0158             <span class="keyword">end</span>
+0159         <span class="keyword">end</span>
+0160         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0161         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0162     <span class="keyword">case</span> {<span class="string">'KRG'</span>,<span class="string">'GKRG'</span>,<span class="string">'InKRG'</span>}
+0163         <span class="comment">%specific storage</span>
+0164         stoZN=valRespN;trZN=valRespN;
+0165         trGZN=valGradN;stoGZN=valGradN;
+0166         <span class="comment">%% Evaluation of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)</span>
+0167         <span class="comment">%parfor (jj=1:nbReqEval,numWorkers)</span>
+0168         <span class="keyword">for</span> jj=1:nbReqEval
+0169             [valRespN(jj),G,varResp(jj),detKRG]=<a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>(reqRespN(jj,:),availData);
+0170             valGradN(jj,:)=G;
+0171             stoZN(jj)=detKRG.stoZ;
+0172             trZN(jj)=detKRG.trZ;
+0173             trGZN(jj,:)=detKRG.trGZ;
+0174             stoGZN(jj,:)=detKRG.stoGZ;
+0175         <span class="keyword">end</span>
+0176         <span class="comment">%% check interpolation</span>
+0177         <span class="keyword">if</span> availData.check
+0178             parfor (jj=1:size(samplingU,1),numWorkers)
+0179                 [checkZN(jj),G]=<a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>(samplingU(jj,:),availData);
+0180                 checkGZN(jj,:)=G;
+0181             <span class="keyword">end</span>
+0182             <span class="keyword">if</span> availData.normOn;
+0183                 checkZ=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(checkZN,<span class="string">'renorm'</span>,availData.norm.resp);
+0184             <span class="keyword">else</span>
+0185                 checkZ=checkZN;
+0186             <span class="keyword">end</span>
+0187             <a href="#_sub1" class="code" title="subfunction checkInterp(ZRef,ZApp,type)">checkInterp</a>(respI,checkZ,<span class="string">'resp'</span>)
+0188             <span class="keyword">if</span> availData.used.availGrad
+0189                 <span class="keyword">if</span> availData.normOn;
+0190                     checkGZ=<a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>(checkGZN,<span class="string">'renorm'</span>,availData.norm.sampling,availData.norm.resp);
+0191                 <span class="keyword">else</span>
+0192                     checkGZ=checkGZN;
+0193                 <span class="keyword">end</span>
+0194                 <a href="#_sub1" class="code" title="subfunction checkInterp(ZRef,ZApp,type)">checkInterp</a>(gradI,checkGZ,<span class="string">'grad'</span>)
+0195             <span class="keyword">end</span>
+0196         <span class="keyword">end</span>
+0197     <span class="keyword">case</span> {<span class="string">'SVR'</span>,<span class="string">'InSVR'</span>,<span class="string">'GSVR'</span>}
+0198         <span class="comment">%% Evaluation of the (Gradient-Enhanced) SVR (SVR/GSVR)</span>
+0199         <span class="comment">%parfor (jj=1:nbReqEval,numWorkers)</span>
+0200         <span class="keyword">for</span> jj=1:nbReqEval
+0201             [valRespN(jj),G,varResp(jj)]=<a href="SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>(reqRespN(jj,:),availData);
+0202             valGradN(jj,:)=G;
+0203         <span class="keyword">end</span>
+0204         <span class="comment">%% check interpolation</span>
+0205         <span class="keyword">if</span> availData.check
+0206             parfor (jj=1:size(samplingU,1),numWorkers)
+0207                 [checkZN(jj),G]=<a href="SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>(samplingU(jj,:),availData);
+0208                 checkGZN(jj,:)=G;
+0209             <span class="keyword">end</span>
+0210             <span class="keyword">if</span> availData.normOn;
+0211                 checkZ=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(checkZN,<span class="string">'renorm'</span>,availData.norm.resp);
+0212             <span class="keyword">else</span>
+0213                 checkZ=checkZN;
+0214             <span class="keyword">end</span>
+0215             <a href="#_sub1" class="code" title="subfunction checkInterp(ZRef,ZApp,type)">checkInterp</a>(respI,checkZ,<span class="string">'resp'</span>)
+0216             <span class="keyword">if</span> availData.used.availGrad
+0217                 <span class="keyword">if</span> availData.normOn;
+0218                     checkGZ=<a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>(checkGZN,<span class="string">'renorm'</span>,availData.norm.sampling,availData.norm.resp);
+0219                 <span class="keyword">else</span>
+0220                     checkGZ=checkGZN;
+0221                 <span class="keyword">end</span>
+0222                 <a href="#_sub1" class="code" title="subfunction checkInterp(ZRef,ZApp,type)">checkInterp</a>(gradI,checkGZ,<span class="string">'grad'</span>)
+0223             <span class="keyword">end</span>
+0224         <span class="keyword">end</span>
+0225         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0226         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0227         
+0228     <span class="keyword">case</span> <span class="string">'DACE'</span>
+0229         <span class="comment">%% Evaluation du metamodele de Krigeage (DACE)</span>
+0230         <span class="keyword">for</span> jj=1:nbReqEval
+0231             [valRespN(jj),G,varResp(jj)]=predictor(reqRespN(jj,:),availData.model);
+0232             valGradN(jj,:)=G;
+0233         <span class="keyword">end</span>
+0234         <span class="comment">%% check interpolation</span>
+0235         <span class="keyword">if</span> availData.check
+0236             parfor (jj=1:size(samplingU,1),numWorkers)
+0237                 [checkZN(jj),G]=predictor(samplingU(jj,:),availData.model);
+0238                 checkGZN(jj,:)=G;
+0239             <span class="keyword">end</span>
+0240             <a href="#_sub1" class="code" title="subfunction checkInterp(ZRef,ZApp,type)">checkInterp</a>(respU,checkZN,<span class="string">'resp'</span>)
+0241         <span class="keyword">end</span>
+0242         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0243         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0244     <span class="keyword">case</span> <span class="string">'PRG'</span>
+0245         <span class="keyword">for</span> degre=availData.deg
+0246             <span class="comment">%% Evaluation of the polynomial regression surrogate model</span>
+0247             parfor (jj=1:nbReqEval,numWorkers)
+0248                 valRespN(jj)=LSEval(availData.prg.coef,reqRespN(jj,1),evalSample(jj,2),availData);
+0249                 <span class="comment">%calculation of the gradients</span>
+0250                 [GRG1,GRG2]=LSEvalD(availData.prg.coef,reqRespN(jj,1),evalSample(jj,2),availData);
+0251                 valGradN(jj,:)=[GRG1,GRG2];
+0252             <span class="keyword">end</span>
+0253         <span class="keyword">end</span>
+0254         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0255         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0256     <span class="keyword">case</span> <span class="string">'ILIN'</span>
+0257         <span class="comment">%% interpolation using linear shape functions</span>
+0258         parfor (jj=1:nbReqEval,numWorkers)
+0259             [valRespN(jj),G]=LInterpEval(reqRespN(jj,:),availData);
+0260             valGradN(jj,:)=G;
+0261         <span class="keyword">end</span>
+0262         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0263         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0264     <span class="keyword">case</span> <span class="string">'ILAG'</span>
+0265         <span class="comment">%% interpolation using linear shape functions based on Lagrange polynoms</span>
+0266         parfor (jj=1:nbReqEval,numWorkers)
+0267             [valRespN(jj),G]=LagInterpEval(reqRespN(jj,:),availData);
+0268             valGradN(jj,:)=G;
+0269             
+0270         <span class="keyword">end</span>
+0271     <span class="keyword">otherwise</span>
+0272         error([<span class="string">'Wrong type of surrogate model (see. on '</span>,mfilename,<span class="string">')'</span>]);
+0273         
+0274 <span class="keyword">end</span>
+0275 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0276 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0277 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0278 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0279 <span class="comment">% compute infill criteria</span>
+0280 explorEI=[];
+0281 exploitEI=[];
+0282 ei=[];
+0283 wei=[];
+0284 gei=[];
+0285 lcb=[];
+0286 <span class="keyword">if</span> availData.infill.on&amp;&amp;exist(<span class="string">'varResp'</span>,<span class="string">'var'</span>)
+0287     <span class="comment">%smallest response</span>
+0288     respMin=min(respU);
+0289     <span class="comment">%computation of infill criteria</span>
+0290     [ei,wei,gei,lcb,exploitEI,explorEI]=<a href="../../../GRENAT/src/crit/InfillCrit.html" class="code" title="function [EI,WEI,GEI,LCB,exploitEI,explorEI]=InfillCrit(respMin,Z,varZ,infillData)">InfillCrit</a>(respMin,valRespN,varResp,availData.infill);
+0291 <span class="keyword">end</span>
+0292 
+0293 
+0294 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0295 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0296 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0297 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0298 <span class="comment">% Renormalization of the data</span>
+0299 <span class="comment">% responses</span>
+0300 <span class="keyword">if</span> availData.norm.on
+0301     valResp=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(valRespN,<span class="string">'renorm'</span>,availData.norm.resp);
+0302     <span class="comment">%specific components</span>
+0303     <span class="keyword">if</span> exist(<span class="string">'stoZN'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZN'</span>,<span class="string">'var'</span>)
+0304         stoZ=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(stoZN,<span class="string">'renorm'</span>,availData.norm.resp);
+0305         trZ=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(trZN,<span class="string">'renorm'</span>,availData.norm.resp);
+0306     <span class="keyword">end</span>
+0307     <span class="comment">%gradients</span>
+0308     <span class="keyword">if</span> exist(<span class="string">'valGradN'</span>,<span class="string">'var'</span>)
+0309         valGrad=<a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>(valGradN,<span class="string">'renorm'</span>,availData.norm.sampling,availData.norm.resp);
+0310         <span class="keyword">if</span> exist(<span class="string">'stoGZN'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZN'</span>,<span class="string">'var'</span>)
+0311             stoGZ=<a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>(stoGZN,<span class="string">'renorm'</span>,availData.norm.sampling,availData.norm.resp);
+0312             trGZ=<a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>(trGZN,<span class="string">'renorm'</span>,availData.norm.sampling,availData.norm.resp);
+0313         <span class="keyword">end</span>
+0314     <span class="keyword">end</span>
+0315 <span class="keyword">else</span>
+0316     valResp=valRespN;
+0317     <span class="keyword">if</span> exist(<span class="string">'stoZN'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZN'</span>,<span class="string">'var'</span>)
+0318         stoZ=stoZN;
+0319         trZ=trZN;
+0320     <span class="keyword">end</span>
+0321     <span class="comment">%gradients</span>
+0322     <span class="keyword">if</span> exist(<span class="string">'valGradN'</span>,<span class="string">'var'</span>)
+0323         valGrad=valGradN;
+0324         <span class="keyword">if</span> exist(<span class="string">'stoGZN'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZN'</span>,<span class="string">'var'</span>)
+0325             stoGZ=stoGZN;
+0326             trGZ=trGZN;
+0327         <span class="keyword">end</span>
+0328     <span class="keyword">end</span>
+0329 <span class="keyword">end</span>
+0330 
+0331 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0332 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0333 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0334 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0335 <span class="comment">%reordering gradients</span>
+0336 <span class="keyword">if</span> np&gt;1
+0337     <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0338         stoGZFinal=zeros(nv);
+0339         trGZFinal=zeros(nv);
+0340     <span class="keyword">end</span>
+0341     GZ=zeros(nv);
+0342     <span class="keyword">if</span> nv(3)&gt;1
+0343         <span class="keyword">for</span> ll=1:nv(3)
+0344             tmp=valGrad(:,ll);
+0345             GZ(:,:,ll)=reshape(tmp,nv(1),nv(2));
+0346         <span class="keyword">end</span>
+0347         <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0348             <span class="keyword">for</span> ll=1:nv(3)
+0349                 tmp=stoGZ(:,ll);
+0350                 tmp1=trGZ(:,ll);
+0351                 stoGZFinal(:,:,ll)=reshape(tmp,nv(1),nv(2));
+0352                 trGZFinal(:,:,ll)=reshape(tmp1,nv(1),nv(2));
+0353             <span class="keyword">end</span>
+0354         <span class="keyword">end</span>
+0355     <span class="keyword">else</span>
+0356         GZ=valGrad;
+0357         <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0358             stoGZFinal=stoGZ;
+0359             trGZFinal=trGZ;
+0360         <span class="keyword">end</span>
+0361     <span class="keyword">end</span>
+0362 <span class="keyword">else</span>
+0363     GZ=valGradN;
+0364     <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0365         stoGZFinal=stoGZ;
+0366         trGZFinal=trGZ;
+0367     <span class="keyword">end</span>
+0368 <span class="keyword">end</span>
+0369 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0370 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0371 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0372 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0373 <span class="comment">%Storage of evaluations</span>
+0374 <span class="keyword">if</span> np&gt;1
+0375     <span class="keyword">if</span> nv(3)==1
+0376         <span class="keyword">if</span> exist(<span class="string">'stoZFinal'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZFinal'</span>,<span class="string">'var'</span>)
+0377             Z.stoZ=stoZFinal;
+0378             Z.trZ=trZFinal;
+0379         <span class="keyword">end</span>
+0380         Z.Z=valResp;
+0381         <span class="keyword">if</span> ~isempty(varResp);Z.var=varResp;<span class="keyword">end</span>
+0382         <span class="keyword">if</span> exist(<span class="string">'wei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(wei);Z.wei=wei;<span class="keyword">end</span>, <span class="keyword">end</span>
+0383         <span class="keyword">if</span> exist(<span class="string">'ei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(ei);Z.ei=ei;<span class="keyword">end</span>, <span class="keyword">end</span>
+0384         <span class="keyword">if</span> exist(<span class="string">'gei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(gei);Z.gei=gei;<span class="keyword">end</span>, <span class="keyword">end</span>
+0385         <span class="keyword">if</span> exist(<span class="string">'lcb'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(lcb);Z.lcb=lcb;<span class="keyword">end</span>, <span class="keyword">end</span>
+0386         <span class="keyword">if</span> exist(<span class="string">'explorEI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(explorEI);Z.explorEI=explorEI;<span class="keyword">end</span>, <span class="keyword">end</span>
+0387         <span class="keyword">if</span> exist(<span class="string">'exploitEI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(exploitEI);Z.exploitEI=exploitEI;<span class="keyword">end</span>, <span class="keyword">end</span>
+0388     <span class="keyword">else</span>
+0389         <span class="keyword">if</span> exist(<span class="string">'stoZFinal'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZFinal'</span>,<span class="string">'var'</span>)
+0390             Z.stoZ=reshape(stoZFinal,nv(1),nv(2));
+0391             Z.trZ=reshape(trZFinal,nv(1),nv(2));
+0392         <span class="keyword">end</span>
+0393         Z.Z=reshape(valResp,nv(1),nv(2));
+0394         <span class="keyword">if</span> ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));<span class="keyword">end</span>
+0395         <span class="keyword">if</span> exist(<span class="string">'wei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(wei);Z.wei=reshape(wei,nv(1),nv(2),size(wei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0396         <span class="keyword">if</span> exist(<span class="string">'ei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(ei);Z.ei=reshape(ei,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0397         <span class="keyword">if</span> exist(<span class="string">'gei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(gei);Z.gei=reshape(gei,nv(1),nv(2),size(gei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0398         <span class="keyword">if</span> exist(<span class="string">'lcb'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(lcb);Z.lcb=reshape(lcb,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0399         <span class="keyword">if</span> exist(<span class="string">'explorEI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(explorEI);Z.explorEI=reshape(explorEI,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0400         <span class="keyword">if</span> exist(<span class="string">'exploitEI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0401     <span class="keyword">end</span>
+0402 <span class="keyword">else</span>
+0403     <span class="keyword">if</span> exist(<span class="string">'stoZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZ'</span>,<span class="string">'var'</span>)
+0404         Z.stoZ=reshape(stoZ,nv(1),nv(2));
+0405         Z.trZ=reshape(trZ,nv(1),nv(2));
+0406     <span class="keyword">end</span>
+0407     Z.Z=reshape(valResp,nv(1),nv(2));
+0408     <span class="keyword">if</span> ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));<span class="keyword">end</span>
+0409     <span class="keyword">if</span> exist(<span class="string">'wei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(wei);Z.wei=reshape(wei,nv(1),nv(2),size(wei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0410     <span class="keyword">if</span> exist(<span class="string">'ei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(ei);Z.ei=reshape(ei,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0411     <span class="keyword">if</span> exist(<span class="string">'gei'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(gei);Z.gei=reshape(gei,nv(1),nv(2),size(gei,3));<span class="keyword">end</span>, <span class="keyword">end</span>
+0412     <span class="keyword">if</span> exist(<span class="string">'lcb'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(lcb);Z.lcb=reshape(lcb,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0413     <span class="keyword">if</span> exist(<span class="string">'explorEI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(explorEI);Z.explorEI=reshape(explorEI,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0414     <span class="keyword">if</span> exist(<span class="string">'exploitEI'</span>,<span class="string">'var'</span>);<span class="keyword">if</span> ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,nv(1),nv(2));<span class="keyword">end</span>, <span class="keyword">end</span>
+0415 <span class="keyword">end</span>
+0416 Z.GZ=GZ;
+0417 <span class="keyword">if</span> exist(<span class="string">'stoGZFinal'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'trGZFinal'</span>,<span class="string">'var'</span>)==1
+0418     Z.stoGZ=stoGZFinal;Z.trGZ=trGZFinal;
+0419 <span class="keyword">end</span>
+0420 
+0421 <span class="comment">%end of evaluations</span>
+0422 <span class="keyword">if</span> nbReqEval&gt;1&amp;&amp;Verb
+0423     fprintf(<span class="string">'++ Evaluation at %i points\n'</span>,nbReqEval);
+0424     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
+0425     fprintf(<span class="string">'#########################################\n'</span>);
+0426 <span class="keyword">end</span>
+0427 
+0428 <span class="keyword">end</span>
+0429 
+0430 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0431 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0432 <span class="comment">%%% function for checking interpolation</span>
+0433 <a name="_sub1" href="#_subfunctions" class="code">function checkInterp(ZRef,ZApp,type)</a>
+0434 limitResp=1e-4;
+0435 limitGrad=1e-4;
+0436 <span class="keyword">switch</span> type
+0437     <span class="keyword">case</span> <span class="string">'resp'</span>
+0438         diffZ=abs(ZApp-ZRef);
+0439         IXZcheck=find(diffZ&gt;limitResp);
+0440         <span class="keyword">if</span> ~isempty(IXZcheck)
+0441             fprintf(<span class="string">'Interpolation issue (responses)\n'</span>)
+0442             fprintf(<span class="string">'Num\t||DiffZ \t||Eval \t\t||Zcheck\n'</span>);
+0443             conc=vertcat(IXZcheck',diffZ(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
+0444             fprintf(<span class="string">'%d\t||%4.2e\t||%4.2e\t||%4.2e\n'</span>,conc(:))
+0445         <span class="keyword">end</span>
+0446     <span class="keyword">case</span> <span class="string">'grad'</span>
+0447         diffGZ=abs(ZApp-ZRef);
+0448         IXGZcheck=find(diffGZ&gt;limitGrad);
+0449         <span class="keyword">if</span> ~isempty(IXGZcheck)
+0450             [IXi,~]=ind2sub(size(diffGZ),IXGZcheck);
+0451             IXi=unique(IXi);
+0452             fprintf(<span class="string">'Interpolation issue (gradient)\n'</span>)
+0453             nb_var=size(ZApp,2);
+0454             tt=repmat(<span class="string">'\t\t'</span>,1,nb_var);
+0455             fprintf([<span class="string">'Num\t||DiffGZ'</span> tt <span class="string">'||Grad'</span> tt <span class="string">'||GZcheck\n'</span>]);
+0456             conc=[IXi,diffGZ(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
+0457             tt=repmat(<span class="string">'%4.2e\t'</span>,1,nb_var);
+0458             tt=[<span class="string">'%d\t||'</span> tt <span class="string">'||'</span> tt <span class="string">'||'</span> tt <span class="string">'\n'</span>];
+0459             fprintf(tt,conc(:))
+0460             
+0461         <span class="keyword">end</span>
+0462         diffNG=abs(sqrt(sum(ZRef.^2,2))-sqrt(sum(ZApp.^2,2)));
+0463         IXNGZverif=find(diffNG&gt;limitGrad);
+0464         <span class="keyword">if</span> ~isempty(IXNGZverif)
+0465             fprintf(<span class="string">'Interpolation issue (gradient)\n'</span>)
+0466             fprintf(<span class="string">'DiffNG\n'</span>)
+0467             fprintf(<span class="string">'%4.2e\n'</span>,diffNG(IXNGZverif))
+0468         <span class="keyword">end</span>
+0469 <span class="keyword">end</span>
+0470 <span class="keyword">end</span>
+0471 
+0472 
+0473</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

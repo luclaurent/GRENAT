@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of README</title>
+  <meta name="keywords" content="README">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GRENAT -->
+<h1>README
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 GRENAT 
+0002 =======
+0003 GRENAT  = **GR**adient **EN**hanced **A**pproximation **T**oolbox
+0004 
+0005 
+0006 GRENAT regroups many techniques <span class="keyword">for</span> generating surrogate models. These surrogate models can be built using responses and gradients obtained on some sample points.
+0007 
+0008 The available surrogate models are
+0009 
+0010 * Radial Basis Function (RBF/GRBF)
+0011 * Kriging/Cokriging (KRG/GKRG)
+0012 * Support Vector Regression (SVR/GSVR)
+0013 
+0014 
+0015 Features
+0016 ------
+0017 GRENAT are able to 
+0018 
+0019 * Normalize the input data
+0020 * Build the surrogate models
+0021 * Estimate hyperparameters (using optimizer and dedicated criteria)
+0022 * Evaluate the surrogate model at sample and non-sample points (and calculate the gradients of the approximation)
+0023 * Compute the variance of the prediction
+0024 * Compute the Cross-Validation of the surrogate model
+0025 * Compute the Expected Improvement (and derivate formulations)
+0026 
+0027 External included toolboxes
+0028 ------
+0029 
+0030 GRENAT uses the
+0031  
+0032 * [MultiDOE](https://bitbucket.org/luclaurent/multidoe) toolbox
+0033 * A modified version of the Particle Swarm Optimization Toolbox [PSOt](http://www.mathworks.com/matlabcentral/fileexchange/7506-particle-swarm-optimization-toolbox)
+0034 
+0035 These toolbox are included in GRENAT.
+0036 
+0037 First start
+0038 ------
+0039 
+0040 Some examples are proposed by functions:
+0041 
+0042 * `ExampleUse1D.m` 1 dimensional example
+0043 * `ExampleUse2D.m` 2 dimensional example
+0044 * `ExampleUseDOE.m` example using the included sampling techniques
+0045 
+0046 
+0047 Requirements
+0048 ------
+0049 The toolbox requires:
+0050 
+0051 
+0052 * the Global Optimization Toolbox of the Matlab's software (optional)
+0053 * the Parallel Computing Toolbox of the Matlab's software (optional)
+0054 
+0055 [Documentation](https://goo.gl/t0hmjG)
+0056 ------
+0057 The automatic building of the documentation is based on the [m2html](http://www.artefact.tk/software/matlab/m2html/) software.
+0058 
+0059 The obtained documentation is available here.
+0060 
+0061 References
+0062 ----
+0063 Approachs available in this toolbox are presented in the following documents:
+0064 
+0065 * [Luc Laurent PhD Thesis](https://tel.archives-ouvertes.fr/tel-00972299) in french
+0066 * L. Laurent, P.-A. Boucard, and B. Soulier. Generation of a cokriging metamodel using a multiparametric strategy. *Computational Mechanics*, 51(2):151–169, February 2013. doi: [10.1007/s00466-012-0711-0](https://dx.doi.org/10.1007/s00466-012-0711-0)
+0067 * L. Laurent, P.-A. Boucard, and B. Soulier. A dedicated multiparametric strategy <span class="keyword">for</span> the fast construction of a cokriging metamodel. *Computers &amp; Structures*, 124(0):61–73, 2013. doi: [10.1016/j.compstruc.2013.03.012](https://dx.doi.org/10.1016/j.compstruc.2013.03.012)
+0068 * L. Laurent, P.-A. Boucard, and B. Soulier. Fast multilevel optimization using a multiparametric strategy and a cokriging metamodel. In Y. Tsompanakis, B.H.V. Topping, (Editors), *Proceedings of the Second International Conference on Soft Computing Technology in Civil, Structural and Environmental Engineering*, 6-9 September, number Paper 50. Civil-Comp Press, Stirlingshire, UK, 2011. doi: [10.4203/ccp.97.50](https://dx.doi.org/10.4203/ccp.97.50)
+0069 
+0070 License ![GNU GPLv3](http://www.gnu.org/graphics/gplv3-88x31.png)
+0071 ----
+0072 
+0073     GRENAT - GRadient ENhanced Approximation Toolbox 
+0074     A toolbox <span class="keyword">for</span> generating and exploiting gradient-enhanced surrogate models
+0075     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;
+0076 
+0077     This program is free software: you can redistribute it and/or modify
+0078     it under the terms of the GNU General Public License as published by
+0079     the Free Software Foundation, either version 3 of the License, or
+0080     (at your option) any later version.
+0081 
+0082     This program is distributed in the hope that it will be useful,
+0083     but WITHOUT ANY WARRANTY; without even the implied warranty of
+0084     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+0085     GNU General Public License <span class="keyword">for</span> more details.
+0086 
+0087     You should have received a copy of the GNU General Public License
+0088     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

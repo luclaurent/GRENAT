@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mono_01_004</title>
+  <meta name="keywords" content="mono_01_004">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html kernANDfun --><!-- menu.html monomial_basis -->
+<h1>mono_01_004
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=mono_01_004(X) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=mono_01_004(X)</a>
+0002 
+0003 derprem=false;dersecond=false;
+0004 <span class="keyword">if</span> nargout&gt;=4;derprem=true;<span class="keyword">end</span>
+0005 <span class="keyword">if</span> nargout==6;dersecond=true;<span class="keyword">end</span>
+0006 
+0007 MatX=[
+0008  ones(size(X,1),1) <span class="keyword">...</span>
+0009 X(:,1) <span class="keyword">...</span>
+0010 X(:,2) <span class="keyword">...</span>
+0011 X(:,3) <span class="keyword">...</span>
+0012 X(:,4)
+0013 ];
+0014 nbmono=5;
+0015 
+0016 <span class="keyword">if</span> derprem
+0017 MatDX=cell(1,size(X,2));
+0018 
+0019 MatDX{1}=[
+0020 zeros(size(X,1),1) <span class="keyword">...</span>
+0021 ones(size(X,1),1) <span class="keyword">...</span>
+0022 zeros(size(X,1),1) <span class="keyword">...</span>
+0023 zeros(size(X,1),1) <span class="keyword">...</span>
+0024 zeros(size(X,1),1) <span class="keyword">...</span>
+0025 ];
+0026 
+0027 MatDX{2}=[
+0028 zeros(size(X,1),1) <span class="keyword">...</span>
+0029 zeros(size(X,1),1) <span class="keyword">...</span>
+0030 ones(size(X,1),1) <span class="keyword">...</span>
+0031 zeros(size(X,1),1) <span class="keyword">...</span>
+0032 zeros(size(X,1),1) <span class="keyword">...</span>
+0033 ];
+0034 
+0035 MatDX{3}=[
+0036 zeros(size(X,1),1) <span class="keyword">...</span>
+0037 zeros(size(X,1),1) <span class="keyword">...</span>
+0038 zeros(size(X,1),1) <span class="keyword">...</span>
+0039 ones(size(X,1),1) <span class="keyword">...</span>
+0040 zeros(size(X,1),1) <span class="keyword">...</span>
+0041 ];
+0042 
+0043 MatDX{4}=[
+0044 zeros(size(X,1),1) <span class="keyword">...</span>
+0045 zeros(size(X,1),1) <span class="keyword">...</span>
+0046 zeros(size(X,1),1) <span class="keyword">...</span>
+0047 zeros(size(X,1),1) <span class="keyword">...</span>
+0048 ones(size(X,1),1) <span class="keyword">...</span>
+0049 ];
+0050 
+0051 CoefDX=[
+0052 0 1 0 0 0 
+0053 0 0 1 0 0 
+0054 0 0 0 1 0 
+0055 0 0 0 0 1 
+0056 ];
+0057 <span class="keyword">end</span>
+0058 
+0059 <span class="keyword">if</span> dersecond
+0060 MatDDX=cell(size(X,2),size(X,2));
+0061 
+0062 MatDDX{1}=[
+0063 zeros(size(X,1),1) <span class="keyword">...</span>
+0064 zeros(size(X,1),1) <span class="keyword">...</span>
+0065 zeros(size(X,1),1) <span class="keyword">...</span>
+0066 zeros(size(X,1),1) <span class="keyword">...</span>
+0067 zeros(size(X,1),1) <span class="keyword">...</span>
+0068 ];
+0069 
+0070 MatDDX{2}=[
+0071 zeros(size(X,1),1) <span class="keyword">...</span>
+0072 zeros(size(X,1),1) <span class="keyword">...</span>
+0073 zeros(size(X,1),1) <span class="keyword">...</span>
+0074 zeros(size(X,1),1) <span class="keyword">...</span>
+0075 zeros(size(X,1),1) <span class="keyword">...</span>
+0076 ];
+0077 
+0078 MatDDX{3}=[
+0079 zeros(size(X,1),1) <span class="keyword">...</span>
+0080 zeros(size(X,1),1) <span class="keyword">...</span>
+0081 zeros(size(X,1),1) <span class="keyword">...</span>
+0082 zeros(size(X,1),1) <span class="keyword">...</span>
+0083 zeros(size(X,1),1) <span class="keyword">...</span>
+0084 ];
+0085 
+0086 MatDDX{4}=[
+0087 zeros(size(X,1),1) <span class="keyword">...</span>
+0088 zeros(size(X,1),1) <span class="keyword">...</span>
+0089 zeros(size(X,1),1) <span class="keyword">...</span>
+0090 zeros(size(X,1),1) <span class="keyword">...</span>
+0091 zeros(size(X,1),1) <span class="keyword">...</span>
+0092 ];
+0093 
+0094 MatDDX{5}=[
+0095 zeros(size(X,1),1) <span class="keyword">...</span>
+0096 zeros(size(X,1),1) <span class="keyword">...</span>
+0097 zeros(size(X,1),1) <span class="keyword">...</span>
+0098 zeros(size(X,1),1) <span class="keyword">...</span>
+0099 zeros(size(X,1),1) <span class="keyword">...</span>
+0100 ];
+0101 
+0102 MatDDX{6}=[
+0103 zeros(size(X,1),1) <span class="keyword">...</span>
+0104 zeros(size(X,1),1) <span class="keyword">...</span>
+0105 zeros(size(X,1),1) <span class="keyword">...</span>
+0106 zeros(size(X,1),1) <span class="keyword">...</span>
+0107 zeros(size(X,1),1) <span class="keyword">...</span>
+0108 ];
+0109 
+0110 MatDDX{7}=[
+0111 zeros(size(X,1),1) <span class="keyword">...</span>
+0112 zeros(size(X,1),1) <span class="keyword">...</span>
+0113 zeros(size(X,1),1) <span class="keyword">...</span>
+0114 zeros(size(X,1),1) <span class="keyword">...</span>
+0115 zeros(size(X,1),1) <span class="keyword">...</span>
+0116 ];
+0117 
+0118 MatDDX{8}=[
+0119 zeros(size(X,1),1) <span class="keyword">...</span>
+0120 zeros(size(X,1),1) <span class="keyword">...</span>
+0121 zeros(size(X,1),1) <span class="keyword">...</span>
+0122 zeros(size(X,1),1) <span class="keyword">...</span>
+0123 zeros(size(X,1),1) <span class="keyword">...</span>
+0124 ];
+0125 
+0126 MatDDX{9}=[
+0127 zeros(size(X,1),1) <span class="keyword">...</span>
+0128 zeros(size(X,1),1) <span class="keyword">...</span>
+0129 zeros(size(X,1),1) <span class="keyword">...</span>
+0130 zeros(size(X,1),1) <span class="keyword">...</span>
+0131 zeros(size(X,1),1) <span class="keyword">...</span>
+0132 ];
+0133 
+0134 MatDDX{10}=[
+0135 zeros(size(X,1),1) <span class="keyword">...</span>
+0136 zeros(size(X,1),1) <span class="keyword">...</span>
+0137 zeros(size(X,1),1) <span class="keyword">...</span>
+0138 zeros(size(X,1),1) <span class="keyword">...</span>
+0139 zeros(size(X,1),1) <span class="keyword">...</span>
+0140 ];
+0141 
+0142 MatDDX{11}=[
+0143 zeros(size(X,1),1) <span class="keyword">...</span>
+0144 zeros(size(X,1),1) <span class="keyword">...</span>
+0145 zeros(size(X,1),1) <span class="keyword">...</span>
+0146 zeros(size(X,1),1) <span class="keyword">...</span>
+0147 zeros(size(X,1),1) <span class="keyword">...</span>
+0148 ];
+0149 
+0150 MatDDX{12}=[
+0151 zeros(size(X,1),1) <span class="keyword">...</span>
+0152 zeros(size(X,1),1) <span class="keyword">...</span>
+0153 zeros(size(X,1),1) <span class="keyword">...</span>
+0154 zeros(size(X,1),1) <span class="keyword">...</span>
+0155 zeros(size(X,1),1) <span class="keyword">...</span>
+0156 ];
+0157 
+0158 MatDDX{13}=[
+0159 zeros(size(X,1),1) <span class="keyword">...</span>
+0160 zeros(size(X,1),1) <span class="keyword">...</span>
+0161 zeros(size(X,1),1) <span class="keyword">...</span>
+0162 zeros(size(X,1),1) <span class="keyword">...</span>
+0163 zeros(size(X,1),1) <span class="keyword">...</span>
+0164 ];
+0165 
+0166 MatDDX{14}=[
+0167 zeros(size(X,1),1) <span class="keyword">...</span>
+0168 zeros(size(X,1),1) <span class="keyword">...</span>
+0169 zeros(size(X,1),1) <span class="keyword">...</span>
+0170 zeros(size(X,1),1) <span class="keyword">...</span>
+0171 zeros(size(X,1),1) <span class="keyword">...</span>
+0172 ];
+0173 
+0174 MatDDX{15}=[
+0175 zeros(size(X,1),1) <span class="keyword">...</span>
+0176 zeros(size(X,1),1) <span class="keyword">...</span>
+0177 zeros(size(X,1),1) <span class="keyword">...</span>
+0178 zeros(size(X,1),1) <span class="keyword">...</span>
+0179 zeros(size(X,1),1) <span class="keyword">...</span>
+0180 ];
+0181 
+0182 MatDDX{16}=[
+0183 zeros(size(X,1),1) <span class="keyword">...</span>
+0184 zeros(size(X,1),1) <span class="keyword">...</span>
+0185 zeros(size(X,1),1) <span class="keyword">...</span>
+0186 zeros(size(X,1),1) <span class="keyword">...</span>
+0187 zeros(size(X,1),1) <span class="keyword">...</span>
+0188 ];
+0189 
+0190 CoefDDX=[
+0191 0 0 0 0 0 
+0192 0 0 0 0 0 
+0193 0 0 0 0 0 
+0194 0 0 0 0 0 
+0195 0 0 0 0 0 
+0196 0 0 0 0 0 
+0197 0 0 0 0 0 
+0198 0 0 0 0 0 
+0199 0 0 0 0 0 
+0200 0 0 0 0 0 
+0201 0 0 0 0 0 
+0202 0 0 0 0 0 
+0203 0 0 0 0 0 
+0204 0 0 0 0 0 
+0205 0 0 0 0 0 
+0206 0 0 0 0 0 
+0207 ];
+0208 <span class="keyword">end</span>
+0209 
+0210 <span class="keyword">end</span>
+0211</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

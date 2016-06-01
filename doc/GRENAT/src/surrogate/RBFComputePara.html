@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RBFComputePara</title>
+  <meta name="keywords" content="RBFComputePara">
+  <meta name="description" content="% function for automatic calculation of the empirical value of the hyperparameters">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>RBFComputePara
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% function for automatic calculation of the empirical value of the hyperparameters</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function para=RBFComputePara(samplingIn,dataRBF) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function for automatic calculation of the empirical value of the hyperparameters
+ L. LAURENT -- 23/02/2012 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% function for automatic calculation of the empirical value of the hyperparameters</span>
+0002 <span class="comment">% L. LAURENT -- 23/02/2012 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <a name="_sub0" href="#_subfunctions" class="code">function para=RBFComputePara(samplingIn,dataRBF)</a>
+0005 
+0006 <span class="comment">% choice of the strategy</span>
+0007 <span class="keyword">if</span> isfield(dataRBF.para,<span class="string">'type'</span>)
+0008     type=dataRBF.para.type; <span class="comment">%Hardy/Franke or manual</span>
+0009 <span class="keyword">else</span>
+0010     type=<span class="string">'Manu'</span>;
+0011 <span class="keyword">end</span>
+0012 <span class="comment">% Aniso or not</span>
+0013 aniso=dataRBF.para.aniso;
+0014 
+0015 <span class="comment">%Nb of variables and points</span>
+0016 np=size(samplingIn,2);
+0017 ns=size(samplingIn,1);
+0018 
+0019 <span class="comment">%depending on the chosen strategy</span>
+0020 <span class="keyword">switch</span> type
+0021     <span class="keyword">case</span> <span class="string">'Hardy'</span> <span class="comment">%c=0.815d with d=1/N*sum di where di is the distance between the point i and the closest neighbor</span>
+0022         <span class="keyword">if</span> aniso
+0023             <span class="comment">%compute smallest distances</span>
+0024             dmin=zeros(ns,np);
+0025             <span class="keyword">for</span> ii=1:ns
+0026                 v=repmat(samplingIn(ii,:),ns-1,1)-samplingIn([(1:ii-1) (ii+1:end)],:) ;
+0027                 d=sqrt(sum(v.^2,2));
+0028                 [~,IX]=min(d);
+0029                 dmin(ii,:)=abs(v(IX,:));
+0030             <span class="keyword">end</span>
+0031         <span class="keyword">else</span>
+0032             <span class="comment">%compute smallest distances</span>
+0033             dmin=zeros(1,ns);
+0034             <span class="keyword">for</span> ii=1:ns
+0035                 v=repmat(samplingIn(ii,:),ns-1,1)-samplingIn([(1:ii-1) (ii+1:end)],:) ;
+0036                 d=sqrt(sum(v.^2,2));
+0037                 dmin(ii)=min(d);
+0038             <span class="keyword">end</span>
+0039         <span class="keyword">end</span>
+0040         
+0041         para=0.815*1/ns*sum(dmin);
+0042     <span class="keyword">case</span> <span class="string">'Franke'</span>
+0043         <span class="keyword">if</span> aniso
+0044             <span class="comment">%compute smallest distances</span>
+0045             D=zeros(np,1);
+0046             <span class="keyword">for</span> ii=1:np
+0047                 D(ii)=abs(max(samplingIn(ii,:))-min(samplingIn(ii,:)));
+0048             <span class="keyword">end</span>
+0049         <span class="keyword">else</span>
+0050             <span class="comment">%compute smallest distances</span>
+0051             D=zeros(1,ns);
+0052             <span class="keyword">for</span> ii=1:ns
+0053                 v=repmat(samplingIn(:,ii),np,ns)-samplingIn;
+0054                 d=sqrt(sum(v.^2,2));
+0055                 D(ii)=max(d);
+0056             <span class="keyword">end</span>
+0057         <span class="keyword">end</span>
+0058         para=1.25*1/ns*D;
+0059         
+0060     <span class="keyword">otherwise</span>
+0061         para=dataRBF.para.l.val;
+0062 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

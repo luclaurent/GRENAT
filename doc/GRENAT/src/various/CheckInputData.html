@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CheckInputData</title>
+  <meta name="keywords" content="CheckInputData">
+  <meta name="description" content="% check input data for finding missing information">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html various -->
+<h1>CheckInputData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% check input data for finding missing information</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [ret]=CheckInputData(sampling,resp,grad) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% check input data for finding missing information
+ L. LAURENT -- 12/06/2012 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/surrogate/BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li><li><a href="../../../GRENAT/src/surrogate/RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% check input data for finding missing information</span>
+0002 <span class="comment">% L. LAURENT -- 12/06/2012 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <a name="_sub0" href="#_subfunctions" class="code">function [ret]=CheckInputData(sampling,resp,grad)</a>
+0022 
+0023 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0025 fprintf(<span class="string">' &gt;&gt; Check missing data \n'</span>);
+0026 
+0027 <span class="comment">%number of variables</span>
+0028 np=size(sampling,2);
+0029 <span class="comment">%number of sample points</span>
+0030 ns=size(sampling,1);
+0031 emptyGrad=isempty(grad);
+0032 
+0033 <span class="comment">%look for missing data in responses</span>
+0034 missResp=isnan(resp);
+0035 nbMissResp=sum(missResp);
+0036 ixMissResp=find(missResp==1);
+0037 ixAvailResp=find(missResp==0);
+0038 <span class="keyword">if</span> nbMissResp==ns;missRespAl=true;<span class="keyword">else</span> missRespAl=false;<span class="keyword">end</span>
+0039 
+0040 <span class="comment">%look for missing data in gradients</span>
+0041 <span class="keyword">if</span> ~emptyGrad
+0042     <span class="comment">%classical matrix of gradients</span>
+0043     missGrad=isnan(grad);
+0044     nbMissGrad=sum(missGrad(:));
+0045     [r,c]=find(missGrad==1);
+0046     ixMissGrad=[r c];
+0047     [r,c]=find(missGrad==0);
+0048     ixAvailGrad=[r c];
+0049     [ix]=find(missGrad==1);
+0050     ixMissGradLine=ix;
+0051     [ix]=find(missGrad==0);
+0052     ixAvailGradLine=ix;
+0053     <span class="comment">%gradients from surrogate model</span>
+0054     missGradT=isnan(grad');
+0055     [r,c]=find(missGradT==1);
+0056     ixMissGradT=[r c];
+0057     [r,c]=find(missGradT==0);
+0058     ixAvailGradT=[r c];
+0059     [ix]=find(missGradT==1);
+0060     ixMissGradtLine=ix;
+0061     [ix]=find(missGradT==0);
+0062     ixAvailGradTLine=ix;
+0063     <span class="keyword">if</span> nbMissGrad==ns*np;missGradAll=true;<span class="keyword">else</span> missGradAll=false;<span class="keyword">end</span>
+0064 <span class="keyword">else</span>
+0065     nbMissGrad=0;
+0066     missGrad=false;
+0067 <span class="keyword">end</span>
+0068 
+0069 
+0070 <span class="comment">%display information</span>
+0071 <span class="keyword">if</span> nbMissResp==0&amp;&amp;nbMissGrad==0
+0072     fprintf(<span class="string">'&gt;&gt;&gt; No missing data\n'</span>);
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="keyword">if</span> nbMissResp~=0
+0076     fprintf(<span class="string">'&gt;&gt;&gt; Missing response(s) at point(s):\n'</span>)
+0077     <span class="keyword">for</span> ii=1:nbMissResp
+0078         num_pts=ixMissResp(ii);
+0079         fprintf(<span class="string">' n%s %i (%4.2f'</span>,char(176),num_pts,sampling(num_pts,1));
+0080         <span class="keyword">if</span> np&gt;1;fprintf(<span class="string">',%4.2f'</span>,sampling(num_pts,2:end));<span class="keyword">end</span>
+0081         fprintf(<span class="string">')\n'</span>);
+0082     <span class="keyword">end</span>
+0083 <span class="keyword">end</span>
+0084 <span class="keyword">if</span> ~emptyGrad
+0085     <span class="keyword">if</span> nbMissGrad~=0
+0086         fprintf(<span class="string">'&gt;&gt;&gt; Missing gradient(s) at point(s):\n'</span>)
+0087         keyboard
+0088         <span class="keyword">for</span> ii=1:nbMissGrad
+0089             num_pts=ixMissGrad(ii,1);
+0090             component=ixMissGrad(ii,2);
+0091             fprintf(<span class="string">' n%s %i (%4.2f'</span>,char(176),num_pts,sampling(num_pts,1));
+0092             <span class="keyword">if</span> np&gt;1;fprintf(<span class="string">',%4.2f'</span>,sampling(num_pts,2:end));<span class="keyword">end</span>
+0093             fprintf(<span class="string">')'</span>);
+0094             fprintf(<span class="string">'  component: %i\n'</span>,component)
+0095         <span class="keyword">end</span>
+0096         fprintf(<span class="string">'----------------\n'</span>)
+0097     <span class="keyword">end</span>
+0098 <span class="keyword">end</span>
+0099 
+0100 <span class="comment">%extract informations</span>
+0101 <span class="keyword">if</span> any(missResp)
+0102     ret.resp.on=any(missResp);
+0103     ret.resp.mask=missResp;
+0104     ret.resp.nb=nbMissResp;
+0105     ret.resp.ixMiss=ixMissResp;
+0106     ret.resp.ixAvail=ixAvailResp;
+0107     ret.resp.all=missRespAl;
+0108 <span class="keyword">else</span>
+0109     ret.resp.on=false;
+0110     ret.resp.nb=0;
+0111     ret.resp.all=false;
+0112 <span class="keyword">end</span>
+0113 
+0114 <span class="keyword">if</span> any(missGrad(:))
+0115     ret.grad.on=any(missGrad(:));
+0116     ret.grad.mask=missGrad;
+0117     ret.grad.nb=nbMissGrad;
+0118     ret.grad.ixMiss=ixMissGrad;
+0119     ret.grad.ixMissLine=ixMissGradLine;
+0120     ret.grad.ixAvailLine=ixAvailGradLine;
+0121     ret.grad.ixAvail=ixAvailGrad;
+0122     ret.grad.ixtMiss=ixMissGradT;
+0123     ret.grad.ixtMissLine=ixMissGradtLine;
+0124     ret.grad.ixtAvailLine=ixAvailGradTLine;
+0125     ret.grad.ixtAvail=ixAvailGradT;
+0126     ret.grad.all=missGradAll;
+0127 <span class="keyword">else</span>
+0128     ret.grad.on=false;
+0129     ret.grad.nb=0;
+0130     ret.grad.all=false;
+0131 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

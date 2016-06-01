@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of BuildMeta</title>
+  <meta name="keywords" content="BuildMeta">
+  <meta name="description" content="% function for building surrogate model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>BuildMeta
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% function for building surrogate model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function for building surrogate model
+ L. LAURENT -- 04/12/2011 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="PrepIn.html" class="code" title="function ret=PrepIn(samplingIn,respIn,gradIn,metaData,missData)">PrepIn</a>	% Preparation for Indirect Gradient-Enhanced Surrogate Models</li><li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li><li><a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>	% check input data for finding missing information</li><li><a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>	% Normalization and renormalization of the Data</li><li><a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>	% normalization and renormalization of the gradient data</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [Indirect,Classical]=CheckGE(typeSurrogate)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% function for building surrogate model</span>
+0002 <span class="comment">% L. LAURENT -- 04/12/2011 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <a name="_sub0" href="#_subfunctions" class="code">function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)</a>
+0022 
+0023 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
+0024 fprintf(<span class="string">'    &gt;&gt;&gt; BUILDING SURROGATE MODEL &lt;&lt;&lt;\n'</span>);
+0025 [tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0026 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0027 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0028 <span class="comment">%taking into account gradients or not</span>
+0029 availGrad=false;
+0030 availGradTxt=<span class="string">'No'</span>;
+0031 <span class="keyword">if</span>  ~isempty(gradIn);
+0032     availGrad=true;
+0033     availGradTxt=<span class="string">'Yes'</span>;
+0034 <span class="keyword">end</span>
+0035 fprintf(<span class="string">'\n++ Gradients are available: %s\n'</span>,availGradTxt);
+0036 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0037 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0038 <span class="comment">%number of design variables</span>
+0039 np=size(samplingIn,2);
+0040 <span class="comment">%number of sample points</span>
+0041 ns=size(samplingIn,1);
+0042 fprintf(<span class="string">' &gt;&gt; Number of design variables: %d \n &gt;&gt; Number of sample points: %d\n'</span>,np,ns);
+0043 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0044 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0045 <span class="comment">%Normalization of the input data</span>
+0046 fprintf(<span class="string">' &gt;&gt; Normalization: '</span>);<span class="keyword">if</span> metaData.normOn; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
+0047 <span class="keyword">if</span> metaData.normOn
+0048     <span class="comment">%normalization of the data</span>
+0049     [respN,infoDataR]=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(respIn,<span class="string">'norm'</span>);
+0050     [samplingN,infoDataS]=<a href="../../../GRENAT/src/various/NormRenorm.html" class="code" title="function [out,infoData]=NormRenorm(in,type,infoData)">NormRenorm</a>(samplingIn,<span class="string">'norm'</span>);
+0051     <span class="keyword">if</span> availGrad
+0052         gradN=<a href="../../../GRENAT/src/various/NormRenormG.html" class="code" title="function [out]=NormRenormG(in,type,infoDataS,infoDataR)">NormRenormG</a>(gradIn,<span class="string">'norm'</span>,infoDataS,infoDataR);
+0053     <span class="keyword">else</span>
+0054         gradN=[];
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">else</span>
+0057     respN=respIn;
+0058     samplingN=samplingIn;
+0059     gradN=gradIn;
+0060     infoDataR.std=[];
+0061     infoDataR.mean=[];
+0062     infoDataS.std=[];
+0063     infoDataS.mean=[];
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0067 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0068 <span class="comment">%Check input data (find missing data)</span>
+0069 [metaData.miss]=<a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>(samplingN,respN,gradN);
+0070 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0071 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0072 <span class="comment">%%%%%%% Building various surrogate models</span>
+0073 <span class="comment">%variable for storing informations</span>
+0074 outMeta=[];
+0075 <span class="comment">%type of surrogate model</span>
+0076 typeMeta=metaData.type;
+0077 
+0078 <span class="comment">%check indirect, classical or non-gradient-based approach</span>
+0079 [InGE,cGE]=<a href="#_sub1" class="code" title="subfunction [Indirect,Classical]=CheckGE(typeSurrogate)">CheckGE</a>(typeMeta);
+0080 <span class="comment">%%in the case of Indirect-gradient-based approach</span>
+0081 <span class="keyword">if</span> InGE
+0082     IndirectData=<a href="PrepIn.html" class="code" title="function ret=PrepIn(samplingIn,respIn,gradIn,metaData,missData)">PrepIn</a>(samplingIn,respIn,gradIn,metaData,metaData.miss);
+0083     samplingOk=IndirectData.new.sampling;
+0084     respOk=IndirectData.new.resp;
+0085     gradOk=[];
+0086     fprintf(<span class="string">'\n%s\n'</span>,[<span class="string">'&gt;&gt; Indirect gradient-enhanced approach'</span>]);
+0087 <span class="keyword">elseif</span> cGE
+0088     samplingOk=samplingN;
+0089     respOk=respN;
+0090     gradOk=gradN;
+0091 <span class="keyword">else</span>
+0092     samplingOk=samplingN;
+0093     respOk=respN;
+0094     gradOk=[];
+0095 <span class="keyword">end</span>
+0096 
+0097 <span class="keyword">if</span> metaData.normOn
+0098     metaData.norm.resp=infoDataR;
+0099     metaData.norm.sampling=infoDataS;
+0100 <span class="keyword">end</span>
+0101 
+0102 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0103 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0104 <span class="comment">%Building surrogate model</span>
+0105 <span class="keyword">switch</span> typeMeta
+0106     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0107     <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0108     <span class="keyword">case</span> <span class="string">'SWF'</span>
+0109         <span class="comment">%% Building of the 'Shepard Weighting Functions' surrogate model</span>
+0110         outMeta=SWFBuild(samplingOk,respOk,gradOk,metaData);
+0111         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0112         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0113     <span class="keyword">case</span> {<span class="string">'RBF'</span>,<span class="string">'InRBF'</span>,<span class="string">'GRBF'</span>}
+0114         <span class="comment">%% Building of the (Gradient-Enhanced) Radial Basis Functions (RBF/GRBF)</span>
+0115         outMeta=<a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>(samplingOk,respOk,gradOk,metaData);
+0116         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0117         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0118     <span class="keyword">case</span> {<span class="string">'KRG'</span>,<span class="string">'InKRG'</span>,<span class="string">'GKRG'</span>}
+0119         <span class="comment">%% Building of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)</span>
+0120         outMeta=<a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>(samplingOk,respOk,gradOk,metaData);
+0121         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0122         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0123     <span class="keyword">case</span> {<span class="string">'SVR'</span>,<span class="string">'InSVR'</span>,<span class="string">'GSVR'</span>}
+0124         <span class="comment">%% Building of the (Gradient-Enhanced) SVR (SVR/GSVR)</span>
+0125         outMeta=<a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>(samplingOk,respOk,gradOk,metaData);
+0126         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0127         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0128     <span class="keyword">case</span> {<span class="string">'DACE'</span>,<span class="string">'InDACE'</span>}
+0129         <span class="comment">%% Construction du metamodele de Krigeage (DACE)</span>
+0130         fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Krigeage (Toolbox DACE)'</span> textf]);
+0131         <span class="keyword">if</span> metaData.para.estim
+0132             <span class="keyword">switch</span> metaData.corr
+0133                 <span class="keyword">case</span> {<span class="string">'correxpg'</span>}
+0134                     lb=[metaData.para.l_min.*ones(1,np), metaData.para.p_min];
+0135                     ub=[metaData.para.l_max.*ones(1,np), metaData.para.p_max];
+0136                 <span class="keyword">otherwise</span>
+0137                     lb=metaData.para.l_min.*ones(np,1);
+0138                     ub=metaData.para.l_max.*ones(np,1);
+0139             <span class="keyword">end</span>
+0140             theta0=(ub-lb)./2;
+0141             [dace.model,dace.perf]=dacefit(samplingN,respN,metaData.regr,metaData.corr,theta0,lb,ub);
+0142         <span class="keyword">else</span>
+0143             <span class="keyword">switch</span> metaData.corr
+0144                 <span class="keyword">case</span> {<span class="string">'correxpg'</span>}
+0145                     theta0=[metaData.para.l_val metaData.para.p_val];
+0146                 <span class="keyword">otherwise</span>
+0147                     theta0=metaData.para.l_val;
+0148             <span class="keyword">end</span>
+0149             [dace.model,dace.perf]=dacefit(samplingIn,respIn,metaData.regr,metaData.corr,theta0);
+0150         <span class="keyword">end</span>
+0151         outMeta=dace;
+0152         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0153         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0154     <span class="keyword">case</span> <span class="string">'PRG'</span>
+0155         ite_prg=1;
+0156         outMeta{numMeta}.prg=length(metaData.deg);
+0157         <span class="keyword">for</span> degre=metaData.deg
+0158             <span class="comment">%% Construction du metamodele de Regression polynomiale</span>
+0159             dd=[<span class="string">'-- Degre du polynome \n'</span>,num2str(degre)];
+0160             fprintf(dd);
+0161             [prg.coef,prg.MSE]=meta_prg(samplingN,respN,degre);
+0162             outMeta.prg{ite_prg}=prg;
+0163             ite_prg=ite_prg+1;
+0164         <span class="keyword">end</span>
+0165         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0166         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0167     <span class="keyword">case</span> <span class="string">'ILIN'</span>
+0168         <span class="comment">%% Construction du metamodele d'interpolation lineaire</span>
+0169         fprintf(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction de base '</span> textf]);
+0170         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0171         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0172     <span class="keyword">case</span> <span class="string">'ILAG'</span>
+0173         <span class="comment">%% interpolation par fonction de base lineaire</span>
+0174         fprintf(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction polynomiale de Lagrange'</span> textf]);
+0175         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0176         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0177     <span class="keyword">otherwise</span>
+0178         error([<span class="string">'Wrong type of surrogate model (see. on '</span>,mfilename,<span class="string">')'</span>]);
+0179 <span class="keyword">end</span>
+0180 
+0181 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0182 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0183 <span class="comment">%concatenate data</span>
+0184 outMeta.used.sampling=samplingOk;
+0185 outMeta.used.resp=respOk;
+0186 outMeta.used.grad=gradOk;
+0187 outMeta.in.sampling=samplingIn;
+0188 outMeta.in.resp=respIn;
+0189 outMeta.in.grad=gradIn;
+0190 outMeta=<a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>(outMeta,metaData);
+0191 outMeta.norm.on=metaData.normOn;
+0192 
+0193 <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
+0194 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
+0195 <span class="keyword">end</span>
+0196 
+0197 <span class="comment">%function for checking if the surrogate model is a classical</span>
+0198 <span class="comment">%gradient-enhanced or indirect gradient-enhanced surrogate model</span>
+0199 <a name="_sub1" href="#_subfunctions" class="code">function [Indirect,Classical]=CheckGE(typeSurrogate)</a>
+0200 <span class="comment">%check Indirect</span>
+0201 nn=regexp(typeSurrogate,<span class="string">'^In'</span>,<span class="string">'ONCE'</span>);
+0202 Indirect=~isempty(nn);
+0203 <span class="comment">%check gradient-enhanced</span>
+0204 nn=regexp(typeSurrogate,<span class="string">'^G'</span>,<span class="string">'ONCE'</span>);
+0205 Classical=~isempty(nn);
+0206 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

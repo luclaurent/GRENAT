@@ -1,0 +1,686 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of KRGCV</title>
+  <meta name="keywords" content="KRGCV">
+  <meta name="description" content="% Function for computing various Cross-Validation criteria for KRG/GKRG">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>KRGCV
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Function for computing various Cross-Validation criteria for KRG/GKRG</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function cv=KRGCV(dataBloc,metaData,type) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Function for computing various Cross-Validation criteria for KRG/GKRG
+L. LAURENT -- 14/12/2011 -- luc.laurent@lecnam.net
+new version: 19/10/2012</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>	% Function for calculating error of LOO (Cross-Validation)</li><li><a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>	% Plot QQ plot (for cross validation)</li><li><a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>	% Plot SCVR (for cross validation)</li><li><a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function retStatus=modWarning(requireStatus,oldStatus)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Function for computing various Cross-Validation criteria for KRG/GKRG</span>
+0002 <span class="comment">%L. LAURENT -- 14/12/2011 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">%new version: 19/10/2012</span>
+0004 
+0005 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0006 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0007 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0010 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0011 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0012 <span class="comment">%     (at your option) any later version.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0015 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0016 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0017 <span class="comment">%     GNU General Public License for more details.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0020 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0021 
+0022 <a name="_sub0" href="#_subfunctions" class="code">function cv=KRGCV(dataBloc,metaData,type)</a>
+0023 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0025 <span class="comment">%%%%%%%%%% OPTIONS</span>
+0026 <span class="comment">%choice of the norma for LOO error</span>
+0027 <span class="comment">%MSE: L2-norm</span>
+0028 normLOO=<span class="string">'L2'</span>;
+0029 <span class="comment">%debug</span>
+0030 debugP=false;
+0031 
+0032 <span class="comment">% display warning or not</span>
+0033 dispWarning=false;
+0034 statusWarning=<a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>([],[]);
+0035 
+0036 <span class="comment">%parallel</span>
+0037 numWorkers=0;
+0038 <span class="keyword">if</span> ~isempty(whos(<span class="string">'parallel'</span>,<span class="string">'global'</span>))
+0039     <span class="keyword">global</span> parallel
+0040     numWorkers=parallel.num;
+0041 <span class="keyword">end</span>
+0042 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0043 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0044 <span class="comment">%various situations</span>
+0045 modDebug=debugP;modStudy=metaData.cv.full;modFinal=false;
+0046 <span class="keyword">if</span> nargin==3
+0047     <span class="keyword">switch</span> type
+0048         <span class="keyword">case</span> <span class="string">'debug'</span>  <span class="comment">%debug mode (display criteria)</span>
+0049             fprintf(<span class="string">'+++ CV KRG in DEBUG mode\n'</span>);
+0050             modDebug=true;
+0051         <span class="keyword">case</span> <span class="string">'study'</span>  <span class="comment">%study mode (use both methods for calculating criteria)</span>
+0052             modStudy=true;
+0053         <span class="keyword">case</span> <span class="string">'estim'</span>  <span class="comment">%estimation mode</span>
+0054             modStudy=false;
+0055         <span class="keyword">case</span> <span class="string">'final'</span>    <span class="comment">%final mode (compute variances)</span>
+0056             modFinal=true;
+0057     <span class="keyword">end</span>
+0058 <span class="keyword">else</span>
+0059     modFinal=true;
+0060 <span class="keyword">end</span>
+0061 <span class="keyword">if</span> modFinal;[tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;<span class="keyword">end</span>
+0062 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0063 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0064 <span class="comment">%load variables</span>
+0065 np=dataBloc.used.np;
+0066 ns=dataBloc.used.ns;
+0067 availGrad=dataBloc.used.availGrad;
+0068 
+0069 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0070 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0071 <span class="comment">%%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)</span>
+0072 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0073 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0074 <span class="comment">%coefficient of (co)Kriging</span>
+0075 coefKRG=dataBloc.build.gamma;
+0076 <span class="comment">%partial extraction of the diagonal of the inverse of the kernel matrix</span>
+0077 <span class="keyword">switch</span> dataBloc.build.factKK
+0078     <span class="keyword">case</span> <span class="string">'QR'</span>
+0079         fcC=dataBloc.build.fcK*dataBloc.build.QtK;
+0080         diagMK=diag(dataBloc.build.RK\dataBloc.build.QtK)-<span class="keyword">...</span>
+0081             diag(fcC'*(dataBloc.build.fcCfct\fcC));
+0082     <span class="keyword">case</span> <span class="string">'LU'</span>
+0083         fcC=dataBloc.build.fcU/dataBloc.build.LK;
+0084         diagMK=diag(dataBloc.build.UK\inv(dataBloc.build.LK))-<span class="keyword">...</span>
+0085             diag(fcC'*(dataBloc.build.fcCfct\fcC));
+0086     <span class="keyword">case</span> <span class="string">'LL'</span>
+0087         fcC=dataBloc.build.fcL/dataBloc.build.LK;
+0088         diagMK=diag(dataBloc.build.LK\inv(dataBloc.build.LK))-<span class="keyword">...</span>
+0089             diag(fcC'*(dataBloc.build.fcCfct\fcC));
+0090     <span class="keyword">otherwise</span>
+0091         diagMK=diag(inv(dataBloc.build.KK))-<span class="keyword">...</span>
+0092             diag(dataBloc.build.fcC'*(dataBloc.build.fcCfct\dataBloc.build.fcC));
+0093         
+0094 <span class="keyword">end</span>
+0095 <span class="comment">%vectors of the distances on removed sample points (reponses et gradients)</span>
+0096 esI=coefKRG./diagMK;
+0097 esR=esI(1:ns);
+0098 <span class="keyword">if</span> availGrad;esG=esI(ns+1:end);<span class="keyword">end</span>
+0099 
+0100 <span class="comment">%computation of the LOO criteria (various norms)</span>
+0101 <span class="keyword">switch</span> normLOO
+0102     <span class="keyword">case</span> <span class="string">'L1'</span>
+0103         cv.then.press=esI'*esI;
+0104         cv.then.eloot=1/numel(esI)*sum(abs(esI));
+0105         cv.press=cv.then.press;
+0106         cv.eloot=cv.then.eloot;
+0107         <span class="keyword">if</span> availGrad
+0108             cv.then.eloor=1/ns*sum(abs(esR));
+0109             cv.then.eloog=1/(ns*np)*sum(abs(esG));
+0110             cv.eloor=cv.then.eloor;
+0111             cv.eloog=cv.then.eloog;
+0112         <span class="keyword">end</span>
+0113         
+0114     <span class="keyword">case</span> <span class="string">'L2'</span> <span class="comment">%MSE</span>
+0115         cv.then.press=esI'*esI;
+0116         cv.then.eloot=1/numel(esI)*(cv.then.press);
+0117         cv.press=cv.then.press;
+0118         cv.eloot=cv.then.eloot;
+0119         <span class="keyword">if</span> availGrad
+0120             cv.then.press=esR'*esR;
+0121             cv.then.eloor=1/ns*(cv.then.press);
+0122             cv.then.eloog=1/(ns*np)*(esG'*esG);
+0123             cv.press=cv.then.press;
+0124             cv.eloor=cv.then.eloor;
+0125             cv.eloog=cv.then.eloog;
+0126         <span class="keyword">end</span>
+0127     <span class="keyword">case</span> <span class="string">'Linf'</span>
+0128         cv.then.press=esI'*esI;
+0129         cv.then.eloot=1/numel(esI)*max(esI(:));
+0130         cv.press=cv.then.press;
+0131         cv.eloot=cv.then.eloot;
+0132         <span class="keyword">if</span> availGrad
+0133             cv.then.press=esR'*esR;
+0134             cv.then.eloor=1/ns*max(esR(:));
+0135             cv.then.eloog=1/(ns*np)*max(esG(:));
+0136             cv.press=cv.then.press;
+0137             cv.eloor=cv.then.eloor;
+0138             cv.eloog=cv.then.eloog;
+0139         <span class="keyword">end</span>
+0140 <span class="keyword">end</span>
+0141 <span class="comment">%mean of bias</span>
+0142 cv.bm=1/ns*sum(esR);
+0143 <span class="comment">%display information</span>
+0144 <span class="keyword">if</span> modDebug||modFinal
+0145     fprintf(<span class="string">'\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n'</span>);
+0146     fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0147     <span class="keyword">if</span> availGrad
+0148         fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
+0149         fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
+0150     <span class="keyword">end</span>
+0151     fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
+0152     fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
+0153 <span class="keyword">end</span>
+0154 
+0155 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0156 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0157 <span class="comment">%%% Classical CV method (successively removing of responses and gradients))</span>
+0158 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0159 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0160 <span class="keyword">if</span> modDebug
+0161     [tMesuDebugA,tInitDebugA]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0162     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0163     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0164     <span class="comment">%store response at removed point</span>
+0165     cvZ=zeros(ns,1);
+0166     cvVar=zeros(ns,1);
+0167     cvGZ=zeros(ns,np);
+0168     yy=dataBloc.build.y;
+0169     fct=dataBloc.build.fct;
+0170     KK=dataBloc.build.KK;
+0171     sampling=dataBloc.used.sampling;
+0172     tiragesn=dataBloc.in.tiragesn;
+0173     grad=dataBloc.in.grad;
+0174     resp=dataBloc.in.eval;
+0175     dimC=dataBloc.build.sizeFc;
+0176     <span class="comment">%along the sample points</span>
+0177     parfor (itS=1:ns,numWorkers)
+0178         <span class="comment">%Load data</span>
+0179         dataCV=dataBloc;
+0180         <span class="comment">%remove data</span>
+0181         cvY=yy([1:(itS-1) (itS+1):end]');
+0182         cvKK=KK([1:(itS-1) (itS+1):end],[1:(itS-1) (itS+1):end]);
+0183         cvFct=fct([1:(itS-1) (itS+1):end],:);
+0184         
+0185         cvFcc=cvFct'/cvKK;
+0186         cvFcCfct=cvFcc*cvFct;
+0187         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0188         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0189         <span class="comment">%compute coefficients</span>
+0190         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(dispWarning);
+0191         dataCV.build.factKK=<span class="string">'None'</span>;
+0192         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
+0193         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
+0194         
+0195         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0196         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0197         <span class="comment">%extract beta and gamma coefficients</span>
+0198         dataCV.build.beta=coefKRG((end-dimC+1):end);
+0199         dataCV.build.gamma=coefKRG(1:(end-dimC));
+0200         dataCV.build.rcc=cvKK;
+0201         
+0202         <span class="comment">%compute variance of the gaussian process</span>
+0203         sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);
+0204         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(~dispWarning);
+0205         
+0206         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0207         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0208         <span class="keyword">if</span> metaData.normOn
+0209             dataCV.build.sig2=sig2*metaData.norm.resp.std^2;
+0210         <span class="keyword">else</span>
+0211             dataCV.build.sig2=sig2;
+0212         <span class="keyword">end</span>
+0213         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0214         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0215         <span class="comment">%store variables</span>
+0216         dataCV.used.sampling=sampling;
+0217         dataCV.used.ns=ns;  <span class="comment">%remove one sample point</span>
+0218         dataCV.build.fct=cvFct;
+0219         dataCV.build.fc=cvFct';
+0220         dataCV.build.fcCfct=cvFcCfct;
+0221         dataCV.infill.on=false;
+0222         <span class="comment">%remove associate response</span>
+0223         dataCV.miss.grad.on=false;
+0224         dataCV.miss.resp.on=true;
+0225         dataCV.miss.resp.ixMiss=itS;
+0226         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0227         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0228         <span class="comment">%evaluate response and variances on removed sample points</span>
+0229         [Z,~,variance]=<a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>(sampling(itS,:),dataCV);
+0230         cvZ(itS)=Z;
+0231         cvVar(itS)=variance;
+0232         <span class="comment">%remove gradients</span>
+0233         <span class="keyword">if</span> availGrad
+0234             <span class="keyword">for</span> posGr=1:np
+0235                 <span class="comment">%load data</span>
+0236                 dataCV=dataBloc;
+0237                 pos=ns+(itS-1)*np+posGr;
+0238                 <span class="comment">%remove data</span>
+0239                 cvY=yy([1:(pos-1) (pos+1):end]');
+0240                 cvKK=KK([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
+0241                 cvFct=fct([1:(pos-1) (pos+1):end],:);
+0242                 cvFcc=cvFct'/cvKK;
+0243                 cvFcCfct=cvFcc*cvFct;
+0244                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0245                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0246                 <span class="comment">%ccompute coefficients</span>
+0247                 <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(dispWarning);
+0248                 dataCV.build.factKK=<span class="string">'None'</span>;
+0249                 cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
+0250                 coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
+0251                 
+0252                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0253                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0254                 <span class="comment">%extraction beta and gamma coefficients</span>
+0255                 dataCV.build.beta=coefKRG((end-dimC+1):end);
+0256                 dataCV.build.gamma=coefKRG(1:(end-dimC));
+0257                 dataCV.build.rcc=cvKK;
+0258                 
+0259                 <span class="comment">%compute variance of the gaussian process</span>
+0260                 sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);
+0261                 <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(~dispWarning);
+0262                 
+0263                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0264                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0265                 <span class="keyword">if</span> metaData.normOn
+0266                     sig2=sig2*metaData.norm.resp.std^2;
+0267                 <span class="keyword">end</span>
+0268                 dataCV.build.sig2=sig2;
+0269                 
+0270                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0271                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0272                 <span class="comment">%store data</span>
+0273                 dataCV.used.sampling=sampling;
+0274                 dataCV.used.ns=ns;  <span class="comment">%remove one sample point</span>
+0275                 dataCV.build.fct=cvFct;
+0276                 dataCV.build.fc=cvFct';
+0277                 dataCV.build.fcCfct=cvFcCfct;
+0278                 dataCV.infill.on=false;
+0279                 <span class="comment">%remove the associated gradient</span>
+0280                 dataCV.miss.grad.on=true;
+0281                 dataCV.miss.resp.on=false;
+0282                 dataCV.miss.grad.ixtMissLine=pos-ns;
+0283                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0284                 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0285                 <span class="comment">%evaluate gradients on removed sample points</span>
+0286                 [~,GZ,~]=<a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>(sampling(itS,:),dataCV);
+0287                 cvGZ(itS,posGr)=GZ(posGr);
+0288             <span class="keyword">end</span>
+0289         <span class="keyword">end</span>
+0290     <span class="keyword">end</span>
+0291     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0292     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0293     <span class="comment">%% compute errors</span>
+0294     [cv.then]=<a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
+0295     <span class="comment">%display information</span>
+0296     <span class="keyword">if</span> modDebug||modFinal
+0297         fprintf(<span class="string">'\n=== CV-LOO with remove responses THEN the gradients (debug)\n'</span>);
+0298         fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0299         <span class="keyword">if</span> availGrad
+0300             fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
+0301             fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
+0302         <span class="keyword">end</span>
+0303         fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
+0304         fprintf(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.then.bm);
+0305         fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
+0306         fprintf(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.then.errp);
+0307         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.then.scvr_min);
+0308         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.then.scvr_max);
+0309         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
+0310         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
+0311     <span class="keyword">end</span>
+0312     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugA,tInitDebugA);
+0313 <span class="keyword">end</span>
+0314 
+0315 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0316 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0317 <span class="comment">%%% Classical CV method (remove simultaneously response and gradient</span>
+0318 <span class="comment">%%% at each sample point)</span>
+0319 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0320 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0321 <span class="keyword">if</span> (modStudy||modDebug)||(modFinal&amp;&amp;metaData.cv.disp)
+0322     [tMesuDebugB,tInitDebugB]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0323     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0324     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0325     <span class="comment">%store response of the surrogate model at remove sample point</span>
+0326     cvZ=zeros(ns,1);
+0327     cvVar=zeros(ns,1);
+0328     cvGZ=zeros(ns,np);
+0329     yy=dataBloc.build.y;
+0330     fct=dataBloc.build.fct;
+0331     KK=dataBloc.build.KK;
+0332     sampling=dataBloc.used.sampling;
+0333     grad=dataBloc.used.grad;
+0334     resp=dataBloc.used.resp;
+0335     dimC=dataBloc.build.sizeFc;
+0336     
+0337     <span class="comment">%along the sample points</span>
+0338     parfor (itS=1:ns,numWorkers)
+0339         <span class="comment">%load data</span>
+0340         dataCV=dataBloc;
+0341         <span class="comment">%remove data</span>
+0342         <span class="keyword">if</span> availGrad
+0343             pos=[itS ns+(itS-1)*np+(1:np)];
+0344             IXi=1:((np+1)*ns);
+0345         <span class="keyword">else</span>
+0346             pos=itS;
+0347             IXi=1:(ns);
+0348         <span class="keyword">end</span>
+0349         <span class="comment">%complement to the intial indexes</span>
+0350         IXc=IXi(end)+(1:dimC);
+0351         <span class="comment">%indexes of the removed data</span>
+0352         IXe=setxor(IXi,pos);
+0353         
+0354         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(dispWarning);
+0355         cvY=yy(IXe');
+0356         cvKK=KK(IXe,IXe);
+0357         cvFct=fct(IXe,:);
+0358         cvFcc=cvFct'/cvKK;
+0359         cvFcCfct=cvFcc*cvFct;
+0360         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0361         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0362         <span class="comment">%compute coefficients</span>
+0363         dataCV.build.factKK=<span class="string">'None'</span>;
+0364         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
+0365         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
+0366         
+0367         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0368         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0369         <span class="comment">%extraction of the beta and gamma coefficients</span>
+0370         dataCV.build.beta=coefKRG((end-dimC+1):end);
+0371         dataCV.build.gamma=coefKRG(1:(end-dimC));
+0372         dataCV.build.KK=cvKK;
+0373         
+0374         
+0375         <span class="comment">%compute variance of the gaussian process</span>
+0376         sig2=1/size(cvKK,1)*((cvY-cvFct*dataCV.build.beta)'*dataCV.build.gamma);
+0377         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(~dispWarning);
+0378         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0379         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0380         
+0381         <span class="keyword">if</span> metaData.normOn
+0382             sig2=sig2*metaData.norm.resp.std^2;
+0383         <span class="keyword">end</span>
+0384         dataCV.build.sig2=sig2;
+0385         
+0386         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0387         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0388         <span class="comment">%store variables</span>
+0389         dataCV.used.sampling=sampling([1:(itS-1) (itS+1):end],:);
+0390         dataCV.used.ns=ns-1;  <span class="comment">%remove one sample point</span>
+0391         dataCV.build.fct=cvFct;
+0392         dataCV.build.fc=cvFct';
+0393         dataCV.build.fcCfct=cvFcCfct;
+0394         dataCV.infill.on=false;
+0395         <span class="comment">%remove of the associated response</span>
+0396         dataCV.miss.grad.on=false;
+0397         dataCV.miss.resp.on=false;
+0398         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0399         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0400         <span class="comment">%evaluate response, gradient and variance at the remove sample point</span>
+0401         [Z,GZ,variance]=<a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>(sampling(itS,:),dataCV);
+0402         cvZ(itS)=Z;
+0403         cvGZ(itS,:)=GZ;
+0404         cvVar(itS)=variance;
+0405     <span class="keyword">end</span>
+0406     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0407     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0408     <span class="comment">%% Compute errors</span>
+0409     [cv.and]=<a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
+0410     <span class="comment">%display informations</span>
+0411     <span class="keyword">if</span> modDebug||modFinal
+0412         fprintf(<span class="string">'\n=== CV-LOO with remove responses AND the gradients\n'</span>);
+0413         fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0414         <span class="keyword">if</span> availGrad
+0415             fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.and.eloor);
+0416             fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.and.eloog);
+0417         <span class="keyword">end</span>
+0418         fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.and.eloot);
+0419         fprintf(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.and.bm);
+0420         fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.and.press);
+0421         fprintf(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.and.errp);
+0422         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.and.scvr_min);
+0423         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.and.scvr_max);
+0424         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.and.scvr_mean);
+0425         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.and.adequ);
+0426     <span class="keyword">end</span>
+0427     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugB,tInitDebugB);
+0428 <span class="keyword">end</span>
+0429 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0430 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0431 <span class="comment">%%Compute variance of prediction at sample points + check calculation on responses and gradients (for CV)</span>
+0432 <span class="comment">%%%CAUTION: not functioning for missing data</span>
+0433 <span class="keyword">if</span> modStudy||metaData.cv.disp
+0434     <span class="comment">%</span>
+0435     [tMesuDebugC,tInitDebugC]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0436     <span class="comment">%%</span>
+0437     cvVarR=zeros(ns,1);
+0438     cvZR=zeros(ns,1);
+0439     cvGZ=zeros(ns,np);
+0440     yy=dataBloc.build.y;
+0441     fct=dataBloc.build.fct;
+0442     KK=dataBloc.build.KK;
+0443     grad=dataBloc.used.grad;
+0444     resp=dataBloc.used.resp;
+0445     dimC=dataBloc.build.sizeFc;
+0446     <span class="keyword">for</span> itS=1:ns
+0447         <span class="comment">%load data and remove responses</span>
+0448         PP=[KK(itS,:) fct(itS,:)];
+0449         PP(itS)=[];
+0450         cvY=yy([1:(itS-1) (itS+1):end]');
+0451         cvKK=KK([1:(itS-1) (itS+1):end],[1:(itS-1) (itS+1):end]);
+0452         cvFct=fct([1:(itS-1) (itS+1):end],:);
+0453         
+0454         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0455         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0456         <span class="comment">%compute coefficients</span>
+0457         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(dispWarning);
+0458         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
+0459         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
+0460         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0461         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0462         <span class="comment">%extraction of the beta and gamma coefficients</span>
+0463         beta=coefKRG((end-dimC+1):end);
+0464         gamma=coefKRG(1:(end-dimC));
+0465         <span class="comment">%compute</span>
+0466         sig2=1/size(cvKK,1)*((cvY-cvFct*beta)'*gamma);
+0467         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0468         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0469         <span class="keyword">if</span> metaData.normOn
+0470             sig2=sig2*metaData.norm.resp.std^2;
+0471         <span class="keyword">end</span>
+0472         dataCV.build.sig2=sig2;
+0473         <span class="comment">%compute variance at the removed point</span>
+0474         cvVarR(itS)=sig2*(1-PP*(cvMKrg\PP'));
+0475         
+0476         <span class="comment">%compute response</span>
+0477         cvZR(itS)=PP*coefKRG;
+0478         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(~dispWarning);
+0479         <span class="comment">%remove gradients</span>
+0480         <span class="keyword">if</span> availGrad
+0481             <span class="keyword">for</span> posGr=1:np
+0482                 pos=ns+(itS-1)*np+posGr;
+0483                 <span class="comment">%remove data</span>
+0484                 cvKK=KK([1:(pos-1) (pos+1):end],[1:(pos-1) (pos+1):end]);
+0485                 cvFct=fct([1:(pos-1) (pos+1):end],:);
+0486                 cvY=yy([1:(pos-1) (pos+1):end]');
+0487                 cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
+0488                 <span class="comment">%extraction of the vector</span>
+0489                 dPP=[KK(pos,:) fct(pos,:)];
+0490                 dPP(pos)=[];
+0491                 <span class="comment">%compute gradients</span>
+0492                 GZ=dPP*(cvMKrg\[cvY;zeros(dimC,1)]);
+0493                 cvGZ(itS,posGr)=GZ;
+0494             <span class="keyword">end</span>
+0495         <span class="keyword">end</span>
+0496     <span class="keyword">end</span>
+0497     
+0498     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0499     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0500     <span class="comment">%% Compute errors</span>
+0501     [cv.then]=<a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>(resp,cvZR,cvVarR,grad,cvGZ,ns,np,normLOO);
+0502     <span class="comment">%display information</span>
+0503     <span class="keyword">if</span> modDebug||modFinal
+0504         fprintf(<span class="string">'\n=== CV-LOO with remove responses THEN the gradients\n'</span>);
+0505         fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0506         <span class="keyword">if</span> availGrad
+0507             fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
+0508             fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
+0509         <span class="keyword">end</span>
+0510         fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
+0511         fprintf(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.then.bm);
+0512         fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
+0513         fprintf(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.then.errp);
+0514         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.then.scvr_min);
+0515         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.then.scvr_max);
+0516         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
+0517         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
+0518     <span class="keyword">end</span>
+0519     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugC,tInitDebugC);
+0520 <span class="keyword">end</span>
+0521 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0522 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0523 <span class="comment">%%Compute variance of prediction at the sample points (for CV)</span>
+0524 <span class="comment">%%%CAUTION: not functioning for missing data</span>
+0525 <span class="keyword">if</span> modFinal
+0526     <span class="comment">%</span>
+0527     [tMesuDebugD,tInitDebugD]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0528     <span class="comment">%</span>
+0529     cvVarR=zeros(ns,1);
+0530     yy=dataBloc.build.y;
+0531     fct=dataBloc.build.fct;
+0532     KK=dataBloc.build.KK;
+0533     dimC=dataBloc.build.sizeFc;
+0534     <span class="comment">%</span>
+0535     parfor (itS=1:ns,numWorkers)
+0536         
+0537         <span class="comment">%extraction data</span>
+0538         PP=[KK(itS,:) fct(itS,:)];
+0539         PP(itS)=[];
+0540         cvKK=KK([1:(itS-1) (itS+1):end],[1:(itS-1) (itS+1):end]);
+0541         cvFct=fct([1:(itS-1) (itS+1):end],:);
+0542         cvY=yy([1:(itS-1) (itS+1):end]');
+0543         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0544         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0545         <span class="comment">%compute coefficients</span>
+0546         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(dispWarning);
+0547         cvMKrg=[cvKK cvFct;cvFct' zeros(dimC)];
+0548         coefKRG=cvMKrg\[cvY;zeros(dimC,1)];
+0549         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0550         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0551         <span class="comment">%extraction of the beta coefficient</span>
+0552         beta=coefKRG((end-dimC+1):end);
+0553         
+0554         <span class="comment">%compute variance of the gaussian process</span>
+0555         sig2=1/size(cvKK,1)*((cvY-cvFct*beta)'/cvKK)*(cvY-cvFct*beta);
+0556         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0557         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0558         <span class="keyword">if</span> metaData.normOn
+0559             sig2=sig2*metaData.norm.resp.std^2;
+0560         <span class="keyword">end</span>
+0561         <span class="comment">%comute variance at the removed sample point</span>
+0562         cvVarR(itS)=sig2*(1-PP*(cvMKrg\PP'));
+0563         <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>(~dispWarning);
+0564     <span class="keyword">end</span>
+0565     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0566     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0567     <span class="comment">%% Compute errors</span>
+0568     [cv.final]=<a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>(zeros(size(esR)),-esR,cvVarR,[],[],ns,np,normLOO);
+0569     cv.then.scvr_min=cv.final.scvr_min;
+0570     cv.then.scvr_max=cv.final.scvr_max;
+0571     cv.then.scvr_mean=cv.final.scvr_mean;
+0572     <span class="comment">%display information</span>
+0573     <span class="keyword">if</span> modDebug||modFinal
+0574         fprintf(<span class="string">'\n=== CV-LOO SCVR\n'</span>);
+0575         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.final.scvr_min);
+0576         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.final.scvr_max);
+0577         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.final.scvr_mean);
+0578     <span class="keyword">end</span>
+0579     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugD,tInitDebugD);
+0580 <span class="keyword">end</span>
+0581 
+0582 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0583 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0584 <span class="comment">%%Show QQ-plot</span>
+0585 <span class="keyword">if</span> metaData.cv.disp&amp;&amp;modFinal
+0586     opt.newfig=false;
+0587     figure
+0588     subplot(1,3,1);
+0589     opt.title=<span class="string">'Normalized data (CV R)'</span>;
+0590     <a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>(dataBloc.used.resp,cvZR,opt)
+0591     subplot(1,3,2);
+0592     opt.title=<span class="string">'Normalized data (CV F)'</span>;
+0593     <a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>(dataBloc.used.resp,cvZ,opt)
+0594     subplot(1,3,3);
+0595     opt.title=<span class="string">'SCVR (Normalized)'</span>;
+0596     opt.xlabel=<span class="string">'Predicted'</span> ;
+0597     opt.ylabel=<span class="string">'SCVR'</span>;
+0598     <a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>(cvZR,cv.final.scvr,opt)
+0599     
+0600     <span class="comment">%     % original data</span>
+0601     <span class="comment">%     subplot(2,3,4);</span>
+0602     <span class="comment">%     opt.title='Original data (CV R)';</span>
+0603     <span class="comment">%     QQplot(dataBloc.used.resp,cvZR,opt)</span>
+0604     <span class="comment">%     subplot(2,3,5);</span>
+0605     <span class="comment">%     opt.title='Original data (CV F)';</span>
+0606     <span class="comment">%     QQplot(dataBloc.used.resp,cvZ,opt)</span>
+0607     <span class="comment">%     subplot(2,3,6);</span>
+0608     <span class="comment">%     opt.title='SCVR (Normalized)';</span>
+0609     <span class="comment">%     opt.xlabel='Predicted' ;</span>
+0610     <span class="comment">%     opt.ylabel='SCVR';</span>
+0611     <span class="comment">%     SCVRplot(cvZR,cv.final.scvr,opt)</span>
+0612 <span class="keyword">end</span>
+0613 <span class="comment">%</span>
+0614 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0615 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0616 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0617 <span class="keyword">if</span> modFinal;<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);<span class="keyword">end</span>
+0618 <span class="keyword">end</span>
+0619 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0620 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0621 <span class="comment">% function for stopping the display of the warning and restoring initial</span>
+0622 <span class="comment">% state</span>
+0623 <a name="_sub1" href="#_subfunctions" class="code">function retStatus=modWarning(requireStatus,oldStatus)</a>
+0624 <span class="keyword">if</span> nargin==1
+0625     <span class="keyword">if</span> ~requireStatus
+0626         warning off all
+0627     <span class="keyword">end</span>
+0628 <span class="keyword">else</span>
+0629     <span class="keyword">if</span> isempty(oldStatus)
+0630         retStatus=warning;
+0631     <span class="keyword">else</span>
+0632         warning(oldStatus)
+0633     <span class="keyword">end</span>
+0634 <span class="keyword">end</span>
+0635 <span class="keyword">end</span>
+0636</pre></div>
+<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

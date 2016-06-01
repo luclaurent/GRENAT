@@ -1,12 +1,30 @@
-%fonction Bohachevsky2
+%% Bohachevsky2 function
 %L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
+%
+%global minimum: f(x1,x2)=0 pour (x1,x2)=(0,0)
+%
+%Design space: -100<x1<100, -100<x2<100
 
-%minimum global: f(x1,x2)=0 pour (x1,x2)=(0,0)
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%Domaine d'etude de la fonction: -100<x1<100, -100<x2<100
-function [p,dp,infos]=fct_bohachevsky2(xx,dim)
+function [p,dp,infos]=funBohachevsky2(xx,dim)
 
-% pour demonstration
+% demo mode
 dem=false;
 if nargin==0
     pas=50;
@@ -18,14 +36,14 @@ if nargin==0
 end
 if ~isempty(xx)
     if size(xx,3)>2
-        error('La fonction Bohachevsky 2 est une fonction de deux variables');
+        error('The Bohachevsky2 function is a 2 dimensional function');
     elseif size(xx,3)==1
         if size(xx,2)==2
             xxx=xx(:,1);yyy=xx(:,2);
         elseif size(xx,1)==2
             xxx=xx(:,2);yyy=xx(:,1);
         else
-            error('Mauvais format varibale entr�e fct Bohachevsky 2');
+            error(['Wrong input variables ',mfilename,']);
         end
         
     else
@@ -47,7 +65,7 @@ else
     dp=[];
 end
 
-%sortie informations sur la fonction
+% output: information about the function
 if nargout==3
     infos.min_glob.Z=0;
     infos.min_glob.X=zeros(1,nbvar);
@@ -55,7 +73,7 @@ if nargout==3
     infos.min_loc.X=NaN;
 end
 
-%demonstration
+% demo mode
 if nargin==0
     figure
     subplot(1,3,1)

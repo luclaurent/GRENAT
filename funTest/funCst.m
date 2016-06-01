@@ -1,9 +1,26 @@
-% Fonction constante
-% L. LAURENT -- 20/10/2011 --
+%% Constant function
+% L. LAURENT -- 20/10/2011 -- luc.laurent@lecnam.net
 
-function [p,dp,infos]=fct_cste(xx,dim)
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% pour demonstration
+function [p,dp,infos]=funCst(xx,dim)
+
+% demo mode
 dem=false;
 if nargin==0
     pas=50;
@@ -14,7 +31,7 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-    %Nombre de variables
+    % number of design variables
     nbvar=size(xx,3);
     
     %valeur constant
@@ -26,7 +43,7 @@ if ~isempty(xx)
         elseif size(xx,1)==2
             xxx=xx(:,2);
         else
-            error('Mauvais format variable entr�e fct Constante');
+            error(['Wrong input variables ',mfilename,']);
         end
         p=val*ones(size(xxx));
         if nargout==2
@@ -46,7 +63,7 @@ else
     p=[];
     dp=[];
 end
-%sortie informations sur la fonction
+% output: information about the function
 if nargout==3
     pts=NaN;
     infos.min_glob.X=pts;

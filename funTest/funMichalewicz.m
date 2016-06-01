@@ -1,13 +1,29 @@
-%Fonction Michalewicz
-%modif L. LAURENT -- 16/09/2011 -- ajout calcul gradient
+%% Michalewicz function
+% L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
+%
+%global minimum: depend of the number of variables
+%
+%Design space: 0<xi<pi
 
-%minimum global: dependent du nb de variables
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%Domaine d'etude de la fonction: 0<xi<pi
-
-
-function [p,dp,infos] = fct_michalewicz(xx,dim)
-% pour demonstration
+function [p,dp,infos] = funMichalewicz(xx,dim)
+% demo mode
 dem=false;
 if nargin==0
     pas=50;
@@ -18,11 +34,11 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-    %Nombre de variables
+    % number of design variables
     nbvar=size(xx,3);
     
     if nbvar==1
-        error('Mauvais format variable entr�e fct Michalewicz');
+        error(['Wrong input variables ',mfilename,']);
     else
         p=0;
         for iter=1:nbvar
@@ -45,7 +61,7 @@ else
     p=[];
     dp=[];
 end
-%sortie informations sur la fonction
+% output: information about the function
 if nargout==3
     pts=NaN;
     infos.min_glob.X=pts;
@@ -54,7 +70,7 @@ if nargout==3
     infos.min_loc.X=pts;
 end
 
-%demonstration
+% demo mode
 if nargin==0
     figure
     subplot(1,3,1)

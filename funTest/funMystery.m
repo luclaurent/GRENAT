@@ -1,14 +1,29 @@
-%Fonction "Mystery" (Sasena 2002)
+%% "Mystery" function (Sasena 2002)
 %L. LAURENT -- 01/04/2011 -- luc.laurent@lecnam.net
-%modif le 16/09/2011 -- modif �criture input pour passage code � n
-%variables
+%
+%3 local minima
+%1 global minimum: f(x)=-1.4565 pour x={2.5044,2.5778}
+%
+%design space: 0<xi<5
 
-%3 minimas locaux
-%1 minimum global: f(x)=-1.4565 pour x={2.5044,2.5778}
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%domaine d'etude: 0<xi<5
-
-function [p,dp,infos]=fct_mystery(xx,dim)
+function [p,dp,infos]=funMystery(xx,dim)
 
 a=2;
 b=0.01;
@@ -18,7 +33,7 @@ e=7;
 f=0.5;
 g=0.7;
 
-% pour demonstration
+% demo mode
 dem=false;
 if nargin==0
     pas=50;
@@ -30,14 +45,14 @@ if nargin==0
 end
 if ~isempty(xx)
     if size(xx,3)>2
-        error('La fonction Mystery est une fonction de deux variables');
+        error('The Mystery function is a 2 dimensional function');
     elseif size(xx,3)==1
         if size(xx,2)==2
             xxx=xx(:,1);yyy=xx(:,2);
         elseif size(xx,1)==2
             xxx=xx(:,2);yyy=xx(:,1);
         else
-            error('Mauvais format variable entree fct Mystery');
+            error(['Wrong input variables ',mfilename,']);
         end
         
     else
@@ -57,7 +72,7 @@ else
     p=[];
     dp=[];
 end
-%sortie informations sur la fonction
+% output: information about the function
 if nargout==3
     pts=[2.5044,2.5778];
     infos.min_glob.X=pts;
@@ -66,7 +81,7 @@ if nargout==3
     infos.min_loc.X=NaN;
 end
 
-%demonstration
+% demo mode
 if nargin==0
     figure
     subplot(1,3,1)

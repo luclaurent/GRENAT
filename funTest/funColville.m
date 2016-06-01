@@ -1,14 +1,32 @@
-%fonction Colville
+%% Colville function
 %L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
+%
+%global minimum : f(x1,x2,x3,x4)=0 pour (x1,x2,x3,x4)=(1,1,1,1)
+%
+%Design space: -10<xi<10
 
-%minimum global: f(x1,x2,x3,x4)=0 pour (x1,x2,x3,x4)=(1,1,1,1)
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%Domaine d'etude de la fonction: -10<xi<10
-function [p,dp,infos]=fct_colville(xx,dim)
+function [p,dp,infos]=funColville(xx,dim)
 
 if ~isempty(xx)
     if size(xx,3)>2
-        error('La fonction Colville est une fonction de 4 variables');
+        error('The Coleville function is a 4 dimensional function');
     elseif size(xx,3)==1
         if size(xx,2)==4
             xxx=xx(:,1);yyy=xx(:,2);zzz=xx(:,3);vvv=xx(:,4);
@@ -39,7 +57,7 @@ else
     p=[];
     dp=[];
 end
-%sortie informations sur la fonction
+% output: information about the function
 if nargout==3
     pts=[1,1,1,1];
     infos.min_glob.X=pts;

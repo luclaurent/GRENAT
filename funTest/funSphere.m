@@ -1,14 +1,28 @@
-%Fonction Sphere
-%modif L. LAURENT -- 16/09/2011 -- ajout calcul gradient
+%% Sphere function
+% L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
+%
+%global minimum : f(xi)=0 pour (x1,x2,x3,x4)=(0,...,0)
+%Design space: -10<xi<10
 
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%minimum global: f(xi)=0 pour (x1,x2,x3,x4)=(0,...,0)
-
-%Domaine d'etude de la fonction: -10<xi<10
-
-
-function [p,dp,infos] = fct_sphere(xx,dim)
-% pour demonstration
+function [p,dp,infos] = funSphere(xx,dim)
+% demo mode
 dem=false;
 if nargin==0
     pas=50;
@@ -20,11 +34,11 @@ if nargin==0
 end
 if ~isempty(xx)
     
-    %Nombre de variables
+    % number of design variables
     nbvar=size(xx,3);
     
     if nbvar==1
-        error('Mauvais format variable entr�e fct Sphere');
+        error(['Wrong input variables ',mfilename,']);
     else
         cal=xx.^2;
         p=sum(cal,3);
@@ -39,7 +53,7 @@ else
     p=[];
     dp=[];
 end
-%sortie informations sur la fonction
+% output: information about the function
 if nargout==3
     pts=[-0.0898,0.7126;0.0898,0.7126];
     infos.min_glob.X=pts;
@@ -48,7 +62,7 @@ if nargout==3
     infos.min_loc.X=NaN;
 end
 
-%demonstration
+% demo mode
 if nargin==0
     figure
     subplot(1,3,1)

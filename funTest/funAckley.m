@@ -1,19 +1,36 @@
-%fonction Ackley
+%% Ackley's function
 %L. LAURENT -- 16/05/2012 -- luc.laurent@lecnam.net
+%
+%numerous local minima
+%1 global minimum : x=(0,0,...,0) >> f(x)=0
+%
+%design space -2<xi<2 (recherche large -15<xi<30)
 
-%nombruex minimums locaux
-%1 minimum global: x=(0,0,...,0) >> f(x)=0
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%domaine d'�tude -2<xi<2 (recherche large -15<xi<30)
-
-function [p,dp,infos]=fct_ackley(xx,dim)
+function [p,dp,infos]=funAckley(xx,dim)
 
 a=20;
 b=0.2;
 c=2*pi;
 d=5.7;
 
-% pour demonstration
+% demo mode
 dem=false;
 if nargin==0
     pas=50;
@@ -23,7 +40,7 @@ if nargin==0
     dem=true;
 end
 if ~isempty(xx)
-    %Nombre de variables
+    %number of design variables
     nbvar=size(xx,3);
     if nbvar==1
         if size(xx,2)==2
@@ -31,7 +48,7 @@ if ~isempty(xx)
         elseif size(xx,1)==2
             xxx=xx(:,2);yyy=xx(:,1);
         else
-            error('Mauvais format variable entr�e fct Rastrigin');
+            error(['Wrong input variables ',mfilename,']);
         end
         norme=sqrt(xxx.^2+yyy.^2);
         ex1=exp(-b*norme/sqrt(2));
@@ -63,7 +80,7 @@ else
     p=[];
     dp=[];
 end
-%sortie informations sur la fonction
+%output of information about the function
 if nargout==3
     infos.min_glob.Z=0;
     infos.min_glob.X=zeros(1,nbvar);
@@ -71,7 +88,7 @@ if nargout==3
     infos.min_loc.X=NaN;
 end
 
-%demonstration
+%demo display
 if nargin==0
     figure
     subplot(1,3,1)

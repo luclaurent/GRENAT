@@ -1,18 +1,34 @@
-%fonction Six-Hump camel back
+%% Six-Hump camel back function
 %L. LAURENT -- 13/12/2010 -- luc.laurent@lecnam.net
-%modif le 16/09/2011 -- modif ecriture input pour passage code a n
-%variables
+%modif on the 16/09/2011 -- change to n variables
+%
+%6 local minima and  2 global:
+%f(x1,x2)=-1.0316 for (x1,x2)={(-0.0898,0.7126),(0.0898,0.7126)}
+%
+%Design space: -3<x1<3 -2<x2<2
+%(recommanded: -2<x1<2 -1<x2<1)
 
-%6 minima locaux dont 2 globaux:
-%f(x1,x2)=-1.0316 pour (x1,x2)={(-0.0898,0.7126),(0.0898,0.7126)}
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%Domaine d'etude de la fonction: -3<x1<3 -2<x2<2
-%(conseille: -2<x1<2 -1<x2<1)
 
+function [p,dp,infos]=funSixHump(xx,dim)
 
-function [p,dp,infos]=fct_sixhump(xx,dim)
-
-% pour demonstration
+% demo mode
 dem=false;
 if nargin==0
     pas=50;
@@ -26,14 +42,14 @@ if nargin==0
 end
 if ~isempty(xx)
     if size(xx,3)>2
-        error('La fonction SixHump est une fonction de deux variables');
+        error('The SixHump function is a 2 dimensional function');
     elseif size(xx,3)==1
         if size(xx,2)==2
             xxx=xx(:,1);yyy=xx(:,2);
         elseif size(xx,1)==2
             xxx=xx(:,2);yyy=xx(:,1);
         else
-            error('Mauvais format variable entr�e fct SixHump');
+            error(['Wrong input variables ',mfilename,']);
         end
         
     else
@@ -52,7 +68,7 @@ else
     p=[];
     dp=[];
 end
-%sortie informations sur la fonction
+% output: information about the function
 if nargout==3
     pts=[-0.0898,0.7126;0.0898,0.7126];
     infos.min_glob.X=pts;
@@ -61,7 +77,7 @@ if nargout==3
     infos.min_loc.X=NaN;
 end
 
-%demonstration
+% demo mode
 if nargin==0
     figure
     subplot(1,3,1)

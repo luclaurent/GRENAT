@@ -44,7 +44,7 @@ metaData=initMeta;
 metaData.type='GSVR';
 metaData.kern='matern32';
 metaData.cv.disp=true;
-metaData.para.estim=false;
+metaData.para.estim=true;
  metaData.para.l.val=[0.1 0.1];
 metaData.normOn=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

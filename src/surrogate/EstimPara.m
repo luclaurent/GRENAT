@@ -103,8 +103,8 @@ ac      = [2.1,2.1];% acceleration constants, only used for modl=0
 Iwt     = [0.9,0.6];  % intertia weights, only used for modl=0
 epoch   = 2000; % max iterations
 wtEnd  = 100; % iterations it takes to go from Iwt(1) to Iwt(2), only for modl=0
-errGrad = 1e-25;   % lowest error gradient tolerance
-errGradIter=150; % max # of epochs without error change >= errgrad
+errGrad = eps;   % lowest error gradient tolerance
+errGradIter=100; % max # of epochs without error change >= errgrad
 PSOseed = 0;    % if=1 then can input particle starting positions, if= 0 then all random
 % starting particle positions (first 20 at zero, just for an example)
 PSOTplot=[];
@@ -416,7 +416,7 @@ if numel(valHP)==1
 else
     fprintf(' %g |',valHP(1:end-1));
     fprintf(' %g',valHP(end));
-end    
+end
 fprintf('\n');
 end
 
@@ -425,11 +425,15 @@ end
 function varargout=optimsetMOD(varargin)
 if exist('optimset','file')
     [varargout{1:nargout}] = optimset( varargin{:} );
+else
+    varargout=[];
 end
 end
 
 function varargout=gaoptimsetMOD(varargin)
 if exist('gaoptimset','file')
-    [varargout{1:nargout}] = optimset( varargin{:} );
+    [varargout{1:nargout}] = gaoptimset( varargin{:} );
+else
+    varargout=[];
 end
 end

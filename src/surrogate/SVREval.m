@@ -128,6 +128,7 @@ if nargout >=3
     %remove bounded supports vectors
     rrUSV=rr(iXsvUSV(:));
     PsiUSV=metaData.build.PsiR(iXsvUSV(:),iXsvUSV(:));
+    
     %variance due to the approximation
     varianceS=1-rrUSV'/PsiUSV*rrUSV;
     variance=varianceI+varianceS;

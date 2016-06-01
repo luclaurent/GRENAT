@@ -23,13 +23,13 @@ execParallel('start',parallelStatus);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %studied function
-funTEST='Schwefel';
+funTEST='Manu';
 %Beale(2),Bohachevky1/2/3(2),Booth(2),Branin(2),Coleville(4)
 %Dixon(n),Gold(2),Michalewicz(n),mystery(2),Peaks(2),Rosenbrock(n)
 %Sixhump(2),Schwefel(n),Sphere(n),SumsSuare(n),AHE(n),Cst(n),Dejong(n)
 %rastrigin(n),RHE(n)
 % dimension du pb (nb de variables)
-dimPB=2;
+dimPB=1;
 %esp=[0 15];
 esp=[];
 %%Definition of the design space
@@ -39,7 +39,7 @@ dispData.nbSteps=initNbPts(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);
 %kind of sampling
 doe.type='IHS_manu';
 %number of sample points
-doe.ns=10;
+doe.ns=5;
 %execute sampling
 sampling=buildDOE(doe);
 samplePts=sampling.sorted;
@@ -55,8 +55,8 @@ data.type='GSVR';
 data.kern='matern32';
 metaData=initMeta(data);
 metaData.cv.disp=true;
-metaData.para.estim=1;
-metaData.para.l.val=[0.1439 0.0711];
+metaData.para.estim=0;
+metaData.para.l.val=[0.1439];% 0.0711];
 metaData.para.dispEstim=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -62,7 +62,7 @@ x0=0.1*(ub-lb);
 %function to minimised
 fun=@(para)feval(funObj,dataProb,dataMeta,para,'estim');
 %options depending on the algorithm
-optionsFmincon = optimset(...
+optionsFmincon = optimsetMOD(...
     'Display', 'iter',...        %display evolution
     'Algorithm','interior-point',... %choice of the type of algorithm
     'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
@@ -70,7 +70,7 @@ optionsFmincon = optimset(...
     'UseParallel','never',...
     'PlotFcns','',...
     'TolFun',critOpti);
-optionsSQP = optimset(...
+optionsSQP = optimsetMOD(...
     'Display', 'iter',...        %display evolution
     'Algorithm','sqp',... %choice of the type of algorithm
     'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
@@ -78,13 +78,13 @@ optionsSQP = optimset(...
     'UseParallel','never',...
     'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
     'TolFun',critOpti);
-optionsFminbnd = optimset(...
+optionsFminbnd = optimsetMOD(...
     'Display', 'iter',...        %display evolution
     'OutputFcn',@stop_estim,...      %function used for following the algorithm and dealing with the various status of it
     'FunValCheck','off',...      %check value of the function (Nan,Inf)
     'UseParallel','never',...
     'PlotFcns','');
-optionsGA = gaoptimset(...
+optionsGA = gaoptimsetMOD(...
     'Display', 'iter',...        %display evolution
     'OutputFcn','',...      %function used for following the algorithm and dealing with the various status of it
     'UseParallel','never',...
@@ -92,7 +92,7 @@ optionsGA = gaoptimset(...
     'PlotFcns','',...
     'TolFun',critOpti,...
     'StallGenLimit',20);
-optionsFminsearch = optimset(...
+optionsFminsearch = optimsetMOD(...
     'Display', 'iter',...        %display evolution    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
     'FunValCheck','off',...      %check value of the function (Nan,Inf)
     'TolFun',critOpti,...
@@ -130,32 +130,32 @@ PSOTMinMax=0;
 
 %display iterations
 if ~dataMeta.para.dispIterGraph
-    optionsFmincon=optimset(optionsFmincon,'OutputFcn','');
-    optionsSQP=optimset(optionsSQP,'OutputFcn','');
-    optionsFminbnd=optimset(optionsFminbnd,'OutputFcn','');
-    optionsFminsearch=optimset(optionsFminbnd,'OutputFcn','');
-    optionsGA=gaoptimset(optionsGA,'OutputFcn','');
+    optionsFmincon=optimsetMOD(optionsFmincon,'OutputFcn','');
+    optionsSQP=optimsetMOD(optionsSQP,'OutputFcn','');
+    optionsFminbnd=optimsetMOD(optionsFminbnd,'OutputFcn','');
+    optionsFminsearch=optimsetMOD(optionsFminbnd,'OutputFcn','');
+    optionsGA=gaoptimsetMOD(optionsGA,'OutputFcn','');
 else
     figure
 end
 
 if ~dataMeta.para.dispIterCmd
-    optionsFmincon=optimset(optionsFmincon,'Display','final');
-    optionsSQP=optimset(optionsSQP,'Display', 'final');
-    optionsFminbnd=optimset(optionsFminbnd,'Display','final');
-    optionsFminsearch=optimset(optionsFminbnd,'Display', 'final');
-    optionsGA=gaoptimset(optionsGA,'Display','final');
+    optionsFmincon=optimsetMOD(optionsFmincon,'Display','final');
+    optionsSQP=optimsetMOD(optionsSQP,'Display', 'final');
+    optionsFminbnd=optimsetMOD(optionsFminbnd,'Display','final');
+    optionsFminsearch=optimsetMOD(optionsFminbnd,'Display', 'final');
+    optionsGA=gaoptimsetMOD(optionsGA,'Display','final');
 end
 
 %display information of the algorithm on a graph
 if dataMeta.para.dispPlotAlgo
-    optionsFmincon=optimset(optionsFmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
+    optionsFmincon=optimsetMOD(optionsFmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
-    optionsSQP=optimset(optionsSQP,'PlotFcns',{@optimplotx,@optimplotfunccount,...
+    optionsSQP=optimsetMOD(optionsSQP,'PlotFcns',{@optimplotx,@optimplotfunccount,...
         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
-    optionsFminbnd=optimset(optionsFminbnd,'PlotFcns',{@optimplotx,@optimplotfunccount,...
+    optionsFminbnd=optimsetMOD(optionsFminbnd,'PlotFcns',{@optimplotx,@optimplotfunccount,...
         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
-    optionsGA=gaoptimset(optionsGA,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
+    optionsGA=gaoptimsetMOD(optionsGA,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
         @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
         @gaplotscorediversity,@gaplotscores,@gaplotstopping});
     %%PSOT
@@ -195,7 +195,7 @@ end
 if sampManuOn&&sampleMinOk
     doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSampInit;doePop.disp=false;doePop.type=dataMeta.para.sampManu;
     samplePop=buildDOE(doePop);
-    optionsGA=gaoptimset(optionsGA,'PopulationSize',nbSampInit,'InitialPopulation',samplePop);
+    optionsGA=gaoptimsetMOD(optionsGA,'PopulationSize',nbSampInit,'InitialPopulation',samplePop);
     %PSOt
     PSOTsampling=samplePop;
     PSOTOptions(13)=1;
@@ -420,10 +420,16 @@ end
 fprintf('\n');
 end
 
-function ret=optimset(varargin)
-ret=[];
+%wrapper to optimset and gaoptimset function (actual functions requires the
+%Matlab's optimization toolbox)
+function varargout=optimsetMOD(varargin)
+if exist('optimset','file')
+    [varargout{1:nargout}] = optimset( varargin{:} );
+end
 end
 
-function ret=gaoptimset(varargin)
-ret=[];
+function varargout=gaoptimsetMOD(varargin)
+if exist('gaoptimset','file')
+    [varargout{1:nargout}] = optimset( varargin{:} );
+end
 end

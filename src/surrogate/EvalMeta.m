@@ -184,6 +184,27 @@ switch availData.type
             [valRespN(jj),G,varResp(jj)]=SVREval(reqRespN(jj,:),availData);
             valGradN(jj,:)=G;
         end
+        %% check interpolation
+        if availData.check
+            parfor (jj=1:size(samplingU,1),numWorkers)
+                [checkZN(jj),G]=SVREval(samplingU(jj,:),availData);
+                checkGZN(jj,:)=G;
+            end
+            if availData.normOn;
+                checkZ=NormRenorm(checkZN,'renorm',availData.norm.resp);
+            else
+                checkZ=checkZN;
+            end
+            checkInterp(respI,checkZ,'resp')
+            if availData.used.availGrad
+                if availData.normOn;
+                    checkGZ=NormRenormG(checkGZN,'renorm',availData.norm.sampling,availData.norm.resp);
+                else
+                    checkGZ=checkGZN;
+                end
+                checkInterp(gradI,checkGZ,'grad')
+            end
+        end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
         

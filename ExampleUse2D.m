@@ -41,16 +41,18 @@ gradRef=C.ref.grad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='SVR';
+metaData.type='GSVR';
 metaData.kern='matern32';
 metaData.cv.disp=true;
-metaData.para.estim=true;
-metaData.normOn=true;
+metaData.para.estim=false;
+ metaData.para.l.val=[0.1 0.1];
+metaData.normOn=false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
 [approx]=BuildMeta(sampling,resp,grad,metaData);
 %evaluation of the surrogate model at the grid points
+[K]=EvalMeta(sampling(1,:),approx);
 [K]=EvalMeta(gridRef,approx);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

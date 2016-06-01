@@ -106,7 +106,7 @@ meta.infill.paraGEI=1;
 meta.infill.paraLCB=0.5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Check interpolation
-meta.check=false;
+meta.check=true;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% chargement configuration particuliere

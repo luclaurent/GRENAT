@@ -92,7 +92,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Solving the Convex Constrained Quadaratic Optimization problem
-opts = optimoptions('quadprog','Diagnostics','off','Display','none');
+opts = optimoptions('quadprog','Diagnostics','off','Display','iter');
 [solQP,fval,exitflag,infoIPM,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,32 +115,16 @@ svUSV=find(alphaPP>lb(1:ns)+epsM & alphaPP<ub(1:ns)-epsM);
 %Bounded SV's
 svBSV=find(alphaPP<lb(1:ns)+epsM | alphaPP>ub(1:ns)-epsM);
 
-
 %finding SV's corresponding to value of alpha situated in the middle of
 %[lb,ub]
 [svMidP,svMidPIX]=min(abs(abs(alphaRAW(1:ns))-ub(1:ns)/2));
 [svMidM,svMidMIX]=min(abs(abs(alphaRAW(ns+1:2*ns))-ub(ns+1:2*ns)/2));
 
-%compute epsilon
-eM=0.5*(dataIn.used.resp(svMidPIX)...
-    -dataIn.used.resp(svMidMIX)...
-    -alphaPM(svPM)'*PsiT(svPM,svMidPIX)...
-    +alphaPM(svPM)'*PsiT(svPM,svMidMIX));
-
-%compute the base term
-SVRmuM=dataIn.used.resp(svMidPIX)...
-    -eM*sign(alphaPM(svMidPIX))...
-    -alphaPM(svPM)'*PsiT(svPM,svMidPIX);
-
-%lagrange multipliers give the values of mu and epsilon
-e=lmQP.ineqlin(1);
-SVRmu=lmQP.eqlin;
-
 %in the case of gradient-based approach
 lambdaPM=[];
 lambdaPP=[];
 lambdaRAW=[];
-iXsv=svPM;
+iXsvT=svPM;
 iXsvPM=svPM;
 iXsvPP=svPP;
 iXsvUSV=svUSV;
@@ -155,29 +139,34 @@ if dataIn.used.availGrad
     %compute indexes of the the gradients associated to the support vectors
     liNp=1:np;
     repI=ones(np,1);
-    iXDsvI=ns+liNp(ones(numel(svPM),1),:)+np*(svPM(:,repI)-1);
-    iXsv=[svPM iXDsvI];
-
+    iXDsvI=liNp(ones(numel(iXsvT),1),:)+np*(iXsvT(:,repI)-1);
+    iXDsvI=iXDsvI';
+    iXsvT=[svPM;ns+iXDsvI(:)];
+    
     %find support vectors dedicated to gradients
     svDI=find(abs(lambdaPM)>epsM);
     [svMiddP,svMiddPIX]=min(abs(abs(lambdaRAW(1:ns*np)-ub(2*ns+1:ns*(np+2))/2)));
     [svMiddM,svMiddMIX]=min(abs(abs(lambdaRAW(ns*np+1:2*ns*np)-ub(ns*(np+2)+1:2*ns*(1+np))/2)));
     
-    %compute epsilon
-    eM=0.5*(dataIn.used.resp(svMidPIX)...
-        -dataIn.used.resp(svMidMIX)...
-        -alphaPM(svPM)'*Psi(svPM,svMidPIX)...
-        -lambdaPM(svPM)'*PsiDo(svMidPIX,svPM)'...
-        +alphaPM(svPM)'*Psi(svPM,svMidMIX)...
-        +lambdaPM(svPM)'*PsiDo(svMidMIX,svPM)');
-    %compute the base term
-    SVRmuM=dataIn.used.resp(svMidPIX)...
-        -eM*sign(alphaPM(svMidPIX))...
-        -alphaPM(svPM)'*Psi(svPM,svMidPIX)...
-        -lambdaPM(svPM)'*PsiDo(svMidPIX,svPM)';
-    e=eM;
-    SVRmu=SVRmuM;
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%compute epsilon
+% eM=0.5*(dataIn.used.resp(svMidPIX)...
+%     -dataIn.used.resp(svMidMIX)...
+%     -FullAlphaLambdaPM(iXsvT)'*PsiR(svMidPIX,iXsvT)'...
+%     +FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidMIX));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%compute the base term
+% SVRmuM=dataIn.used.resp(svMidPIX)...
+%     -eM*sign(alphaPM(svMidPIX))...
+%     -FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidPIX);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%lagrange multipliers give the values of mu and epsilon
+e=lmQP.ineqlin(1);
+SVRmu=lmQP.eqlin;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Number of Unbounded and Bounded SVs
@@ -238,114 +227,3 @@ critMin=spanBound;
 %ret.build.Bound=Bound;
 %ret.build.loo=loo;
 
-
- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %Factorization of the matrix
-% switch factKK
-%     case 'QR'
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %QR factorization
-%         [QK,RK,PK]=qr(KK);
-%         QtK=QK';
-%         yQ=QtK*dataIn.build.y;
-%         fctQ=QtK*dataIn.build.fct;
-%         fcK=dataIn.build.fc*PK/RK;
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %compute beta coefficient
-%         fcCfct=fcK*fctQ;
-%         block2=fcK*yQ;
-%         beta=fcCfct\block2;
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %compute gamma coefficient
-%         gamma=PK*(RK\(yQ-fctQ*beta));
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %save variables
-%         buildData.yQ=yQ;
-%         buildData.fctQ=fctQ;
-%         buildData.fcK=fcK;
-%         buildData.fcCfct=fcCfct;
-%         buildData.RK=RK;
-%         buildData.QK=QK;
-%         buildData.QtK=QtK;
-%         buildData.PK=PK;
-%
-%     case 'LU'
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %LU factorization
-%         [LK,UK,PK]=lu(KK,'vector');
-%         yP=dataIn.build.y(PK,:);
-%         fctP=dataIn.build.fct(PK,:);
-%         yL=LK\yP;
-%         fctL=LK\fctP;
-%         fcU=dataIn.build.fc/UK;
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %compute beta coefficient
-%         fcCfct=fcU*fctL;
-%         block2=fcU*yL;
-%         beta=fcCfct\block2;
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %compute gamma coefficient
-%         gamma=UK\(yL-fctL*beta);
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %save variables
-%         buildData.yL=yL;
-%         buildData.fcU=fcU;
-%         buildData.fctL=fctL;
-%         buildData.fcCfct=fcCfct;
-%         buildData.LK=LK;
-%         buildData.UK=UK;
-%         buildData.PK=PK;
-%     case 'LL'
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %Cholesky's fatorization
-%         %%% to be degugged
-%         LK=chol(KK,'lower');
-%         LtK=LK';
-%         yL=LK\dataIn.build.y;
-%         fctL=LK\dataIn.build.fct;
-%         fcL=dataIn.build.fc/LtK;
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %compute beta coefficient
-%         fcCfct=fcL*fctL;
-%         block2=fcL*yL;
-%         beta=fcCfct\block2;
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %compute gamma coefficient
-%         gamma=LtK\(yL-fctL*beta);
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %save variables
-%         buildData.yL=yL;
-%         buildData.fcL=fcL;
-%         buildData.fctL=fctL;
-%         buildData.fcCfct=fcCfct;
-%         buildData.LtK=LtK;
-%         buildData.LK=LK;
-%     otherwise
-%         %classical approach
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %compute gamma and beta coefficients
-%         fcC=dataIn.build.fc/KK;
-%         fcCfct=fcC*dataIn.build.fct;
-%         block2=((dataIn.build.fc/KK)*dataIn.build.y);
-%         beta=fcCfct\block2;
-%         gamma=KK\(dataIn.build.y-dataIn.build.fct*beta);
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         %save variables
-%         buildData.fcC=fcC;
-%         buildData.fcCfct=fcCfct;
-% end

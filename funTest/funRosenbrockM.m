@@ -46,7 +46,7 @@ if ~isempty(xx)
         elseif size(xx,1)==2
             xxx=xx(:,2);yyy=xx(:,1);
         else
-            error(['Wrong input variables ',mfilename,']);
+            error(['Wrong input variables ',mfilename]);
         end
         p=a.*(yyy-xxx.^2).^2 + (1 - xxx).^2 + c * (sin(d*(1-xxx)) + sin(d*(1-yyy)));
         if nargout==2||dem

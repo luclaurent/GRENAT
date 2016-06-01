@@ -39,7 +39,7 @@ if ~isempty(xx)
     nbvar=size(xx,3);
     
     if nbvar==1
-        error(['Wrong input variables ',mfilename,']);
+        error(['Wrong input variables ',mfilename]);
     else
         nu(1,1,:)=1:nbvar;
         nu=repmat(nu,[size(xx,1),size(xx,2),1]);

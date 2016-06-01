@@ -38,7 +38,7 @@ if ~isempty(xx)
     nbvar=size(xx,3);
     
     if nbvar==1
-        error(['Wrong input variables ',mfilename,']);
+        error(['Wrong input variables ',mfilename]);
     else
         p=0;
         for iter=1:nbvar

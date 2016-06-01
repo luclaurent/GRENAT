@@ -44,7 +44,7 @@ if ~isempty(xx)
         elseif size(xx,1)==2
             xxx=xx(:,2);yyy=xx(:,1);
         else
-            error(['Wrong input variables ',mfilename,']);
+            error(['Wrong input variables ',mfilename]);
         end
         p=xxx.^2+2*yyy.^2;
         if nargout==2||dem

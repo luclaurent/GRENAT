@@ -36,7 +36,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li><li><a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>	% function for automatic calculation of the empirical value of the hyperparameters</li></ul>
+<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li><li><a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>	% function for automatic calculation of the empirical value of the hyperparameters</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li></ul>
@@ -314,7 +314,7 @@ This function is called by:
 0267         set(h,<span class="string">'LineWidth'</span>,2)
 0268         <span class="comment">%store figure in TeX/Tikz file</span>
 0269         <span class="keyword">if</span> dispData.save
-0270             <a href="../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>([dispData.doss <span class="string">'/RBFmse.tex'</span>])
+0270             matlab2tikz([dispData.doss <span class="string">'/RBFmse.tex'</span>])
 0271         <span class="keyword">end</span>
 0272         
 0273     <span class="keyword">elseif</span> ~metaData.para.aniso||np==1
@@ -411,6 +411,6 @@ This function is called by:
 0364 <span class="keyword">end</span>
 0365 
 0366</pre></div>
-<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

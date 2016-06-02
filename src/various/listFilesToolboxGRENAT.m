@@ -20,7 +20,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function listF=listFilesToolbox(dirT)
+function listF=listFilesToolboxGRENAT(dirT)
 listF={};
 %process all directories in the directory 'dirT'
 for ii=1:numel(dirT)
@@ -42,7 +42,7 @@ listF={listF{:},fileDirOk{:}};
 blacklist={'.git',char(126),'m2html','.DS_Store',...
     'lightspeed','mmx','mtimesx','Multiprod',...
     'sqplab-0.4.5-distrib','toolbox','PSOt',...
-    'base_monomes'};
+    'monomial_basis','.travis.yml'};
 
 for jj=1:numel(blacklist)
     %pattern to check

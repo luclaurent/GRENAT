@@ -2,8 +2,8 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Description of listFilesToolbox</title>
-  <meta name="keywords" content="listFilesToolbox">
+  <title>Description of listFilesToolboxGRENAT</title>
+  <meta name="keywords" content="listFilesToolboxGRENAT">
   <meta name="description" content="% List all files of the GRENAT Toolbox">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
@@ -16,14 +16,14 @@
 <body>
 <a name="_top"></a>
 <!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html various -->
-<h1>listFilesToolbox
+<h1>listFilesToolboxGRENAT
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="box"><strong>% List all files of the GRENAT Toolbox</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function listF=listFilesToolbox(dirT) </strong></div>
+<div class="box"><strong>function listF=listFilesToolboxGRENAT(dirT) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre class="comment">% List all files of the GRENAT Toolbox
@@ -68,7 +68,7 @@ This function is called by:
 0020 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
 0021 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 0022 
-0023 <a name="_sub0" href="#_subfunctions" class="code">function listF=listFilesToolbox(dirT)</a>
+0023 <a name="_sub0" href="#_subfunctions" class="code">function listF=listFilesToolboxGRENAT(dirT)</a>
 0024 listF={};
 0025 <span class="comment">%process all directories in the directory 'dirT'</span>
 0026 <span class="keyword">for</span> ii=1:numel(dirT)
@@ -90,7 +90,7 @@ This function is called by:
 0042 blacklist={<span class="string">'.git'</span>,char(126),<span class="string">'m2html'</span>,<span class="string">'.DS_Store'</span>,<span class="keyword">...</span>
 0043     <span class="string">'lightspeed'</span>,<span class="string">'mmx'</span>,<span class="string">'mtimesx'</span>,<span class="string">'Multiprod'</span>,<span class="keyword">...</span>
 0044     <span class="string">'sqplab-0.4.5-distrib'</span>,<span class="string">'toolbox'</span>,<span class="string">'PSOt'</span>,<span class="keyword">...</span>
-0045     <span class="string">'base_monomes'</span>};
+0045     <span class="string">'monomial_basis'</span>,<span class="string">'.travis.yml'</span>};
 0046 
 0047 <span class="keyword">for</span> jj=1:numel(blacklist)
 0048     <span class="comment">%pattern to check</span>
@@ -119,6 +119,6 @@ This function is called by:
 0071 <span class="comment">%list of files in the directory</span>
 0072 filDir={rawList(flag_file).name};
 0073 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

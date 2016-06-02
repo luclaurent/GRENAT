@@ -1,7 +1,7 @@
 /* Created by mdot for Matlab */
 digraph m2html {
   buildDisp -> mesuTime;
-  buildDocGRENAT -> listFilesToolbox;
+  buildDocGRENAT -> listFilesToolboxGRENAT;
   evalFunGrad -> mesuTime;
 
   CheckInputData [URL="CheckInputData.html"];
@@ -13,7 +13,7 @@ digraph m2html {
   evalFunGrad [URL="evalFunGrad.html"];
   example2D [URL="example2D.html"];
   execParallel [URL="execParallel.html"];
-  listFilesToolbox [URL="listFilesToolbox.html"];
+  listFilesToolboxGRENAT [URL="listFilesToolboxGRENAT.html"];
   mesuTime [URL="mesuTime.html"];
   statusParallel [URL="statusParallel.html"];
 }

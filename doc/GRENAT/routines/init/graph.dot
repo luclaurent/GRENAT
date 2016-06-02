@@ -1,6 +1,0 @@
-/* Created by mdot for Matlab */
-digraph m2html {
-
-  init_aff [URL="init_aff.html"];
-  init_meta [URL="init_meta.html"];
-}

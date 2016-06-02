@@ -1,7 +1,6 @@
 /* Created by mdot for Matlab */
 digraph m2html {
 
-  .travis [URL=".travis.html"];
   AUTHORS [URL="AUTHORS.html"];
   CHANGELOG [URL="CHANGELOG.html"];
   LICENSE [URL="LICENSE.html"];

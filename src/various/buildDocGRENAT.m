@@ -32,7 +32,7 @@ analyseDir='GRENAT';
 %ignDir={'};
 
 %listof files
-listFiles=listFilesToolbox(dirPath);
+listFiles=listFilesToolboxGRENAT(dirPath);
 %add path to all files
 listFiles=cellfun(@(x) sprintf('%s/%s',analyseDir,x),listFiles,'UniformOutput',false);
 

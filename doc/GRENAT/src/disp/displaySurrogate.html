@@ -33,7 +33,7 @@ L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/init/initDisp.html" class="code" title="function dispDef=initDisp()">initDisp</a>	% Initialization of display variables</li><li><a href="../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li></ul>
+<li><a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/init/initDisp.html" class="code" title="function dispDef=initDisp()">initDisp</a>	% Initialization of display variables</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
@@ -517,13 +517,13 @@ This function is called by:
 0473     <span class="comment">%export using tikz</span>
 0474     <span class="keyword">if</span> dispData.tikz
 0475         nomfig=[dispData.directory <span class="string">'/fig_'</span> num2str(dispData.num,<span class="string">'%04.0f'</span>) <span class="string">'.tex'</span>];
-0476         <a href="../../../GRENAT/src/libs/matlab2tikz.html" class="code" title="">matlab2tikz</a>(nomfig);
+0476         matlab2tikz(nomfig);
 0477     <span class="keyword">end</span>
 0478     
 0479     hold off
 0480 <span class="keyword">end</span>
 0481 <span class="keyword">end</span>
 0482</pre></div>
-<hr><address>Generated on Wed 01-Jun-2016 23:36:27 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -11,7 +11,7 @@ The available surrogate models are
 * Kriging/Cokriging (KRG/GKRG)
 * Support Vector Regression (SVR/GSVR)
 
-This toolbox is the result of a teamwork with [Luc LAURENT](http://www.lmssc.cnam.fr/fr/equipe/luc-laurent) ([LMSSC](http://www.lmssc.cnam.fr)), [Pierre-Alain Boucard](http://w3.lmt.ens-cachan.fr/site/php_perso/perso_page_lmt.php?nom=BOUCARD) ([LMT-Cachan](http://www.lmt.ens-cachan.fr/) and [Bruno Soulier](http://w3.lmt.ens-cachan.fr/site/php_perso/perso_page_lmt.php?nom=SOULIER) ([LMT-Cachan](http://www.lmt.ens-cachan.fr/). 
+This toolbox is the result of a teamwork with [Luc LAURENT](http://www.lmssc.cnam.fr/fr/equipe/luc-laurent) ([LMSSC](http://www.lmssc.cnam.fr)), [Pierre-Alain Boucard](http://w3.lmt.ens-cachan.fr/site/php_perso/perso_page_lmt.php?nom=BOUCARD) ([LMT-Cachan](http://www.lmt.ens-cachan.fr/)) and [Bruno Soulier](http://w3.lmt.ens-cachan.fr/site/php_perso/perso_page_lmt.php?nom=SOULIER) ([LMT-Cachan](http://www.lmt.ens-cachan.fr/)). 
 
 Features
 ------

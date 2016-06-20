@@ -1,5 +1,5 @@
-%% Erase all variables and close all opened windows
-%% L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
+%% Script for checking if the code is executed on Matlab or Octave
+% L. LAURENT -- 20/06/2016 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -18,21 +18,10 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function customClean
-% display warning or not
-dispWarning=false;
-
-if ~dispWarning; warning off all;end
-
-%if display available, the windows have to be closed
-screenSize = get(0,'ScreenSize');
-if ~isequal(screenSize(3:4),[1 1])
-    clf
-end
-
-clc;
-close all hidden;
-clear all;
-clear all global;
-
+function r = isOctave ()
+  persistent x;
+  if (isempty (x))
+    x = exist ('OCTAVE_VERSION', 'builtin');
+  end
+  r = x;
 end

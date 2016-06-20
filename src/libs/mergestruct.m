@@ -5,10 +5,14 @@ function sout = mergestruct(varargin)
 
 % Start with collecting fieldnames, checking implicitly
 % that inputs are structures.
-fn = [];
+fn = {};
 for k = 1:nargin
     try
-        fn = [fn ; fieldnames(varargin{k})];
+      if numel(fn)==0
+        fn=fieldnames(varargin{k});
+      else
+        fn=[fn;fieldnames(varargin{k})];
+      end
     catch MEstruct
         throw(MEstruct)
     end
@@ -25,7 +29,11 @@ end
 c = [];
 for k = 1:nargin
     try
+      if numel(c)==0
+        c=struct2cell(varargin{k});
+      else
         c = [c ; struct2cell(varargin{k})];
+      end
     catch MEdata
         throw(MEdata);
     end

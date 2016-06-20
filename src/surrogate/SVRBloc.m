@@ -109,8 +109,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Solving the Convex Constrained Quadaratic Optimization problem
-opts = optimoptions('quadprog','Diagnostics','off','Display','none');
-[solQP,fval,exitflag,infoIPM,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
+[solQP, obj, info, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Specific data for none-gradient-based SVR
@@ -243,4 +242,21 @@ ret.build.spanBound=spanBound;
 critMin=spanBound;
 %ret.build.Bound=Bound;
 %ret.build.loo=loo;
+
+end
+
+%specific execution of Quadratic Programming depending on Matlab/Octave
+function [solQP, obj, info, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub)
+if isOctave
+[solQP, obj, info, lambda] = qp ([],PsiT,CC,Aeq,beq,lb,ub,[], AA, bb);
+exitflag=info.info;
+lmQP.ineqlin=lambda((end-numel(bb)):end);
+lmQP.eqlin=lambda(1:numel(beq));
+lmQP.lower=lambda(numel(beq)+(1:numel(lb)));
+lmQP.upper=lambda(numel(beq)+numel(lb)+(1:numel(ub)));
+else
+opts = optimoptions('quadprog','Diagnostics','off','Display','none');
+[solQP,fval,exitflag,~,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
+end
+end
 

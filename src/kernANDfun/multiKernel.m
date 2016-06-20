@@ -132,7 +132,10 @@ if nbOut>2
         if nV>1;maskM=[1 1];else maskM=1;end
         mm=[maskM 3:nV];
         mask1=mm(ones(nV,1),:); %shift indexes
-        mask1=triu(mask1,2)+tril(ones(nV),1);
+        mask1=tril(ones(nV),1);
+        if numel(mask1)>1
+          mask1=triu(mask1,2)+mask1;
+        end
         %
         pcc=reshape([ones(1,nE);uniR'],1,nV+1,nE);
         M=reshape(pcc(1,mask1,:),nV,nV,nE);

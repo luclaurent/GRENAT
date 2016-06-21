@@ -254,11 +254,9 @@ lmQP.ineqlin=lambda((end-numel(bb)+1):end);
 lmQP.eqlin=-lambda(1:numel(beq));
 lmQP.lower=lambda(numel(beq)+(1:numel(lb)));
 lmQP.upper=lambda(numel(beq)+numel(lb)+(1:numel(ub)));
-keyboard
 else
 opts = optimoptions('quadprog','Diagnostics','off','Display','none');
 [solQP,fval,exitflag,~,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
-keyboard
 end
 end
 

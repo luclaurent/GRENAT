@@ -104,7 +104,7 @@ meta.para.critOpti=10^-6;
 % bounds of the space on which internal parameters are looked for
 if meta.para.estim
     meta.para.l.min=1e-1;
-    meta.para.l.max=30;
+    meta.para.l.max=100;
     meta.para.l.val=1;
     meta.para.p.max=2;
     meta.para.p.min=1.001;

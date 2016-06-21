@@ -27,9 +27,9 @@ critOpti=dataMeta.para.critOpti;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
 fprintf('    > Estimation of hyperparameters <\n');
-fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
 [tMesu,tInit]=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,7 +97,7 @@ optionsSQP = optimsetMOD(...
     'TolFun',critOpti);
 optionsFminbnd = optimsetMOD(...
     'Display', 'iter',...        %display evolution
-    'OutputFcn',@stop_estim,...      %function used for following the algorithm and dealing with the various status of it
+    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
     'FunValCheck','off',...      %check value of the function (Nan,Inf)
     'UseParallel','never',...
     'PlotFcns','');
@@ -153,7 +153,7 @@ if ~dataMeta.para.dispIterGraph
     optionsFminsearch=optimsetMOD(optionsFminbnd,'OutputFcn','');
     optionsGA=gaoptimsetMOD(optionsGA,'OutputFcn','');
 else
-    figure
+    figure;
 end
 
 if ~dataMeta.para.dispIterCmd
@@ -264,7 +264,7 @@ switch methodOptim
         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsSQP);
         %stop minimiszation
         if exitflag==1||exitflag==0||exitflag==2
-            disp('Stop')
+            disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
@@ -286,7 +286,7 @@ switch methodOptim
         if ~dispWarning;warning on all;end
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
-            disp('Stop')
+            disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
@@ -305,7 +305,7 @@ switch methodOptim
         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
-            disp('Stop')
+            disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
@@ -326,7 +326,7 @@ switch methodOptim
         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsFmincon);
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
-            disp('Stop')
+            disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
@@ -345,7 +345,7 @@ switch methodOptim
         [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsGA);
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
-            disp('Stop')
+            disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
@@ -382,7 +382,7 @@ switch methodOptim
         exitflag=[];
         output.tr=tr;
         output.te=te;
-        disp('Stop')
+        disp('Stop');
         paraEstim.outAlgo=output;
         paraEstim.outAlgo.xval=Xmin;
         paraEstim.outAlgo.fval=Zmin;
@@ -417,12 +417,12 @@ switch dataMeta.kern
 end
 %display values of HyperParameters
 fprintf(' >>> Optimal HyperParameters\n');
-dispHyperParameter('l ',paraEstim.l.val)
+dispHyperParameter('l ',paraEstim.l.val);
 if ~isnan(paraEstim.p.val);dispHyperParameter('p ',paraEstim.p.val);end
 if ~isnan(paraEstim.nu.val);dispHyperParameter('nu',paraEstim.nu.val);end
 %
 mesuTime(tMesu,tInit);
-fprintf(' - - - - - - - - - - - - - - - - - - - - \n')
+fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
 end
 
 %function for displaying hyperparameters in the command window
@@ -440,7 +440,7 @@ end
 %wrapper to optimset and gaoptimset function (actual functions requires the
 %Matlab's optimization toolbox)
 function varargout=optimsetMOD(varargin)
-if exist('optimset','file')
+if exist('optimset','file')&&~isOctave
     [varargout{1:nargout}] = optimset( varargin{:} );
 else
     varargout{1}=[];
@@ -448,7 +448,7 @@ end
 end
 
 function varargout=gaoptimsetMOD(varargin)
-if exist('gaoptimset','file')
+if exist('gaoptimset','file')&&~isOctave
     [varargout{1:nargout}] = gaoptimset( varargin{:} );
 else
     varargout{1}=[];

@@ -60,7 +60,7 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='SVR';
+metaData.type='GKRG';
 metaData.kern='matern32';
 metaData.cv.disp=true;
 metaData.para.estim=false;

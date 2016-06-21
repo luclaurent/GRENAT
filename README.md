@@ -35,6 +35,22 @@ GRENAT uses the
 
 These toolbox are included in GRENAT.
 
+Download
+------
+
+The toolbox can be downloaded [here](https://bitbucket.org/luclaurent/grenat/downloads).
+
+If you use `git`, you can clone the repository using the following command
+
+    git clone --recursive git@bitbucket.org:luclaurent/grenat.git GRENAT
+
+Due to the use of submodules, the option  `--recursive` is *mandatory*.
+
+If you forget to use this option, you can activate the submodules by going in the folder on which you have cloned the repository and execute the following command:
+
+    git submodule update --init --recursive
+ 
+
 First start
 ------
 

@@ -24,7 +24,7 @@ global parallelData
 parallelData.on=false;
 parallelData.num=0;
 
-if usejava('jvm')
+if usejava('jvm')&&~isOctave
     %depending on the status
     switch statut
         case 'start'

@@ -42,7 +42,7 @@ execParallel('start',parallel);
 
 %sampling points
 sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
-sampling=linspace(-2,15,10)';
+%sampling=linspace(-2,15,10)';
 nns=6;
 
 
@@ -60,10 +60,10 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load surrogate model parameters
 metaData=initMeta;
-metaData.type='KRG';
+metaData.type='SVR';
 metaData.kern='matern32';
 metaData.cv.disp=true;
-metaData.para.estim=true;
+metaData.para.estim=false;
 metaData.para.nu.val=3;
 metaData.para.l.val=0.1;
 metaData.para.dispPlotAlgo=false;

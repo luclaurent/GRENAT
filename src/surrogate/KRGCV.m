@@ -584,18 +584,18 @@ end
 %%Show QQ-plot
 if metaData.cv.disp&&modFinal
     opt.newfig=false;
-    figure
+    figure;
     subplot(1,3,1);
     opt.title='Normalized data (CV R)';
-    QQplot(dataBloc.used.resp,cvZR,opt)
+    QQplot(dataBloc.used.resp,cvZR,opt);
     subplot(1,3,2);
     opt.title='Normalized data (CV F)';
-    QQplot(dataBloc.used.resp,cvZ,opt)
+    QQplot(dataBloc.used.resp,cvZ,opt);
     subplot(1,3,3);
     opt.title='SCVR (Normalized)';
     opt.xlabel='Predicted' ;
     opt.ylabel='SCVR';
-    SCVRplot(cvZR,cv.final.scvr,opt)
+    SCVRplot(cvZR,cv.final.scvr,opt);
     
     %     % original data
     %     subplot(2,3,4);
@@ -623,13 +623,13 @@ end
 function retStatus=modWarning(requireStatus,oldStatus)
 if nargin==1
     if ~requireStatus
-        warning off all
+        warning off all;
     end
 else
     if isempty(oldStatus)
         retStatus=warning;
     else
-        warning(oldStatus)
+        warning(oldStatus);
     end
 end
 end

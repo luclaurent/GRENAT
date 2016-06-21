@@ -246,17 +246,19 @@ critMin=spanBound;
 end
 
 %specific execution of Quadratic Programming depending on Matlab/Octave
-function [solQP, obj, info, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub)
+function [solQP, fval, exitflag, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub)
 if isOctave
-[solQP, obj, info, lambda] = qp ([],PsiT,CC,Aeq,beq,lb,ub,[], AA, bb);
+[solQP, fval, info, lambda] = qp ([],PsiT,CC,Aeq,beq,lb,ub,[], AA, bb);
 exitflag=info.info;
-lmQP.ineqlin=lambda((end-numel(bb)):end);
-lmQP.eqlin=lambda(1:numel(beq));
+lmQP.ineqlin=lambda((end-numel(bb)+1):end);
+lmQP.eqlin=-lambda(1:numel(beq));
 lmQP.lower=lambda(numel(beq)+(1:numel(lb)));
 lmQP.upper=lambda(numel(beq)+numel(lb)+(1:numel(ub)));
+keyboard
 else
 opts = optimoptions('quadprog','Diagnostics','off','Display','none');
 [solQP,fval,exitflag,~,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
+keyboard
 end
 end
 

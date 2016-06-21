@@ -13,8 +13,8 @@ for k = 1:nargin
       else
         fn=[fn;fieldnames(varargin{k})];
       end
-    catch MEstruct
-        throw(MEstruct)
+    catch MEstruct;
+        throw(MEstruct);
     end
 end
 
@@ -34,7 +34,7 @@ for k = 1:nargin
       else
         c = [c ; struct2cell(varargin{k})];
       end
-    catch MEdata
+    catch MEdata;
         throw(MEdata);
     end
 end

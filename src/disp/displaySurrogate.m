@@ -70,7 +70,7 @@ if ~isempty(fMiss)
         fprintf('%s ',fMiss{ii});
         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
     end
-    fprintf('\n')
+    fprintf('\n');
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -150,7 +150,7 @@ if dispData.on
     if dispData.newFig
         figHandle=figure;
     else
-        hold on
+        hold on;
     end
     
     %display in 2D (2 design parameters)
@@ -205,7 +205,7 @@ if dispData.on
             
             %show sample points
             if dispData.samplePts
-                hold on
+                hold on;
                 
                 %show sample points on which all information is known
                 plot3(sampling(listPtsOk,1),sampling(listPtsOk,2),resp(listPtsOk),...
@@ -268,12 +268,12 @@ if dispData.on
                 dimr=abs(max(max(vZ))-min(min(vZ)));
                 %maximal norm of the gradients
                 nmax=max(max(vec.N));
-                hold on
+                hold on;
                 %hcones =coneplot(X,Y,vZ,vec.X,vec.Y,vec.Z,0.1,'nointerp');
                 % hcones=coneplot(X,Y,vZ,GR1,GR2,-ones(size(GR1)),0.1,'nointerp');
                 % set(hcones,'FaceColor','red','EdgeColor','none')
                 quiver3(gridX,gridY,vZ,scaleFactor*vec.X,scaleFactor*vec.Y,scaleFactor*vec.Z,...
-                    'b','MaxHeadSize',0.1*dimr/nmax,'AutoScale','off')
+                    'b','MaxHeadSize',0.1*dimr/nmax,'AutoScale','off');
             end
             %axis([min(grille_X(:)) max(grille_X(:)) min(grille_Y(:)) max(grille_Y(:)) min(vZ(:)) max(vZ(:))])
         end
@@ -301,7 +301,7 @@ if dispData.on
                 end
                 %show sample points
                 if dispData.samplePts
-                    hold on
+                    hold on;
                     %show sample points on which all information is known
                     plot(sampling(listPtsOk,1),sampling(listPtsOk,2),...
                         'o',...
@@ -354,8 +354,8 @@ if dispData.on
         %rendering
         if dispData.render
             hlight=light;               % active light
-            lighting('gouraud')         % type of rendering
-            lightangle(hlight,48,70)    % direction of the light
+            lighting('gouraud');         % type of rendering
+            lightangle(hlight,48,70);    % direction of the light
         end
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -366,7 +366,7 @@ if dispData.on
         ylabel(dispData.ylabel);
         if dispData.d3
             zlabel(dispData.zlabel);
-            view(3)
+            view(3);
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -403,7 +403,7 @@ if dispData.on
         end
         %show sample points
         if dispData.samplePts
-            hold on
+            hold on;
             if dispData.gridGrad&&isfield(Z,'GZ');valPlot=grad;else valPlot=resp;end
             %show sample points on which all information is known
             plot(sampling(listPtsOk),valPlot(listPtsOk),...
@@ -476,7 +476,7 @@ if dispData.on
         matlab2tikz(nomfig);
     end
     
-    hold off
+    hold off;
 end
 end
 

@@ -15,7 +15,7 @@ This toolbox is the result of the PhD thesis of [Luc LAURENT](http://www.lmssc.c
 
 Features
 ------
-GRENAT are able to 
+GRENAT is able to 
 
 * Normalize the input data
 * Build the surrogate models

@@ -26,7 +26,6 @@ classdef GRENAT < handle
         resp=[];
         grad=[];
         confMeta=initMeta;%load default configuration
-        type=confMeta.type;
         %training
         dataTrain;
         %evaluating
@@ -43,6 +42,9 @@ classdef GRENAT < handle
         respRef=[];
         gradRef=[];
     end
+    properties (Dependent)
+        type;
+    end
     
     properties (Constant)
         typeAvail={};
@@ -57,6 +59,10 @@ classdef GRENAT < handle
     methods
         %construction
         function obj=GRENAT(typeIn,samplingIn,respIn,gradIn)
+            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            fprintf(' Create GRENAT Object \n')
+            %the date and time
+            dispDate;
             %load directories on the path
             initDirGRENAT;
             %specific configuration
@@ -93,7 +99,7 @@ classdef GRENAT < handle
             else
                 fprintf('ERROR: Empty array of sample points\n');
             end
-        end        
+        end
         %setter for the responses
         function set.resp(obj,respIn)
             if ~isempty(respIn)
@@ -121,6 +127,10 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %getter for the type of metamodel
+        function type=get.type(obj)
+            type=obj.confMeta.type;
+        end
         %getter for the responses at the non sample points
         function Z=get.nonsampleResp(obj)
             if obj.runEval;eval(obj);end
@@ -148,6 +158,8 @@ classdef GRENAT < handle
         end
         %evaluate the metamodel
         function [Z,GZ,variance]=eval(obj,nonsamplePts)
+            %check if the metamodel has been already trained
+            if ~obj.runTrain;train(obj);end
             %store non sample points
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %evaluation of the metamodels
@@ -266,7 +278,7 @@ classdef GRENAT < handle
             %type of confidence intervals
             ciOk=false;ciValDef=95;
             if nargin>1;if ~isempty(ciVal);if ismember(ciVal,[68,95,99]);ciOk=true;end, end, end
-            if ~ciOk;ciVal=ciValDef;end            
+            if ~ciOk;ciVal=ciValDef;end
             %store non sample points
             if nargin>2;obj.nonsamplePts=nonsamplePts;end
             obj.dispData.title=([num2str(ciVal) '% confidence intervals']);
@@ -274,7 +286,7 @@ classdef GRENAT < handle
             ciDisp=obj.nonsampleCI.(['ci' num2str(ciVal)]);
             displaySurrogateCI(obj.nonsamplePts,ciDisp,obj.dispData,K.Z);
         end
-    end    
+    end
 end
 
 

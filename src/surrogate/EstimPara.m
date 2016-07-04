@@ -30,7 +30,7 @@ critOpti=dataMeta.para.critOpti;
 fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
 fprintf('    > Estimation of hyperparameters <\n');
 fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
-[tMesu,tInit]=mesuTime;
+countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Definition of the parameters for minimization
@@ -421,7 +421,7 @@ dispHyperParameter('l ',paraEstim.l.val);
 if ~isnan(paraEstim.p.val);dispHyperParameter('p ',paraEstim.p.val);end
 if ~isnan(paraEstim.nu.val);dispHyperParameter('nu',paraEstim.nu.val);end
 %
-mesuTime(tMesu,tInit);
+countTime.stop;
 fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
 end
 

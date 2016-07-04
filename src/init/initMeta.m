@@ -26,7 +26,7 @@ end
 
 fprintf('=========================================\n')
 fprintf('  >>> INITIALIZATION Surrogate Model \n');
-[tMesu,tInit]=mesuTime;
+countTime=mesuTime;
 
 %% default configuration
 %taking into account gradients
@@ -242,5 +242,5 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-mesuTime(tMesu,tInit);
+countTime.stop;
 fprintf('=========================================\n')

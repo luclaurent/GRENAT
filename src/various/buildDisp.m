@@ -22,7 +22,7 @@ function [XY,dispData]=buildDisp(doeData,dispData)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('     >>> BUILD DISPLAY <<<\n');
-[tMesu,tInit]=mesuTime;
+countTime=mesuTime;
 %dimension of the sapce
 spaDim=numel(doeData.Xmin);
 
@@ -60,5 +60,5 @@ dispData.step=abs(doeData.Xmax-doeData.Xmin)./dispData.nbSteps;
 fprintf(' >> Number of points on the grid %i (%i',dispData.nbSteps^spaDim,dispData.nbSteps);
 fprintf('x%i',dispData.nbSteps*ones(1,spaDim-1));fprintf(')\n');
 
-mesuTime(tMesu,tInit);
+countTime.stop;
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

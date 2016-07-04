@@ -21,7 +21,7 @@
 function [eval,grad]=evalFunGrad(funR,X,type)
 
 
-[tMesu,tInit]=mesuTime;
+countTime=mesuTime;
 % depending on the kind of evaluations (computation at the sample points or
 % for displaying)
 switch type
@@ -75,5 +75,5 @@ fprintf(' >> Evaluation of the function %s at %i pts (%iD)\n',funT,ns,np);
 fprintf(' >> Computation of the gradients: ');
 if nargout==2;fprintf('Yes\n');else fprintf('No\n');end
 
-mesuTime(tMesu,tInit);
+countTime.stop;
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

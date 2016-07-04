@@ -23,7 +23,7 @@ classdef execParallel < handle
         workers=[];
         defaultParallel=[];
         currentParallel=[];
-        on=true;
+        on=false;
         numWorkers=[];
     end
     methods
@@ -41,6 +41,12 @@ classdef execParallel < handle
                 %run in specific case
                 if nargin==0;start(obj);end
             end
+            %load current configuration
+            if nargin==0
+                currentConf(obj);
+                %initialize value
+                obj.numWorkers=obj.currentParallel.NumWorkers;
+            end                
         end
         %setter for on
         function set.on(obj,stateIn)

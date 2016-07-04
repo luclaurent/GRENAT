@@ -19,35 +19,19 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %customClean;
-
-%display the date
-dispDate;
-
-%initialization of display variables
-dispData=initDisp();
-
-fprintf('++++++++++++++++++++++++++++++++++++++++++\n')
-fprintf('  >>>   Building surrogate model    <<<\n');
 countTime=mesuTime;
-
+%load folder structure
+initDirGRENAT;
 %parallel execution (options and starting of the workers)
 paraCluster=execParallel(false);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Load of a set of 2D data
-
 %sampling points
 sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
-%sampling=linspace(-2,15,10)';
-nns=6;
-
-
-sampling=linspace(0,15,nns)';
 %responses and gradients at sample points
 [resp,grad]=funManu(sampling);
-
-
 %%for displaying and comparing with the actual function
 %regular grid
 gridRef=linspace(-2,15,300)';
@@ -55,21 +39,14 @@ gridRef=linspace(-2,15,300)';
 [respRef,gradRef]=funManu(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%load surrogate model parameters
-metaData=initMeta;
-metaData.type='GKRG';
-metaData.kern='matern32';
-metaData.cv.disp=true;
-metaData.para.estim=true;
-metaData.para.nu.val=3;
-metaData.para.l.val=0.1;
-metaData.para.dispPlotAlgo=false;
+%create GRENAT Object
+metaGRENAT=GRENAT('GKRG',sampling,resp,grad);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
-[approx]=BuildMeta(sampling,resp,grad,metaData);
+metaGRENAT.train;
 %evaluation of the surrogate model at the grid points
-[K]=EvalMeta(gridRef,approx);
+metaGRENAT.eval(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %computation of the confidence intervals

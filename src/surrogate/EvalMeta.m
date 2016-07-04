@@ -21,7 +21,7 @@
 
 function [Z]=EvalMeta(evalSample,availData,Verb)
 
-[tMesu,tInit]=mesuTime;
+countTime=mesuTime;
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %output variable
@@ -421,7 +421,7 @@ end
 %end of evaluations
 if nbReqEval>1&&Verb
     fprintf('++ Evaluation at %i points\n',nbReqEval);
-    mesuTime(tMesu,tInit);
+    countTime.stop;
     fprintf('#########################################\n');
 end
 

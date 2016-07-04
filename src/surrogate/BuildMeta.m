@@ -22,7 +22,7 @@ function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)
 
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
-[tMesu,tInit]=mesuTime;
+countTime=mesuTime;
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %taking into account gradients or not
@@ -190,7 +190,7 @@ outMeta.in.grad=gradIn;
 outMeta=mergestruct(outMeta,metaData);
 outMeta.norm.on=metaData.normOn;
 
-mesuTime(tMesu,tInit);
+countTime.stop;
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 end
 

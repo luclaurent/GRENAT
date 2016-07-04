@@ -18,7 +18,6 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-initDirGRENAT();
 %customClean;
 
 %display the date
@@ -29,12 +28,10 @@ dispData=initDisp();
 
 fprintf('++++++++++++++++++++++++++++++++++++++++++\n')
 fprintf('  >>>   Building surrogate model    <<<\n');
-[tMesu,tInit]=mesuTime;
+countTime=mesuTime;
 
 %parallel execution (options and starting of the workers)
-parallel.on=false;
-parallel.workers='auto';
-execParallel('start',parallel);
+paraCluster=execParallel(false);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -130,6 +127,7 @@ err=critErrDisp(K.Z,respRef,approx.build);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Stop workers
-execParallel('stop',parallel);
+paraCluster.stop();
 
-mesuTime(tMesu,tInit);
+countTime.stop();
+

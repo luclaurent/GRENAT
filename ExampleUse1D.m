@@ -45,11 +45,15 @@ metaGRENAT=GRENAT('GKRG',sampling,resp,grad);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
 metaGRENAT.train;
+%define the reference (optional)
+metaGRENAT.defineRef(gridRef,respRef,gradRef);
 %evaluation of the surrogate model at the grid points
 metaGRENAT.eval(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%computation of the confidence intervals
+%display the result
+metaGRENAT.show;
+
 if isfield(K,'var');[ci68,ci95,ci99]=BuildCI(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

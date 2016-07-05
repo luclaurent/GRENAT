@@ -22,7 +22,7 @@ function dispDef=initDisp()
 
     dispDef.scale=true;             %scale for displaying gradients
     dispDef.tikz=false;             %save on tikz's format
-    dispDef.on=false;               %enable/disable display
+    dispDef.on=true;               %enable/disable display
     dispDef.d3=false;               %3D display
     dispDef.d2=false;               %2D display
     dispDef.contour=false;          %display contour
@@ -32,7 +32,7 @@ function dispDef=initDisp()
     dispDef.sampleGrad=false;       %display gradients at sample points
     dispDef.ci.on=false;            %display confidence intervals (if available)
     dispDef.ci.type='0';            %choose CI to dispaly
-    dispDef.newFig=true;            %display in new figure
+    dispDef.newFig=false;            %display in new figure
     dispDef.opt=[];                 %plot options
     dispDef.uni=false;              %use uniform color
     dispDef.color=[];               %choose display color   

@@ -39,6 +39,7 @@ classdef GRENAT < handle
         %display data
         dispData=initDisp;
         %reference
+        sampleRef=[];
         respRef=[];
         gradRef=[];
     end
@@ -66,7 +67,7 @@ classdef GRENAT < handle
             %load directories on the path
             initDirGRENAT;
             %specific configuration
-            if nargin>0;obj.confMeta.type=typeIn;obj.type=typeIn;end
+            if nargin>0;obj.confMeta.type=typeIn;end
             if nargin>1;obj.sampling=samplingIn;end
             if nargin>2;obj.resp=respIn;end
             if nargin>3;obj.grad=gradIn;end
@@ -86,7 +87,7 @@ classdef GRENAT < handle
                 %turn cell into string for convenience
                 field2check = fn{1};
                 if isfield(oldVal,field2check)
-                    %# simply assign the fields you don't care about
+                    % simply assign the fields you don't care about
                     obj.confMeta.(field2check) = confIn.(field2check);
                 end
             end
@@ -119,8 +120,10 @@ classdef GRENAT < handle
         end
         %setter for the non sample points
         function set.nonsamplePts(obj,samplingIn)
-            obj.nonsamplePts=samplingIn;
-            obj.runEval=true;
+            if ~isempty(samplingIn)
+                obj.nonsamplePts=samplingIn;
+                obj.runEval=true;
+            end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -159,12 +162,12 @@ classdef GRENAT < handle
         %evaluate the metamodel
         function [Z,GZ,variance]=eval(obj,nonsamplePts)
             %check if the metamodel has been already trained
-            if ~obj.runTrain;train(obj);end
+            if obj.runTrain;train(obj);end
             %store non sample points
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %evaluation of the metamodels
             if obj.runEval
-                [K]=EvalMeta(nonsamplePts,obj.dataTrain);
+                [K]=EvalMeta(obj.nonsamplePts,obj.dataTrain);
                 obj.runEval=false;
                 Z=K.Z;GZ=K.GZ;variance=K.var;
                 %store data from the evaluation
@@ -178,7 +181,7 @@ classdef GRENAT < handle
             end
         end
         %evaluate the CI of the metamodel
-        function evalCI(obj,nonsamplePts)
+        function [ci68,ci95,ci99]=evalCI(obj,nonsamplePts)
             %store non sample points
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %eval the CI
@@ -187,6 +190,17 @@ classdef GRENAT < handle
             obj.nonsampleCI.ci95=ci95;
             obj.nonsampleCI.ci99=ci99;
         end
+        %extract CI
+        function [ci68,ci95,ci99]=CI(obj,nonsamplePts)
+            %store non sample points
+            if nargin>1;obj.nonsamplePts=nonsamplePts;end
+            %eval the CI
+            [ci68,ci95,ci99]=BuildCI(obj.nonsampleResp,obj.nonsampleVar);
+            obj.nonsampleCI.ci68=ci68;
+            obj.nonsampleCI.ci95=ci95;
+            obj.nonsampleCI.ci99=ci99;
+        end
+        
         %define the reference surface
         function defineRef(obj,varargin)
             %accepted keyword
@@ -194,6 +208,7 @@ classdef GRENAT < handle
             %two kind of input variables list (with keywords or not)
             %depend on the first argument: double for classical list of
             %argument or string if the use of keywords
+            execOk=true;
             if isa(varargin{1},'double')
                 if nargin>1;obj.sampleRef=varargin{1};obj.nonsamplePts=varargin{1};end
                 if nargin>2;obj.respRef=varargin{2};end
@@ -225,6 +240,40 @@ classdef GRENAT < handle
                 fprintf('or sortConf(''sampleRef'',val1,''respRef'',val2,''gradRef'',val3)\n')
             end
         end
+        %check if all data is available for displaying the reference
+        %surface and gradients
+        function [okAll,okSample,okResp,okGrad]=checkRef(obj)
+            okSample=false;
+            okResp=false;
+            okGrad=false;
+            nbSRef(1)=size(obj.sampleRef,1);
+            nbSRef(2)=size(obj.sampleRef,2);
+            nbSRef(3)=size(obj.sampleRef,3);
+            nbRRef(1)=size(obj.respRef,1);
+            nbRRef(2)=size(obj.respRef,2);
+            nbRRef(3)=size(obj.respRef,3);
+            nbGRef(1)=size(obj.gradRef,1);
+            nbGRef(2)=size(obj.gradRef,2);
+            nbGRef(3)=size(obj.gradRef,3);
+            if sum(nbSRef(:))~=0
+                okSample=true;
+                if nbSRef(1)==nbRRef(1)
+                    okResp=true;
+                end
+                if nbGRef(3)==1
+                    if nbGRef(1)==nbSRef(1)&&nbGRef(2)==nbSRef(2)
+                        okGrad=true;
+                    end
+                elseif nbGRef(3)==nbSRef(2)&&nbGRef(1)==nbSRef(1)
+                    okGrad=true;
+                end
+            end
+            okAll=okSample&&okResp&&okGrad;
+            %display error messages
+            if ~okSample;fprintf('>> Wrong definition of the reference sample points\n');end
+            if ~okResp;fprintf('>> Wrong definition of the reference responses\n');end
+            if ~okGrad;fprintf('>> Wrong definition of the reference gradients\n');end
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -232,37 +281,37 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %display the surrogate model
         function show(obj,nonsamplePts)
+            if nargin==1;nonsamplePts=[];end
             %store non sample points
             figure;
-            subplot(231)
-            showRespRef(obj,nonsamplePts);
-            subplot(234)
-            showGradRef(obj,nonsamplePts);
-            subplot(232)
+            %depend if the reference is available or not
+            if checkRef(obj);
+                nbSubplot=231;
+                subplot(nbSubplot)                
+                showRespRef(obj);
+                nbSubplot=nbSubplot+1;subplot(nbSubplot)
+                showGradRef(obj);
+            else
+                nbSubplot=221;
+            end
+            nbSubplot=nbSubplot+1;subplot(nbSubplot)
             showResp(obj,nonsamplePts);
-            subplot(235)
+            nbSubplot=nbSubplot+1;subplot(nbSubplot)
             showGrad(obj,nonsamplePts);
-            subplot(233)
+            nbSubplot=nbSubplot+1;subplot(nbSubplot)
             showCI(obj,nonsamplePts);
-        end
-        %display the gradients approximated by the metamodel
-        function showGrad(obj,nonsamplePts)
-            %store non sample points
-            if nargin>1;obj.nonsamplePts=nonsamplePts;end
-            obj.dispData.title=('Approximated gradients');
-            displaySurrogate(obj.nonsamplePts,obj.nonsampleResp,obj.sampling,obj.resp,obj.grad,obj.dispData);
         end
         %display the reference surface
         function showRespRef(obj,varargin)
             %store non sample points
-            definRef(obj,varargin);
+            if nargin>1;defineRef(obj,varargin{:});end
             obj.dispData.title=('Reference');
             displaySurrogate(obj.sampleRef,obj.respRef,obj.sampling,obj.resp,obj.grad,obj.dispData);
         end
         %display the reference gradients surface
         function showGradRef(obj,varargin)
             %store non sample points
-            definRef(obj,varargin);
+            if nargin>1;defineRef(obj,varargin{:});end
             obj.dispData.title=('Gradients Reference');
             displaySurrogate(obj.sampleRef,obj.respRef,obj.sampling,obj.resp,obj.grad,obj.dispData);
         end
@@ -271,6 +320,13 @@ classdef GRENAT < handle
             %store non sample points
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             obj.dispData.title=('Approximated responses');
+            displaySurrogate(obj.nonsamplePts,obj.nonsampleResp,obj.sampling,obj.resp,obj.grad,obj.dispData);
+        end
+        %display the gradients approximated by the metamodel
+        function showGrad(obj,nonsamplePts)
+            %store non sample points
+            if nargin>1;obj.nonsamplePts=nonsamplePts;end
+            obj.dispData.title=('Approximated gradients');
             displaySurrogate(obj.nonsamplePts,obj.nonsampleResp,obj.sampling,obj.resp,obj.grad,obj.dispData);
         end
         %display the confidence intervals approximated by the metamodel
@@ -282,9 +338,12 @@ classdef GRENAT < handle
             %store non sample points
             if nargin>2;obj.nonsamplePts=nonsamplePts;end
             obj.dispData.title=([num2str(ciVal) '% confidence intervals']);
+            %evaluation of the confidence interval
+            evalCI(obj);
             %load data to display
             ciDisp=obj.nonsampleCI.(['ci' num2str(ciVal)]);
-            displaySurrogateCI(obj.nonsamplePts,ciDisp,obj.dispData,K.Z);
+            %display the CI
+            displaySurrogateCI(obj.nonsamplePts,ciDisp,obj.dispData,obj.nonsampleResp);
         end
     end
 end

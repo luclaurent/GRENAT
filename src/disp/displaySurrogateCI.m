@@ -68,6 +68,9 @@ if d1
         plot(Xpts,vZ,'b','LineWidth',2)
     end   
     hold off
+    title(dispData.title)
+    xlabel(dispData.xlabel)
+    ylabel(dispData.ylabel)
     %dimension 2
 elseif d2
     XX=Xpts(:,:,1);

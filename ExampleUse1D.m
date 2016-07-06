@@ -53,58 +53,10 @@ metaGRENAT.eval(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %display the result
 metaGRENAT.show;
-
-if isfield(K,'var');[ci68,ci95,ci99]=BuildCI(K.Z,K.var);end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Display
-% default values
-dispData.on=true;
-dispData.newFig=false;
-dispData.ci.on=true; % display confidence intervals
-dispData.render=false;
-dispData.d3=true;
-dispData.samplePts=true;
-dispData.xlabel='x_1';
-dispData.ylabel='x_2';
-
-figure
-subplot(2,3,1)
-dispData.title='Reference function';
-displaySurrogate(gridRef,respRef,sampling,resp,grad,dispData);
-subplot(2,3,2)
-dispData.title='Approximate function';
-displaySurrogate(gridRef,K.Z,sampling,resp,grad,dispData);
-subplot(2,3,4)
-dispData.title='';
-dispData.render=false;
-dispData.d3=false;
-dispData.d2=true;
-dispData.contour=true;
-dispData.gridGrad=true;
-ref.Z=respRef;
-ref.GZ=gradRef;
-displaySurrogate(gridRef,ref,sampling,resp,grad,dispData);
-subplot(2,3,5)
-displaySurrogate(gridRef,K,sampling,resp,grad,dispData);
-subplot(2,3,3)
-dispData.d3=true;
-dispData.d2=false;
-dispData.contour=false;
-dispData.gridGrad=false;
-dispData.render=false;
-dispData.title='Variance';
-dispData.samplePts=false;
-displaySurrogate(gridRef,K.var,sampling,resp,grad,dispData);
-subplot(2,3,6)
-dispData.title='95% confidence interval';
-dispData.trans=true;
-dispData.uni=true;
-displaySurrogateCI(gridRef,ci95,dispData,K.Z);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Computation and display of the errors
-err=critErrDisp(K.Z,respRef,approx.build);
+%compute display error
+metaGRENAT.errCalc;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Stop workers

@@ -55,6 +55,7 @@ classdef GRENAT < handle
         runTrain=true; %flag for checking if the training is obsolete
         runEval=true; %flag for checking if the training is obsolete
         gradAvail=false; %flag for availability of the gradients
+        runErr=true; %flag for computation of the error 
     end
     
     methods
@@ -125,6 +126,7 @@ classdef GRENAT < handle
                 obj.runEval=true;
             end
         end
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -149,6 +151,11 @@ classdef GRENAT < handle
             if obj.runEval;eval(obj);end
             variance=obj.nonsampleVar;
         end
+        %getter for error values
+        function err=get.err(obj)
+            if obj.runErr;errCalc(obj);end
+            err=obj.err;
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -158,6 +165,7 @@ classdef GRENAT < handle
         function train(obj)
             obj.dataTrain=BuildMeta(obj.sampling,obj.resp,obj.grad,obj.confMeta);
             obj.runTrain=false;
+            obj.runErr=true;
         end
         %evaluate the metamodel
         function [Z,GZ,variance]=eval(obj,nonsamplePts)
@@ -169,6 +177,7 @@ classdef GRENAT < handle
             if obj.runEval
                 [K]=EvalMeta(obj.nonsamplePts,obj.dataTrain);
                 obj.runEval=false;
+                obj.runErr=true;
                 Z=K.Z;GZ=K.GZ;variance=K.var;
                 %store data from the evaluation
                 obj.nonsampleResp=Z;
@@ -200,7 +209,12 @@ classdef GRENAT < handle
             obj.nonsampleCI.ci95=ci95;
             obj.nonsampleCI.ci99=ci99;
         end
-        
+        %compute and show the errors of the metamodel (using reference if it is
+        %available)
+        function errCalc(obj)
+            obj.err=critErrDisp(obj.nonsampleResp,obj.respRef,obj.dataTrain.build);
+            obj.runErr=false;
+        end
         %define the reference surface
         function defineRef(obj,varargin)
             %accepted keyword

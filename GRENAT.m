@@ -280,13 +280,15 @@ classdef GRENAT < handle
                     end
                 elseif nbGRef(3)==nbSRef(2)&&nbGRef(1)==nbSRef(1)
                     okGrad=true;
+                elseif all(nbGRef==nbSRef)
+                    okGrad=true;
                 end
             end
             okAll=okSample&&okResp&&okGrad;
             %display error messages
             if ~okSample;fprintf('>> Wrong definition of the reference sample points\n');end
             if ~okResp;fprintf('>> Wrong definition of the reference responses\n');end
-            if ~okGrad;fprintf('>> Wrong definition of the reference gradients\n');end
+            if ~okGrad;keyboard;fprintf('>> Wrong definition of the reference gradients\n');end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -305,6 +307,7 @@ classdef GRENAT < handle
                 showRespRef(obj);
                 nbSubplot=nbSubplot+1;subplot(nbSubplot)
                 showGradRef(obj);
+                nbSubplot=nbSubplot+1;
             else
                 nbSubplot=221;
             end

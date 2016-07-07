@@ -27,7 +27,7 @@ paraCluster=execParallel(false);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Load of a set of 2D data
+%%Load of a set of 1D data
 %sampling points
 sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
 %responses and gradients at sample points

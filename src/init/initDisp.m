@@ -55,11 +55,12 @@ classdef initDisp < handle
     end
     methods
         %constructor
-        function obj=initDisp(varargin)
+        function obj=initDisp(varargin)            
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            fprintf(' >> Initialization of the display configuration\n');
+            fprintf('=========================================\n')
+            fprintf(' >>> Initialization of the display configuration\n');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,6 +74,7 @@ classdef initDisp < handle
                 obj.scale=boolIn;
             end
         end
+        %
         function set.on(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.on,boolIn)
@@ -82,6 +84,7 @@ classdef initDisp < handle
                 obj.on=boolIn;
             end
         end
+        %
         function set.d3(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.d3,boolIn)
@@ -91,6 +94,7 @@ classdef initDisp < handle
                 obj.d3=boolIn;
             end
         end
+        %
         function set.d2(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.d2,boolIn)
@@ -100,6 +104,7 @@ classdef initDisp < handle
                 obj.d2=boolIn;
             end
         end
+        %
         function set.contour(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.contour,boolIn)
@@ -109,6 +114,7 @@ classdef initDisp < handle
                 obj.contour=boolIn;
             end
         end
+        %
         function set.tikz(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.tikz,boolIn)
@@ -118,6 +124,7 @@ classdef initDisp < handle
                 obj.tikz=boolIn;
             end
         end
+        %
         function set.save(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.save,boolIn)
@@ -127,6 +134,7 @@ classdef initDisp < handle
                 obj.save=boolIn;
             end
         end
+        %
         function set.directory(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.directory,charIn)
@@ -135,6 +143,7 @@ classdef initDisp < handle
                 obj.directory=charIn;
             end
         end
+        %
         function set.gridGrad(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.gridGrad,boolIn)
@@ -144,6 +153,7 @@ classdef initDisp < handle
                 obj.gridGrad=boolIn;
             end
         end
+        %
         function set.sampleGrad(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.sampleGrad,boolIn)
@@ -153,6 +163,7 @@ classdef initDisp < handle
                 obj.sampleGrad=boolIn;
             end
         end
+        %
         function set.ciOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.ciOn,boolIn)
@@ -162,6 +173,7 @@ classdef initDisp < handle
                 obj.ciOn=boolIn;
             end
         end
+        %
         function set.ciType(obj,charIn)
             if isG(charIn,'char')
                 if xor(obj.ciType,charIn)
@@ -170,6 +182,7 @@ classdef initDisp < handle
                 obj.ciType=charIn;
             end
         end
+        %
         function set.newFig(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.newFig,boolIn)
@@ -179,6 +192,7 @@ classdef initDisp < handle
                 obj.newFig=boolIn;
             end
         end
+        %
         function set.opt(obj,charIn)
             if isG(charIn,'char')
                 if xor(obj.opt,charIn)
@@ -187,6 +201,7 @@ classdef initDisp < handle
                 obj.opt=charIn;
             end
         end
+        %
         function set.xlabel(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.xlabel,charIn)
@@ -195,6 +210,7 @@ classdef initDisp < handle
                 obj.xlabel=charIn;
             end
         end
+        %
         function set.ylabel(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.ylabel,charIn)
@@ -203,6 +219,7 @@ classdef initDisp < handle
                 obj.ylabel=charIn;
             end
         end
+        %
         function set.zlabel(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.zlabel,charIn)
@@ -211,6 +228,7 @@ classdef initDisp < handle
                 obj.zlabel=charIn;
             end
         end
+        %
         function set.title(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.title,charIn)

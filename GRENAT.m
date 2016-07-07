@@ -25,7 +25,7 @@ classdef GRENAT < handle
         sampling=[];
         resp=[];
         grad=[];
-        confMeta=initMeta;%load default configuration
+        confMeta;%load default configuration
         %training
         dataTrain;
         %evaluating
@@ -37,7 +37,7 @@ classdef GRENAT < handle
         nonsampleEI=[];
         err=[];
         %display data
-        dispData=initDisp;
+        confDisp;
         %reference
         sampleRef=[];
         respRef=[];
@@ -45,12 +45,8 @@ classdef GRENAT < handle
     end
     properties (Dependent)
         type;
-    end
-    
-    properties (Constant)
-        typeAvail={};
-        typeTxt={};
-    end
+    end    
+
     properties (Access = private)
         runTrain=true; %flag for checking if the training is obsolete
         runEval=true; %flag for checking if the training is obsolete
@@ -61,12 +57,16 @@ classdef GRENAT < handle
     methods
         %construction
         function obj=GRENAT(typeIn,samplingIn,respIn,gradIn)
+            %load directories on the path
+            initDirGRENAT;
             fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
             fprintf(' Create GRENAT Object \n')
             %the date and time
-            dispDate;
-            %load directories on the path
-            initDirGRENAT;
+            dispDate; 
+            %load default configuration
+            obj.confMeta=initMeta;
+            %load display configuration
+            obj.confDisp=initDisp;
             %specific configuration
             if nargin>0;obj.confMeta.type=typeIn;end
             if nargin>1;obj.sampling=samplingIn;end
@@ -92,7 +92,7 @@ classdef GRENAT < handle
                     obj.confMeta.(field2check) = confIn.(field2check);
                 end
             end
-        end
+        end        
         %setter for the sampling
         function set.sampling(obj,samplingIn)
             if ~isempty(samplingIn)
@@ -125,8 +125,7 @@ classdef GRENAT < handle
                 obj.nonsamplePts=samplingIn;
                 obj.runEval=true;
             end
-        end
-        
+        end        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -161,6 +160,11 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %define the configuration for the display
+        function defineDisp(obj,varargin)            
+            % look up the previous value
+            obj.confDisp.conf(varargin{:});
+        end
         %train the metamodel
         function train(obj)
             obj.dataTrain=BuildMeta(obj.sampling,obj.resp,obj.grad,obj.confMeta);

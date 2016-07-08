@@ -29,13 +29,19 @@ classdef initMeta < handle
         lVal=1;             %internal length (correlation length)
         pVal=2;             %power exponent for generalized exponential kernel function
         nuVal=0.6;          %smoothness coefficient for Matern kernel function
+        lMin=1e-1;
+        lMax=100;
+        pMax=2;
+        pMin=1.001;
+        nuMin=1.5;
+        nuMax=5;
         polyOrder=1;        %polynomial order for kriging, xLS
         swfPara=1;         %swf parameter
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)
         ek=1e-2;            %thickness of the tube of gradient (not used for nu-SVR)
         c0=1e6;             %constant for trade off between flatness of the function and the amount up to
-                            %which deviations larger to e0 are tolerated
+        %which deviations larger to e0 are tolerated
         ck=1e6;             %same trade off constant as before
         nuSVR=0.6;          %parameter of the nu-SVR (nu in [0,1])
         nuGSVR=0.6;         %idem for nu-GSVR
@@ -65,8 +71,8 @@ classdef initMeta < handle
         %% infill strategy
         infillOn=false;     %activate/desactivate computation of the infill criterion
         infillParaWEI=0.5;  %parameters for Weighted Expected Improvement
-        infillParaGEI=1;    %parameters for Generalized Expected Improvement   
-        infillParaLCB=0.5;  %parameters for Lower Confidence Bound 
+        infillParaGEI=1;    %parameters for Generalized Expected Improvement
+        infillParaLCB=0.5;  %parameters for Lower Confidence Bound
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% Check interpolation
         checkInterp=true;   %activate/deactivate the checking of the interpolation property
@@ -77,8 +83,8 @@ classdef initMeta < handle
         typeTxt={};
     end
     methods
-         %constructor
-        function obj=initMeta(varargin)            
+        %constructor
+        function obj=initMeta(varargin)
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
@@ -97,7 +103,7 @@ classdef initMeta < handle
                 obj.useGrad=boolIn;
             end
         end
-        %        
+        %
         function set.type(obj,charIn)
             if isG(charIn,'char')
                 if ismember(charIn,obj.typeAvail)
@@ -112,10 +118,10 @@ classdef initMeta < handle
             end
         end
         %
-        function set.para(obj,varargin)
-            keyOk={'',''};
-            
-        end
+%         function set.para(obj,varargin)
+%             keyOk={'',''};
+%             
+%         end
         function set.stepTaylor(obj,doubleIn)
             if isG(doubleIn,'double')
                 if all(obj.stepTaylor~=doubleIn)
@@ -134,6 +140,66 @@ classdef initMeta < handle
                     fprintf('(previous [');fprintf('%d ',obj.lVal);fprintf('])\n');
                 end
                 obj.lVal=doubleIn;
+            end
+        end
+        function set.lMin(obj,doubleIn)
+            if isG(doubleIn,'double')
+                if all(obj.lMin~=doubleIn)
+                    fprintf(' >>> Internal length : [');
+                    fprintf('%d ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.lMin);fprintf('])\n');
+                end
+                obj.lMin=doubleIn;
+            end
+        end
+        function set.lMax(obj,doubleIn)
+            if isG(doubleIn,'double')
+                if all(obj.lMax~=doubleIn)
+                    fprintf(' >>> Internal length : [');
+                    fprintf('%d ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.lMax);fprintf('])\n');
+                end
+                obj.lMax=doubleIn;
+            end
+        end
+        function set.pMin(obj,doubleIn)
+            if isG(doubleIn,'double')
+                if all(obj.pMin~=doubleIn)
+                    fprintf(' >>> Internal length : [');
+                    fprintf('%d ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.pMin);fprintf('])\n');
+                end
+                obj.pMin=doubleIn;
+            end
+        end
+        function set.pMax(obj,doubleIn)
+            if isG(doubleIn,'double')
+                if all(obj.pMax~=doubleIn)
+                    fprintf(' >>> Internal length : [');
+                    fprintf('%d ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.pMax);fprintf('])\n');
+                end
+                obj.pMax=doubleIn;
+            end
+        end
+        function set.nuMin(obj,doubleIn)
+            if isG(doubleIn,'double')
+                if all(obj.nuMin~=doubleIn)
+                    fprintf(' >>> Internal length : [');
+                    fprintf('%d ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.nuMin);fprintf('])\n');
+                end
+                obj.nuMin=doubleIn;
+            end
+        end
+        function set.nuMax(obj,doubleIn)
+            if isG(doubleIn,'double')
+                if all(obj.nuMax~=doubleIn)
+                    fprintf(' >>> Internal length : [');
+                    fprintf('%d ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.nuMax);fprintf('])\n');
+                end
+                obj.nuMax=doubleIn;
             end
         end
         function set.pVal(obj,doubleIn)
@@ -299,8 +365,22 @@ classdef initMeta < handle
                 obj.dispPlotAlgo=boolIn;
             end
         end
-        method='pso';       % optimizer used for finding internal parameter
-        sampManu='IHS';     % method used for the initial sampling for GA ('', 'LHS','IHS'...)
+        function set.method(obj,charIn)
+            if isG(charIn,'char')
+                if strcmp(obj.method,charIn)
+                    fprintf(' >>> Optimizer for estimating hyperparameters : %s (previous %s)',charIn,obj.method);
+                end
+                obj.method=charIn;
+            end
+        end
+        function set.sampManu(obj,charIn)
+            if isG(charIn,'char')
+                if strcmp(obj.sampManu,charIn)
+                    fprintf(' >>> DOE for initial sampling GA : %s (previous %s)',charIn,obj.sampManu);
+                end
+                obj.sampManu=charIn;
+            end
+        end
         function set.sampManuOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.sampManuOn,boolIn)
@@ -320,16 +400,16 @@ classdef initMeta < handle
                 obj.nbSampInit=doubleIn;
             end
         end
-                function set.critOpti(obj,doubleIn)
+        function set.critOpti(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.nbSampInit~=doubleIn)
+                if all(obj.critOpti~=doubleIn)
                     fprintf(' >>> Stopping criterion for estimation process : [');
                     fprintf('%i ',doubleIn);fprintf('] ');
                     fprintf('(previous [');fprintf('%d ',obj.critOpti);fprintf('])\n');
                 end
                 obj.critOpti=doubleIn;
             end
-                end
+        end
         function set.kern(obj,charIn)
             if isG(charIn,'char')
                 if ismember(charIn,obj.kernAvail)
@@ -343,7 +423,7 @@ classdef initMeta < handle
                 end
             end
         end
-function set.normOn(obj,boolIn)
+        function set.normOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.normOn,boolIn)
                     fprintf(' >>> Normalization of the data : ');
@@ -351,7 +431,7 @@ function set.normOn(obj,boolIn)
                 end
                 obj.normOn=boolIn;
             end
-end
+        end
         function set.recond(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.recond,boolIn)
@@ -361,7 +441,7 @@ end
                 obj.recond=boolIn;
             end
         end
-                function set.cvOn(obj,boolIn)
+        function set.cvOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.cvOn,boolIn)
                     fprintf(' >>> Cross-validation : ');
@@ -369,8 +449,8 @@ end
                 end
                 obj.cvOn=boolIn;
             end
-                end
-                        function set.cvFull(obj,boolIn)
+        end
+        function set.cvFull(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.cvFull,boolIn)
                     fprintf(' >>> All CV criteria : ');
@@ -379,271 +459,66 @@ end
                 obj.cvFull=boolIn;
             end
         end
+        function set.cvDisp(obj,boolIn)
+            if isG(boolIn,'logical')
+                if xor(obj.cvDisp,boolIn)
+                    fprintf(' >>> Display QQ plot CV : ');
+                    SwitchOnOff(boolIn);
+                end
+                obj.cvDisp=boolIn;
+            end
+        end
         
-       
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        normOn=true;        %normalization
-        recond=true;        %improve condition number of matrix (kriging, RBF, SVR...)
-        cvOn=true;          %cross-validation
-        cvFull=false;       %compute all CV criteria
-        cvDisp=false;       %display QQ plot CV
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %% infill strategy
-        infillOn=false;     %activate/desactivate computation of the infill criterion
-        infillParaWEI=0.5;  %parameters for Weighted Expected Improvement
-        infillParaGEI=1;    %parameters for Generalized Expected Improvement   
-        infillParaLCB=0.5;  %parameters for Lower Confidence Bound 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %% Check interpolation
-        checkInterp=true;   %activate/deactivate the checking of the interpolation property
-        %
-        function set.d2(obj,boolIn)
+        function set.infillOn(obj,boolIn)
             if isG(boolIn,'logical')
-                if xor(obj.d2,boolIn)
-                    fprintf(' >>> 2D display: ');
+                if xor(obj.infillOn,boolIn)
+                    fprintf(' >>> Computation of the infill creiterion : ');
                     SwitchOnOff(boolIn);
                 end
-                obj.d2=boolIn;
+                obj.infillOn=boolIn;
             end
         end
-        %
-        function set.contour(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.contour,boolIn)
-                    fprintf(' >>> Display contour: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.contour=boolIn;
-            end
-        end
-        %
-        function set.tikz(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.tikz,boolIn)
-                    fprintf(' >>> Save display using tikz (matlab2tikz): ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.tikz=boolIn;
-            end
-        end
-        %
-        function set.save(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.save,boolIn)
-                    fprintf(' >>> Save display using fig: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.save=boolIn;
-            end
-        end
-        %
-        function set.directory(obj,charIn)
-            if isG(charIn,'char')
-                if strcmp(obj.directory,charIn)
-                    fprintf(' >>> Saving directory : %s (previous %s)',charIn,obj.directory);
-                end
-                obj.directory=charIn;
-            end
-        end
-        %
-        function set.gridGrad(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.gridGrad,boolIn)
-                    fprintf(' >>> Show gradients on the grid: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.gridGrad=boolIn;
-            end
-        end
-        %
-        function set.sampleGrad(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.sampleGrad,boolIn)
-                    fprintf(' >>> Show gradients at the sample points: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.sampleGrad=boolIn;
-            end
-        end
-        %
-        function set.ciOn(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.ciOn,boolIn)
-                    fprintf(' >>> Show confidence intervals (if available): ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.ciOn=boolIn;
-            end
-        end
-        %
-        function set.ciType(obj,charIn)
-            if isG(charIn,'char')
-                if xor(obj.ciType,charIn)
-                    fprintf(' >>> Type of confidence interval : %s (previous %s)',charIn,obj.ciType);
-                end
-                obj.ciType=charIn;
-            end
-        end
-        %
-        function set.newFig(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.newFig,boolIn)
-                    fprintf(' >>> Show in new figure: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.newFig=boolIn;
-            end
-        end
-        %
-        function set.opt(obj,charIn)
-            if isG(charIn,'char')
-                if xor(obj.opt,charIn)
-                    fprintf(' >>> Plot options : %s (previous %s)',charIn,obj.opt);
-                end
-                obj.opt=charIn;
-            end
-        end
-        %
-        function set.xlabel(obj,charIn)
-            if isG(charIn,'char')
-                if strcmp(obj.xlabel,charIn)
-                    fprintf(' >>> X label : %s (previous %s)',charIn,obj.xlabel);
-                end
-                obj.xlabel=charIn;
-            end
-        end
-        %
-        function set.ylabel(obj,charIn)
-            if isG(charIn,'char')
-                if strcmp(obj.ylabel,charIn)
-                    fprintf(' >>> Y label : %s (previous %s)',charIn,obj.ylabel);
-                end
-                obj.ylabel=charIn;
-            end
-        end
-        %
-        function set.zlabel(obj,charIn)
-            if isG(charIn,'char')
-                if strcmp(obj.zlabel,charIn)
-                    fprintf(' >>> Z label : %s (previous %s)',charIn,obj.zlabel);
-                end
-                obj.zlabel=charIn;
-            end
-        end
-        %
-        function set.title(obj,charIn)
-            if isG(charIn,'char')
-                if strcmp(obj.title,charIn)
-                    fprintf(' >>> Z label : %s (previous %s)',charIn,obj.title);
-                end
-                obj.title=charIn;
-            end
-        end
-        %
-        function set.color(obj,charIn)
-            if isG(charIn,'char')
-                if strcmp(obj.color,charIn)
-                    fprintf(' >>> Color for uniform display : %s (previous %s)',charIn,obj.color);
-                end
-                obj.color=charIn;
-            end
-        end
-        %
-        function set.uni(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.uni,boolIn)
-                    fprintf(' >>> Uniform color: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.uni=boolIn;
-            end
-        end
-        %
-        function set.render(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.render,boolIn)
-                    fprintf(' >>> 3D rendering: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.render=boolIn;
-            end
-        end
-        %
-        function set.samplePts(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.samplePts,boolIn)
-                    fprintf(' >>> Show sample points: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.samplePts=boolIn;
-            end
-        end
-        %
-        function set.num(obj,doubleIn)
+        function set.infillParaWEI(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.num~=doubleIn)
-                    fprintf(' >>> Number of the plot: %d (previous %d)',doubleIn,obj.num);
+                if all(obj.infillParaWEI~=doubleIn)
+                    fprintf(' >>> Parameter for Weighted EI : [');
+                    fprintf('%i ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.infillParaWEI);fprintf('])\n');
                 end
-                obj.num=doubleIn;
+                obj.infillParaWEI=doubleIn;
             end
         end
-        %
-        function set.nbSteps(obj,doubleIn)
+        function set.infillParaGEI(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.nbSteps~=doubleIn)
-                    fprintf(' >>> Number of steps of the reference grid: %d (previous %d)',doubleIn,obj.nbSteps);
+                if all(obj.infillParaGEI~=doubleIn)
+                    fprintf(' >>> Parameter for Generalized EI : [');
+                    fprintf('%i ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.infillParaGEI);fprintf('])\n');
                 end
-                obj.nbSteps=doubleIn;
+                obj.infillParaGEI=doubleIn;
             end
         end
-        %
-        function set.step(obj,doubleIn)
+        function set.infillParaLCB(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.step~=doubleIn)
-                    fprintf(' >>> Size of steps of the reference grid: %d (previous %d)',doubleIn,obj.step);
+                if all(obj.infillParaLCB~=doubleIn)
+                    fprintf(' >>> Parameter for Lower Confidence Bound : [');
+                    fprintf('%i ',doubleIn);fprintf('] ');
+                    fprintf('(previous [');fprintf('%d ',obj.infillParaLCB);fprintf('])\n');
                 end
-                obj.step=doubleIn;
+                obj.infillParaLCB=doubleIn;
             end
         end
-        %
-        function set.nv(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.nv~=doubleIn)
-                    fprintf(' >>> Number of sample points of the reference grid: %d (previous %d)',doubleIn,obj.nv);
-                end
-                obj.nv=doubleIn;
-            end
-        end
-        %
-        function set.tex(obj,boolIn)
+        function set.checkInterp(obj,boolIn)
             if isG(boolIn,'logical')
-                if xor(obj.tex,boolIn)
-                    fprintf(' >>> Save data in TeX file: ');
+                if xor(obj.checkInterp,boolIn)
+                    fprintf(' >>> Check interpolation property : ');
                     SwitchOnOff(boolIn);
                 end
-                obj.tex=boolIn;
+                obj.checkInterp=boolIn;
             end
         end
-        %
-        function set.bar(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.bar,boolIn)
-                    fprintf(' >>> Use bar on plot: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.bar=boolIn;
-            end
-        end
-        %
-        function set.trans(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.trans,boolIn)
-                    fprintf(' >>> Transparency: ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.trans=boolIn;
-            end
-        end  
+        
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %define properties
@@ -684,25 +559,7 @@ end
         end
     end
 end
-    
-% bounds of the space on which internal parameters are looked for
-if meta.para.estim
-    meta.para.l.min=1e-1;
-    meta.para.l.max=100;
-    meta.para.l.val=1;
-    meta.para.p.max=2;
-    meta.para.p.min=1.001;
-    meta.para.p.val=2;
-    meta.para.nu.min=1.5;
-    meta.para.nu.max=5;
-    meta.para.nu.val=3/2;
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-       
-        
-    end
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -759,6 +616,20 @@ okG=isa(varIn,typeIn);
 if ~okG;fprintf(' Wrong input variable. Required: %s (current: %s)\n',typeIn,class(varIn));end
 end
 
+%function for checking 'double' input of a setter function (with bound 
+function okG=checkDouble(varIn,varOld,TxtIn,lB,uB)
+%check if it is a double
+if isG(varIn,'double')
+    %check for different size of the previous and new values
+    %
+    if all(varOld~=varIn)
+        fprintf(' >>> %s : [',TxtIn);
+        fprintf('%i ',doubleIn);fprintf('] ');
+        fprintf('(previous [');fprintf('%d ',varOld);fprintf('])\n');
+    end
+end
+end
+
 %display change of state
 function SwitchOnOff(boolIn)
 if boolIn;
@@ -769,115 +640,115 @@ end
 end
 
 
-function meta=initMeta(in,parallelOn)
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% chargement configuration particuliere
-if nargin==0
-    in=[];
-end
-%taking gradients into account
-if isfield(in,'useGrad');meta.useGrad=in.useGrad;end
-%type of surrgate model KRG/GKRG/DACE/RBF/GRBF/SVR/GSVR...
-if isfield(in,'type');meta.type=in.type;end
-%parameter of the kernel function
-if isfield(in,'para')
-    if isfield(in.para,'long');meta.para.l.val=in.para.long;end
-    if meta.para.estim
-        if isfield(in,'long');
-            meta.para.l.max=in.para.long(2);
-            meta.para.l.min=in.para.long(1);
-        end
-    end
-    if isfield(in.para,'pow');meta.para.p.val=in.para.pow;end
-    if meta.para.estim
-        if isfield(in,'pow');
-            meta.para.p.max=in.para.pow(2);
-            meta.para.p.min=in.para.pow(1);
-        end
-    end
-    if isfield(in.para,'nu');meta.para.nu.val=in.para.nu;end
-    if meta.para.estim
-        if isfield(in,'nu');
-            meta.para.nu.max=in.para.nu(2);
-            meta.para.nu.min=in.para.nu(1);
-        end
-    end
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% depending on the type of surrogate model
-switch meta.type
-    case 'SWF'
-        if isfield(in,'swf_para');meta.swf_para=in.swf_para;else meta.swf_para=swf_para;end
-    case 'DACE'
-        fctp='regpoly';
-        %regression function
-        if isfield(in,'polyOrder');meta.regr=[fctp num2str(in.polyOrder,'%d')];else meta.regr=[fctp num2str(meta.polyOrder,'%d')];end
-        %correlation function
-        if isfield(in,'corr');meta.corr=['corr' in.corr];else meta.corr=corr;end
-    case {'RBF','GRBF','InRBF'}
-        if isfield(in,'kern');meta.kern=in.kern;end
-    case {'KRG','GKRG','InKRG','SVR','GSVR'}
-        %order of the polynomial basis used for regression
-        if isfield(in,'polyOrder');meta.polyOrder=in.polyOrder;end; 
-        %kernel function
-        if isfield(in,'kern');meta.kern=in.kern;end
-        
-    otherwise
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%normalisation
-if isfield(in,'normOn');meta.normOn=in.normOn;end
-%improve condition number of the matrix
-if isfield(in,'recond');meta.recond=in.recond;end
-%cross-validation
-if isfield(in,'cv');meta.cv=in.cv;end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% estimation parametre long (longueur de correlation)
-if isfield(in,'para');
-    % seek for best values of the internal parameters
-    if isfield(in.para,'estim');meta.para.estim=in.para.estim;end
-    % anisotropic model (one internal length per variable)
-    if isfield(in.para,'aniso');meta.para.aniso=in.para.aniso;end
-    % display objective function to be minimised
-    if isfield(in.para,'dispEstim');meta.para.dispEstim=in.para.dispEstim;end
-    % display iterations of the optimisation process on a figure (1D/2D)
-    if isfield(in.para,'dispIterGraph');meta.para.dispIterGraph=in.para.dispIterGraph;end
-    % display iteration in the console
-    if isfield(in.para,'dispIterCmd');meta.para.dispIterCmd=in.para.dispIterCmd;end
-    % display convergence information on figures
-    if isfield(in.para,'dispPlotAlgo');meta.para.dispPlotAlgo=in.para.dispPlotAlgo;end
-    % optimizer used for finding internal parameter
-    if isfield(in.para,'method');meta.para.method=in.para.method;end
-    % method used for the initial sampling for GA ('', 'LHS','IHS'...)
-    if isfield(in.para,'popManu');meta.para.popManu=in.para.popManu;end
-   % number of sample points of the initial sampling for GA
-    if isfield(in.para,'norpopInitm');meta.para.popInit=in.para.popInit;end
-    % Value of the stopping criterion of the optimizer
-    if isfield(in.para,'critOpti');meta.para.critOpti=in.para.critOpti;end
-    if meta.para.estim
-        if isfield(in.para,'long');
-            meta.para.l.max=in.para.long(2);
-            meta.para.l.min=in.para.long(1);
-        end
-    end
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% infill strategy 
-if isfield(in,'infill');
-    if isfield(in.infill,'on');meta.infill.on=in.infill.on;end
-    if isfield(in.infill,'para_wei');meta.infill.para_wei=in.infill.para_wei;end
-    if isfield(in.infill,'para_gei');meta.infill.para_gei=in.infill.para_gei;end
-    if isfield(in.infill,'para_lcb');meta.infill.para_lcb=in.infill.para_lcb;end
-    
-    % check interpolation
-    if isfield(in,'check');meta.check=in.check;end
-end
+% function meta=initMeta(in,parallelOn)
+%
+%
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% chargement configuration particuliere
+% if nargin==0
+%     in=[];
+% end
+% %taking gradients into account
+% if isfield(in,'useGrad');meta.useGrad=in.useGrad;end
+% %type of surrgate model KRG/GKRG/DACE/RBF/GRBF/SVR/GSVR...
+% if isfield(in,'type');meta.type=in.type;end
+% %parameter of the kernel function
+% if isfield(in,'para')
+%     if isfield(in.para,'long');meta.para.l.val=in.para.long;end
+%     if meta.para.estim
+%         if isfield(in,'long');
+%             meta.para.l.max=in.para.long(2);
+%             meta.para.l.min=in.para.long(1);
+%         end
+%     end
+%     if isfield(in.para,'pow');meta.para.p.val=in.para.pow;end
+%     if meta.para.estim
+%         if isfield(in,'pow');
+%             meta.para.p.max=in.para.pow(2);
+%             meta.para.p.min=in.para.pow(1);
+%         end
+%     end
+%     if isfield(in.para,'nu');meta.para.nu.val=in.para.nu;end
+%     if meta.para.estim
+%         if isfield(in,'nu');
+%             meta.para.nu.max=in.para.nu(2);
+%             meta.para.nu.min=in.para.nu(1);
+%         end
+%     end
+% end
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% depending on the type of surrogate model
+% switch meta.type
+%     case 'SWF'
+%         if isfield(in,'swf_para');meta.swf_para=in.swf_para;else meta.swf_para=swf_para;end
+%     case 'DACE'
+%         fctp='regpoly';
+%         %regression function
+%         if isfield(in,'polyOrder');meta.regr=[fctp num2str(in.polyOrder,'%d')];else meta.regr=[fctp num2str(meta.polyOrder,'%d')];end
+%         %correlation function
+%         if isfield(in,'corr');meta.corr=['corr' in.corr];else meta.corr=corr;end
+%     case {'RBF','GRBF','InRBF'}
+%         if isfield(in,'kern');meta.kern=in.kern;end
+%     case {'KRG','GKRG','InKRG','SVR','GSVR'}
+%         %order of the polynomial basis used for regression
+%         if isfield(in,'polyOrder');meta.polyOrder=in.polyOrder;end;
+%         %kernel function
+%         if isfield(in,'kern');meta.kern=in.kern;end
+%
+%     otherwise
+% end
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %normalisation
+% if isfield(in,'normOn');meta.normOn=in.normOn;end
+% %improve condition number of the matrix
+% if isfield(in,'recond');meta.recond=in.recond;end
+% %cross-validation
+% if isfield(in,'cv');meta.cv=in.cv;end
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% estimation parametre long (longueur de correlation)
+% if isfield(in,'para');
+%     % seek for best values of the internal parameters
+%     if isfield(in.para,'estim');meta.para.estim=in.para.estim;end
+%     % anisotropic model (one internal length per variable)
+%     if isfield(in.para,'aniso');meta.para.aniso=in.para.aniso;end
+%     % display objective function to be minimised
+%     if isfield(in.para,'dispEstim');meta.para.dispEstim=in.para.dispEstim;end
+%     % display iterations of the optimisation process on a figure (1D/2D)
+%     if isfield(in.para,'dispIterGraph');meta.para.dispIterGraph=in.para.dispIterGraph;end
+%     % display iteration in the console
+%     if isfield(in.para,'dispIterCmd');meta.para.dispIterCmd=in.para.dispIterCmd;end
+%     % display convergence information on figures
+%     if isfield(in.para,'dispPlotAlgo');meta.para.dispPlotAlgo=in.para.dispPlotAlgo;end
+%     % optimizer used for finding internal parameter
+%     if isfield(in.para,'method');meta.para.method=in.para.method;end
+%     % method used for the initial sampling for GA ('', 'LHS','IHS'...)
+%     if isfield(in.para,'popManu');meta.para.popManu=in.para.popManu;end
+%     % number of sample points of the initial sampling for GA
+%     if isfield(in.para,'norpopInitm');meta.para.popInit=in.para.popInit;end
+%     % Value of the stopping criterion of the optimizer
+%     if isfield(in.para,'critOpti');meta.para.critOpti=in.para.critOpti;end
+%     if meta.para.estim
+%         if isfield(in.para,'long');
+%             meta.para.l.max=in.para.long(2);
+%             meta.para.l.min=in.para.long(1);
+%         end
+%     end
+% end
+%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %% infill strategy
+% if isfield(in,'infill');
+%     if isfield(in.infill,'on');meta.infill.on=in.infill.on;end
+%     if isfield(in.infill,'para_wei');meta.infill.para_wei=in.infill.para_wei;end
+%     if isfield(in.infill,'para_gei');meta.infill.para_gei=in.infill.para_gei;end
+%     if isfield(in.infill,'para_lcb');meta.infill.para_lcb=in.infill.para_lcb;end
+%
+%     % check interpolation
+%     if isfield(in,'check');meta.check=in.check;end
+% end
 
 

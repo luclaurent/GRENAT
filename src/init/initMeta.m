@@ -22,9 +22,21 @@ classdef initMeta < handle
     properties
         useGrad=true;         %taking into account gradients
         type='KRG';            %type of surrogate model
+        normOn=true;        %normalization
+        recond=true;        %improve condition number of matrix (kriging, RBF, SVR...)
+        kern='matern32';    %kernel function
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %% Check interpolation
+        checkInterp=true;   %activate/deactivate the checking of the interpolation property
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        para;               %struct for storing choice of parameters
+        estim;              %struct for storing estimation parameters
+        infill;             %struct for storing infillment parameters
+        cv;                 %struct for storing cross-validation parameters
+    end
+    properties (SetObservable, AbortSet)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%parameters
-        para;               %struct for storing choice of parameters
         stepTaylor=10^-2;   %Taylor's step for indirect gradient-based
         lVal=1;             %internal length (correlation length)
         pVal=2;             %power exponent for generalized exponential kernel function
@@ -36,7 +48,7 @@ classdef initMeta < handle
         nuMin=1.5;
         nuMax=5;
         polyOrder=1;        %polynomial order for kriging, xLS
-        swfPara=1;         %swf parameter
+        swfPara=1;          %swf parameter
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)
         ek=1e-2;            %thickness of the tube of gradient (not used for nu-SVR)
@@ -47,7 +59,7 @@ classdef initMeta < handle
         nuGSVR=0.6;         %idem for nu-GSVR
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% internal parameters estimation
-        estim=true;         % seek for best values of the internal parameters
+        estimOn=true;       % seek for best values of the internal parameters
         aniso=true;         % anisotropic model (one internal length per variable)
         dispEstim=false;    % display objective function to be minimised
         saveEstim=false;         %save evolution function to be minimized
@@ -60,10 +72,6 @@ classdef initMeta < handle
         nbSampInit=[];      % number of sample points of the initial sampling for GA
         critOpti=10^-6;     % Value of the stopping criterion of the optimizer
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        kern='matern32';    %kernel function
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        normOn=true;        %normalization
-        recond=true;        %improve condition number of matrix (kriging, RBF, SVR...)
         cvOn=true;          %cross-validation
         cvFull=false;       %compute all CV criteria
         cvDisp=false;       %display QQ plot CV
@@ -73,14 +81,24 @@ classdef initMeta < handle
         infillParaWEI=0.5;  %parameters for Weighted Expected Improvement
         infillParaGEI=1;    %parameters for Generalized Expected Improvement
         infillParaLCB=0.5;  %parameters for Lower Confidence Bound
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %% Check interpolation
-        checkInterp=true;   %activate/deactivate the checking of the interpolation property
     end
     properties (Access = private,Constant)
         infoProp=affectTxtProp;
-        typeAvail={};
-        typeTxt={};
+        kernAvail={'matern','matern32','matern52','sexp'};
+        typeAvail={'SWF','IDW','RBF','InRBF','GRBF','KRG','InKRG','GKRG','SVR','InSVR','GSVR','DACE','InDACE'};%,'PRG','ILIN','ILAG'};
+        typeTxt={'Shepard Weighting Function or Inverse Distance Weighting',...
+            'idem',...
+            'Radial Basis Function',...
+            'Gradient-Based Indirect Radial Basis Function',...
+            'Gradient-Based Radial Basis Function',...
+            'Kriging',...
+            'Gradient-Based Indirect Kriging',...
+            'Gradient-Based Cokriging',...
+            'Support Vector Regression',...
+            'Gradient-Based Indirect Support Vector Regression',...
+            'Gradient-Based Support Vector Regression',...
+            'DACE',...
+            'Gradient-Based Indirect DACE'};
     end
     methods
         %constructor
@@ -90,6 +108,14 @@ classdef initMeta < handle
             %display message
             fprintf('=========================================\n')
             fprintf(' >> Initialization of the metamodel configuration\n');
+            %listeners
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%add listener for specific event (execute method after the set
+            %%of the 'SetObservable' properties
+            %find the 'SetObservable' properties
+            setObservProperties=findAttrValue(obj,'SetObservable');
+            %create listeners
+            addlistener(obj,setObservProperties,'PostSet',@obj.updateAllStruct);
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,7 +129,6 @@ classdef initMeta < handle
                 obj.useGrad=boolIn;
             end
         end
-        %
         function set.type(obj,charIn)
             if isG(charIn,'char')
                 if ismember(charIn,obj.typeAvail)
@@ -117,198 +142,103 @@ classdef initMeta < handle
                 end
             end
         end
-        %
-%         function set.para(obj,varargin)
-%             keyOk={'',''};
-%             
-%         end
         function set.stepTaylor(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.stepTaylor~=doubleIn)
-                    fprintf(' >>> Taylor''s step for indirect gradient-based : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.stepTaylor);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.stepTaylor,'Taylor''s step for indirect gradient-based',0,[])
                 obj.stepTaylor=doubleIn;
             end
         end
         function set.lVal(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.lVal~=doubleIn)
-                    fprintf(' >>> Internal length : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.lVal);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.lVal,'Internal length',0,[])
                 obj.lVal=doubleIn;
             end
         end
         function set.lMin(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.lMin~=doubleIn)
-                    fprintf(' >>> Internal length : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.lMin);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.lMin,'Minimum internal length',0,[])
                 obj.lMin=doubleIn;
             end
         end
         function set.lMax(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.lMax~=doubleIn)
-                    fprintf(' >>> Internal length : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.lMax);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.lMax,'Maximum internal length',0,[])
                 obj.lMax=doubleIn;
             end
         end
         function set.pMin(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.pMin~=doubleIn)
-                    fprintf(' >>> Internal length : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.pMin);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.pMin,'Minimum power exponent generalized exponential kernel',0,[])
                 obj.pMin=doubleIn;
             end
         end
         function set.pMax(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.pMax~=doubleIn)
-                    fprintf(' >>> Internal length : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.pMax);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.pMax,'Maximum power exponent generalized exponential kernel',0,[])
                 obj.pMax=doubleIn;
             end
         end
         function set.nuMin(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.nuMin~=doubleIn)
-                    fprintf(' >>> Internal length : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.nuMin);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.nuMin,'Minimum smoothness coefficient for Matern kernel',0,[])
                 obj.nuMin=doubleIn;
             end
         end
         function set.nuMax(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.nuMax~=doubleIn)
-                    fprintf(' >>> Internal length : [');
-                    fprintf('%d ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.nuMax);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.nuMax,'Maximum smoothness coefficient for Matern kernel',0,[])
                 obj.nuMax=doubleIn;
             end
         end
         function set.pVal(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.pVal~=doubleIn)
-                    fprintf(' >>> Power exponent generalized exponential kernel : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.pVal);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.pVal,'Power exponent generalized exponential kernel',0,[])
                 obj.pVal=doubleIn;
             end
         end
         function set.nuVal(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.nuVal~=doubleIn)
-                    fprintf(' >>> Smoothness coefficient for Matern kernel function : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.nuVal);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.nuVal,'Smoothness coefficient for Matern kernel function',0,[])
                 obj.nuVal=doubleIn;
             end
         end
         function set.polyOrder(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.polyOrder~=doubleIn)
-                    fprintf(' >>> Polynomial order for kriging, xLS : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.polyOrder);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.polyOrder,'Polynomial order for kriging, xLS',0,[])
                 obj.polyOrder=doubleIn;
             end
         end
         function set.swfPara(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.swfPara~=doubleIn)
-                    fprintf(' >>> SWF parameter : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.swfPara);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.swfPara,'SWF parameter',0,[])
                 obj.swfPara=doubleIn;
             end
         end
         function set.e0(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.e0~=doubleIn)
-                    fprintf(' >>> Thickness of the tube (nu-SVR) : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.e0);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.e0,'Thickness of the tube (nu-SVR)',0,[])
                 obj.e0=doubleIn;
             end
         end
         function set.ek(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.ek~=doubleIn)
-                    fprintf(' >>> Thickness of the tube (nu-GSVR) : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.ek);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.ek,'Thickness of the tube (nu-GSVR)',0,[])
                 obj.ek=doubleIn;
             end
         end
         function set.c0(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.c0~=doubleIn)
-                    fprintf(' >>> Constant for trade off (nu-SVR) : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.c0);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.c0,'Constant for trade off (nu-SVR)',0,[])
                 obj.c0=doubleIn;
             end
         end
         function set.ck(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.ck~=doubleIn)
-                    fprintf(' >>> Constant for trade off (nu-GSVR) : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.ck);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.ck,'Constant for trade off (nu-GSVR)',0,[])
                 obj.ck=doubleIn;
             end
         end
         function set.nuSVR(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.nuSVR~=doubleIn)
-                    fprintf(' >>> Parameter for nu-SVR : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.nuSVR);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.nuSVR,'Parameter for nu-SVR',0,1)
                 obj.nuSVR=doubleIn;
             end
         end
         function set.nuGSVR(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.nuGSVR~=doubleIn)
-                    fprintf(' >>> Parameter for nu-GSVR : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.nuGSVR);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.nuGSVR,'Parameter for nu-GSVR',0,1)
                 obj.nuGSVR=doubleIn;
             end
         end
-        function set.estim(obj,boolIn)
+        function set.estimOn(obj,boolIn)
             if isG(boolIn,'logical')
-                if xor(obj.estim,boolIn)
+                if xor(obj.estimOn,boolIn)
                     fprintf(' >>> Estimation of the hyperparameters : ');
                     SwitchOnOff(boolIn);
                 end
-                obj.estim=boolIn;
+                obj.estimOn=boolIn;
             end
         end
         function set.aniso(obj,boolIn)
@@ -391,22 +321,12 @@ classdef initMeta < handle
             end
         end
         function set.nbSampInit(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.nbSampInit~=doubleIn)
-                    fprintf(' >>> Number of sample points for GA, PSO : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.nbSampInit);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.nbSampInit,'Number of sample points for GA, PSO',0,[])
                 obj.nbSampInit=doubleIn;
             end
         end
         function set.critOpti(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.critOpti~=doubleIn)
-                    fprintf(' >>> Stopping criterion for estimation process : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.critOpti);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.critOpti,'Stopping criterion for estimation process',0,[])
                 obj.critOpti=doubleIn;
             end
         end
@@ -472,39 +392,24 @@ classdef initMeta < handle
         function set.infillOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.infillOn,boolIn)
-                    fprintf(' >>> Computation of the infill creiterion : ');
+                    fprintf(' >>> Computation of the infill criterion : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.infillOn=boolIn;
             end
         end
         function set.infillParaWEI(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.infillParaWEI~=doubleIn)
-                    fprintf(' >>> Parameter for Weighted EI : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.infillParaWEI);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.infillParaWEI,'Parameter for Weighted EI',0,1)
                 obj.infillParaWEI=doubleIn;
             end
         end
         function set.infillParaGEI(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.infillParaGEI~=doubleIn)
-                    fprintf(' >>> Parameter for Generalized EI : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.infillParaGEI);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.infillParaGEI,'Parameter for Generalized EI',0,[])
                 obj.infillParaGEI=doubleIn;
             end
         end
         function set.infillParaLCB(obj,doubleIn)
-            if isG(doubleIn,'double')
-                if all(obj.infillParaLCB~=doubleIn)
-                    fprintf(' >>> Parameter for Lower Confidence Bound : [');
-                    fprintf('%i ',doubleIn);fprintf('] ');
-                    fprintf('(previous [');fprintf('%d ',obj.infillParaLCB);fprintf('])\n');
-                end
+            if checkDouble(doubleIn,obj.infillParaLCB,'Parameter for Lower Confidence Bound',0,[])
                 obj.infillParaLCB=doubleIn;
             end
         end
@@ -517,8 +422,90 @@ classdef initMeta < handle
                 obj.checkInterp=boolIn;
             end
         end
-        
-        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %list available techniques
+        function availableType(obj)
+            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            fprintf('Available techniques for surrogate models\n')
+            dispTableTwoColumns(obj.typeAvail,obj.typeTxt);
+            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %list available kernel function
+        function availableKernel(obj)
+            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            fprintf('Available kernel functions for surrogate models\n')
+            dispTableTwoColumns(obj.typeAvail,obj.typeTxt);
+            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %update para struct
+        function updatePara(obj)
+            obj.para.l.Val=obj.lVal;
+            obj.para.l.Min=obj.lMin;
+            obj.para.l.Max=obj.lMax;
+            obj.para.p.Val=obj.pVal;
+            obj.para.p.Min=obj.pMin;
+            obj.para.p.Max=obj.pMax;
+            obj.para.nu.Val=obj.nuVal;
+            obj.para.nu.Min=obj.nuMin;
+            obj.para.nu.Max=obj.nuMax;
+            obj.para.stepTaylor=obj.stepTaylor;
+            obj.para.polyOrder=obj.polyOrder;
+            obj.para.swfPara=obj.swfPara;
+            obj.para.e0=obj.e0;
+            obj.para.ek=obj.ek;
+            obj.para.c0=obj.c0;
+            obj.para.ck=obj.ck;
+            obj.para.nuSVR=obj.nuSVR;
+            obj.para.nuGSVR=obj.nuGSVR;
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %update infill struct
+        function updateInfill(obj)
+            obj.infill.on=obj.infillOn;
+            obj.infill.wei=obj.infillParaWEI;
+            obj.infill.gei=obj.infillParaGEI;
+            obj.infill.lcb=obj.infillParaLCB;
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %update estimation struct
+        function updateEstim(obj)
+            obj.estim.on=obj.estimOn;
+            obj.estim.aniso=obj.aniso;
+            obj.estim.disp=obj.dispEstim;
+            obj.estim.save=obj.saveEstim;
+            obj.estim.dispIterGraph=obj.dispIterGraph;
+            obj.estim.dispIterCmd=obj.dispIterCmd;
+            obj.estim.dispPlotAlgo=obj.dispPlotAlgo;
+            obj.estim.method=obj.method;
+            obj.estim.sampManuOn=obj.sampManuOn;
+            obj.estim.sampManu=obj.sampManu;
+            obj.estim.nbSampInit=obj.nbSampInit;
+            obj.estim.critOpti=obj.critOpti;
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %update cross-validation struct
+        function updateCV(obj)
+            obj.cv.on=obj.cvOn;
+            obj.cv.full=obj.cvFull;
+            obj.cv.disp=obj.cvDisp;
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %update all structs
+        function updateAllStruct(obj,~,~)
+            updatePara(obj);
+            updateInfill(obj);
+            updateEstim(obj);
+            updateCV(obj);
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %define properties
@@ -548,13 +535,14 @@ classdef initMeta < handle
                     end
                 end
                 if ~okConf
-                    fprintf(' Wrong syntax used for conf method\n')
+                    fprintf('\nWrong syntax used for conf method\n')
                     fprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
-                    fprintf('List of the avilable keywords:\n');
+                    fprintf('\nList of the avilable keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
                 end
             else
                 fprintf('Current configuration\n');
+                disp(obj);
             end
         end
     end
@@ -565,35 +553,53 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %function for declaring the purpose of each properties
 function info=affectTxtProp()
-info.scale='scale for displaying gradients';
-info.tikz='save on tikz''s format';
-info.on='enable/disable display';
-info.d3='3D display';
-info.d2='2D display';
-info.contour='display contour';
-info.save='save display';
-info.directory='directory for saving figures';
-info.gridGrad='display gradients at the points of the grid';
-info.sampleGrad='display gradients at sample points';
-info.ciOn='display confidence intervals (if available)';
-info.ciType='choose CI to display';
-info.newFig='display in new figure';
-info.opt='plot options';
-info.uni='use uniform color';
-info.color='choose display color';
-info.xlabel='X-axis label';
-info.ylabel='Y-axis label';
-info.zlabel='Z-axis label';
-info.title='title of the figure';
-info.render='enable/disable 3D rendering';
-info.samplePts='display sample points';
-info.num='number of the display numérotation affichage';
-info.tex='save data in TeX file';
-info.bar='display using bar';
-info.trans='display using transparency';
-info.nv='number of sample points on the reference grid';
-info.nbSteps='number of steps on the reference grid';
-info.step='size of the step of the grid';
+info.useGrad='Taking into account gradients';
+info.type='type of surrogate model';
+info.para='struct for storing choice of parameters';
+info.stepTaylor='Taylor''s step for indirect gradient-based';
+info.lVal='Nominal internal length (correlation length)';
+info.pVal='Nominal power exponent for generalized exponential kernel function';
+info.nuVal='Nominal smoothness coefficient for Matern kernel function';
+info.lMin='Minimum internal length (correlation length)';
+info.lMax='Maximum internal length (correlation length)';
+info.pMax='Maximum power exponent for generalized exponential kernel function';
+info.pMin='Minimum power exponent for generalized exponential kernel function';
+info.nuMin='Minimum smoothness coefficient for Matern kernel function';
+info.nuMax='Maximum smoothness coefficient for Matern kernel function';
+info.polyOrder='Polynomial order for kriging, xLS';
+info.swfPara='Swf parameter';
+info.e0='Thickness of the tube (not used for nu-SVR)';
+info.ek='Thickness of the tube of gradient (not used for nu-SVR)';
+info.c0='Constant for trade off between flatness and deviations (SVR)';
+info.ck='Same trade off constant as before';
+info.nuSVR='Parameter of the nu-SVR (nu in [0,1])';
+info.nuGSVR='Parameter of the nu-GSVR (nu in [0,1])';
+info.estim='Struct for storing estimation parameters';
+info.estimOn='Seek for best values of the internal parameters';
+info.aniso='Anisotropic model (one internal length per variable)';
+info.dispEstim='Display objective function to be minimised';
+info.saveEstim='Save evolution function to be minimized';
+info.dispIterGraph='Display iterations of the optimisation process on a figure (1D/2D)';
+info.dispIterCmd='Display iteration in the console';
+info.dispPlotAlgo='Display convergence information on figures';
+info.method='Optimizer used for finding internal parameter';
+info.sampManuOn='Initial sampling or not';
+info.sampManu='Method used for the initial sampling for GA ('''', ''LHS'',''IHS''...)';
+info.nbSampInit='Number of sample points of the initial sampling for GA';
+info.critOpti='Value of the stopping criterion of the optimizer';
+info.kern='Kernel function';
+info.normOn='Normalization';
+info.recond='Improve condition number of matrix (kriging, RBF, SVR...)';
+info.cv='Struct for storing infillment parameters';
+info.cvOn='Cross-validation';
+info.cvFull='Compute all CV criteria';
+info.cvDisp='Display QQ plot CV';
+info.infill='Struct for storing infillment parameters';
+info.infillOn='Activate/desactivate computation of the infill criterion';
+info.infillParaWEI='Parameters for Weighted Expected Improvement';
+info.infillParaGEI='Parameters for Generalized Expected Improvement';
+info.infillParaLCB='Parameters for Lower Confidence Bound';
+info.checkInterp='Activate/deactivate the checking of the interpolation property';
 end
 
 %function display table with two columns of text
@@ -610,22 +616,66 @@ for itT=1:numel(tableFiedIn)
 end
 end
 
-%function for checking type a variable and display erro message
+%function display table with two columns of text
+function dispTableTwoColumns(tableA,tableB)
+%size of every components in tableA
+sizeA=cellfun(@numel,tableA);
+maxA=max(sizeA);
+%space after each component
+spaceA=maxA-sizeA+3;
+spaceTxt=' ';
+%display table
+for itT=1:numel(tableA)
+    fprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
+end
+end
+
+
+%function for checking type a variable and display error message
 function okG=isG(varIn,typeIn)
 okG=isa(varIn,typeIn);
 if ~okG;fprintf(' Wrong input variable. Required: %s (current: %s)\n',typeIn,class(varIn));end
 end
 
-%function for checking 'double' input of a setter function (with bound 
-function okG=checkDouble(varIn,varOld,TxtIn,lB,uB)
+%function for checking 'double' input of a setter function (with bound
+function okCD=checkDouble(varIn,varOld,TxtIn,lB,uB)
+okCD=false;
+oklB=true;
+okuB=true;
 %check if it is a double
 if isG(varIn,'double')
     %check for different size of the previous and new values
-    %
-    if all(varOld~=varIn)
-        fprintf(' >>> %s : [',TxtIn);
-        fprintf('%i ',doubleIn);fprintf('] ');
-        fprintf('(previous [');fprintf('%d ',varOld);fprintf('])\n');
+    checkS=false;
+    if numel(varOld)==1||numel(varIn)==1
+        checkS=all(varOld~=varIn);
+    else
+        if all(size(varOld)==size(varIn))
+            checkS=all(varOld~=varIn);
+        end
+    end
+    if checkS
+        %check if the bounds are respected
+        if ~isempty(lB)
+            oklB=all(varIn>=uB);
+        end
+        if ~isempty(uB)
+            okuB=all(varIn<=uB);
+        end
+        if ~oklB||~okuB
+            fprintf(' >>> %s: Wrong variable',TxtIn);
+            if ~isempty(lB)
+                fprintf('Lower bound:');fprintf(' %d',lB);fprintf('\n');
+            end
+            if ~isempty(uB)
+                fprintf('Upper bound:');fprintf(' %d',uB);fprintf('\n');
+            end
+            fprintf('Proposed value:');fprintf(' %d',varIn);fprintf('\n');
+        else
+            fprintf(' >>> %s : [',TxtIn);
+            fprintf('%i ',varIn);fprintf('] ');
+            fprintf('(previous [');fprintf('%d ',varOld);fprintf('])\n');
+            okCD=true;
+        end
     end
 end
 end
@@ -639,6 +689,30 @@ else
 end
 end
 
+%function for finding properties with specific attribute
+function cl_out = findAttrValue(obj,attrName,varargin)
+if ischar(obj)
+    mc = meta.class.fromName(obj);
+elseif isobject(obj)
+    mc = metaclass(obj);
+end
+ii = 0; numb_props = length(mc.PropertyList);
+cl_array = cell(1,numb_props);
+for  c = 1:numb_props
+    mp = mc.PropertyList(c);
+    if isempty (findprop(mp,attrName))
+        error('Not a valid attribute name')
+    end
+    attrValue = mp.(attrName);
+    if attrValue
+        if islogical(attrValue) || strcmp(varargin{1},attrValue)
+            ii = ii + 1;
+            cl_array(ii) = {mp.Name};
+        end
+    end
+end
+cl_out = cl_array(1:ii);
+end
 
 % function meta=initMeta(in,parallelOn)
 %

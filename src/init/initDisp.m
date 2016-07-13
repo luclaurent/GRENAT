@@ -371,13 +371,14 @@ classdef initDisp < handle
                     end
                 end
                 if ~okConf
-                    fprintf(' Wrong syntax used for conf method\n')
+                    fprintf('\nWrong syntax used for conf method\n')
                     fprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
-                    fprintf('List of the avilable keywords:\n');
+                    fprintf('\nList of the avilable keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
                 end
             else
                 fprintf('Current configuration\n');
+                disp(obj);
             end
         end
     end

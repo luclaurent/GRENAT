@@ -25,7 +25,7 @@ classdef GRENAT < handle
         sampling=[];
         resp=[];
         grad=[];
-        confMeta;%load default configuration
+        confMeta;%configuration data 
         %training
         dataTrain;
         %evaluating
@@ -77,22 +77,7 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %setter for the type of metamodel
-        function set.confMeta(obj,confIn)
-            % look up the previous value
-            oldVal = obj.confMeta;
-            % loop through fields to check what has changed
-            fields = fieldnames(confIn);
-            for fn = fields(:)' %'#
-                %turn cell into string for convenience
-                field2check = fn{1};
-                if isfield(oldVal,field2check)
-                    % simply assign the fields you don't care about
-                    obj.confMeta.(field2check) = confIn.(field2check);
-                end
-            end
-        end        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
         %setter for the sampling
         function set.sampling(obj,samplingIn)
             if ~isempty(samplingIn)

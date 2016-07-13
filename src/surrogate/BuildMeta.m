@@ -83,7 +83,7 @@ if InGE
     samplingOk=IndirectData.new.sampling;
     respOk=IndirectData.new.resp;
     gradOk=[];
-    fprintf('\n%s\n',['>> Indirect gradient-enhanced approach']);
+    fprintf('\n%s\n','>> Indirect gradient-enhanced approach');
 elseif cGE
     samplingOk=samplingN;
     respOk=respN;

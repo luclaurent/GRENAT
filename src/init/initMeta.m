@@ -115,7 +115,7 @@ classdef initMeta < handle
             %find the 'SetObservable' properties
             setObservProperties=findAttrValue(obj,'SetObservable');
             %create listeners
-            addlistener(obj,setObservProperties,'PostSet',@obj.updateAllStruct);
+            addlistener(obj,setObservProperties,'PostSet',@obj.updateAllStruct);            
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

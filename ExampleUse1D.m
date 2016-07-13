@@ -18,10 +18,11 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%customClean;
-countTime=mesuTime;
 %load folder structure
 initDirGRENAT;
+
+%customClean;
+countTime=mesuTime;
 %parallel execution (options and starting of the workers)
 paraCluster=execParallel(false);
 

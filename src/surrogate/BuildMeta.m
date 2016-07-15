@@ -40,33 +40,7 @@ np=size(samplingIn,2);
 %number of sample points
 ns=size(samplingIn,1);
 fprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n',np,ns);
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-%Normalization of the input data
-fprintf(' >> Normalization: ');if metaData.normOn; fprintf('Yes\n');else fprintf('No\n');end
-if metaData.normOn
-    %normalization of the data
-    [respN,infoDataR]=NormRenorm(respIn,'norm');
-    [samplingN,infoDataS]=NormRenorm(samplingIn,'norm');
-    if availGrad
-        gradN=NormRenormG(gradIn,'norm',infoDataS,infoDataR);
-    else
-        gradN=[];
-    end
-else
-    respN=respIn;
-    samplingN=samplingIn;
-    gradN=gradIn;
-    infoDataR.std=[];
-    infoDataR.mean=[];
-    infoDataS.std=[];
-    infoDataS.mean=[];
-end
 
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-%Check input data (find missing data)
-[metaData.miss]=CheckInputData(samplingN,respN,gradN);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %%%%%%% Building various surrogate models

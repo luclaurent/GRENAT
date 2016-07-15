@@ -25,23 +25,39 @@ classdef GRENAT < handle
         sampling=[];
         resp=[];
         grad=[];
-        confMeta;%configuration data 
-        %training
-        dataTrain;
+        samplingN=[];
+        respN=[];
+        gradN=[];
         %evaluating
         nonsamplePts=[];
         nonsampleResp=[];
         nonsampleGrad=[];
+        nonsamplePtsN=[];
+        nonsampleRespN=[];
+        nonsampleGradN=[];
         nonsampleVar=[];
         nonsampleCI=struct('ci68',[],'ci95',[],'ci98',[]);
         nonsampleEI=[];
+        %normalization data
+        norm;
+        normMeanS;
+        normStdS;
+        normMeanR;
+        normStdR;
+        %
         err=[];
-        %display data
-        confDisp;
         %reference
         sampleRef=[];
         respRef=[];
         gradRef=[];
+        sampleRefN=[];
+        respRefN=[];
+        gradRefN=[];
+        %structures & class for storing configuration and data
+        confMeta;   %metamodel configuration 
+        dataTrain;  %training data
+        confDisp;   %display configuration 
+        miss;       %missing data
     end
     properties (Dependent)
         type;
@@ -52,6 +68,9 @@ classdef GRENAT < handle
         runEval=true; %flag for checking if the training is obsolete
         gradAvail=false; %flag for availability of the gradients
         runErr=true; %flag for computation of the error 
+        normSamplePtsIn=false; %flag for checking if the input data are normalized
+        normRespIn=false; %flag for checking if the input data are normalized
+        normGradIn=false; %flag for checking if the input data are normalized
     end
     
     methods
@@ -82,7 +101,10 @@ classdef GRENAT < handle
         function set.sampling(obj,samplingIn)
             if ~isempty(samplingIn)
                 obj.sampling=samplingIn;
+                obj.samplingN=samplingIn;
                 obj.runTrain=true;
+                obj.normMeanS=[];
+                obj.normStdS=[];
             else
                 fprintf('ERROR: Empty array of sample points\n');
             end
@@ -91,6 +113,7 @@ classdef GRENAT < handle
         function set.resp(obj,respIn)
             if ~isempty(respIn)
                 obj.resp=respIn;
+                obj.respN=respIn;
                 obj.runTrain=true;
             else
                 fprintf('ERROR: Empty array of responses\n');
@@ -100,6 +123,7 @@ classdef GRENAT < handle
         function set.grad(obj,gradIn)
             if ~isempty(gradIn)
                 obj.grad=gradIn;
+                obj.gradN=gradIn;
                 obj.runTrain=true;
                 obj.gradAvail=true;
             end
@@ -108,6 +132,7 @@ classdef GRENAT < handle
         function set.nonsamplePts(obj,samplingIn)
             if ~isempty(samplingIn)
                 obj.nonsamplePts=samplingIn;
+                obj.nonsamplePtsN=samplingIn;
                 obj.runEval=true;
             end
         end        
@@ -140,11 +165,92 @@ classdef GRENAT < handle
             if obj.runErr;errCalc(obj);end
             err=obj.err;
         end
+        %getter for normalized sample points
+        function S=get.samplingN(obj)
+            if ~obj.normSamplePtsIn
+                normInputData(obj,'initSamplePts');
+            end
+            S=obj.samplingN;
+        end
+        %getter for normalized responses
+        function Z=get.respN(obj)
+            if ~obj.normRespIn
+                normInputData(obj,'initResp');
+            end
+            Z=obj.respN;
+        end
+        %getter for normalized gradients
+        function GZ=get.gradN(obj)
+            if ~obj.normGradIn
+                if ~obj.normSamplePtsIn
+                    normInputData(obj,'initSamplePts');
+                end
+                if ~obj.normRespIn
+                    normInputData(obj,'initResp');
+                end
+                normInputData(obj,'grad');
+            end
+            GZ=obj.gradN;
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %Normalization of the input data
+        function normInputData(obj,type)
+            if obj.metaData.normOn
+                %depending on the argument
+                if nargin<2;type=[];end
+                %preparing data structures
+                infoDataS=struct('mean',obj.normMeanS,'std',obj.normStdS);
+                infoDataR=struct('mean',obj.normMeanR,'std',obj.normStdR);
+                %for various situations
+                switch type
+                    case 'initSamplePts'
+                        [obj.samplingN,infoDataS]=NormRenorm(obj.sampling,'norm');
+                        obj.normMeanS=infoDataS.mean;
+                        obj.normStdS=infoDataS.std;
+                        obj.normSamplePtsIn=true;
+                    case 'initResp'
+                        [obj.respN,infoDataR]=NormRenorm(obj.resp,'norm');
+                        obj.normMeanR=infoDataR.mean;
+                        obj.normStdR=infoDataR.std;
+                        obj.normRespIn=true;
+                    case 'SamplePts'
+                        [obj.samplingN]=NormRenorm(obj.sampling,'norm',infoDataR);
+                        obj.normSamplePtsIn=true;
+                    case 'Resp'
+                        obj.respN=NormRenorm(obj.resp,'norm',infoDataR);
+                        obj.normRespIn=true;
+                    case 'grad'
+                        obj.gradN=NormRenormG(obj.grad,'norm',infoDataS,infoDataR);
+                        obj.normGradIn=true;
+                end
+            end
+        end
+        %ReNormalization of the input data
+        function reNormInputData(obj,type)
+            if obj.metaData.normOn
+                %depending on the argument
+                if nargin<2;type=[];end
+                %preparing data structures
+                infoDataS=struct('mean',obj.normMeanS,'std',obj.normStdS);
+                infoDataR=struct('mean',obj.normMeanR,'std',obj.normStdR);
+                %for various situations
+                switch type
+                    case 'SamplePts'
+                    case 'Resp'
+                    case 'grad'
+                end
+            end
+        end
+        %reset normalisation state
+        function resetNorm(obj)
+            obj.normSamplePtsIn=false;
+            obj.normRespIn=false;
+            obj.normGradIn=false;
+        end
         %define the configuration for the display
         function defineDisp(obj,varargin)            
             % look up the previous value
@@ -152,7 +258,12 @@ classdef GRENAT < handle
         end
         %train the metamodel
         function train(obj)
-            obj.dataTrain=BuildMeta(obj.sampling,obj.resp,obj.grad,obj.confMeta);
+            %normalization of the input data
+            normInputData(obj);
+            %Check input data (find missing data)
+            [obj.confMeta.miss]=CheckInputData(obj.samplingN,obj.respN,obj.gradN);
+            %train surrogate model
+            obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
             obj.runTrain=false;
             obj.runErr=true;
         end
@@ -164,14 +275,19 @@ classdef GRENAT < handle
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %evaluation of the metamodels
             if obj.runEval
+                %normalization of the input data
+                normInputData(obj,'SamplePts');
                 [K]=EvalMeta(obj.nonsamplePts,obj.dataTrain);
                 obj.runEval=false;
                 obj.runErr=true;
-                Z=K.Z;GZ=K.GZ;variance=K.var;
                 %store data from the evaluation
-                obj.nonsampleResp=Z;
-                obj.nonsampleGrad=GZ;
-                obj.nonsampleVar=variance;
+                obj.nonsampleRespN=K.Z;
+                obj.nonsampleGradN=K.GZ;
+                obj.nonsampleVar=K.var;
+                %extract unnormalized data
+                Z=obj.nonsampleResp;
+                GZ=obj.nonsampleGrad;
+                variance=obj.nonsampleVar;
             else
                 Z=obj.nonsampleResp;
                 GZ=obj.nonsampleGrad;

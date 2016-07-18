@@ -50,27 +50,27 @@ classdef GRENAT < handle
         sampleRef=[];
         respRef=[];
         gradRef=[];
-        sampleRefN=[];
-        respRefN=[];
-        gradRefN=[];
         %structures & class for storing configuration and data
-        confMeta;   %metamodel configuration 
+        confMeta;   %metamodel configuration
         dataTrain;  %training data
-        confDisp;   %display configuration 
+        confDisp;   %display configuration
         miss;       %missing data
     end
     properties (Dependent)
         type;
-    end    
-
+    end
+    
     properties (Access = private)
         runTrain=true; %flag for checking if the training is obsolete
         runEval=true; %flag for checking if the training is obsolete
         gradAvail=false; %flag for availability of the gradients
-        runErr=true; %flag for computation of the error 
+        runErr=true; %flag for computation of the error
         normSamplePtsIn=false; %flag for checking if the input data are normalized
         normRespIn=false; %flag for checking if the input data are normalized
-        normGradIn=false; %flag for checking if the input data are normalized
+        runMissingData=true; %flag for checking missing data
+    end
+    properties (Access = private,Constant)
+        infoProp=affectTxtProp;
     end
     
     methods
@@ -81,7 +81,7 @@ classdef GRENAT < handle
             fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
             fprintf(' Create GRENAT Object \n')
             %the date and time
-            dispDate; 
+            dispDate;
             %load default configuration
             obj.confMeta=initMeta;
             %load display configuration
@@ -96,15 +96,13 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %setter for the sampling
         function set.sampling(obj,samplingIn)
             if ~isempty(samplingIn)
                 obj.sampling=samplingIn;
-                obj.samplingN=samplingIn;
                 obj.runTrain=true;
-                obj.normMeanS=[];
-                obj.normStdS=[];
+                resetNorm(obj);
             else
                 fprintf('ERROR: Empty array of sample points\n');
             end
@@ -113,7 +111,6 @@ classdef GRENAT < handle
         function set.resp(obj,respIn)
             if ~isempty(respIn)
                 obj.resp=respIn;
-                obj.respN=respIn;
                 obj.runTrain=true;
             else
                 fprintf('ERROR: Empty array of responses\n');
@@ -123,7 +120,6 @@ classdef GRENAT < handle
         function set.grad(obj,gradIn)
             if ~isempty(gradIn)
                 obj.grad=gradIn;
-                obj.gradN=gradIn;
                 obj.runTrain=true;
                 obj.gradAvail=true;
             end
@@ -132,10 +128,9 @@ classdef GRENAT < handle
         function set.nonsamplePts(obj,samplingIn)
             if ~isempty(samplingIn)
                 obj.nonsamplePts=samplingIn;
-                obj.nonsamplePtsN=samplingIn;
                 obj.runEval=true;
             end
-        end        
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -165,32 +160,12 @@ classdef GRENAT < handle
             if obj.runErr;errCalc(obj);end
             err=obj.err;
         end
-        %getter for normalized sample points
-        function S=get.samplingN(obj)
-            if ~obj.normSamplePtsIn
-                normInputData(obj,'initSamplePts');
-            end
-            S=obj.samplingN;
-        end
-        %getter for normalized responses
-        function Z=get.respN(obj)
-            if ~obj.normRespIn
-                normInputData(obj,'initResp');
-            end
-            Z=obj.respN;
-        end
-        %getter for normalized gradients
-        function GZ=get.gradN(obj)
-            if ~obj.normGradIn
-                if ~obj.normSamplePtsIn
-                    normInputData(obj,'initSamplePts');
-                end
-                if ~obj.normRespIn
-                    normInputData(obj,'initResp');
-                end
-                normInputData(obj,'grad');
-            end
-            GZ=obj.gradN;
+        %getter for normalization data structure
+        function normStruct=get.norm(obj)
+            normStruct.sampling.mean=obj.normMeanS;
+            normStruct.sampling.std=obj.normStdS;
+            normStruct.resp.mean=obj.normMeanR;
+            normStruct.resp.std=obj.normStdR;
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,13 +173,11 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Normalization of the input data
-        function normInputData(obj,type)
+        function dataOut=normInputData(obj,type,dataIn)
             if obj.metaData.normOn
-                %depending on the argument
-                if nargin<2;type=[];end
                 %preparing data structures
-                infoDataS=struct('mean',obj.normMeanS,'std',obj.normStdS);
-                infoDataR=struct('mean',obj.normMeanR,'std',obj.normStdR);
+                infoDataS=obj.sampling;
+                infoDataR=obj.resp;
                 %for various situations
                 switch type
                     case 'initSamplePts'
@@ -218,30 +191,36 @@ classdef GRENAT < handle
                         obj.normStdR=infoDataR.std;
                         obj.normRespIn=true;
                     case 'SamplePts'
-                        [obj.samplingN]=NormRenorm(obj.sampling,'norm',infoDataR);
-                        obj.normSamplePtsIn=true;
+                        dataOut=NormRenorm(dataIn,'norm',infoDataR);
                     case 'Resp'
-                        obj.respN=NormRenorm(obj.resp,'norm',infoDataR);
-                        obj.normRespIn=true;
+                        dataOut=NormRenorm(dataIn,'norm',infoDataR);
                     case 'grad'
-                        obj.gradN=NormRenormG(obj.grad,'norm',infoDataS,infoDataR);
-                        obj.normGradIn=true;
+                        dataOut=NormRenormG(dataIn,'norm',infoDataS,infoDataR);
+                end
+            else
+                if nargout>2
+                    dataOut=dataIn;
                 end
             end
         end
         %ReNormalization of the input data
-        function reNormInputData(obj,type)
+        function dataOut=reNormInputData(obj,type,dataIn)
             if obj.metaData.normOn
-                %depending on the argument
-                if nargin<2;type=[];end
                 %preparing data structures
-                infoDataS=struct('mean',obj.normMeanS,'std',obj.normStdS);
-                infoDataR=struct('mean',obj.normMeanR,'std',obj.normStdR);
+                infoDataS=obj.sampling;
+                infoDataR=obj.resp;
                 %for various situations
                 switch type
                     case 'SamplePts'
+                        dataOut=NormRenorm(dataIn,'renorm',infoDataS);
                     case 'Resp'
+                        dataOut=NormRenorm(dataIn,'renorm',infoDataR);
                     case 'grad'
+                        dataOut=NormRenorm(dataIn,'renorm',infoDataS,infoDataR);
+                end
+            else
+                if nargout>2
+                    dataOut=dataIn;
                 end
             end
         end
@@ -249,19 +228,26 @@ classdef GRENAT < handle
         function resetNorm(obj)
             obj.normSamplePtsIn=false;
             obj.normRespIn=false;
-            obj.normGradIn=false;
+        end
+        %check missing data
+        function checkMissingData(obj)
+            %Check input data (find missing data)
+            obj.confMeta.miss=CheckInputData(obj.samplingN,obj.respN,obj.gradN);
+            obj.runMissingData=false;
         end
         %define the configuration for the display
-        function defineDisp(obj,varargin)            
+        function defineDisp(obj,varargin)
             % look up the previous value
             obj.confDisp.conf(varargin{:});
         end
         %train the metamodel
         function train(obj)
             %normalization of the input data
-            normInputData(obj);
-            %Check input data (find missing data)
-            [obj.confMeta.miss]=CheckInputData(obj.samplingN,obj.respN,obj.gradN);
+            obj.samplingN=normInputData(obj,'initSamplePts',obj.sampling);
+            obj.respN=normInputData(obj,'initResp',obj.resp);
+            obj.gradN=normInputData(obj,'grad',obj.grad);
+            %check if data are missing
+            checkMissingData(obj);
             %train surrogate model
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
             obj.runTrain=false;
@@ -276,14 +262,18 @@ classdef GRENAT < handle
             %evaluation of the metamodels
             if obj.runEval
                 %normalization of the input data
-                normInputData(obj,'SamplePts');
-                [K]=EvalMeta(obj.nonsamplePts,obj.dataTrain);
+                obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePts);
+                %evaluation of the metamodel
+                [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain);
                 obj.runEval=false;
                 obj.runErr=true;
                 %store data from the evaluation
                 obj.nonsampleRespN=K.Z;
                 obj.nonsampleGradN=K.GZ;
                 obj.nonsampleVar=K.var;
+                %renormalization of the data
+                obj.nonsampleResp=reNormInputData(obj,'Resp',obj.nonsampleRespN);
+                obj.nonsampleGrad=reNormInputData(obj,'SamplePts',obj.nonsampleGradN);
                 %extract unnormalized data
                 Z=obj.nonsampleResp;
                 GZ=obj.nonsampleGrad;
@@ -395,6 +385,45 @@ classdef GRENAT < handle
             if ~okResp;fprintf('>> Wrong definition of the reference responses\n');end
             if ~okGrad;keyboard;fprintf('>> Wrong definition of the reference gradients\n');end
         end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %define properties
+        function conf(obj,varargin)
+            %list properties
+            listProp=properties(obj);
+            okConf=false;
+            %if a input variable is specifiec
+            if nargin>2
+                %if the number of input argument is even
+                if  mod(nargin-1,2)==0
+                    %along the argument
+                    for itV=1:2:nargin-1
+                        %extract keyword and associated value
+                        keyW=varargin{itV};
+                        keyV=varargin{itV+1};
+                        %if the first argument is a string
+                        if isa(varargin{1},'char')
+                            %check if the keyword is acceptable
+                            if ismember(keyW,listProp)
+                                okConf=true;
+                                obj.(keyW)=keyV;
+                            else
+                                fprintf('>> Wrong keyword ''%s''\n',keyW);
+                            end
+                        end
+                    end
+                end
+                if ~okConf
+                    fprintf('\nWrong syntax used for conf method\n')
+                    fprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
+                    fprintf('\nList of the available keywords:\n');
+                    dispTableTwoColumnsStruct(listProp,obj.infoProp);
+                end
+            else
+                fprintf('Current configuration\n');
+                disp(obj);
+            end
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -408,7 +437,7 @@ classdef GRENAT < handle
             %depend if the reference is available or not
             if checkRef(obj);
                 nbSubplot=231;
-                subplot(nbSubplot)                
+                subplot(nbSubplot)
                 showRespRef(obj);
                 nbSubplot=nbSubplot+1;subplot(nbSubplot)
                 showGradRef(obj);
@@ -475,6 +504,53 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%function for declaring the purpose of each properties
+function info=affectTxtProp()
+info.type='Type of the surrogate model';
+info.sampling='Coordinates of the sample points';
+info.resp='Value(s) of the responses at the sample points';
+info.grad='Value(s) of the gradients at the sample points';
+info.samplingN='Normalized coordinates of the sample points';
+info.respN='Value(s) of the normalized responses at the sample points';
+info.gradN='Value(s) of the normalized gradients at the sample points';
+info.nonsamplePts='Coordinates of the non-sample points';
+info.nonsampleResp='Value(s) of the approximated responses calculated at the non-sample points';
+info.nonsampleGrad='Value(s) of the approximated gradients calculated at the non-sample points';
+info.nonsamplePtsN='Normalized coordinates of the  non-sample points';
+info.nonsampleRespN='Value(s) of the normalized approximated responses calculated at the non-sample points';
+info.nonsampleGradN='Value(s) of the normalized approximated gradients calculated at the non-sample points';
+info.nonsampleVar='Value(s) of the variance calculated at the non-sample points';
+info.nonsampleCI='Structure containing the bounds of the confidence intervals (68%, 95%, 99%)';
+info.nonsampleEI='Value(s) of the expected improvment calculated at the non-sample points';
+info.norm='Structure containing the normalization data';
+info.normMeanS='Mean value of the sample points (vector)';
+info.normStdS='Standard deviation of the sample points (vector)';
+info.normMeanR='Mean value of the responses';
+info.normStdR='Standard deviation of the responses';
+info.err='Structure containing the values of the error criteria';
+info.sampleRef='Array of the sample points used for the reference response surface';
+info.respRef='Array of the responses of the reference response surface';
+info.gradRef='Array of the gradients of the reference response surface';
+info.confMeta='Class object (initMeta) containing information about the configuration (metamodel) (conf method for modifying it)';
+info.dataTrain='Structures containing data about the training of the surrogate model';
+info.confDisp='Class object (initDisp) containing information about the display (conf method for modifying it)';
+info.miss='Structure Containing information about the missing data';
+end
+
+%function display table with two columns of text
+function dispTableTwoColumnsStruct(tableFiedIn,structIn)
+%size of every components in tableA
+sizeA=cellfun(@numel,tableFiedIn);
+maxA=max(sizeA);
+%space after each component
+spaceA=maxA-sizeA+3;
+spaceTxt=' ';
+%display table
+for itT=1:numel(tableFiedIn)
+    fprintf('%s%s%s\n',tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
+end
+end
+
 %function display table with two columns of text
 function dispTableTwoColumns(tableA,tableB)
 %size of every components in tableA

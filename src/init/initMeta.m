@@ -630,7 +630,6 @@ for itT=1:numel(tableA)
 end
 end
 
-
 %function for checking type a variable and display error message
 function okG=isG(varIn,typeIn)
 okG=isa(varIn,typeIn);

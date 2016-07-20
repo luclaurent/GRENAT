@@ -47,7 +47,7 @@ final=false;
 if nargin>=3
     paraVal=paraValIn;
 else
-    paraVal=metaData.para.val;
+    paraVal=metaData.para.Val;
     final=true;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -329,11 +329,8 @@ ret.build.sig2=1/size(KK,1)*...
 %compute of the Likelihood (and log-likelihood)
 [lilog,ret.li]=KRGLikelihood(ret);
 ret.lilog=lilog;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%denormalisation sigma^2
-if metaData.normOn&&~isempty(metaData.norm.resp.std)
+%
+if metaData.norm.on&&~isempty(metaData.norm.resp.std)
     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
 end
-%
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

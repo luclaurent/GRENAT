@@ -23,7 +23,7 @@ function paraEstim=EstimPara(dataProb,dataMeta,funObj)
 dispWarning=false;
 
 %value of the criteria for stopping minimization
-critOpti=dataMeta.para.critOpti;
+critOpti=dataMeta.estim.critOpti;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,7 +36,7 @@ countTime=mesuTime;
 % Definition of the parameters for minimization
 % Number of hyperparameters to estimate
 %anisotropy
-if dataMeta.para.aniso
+if dataMeta.estim.aniso
     nbP=dataProb.used.np;
     nbPOptim=nbP;
 else
@@ -48,31 +48,31 @@ end
 % deal with specific cases (depending on the kernel function)
 switch dataMeta.kern
     case 'matern'
-        lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.nu.min];
-        ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.nu.max];
+        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.nu.Min];
+        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.nu.Max];
         nbPOptim=nbP+1;
     case 'expg'
-        lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.p.min];
-        ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.p.max];
+        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min];
+        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max];
         nbPOptim=nbP+1;
     case 'expgg'
-        lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.p.min*ones(1,nbP)];
-        ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.p.max*ones(1,nbP)];
+        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min*ones(1,nbP)];
+        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max*ones(1,nbP)];
         nbPOptim=2*nbP;
     otherwise
-        lb=dataMeta.para.l.min*ones(1,nbP);
-        ub=dataMeta.para.l.max*ones(1,nbP);
+        lb=dataMeta.para.l.Min*ones(1,nbP);
+        ub=dataMeta.para.l.Max*ones(1,nbP);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Manual definition of the initial population using LHS/IHS (GA)
 nbSampInit=10*nbPOptim;
-sampManuOn=dataMeta.para.sampManuOn;
+sampManuOn=dataMeta.estim.sampManuOn;
 if sampManuOn
     nbSampleSpecif=false;
-    if isfield(dataMeta.para,'nbSampInit');if ~isempty(dataMeta.para.nbSampInit);nbSampleSpecif=false;end, end
-    if nbSampleSpecif;nbSampInit=dataMeta.para.nbSampInit;end
+    if isfield(dataMeta.estim,'nbSampInit');if ~isempty(dataMeta.estim.nbSampInit);nbSampleSpecif=false;end, end
+    if nbSampleSpecif;nbSampInit=dataMeta.estim.nbSampInit;end
 end
 %definition valeur de depart de la variable
 x0=0.1*(ub-lb);
@@ -146,7 +146,7 @@ PSOTMinMax=0;
 %%%%%
 
 %display iterations
-if ~dataMeta.para.dispIterGraph
+if ~dataMeta.estim.dispIterGraph
     optionsFmincon=optimsetMOD(optionsFmincon,'OutputFcn','');
     optionsSQP=optimsetMOD(optionsSQP,'OutputFcn','');
     optionsFminbnd=optimsetMOD(optionsFminbnd,'OutputFcn','');
@@ -156,7 +156,7 @@ else
     figure;
 end
 
-if ~dataMeta.para.dispIterCmd
+if ~dataMeta.estim.dispIterCmd
     optionsFmincon=optimsetMOD(optionsFmincon,'Display','final');
     optionsSQP=optimsetMOD(optionsSQP,'Display', 'final');
     optionsFminbnd=optimsetMOD(optionsFminbnd,'Display','final');
@@ -165,7 +165,7 @@ if ~dataMeta.para.dispIterCmd
 end
 
 %display information of the algorithm on a graph
-if dataMeta.para.dispPlotAlgo
+if dataMeta.estim.dispPlotAlgo
     optionsFmincon=optimsetMOD(optionsFmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
     optionsSQP=optimsetMOD(optionsSQP,'PlotFcns',{@optimplotx,@optimplotfunccount,...
@@ -185,12 +185,12 @@ end
 %% Deal with 'SampleMin_xxxx' strategies
 %look for the 'SampleMin_' pattern
 patternS='SampleMin_';
-[wordFind]=strfind(dataMeta.para.method,patternS);
+[wordFind]=strfind(dataMeta.estim.method,patternS);
 if isempty(wordFind)
-    methodOptim=dataMeta.para.method;
+    methodOptim=dataMeta.estim.method;
     sampleMinOk=false;
 else
-    methodOptim=dataMeta.para.method((wordFind+numel(patternS)):end);
+    methodOptim=dataMeta.estim.method((wordFind+numel(patternS)):end);
     sampleMinOk=true;
 end
 % if SampleMin_ than a sampling is achieved for finding a initialization
@@ -401,25 +401,25 @@ end
 
 
 %store obtained value of the hyperparameters obtained with the minimization
-paraEstim.val=x;
+paraEstim.Val=x;
 %deal with various kind of kernel functions
-paraEstim.l.val=x(1:nbP);
-paraEstim.p.val=NaN;
-paraEstim.nu.val=NaN;
+paraEstim.l.Val=x(1:nbP);
+paraEstim.p.Val=NaN;
+paraEstim.nu.Val=NaN;
 
 switch dataMeta.kern
     case 'matern'
-        paraEstim.nu.val=x(end);
+        paraEstim.nu.Val=x(end);
     case 'expg'
-        paraEstim.p.val=x(end);
+        paraEstim.p.Val=x(end);
     case 'expgg'
-        paraEstim.p.val=x(nbP+1:end);
+        paraEstim.p.Val=x(nbP+1:end);
 end
 %display values of HyperParameters
 fprintf(' >>> Optimal HyperParameters\n');
-dispHyperParameter('l ',paraEstim.l.val);
-if ~isnan(paraEstim.p.val);dispHyperParameter('p ',paraEstim.p.val);end
-if ~isnan(paraEstim.nu.val);dispHyperParameter('nu',paraEstim.nu.val);end
+dispHyperParameter('l ',paraEstim.l.Val);
+if ~isnan(paraEstim.p.Val);dispHyperParameter('p ',paraEstim.p.Val);end
+if ~isnan(paraEstim.nu.Val);dispHyperParameter('nu',paraEstim.nu.Val);end
 %
 countTime.stop;
 fprintf(' - - - - - - - - - - - - - - - - - - - - \n');

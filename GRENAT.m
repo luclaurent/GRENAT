@@ -166,6 +166,7 @@ classdef GRENAT < handle
             normStruct.sampling.std=obj.normStdS;
             normStruct.resp.mean=obj.normMeanR;
             normStruct.resp.std=obj.normStdR;
+            normStruct.on=obj.confMeta.normOn;
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -174,10 +175,10 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %Normalization of the input data
         function dataOut=normInputData(obj,type,dataIn)
-            if obj.metaData.normOn
+            if obj.confMeta.normOn
                 %preparing data structures
-                infoDataS=obj.sampling;
-                infoDataR=obj.resp;
+                infoDataS=obj.norm.sampling;
+                infoDataR=obj.norm.resp;
                 %for various situations
                 switch type
                     case 'initSamplePts'
@@ -194,7 +195,7 @@ classdef GRENAT < handle
                         dataOut=NormRenorm(dataIn,'norm',infoDataR);
                     case 'Resp'
                         dataOut=NormRenorm(dataIn,'norm',infoDataR);
-                    case 'grad'
+                    case 'grad'                        
                         dataOut=NormRenormG(dataIn,'norm',infoDataS,infoDataR);
                 end
             else
@@ -205,7 +206,7 @@ classdef GRENAT < handle
         end
         %ReNormalization of the input data
         function dataOut=reNormInputData(obj,type,dataIn)
-            if obj.metaData.normOn
+            if obj.confMeta.normOn
                 %preparing data structures
                 infoDataS=obj.sampling;
                 infoDataR=obj.resp;
@@ -243,15 +244,22 @@ classdef GRENAT < handle
         %train the metamodel
         function train(obj)
             %normalization of the input data
-            obj.samplingN=normInputData(obj,'initSamplePts',obj.sampling);
-            obj.respN=normInputData(obj,'initResp',obj.resp);
+            normInputData(obj,'initSamplePts');
+            normInputData(obj,'initResp');
             obj.gradN=normInputData(obj,'grad',obj.grad);
             %check if data are missing
             checkMissingData(obj);
+            %store normalization data
+            obj.confMeta.norm=obj.norm;
             %train surrogate model
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
             obj.runTrain=false;
             obj.runErr=true;
+            
+            % keyboard
+            % if metaData.norm.on&&~isempty(metaData.norm.resp.std)
+            %     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
+            % end
         end
         %evaluate the metamodel
         function [Z,GZ,variance]=eval(obj,nonsamplePts)
@@ -264,7 +272,7 @@ classdef GRENAT < handle
                 %normalization of the input data
                 obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePts);
                 %evaluation of the metamodel
-                [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain);
+                [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta);
                 obj.runEval=false;
                 obj.runErr=true;
                 %store data from the evaluation
@@ -495,6 +503,10 @@ classdef GRENAT < handle
             ciDisp=obj.nonsampleCI.(['ci' num2str(ciVal)]);
             %display the CI
             displaySurrogateCI(obj.nonsamplePts,ciDisp,obj.dispData,obj.nonsampleResp);
+        end
+        %overload isfield
+        function isF=isfield(obj,field)
+            isF=isprop(obj,field);
         end
     end
 end

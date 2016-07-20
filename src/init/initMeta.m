@@ -33,6 +33,8 @@ classdef initMeta < handle
         estim;              %struct for storing estimation parameters
         infill;             %struct for storing infillment parameters
         cv;                 %struct for storing cross-validation parameters
+        miss;               %struct for storing missing data
+        norm;               %struct for storing normalization data
     end
     properties (SetObservable, AbortSet)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,7 +117,9 @@ classdef initMeta < handle
             %find the 'SetObservable' properties
             setObservProperties=findAttrValue(obj,'SetObservable');
             %create listeners
-            addlistener(obj,setObservProperties,'PostSet',@obj.updateAllStruct);            
+            addlistener(obj,setObservProperties,'PostSet',@obj.updateAllStruct);
+            %create all structures
+            updateAllStruct(obj);
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -544,6 +548,10 @@ classdef initMeta < handle
                 fprintf('Current configuration\n');
                 disp(obj);
             end
+        end
+        %overload isfield
+        function isF=isfield(obj,field)
+            isF=isprop(obj,field);
         end
     end
 end

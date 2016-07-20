@@ -59,18 +59,13 @@ if InGE
     gradOk=[];
     fprintf('\n%s\n','>> Indirect gradient-enhanced approach');
 elseif cGE
-    samplingOk=samplingN;
-    respOk=respN;
-    gradOk=gradN;
+    samplingOk=samplingIn;
+    respOk=respIn;
+    gradOk=gradIn;
 else
-    samplingOk=samplingN;
-    respOk=respN;
+    samplingOk=samplingIn;
+    respOk=respIn;
     gradOk=[];
-end
-
-if metaData.normOn
-    metaData.norm.resp=infoDataR;
-    metaData.norm.sampling=infoDataS;
 end
 
 %%%%%%%%=================================%%%%%%%%
@@ -161,8 +156,9 @@ outMeta.used.grad=gradOk;
 outMeta.in.sampling=samplingIn;
 outMeta.in.resp=respIn;
 outMeta.in.grad=gradIn;
-outMeta=mergestruct(outMeta,metaData);
-outMeta.norm.on=metaData.normOn;
+%outMeta=mergestruct(outMeta,metaData);
+outMeta.norm=metaData.norm;
+outMeta.miss=metaData.miss;
 
 countTime.stop;
 fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

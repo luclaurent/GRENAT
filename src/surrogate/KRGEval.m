@@ -70,7 +70,7 @@ end
 if metaData.used.availGrad
     if calcGrad  %if compute gradients
         %evaluate kernel function
-        [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+        [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
         rr(1:ns)=ev;
         rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
         

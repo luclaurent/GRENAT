@@ -309,7 +309,7 @@ classdef GRENAT < handle
             
         %check interpolation
         function [statusR,statusG]=checkInterp(obj)
-            statusR=true;statusG=true;
+            statusG=true;
             %evaluation of the approximation at the sample points
             [Z,GZ]=obj.eval(obj.sampling);
             %check interpolation

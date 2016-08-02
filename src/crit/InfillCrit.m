@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [EI,WEI,GEI,LCB,exploitEI,explorEI]=InfillCrit(respMin,Z,varZ,infillData)
+function [ZI,detInfill]=InfillCrit(respMin,Z,varZ,infillData)
 
 %fprintf('  >>> Compute infill criteria\n');
 
@@ -31,29 +31,28 @@ calcExploit=false;
 calcExplor=false;
 
 %initialize outuput variables
-EI=[];
-WEI=[];
-GEI=[];
-LCB=[];
 exploitEI=[];
 explorEI=[];
 
 if isfield(infillData,'crit')
     if ~isempty(infillData.crit)
-        if ismember('EI',infillData.crit);calcEI=true;calcExploit=true;calcExplor=true;end
-        if ismember('WEI',infillData.crit);calcWEI=true;calcExploit=true;calcExplor=true;end
-        if ismember('GEI',infillData.crit);calcGEI=true;calcExploit=true;calcExplor=true;end
-        if ismember('LCB',infillData.crit);calcLCB=true;end
-        if ismember('exploitEI',infillData.crit);calcExploit=true;end
-        if ismember('explorEI',infillData.crit);calcExplor=true;end
+        switch infillData.crit
+            case 'EI'
+                calcEI=true;calcExploit=true;calcExplor=true;
+            case 'WEI'
+                calcWEI=true;calcExploit=true;calcExplor=true;
+            case 'GEI'
+                calcGEI=true;calcExploit=true;calcExplor=true;
+            case 'LCB'
+                calcLCB=true;
+            case 'exploitEI'
+                calcExploit=true;
+            case 'explorEI'
+                calcExplor=true;
+        end
     end
 else
     calcEI=true;
-    calcWEI=true;
-    calcGEI=true;
-    calcLCB=true;
-    calcExploit=true;
-    calcExplor=true;
 end
 
 %dimensions
@@ -88,12 +87,14 @@ u=diffEI./respStd;
 densProb=1/sqrt(2*pi)*exp(-0.5*u.^2); %normpdf
 if calcExplor || calcEI || calcWEI
     explorEI=respStd.*densProb;
+    ZI=explorEI;
 end
 
 %exploitation (cumulative distribution function)
 cumDist=0.5*(1+erf(u/sqrt(2))); %cdf
 if calcExploit || calcEI || calcWEI
     exploitEI=diffEI.*cumDist;
+    ZI=exploitEI;
 end
 
 %deal with specific case: variance lower than 0 or close to 0
@@ -101,9 +102,11 @@ if ~isempty(ixInf)
     u(ixInf)=0;
     if calcExplor || calcEI || calcWEI
         explorEI(ixInf)=0;
+        ZI=explorEI;
     end
     if calcExploit || calcEI || calcWEI
         exploitEI(ixInf)=0;
+        ZI=exploitEI;
     end
 end
 
@@ -111,18 +114,20 @@ end
 if calcWEI
     nbParaWEI=numel(infillData.paraWEI);
     if nbParaWEI~=1
-        paraWEI=reshape(infillData.para_wei,1,1,nbParaWEI);
+        paraWEI=reshape(infillData.paraWEI,1,1,nbParaWEI);
         paraWEI=repmat(paraWEI,[nbv(1),nbv(2),1]);
         WEI=paraWEI.*repmat(exploitEI,[1 1 nbParaWEI])...
             +(1-paraWEI).*repmat(explorEI,[1 1 nbParaWEI]);
     else
-        WEI=infillData.paraWEI.*exploitEI+(1-infillData.para_wei)*explorEI;
+        WEI=infillData.paraWEI.*exploitEI+(1-infillData.paraWEI)*explorEI;
     end
+    ZI=WEI;
 end
 
 %Expected Improvement (Schonlau 1997)
 if calcEI
     EI=exploitEI+explorEI;
+    ZI=EI;
 end
 
 %Lower Confidence Bound (Cox et John 1997)
@@ -132,6 +137,7 @@ if calcLCB
     if ~isempty(ixInf)
         LCB(ixInf)=0;
     end
+    ZI=LCB;
 end
 
 % Generalized Expected Improvement (Schonlau 1997)
@@ -173,4 +179,9 @@ if calcGEI
             GEI(:,:,cg+1)=varG.*sum_tmp;
         end
     end
+    ZI=GEI;
 end
+
+%details of the enrichement
+detInfill.exploitEI=exploitEI;
+detInfill.explorEI=explorEI;

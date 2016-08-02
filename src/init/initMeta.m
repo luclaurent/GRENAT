@@ -80,6 +80,7 @@ classdef initMeta < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% infill strategy
         infillOn=false;     %activate/desactivate computation of the infill criterion
+        infillCrit='EI';    %type of criterion used for the infill strategy
         infillParaWEI=0.5;  %parameters for Weighted Expected Improvement
         infillParaGEI=1;    %parameters for Generalized Expected Improvement
         infillParaLCB=0.5;  %parameters for Lower Confidence Bound
@@ -402,6 +403,14 @@ classdef initMeta < handle
                 obj.infillOn=boolIn;
             end
         end
+        function set.infillCrit(obj,charIn)
+            if isG(charIn,'char')
+                if strcmp(obj.infillCrit,charIn)
+                    fprintf(' >>> Infill criterion : %s (previous %s)',charIn,obj.kern);
+                end
+                obj.infillCrit=charIn;
+            end
+        end
         function set.infillParaWEI(obj,doubleIn)
             if checkDouble(doubleIn,obj.infillParaWEI,'Parameter for Weighted EI',0,1)
                 obj.infillParaWEI=doubleIn;
@@ -472,6 +481,7 @@ classdef initMeta < handle
         %update infill struct
         function updateInfill(obj)
             obj.infill.on=obj.infillOn;
+            obj.infill.crit=obj.infillCrit;
             obj.infill.wei=obj.infillParaWEI;
             obj.infill.gei=obj.infillParaGEI;
             obj.infill.lcb=obj.infillParaLCB;
@@ -604,6 +614,7 @@ info.cvFull='Compute all CV criteria';
 info.cvDisp='Display QQ plot CV';
 info.infill='Struct for storing infillment parameters';
 info.infillOn='Activate/desactivate computation of the infill criterion';
+info.infillCrit='Infill criterion';
 info.infillParaWEI='Parameters for Weighted Expected Improvement';
 info.infillParaGEI='Parameters for Generalized Expected Improvement';
 info.infillParaLCB='Parameters for Lower Confidence Bound';

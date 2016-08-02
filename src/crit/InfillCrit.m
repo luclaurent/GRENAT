@@ -1,20 +1,20 @@
 %% Compute infill criteria EI/WEI/LCB
 % L. LAURENT -- 04/05/2012 -- luc.laurent@lecnam.net
 
-%     GRENAT - GRadient ENhanced Approximation Toolbox 
+%     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
 %     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
-% 
+%
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
 %     (at your option) any later version.
-% 
+%
 %     This program is distributed in the hope that it will be useful,
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
+%
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -40,12 +40,12 @@ explorEI=[];
 
 if isfield(infillData,'crit')
     if ~isempty(infillData.crit)
-    if ismember('EI',infillData.crit);calcEI=true;calcExploit=true;calcExplor=true;end
-    if ismember('WEI',infillData.crit);calcWEI=true;calcExploit=true;calcExplor=true;end
-    if ismember('GEI',infillData.crit);calcGEI=true;calcExploit=true;calcExplor=true;end
-    if ismember('LCB',infillData.crit);calcLCB=true;end
-    if ismember('exploitEI',infillData.crit);calcExploit=true;end
-    if ismember('explorEI',infillData.crit);calcExplor=true;end
+        if ismember('EI',infillData.crit);calcEI=true;calcExploit=true;calcExplor=true;end
+        if ismember('WEI',infillData.crit);calcWEI=true;calcExploit=true;calcExplor=true;end
+        if ismember('GEI',infillData.crit);calcGEI=true;calcExploit=true;calcExplor=true;end
+        if ismember('LCB',infillData.crit);calcLCB=true;end
+        if ismember('exploitEI',infillData.crit);calcExploit=true;end
+        if ismember('explorEI',infillData.crit);calcExplor=true;end
     end
 else
     calcEI=true;
@@ -96,7 +96,7 @@ if calcExploit || calcEI || calcWEI
     exploitEI=diffEI.*cumDist;
 end
 
-%deal with specific case: variance lower than 0 or close to 0 
+%deal with specific case: variance lower than 0 or close to 0
 if ~isempty(ixInf)
     u(ixInf)=0;
     if calcExplor || calcEI || calcWEI
@@ -128,7 +128,7 @@ end
 %Lower Confidence Bound (Cox et John 1997)
 if calcLCB
     LCB=Z-infillData.para_lcb*respStd;
-    %deal with specific case: variance lower than 0 or close to 0 
+    %deal with specific case: variance lower than 0 or close to 0
     if ~isempty(ixInf)
         LCB(ixInf)=0;
     end

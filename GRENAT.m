@@ -225,7 +225,7 @@ classdef GRENAT < handle
                 end
             end
         end
-        %reset normalisation state
+                %reset normalisation state
         function resetNorm(obj)
             obj.normSamplePtsIn=false;
             obj.normRespIn=false;
@@ -269,7 +269,7 @@ classdef GRENAT < handle
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %evaluation of the metamodels
             if obj.runEval
-                %normalization of the input data
+                 %normalization of the input data
                 obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePts);
                 %evaluation of the metamodel
                 [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta);
@@ -290,6 +290,32 @@ classdef GRENAT < handle
                 Z=obj.nonsampleResp;
                 GZ=obj.nonsampleGrad;
                 variance=obj.nonsampleVar;
+            end
+        end
+        %check interpolation
+        function [ZI,detI]=evalInfill(obj,nonsamplePts)
+            %store non sample points
+            if nargin>1;obj.nonsamplePts=nonsamplePts;end
+            %evaluation
+            eval(obj);
+            %smallest response
+            respMin=min(obj.resp);
+            %computation of infill criteria
+            ZI=[];
+            if ~isempty(obj.nonsampleVar)
+                [ZI,detI]=InfillCrit(respMin,obj.nonsampleResp,obj.nonsampleVar,obj.confMeta.infill);
+            end
+        end
+            
+        %check interpolation
+        function [statusR,statusG]=checkInterp(obj)
+            statusR=true;statusG=true;
+            %evaluation of the approximation at the sample points
+            [Z,GZ]=obj.eval(obj.sampling);
+            %check interpolation
+            statusR=checkInterpRG(obj.resp,Z,'resp');
+            if  obj.dataTrain.used.availGrad
+                statusG=checkInterpRG(obj.grad,GZ,'grad');
             end
         end
         %evaluate the CI of the metamodel

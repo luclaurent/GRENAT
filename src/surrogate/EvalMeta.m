@@ -43,7 +43,7 @@ nv=size(evalSample);
 nv(3)=size(evalSample,3);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%reordering non-sample points
+%sorting non-sample points
 if np>1
     % if the non-sample points corresponds to a grid
     if nv(3)~=1
@@ -65,26 +65,10 @@ else
 end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
-%normalisation of the sample points
-if dataTrain.norm.on
-    reqRespN=NormRenorm(reqResp,'norm',dataTrain.norm.sampling);
-else
-    reqRespN=reqResp;
-end
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
 %variables for storage
-if np>1
-    varResp=zeros(size(reqRespN,1),1);
-    valRespN=varResp;
-    valGrad=zeros(nbReqEval,np);
-    valGradN=valGrad;
-else
-    varResp=[];
-    valRespN=[];
-    valGrad=[];
-    valGradN=[];
-end
+valResp=zeros(nbReqEval,1);
+varResp=zeros(nbReqEval,1);
+valGrad=zeros(nbReqEval,np);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 if nbReqEval>1&&Verb
@@ -125,102 +109,39 @@ switch metaConf.type
     case 'SWF'
         %% Evaluation of the 'Shepard Weighting Functions' surrogate model
         for jj=1:nbReqEval
-            [valRespN(jj),G]=SWFEval(reqRespN(jj,:),dataTrain);
-            valGradN(jj,:)=G;
+            [valResp(jj),G]=SWFEval(reqResp(jj,:),dataTrain);
+            valGrad(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case {'GRBF','RBF','InRBF'}
         %% Evaluation of the (Gradient-Enhanced) Radial Basis Functions (RBF/GRBF)
         parfor (jj=1:nbReqEval,numWorkers)
-            [valRespN(jj),G,varResp(jj)]=RBFEval(reqRespN(jj,:),dataTrain);
-            valGradN(jj,:)=G;
-        end
-        %% check interpolation
-        if metaConf.checkInterp
-            parfor (jj=1:size(samplingU,1),numWorkers)
-                [checkZN(jj),G]=RBFEval(samplingU(jj,:),dataTrain);
-                checkGZN(jj,:)=G;
-            end
-            if dataTrain.norm.on;
-                checkZ=NormRenorm(checkZN,'renorm',dataTrain.norm.resp);
-            else
-                checkZ=checkZN;
-            end
-            checkInterp(respI,checkZ,'resp')
-            if dataTrain.used.availGrad
-                if dataTrain.norm.on;
-                    checkGZ=NormRenormG(checkGZN,'renorm',dataTrain.norm.sampling,dataTrain.norm.resp);
-                else
-                    checkGZ=checkGZN;
-                end
-                checkInterp(gradI,checkGZ,'grad')
-            end
+            [valResp(jj),G,varResp(jj)]=RBFEval(reqResp(jj,:),dataTrain);
+            valGrad(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case {'KRG','GKRG','InKRG'}
         %specific storage
-        stoZN=valRespN;trZN=valRespN;
-        trGZN=valGradN;stoGZN=valGradN;
+        stoZ=valResp;trZ=valResp;
+        trGZ=valGrad;stoGZ=valGrad;
         %% Evaluation of the (Gradient-Enhanced) Kriging/Cokriging (KRG/GKRG)
         %parfor (jj=1:nbReqEval,numWorkers)
-        for jj=1:nbReqEval
-            [valRespN(jj),G,varResp(jj),detKRG]=KRGEval(reqRespN(jj,:),dataTrain);
-            valGradN(jj,:)=G;
-            stoZN(jj)=detKRG.stoZ;
-            trZN(jj)=detKRG.trZ;
-            trGZN(jj,:)=detKRG.trGZ;
-            stoGZN(jj,:)=detKRG.stoGZ;
-        end
-        %% check interpolation
-        if metaConf.checkInterp
-            parfor (jj=1:size(samplingU,1),numWorkers)
-                [checkZN(jj),G]=KRGEval(samplingU(jj,:),dataTrain);
-                checkGZN(jj,:)=G;
-            end
-            if dataTrain.norm.on;
-                checkZ=NormRenorm(checkZN,'renorm',dataTrain.norm.resp);
-            else
-                checkZ=checkZN;
-            end
-            checkInterp(respI,checkZ,'resp')
-            if dataTrain.used.availGrad
-                if dataTrain.norm.on;
-                    checkGZ=NormRenormG(checkGZN,'renorm',dataTrain.norm.sampling,dataTrain.norm.resp);
-                else
-                    checkGZ=checkGZN;
-                end
-                checkInterp(gradI,checkGZ,'grad')
-            end
+        parfor (jj=1:nbReqEval,numWorkers)
+            [valResp(jj),G,varResp(jj),detKRG]=KRGEval(reqResp(jj,:),dataTrain);
+            valGrad(jj,:)=G;
+            stoZ(jj)=detKRG.stoZ;
+            trZ(jj)=detKRG.trZ;
+            trGZ(jj,:)=detKRG.trGZ;
+            stoGZ(jj,:)=detKRG.stoGZ;
         end
     case {'SVR','InSVR','GSVR'}
         %% Evaluation of the (Gradient-Enhanced) SVR (SVR/GSVR)
         %parfor (jj=1:nbReqEval,numWorkers)
-        for jj=1:nbReqEval
-            [valRespN(jj),G,varResp(jj)]=SVREval(reqRespN(jj,:),dataTrain);
-            valGradN(jj,:)=G;
-        end
-        %% check interpolation
-        if metaConf.checkInterp
-            parfor (jj=1:size(samplingU,1),numWorkers)
-                [checkZN(jj),G]=SVREval(samplingU(jj,:),dataTrain);
-                checkGZN(jj,:)=G;
-            end
-            if dataTrain.norm.on;
-                checkZ=NormRenorm(checkZN,'renorm',dataTrain.norm.resp);
-            else
-                checkZ=checkZN;
-            end
-            checkInterp(respI,checkZ,'resp')
-            if dataTrain.used.availGrad
-                if dataTrain.norm.on;
-                    checkGZ=NormRenormG(checkGZN,'renorm',dataTrain.norm.sampling,dataTrain.norm.resp);
-                else
-                    checkGZ=checkGZN;
-                end
-                checkInterp(gradI,checkGZ,'grad')
-            end
+        parfor (jj=1:nbReqEval,numWorkers)
+            [valResp(jj),G,varResp(jj)]=SVREval(reqResp(jj,:),dataTrain);
+            valGrad(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
@@ -228,16 +149,8 @@ switch metaConf.type
     case 'DACE'
         %% Evaluation du metamodele de Krigeage (DACE)
         for jj=1:nbReqEval
-            [valRespN(jj),G,varResp(jj)]=predictor(reqRespN(jj,:),dataTrain.model);
-            valGradN(jj,:)=G;
-        end
-        %% check interpolation
-        if metaConf.checkInterp
-            parfor (jj=1:size(samplingU,1),numWorkers)
-                [checkZN(jj),G]=predictor(samplingU(jj,:),dataTrain.model);
-                checkGZN(jj,:)=G;
-            end
-            checkInterp(respU,checkZN,'resp')
+            [valResp(jj),G,varResp(jj)]=predictor(reqResp(jj,:),dataTrain.model);
+            valGrad(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
@@ -245,10 +158,10 @@ switch metaConf.type
         for degre=dataTrain.deg
             %% Evaluation of the polynomial regression surrogate model
             parfor (jj=1:nbReqEval,numWorkers)
-                valRespN(jj)=LSEval(dataTrain.prg.coef,reqRespN(jj,1),evalSample(jj,2),dataTrain);
+                valResp(jj)=LSEval(dataTrain.prg.coef,reqResp(jj,1),evalSample(jj,2),dataTrain);
                 %calculation of the gradients
-                [GRG1,GRG2]=LSEvalD(dataTrain.prg.coef,reqRespN(jj,1),evalSample(jj,2),dataTrain);
-                valGradN(jj,:)=[GRG1,GRG2];
+                [GRG1,GRG2]=LSEvalD(dataTrain.prg.coef,reqResp(jj,1),evalSample(jj,2),dataTrain);
+                valGrad(jj,:)=[GRG1,GRG2];
             end
         end
         %%%%%%%%=================================%%%%%%%%
@@ -256,78 +169,22 @@ switch metaConf.type
     case 'ILIN'
         %% interpolation using linear shape functions
         parfor (jj=1:nbReqEval,numWorkers)
-            [valRespN(jj),G]=LInterpEval(reqRespN(jj,:),dataTrain);
-            valGradN(jj,:)=G;
+            [valResp(jj),G]=LInterpEval(reqResp(jj,:),dataTrain);
+            valGrad(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'ILAG'
         %% interpolation using linear shape functions based on Lagrange polynoms
         parfor (jj=1:nbReqEval,numWorkers)
-            [valRespN(jj),G]=LagInterpEval(reqRespN(jj,:),dataTrain);
-            valGradN(jj,:)=G;
+            [valResp(jj),G]=LagInterpEval(reqResp(jj,:),dataTrain);
+            valGrad(jj,:)=G;
             
         end
     otherwise
         error(['Wrong type of surrogate model (see. on ',mfilename,')']);
         
 end
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-% compute infill criteria
-explorEI=[];
-exploitEI=[];
-ei=[];
-wei=[];
-gei=[];
-lcb=[];
-if metaConf.infill.on&&exist('varResp','var')
-    %smallest response
-    respMin=min(respU);
-    %computation of infill criteria
-    [ei,wei,gei,lcb,exploitEI,explorEI]=InfillCrit(respMin,valRespN,varResp,dataTrain.infill);
-end
-
-
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-%%%%%%%%=================================%%%%%%%%
-% Renormalization of the data
-% responses
-if dataTrain.norm.on
-    valResp=NormRenorm(valRespN,'renorm',dataTrain.norm.resp);
-    %specific components
-    if exist('stoZN','var')&&exist('trZN','var')
-        stoZ=NormRenorm(stoZN,'renorm',dataTrain.norm.resp);
-        trZ=NormRenorm(trZN,'renorm',dataTrain.norm.resp);
-    end
-    %gradients
-    if exist('valGradN','var')
-        valGrad=NormRenormG(valGradN,'renorm',dataTrain.norm.sampling,dataTrain.norm.resp);
-        if exist('stoGZN','var')&&exist('trGZN','var')
-            stoGZ=NormRenormG(stoGZN,'renorm',dataTrain.norm.sampling,dataTrain.norm.resp);
-            trGZ=NormRenormG(trGZN,'renorm',dataTrain.norm.sampling,dataTrain.norm.resp);
-        end
-    end
-else
-    valResp=valRespN;
-    if exist('stoZN','var')&&exist('trZN','var')
-        stoZ=stoZN;
-        trZ=trZN;
-    end
-    %gradients
-    if exist('valGradN','var')
-        valGrad=valGradN;
-        if exist('stoGZN','var')&&exist('trGZN','var')
-            stoGZ=stoGZN;
-            trGZ=trGZN;
-        end
-    end
-end
-
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
@@ -429,47 +286,7 @@ end
 
 end
 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% function for checking interpolation
-function checkInterp(ZRef,ZApp,type)
-limitResp=1e-4;
-limitGrad=1e-4;
-switch type
-    case 'resp'
-        diffZ=abs(ZApp-ZRef);
-        IXZcheck=find(diffZ>limitResp);
-        if ~isempty(IXZcheck)
-            fprintf('Interpolation issue (responses)\n')
-            fprintf('Num\t||DiffZ \t||Eval \t\t||Zcheck\n');
-            conc=vertcat(IXZcheck',diffZ(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
-            fprintf('%d\t||%4.2e\t||%4.2e\t||%4.2e\n',conc(:))
-        end
-    case 'grad'
-        diffGZ=abs(ZApp-ZRef);
-        IXGZcheck=find(diffGZ>limitGrad);
-        if ~isempty(IXGZcheck)
-            [IXi,~]=ind2sub(size(diffGZ),IXGZcheck);
-            IXi=unique(IXi);
-            fprintf('Interpolation issue (gradient)\n')
-            nb_var=size(ZApp,2);
-            tt=repmat('\t\t',1,nb_var);
-            fprintf(['Num\t||DiffGZ' tt '||Grad' tt '||GZcheck\n']);
-            conc=[IXi,diffGZ(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
-            tt=repmat('%4.2e\t',1,nb_var);
-            tt=['%d\t||' tt '||' tt '||' tt '\n'];
-            fprintf(tt,conc(:))
-            
-        end
-        diffNG=abs(sqrt(sum(ZRef.^2,2))-sqrt(sum(ZApp.^2,2)));
-        IXNGZverif=find(diffNG>limitGrad);
-        if ~isempty(IXNGZverif)
-            fprintf('Interpolation issue (gradient)\n')
-            fprintf('DiffNG\n')
-            fprintf('%4.2e\n',diffNG(IXNGZverif))
-        end
-end
-end
+
 
 
 

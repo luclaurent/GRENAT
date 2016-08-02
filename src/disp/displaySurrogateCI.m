@@ -19,23 +19,23 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function displaySurrogateCI(Xpts,ic,dispData,Z)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%load default configuration for display
-dispDef=initDisp;
-%deal with missing data 
-fDef=fieldnames(dispDef);
-fAvail=fieldnames(dispData);
-fMiss=setxor(fDef,fAvail);
-%add missing options
-if ~isempty(fMiss)
-    fprintf('Missing display options (add)\n');
-    for ii=1:numel(fMiss)
-        fprintf('%s ',fMiss{ii});
-        dispData.(fMiss{ii})=dispDef.(fMiss{ii});
-    end
-    fprintf('\n')
-end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %load default configuration for display
+% dispDef=initDisp;
+% %deal with missing data 
+% fDef=fieldnames(dispDef);
+% fAvail=fieldnames(dispData);
+% fMiss=setxor(fDef,fAvail);
+% %add missing options
+% if ~isempty(fMiss)
+%     fprintf('Missing display options (add)\n');
+%     for ii=1:numel(fMiss)
+%         fprintf('%s ',fMiss{ii});
+%         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
+%     end
+%     fprintf('\n')
+% end
 
 %new figure or not
 if dispData.newFig

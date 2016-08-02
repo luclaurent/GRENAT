@@ -55,23 +55,23 @@ function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)
 %           * dispData.directory: directory used for saving figures
 %           * dispData.step: step of the grid used for plotting
 %           * dispData.missData: information about the missing data
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Load default options
-dispDef=initDisp;
-%deal with missing options (added to the options structure)
-fDef=fieldnames(dispDef);
-fAvail=fieldnames(dispData);
-fMiss=setxor(fDef,fAvail);
-%adding missing options
-if ~isempty(fMiss)
-    fprintf('Some display options are missing (add its)\n');
-    for ii=1:numel(fMiss)
-        fprintf('%s ',fMiss{ii});
-        dispData.(fMiss{ii})=dispDef.(fMiss{ii});
-    end
-    fprintf('\n');
-end
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %Load default options
+% dispDef=initDisp;
+% %deal with missing options (added to the options structure)
+% fDef=fieldnames(dispDef);
+% fAvail=fieldnames(dispData);
+% fMiss=setxor(fDef,fAvail);
+% %adding missing options
+% if ~isempty(fMiss)
+%     fprintf('Some display options are missing (add its)\n');
+%     for ii=1:numel(fMiss)
+%         fprintf('%s ',fMiss{ii});
+%         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
+%     end
+%     fprintf('\n');
+% end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figHandle=[];

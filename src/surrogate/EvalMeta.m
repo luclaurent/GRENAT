@@ -49,11 +49,7 @@ if np>1
     if nv(3)~=1
         %number a required evaluations
         nbReqEval=prod(nv(1:2));
-        reqResp=zeros(nbReqEval,nv(3));
-        for ll=1:nv(3)
-            tmp=evalSample(:,:,ll);
-            reqResp(:,ll)=tmp(:);
-        end
+        reqResp=reshape(evalSample,[nv(1)*nv(2),nv(3),1]);
     else
         %if not the number a required evaluations is determined
         nbReqEval=nv(1);
@@ -197,17 +193,10 @@ if np>1
     end
     GZ=zeros(nv);
     if nv(3)>1
-        for ll=1:nv(3)
-            tmp=valGrad(:,ll);
-            GZ(:,:,ll)=reshape(tmp,nv(1),nv(2));
-        end
+        GZ=reshape(GZ,[nv(1),nv(2),nv(3)]);
         if exist('stoGZ','var')&&exist('trGZ','var')
-            for ll=1:nv(3)
-                tmp=stoGZ(:,ll);
-                tmp1=trGZ(:,ll);
-                stoGZFinal(:,:,ll)=reshape(tmp,nv(1),nv(2));
-                trGZFinal(:,:,ll)=reshape(tmp1,nv(1),nv(2));
-            end
+            stoGZFinal=reshape(stoGZ,[nv(1),nv(2),nv(3)]);
+            trGZFinal=reshape(trGZ,[nv(1),nv(2),nv(3)]);
         end
     else
         GZ=valGrad;
@@ -217,7 +206,7 @@ if np>1
         end
     end
 else
-    GZ=valGradN;
+    GZ=valGrad;
     if exist('stoGZ','var')&&exist('trGZ','var')
         stoGZFinal=stoGZ;
         trGZFinal=trGZ;
@@ -228,8 +217,6 @@ end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %Storage of evaluations
-
-
 if np>1
     if nv(3)==1
         if exist('stoZFinal','var')&&exist('trZFinal','var')
@@ -238,12 +225,6 @@ if np>1
         end
         Z.Z=valResp;
         if ~isempty(varResp);Z.var=varResp;end
-        if exist('wei','var');if ~isempty(wei);Z.wei=wei;end, end
-        if exist('ei','var');if ~isempty(ei);Z.ei=ei;end, end
-        if exist('gei','var');if ~isempty(gei);Z.gei=gei;end, end
-        if exist('lcb','var');if ~isempty(lcb);Z.lcb=lcb;end, end
-        if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=explorEI;end, end
-        if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=exploitEI;end, end
     else
         if exist('stoZFinal','var')&&exist('trZFinal','var')
             Z.stoZ=reshape(stoZFinal,nv(1),nv(2));
@@ -251,12 +232,6 @@ if np>1
         end
         Z.Z=reshape(valResp,nv(1),nv(2));
         if ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));end
-        if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,nv(1),nv(2),size(wei,3));end, end
-        if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,nv(1),nv(2));end, end
-        if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,nv(1),nv(2),size(gei,3));end, end
-        if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,nv(1),nv(2));end, end
-        if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,nv(1),nv(2));end, end
-        if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,nv(1),nv(2));end, end
     end
 else
     if exist('stoZ','var')&&exist('trZ','var')
@@ -265,12 +240,6 @@ else
     end
     Z.Z=reshape(valResp,nv(1),nv(2));
     if ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));end
-    if exist('wei','var');if ~isempty(wei);Z.wei=reshape(wei,nv(1),nv(2),size(wei,3));end, end
-    if exist('ei','var');if ~isempty(ei);Z.ei=reshape(ei,nv(1),nv(2));end, end
-    if exist('gei','var');if ~isempty(gei);Z.gei=reshape(gei,nv(1),nv(2),size(gei,3));end, end
-    if exist('lcb','var');if ~isempty(lcb);Z.lcb=reshape(lcb,nv(1),nv(2));end, end
-    if exist('explorEI','var');if ~isempty(explorEI);Z.explorEI=reshape(explorEI,nv(1),nv(2));end, end
-    if exist('exploitEI','var');if ~isempty(exploitEI);Z.exploitEI=reshape(exploitEI,nv(1),nv(2));end, end
 end
 Z.GZ=GZ;
 if exist('stoGZFinal','var')==1&&exist('trGZFinal','var')==1

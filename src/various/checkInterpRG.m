@@ -49,8 +49,8 @@ switch type
             IXi=unique(IXi);
             fprintf('Interpolation issue (gradient)\n')
             nb_var=size(ZApp,2);
-            tt=repmat('\t\t',1,nb_var);
-            fprintf(['Num\t||DiffGZ' tt '||Grad' tt '||GZcheck\n']);
+            tt=repmat('\t',1,nb_var);
+            fprintf(['Num\t||DiffGZ' tt '||Grad\t' tt '||GZcheck\n']);
             conc=[IXi,diffGZ(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
             tt=repmat('%4.2e\t',1,nb_var);
             tt=['%d\t||' tt '||' tt '||' tt '\n'];

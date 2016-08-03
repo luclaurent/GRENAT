@@ -73,6 +73,7 @@ classdef GRENAT < handle
         normSamplePtsIn=false; %flag for checking if the input data are normalized
         normRespIn=false; %flag for checking if the input data are normalized
         runMissingData=true; %flag for checking missing data
+        nbSubplot=0; %number of subplot for display
     end
     properties (Access = private,Constant)
         infoProp=affectTxtProp;
@@ -511,55 +512,92 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %display the surrogate model
-        function show(obj,nonsamplePts)
-            if nargin==1;nonsamplePts=[];end
-            %store non sample points
+        function show(obj,varargin)
+            %depending of the kind of data
+            if obj.sizeNonSample(3)==2
+                obj.confDisp.conf('d3',true,'contour',true);
+                %if argument
+                if nargin>1;obj.confDisp.conf(varargin{:});end
+                show2D(obj);
+            elseif obj.sizeNonSample(3)==1
+                obj.confDisp.conf('d3',false,'d2',false);
+                %if argument
+                if nargin>1;obj.confDisp.conf(varargin{:});end
+                show1D(obj);
+            end
+        end
+        function show1D(obj)
             figure;
             %depend if the reference is available or not
             if checkRef(obj);
-                nbSubplot=231;
-                subplot(nbSubplot)
+                obj.nbSubplot=231;
+                subplot(obj.nbSubplot)
                 showRespRef(obj);
-                nbSubplot=nbSubplot+1;subplot(nbSubplot)
+                obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
                 showGradRef(obj);
-                nbSubplot=nbSubplot+1;
+                obj.nbSubplot=obj.nbSubplot+1;
             else
-                nbSubplot=221;
+                obj.nbSubplot=221;
             end
-            nbSubplot=nbSubplot+1;subplot(nbSubplot)
-            showResp(obj,nonsamplePts);
-            nbSubplot=nbSubplot+1;subplot(nbSubplot)
-            showGrad(obj,nonsamplePts);
-            nbSubplot=nbSubplot+1;subplot(nbSubplot)
-            showCI(obj,nonsamplePts);
+            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            showResp(obj);
+            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            showGrad(obj);
+            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            showCI(obj,[]);
+        end
+        function show2D(obj)
+            figure;
+            %depend if the reference is available or not
+            if checkRef(obj);
+                obj.nbSubplot=331;
+                subplot(obj.nbSubplot)
+                showRespRef(obj);
+                obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
+                showGradRef(obj,1);
+                obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
+                showGradRef(obj,2);
+            else
+                obj.nbSubplot=231;
+            end
+            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            showResp(obj);
+            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            showGrad(obj,1);
+            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            showGrad(obj,2);
+            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            showCI(obj,[]);
         end
         %display the reference surface
-        function showRespRef(obj,varargin)
-            %store non sample points
-            if nargin>1;defineRef(obj,varargin{:});end
+        function showRespRef(obj)
             obj.confDisp.title=('Reference');
+            obj.confDisp.conf('samplePts',true);
             displaySurrogate(obj.sampleRef,obj.respRef,obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end
         %display the reference gradients surface
-        function showGradRef(obj,varargin)
-            %store non sample points
-            if nargin>1;defineRef(obj,varargin{:});end
-            obj.confDisp.title=('Gradients Reference');
-            displaySurrogate(obj.sampleRef,obj.respRef,obj.sampling,obj.resp,obj.grad,obj.confDisp);
+        function showGradRef(obj,nbG)
+            %default value
+            if nargin==1;nbG=1;end
+            %remove display of sample points
+            obj.confDisp.conf('samplePts',false,'sampleGrad',false,'gridGrad',false);
+            obj.confDisp.title=(['Gradients Reference /x' num2str(nbG)]);
+            displaySurrogate(obj.sampleRef,obj.gradRef(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end
         %display the response approximated by the metamodel
-        function showResp(obj,nonsamplePts)
-            %store non sample points
-            if nargin>1;obj.nonsamplePts=nonsamplePts;end
+        function showResp(obj)
             obj.confDisp.title=('Approximated responses');
+            obj.confDisp.conf('samplePts',true);
             displaySurrogate(obj.nonsamplePts,obj.nonsampleResp,obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end
         %display the gradients approximated by the metamodel
-        function showGrad(obj,nonsamplePts)
-            %store non sample points
-            if nargin>1;obj.nonsamplePts=nonsamplePts;end
-            obj.confDisp.title=('Approximated gradients');
-            displaySurrogate(obj.nonsamplePts,obj.nonsampleResp,obj.sampling,obj.resp,obj.grad,obj.confDisp);
+        function showGrad(obj,nbG)
+            %default value
+            if nargin==1;nbG=1;end
+            %remove display of sample points
+            obj.confDisp.conf('samplePts',false,'sampleGrad',false,'gridGrad',false);
+            obj.confDisp.title=(['Approximated gradients /x' num2str(nbG)]);
+            displaySurrogate(obj.nonsamplePts,obj.nonsampleGrad(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end
         %display the confidence intervals approximated by the metamodel
         function showCI(obj,ciVal,nonsamplePts)

@@ -64,11 +64,6 @@ else
     end
 end
 %
-if dispTxtOnOff(metaData.infill.on,'>> Infill criteria: ',[],true)
-    fprintf('>> Balancing WEI: ');fprintf('%d ',metaData.infill.paraWEI);fprintf('\n');
-    fprintf('>> Balancing GEI: ');fprintf('%d ',metaData.infill.paraGEI);fprintf('\n');
-    fprintf('>> Balancing LCB: %d\n',metaData.infill.paraLCB);
-end
 fprintf('\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,4 +1,4 @@
-%% Example of use of the GRENAToolbox with the LMTir one
+%% Example of use of the GRENAToolbox with the MultiDOE one
 % L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 

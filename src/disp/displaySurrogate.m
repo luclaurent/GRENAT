@@ -109,6 +109,7 @@ if ~isfield(Z,'GZ');dispData.gridGrad=false;end
 
 %available gradients at sample points
 dispData.sampleGrad=~isempty(grad)&&dispData.sampleGrad;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %seeking and dealing with missing data
@@ -404,7 +405,7 @@ if dispData.on
         %show sample points
         if dispData.samplePts
             hold on;
-            if dispData.gridGrad&&isfield(Z,'GZ');valPlot=grad;else valPlot=resp;end
+            if dispData.sampleGrad;valPlot=grad;else valPlot=resp;end
             %show sample points on which all information is known
             plot(sampling(listPtsOk),valPlot(listPtsOk),...
                 'rs',...

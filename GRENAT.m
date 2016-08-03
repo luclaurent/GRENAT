@@ -531,17 +531,23 @@ classdef GRENAT < handle
             %depend if the reference is available or not
             if checkRef(obj);
                 obj.nbSubplot=231;
-                subplot(obj.nbSubplot)
+                subplot(obj.nbSubplot);
+                obj.confDisp.conf('samplePts',true,'sampleGrad',false);
                 showRespRef(obj);
                 obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
+                %remove display of sample points
+                obj.confDisp.conf('samplePts',true,'sampleGrad',true);
                 showGradRef(obj);
                 obj.nbSubplot=obj.nbSubplot+1;
             else
                 obj.nbSubplot=221;
             end
             obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.confDisp.conf('samplePts',true,'sampleGrad',false);
             showResp(obj);
             obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            %remove display of sample points
+            obj.confDisp.conf('samplePts',true,'sampleGrad',true);
             showGrad(obj);
             obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
             showCI(obj,[]);
@@ -551,9 +557,12 @@ classdef GRENAT < handle
             %depend if the reference is available or not
             if checkRef(obj);
                 obj.nbSubplot=331;
-                subplot(obj.nbSubplot)
+                subplot(obj.nbSubplot);
+                obj.confDisp.conf('samplePts',true);
                 showRespRef(obj);
                 obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
+                %remove display of sample points
+                obj.confDisp.conf('samplePts',false,'sampleGrad',false);
                 showGradRef(obj,1);
                 obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
                 showGradRef(obj,2);
@@ -561,8 +570,11 @@ classdef GRENAT < handle
                 obj.nbSubplot=231;
             end
             obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.confDisp.conf('samplePts',true);
             showResp(obj);
             obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            %remove display of sample points
+            obj.confDisp.conf('samplePts',false,'sampleGrad',false,'gridGrad',false);
             showGrad(obj,1);
             obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
             showGrad(obj,2);
@@ -572,30 +584,24 @@ classdef GRENAT < handle
         %display the reference surface
         function showRespRef(obj)
             obj.confDisp.title=('Reference');
-            obj.confDisp.conf('samplePts',true);
             displaySurrogate(obj.sampleRef,obj.respRef,obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end
         %display the reference gradients surface
         function showGradRef(obj,nbG)
             %default value
             if nargin==1;nbG=1;end
-            %remove display of sample points
-            obj.confDisp.conf('samplePts',false,'sampleGrad',false,'gridGrad',false);
             obj.confDisp.title=(['Gradients Reference /x' num2str(nbG)]);
             displaySurrogate(obj.sampleRef,obj.gradRef(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end
         %display the response approximated by the metamodel
         function showResp(obj)
             obj.confDisp.title=('Approximated responses');
-            obj.confDisp.conf('samplePts',true);
             displaySurrogate(obj.nonsamplePts,obj.nonsampleResp,obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end
         %display the gradients approximated by the metamodel
         function showGrad(obj,nbG)
             %default value
             if nargin==1;nbG=1;end
-            %remove display of sample points
-            obj.confDisp.conf('samplePts',false,'sampleGrad',false,'gridGrad',false);
             obj.confDisp.title=(['Approximated gradients /x' num2str(nbG)]);
             displaySurrogate(obj.nonsamplePts,obj.nonsampleGrad(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
         end

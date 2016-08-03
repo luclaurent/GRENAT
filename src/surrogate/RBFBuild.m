@@ -31,28 +31,28 @@ textf='';
 fprintf('\n%s\n',[textd 'Radial Basis Function ((G)RBF)' textf]);
 %
 fprintf('>>> Building : ');
-if ~isempty(gradIn);fprintf('GRBF \n');else fprintf('RBF \n');end
-fprintf('>>> Kernel function: %s\n',metaData.kern);
+dispTxtOnOff(~isempty(gradIn),'GRBF','RBF',true);
+fprintf('>> Kernel function: %s\n',metaData.kern);
 %
-fprintf('>>> CV: ');if metaData.cv.on; fprintf('Yes\n');else fprintf('No\n');end
-fprintf('>> Computation all CV criteria: ');if metaData.cv.full; fprintf('Yes\n');else fprintf('No\n');end
-fprintf('>> Show CV: ');if metaData.cv.disp; fprintf('Yes\n');else fprintf('No\n');end
+if dispTxtOnOff(metaData.cv.on,'>> CV: ',[],true)
+    dispTxtOnOff(metaData.cv.full,'>> Computation all CV criteria: ',[],true);
+    dispTxtOnOff(metaData.cv.disp,'>> Show CV: ',[],true);
+end
 %
-fprintf('>> Correction of matrix condition:');if metaData.recond; fprintf('Yes\n');else fprintf('No\n');end
+dispTxtOnOff(metaData.recond,'>> Correction of matrix condition:',[],true);
 %
-fprintf('>>> Estimation of the hyperparameters: ');if metaData.para.estim; fprintf('Yes\n');else fprintf('No\n');end
-if metaData.para.estim
-    fprintf('>> Algorithm for estimation: %s\n',metaData.para.method);
-    fprintf('>> Bounds: [%d , %d]\n',metaData.para.l.min,metaData.para.l.max);
+if dispTxtOnOff(metaData.estim.on,'>> Estimation of the hyperparameters: ',[],true)
+    fprintf('>> Algorithm for estimation: %s\n',metaData.estim.method);
+    fprintf('>> Bounds: [%d , %d]\n',metaData.para.l.Min,metaData.para.l.Max);
     switch metaData.kern
         case {'expg','expgg'}
-            fprintf('>> Bounds for exponent: [%d , %d]\n',metaData.para.p.min,metaData.para.p.max);
+            fprintf('>> Bounds for exponent: [%d , %d]\n',metaData.para.p.Min,metaData.para.p.Max);
         case 'matern'
-            fprintf('>> Bounds for nu (Matern): [%d , %d]\n',metaData.para.nu.min,metaData.para.nu.max);
+            fprintf('>> Bounds for nu (Matern): [%d , %d]\n',metaData.para.nu.Min,metaData.para.nu.Max);
     end
-    fprintf('>> Anisotropy: ');if metaData.para.aniso; fprintf('Yes\n');else fprintf('No\n');end
-    fprintf('>> Show estimation steps in console: ');if metaData.para.dispIterCmd; fprintf('Yes\n');else fprintf('No\n');end
-    fprintf('>> Plot estimation steps: ');if metaData.para.dispIterGraph; fprintf('Yes\n');else fprintf('No\n');end
+    dispTxtOnOff(metaData.estim.aniso,'>> Anisotropy: ',[],true);
+    dispTxtOnOff(metaData.estim.dispIterCmd,'>> Show estimation steps in console: ',[],true);
+    dispTxtOnOff(metaData.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
 else
     fprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
     switch metaData.kern
@@ -65,19 +65,6 @@ else
     end
 end
 %
-fprintf('>>> Infill criteria: ');
-if metaData.infill.on;
-    fprintf('%s\n','Yes');
-    fprintf('>> Balancing WEI: ')
-    fprintf('%d ',metaData.infill.paraWEI);
-    fprintf('\n')
-    fprintf('>> Balancing GEI: ')
-    fprintf('%d ',metaData.infill.paraGEI);
-    fprintf('\n')
-    fprintf('>> Balancing LCB: %d\n',metaData.infill.paraLCB);
-else
-    fprintf('%s\n','No');
-end
 fprintf('\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -233,7 +220,7 @@ CvOld=metaData.cv;
 dispCvOld=metaData.cv.disp;
 metaData.cv.disp=false;
 
-if metaData.para.estim&&metaData.para.dispEstim
+if metaData.estim.on&&metaData.estim.disp
     valPara=linspace(metaData.para.l.min,metaData.para.l.max,50);
     % load progress bar
     cpb = ConsoleProgressBar();
@@ -319,31 +306,31 @@ metaData.cv=CvOld;
 %%Building of the various elements with and without estimation of the
 %%hyperparameters if no estimation the values of the hyperparameters are
 %%chosen using empirical choice of  Hardy/Franke
-if metaData.para.estim
+if metaData.estim.on
     paraEstim=EstimPara(ret,metaData,'RBFBloc');
     ret.build.paraEstim=paraEstim;
-    metaData.para.l.val=paraEstim.l.val;
-    metaData.para.val=paraEstim.val;
+    metaData.para.l.Val=paraEstim.l.Val;
+    metaData.para.Val=paraEstim.Val;
     if isfield(paraEstim,'p')
-        metaData.para.p.val=paraEstim.p.val;
+        metaData.para.p.Val=paraEstim.p.Val;
     end
     if isfield(paraEstim,'nu')
-        metaData.para.nu.val=paraEstim.nu.val;
+        metaData.para.nu.Val=paraEstim.nu.Val;
     end
 else
     valL=RBFComputePara(samplingIn,metaData);
     if numel(valL)==1;
-        metaData.para.l.val=valL*ones(1,np);
+        metaData.para.l.Val=valL*ones(1,np);
     else
-        metaData.para.l.val=valL;
+        metaData.para.l.Val=valL;
     end
     switch metaData.kern
         case {'expg','expgg'}
-            metaData.para.val=[metaData.para.l.val metaData.para.p.val];
+            metaData.para.val=[metaData.para.l.Val metaData.para.p.Val];
         case {'matern'}
-            metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
+            metaData.para.val=[metaData.para.l.Val metaData.para.nu.Val];
         otherwise
-            metaData.para.val=metaData.para.l.val;
+            metaData.para.val=metaData.para.l.Val;
     end
 end
 
@@ -361,6 +348,25 @@ if availGrad;txt='GRBF';else txt='RBF';end
 fprintf('\n >> END Building %s\n',txt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end
+
+%% function for display information
+function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)
+boolOut=boolIn;
+if nargin==2
+    txtInFalse=[];
+    returnLine=false;
+elseif nargin==3
+    returnLine=false;
+end
+if isempty(txtInFalse)
+    fprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else fprintf('No');end
+else
+    if boolIn; fprintf('%s',txtInTrue);else fprintf('%s',txtInFalse);end
+end
+if returnLine
+    fprintf('\n')
+end
 end
 
 

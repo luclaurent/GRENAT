@@ -353,20 +353,20 @@ if metaData.estim.on
     metaData.para.l.Val=paraEstim.l.Val;
     metaData.para.Val=paraEstim.Val;
     if isfield(paraEstim,'p')
-        metaData.para.p.val=paraEstim.p.Val;
+        metaData.para.p.Val=paraEstim.p.Val;
     end
     if isfield(paraEstim,'nu')
-        metaData.para.nu.val=paraEstim.nu.Val;
+        metaData.para.nu.Val=paraEstim.nu.Val;
     end
 else
     %w/o estimation, the initial values of hyperparameters are chosen
     switch metaData.kern
         case {'expg','expgg'}
-            metaData.para.val=[metaData.para.l.val metaData.para.p.val];
+            metaData.para.Val=[metaData.para.l.Val metaData.para.p.Val];
         case {'matern'}
-            metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
+            metaData.para.Val=[metaData.para.l.Val metaData.para.nu.Val];
         otherwise
-            metaData.para.val=metaData.para.l.val;
+            metaData.para.Val=metaData.para.l.Val;
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

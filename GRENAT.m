@@ -192,10 +192,10 @@ classdef GRENAT < handle
                         obj.normStdR=infoDataR.std;
                         obj.normRespIn=true;
                     case 'SamplePts'
-                        dataOut=NormRenorm(dataIn,'norm',infoDataR);
+                        dataOut=NormRenorm(dataIn,'norm',infoDataS);
                     case 'Resp'
                         dataOut=NormRenorm(dataIn,'norm',infoDataR);
-                    case 'grad'                        
+                    case 'Grad'                        
                         dataOut=NormRenormG(dataIn,'norm',infoDataS,infoDataR);
                 end
             else
@@ -216,7 +216,7 @@ classdef GRENAT < handle
                         dataOut=NormRenorm(dataIn,'renorm',infoDataS);
                     case 'Resp'
                         dataOut=NormRenorm(dataIn,'renorm',infoDataR);
-                    case 'grad'
+                    case 'Grad'
                         dataOut=NormRenormG(dataIn,'renorm',infoDataS,infoDataR);
                 end
             else
@@ -246,7 +246,7 @@ classdef GRENAT < handle
             %normalization of the input data
             normInputData(obj,'initSamplePts');
             normInputData(obj,'initResp');
-            obj.gradN=normInputData(obj,'grad',obj.grad);
+            obj.gradN=normInputData(obj,'Grad',obj.grad);
             %check if data are missing
             checkMissingData(obj);
             %store normalization data
@@ -279,7 +279,7 @@ classdef GRENAT < handle
                 obj.nonsampleVar=K.var;
                 %renormalization of the data
                 obj.nonsampleResp=reNormInputData(obj,'Resp',obj.nonsampleRespN);
-                obj.nonsampleGrad=reNormInputData(obj,'grad',obj.nonsampleGradN);
+                obj.nonsampleGrad=reNormInputData(obj,'Grad',obj.nonsampleGradN);
                 %update flags
                 obj.runEval=false;
                 obj.runErr=true;
@@ -381,7 +381,7 @@ classdef GRENAT < handle
             if ~execOk
                 fprintf('Wrong syntax for the method\n')
                 fprintf('defineref(sampleRef,respRef,gradRef)\n')
-                fprintf('or sortConf(''sampleRef'',val1,''respRef'',val2,''gradRef'',val3)\n')
+                fprintf('or defineref(''sampleRef'',val1,''respRef'',val2,''gradRef'',val3)\n')
             end
         end
         %check if all data is available for displaying the reference

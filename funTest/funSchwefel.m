@@ -54,9 +54,12 @@ if ~isempty(xx)
             cal=xxx.*sin(sqrt(abs(xxx)))+yyy.*sin(sqrt(abs(yyy)));
             p=coef*nbvar-cal;
             if nargout==2||dem
-                dp(:,:,1)=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
-                
-                dp(:,:,2)=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
+                dpX=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
+                iXZ=find(abs(xxx)<eps);dpX(iXZ)=0;
+                dpY=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
+                iXZ=find(abs(yyy)<eps);dpY(iXZ)=0;
+                dp(:,:,1)=dpX;
+                dp(:,:,2)=dpY;
             end
         end
         
@@ -66,7 +69,7 @@ if ~isempty(xx)
         
         if nargout==2||dem
             dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
-            iXZ=find(xx<eps);dp(iXZ)=0;
+            iXZ=find(abs(xx)<eps);dp(iXZ)=0;
         end
         
     end

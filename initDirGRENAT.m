@@ -53,7 +53,7 @@ elseif nargin>1
 end
 %if no specified directory
 if ~specifDir
-    pathcustom=pwd;
+    pathcustom=strrep(mfilename('fullpath'),mfilename,'');
 end
 
 %absolute paths

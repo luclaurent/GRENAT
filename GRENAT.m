@@ -84,6 +84,8 @@ classdef GRENAT < handle
         function obj=GRENAT(typeIn,samplingIn,respIn,gradIn)
             %load directories on the path
             initDirGRENAT;
+            %
+            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
             fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
             fprintf(' Create GRENAT Object \n')
             %the date and time

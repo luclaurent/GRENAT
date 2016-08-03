@@ -137,7 +137,7 @@ classdef initMeta < handle
         function set.type(obj,charIn)
             if isG(charIn,'char')
                 if ismember(charIn,obj.typeAvail)
-                    if strcmp(obj.type,charIn)
+                    if ~strcmp(obj.type,charIn)
                         fprintf(' >>> Type of metamodel : %s (previous %s)',charIn,obj.type);
                     end
                     obj.type=charIn;

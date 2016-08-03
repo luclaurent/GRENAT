@@ -32,10 +32,15 @@ classdef GRENAT < handle
         nonsamplePts=[];
         nonsampleResp=[];
         nonsampleGrad=[];
+        nonsamplePtsOrder=[];
+        nonsampleRespOrder=[];
+        nonsampleGradOrder=[];
         nonsamplePtsN=[];
         nonsampleRespN=[];
         nonsampleGradN=[];
+        sizeNonSample=zeros(1,3);
         nonsampleVar=[];
+        nonsampleVarOrder=[];
         nonsampleCI=struct('ci68',[],'ci95',[],'ci98',[]);
         nonsampleEI=[];
         %normalization data
@@ -101,7 +106,7 @@ classdef GRENAT < handle
         function set.sampling(obj,samplingIn)
             if ~isempty(samplingIn)
                 obj.sampling=samplingIn;
-                obj.runTrain=true;
+                initRunTrain(obj,true);
                 resetNorm(obj);
             else
                 fprintf('ERROR: Empty array of sample points\n');
@@ -111,7 +116,7 @@ classdef GRENAT < handle
         function set.resp(obj,respIn)
             if ~isempty(respIn)
                 obj.resp=respIn;
-                obj.runTrain=true;
+                initRunTrain(obj,true);
             else
                 fprintf('ERROR: Empty array of responses\n');
             end
@@ -120,15 +125,15 @@ classdef GRENAT < handle
         function set.grad(obj,gradIn)
             if ~isempty(gradIn)
                 obj.grad=gradIn;
-                obj.runTrain=true;
-                obj.gradAvail=true;
+                initRunTrain(obj,true);
+                initGradAvail(obj,true);
             end
         end
         %setter for the non sample points
         function set.nonsamplePts(obj,samplingIn)
             if ~isempty(samplingIn)
                 obj.nonsamplePts=samplingIn;
-                obj.runEval=true;
+                initRunEval(obj,true);
             end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -140,20 +145,24 @@ classdef GRENAT < handle
         function type=get.type(obj)
             type=obj.confMeta.type;
         end
+        %setter for the non sample points
+        function PtS=get.nonsamplePtsOrder(obj)
+            PtS=orderData(obj,obj.nonsamplePts,'sampleIn');
+        end
         %getter for the responses at the non sample points
         function Z=get.nonsampleResp(obj)
             if obj.runEval;eval(obj);end
-            Z=obj.nonsampleResp;
+            Z=orderData(obj,obj.nonsampleRespOrder,'respOut');
         end
         %getter for the gradients at the non sample points
         function GZ=get.nonsampleGrad(obj)
             if obj.runEval;eval(obj);end
-            GZ=obj.nonsampleGrad;
+            GZ=orderData(obj,obj.nonsampleGradOrder,'gradOut');
         end
         %getter for the variance at the non sample points
         function variance=get.nonsampleVar(obj)
             if obj.runEval;eval(obj);end
-            variance=obj.nonsampleVar;
+            variance=orderData(obj,obj.nonsampleVarOrder,'respOut');
         end
         %getter for error values
         function err=get.err(obj)
@@ -173,6 +182,48 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %initialize flags
+        function initRunTrain(obj,flag)
+            obj.runTrain=flag;
+        end
+        function initGradAvail(obj,flag)
+            obj.gradAvail=flag;
+        end
+        function initRunEval(obj,flag)
+            obj.runEval=flag;
+        end
+        %ordering data (for manipulating nd-arrays)
+        function dataOut=orderData(obj,dataIn,type)
+            switch type
+                case 'sampleIn'
+                    %size of the input data
+                    obj.sizeNonSample=[size(dataIn,1),size(dataIn,2),size(dataIn,3)];
+                    %in the case of nd-array
+                    if obj.sizeNonSample(3)>1
+                        dataOut=reshape(dataIn,[ obj.sizeNonSample(1)*obj.sizeNonSample(2),obj.sizeNonSample(3),1]);
+                    else
+                        dataOut=dataIn;
+                    end
+                case 'sampleOut'
+                    if obj.sizeNonSample(3)>1
+                        dataOut=reshape(dataIn,[ obj.sizeNonSample(1),obj.sizeNonSample(2),obj.sizeNonSample(3)]);
+                    else
+                        dataOut=dataIn;
+                    end
+                case 'respOut'
+                    if obj.sizeNonSample(3)>1
+                        dataOut=reshape(dataIn,[ obj.sizeNonSample(1),obj.sizeNonSample(2)]);
+                    else
+                        dataOut=dataIn;
+                    end
+                case 'gradOut'
+                    if obj.sizeNonSample(3)>1
+                        dataOut=reshape(dataIn,[ obj.sizeNonSample(1),obj.sizeNonSample(2),obj.sizeNonSample(3)]);
+                    else
+                        dataOut=dataIn;
+                    end
+            end
+        end
         %Normalization of the input data
         function dataOut=normInputData(obj,type,dataIn)
             if obj.confMeta.normOn
@@ -195,7 +246,7 @@ classdef GRENAT < handle
                         dataOut=NormRenorm(dataIn,'norm',infoDataS);
                     case 'Resp'
                         dataOut=NormRenorm(dataIn,'norm',infoDataR);
-                    case 'Grad'                        
+                    case 'Grad'
                         dataOut=NormRenormG(dataIn,'norm',infoDataS,infoDataR);
                 end
             else
@@ -225,7 +276,7 @@ classdef GRENAT < handle
                 end
             end
         end
-                %reset normalisation state
+        %reset normalisation state
         function resetNorm(obj)
             obj.normSamplePtsIn=false;
             obj.normRespIn=false;
@@ -269,29 +320,25 @@ classdef GRENAT < handle
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %evaluation of the metamodels
             if obj.runEval
-                 %normalization of the input data
-                obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePts);
+                %normalization of the input data
+                obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePtsOrder);
                 %evaluation of the metamodel
                 [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta);
                 %store data from the evaluation
                 obj.nonsampleRespN=K.Z;
                 obj.nonsampleGradN=K.GZ;
-                obj.nonsampleVar=K.var;
+                obj.nonsampleVarOrder=K.var;
                 %renormalization of the data
-                obj.nonsampleResp=reNormInputData(obj,'Resp',obj.nonsampleRespN);
-                obj.nonsampleGrad=reNormInputData(obj,'Grad',obj.nonsampleGradN);
+                obj.nonsampleRespOrder=reNormInputData(obj,'Resp',obj.nonsampleRespN);
+                obj.nonsampleGradOrder=reNormInputData(obj,'Grad',obj.nonsampleGradN);
                 %update flags
                 obj.runEval=false;
                 obj.runErr=true;
-                %extract unnormalized data
-                Z=obj.nonsampleResp;
-                GZ=obj.nonsampleGrad;
-                variance=obj.nonsampleVar;
-            else
-                Z=obj.nonsampleResp;
-                GZ=obj.nonsampleGrad;
-                variance=obj.nonsampleVar;
             end
+            %extract unnormalized data
+            Z=obj.nonsampleResp;
+            GZ=obj.nonsampleGrad;
+            variance=obj.nonsampleVar;
         end
         %check interpolation
         function [ZI,detI]=evalInfill(obj,nonsamplePts)
@@ -307,7 +354,6 @@ classdef GRENAT < handle
                 [ZI,detI]=InfillCrit(respMin,obj.nonsampleResp,obj.nonsampleVar,obj.confMeta.infill);
             end
         end
-            
         %check interpolation
         function [statusR,statusG]=checkInterp(obj)
             statusG=true;
@@ -418,7 +464,7 @@ classdef GRENAT < handle
             %display error messages
             if ~okSample;fprintf('>> Wrong definition of the reference sample points\n');end
             if ~okResp;fprintf('>> Wrong definition of the reference responses\n');end
-            if ~okGrad;keyboard;fprintf('>> Wrong definition of the reference gradients\n');end
+            if ~okGrad;fprintf('>> Wrong definition of the reference gradients\n');end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -390,10 +390,10 @@ ret.build.lilog=lilog;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Cross-validation (compute various errors)
 if metaData.cv.on
-    countTime=mesuTime;
-    [ret.build.cv]=KRGCV(ret,metaData);
+    %countTime=mesuTime;
     fprintf(' > Computation CV\n');
-    countTime.stop;
+    [ret.build.cv]=KRGCV(ret,metaData);
+    %countTime.stop;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

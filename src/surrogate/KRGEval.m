@@ -112,9 +112,9 @@ if metaData.used.availGrad
     end
 else
     if calcGrad  %if the gradients will be computed
-        [rr,jr]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+        [rr,jr]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
     else %otherwise
-        rr=feval(metaData.build.kern,distS,metaData.build.para.val);
+        rr=feval(metaData.build.kern,distS,metaData.build.para.Val);
     end
     %if missing data
     if metaData.miss.resp.on

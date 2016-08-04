@@ -77,7 +77,7 @@ The obtained documentation is available [here](https://goo.gl/FlnVAK).
 
 References
 ----
-Approachs available in this toolbox are presented in the following documents:
+Available approachs of this toolbox are presented in the following documents:
 
 * [Luc Laurent PhD Thesis](https://tel.archives-ouvertes.fr/tel-00972299) in french
 * L. Laurent, P.-A. Boucard, and B. Soulier. Generation of a cokriging metamodel using a multiparametric strategy. *Computational Mechanics*, 51(2):151–169, February 2013. doi: [10.1007/s00466-012-0711-0](https://dx.doi.org/10.1007/s00466-012-0711-0)

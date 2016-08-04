@@ -55,7 +55,7 @@ distS=repmat(X,ns,1)-sampling;
 if metaData.used.availGrad
     if calcGrad  %if compute gradients
         %evaluate kernel function
-        [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+        [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
         %reordering responses and gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         P=[ev' reshape(dev',1,ns*np)];
@@ -82,7 +82,7 @@ if metaData.used.availGrad
         
     else %otherwise
         %evaluate kernel function
-        [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+        [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
         %reordering responses and gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
         P=[ev' reshape(dev',1,ns*np)];
@@ -93,14 +93,14 @@ if metaData.used.availGrad
     end
 else
     if calcGrad  %if compute gradients        
-        [P,dP]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);P=P';dP=dP';
+        [P,dP]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);P=P';dP=dP';
         %if missing responses
         if metaData.miss.resp.on
             P(metaData.miss.resp.ixMiss)=[];
             dP(:,metaData.miss.resp.ixMiss)=[];
         end
     else %otherwise
-        P=feval(metaData.build.fct,distS,metaData.build.para.val);P=P';
+        P=feval(metaData.build.fct,distS,metaData.build.para.Val);P=P';
         %%if missing responses
         if metaData.miss.resp.on
             P(metaData.miss.resp.ixMiss)=[];

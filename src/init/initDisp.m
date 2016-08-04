@@ -61,6 +61,7 @@ classdef initDisp < handle
             %display message
             fprintf('=========================================\n')
             fprintf(' >>> Initialization of the display configuration\n');
+            fprintf('=========================================\n')
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

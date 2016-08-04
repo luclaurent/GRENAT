@@ -51,7 +51,7 @@ finalStatus=false;
 if nargin>=3
     paraVal=paraValIn;
 else
-    paraVal=metaData.para.val;
+    paraVal=metaData.para.Val;
     finalStatus=true;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

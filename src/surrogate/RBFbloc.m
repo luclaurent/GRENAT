@@ -47,7 +47,7 @@ if nargin>=3
     %in this case, the single required criterion is computed (estimation)
     typeCV='estim';
 else
-    paraVal=metaData.para.val;
+    paraVal=metaData.para.Val;
     typeCV='final';
 end
 metaData.para.l.val=paraVal;

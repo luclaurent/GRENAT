@@ -60,7 +60,7 @@ if nargin==4
 else
     modFinal=true;
 end
-if modFinal;[tMesu,tInit]=mesuTime;end
+if modFinal;countTime=mesuTime;end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load variables
@@ -139,7 +139,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if modDebug    
-    [tMesuDebugA,tInitDebugA]=mesuTime;
+    countTimeA=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %store response at removed point
@@ -250,7 +250,7 @@ if modDebug
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
-    mesuTime(tMesuDebugA,tInitDebugA);
+    countTimeA.stop;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -261,7 +261,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
     
-    [tMesuDebugB,tInitDebugB]=mesuTime;
+    countTimeB=mesuTime;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %store response of the surrogate model at remove sample point
@@ -352,7 +352,7 @@ if (modStudy||modFinal)&&(modDebug||metaData.cv.disp)
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.and.adequ);
     end
-    mesuTime(tMesuDebugB,tInitDebugB);
+    countTimeB.stop;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -361,7 +361,7 @@ end
 %%%CAUTION: not functioning for missing data
 if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
     %
-    [tMesuDebugC,tInitDebugC]=mesuTime;
+    countTimeC=mesuTime;
     %
     cvVarR=zeros(ns,1);
     cvZR=zeros(ns,1);
@@ -428,7 +428,7 @@ if (modStudy||modFinal)&&(metaData.cv.disp||modDebug)
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
     end
-    mesuTime(tMesuDebugC,tInitDebugC);
+    countTimeC.stop;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -437,7 +437,7 @@ end
 %%%CAUTION: not functioning for missing data
 if modFinal
     %
-    [tMesuDebugD,tInitDebugD]=mesuTime;
+    countTimeD=mesuTime;
     %
     cvVarR=zeros(ns,1);
     KK=dataBloc.build.KK;
@@ -469,7 +469,7 @@ if modFinal
         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
     end
-    mesuTime(tMesuDebugD,tInitDebugD);
+    countTimeD.stop;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -507,7 +507,7 @@ end
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if modFinal;mesuTime(tMesu,tInit);end
+if modFinal;countTime.stop;end
 end
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

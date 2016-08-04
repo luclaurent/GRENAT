@@ -111,6 +111,7 @@ classdef initMeta < handle
             %display message
             fprintf('=========================================\n')
             fprintf(' >> Initialization of the metamodel configuration\n');
+            fprintf('=========================================\n')
             %listeners
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%add listener for specific event (execute method after the set
@@ -138,7 +139,7 @@ classdef initMeta < handle
             if isG(charIn,'char')
                 if ismember(charIn,obj.typeAvail)
                     if ~strcmp(obj.type,charIn)
-                        fprintf(' >>> Type of metamodel : %s (previous %s)',charIn,obj.type);
+                        fprintf(' >>> Type of metamodel : %s (previous %s)\n',charIn,obj.type);
                     end
                     obj.type=charIn;
                 else

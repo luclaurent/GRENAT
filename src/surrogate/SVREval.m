@@ -71,7 +71,7 @@ end
 if metaData.used.availGrad
     if calcGrad  %if compute gradients
         %evaluate kernel function
-        [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+        [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
         rr(1:ns)=ev;
         rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
         
@@ -99,7 +99,7 @@ if metaData.used.availGrad
         end
         
     else %otherwise
-        [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+        [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
         rr(1:ns)=ev;
         rr(ns+1:sizeMatVec)=reshape(dev',1,ns*np);
         %if missing data
@@ -113,9 +113,9 @@ if metaData.used.availGrad
     end
 else
     if calcGrad  %if the gradients will be computed
-        [rr,jr]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+        [rr,jr]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
     else %otherwise
-        rr=feval(metaData.build.kern,distS,metaData.build.para.val);
+        rr=feval(metaData.build.kern,distS,metaData.build.para.Val);
     end
     %if missing data
     if metaData.miss.resp.on

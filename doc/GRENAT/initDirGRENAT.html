@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="../GRENAT/src/libs/MultiDOE/initDirMultiDOE.html" class="code" title="function foldersLoad=initDirMultiDOE(pathcustom,other)">initDirMultiDOE</a>	MultiDOE - Toolbox for sampling a bounded space</li><li><a href="../GRENAT/src/libs/initMatlab2tikz.html" class="code" title="function initMatlab2tikz(pathCustom)">initMatlab2tikz</a>	% Initialization of the matlab2tikz's files (MATLAB's path)</li></ul>
+<li><a href="../GRENAT/src/libs/initMatlab2tikz.html" class="code" title="function initMatlab2tikz(pathCustom)">initMatlab2tikz</a>	% Initialization of the matlab2tikz's files (MATLAB's path)</li><li><a href="../GRENAT/src/libs/multidoe/initDirMultiDOE.html" class="code" title="function foldersLoad=initDirMultiDOE(pathcustom,other)">initDirMultiDOE</a>	% Initialization of the directories (MATLAB's path)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li><li><a href="../GRENAT/src/various/buildDocGRENAT.html" class="code" title="">buildDocGRENAT</a>	% Build documentation (using m2html library)</li></ul>
+<li><a href="ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the MultiDOE one</li><li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="../GRENAT/src/various/buildDocGRENAT.html" class="code" title="">buildDocGRENAT</a>	% Build documentation (using m2html library)</li></ul>
 <!-- crossreference -->
 
 
@@ -83,7 +83,7 @@ This function is called by:
 0039     <span class="string">'src/crit'</span>,<span class="keyword">...</span>
 0040     <span class="string">'src/libs'</span>,<span class="keyword">...</span>
 0041     <span class="string">'src/libs/PSOt'</span>,<span class="keyword">...</span>
-0042     <span class="string">'src/libs/MultiDOE'</span>,<span class="keyword">...</span>
+0042     <span class="string">'src/libs/multidoe'</span>,<span class="keyword">...</span>
 0043     <span class="string">'src/libs/matlab2tikz'</span>};
 0044 
 0045 <span class="comment">%depending on the parameters</span>
@@ -97,7 +97,7 @@ This function is called by:
 0053 <span class="keyword">end</span>
 0054 <span class="comment">%if no specified directory</span>
 0055 <span class="keyword">if</span> ~specifDir
-0056     pathcustom=pwd;
+0056     pathcustom=strrep(mfilename(<span class="string">'fullpath'</span>),mfilename,<span class="string">''</span>);
 0057 <span class="keyword">end</span>
 0058 
 0059 <span class="comment">%absolute paths</span>
@@ -118,7 +118,7 @@ This function is called by:
 0074 
 0075 <span class="comment">%if MultiDOE is available the MultiDOE files will be loaded</span>
 0076 <span class="keyword">if</span> exist(<span class="string">'initDirMultiDOE'</span>,<span class="string">'file'</span>)
-0077     <a href="../GRENAT/src/libs/MultiDOE/initDirMultiDOE.html" class="code" title="function foldersLoad=initDirMultiDOE(pathcustom,other)">initDirMultiDOE</a>([pathcustom <span class="string">'/src/libs/MultiDOE'</span>]);
+0077     <a href="../GRENAT/src/libs/multidoe/initDirMultiDOE.html" class="code" title="function foldersLoad=initDirMultiDOE(pathcustom,other)">initDirMultiDOE</a>([pathcustom <span class="string">'/src/libs/multidoe'</span>]);
 0078 <span class="keyword">end</span>
 0079 
 0080 <span class="keyword">if</span> nargin==2
@@ -133,6 +133,6 @@ This function is called by:
 0089     cellfun(@feval,namFun,pathAbsolute,<span class="string">'uni'</span>,false)
 0090 <span class="keyword">end</span>
 0091 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

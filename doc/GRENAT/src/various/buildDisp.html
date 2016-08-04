@@ -4,7 +4,7 @@
 <head>
   <title>Description of buildDisp</title>
   <meta name="keywords" content="buildDisp">
-  <meta name="description" content="% Build space for plotting 2D function">
+  <meta name="description" content="% Build space for plotting 1D/2D function">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -20,29 +20,29 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>% Build space for plotting 2D function</strong></div>
+<div class="box"><strong>% Build space for plotting 1D/2D function</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function [XY,dispData]=buildDisp(doeData,dispData) </strong></div>
+<div class="box"><strong>function [XY,dispData]=buildDisp(doeData,nbSteps) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">% Build space for plotting 2D function
+<div class="fragment"><pre class="comment">% Build space for plotting 1D/2D function
  L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+<li><a href="mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+<li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the MultiDOE one</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%% Build space for plotting 2D function</span>
+<div class="fragment"><pre>0001 <span class="comment">%% Build space for plotting 1D/2D function</span>
 0002 <span class="comment">% L. LAURENT -- 05/01/2011 -- luc.laurent@lecnam.net</span>
 0003 
 0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
@@ -62,23 +62,23 @@ This function is called by:
 0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
 0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 0020 
-0021 <a name="_sub0" href="#_subfunctions" class="code">function [XY,dispData]=buildDisp(doeData,dispData)</a>
+0021 <a name="_sub0" href="#_subfunctions" class="code">function [XY,dispData]=buildDisp(doeData,nbSteps)</a>
 0022 
 0023 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
 0024 fprintf(<span class="string">'     &gt;&gt;&gt; BUILD DISPLAY &lt;&lt;&lt;\n'</span>);
-0025 [tMesu,tInit]=<a href="mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0025 countTime=<a href="mesuTime.html" class="code" title="">mesuTime</a>;
 0026 <span class="comment">%dimension of the sapce</span>
 0027 spaDim=numel(doeData.Xmin);
 0028 
 0029 <span class="comment">% the grid is built depending on the number of designa variables</span>
 0030 
 0031 <span class="keyword">if</span> spaDim==1
-0032     XY=linspace(doeData.Xmin,doeData.Xmax,dispData.nbSteps)';
+0032     XY=linspace(doeData.Xmin,doeData.Xmax,nbSteps)';
 0033     
 0034     <span class="comment">% in 2D the grid is defined using meshgrid</span>
 0035 <span class="keyword">elseif</span> spaDim==2
-0036     x=linspace(doeData.Xmin(1),doeData.Xmax(1),dispData.nbSteps);
-0037     y=linspace(doeData.Xmin(2),doeData.Xmax(2),dispData.nbSteps);
+0036     x=linspace(doeData.Xmin(1),doeData.Xmax(1),nbSteps);
+0037     y=linspace(doeData.Xmin(2),doeData.Xmax(2),nbSteps);
 0038     [gridX,gridY]=meshgrid(x,y);
 0039     
 0040     XY=zeros(size(gridX,1),size(gridX,2),2);
@@ -87,7 +87,7 @@ This function is called by:
 0043     
 0044 <span class="keyword">else</span>
 0045     <span class="comment">% in nD the full factorial function is used</span>
-0046     grid=fullFactDOE(dispData.nbSteps,doeData.Xmin,doeData.Xmax);
+0046     grid=fullFactDOE(nbSteps,doeData.Xmin,doeData.Xmax);
 0047     
 0048     <span class="comment">%reordering the grid</span>
 0049     XY=zeros(size(grid,1),1,spaDim);
@@ -99,13 +99,14 @@ This function is called by:
 0055 <span class="keyword">end</span>
 0056 
 0057 <span class="comment">%step of the grid</span>
-0058 dispData.step=abs(doeData.Xmax-doeData.Xmin)./dispData.nbSteps;
-0059 
-0060 fprintf(<span class="string">' &gt;&gt; Number of points on the grid %i (%i'</span>,dispData.nbSteps^spaDim,dispData.nbSteps);
-0061 fprintf(<span class="string">'x%i'</span>,dispData.nbSteps*ones(1,spaDim-1));fprintf(<span class="string">')\n'</span>);
-0062 
-0063 <a href="mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
-0064 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)</pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0058 dispData.nbSteps=nbSteps;
+0059 dispData.step=abs(doeData.Xmax-doeData.Xmin)./nbSteps;
+0060 
+0061 fprintf(<span class="string">' &gt;&gt; Number of points on the grid %i (%i'</span>,nbSteps^spaDim,nbSteps);
+0062 fprintf(<span class="string">'x%i'</span>,nbSteps*ones(1,spaDim-1));fprintf(<span class="string">')\n'</span>);
+0063 
+0064 countTime.stop;
+0065 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)</pre></div>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

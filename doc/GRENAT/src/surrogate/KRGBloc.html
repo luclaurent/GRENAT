@@ -96,7 +96,7 @@ This function is called by:
 0047 <span class="keyword">if</span> nargin&gt;=3
 0048     paraVal=paraValIn;
 0049 <span class="keyword">else</span>
-0050     paraVal=metaData.para.val;
+0050     paraVal=metaData.para.Val;
 0051     final=true;
 0052 <span class="keyword">end</span>
 0053 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -378,14 +378,11 @@ This function is called by:
 0329 <span class="comment">%compute of the Likelihood (and log-likelihood)</span>
 0330 [lilog,ret.li]=<a href="KRGLikelihood.html" class="code" title="function [logLi,Li,liSack]=KRGLikelihood(dataKRG)">KRGLikelihood</a>(ret);
 0331 ret.lilog=lilog;
-0332 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0333 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0334 <span class="comment">%denormalisation sigma^2</span>
-0335 <span class="keyword">if</span> metaData.normOn&amp;&amp;~isempty(metaData.norm.resp.std)
-0336     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
-0337 <span class="keyword">end</span>
-0338 <span class="comment">%</span>
-0339 <span class="comment">%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0332 <span class="comment">%</span>
+0333 <span class="keyword">if</span> metaData.norm.on&amp;&amp;~isempty(metaData.norm.resp.std)
+0334     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
+0335 <span class="keyword">end</span>
+0336 <span class="comment">%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

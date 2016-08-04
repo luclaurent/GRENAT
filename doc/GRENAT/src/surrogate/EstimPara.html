@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>	%%%%%%</li><li><a href="stopEstim.html" class="code" title="function stop=stopEstim(x,optimValues,state)">stopEstim</a>	% Fonction assurant l'arret de la procedure d'optimisation</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+<li><a href="../../../GRENAT/src/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>	%%%%%%</li><li><a href="stopEstim.html" class="code" title="function stop=stopEstim(x,optimValues,state)">stopEstim</a>	% Fonction assurant l'arret de la procedure d'optimisation</li><li><a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>	% Script for checking if the code is executed on Matlab or Octave</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
@@ -69,20 +69,20 @@ This function is called by:
 0023 dispWarning=false;
 0024 
 0025 <span class="comment">%value of the criteria for stopping minimization</span>
-0026 critOpti=dataMeta.para.critOpti;
+0026 critOpti=dataMeta.estim.critOpti;
 0027 
 0028 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0030 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0030 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>);
 0031 fprintf(<span class="string">'    &gt; Estimation of hyperparameters &lt;\n'</span>);
-0032 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
-0033 [tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0032 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>);
+0033 countTime=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0034 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0035 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0036 <span class="comment">% Definition of the parameters for minimization</span>
 0037 <span class="comment">% Number of hyperparameters to estimate</span>
 0038 <span class="comment">%anisotropy</span>
-0039 <span class="keyword">if</span> dataMeta.para.aniso
+0039 <span class="keyword">if</span> dataMeta.estim.aniso
 0040     nbP=dataProb.used.np;
 0041     nbPOptim=nbP;
 0042 <span class="keyword">else</span>
@@ -94,31 +94,31 @@ This function is called by:
 0048 <span class="comment">% deal with specific cases (depending on the kernel function)</span>
 0049 <span class="keyword">switch</span> dataMeta.kern
 0050     <span class="keyword">case</span> <span class="string">'matern'</span>
-0051         lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.nu.min];
-0052         ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.nu.max];
+0051         lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.nu.Min];
+0052         ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.nu.Max];
 0053         nbPOptim=nbP+1;
 0054     <span class="keyword">case</span> <span class="string">'expg'</span>
-0055         lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.p.min];
-0056         ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.p.max];
+0055         lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min];
+0056         ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max];
 0057         nbPOptim=nbP+1;
 0058     <span class="keyword">case</span> <span class="string">'expgg'</span>
-0059         lb=[dataMeta.para.l.min*ones(1,nbP) dataMeta.para.p.min*ones(1,nbP)];
-0060         ub=[dataMeta.para.l.max*ones(1,nbP) dataMeta.para.p.max*ones(1,nbP)];
+0059         lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min*ones(1,nbP)];
+0060         ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max*ones(1,nbP)];
 0061         nbPOptim=2*nbP;
 0062     <span class="keyword">otherwise</span>
-0063         lb=dataMeta.para.l.min*ones(1,nbP);
-0064         ub=dataMeta.para.l.max*ones(1,nbP);
+0063         lb=dataMeta.para.l.Min*ones(1,nbP);
+0064         ub=dataMeta.para.l.Max*ones(1,nbP);
 0065 <span class="keyword">end</span>
 0066 
 0067 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0068 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0069 <span class="comment">%Manual definition of the initial population using LHS/IHS (GA)</span>
 0070 nbSampInit=10*nbPOptim;
-0071 sampManuOn=dataMeta.para.sampManuOn;
+0071 sampManuOn=dataMeta.estim.sampManuOn;
 0072 <span class="keyword">if</span> sampManuOn
 0073     nbSampleSpecif=false;
-0074     <span class="keyword">if</span> isfield(dataMeta.para,<span class="string">'nbSampInit'</span>);<span class="keyword">if</span> ~isempty(dataMeta.para.nbSampInit);nbSampleSpecif=false;<span class="keyword">end</span>, <span class="keyword">end</span>
-0075     <span class="keyword">if</span> nbSampleSpecif;nbSampInit=dataMeta.para.nbSampInit;<span class="keyword">end</span>
+0074     <span class="keyword">if</span> isfield(dataMeta.estim,<span class="string">'nbSampInit'</span>);<span class="keyword">if</span> ~isempty(dataMeta.estim.nbSampInit);nbSampleSpecif=false;<span class="keyword">end</span>, <span class="keyword">end</span>
+0075     <span class="keyword">if</span> nbSampleSpecif;nbSampInit=dataMeta.estim.nbSampInit;<span class="keyword">end</span>
 0076 <span class="keyword">end</span>
 0077 <span class="comment">%definition valeur de depart de la variable</span>
 0078 x0=0.1*(ub-lb);
@@ -143,7 +143,7 @@ This function is called by:
 0097     <span class="string">'TolFun'</span>,critOpti);
 0098 optionsFminbnd = <a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(<span class="keyword">...</span>
 0099     <span class="string">'Display'</span>, <span class="string">'iter'</span>,<span class="keyword">...</span><span class="comment">        %display evolution</span>
-0100     <span class="string">'OutputFcn'</span>,@stop_estim,<span class="keyword">...</span><span class="comment">      %function used for following the algorithm and dealing with the various status of it</span>
+0100     <span class="string">'OutputFcn'</span>,@<a href="stopEstim.html" class="code" title="function stop=stopEstim(x,optimValues,state)">stopEstim</a>,<span class="keyword">...</span><span class="comment">      %function used for following the algorithm and dealing with the various status of it</span>
 0101     <span class="string">'FunValCheck'</span>,<span class="string">'off'</span>,<span class="keyword">...</span><span class="comment">      %check value of the function (Nan,Inf)</span>
 0102     <span class="string">'UseParallel'</span>,<span class="string">'never'</span>,<span class="keyword">...</span>
 0103     <span class="string">'PlotFcns'</span>,<span class="string">''</span>);
@@ -192,17 +192,17 @@ This function is called by:
 0146 <span class="comment">%%%%%</span>
 0147 
 0148 <span class="comment">%display iterations</span>
-0149 <span class="keyword">if</span> ~dataMeta.para.dispIterGraph
+0149 <span class="keyword">if</span> ~dataMeta.estim.dispIterGraph
 0150     optionsFmincon=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFmincon,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
 0151     optionsSQP=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsSQP,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
 0152     optionsFminbnd=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
 0153     optionsFminsearch=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
 0154     optionsGA=<a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(optionsGA,<span class="string">'OutputFcn'</span>,<span class="string">''</span>);
 0155 <span class="keyword">else</span>
-0156     figure
+0156     figure;
 0157 <span class="keyword">end</span>
 0158 
-0159 <span class="keyword">if</span> ~dataMeta.para.dispIterCmd
+0159 <span class="keyword">if</span> ~dataMeta.estim.dispIterCmd
 0160     optionsFmincon=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFmincon,<span class="string">'Display'</span>,<span class="string">'final'</span>);
 0161     optionsSQP=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsSQP,<span class="string">'Display'</span>, <span class="string">'final'</span>);
 0162     optionsFminbnd=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFminbnd,<span class="string">'Display'</span>,<span class="string">'final'</span>);
@@ -211,7 +211,7 @@ This function is called by:
 0165 <span class="keyword">end</span>
 0166 
 0167 <span class="comment">%display information of the algorithm on a graph</span>
-0168 <span class="keyword">if</span> dataMeta.para.dispPlotAlgo
+0168 <span class="keyword">if</span> dataMeta.estim.dispPlotAlgo
 0169     optionsFmincon=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsFmincon,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
 0170         @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
 0171     optionsSQP=<a href="#_sub2" class="code" title="subfunction varargout=optimsetMOD(varargin)">optimsetMOD</a>(optionsSQP,<span class="string">'PlotFcns'</span>,{@optimplotx,@optimplotfunccount,<span class="keyword">...</span>
@@ -231,12 +231,12 @@ This function is called by:
 0185 <span class="comment">%% Deal with 'SampleMin_xxxx' strategies</span>
 0186 <span class="comment">%look for the 'SampleMin_' pattern</span>
 0187 patternS=<span class="string">'SampleMin_'</span>;
-0188 [wordFind]=strfind(dataMeta.para.method,patternS);
+0188 [wordFind]=strfind(dataMeta.estim.method,patternS);
 0189 <span class="keyword">if</span> isempty(wordFind)
-0190     methodOptim=dataMeta.para.method;
+0190     methodOptim=dataMeta.estim.method;
 0191     sampleMinOk=false;
 0192 <span class="keyword">else</span>
-0193     methodOptim=dataMeta.para.method((wordFind+numel(patternS)):end);
+0193     methodOptim=dataMeta.estim.method((wordFind+numel(patternS)):end);
 0194     sampleMinOk=true;
 0195 <span class="keyword">end</span>
 0196 <span class="comment">% if SampleMin_ than a sampling is achieved for finding a initialization</span>
@@ -310,7 +310,7 @@ This function is called by:
 0264         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsSQP);
 0265         <span class="comment">%stop minimiszation</span>
 0266         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0267             disp(<span class="string">'Stop'</span>)
+0267             disp(<span class="string">'Stop'</span>);
 0268             paraEstim.outAlgo=output;
 0269             paraEstim.outAlgo.fval=fval;
 0270             paraEstim.outAlgo.exitflag=exitflag;
@@ -332,7 +332,7 @@ This function is called by:
 0286         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
 0287         <span class="comment">%stop minimization</span>
 0288         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0289             disp(<span class="string">'Stop'</span>)
+0289             disp(<span class="string">'Stop'</span>);
 0290             paraEstim.outAlgo=output;
 0291             paraEstim.outAlgo.fval=fval;
 0292             paraEstim.outAlgo.exitflag=exitflag;
@@ -351,7 +351,7 @@ This function is called by:
 0305         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
 0306         <span class="comment">%stop minimization</span>
 0307         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0308             disp(<span class="string">'Stop'</span>)
+0308             disp(<span class="string">'Stop'</span>);
 0309             paraEstim.outAlgo=output;
 0310             paraEstim.outAlgo.fval=fval;
 0311             paraEstim.outAlgo.exitflag=exitflag;
@@ -372,7 +372,7 @@ This function is called by:
 0326         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsFmincon);
 0327         <span class="comment">%stop minimization</span>
 0328         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0329             disp(<span class="string">'Stop'</span>)
+0329             disp(<span class="string">'Stop'</span>);
 0330             paraEstim.outAlgo=output;
 0331             paraEstim.outAlgo.fval=fval;
 0332             paraEstim.outAlgo.exitflag=exitflag;
@@ -391,7 +391,7 @@ This function is called by:
 0345         [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsGA);
 0346         <span class="comment">%stop minimization</span>
 0347         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0348             disp(<span class="string">'Stop'</span>)
+0348             disp(<span class="string">'Stop'</span>);
 0349             paraEstim.outAlgo=output;
 0350             paraEstim.outAlgo.fval=fval;
 0351             paraEstim.outAlgo.exitflag=exitflag;
@@ -428,7 +428,7 @@ This function is called by:
 0382         exitflag=[];
 0383         output.tr=tr;
 0384         output.te=te;
-0385         disp(<span class="string">'Stop'</span>)
+0385         disp(<span class="string">'Stop'</span>);
 0386         paraEstim.outAlgo=output;
 0387         paraEstim.outAlgo.xval=Xmin;
 0388         paraEstim.outAlgo.fval=Zmin;
@@ -447,28 +447,28 @@ This function is called by:
 0401 
 0402 
 0403 <span class="comment">%store obtained value of the hyperparameters obtained with the minimization</span>
-0404 paraEstim.val=x;
+0404 paraEstim.Val=x;
 0405 <span class="comment">%deal with various kind of kernel functions</span>
-0406 paraEstim.l.val=x(1:nbP);
-0407 paraEstim.p.val=NaN;
-0408 paraEstim.nu.val=NaN;
+0406 paraEstim.l.Val=x(1:nbP);
+0407 paraEstim.p.Val=NaN;
+0408 paraEstim.nu.Val=NaN;
 0409 
 0410 <span class="keyword">switch</span> dataMeta.kern
 0411     <span class="keyword">case</span> <span class="string">'matern'</span>
-0412         paraEstim.nu.val=x(end);
+0412         paraEstim.nu.Val=x(end);
 0413     <span class="keyword">case</span> <span class="string">'expg'</span>
-0414         paraEstim.p.val=x(end);
+0414         paraEstim.p.Val=x(end);
 0415     <span class="keyword">case</span> <span class="string">'expgg'</span>
-0416         paraEstim.p.val=x(nbP+1:end);
+0416         paraEstim.p.Val=x(nbP+1:end);
 0417 <span class="keyword">end</span>
 0418 <span class="comment">%display values of HyperParameters</span>
 0419 fprintf(<span class="string">' &gt;&gt;&gt; Optimal HyperParameters\n'</span>);
-0420 <a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'l '</span>,paraEstim.l.val)
-0421 <span class="keyword">if</span> ~isnan(paraEstim.p.val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'p '</span>,paraEstim.p.val);<span class="keyword">end</span>
-0422 <span class="keyword">if</span> ~isnan(paraEstim.nu.val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'nu'</span>,paraEstim.nu.val);<span class="keyword">end</span>
+0420 <a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'l '</span>,paraEstim.l.Val);
+0421 <span class="keyword">if</span> ~isnan(paraEstim.p.Val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'p '</span>,paraEstim.p.Val);<span class="keyword">end</span>
+0422 <span class="keyword">if</span> ~isnan(paraEstim.nu.Val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'nu'</span>,paraEstim.nu.Val);<span class="keyword">end</span>
 0423 <span class="comment">%</span>
-0424 <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
-0425 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>)
+0424 countTime.stop;
+0425 fprintf(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>);
 0426 <span class="keyword">end</span>
 0427 
 0428 <span class="comment">%function for displaying hyperparameters in the command window</span>
@@ -486,7 +486,7 @@ This function is called by:
 0440 <span class="comment">%wrapper to optimset and gaoptimset function (actual functions requires the</span>
 0441 <span class="comment">%Matlab's optimization toolbox)</span>
 0442 <a name="_sub2" href="#_subfunctions" class="code">function varargout=optimsetMOD(varargin)</a>
-0443 <span class="keyword">if</span> exist(<span class="string">'optimset'</span>,<span class="string">'file'</span>)
+0443 <span class="keyword">if</span> exist(<span class="string">'optimset'</span>,<span class="string">'file'</span>)&amp;&amp;~<a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
 0444     [varargout{1:nargout}] = optimset( varargin{:} );
 0445 <span class="keyword">else</span>
 0446     varargout{1}=[];
@@ -494,12 +494,12 @@ This function is called by:
 0448 <span class="keyword">end</span>
 0449 
 0450 <a name="_sub3" href="#_subfunctions" class="code">function varargout=gaoptimsetMOD(varargin)</a>
-0451 <span class="keyword">if</span> exist(<span class="string">'gaoptimset'</span>,<span class="string">'file'</span>)
+0451 <span class="keyword">if</span> exist(<span class="string">'gaoptimset'</span>,<span class="string">'file'</span>)&amp;&amp;~<a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
 0452     [varargout{1:nargout}] = gaoptimset( varargin{:} );
 0453 <span class="keyword">else</span>
 0454     varargout{1}=[];
 0455 <span class="keyword">end</span>
 0456 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

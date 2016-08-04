@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+<li><a href="mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+<li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the MultiDOE one</li></ul>
 <!-- crossreference -->
 
 
@@ -65,7 +65,7 @@ This function is called by:
 0021 <a name="_sub0" href="#_subfunctions" class="code">function [eval,grad]=evalFunGrad(funR,X,type)</a>
 0022 
 0023 
-0024 [tMesu,tInit]=<a href="mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0024 countTime=<a href="mesuTime.html" class="code" title="">mesuTime</a>;
 0025 <span class="comment">% depending on the kind of evaluations (computation at the sample points or</span>
 0026 <span class="comment">% for displaying)</span>
 0027 <span class="keyword">switch</span> type
@@ -119,8 +119,8 @@ This function is called by:
 0075 fprintf(<span class="string">' &gt;&gt; Computation of the gradients: '</span>);
 0076 <span class="keyword">if</span> nargout==2;fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
 0077 
-0078 <a href="mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
+0078 countTime.stop;
 0079 fprintf(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)</pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

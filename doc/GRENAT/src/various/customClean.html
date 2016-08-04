@@ -36,7 +36,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+</ul>
 <!-- crossreference -->
 
 
@@ -45,24 +45,41 @@ This function is called by:
 <div class="fragment"><pre>0001 <span class="comment">%% Erase all variables and close all opened windows</span>
 0002 <span class="comment">%% L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net</span>
 0003 
-0004 <a name="_sub0" href="#_subfunctions" class="code">function customClean</a>
-0005 <span class="comment">% display warning or not</span>
-0006 dispWarning=false;
-0007 
-0008 <span class="keyword">if</span> ~dispWarning; warning off all;<span class="keyword">end</span>
-0009 
-0010 <span class="comment">%if display available, the windows have to be closed</span>
-0011 screenSize = get(0,<span class="string">'ScreenSize'</span>);
-0012 <span class="keyword">if</span> ~isequal(screenSize(3:4),[1 1])
-0013     clf
-0014 <span class="keyword">end</span>
-0015 
-0016 clc;
-0017 close all hidden;
-0018 clear all;
-0019 clear all <span class="keyword">global</span>;
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 0020 
-0021 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0021 <a name="_sub0" href="#_subfunctions" class="code">function customClean</a>
+0022 <span class="comment">% display warning or not</span>
+0023 dispWarning=false;
+0024 
+0025 <span class="keyword">if</span> ~dispWarning; warning off all;<span class="keyword">end</span>
+0026 
+0027 <span class="comment">%if display available, the windows have to be closed</span>
+0028 screenSize = get(0,<span class="string">'ScreenSize'</span>);
+0029 <span class="keyword">if</span> ~isequal(screenSize(3:4),[1 1])
+0030     clf
+0031 <span class="keyword">end</span>
+0032 
+0033 clc;
+0034 close all hidden;
+0035 clear all;
+0036 clear all <span class="keyword">global</span>;
+0037 
+0038 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

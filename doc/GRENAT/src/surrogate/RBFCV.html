@@ -34,10 +34,10 @@ new version: 31/05/2012</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>	% Function for calculating error of LOO (Cross-Validation)</li><li><a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>	% Plot QQ plot (for cross validation)</li><li><a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>	% Plot SCVR (for cross validation)</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>	% check input data for finding missing information</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+<li><a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>	% Function for calculating error of LOO (Cross-Validation)</li><li><a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>	% Plot QQ plot (for cross validation)</li><li><a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>	% Plot SCVR (for cross validation)</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>	% check input data for finding missing information</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
+<li><a href="RBFbloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFbloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -107,7 +107,7 @@ This function is called by:
 0060 <span class="keyword">else</span>
 0061     modFinal=true;
 0062 <span class="keyword">end</span>
-0063 <span class="keyword">if</span> modFinal;[tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;<span class="keyword">end</span>
+0063 <span class="keyword">if</span> modFinal;countTime=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;<span class="keyword">end</span>
 0064 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0065 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0066 <span class="comment">%load variables</span>
@@ -186,7 +186,7 @@ This function is called by:
 0139 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0140 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0141 <span class="keyword">if</span> modDebug    
-0142     [tMesuDebugA,tInitDebugA]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0142     countTimeA=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0143     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0144     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0145     <span class="comment">%store response at removed point</span>
@@ -297,7 +297,7 @@ This function is called by:
 0250         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
 0251         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
 0252     <span class="keyword">end</span>
-0253     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugA,tInitDebugA);
+0253     countTimeA.stop;
 0254 <span class="keyword">end</span>
 0255 
 0256 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -308,7 +308,7 @@ This function is called by:
 0261 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0262 <span class="keyword">if</span> (modStudy||modFinal)&amp;&amp;(modDebug||metaData.cv.disp)
 0263     
-0264     [tMesuDebugB,tInitDebugB]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0264     countTimeB=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0265     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0266     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0267     <span class="comment">%store response of the surrogate model at remove sample point</span>
@@ -399,7 +399,7 @@ This function is called by:
 0352         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.and.scvr_mean);
 0353         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.and.adequ);
 0354     <span class="keyword">end</span>
-0355     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugB,tInitDebugB);
+0355     countTimeB.stop;
 0356 <span class="keyword">end</span>
 0357 
 0358 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -408,7 +408,7 @@ This function is called by:
 0361 <span class="comment">%%%CAUTION: not functioning for missing data</span>
 0362 <span class="keyword">if</span> (modStudy||modFinal)&amp;&amp;(metaData.cv.disp||modDebug)
 0363     <span class="comment">%</span>
-0364     [tMesuDebugC,tInitDebugC]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0364     countTimeC=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0365     <span class="comment">%</span>
 0366     cvVarR=zeros(ns,1);
 0367     cvZR=zeros(ns,1);
@@ -475,7 +475,7 @@ This function is called by:
 0428         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
 0429         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
 0430     <span class="keyword">end</span>
-0431     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugC,tInitDebugC);
+0431     countTimeC.stop;
 0432 <span class="keyword">end</span>
 0433 
 0434 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -484,7 +484,7 @@ This function is called by:
 0437 <span class="comment">%%%CAUTION: not functioning for missing data</span>
 0438 <span class="keyword">if</span> modFinal
 0439     <span class="comment">%</span>
-0440     [tMesuDebugD,tInitDebugD]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0440     countTimeD=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0441     <span class="comment">%</span>
 0442     cvVarR=zeros(ns,1);
 0443     KK=dataBloc.build.KK;
@@ -516,7 +516,7 @@ This function is called by:
 0469         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.final.scvr_max);
 0470         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.final.scvr_mean);
 0471     <span class="keyword">end</span>
-0472     <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesuDebugD,tInitDebugD);
+0472     countTimeD.stop;
 0473 <span class="keyword">end</span>
 0474 
 0475 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -554,7 +554,7 @@ This function is called by:
 0507 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0508 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0509 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0510 <span class="keyword">if</span> modFinal;<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);<span class="keyword">end</span>
+0510 <span class="keyword">if</span> modFinal;countTime.stop;<span class="keyword">end</span>
 0511 <span class="keyword">end</span>
 0512 
 0513 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -574,6 +574,6 @@ This function is called by:
 0527     <span class="keyword">end</span>
 0528 <span class="keyword">end</span>
 0529 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -35,7 +35,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/surrogate/BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li><li><a href="../../../GRENAT/src/surrogate/KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="../../../GRENAT/src/surrogate/RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="../../../GRENAT/src/surrogate/SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
+<li><a href="../../../GRENAT/src/surrogate/KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="../../../GRENAT/src/surrogate/RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="../../../GRENAT/src/surrogate/SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
 <!-- crossreference -->
 
 
@@ -48,34 +48,42 @@ This function is called by:
 0005 
 0006 <span class="comment">% Start with collecting fieldnames, checking implicitly</span>
 0007 <span class="comment">% that inputs are structures.</span>
-0008 fn = [];
+0008 fn = {};
 0009 <span class="keyword">for</span> k = 1:nargin
 0010     <span class="keyword">try</span>
-0011         fn = [fn ; fieldnames(varargin{k})];
-0012     <span class="keyword">catch</span> MEstruct
-0013         throw(MEstruct)
-0014     <span class="keyword">end</span>
-0015 <span class="keyword">end</span>
-0016 
-0017 <span class="comment">% Make sure the field names are unique.</span>
-0018 <span class="keyword">if</span> length(fn) ~= length(unique(fn))
-0019     error(<span class="string">'mergestruct:FieldsNotUnique'</span>,<span class="keyword">...</span>
-0020         <span class="string">'Field names must be unique'</span>);
-0021 <span class="keyword">end</span>
-0022 
-0023 <span class="comment">% Now concatenate the data from each struct.  Can't use</span>
-0024 <span class="comment">% structfun since input structs may not be scalar.</span>
-0025 c = [];
-0026 <span class="keyword">for</span> k = 1:nargin
-0027     <span class="keyword">try</span>
-0028         c = [c ; struct2cell(varargin{k})];
-0029     <span class="keyword">catch</span> MEdata
-0030         throw(MEdata);
-0031     <span class="keyword">end</span>
-0032 <span class="keyword">end</span>
-0033 
-0034 <span class="comment">% Construct the output.</span>
-0035 sout = cell2struct(c, fn, 1);</pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0011       <span class="keyword">if</span> numel(fn)==0
+0012         fn=fieldnames(varargin{k});
+0013       <span class="keyword">else</span>
+0014         fn=[fn;fieldnames(varargin{k})];
+0015       <span class="keyword">end</span>
+0016     <span class="keyword">catch</span> MEstruct;
+0017         throw(MEstruct);
+0018     <span class="keyword">end</span>
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="comment">% Make sure the field names are unique.</span>
+0022 <span class="keyword">if</span> length(fn) ~= length(unique(fn))
+0023     error(<span class="string">'mergestruct:FieldsNotUnique'</span>,<span class="keyword">...</span>
+0024         <span class="string">'Field names must be unique'</span>);
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">% Now concatenate the data from each struct.  Can't use</span>
+0028 <span class="comment">% structfun since input structs may not be scalar.</span>
+0029 c = [];
+0030 <span class="keyword">for</span> k = 1:nargin
+0031     <span class="keyword">try</span>
+0032       <span class="keyword">if</span> numel(c)==0
+0033         c=struct2cell(varargin{k});
+0034       <span class="keyword">else</span>
+0035         c = [c ; struct2cell(varargin{k})];
+0036       <span class="keyword">end</span>
+0037     <span class="keyword">catch</span> MEdata;
+0038         throw(MEdata);
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% Construct the output.</span>
+0043 sout = cell2struct(c, fn, 1);</pre></div>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

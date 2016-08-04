@@ -2,9 +2,9 @@
                 "http://www.w3.org/TR/REC-html40/loose.dtd">
 <html>
 <head>
-  <title>Description of dispDate</title>
-  <meta name="keywords" content="dispDate">
-  <meta name="description" content="% Display date and time">
+  <title>Description of isOctave</title>
+  <meta name="keywords" content="isOctave">
+  <meta name="description" content="% Script for checking if the code is executed on Matlab or Octave">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -15,19 +15,19 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html disp -->
-<h1>dispDate
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html various -->
+<h1>isOctave
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>% Display date and time</strong></div>
+<div class="box"><strong>% Script for checking if the code is executed on Matlab or Octave</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="box"><strong>function dispDate(type) </strong></div>
+<div class="box"><strong>function r = isOctave () </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre class="comment">% Display date and time
- L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net</pre></div>
+<div class="fragment"><pre class="comment">% Script for checking if the code is executed on Matlab or Octave
+ L. LAURENT -- 20/06/2016 -- luc.laurent@lecnam.net</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -36,14 +36,14 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
+<li><a href="../../../GRENAT/src/surrogate/EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="../../../GRENAT/src/surrogate/SVRBloc.html" class="code" title="function [critMin,ret]=SVRBloc(dataIn,metaData,paraValIn,type)">SVRBloc</a>	% Building of the nu-SVR/GSVR matrix</li><li><a href="execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%% Display date and time</span>
-0002 <span class="comment">% L. LAURENT -- 17/12/2010 -- luc.laurent@lecnam.net</span>
+<div class="fragment"><pre>0001 <span class="comment">%% Script for checking if the code is executed on Matlab or Octave</span>
+0002 <span class="comment">% L. LAURENT -- 20/06/2016 -- luc.laurent@lecnam.net</span>
 0003 
 0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
 0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
@@ -62,29 +62,13 @@ This function is called by:
 0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
 0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 0020 
-0021 <a name="_sub0" href="#_subfunctions" class="code">function dispDate(type)</a>
-0022 
-0023 day=clock;
-0024 <span class="keyword">if</span> nargin==0
-0025     fprintf(<span class="string">'=============================================\n'</span>);
-0026     fprintf(<span class="string">'Date: %d/%d/%d   Time: %02.0f:%02.0f:%02.0f\n'</span>,<span class="keyword">...</span>
-0027         day(3), day(2), day(1), day(4), day(5), day(6));
-0028     fprintf(<span class="string">'=============================================\n'</span>);
-0029 <span class="keyword">else</span>
-0030     <span class="keyword">switch</span> type
-0031         <span class="keyword">case</span> <span class="string">'date'</span>
-0032             fprintf(<span class="string">'==============\n'</span>);
-0033             fprintf(<span class="string">'Date: %d/%d/%d\n'</span>,<span class="keyword">...</span>
-0034                 day(3), day(2), day(1));
-0035             fprintf(<span class="string">'==============\n'</span>);
-0036         <span class="keyword">case</span> <span class="string">'time'</span>
-0037             fprintf(<span class="string">'===============\n'</span>);
-0038             fprintf(<span class="string">'Time: %02.0f:%02.0f:%02.0f\n'</span>,<span class="keyword">...</span>
-0039                 day(4), day(5), day(6));
-0040             fprintf(<span class="string">'===============\n'</span>);
-0041     <span class="keyword">end</span>
-0042 <span class="keyword">end</span>
-0043 <span class="keyword">end</span></pre></div>
+0021 <a name="_sub0" href="#_subfunctions" class="code">function r = isOctave ()</a>
+0022   <span class="keyword">persistent</span> x;
+0023   <span class="keyword">if</span> (isempty (x))
+0024     x = exist (<span class="string">'OCTAVE_VERSION'</span>, <span class="string">'builtin'</span>);
+0025   <span class="keyword">end</span>
+0026   r = x;
+0027 <span class="keyword">end</span></pre></div>
 <hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -4,7 +4,7 @@
 <head>
   <title>Description of ExampleUseDOE</title>
   <meta name="keywords" content="ExampleUseDOE">
-  <meta name="description" content="% Example of use of the GRENAToolbox with the LMTir one">
+  <meta name="description" content="% Example of use of the GRENAToolbox with the MultiDOE one">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -20,20 +20,20 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>% Example of use of the GRENAToolbox with the LMTir one</strong></div>
+<div class="box"><strong>% Example of use of the GRENAToolbox with the MultiDOE one</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <div class="box"><strong>This is a script file. </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre class="comment">% Example of use of the GRENAToolbox with the LMTir one
+<div class="fragment"><pre class="comment">% Example of use of the GRENAToolbox with the MultiDOE one
  L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/crit/BuildCI.html" class="code" title="function [ci68,ci95,ci99]=BuildCI(ZZ,var)">BuildCI</a>	% function for building confidence intervals (CI)</li><li><a href="../GRENAT/src/crit/critErrDisp.html" class="code" title="function [err,errV,errNAME]=critErrDisp(Zap,Zref,data)">critErrDisp</a>	% Compute error criteria and display</li><li><a href="../GRENAT/src/disp/dispDate.html" class="code" title="function dispDate(type)">dispDate</a>	% Display date and time</li><li><a href="../GRENAT/src/disp/displaySurrogate.html" class="code" title="function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)">displaySurrogate</a>	% function for displaying response surfaces</li><li><a href="../GRENAT/src/disp/displaySurrogateCI.html" class="code" title="function displaySurrogateCI(Xpts,ic,dispData,Z)">displaySurrogateCI</a>	% Display confidence intervals</li><li><a href="../GRENAT/src/init/initDisp.html" class="code" title="function dispDef=initDisp()">initDisp</a>	% Initialization of display variables</li><li><a href="../GRENAT/src/init/initMeta.html" class="code" title="function meta=initMeta(in,parallelOn)">initMeta</a>	% Initialization of the surrogate model</li><li><a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>	% Function for calculating th right number of sample points for the reference grid</li><li><a href="../GRENAT/src/surrogate/BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li><li><a href="../GRENAT/src/surrogate/EvalMeta.html" class="code" title="function [Z]=EvalMeta(evalSample,availData,Verb)">EvalMeta</a>	% Evaluation of the surrogate model</li><li><a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,dispData)">buildDisp</a>	% Build space for plotting 2D function</li><li><a href="../GRENAT/src/various/customClean.html" class="code" title="function customClean">customClean</a>	% Erase all variables and close all opened windows</li><li><a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>	% Evaluation of the function and the gradients</li><li><a href="../GRENAT/src/various/execParallel.html" class="code" title="function [ret]=execParallel(statut,options)">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+<li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>	% Function for calculating th right number of sample points for the reference grid</li><li><a href="../GRENAT/src/libs/multidoe/multiDOE.html" class="code" title="">multiDOE</a>	% multiDOE class for manipulating sampling</li><li><a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,nbSteps)">buildDisp</a>	% Build space for plotting 1D/2D function</li><li><a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>	% Evaluation of the function and the gradients</li><li><a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -42,7 +42,7 @@ This function is called by:
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <span class="comment">%% Example of use of the GRENAToolbox with the LMTir one</span>
+<div class="fragment"><pre>0001 <span class="comment">%% Example of use of the GRENAToolbox with the MultiDOE one</span>
 0002 <span class="comment">% L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net</span>
 0003 
 0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
@@ -62,132 +62,184 @@ This function is called by:
 0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
 0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 0020 
-0021 <a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other)">initDirGRENAT</a>();
-0022 <a href="../GRENAT/src/various/customClean.html" class="code" title="function customClean">customClean</a>;
-0023 
-0024 <span class="comment">%display the date</span>
-0025 <a href="../GRENAT/src/disp/dispDate.html" class="code" title="function dispDate(type)">dispDate</a>;
-0026 
-0027 <span class="comment">%initialization of display variables</span>
-0028 dispData=<a href="../GRENAT/src/init/initDisp.html" class="code" title="function dispDef=initDisp()">initDisp</a>();
-0029 
-0030 
-0031 fprintf(<span class="string">'++++++++++++++++++++++++++++++++++++++++++\n'</span>)
-0032 fprintf(<span class="string">'  &gt;&gt;&gt;   Building surrogate model    &lt;&lt;&lt;\n'</span>);
-0033 [tMesu,tInit]=<a href="../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
-0034 
-0035 <span class="comment">%parallel execution (options and starting of the workers)</span>
-0036 parallelStatus.on=false;
-0037 parallelStatus.workers=<span class="string">'auto'</span>;
-0038 <a href="../GRENAT/src/various/execParallel.html" class="code" title="function [ret]=execParallel(statut,options)">execParallel</a>(<span class="string">'start'</span>,parallelStatus);
-0039 
-0040 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0041 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0042 <span class="comment">%studied function</span>
-0043 funTEST=<span class="string">'Manu'</span>;
-0044 <span class="comment">%Beale(2),Bohachevky1/2/3(2),Booth(2),Branin(2),Coleville(4)</span>
-0045 <span class="comment">%Dixon(n),Gold(2),Michalewicz(n),mystery(2),Peaks(2),Rosenbrock(n)</span>
-0046 <span class="comment">%Sixhump(2),Schwefel(n),Sphere(n),SumsSuare(n),AHE(n),Cst(n),Dejong(n)</span>
-0047 <span class="comment">%rastrigin(n),RHE(n)</span>
-0048 <span class="comment">% dimension du pb (nb de variables)</span>
-0049 dimPB=1;
-0050 <span class="comment">%esp=[0 15];</span>
-0051 esp=[];
-0052 <span class="comment">%%Definition of the design space</span>
-0053 [doe]=initDOE(dimPB,esp,funTEST);
-0054 <span class="comment">%number of steps per dimensions (for plotting)</span>
-0055 dispData.nbSteps=<a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>(doe.dimPB);<span class="comment">%max([3 floor((30^2)^(1/doe.dim_pb))]);</span>
-0056 <span class="comment">%kind of sampling</span>
-0057 doe.type=<span class="string">'IHS_manu'</span>;
-0058 <span class="comment">%number of sample points</span>
-0059 doe.ns=5;
-0060 <span class="comment">%execute sampling</span>
-0061 sampling=buildDOE(doe);
-0062 samplePts=sampling.sorted;
-0063 <span class="comment">%evaluate function at sample points</span>
-0064 [eval,grad]=<a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>(doe.funT,samplePts,<span class="string">'eval'</span>);
-0065 <span class="comment">%Data for plotting functions</span>
-0066 [gridRef,dispData]=<a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,dispData)">buildDisp</a>(doe,dispData);
-0067 [respRef,gradRef]=<a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>(doe.funT,gridRef,<span class="string">'disp'</span>);
+0021 
+0022 <span class="comment">%load folder structure</span>
+0023 <a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other)">initDirGRENAT</a>;
+0024 <span class="comment">%customClean;</span>
+0025 countTime=<a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
+0026 <span class="comment">%parallel execution (options and starting of the workers)</span>
+0027 paraCluster=<a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>(false);
+0028 
+0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0030 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0031 <span class="comment">%define the sampling using MultiDOE toolbox</span>
+0032 dimPB=2; <span class="comment">%number of design parameters</span>
+0033 ns=20; <span class="comment">%number if sample points</span>
+0034 typeDOE=<span class="string">'LHS'</span>; <span class="comment">%type of DOE</span>
+0035 testFunction=<span class="string">'Mystery'</span>; <span class="comment">%test function</span>
+0036 <span class="comment">%</span>
+0037 mDOE=<a href="../GRENAT/src/libs/multidoe/multiDOE.html" class="code" title="">multiDOE</a>(dimPB,typeDOE,ns,[],[],testFunction);
+0038 <span class="comment">%mDOE.show;</span>
+0039 <span class="comment">%</span>
+0040 samplePts=mDOE.sorted;
+0041 <span class="comment">%</span>
+0042 <span class="comment">%evaluate function at sample points</span>
+0043 [resp,grad]=<a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>(mDOE.funTest,samplePts,<span class="string">'eval'</span>);
+0044 <span class="comment">%Data for plotting functions</span>
+0045 [gridRef]=<a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,nbSteps)">buildDisp</a>(mDOE,<a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>(mDOE.dimPB));
+0046 [respRef,gradRef]=<a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>(mDOE.funTest,gridRef,<span class="string">'disp'</span>);
+0047 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0048 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0049 <span class="comment">%create GRENAT Object</span>
+0050 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'GSVR'</span>,samplePts,resp,grad);
+0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0052 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0053 <span class="comment">%building of the surrogate model</span>
+0054 metaGRENAT.train;
+0055 <span class="comment">%define the reference (optional)</span>
+0056 metaGRENAT.defineRef(gridRef,respRef,gradRef);
+0057 <span class="comment">%evaluation of the surrogate model at the grid points</span>
+0058 metaGRENAT.eval(gridRef);
+0059 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0060 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0061 <span class="comment">%display the result</span>
+0062 metaGRENAT.show;
+0063 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0064 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0065 <span class="comment">%compute display error</span>
+0066 metaGRENAT.errCalc;
+0067 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0068 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0069 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0070 <span class="comment">%load parameters of the surrogate model</span>
-0071 data.type=<span class="string">'GSVR'</span>;
-0072 data.kern=<span class="string">'matern32'</span>;
-0073 metaData=<a href="../GRENAT/src/init/initMeta.html" class="code" title="function meta=initMeta(in,parallelOn)">initMeta</a>(data);
-0074 metaData.cv.disp=true;
-0075 metaData.para.estim=0;
-0076 metaData.para.l.val=[0.1439];<span class="comment">% 0.0711];</span>
-0077 metaData.para.dispEstim=false;
-0078 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0079 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0080 <span class="comment">%%building of the surrogate model</span>
-0081 [approx]=<a href="../GRENAT/src/surrogate/BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>(samplePts,eval,grad,metaData);
-0082 <span class="comment">%evaluation of the surrogate model at the grid points</span>
-0083 [K]=<a href="../GRENAT/src/surrogate/EvalMeta.html" class="code" title="function [Z]=EvalMeta(evalSample,availData,Verb)">EvalMeta</a>(gridRef,approx);
-0084 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0085 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0086 <span class="comment">%computation of the confidence intervals</span>
-0087 <span class="keyword">if</span> isfield(K,<span class="string">'var'</span>);[ci68,ci95,ci99]=<a href="../GRENAT/src/crit/BuildCI.html" class="code" title="function [ci68,ci95,ci99]=BuildCI(ZZ,var)">BuildCI</a>(K.Z,K.var);<span class="keyword">end</span>
-0088 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0089 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0090 <span class="comment">%%%display</span>
-0091 <span class="comment">%defaults parameters</span>
-0092 dispData.on=true;
-0093 dispData.newFig=false;
-0094 dispData.ci.on=true;<span class="comment">% display confidence intervals</span>
-0095 dispData.render=true;
-0096 dispData.d3=true;
-0097 dispData.xlabel=<span class="string">'x_1'</span>;
-0098 dispData.ylabel=<span class="string">'x_2'</span>;
-0099 
-0100 figure
-0101 subplot(2,3,1)
-0102 dispData.title=<span class="string">'Reference function'</span>;
-0103 <a href="../GRENAT/src/disp/displaySurrogate.html" class="code" title="function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)">displaySurrogate</a>(gridRef,respRef,samplePts,eval,grad,dispData);
-0104 subplot(2,3,2)
-0105 dispData.title=<span class="string">'Approximate function'</span>;
-0106 <a href="../GRENAT/src/disp/displaySurrogate.html" class="code" title="function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)">displaySurrogate</a>(gridRef,K.Z,samplePts,eval,grad,dispData);
-0107 subplot(2,3,4)
-0108 dispData.title=<span class="string">''</span>;
-0109 dispData.render=false;
-0110 dispData.d3=false;
-0111 dispData.d2=true;
-0112 dispData.contour=true;
-0113 dispData.gridGrad=true;
-0114 dispData.sampleGrad=true;
-0115 ref.Z=respRef;ref.GZ=gradRef;
-0116 <a href="../GRENAT/src/disp/displaySurrogate.html" class="code" title="function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)">displaySurrogate</a>(gridRef,ref,samplePts,eval,grad,dispData);
-0117 subplot(2,3,5)
-0118 <a href="../GRENAT/src/disp/displaySurrogate.html" class="code" title="function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)">displaySurrogate</a>(gridRef,K,samplePts,eval,grad,dispData);
-0119 subplot(2,3,3)
-0120 dispData.d3=true;
-0121 dispData.d2=false;
-0122 dispData.contour=false;
-0123 dispData.gridGrad=false;
-0124 dispData.sampleGrad=false;
-0125 dispData.samplePts=false;
-0126 dispData.render=true;
-0127 dispData.title=<span class="string">'Variance'</span>;
-0128 <a href="../GRENAT/src/disp/displaySurrogate.html" class="code" title="function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)">displaySurrogate</a>(gridRef,K.var,samplePts,eval,grad,dispData);
-0129 subplot(2,3,6)
-0130 dispData.title=<span class="string">'Confidence intervals at 95%'</span>;
-0131 dispData.trans=true;
-0132 dispData.uni=true;
-0133  <a href="../GRENAT/src/disp/displaySurrogateCI.html" class="code" title="function displaySurrogateCI(Xpts,ic,dispData,Z)">displaySurrogateCI</a>(gridRef,ci95,dispData,K.Z);
-0134 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0135 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0136 <span class="comment">%%Computation and display of the errors</span>
-0137 err=<a href="../GRENAT/src/crit/critErrDisp.html" class="code" title="function [err,errV,errNAME]=critErrDisp(Zap,Zref,data)">critErrDisp</a>(K.Z,respRef,approx);
-0138 fprintf(<span class="string">'=====================================\n'</span>);
-0139 fprintf(<span class="string">'=====================================\n'</span>);
-0140 
-0141 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0142 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0143 <span class="comment">%stop workers</span>
-0144 <a href="../GRENAT/src/various/execParallel.html" class="code" title="function [ret]=execParallel(statut,options)">execParallel</a>(<span class="string">'stop'</span>,parallelStatus);
-0145 
-0146 <a href="../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);</pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0069 <span class="comment">%%Stop workers</span>
+0070 paraCluster.stop();
+0071 
+0072 countTime.stop();
+0073 
+0074 <span class="comment">%</span>
+0075 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%</span>
+0076 <span class="comment">%</span>
+0077 <span class="comment">% initDirGRENAT();</span>
+0078 <span class="comment">% customClean;</span>
+0079 <span class="comment">%</span>
+0080 <span class="comment">% %display the date</span>
+0081 <span class="comment">% dispDate;</span>
+0082 <span class="comment">%</span>
+0083 <span class="comment">% %initialization of display variables</span>
+0084 <span class="comment">% dispData=initDisp();</span>
+0085 <span class="comment">%</span>
+0086 <span class="comment">%</span>
+0087 <span class="comment">% fprintf('++++++++++++++++++++++++++++++++++++++++++\n')</span>
+0088 <span class="comment">% fprintf('  &gt;&gt;&gt;   Building surrogate model    &lt;&lt;&lt;\n');</span>
+0089 <span class="comment">% [tMesu,tInit]=mesuTime;</span>
+0090 <span class="comment">%</span>
+0091 <span class="comment">% %parallel execution (options and starting of the workers)</span>
+0092 <span class="comment">% parallelStatus.on=false;</span>
+0093 <span class="comment">% parallelStatus.workers='auto';</span>
+0094 <span class="comment">% execParallel('start',parallelStatus);</span>
+0095 <span class="comment">%</span>
+0096 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0097 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0098 <span class="comment">% %studied function</span>
+0099 <span class="comment">% funTEST='Manu';</span>
+0100 <span class="comment">% %Beale(2),Bohachevky1/2/3(2),Booth(2),Branin(2),Coleville(4)</span>
+0101 <span class="comment">% %Dixon(n),Gold(2),Michalewicz(n),mystery(2),Peaks(2),Rosenbrock(n)</span>
+0102 <span class="comment">% %Sixhump(2),Schwefel(n),Sphere(n),SumsSuare(n),AHE(n),Cst(n),Dejong(n)</span>
+0103 <span class="comment">% %rastrigin(n),RHE(n)</span>
+0104 <span class="comment">% % dimension du pb (nb de variables)</span>
+0105 <span class="comment">% dimPB=1;</span>
+0106 <span class="comment">% %esp=[0 15];</span>
+0107 <span class="comment">% esp=[];</span>
+0108 <span class="comment">% %%Definition of the design space</span>
+0109 <span class="comment">% [doe]=initDOE(dimPB,esp,funTEST);</span>
+0110 <span class="comment">% %number of steps per dimensions (for plotting)</span>
+0111 <span class="comment">% dispData.nbSteps=initNbPts(doe.dimPB);%max([3 floor((30^2)^(1/doe.dim_pb))]);</span>
+0112 <span class="comment">% %kind of sampling</span>
+0113 <span class="comment">% doe.type='IHS_manu';</span>
+0114 <span class="comment">% %number of sample points</span>
+0115 <span class="comment">% doe.ns=5;</span>
+0116 <span class="comment">% %execute sampling</span>
+0117 <span class="comment">% sampling=buildDOE(doe);</span>
+0118 <span class="comment">% samplePts=sampling.sorted;</span>
+0119 <span class="comment">%</span>
+0120 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0121 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0122 <span class="comment">% %load parameters of the surrogate model</span>
+0123 <span class="comment">% data.type='GSVR';</span>
+0124 <span class="comment">% data.kern='matern32';</span>
+0125 <span class="comment">% metaData=initMeta(data);</span>
+0126 <span class="comment">% metaData.cv.disp=true;</span>
+0127 <span class="comment">% metaData.para.estim=0;</span>
+0128 <span class="comment">% metaData.para.l.val=[0.1439];% 0.0711];</span>
+0129 <span class="comment">% metaData.para.dispEstim=false;</span>
+0130 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0131 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0132 <span class="comment">% %%building of the surrogate model</span>
+0133 <span class="comment">% [approx]=BuildMeta(samplePts,eval,grad,metaData);</span>
+0134 <span class="comment">% %evaluation of the surrogate model at the grid points</span>
+0135 <span class="comment">% [K]=EvalMeta(gridRef,approx);</span>
+0136 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0137 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0138 <span class="comment">% %computation of the confidence intervals</span>
+0139 <span class="comment">% if isfield(K,'var');[ci68,ci95,ci99]=BuildCI(K.Z,K.var);end</span>
+0140 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0141 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0142 <span class="comment">% %%%display</span>
+0143 <span class="comment">% %defaults parameters</span>
+0144 <span class="comment">% dispData.on=true;</span>
+0145 <span class="comment">% dispData.newFig=false;</span>
+0146 <span class="comment">% dispData.ci.on=true;% display confidence intervals</span>
+0147 <span class="comment">% dispData.render=true;</span>
+0148 <span class="comment">% dispData.d3=true;</span>
+0149 <span class="comment">% dispData.xlabel='x_1';</span>
+0150 <span class="comment">% dispData.ylabel='x_2';</span>
+0151 <span class="comment">%</span>
+0152 <span class="comment">% figure</span>
+0153 <span class="comment">% subplot(2,3,1)</span>
+0154 <span class="comment">% dispData.title='Reference function';</span>
+0155 <span class="comment">% displaySurrogate(gridRef,respRef,samplePts,eval,grad,dispData);</span>
+0156 <span class="comment">% subplot(2,3,2)</span>
+0157 <span class="comment">% dispData.title='Approximate function';</span>
+0158 <span class="comment">% displaySurrogate(gridRef,K.Z,samplePts,eval,grad,dispData);</span>
+0159 <span class="comment">% subplot(2,3,4)</span>
+0160 <span class="comment">% dispData.title='';</span>
+0161 <span class="comment">% dispData.render=false;</span>
+0162 <span class="comment">% dispData.d3=false;</span>
+0163 <span class="comment">% dispData.d2=true;</span>
+0164 <span class="comment">% dispData.contour=true;</span>
+0165 <span class="comment">% dispData.gridGrad=true;</span>
+0166 <span class="comment">% dispData.sampleGrad=true;</span>
+0167 <span class="comment">% ref.Z=respRef;ref.GZ=gradRef;</span>
+0168 <span class="comment">% displaySurrogate(gridRef,ref,samplePts,eval,grad,dispData);</span>
+0169 <span class="comment">% subplot(2,3,5)</span>
+0170 <span class="comment">% displaySurrogate(gridRef,K,samplePts,eval,grad,dispData);</span>
+0171 <span class="comment">% subplot(2,3,3)</span>
+0172 <span class="comment">% dispData.d3=true;</span>
+0173 <span class="comment">% dispData.d2=false;</span>
+0174 <span class="comment">% dispData.contour=false;</span>
+0175 <span class="comment">% dispData.gridGrad=false;</span>
+0176 <span class="comment">% dispData.sampleGrad=false;</span>
+0177 <span class="comment">% dispData.samplePts=false;</span>
+0178 <span class="comment">% dispData.render=true;</span>
+0179 <span class="comment">% dispData.title='Variance';</span>
+0180 <span class="comment">% displaySurrogate(gridRef,K.var,samplePts,eval,grad,dispData);</span>
+0181 <span class="comment">% subplot(2,3,6)</span>
+0182 <span class="comment">% dispData.title='Confidence intervals at 95%';</span>
+0183 <span class="comment">% dispData.trans=true;</span>
+0184 <span class="comment">% dispData.uni=true;</span>
+0185 <span class="comment">%  displaySurrogateCI(gridRef,ci95,dispData,K.Z);</span>
+0186 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0187 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0188 <span class="comment">% %%Computation and display of the errors</span>
+0189 <span class="comment">% err=critErrDisp(K.Z,respRef,approx);</span>
+0190 <span class="comment">% fprintf('=====================================\n');</span>
+0191 <span class="comment">% fprintf('=====================================\n');</span>
+0192 <span class="comment">%</span>
+0193 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0194 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0195 <span class="comment">% %stop workers</span>
+0196 <span class="comment">% execParallel('stop',parallelStatus);</span>
+0197 <span class="comment">%</span>
+0198 <span class="comment">% mesuTime(tMesu,tInit);</span></pre></div>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

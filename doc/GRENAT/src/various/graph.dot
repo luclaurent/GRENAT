@@ -3,16 +3,21 @@ digraph m2html {
   buildDisp -> mesuTime;
   buildDocGRENAT -> listFilesToolboxGRENAT;
   evalFunGrad -> mesuTime;
+  execParallel -> execParallel;
+  execParallel -> isOctave;
+  mesuTime -> mesuTime;
 
   CheckInputData [URL="CheckInputData.html"];
   NormRenorm [URL="NormRenorm.html"];
   NormRenormG [URL="NormRenormG.html"];
   buildDisp [URL="buildDisp.html"];
   buildDocGRENAT [URL="buildDocGRENAT.html"];
+  checkInterpRG [URL="checkInterpRG.html"];
   customClean [URL="customClean.html"];
   evalFunGrad [URL="evalFunGrad.html"];
   example2D [URL="example2D.html"];
   execParallel [URL="execParallel.html"];
+  isOctave [URL="isOctave.html"];
   listFilesToolboxGRENAT [URL="listFilesToolboxGRENAT.html"];
   mesuTime [URL="mesuTime.html"];
   statusParallel [URL="statusParallel.html"];

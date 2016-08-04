@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="calcMSE.html" class="code" title="function emse=calcMSE(Zex,Zap)">calcMSE</a>	% function for calculating MSE</li><li><a href="calcRAAE.html" class="code" title="function raae=calcRAAE(Zex,Zap)">calcRAAE</a>	% function for calculating RAAE (Relative Average Absolute Error)</li><li><a href="calcRMAE.html" class="code" title="function rmae=calcRMAE(Zex,Zap)">calcRMAE</a>	% function for calculating RMAE (Relative Maximum Absolute Error)</li><li><a href="calcRMSE.html" class="code" title="function rmse=calcRMSE(Zex,Zap)">calcRMSE</a>	% function for calculating RMSE</li><li><a href="corrFact.html" class="code" title="function [r,radj,r2,r2adj,rccc]=corrFact(Zex,Zap)">corrFact</a>	% function for calculating R2 (correlation errors</li><li><a href="qualError.html" class="code" title="function [q1,q2,q3]=qualError(Zex,Zap)">qualError</a>	% Function for computing 3 custom quality errors</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>	% Script dedicated to the initiailisation, the measure and the display of the spent time</li></ul>
+<li><a href="calcMSE.html" class="code" title="function emse=calcMSE(Zex,Zap)">calcMSE</a>	% function for calculating MSE</li><li><a href="calcRAAE.html" class="code" title="function raae=calcRAAE(Zex,Zap)">calcRAAE</a>	% function for calculating RAAE (Relative Average Absolute Error)</li><li><a href="calcRMAE.html" class="code" title="function rmae=calcRMAE(Zex,Zap)">calcRMAE</a>	% function for calculating RMAE (Relative Maximum Absolute Error)</li><li><a href="calcRMSE.html" class="code" title="function rmse=calcRMSE(Zex,Zap)">calcRMSE</a>	% function for calculating RMSE</li><li><a href="corrFact.html" class="code" title="function [r,radj,r2,r2adj,rccc]=corrFact(Zex,Zap)">corrFact</a>	% function for calculating R2 (correlation errors</li><li><a href="qualError.html" class="code" title="function [q1,q2,q3]=qualError(Zex,Zap)">qualError</a>	% Function for computing 3 custom quality errors</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUse2D.html" class="code" title="">ExampleUse2D</a>	% Example of use of GRENAT without the sampling toolbox</li><li><a href="../../../GRENAT/ExampleUseDOE.html" class="code" title="">ExampleUseDOE</a>	% Example of use of the GRENAToolbox with the LMTir one</li></ul>
+<li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -68,7 +68,7 @@ This function is called by:
 0022 
 0023 fprintf(<span class="string">'#########################################\n'</span>);
 0024 fprintf(<span class="string">'   &gt;&gt;&gt; Compute error criteria &lt;&lt;&lt;\n'</span>);
-0025 [tMesu,tInit]=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>;
+0025 countTime=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0026 
 0027 <span class="comment">%Reordering data</span>
 0028 <span class="keyword">if</span> isa(Zap,<span class="string">'struct'</span>);Zap=Zap.Z;<span class="keyword">end</span>
@@ -150,7 +150,7 @@ This function is called by:
 0104         errNAME=TMPErrNAME;
 0105     <span class="keyword">end</span>
 0106 <span class="keyword">end</span>
-0107 <a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="function [tictoc_compt,tInit]=mesuTime(compteur,tps_init)">mesuTime</a>(tMesu,tInit);
+0107 countTime.stop;
 0108 fprintf(<span class="string">'#########################################\n'</span>);
 0109 <span class="keyword">end</span>
 0110 
@@ -181,6 +181,6 @@ This function is called by:
 0135     <span class="keyword">end</span>
 0136 <span class="keyword">end</span>
 0137 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

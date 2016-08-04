@@ -104,56 +104,59 @@ This function is called by:
 0054             cal=xxx.*sin(sqrt(abs(xxx)))+yyy.*sin(sqrt(abs(yyy)));
 0055             p=coef*nbvar-cal;
 0056             <span class="keyword">if</span> nargout==2||dem
-0057                 dp(:,:,1)=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
-0058                 
-0059                 dp(:,:,2)=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
-0060             <span class="keyword">end</span>
-0061         <span class="keyword">end</span>
-0062         
-0063     <span class="keyword">else</span>
-0064         cal=xx.*sin(sqrt(abs(xx)));
-0065         p=coef*nbvar-sum(cal,3);
-0066         
-0067         <span class="keyword">if</span> nargout==2||dem
-0068             dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
-0069             iXZ=find(xx&lt;eps);dp(iXZ)=0;
-0070         <span class="keyword">end</span>
-0071         
-0072     <span class="keyword">end</span>
-0073 <span class="keyword">else</span>
-0074     nbvar=dim;
-0075     p=[];
-0076     dp=[];
-0077 <span class="keyword">end</span>
-0078 <span class="comment">% output: information about the function</span>
-0079 <span class="keyword">if</span> nargout==3
-0080     pts=ones(1,nbvar);
-0081     infos.min_glob.X=pts;
-0082     cal=pts(:,1).*sin(sqrt(abs(pts(:,1))))+pts(:,2).*sin(sqrt(abs(pts(:,2))));
-0083     infos.min_glob.Z=coef*nbvar-cal;
-0084     infos.min_loc.Z=NaN;
-0085     infos.min_loc.X=NaN;
-0086 <span class="keyword">end</span>
-0087 
-0088 <span class="comment">% demo mode</span>
-0089 <span class="keyword">if</span> nargin==0
-0090     figure
-0091     subplot(1,3,1)
-0092     surf(x,y,p);
-0093     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0094     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Schwefel'</span>)
-0095     subplot(1,3,2)
-0096     surf(x,y,dp(:,:,1));
-0097     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0098     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Schwefel'</span>)
-0099     subplot(1,3,3)
-0100     surf(x,y,dp(:,:,2));
-0101     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0102     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Schwefel'</span>)
-0103     p=[];
-0104 <span class="keyword">end</span>
-0105 
-0106 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0057                 dpX=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
+0058                 iXZ=find(abs(xxx)&lt;eps);dpX(iXZ)=0;
+0059                 dpY=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
+0060                 iXZ=find(abs(yyy)&lt;eps);dpY(iXZ)=0;
+0061                 dp(:,:,1)=dpX;
+0062                 dp(:,:,2)=dpY;
+0063             <span class="keyword">end</span>
+0064         <span class="keyword">end</span>
+0065         
+0066     <span class="keyword">else</span>
+0067         cal=xx.*sin(sqrt(abs(xx)));
+0068         p=coef*nbvar-sum(cal,3);
+0069         
+0070         <span class="keyword">if</span> nargout==2||dem
+0071             dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
+0072             iXZ=find(abs(xx)&lt;eps);dp(iXZ)=0;
+0073         <span class="keyword">end</span>
+0074         
+0075     <span class="keyword">end</span>
+0076 <span class="keyword">else</span>
+0077     nbvar=dim;
+0078     p=[];
+0079     dp=[];
+0080 <span class="keyword">end</span>
+0081 <span class="comment">% output: information about the function</span>
+0082 <span class="keyword">if</span> nargout==3
+0083     pts=ones(1,nbvar);
+0084     infos.min_glob.X=pts;
+0085     cal=pts(:,1).*sin(sqrt(abs(pts(:,1))))+pts(:,2).*sin(sqrt(abs(pts(:,2))));
+0086     infos.min_glob.Z=coef*nbvar-cal;
+0087     infos.min_loc.Z=NaN;
+0088     infos.min_loc.X=NaN;
+0089 <span class="keyword">end</span>
+0090 
+0091 <span class="comment">% demo mode</span>
+0092 <span class="keyword">if</span> nargin==0
+0093     figure
+0094     subplot(1,3,1)
+0095     surf(x,y,p);
+0096     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0097     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Schwefel'</span>)
+0098     subplot(1,3,2)
+0099     surf(x,y,dp(:,:,1));
+0100     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0101     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Schwefel'</span>)
+0102     subplot(1,3,3)
+0103     surf(x,y,dp(:,:,2));
+0104     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0105     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Schwefel'</span>)
+0106     p=[];
+0107 <span class="keyword">end</span>
+0108 
+0109 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

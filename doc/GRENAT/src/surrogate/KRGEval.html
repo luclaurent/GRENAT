@@ -38,7 +38,7 @@ This function calls:
 <li><a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>	% function for evaluating multidimensional kernel function</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="EvalMeta.html" class="code" title="function [Z]=EvalMeta(evalSample,availData,Verb)">EvalMeta</a>	% Evaluation of the surrogate model</li><li><a href="KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>	% Function for computing various Cross-Validation criteria for KRG/GKRG</li></ul>
+<li><a href="EvalMeta.html" class="code" title="function [Z]=EvalMeta(evalSample,dataTrain,metaConf,Verb)">EvalMeta</a>	% Evaluation of the surrogate model</li><li><a href="KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>	% Function for computing various Cross-Validation criteria for KRG/GKRG</li></ul>
 <!-- crossreference -->
 
 
@@ -116,7 +116,7 @@ This function is called by:
 0070 <span class="keyword">if</span> metaData.used.availGrad
 0071     <span class="keyword">if</span> calcGrad  <span class="comment">%if compute gradients</span>
 0072         <span class="comment">%evaluate kernel function</span>
-0073         [ev,dev,ddev]=<a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.val);
+0073         [ev,dev,ddev]=<a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);
 0074         rr(1:ns)=ev;
 0075         rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
 0076         
@@ -158,9 +158,9 @@ This function is called by:
 0112     <span class="keyword">end</span>
 0113 <span class="keyword">else</span>
 0114     <span class="keyword">if</span> calcGrad  <span class="comment">%if the gradients will be computed</span>
-0115         [rr,jr]=<a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.val);
+0115         [rr,jr]=<a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);
 0116     <span class="keyword">else</span> <span class="comment">%otherwise</span>
-0117         rr=feval(metaData.build.kern,distS,metaData.build.para.val);
+0117         rr=feval(metaData.build.kern,distS,metaData.build.para.Val);
 0118     <span class="keyword">end</span>
 0119     <span class="comment">%if missing data</span>
 0120     <span class="keyword">if</span> metaData.miss.resp.on
@@ -232,6 +232,6 @@ This function is called by:
 0186     details.stoGZ=stoGZ;
 0187 <span class="keyword">end</span>
 0188 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

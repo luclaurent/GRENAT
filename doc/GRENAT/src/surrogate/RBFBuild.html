@@ -36,13 +36,15 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li><li><a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>	% function for automatic calculation of the empirical value of the hyperparameters</li></ul>
+<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>	% function for automatic calculation of the empirical value of the hyperparameters</li><li><a href="RBFbloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFbloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li></ul>
 <!-- crossreference -->
 
-
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <span class="comment">%% Function for building Radial Basis Function surrogate model</span>
@@ -78,28 +80,28 @@ This function is called by:
 0031 fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Radial Basis Function ((G)RBF)'</span> textf]);
 0032 <span class="comment">%</span>
 0033 fprintf(<span class="string">'&gt;&gt;&gt; Building : '</span>);
-0034 <span class="keyword">if</span> ~isempty(gradIn);fprintf(<span class="string">'GRBF \n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'RBF \n'</span>);<span class="keyword">end</span>
-0035 fprintf(<span class="string">'&gt;&gt;&gt; Kernel function: %s\n'</span>,metaData.kern);
+0034 <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(~isempty(gradIn),<span class="string">'GRBF'</span>,<span class="string">'RBF'</span>,true);
+0035 fprintf(<span class="string">'&gt;&gt; Kernel function: %s\n'</span>,metaData.kern);
 0036 <span class="comment">%</span>
-0037 fprintf(<span class="string">'&gt;&gt;&gt; CV: '</span>);<span class="keyword">if</span> metaData.cv.on; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
-0038 fprintf(<span class="string">'&gt;&gt; Computation all CV criteria: '</span>);<span class="keyword">if</span> metaData.cv.full; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
-0039 fprintf(<span class="string">'&gt;&gt; Show CV: '</span>);<span class="keyword">if</span> metaData.cv.disp; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
-0040 <span class="comment">%</span>
-0041 fprintf(<span class="string">'&gt;&gt; Correction of matrix condition:'</span>);<span class="keyword">if</span> metaData.recond; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
-0042 <span class="comment">%</span>
-0043 fprintf(<span class="string">'&gt;&gt;&gt; Estimation of the hyperparameters: '</span>);<span class="keyword">if</span> metaData.para.estim; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
-0044 <span class="keyword">if</span> metaData.para.estim
-0045     fprintf(<span class="string">'&gt;&gt; Algorithm for estimation: %s\n'</span>,metaData.para.method);
-0046     fprintf(<span class="string">'&gt;&gt; Bounds: [%d , %d]\n'</span>,metaData.para.l.min,metaData.para.l.max);
+0037 <span class="keyword">if</span> <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.on,<span class="string">'&gt;&gt; CV: '</span>,[],true)
+0038     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.full,<span class="string">'&gt;&gt; Computation all CV criteria: '</span>,[],true);
+0039     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.disp,<span class="string">'&gt;&gt; Show CV: '</span>,[],true);
+0040 <span class="keyword">end</span>
+0041 <span class="comment">%</span>
+0042 <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.recond,<span class="string">'&gt;&gt; Correction of matrix condition:'</span>,[],true);
+0043 <span class="comment">%</span>
+0044 <span class="keyword">if</span> <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.on,<span class="string">'&gt;&gt; Estimation of the hyperparameters: '</span>,[],true)
+0045     fprintf(<span class="string">'&gt;&gt; Algorithm for estimation: %s\n'</span>,metaData.estim.method);
+0046     fprintf(<span class="string">'&gt;&gt; Bounds: [%d , %d]\n'</span>,metaData.para.l.Min,metaData.para.l.Max);
 0047     <span class="keyword">switch</span> metaData.kern
 0048         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
-0049             fprintf(<span class="string">'&gt;&gt; Bounds for exponent: [%d , %d]\n'</span>,metaData.para.p.min,metaData.para.p.max);
+0049             fprintf(<span class="string">'&gt;&gt; Bounds for exponent: [%d , %d]\n'</span>,metaData.para.p.Min,metaData.para.p.Max);
 0050         <span class="keyword">case</span> <span class="string">'matern'</span>
-0051             fprintf(<span class="string">'&gt;&gt; Bounds for nu (Matern): [%d , %d]\n'</span>,metaData.para.nu.min,metaData.para.nu.max);
+0051             fprintf(<span class="string">'&gt;&gt; Bounds for nu (Matern): [%d , %d]\n'</span>,metaData.para.nu.Min,metaData.para.nu.Max);
 0052     <span class="keyword">end</span>
-0053     fprintf(<span class="string">'&gt;&gt; Anisotropy: '</span>);<span class="keyword">if</span> metaData.para.aniso; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
-0054     fprintf(<span class="string">'&gt;&gt; Show estimation steps in console: '</span>);<span class="keyword">if</span> metaData.para.dispIterCmd; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
-0055     fprintf(<span class="string">'&gt;&gt; Plot estimation steps: '</span>);<span class="keyword">if</span> metaData.para.dispIterGraph; fprintf(<span class="string">'Yes\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No\n'</span>);<span class="keyword">end</span>
+0053     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.aniso,<span class="string">'&gt;&gt; Anisotropy: '</span>,[],true);
+0054     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.dispIterCmd,<span class="string">'&gt;&gt; Show estimation steps in console: '</span>,[],true);
+0055     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.dispIterGraph,<span class="string">'&gt;&gt; Plot estimation steps: '</span>,[],true);
 0056 <span class="keyword">else</span>
 0057     fprintf(<span class="string">'&gt;&gt; Value hyperparameter: %d\n'</span>,metaData.para.l.val);
 0058     <span class="keyword">switch</span> metaData.kern
@@ -112,305 +114,311 @@ This function is called by:
 0065     <span class="keyword">end</span>
 0066 <span class="keyword">end</span>
 0067 <span class="comment">%</span>
-0068 fprintf(<span class="string">'&gt;&gt;&gt; Infill criteria: '</span>);
-0069 <span class="keyword">if</span> metaData.infill.on;
-0070     fprintf(<span class="string">'%s\n'</span>,<span class="string">'Yes'</span>);
-0071     fprintf(<span class="string">'&gt;&gt; Balancing WEI: '</span>)
-0072     fprintf(<span class="string">'%d '</span>,metaData.infill.paraWEI);
-0073     fprintf(<span class="string">'\n'</span>)
-0074     fprintf(<span class="string">'&gt;&gt; Balancing GEI: '</span>)
-0075     fprintf(<span class="string">'%d '</span>,metaData.infill.paraGEI);
-0076     fprintf(<span class="string">'\n'</span>)
-0077     fprintf(<span class="string">'&gt;&gt; Balancing LCB: %d\n'</span>,metaData.infill.paraLCB);
-0078 <span class="keyword">else</span>
-0079     fprintf(<span class="string">'%s\n'</span>,<span class="string">'No'</span>);
-0080 <span class="keyword">end</span>
-0081 fprintf(<span class="string">'\n'</span>);
-0082 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0083 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0084 <span class="comment">%load global variables</span>
-0085 <span class="keyword">global</span> dispData
-0086 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0087 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0088 <span class="comment">%% Initialisation of the variables</span>
-0089 <span class="comment">%number of sample points</span>
-0090 ns=size(respIn,1);
-0091 <span class="comment">%number of design variables</span>
-0092 np=size(samplingIn,2);
-0093 
-0094 <span class="comment">%check availability of the gradients</span>
-0095 availGrad=~isempty(gradIn);
-0096 <span class="comment">%check missing data</span>
-0097 <span class="keyword">if</span> isfield(metaData,<span class="string">'miss'</span>)
-0098     missResp=metaData.miss.resp.on;
-0099     missGrad=metaData.miss.grad.on;
-0100     availGrad=(~metaData.miss.grad.all&amp;&amp;metaData.miss.grad.on)||(availGrad&amp;&amp;~metaData.miss.grad.on);
-0101 <span class="keyword">else</span>
-0102     metaData.miss.resp.on=false;
-0103     metaData.miss.grad.on=false;
-0104     missResp=missData.resp.on;
-0105     missGrad=metaData.miss.grad.on;
-0106 <span class="keyword">end</span>
-0107 
-0108 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0109 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0110 <span class="comment">%Responses and gradients at sample points</span>
-0111 YY=respIn;
-0112 <span class="comment">%remove missing response(s)</span>
-0113 <span class="keyword">if</span> missResp
-0114     YY=YY(metaData.miss.resp.ixAvail);
-0115 <span class="keyword">end</span>
-0116 <span class="keyword">if</span> availGrad
-0117     tmp=gradIn';
-0118     der=tmp(:);
-0119     <span class="comment">%remove missing gradient(s)</span>
-0120     <span class="keyword">if</span> missGrad
-0121         der=der(metaData.miss.grad.ixtAvailLine);
-0122     <span class="keyword">end</span>
-0123     YY=vertcat(YY,der);
-0124 <span class="keyword">end</span>
-0125 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0126 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0127 <span class="comment">% Building indexes system for building RBF/GRBF matrices</span>
-0128 <span class="keyword">if</span> availGrad
-0129     sizeMatRc=(ns^2+ns)/2;
-0130     sizeMatRa=np*(ns^2+ns)/2;
-0131     sizeMatRi=np^2*(ns^2+ns)/2;
-0132     iXmat=zeros(sizeMatRc,1);
-0133     iXmatA=zeros(sizeMatRa,1);
-0134     iXmatAb=zeros(sizeMatRa,1);
-0135     iXmatI=zeros(sizeMatRi,1);
-0136     iXdev=zeros(sizeMatRa,1);
-0137     iXsampling=zeros(sizeMatRc,2);
-0138     
-0139     tmpList=zeros(sizeMatRc,np);
-0140     tmpList(:)=1:sizeMatRc*np;
-0141     
-0142     ite=0;
-0143     iteA=0;
-0144     iteAb=0;
-0145     pres=0;
-0146     <span class="comment">%table of indexes for inter-lengths (1), responses (1) and 1st</span>
-0147     <span class="comment">%derivatives (2)</span>
-0148     <span class="keyword">for</span> ii=1:ns
-0149         
-0150         ite=ite(end)+(1:(ns-ii+1));
-0151         iXmat(ite)=(ns+1)*ii-ns:ii*ns;
-0152         iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];
-0153         iteAb=iteAb(end)+(1:((ns-ii+1)*np));
-0154         
-0155         debb=(ii-1)*np*ns+ii;
-0156         finb=ns^2*np-(ns-ii);
-0157         lib=debb:ns:finb;
-0158         
-0159         iXmatAb(iteAb)=lib;
-0160         
-0161         <span class="keyword">for</span> jj=1:np
-0162             iteA=iteA(end)+(1:(ns-ii+1));
-0163             shiftA=(ii-1);
-0164             deb=pres+shiftA;
-0165             li=deb + (1:(ns-ii+1));
-0166             iXmatA(iteA)=li;
-0167             pres=li(end);
-0168             liste_tmpB=reshape(tmpList',[],1);
-0169             iXdev(iteA)=tmpList(ite,jj);
-0170             iXdevb=liste_tmpB;
-0171         <span class="keyword">end</span>
-0172     <span class="keyword">end</span>
-0173     <span class="comment">%table of indexes for second derivatives</span>
-0174     a=zeros(ns*np,np);
-0175     shiftA=0;
-0176     precI=0;
-0177     iteI=0;
-0178     <span class="keyword">for</span> ii=1:ns
-0179         li=1:ns*np^2;
-0180         a(:)=shiftA+li;
-0181         shiftA=a(end);
-0182         b=a';
-0183         
-0184         iteI=precI+(1:(np^2*(ns-(ii-1))));
-0185         
-0186         debb=(ii-1)*np^2+1;
-0187         finb=np^2*ns;
-0188         iteb=debb:finb;
-0189         iXmatI(iteI)=b(iteb);
-0190         precI=iteI(end);
-0191     <span class="keyword">end</span>
-0192 <span class="keyword">else</span>
-0193     <span class="comment">%table of indexes for inter-lenghts  (1), responses (1)</span>
-0194     bmax=ns-1;
-0195     iXmat=zeros(ns*(ns-1)/2,1);
-0196     iXsampling=zeros(ns*(ns-1)/2,2);
-0197     ite=0;
-0198     <span class="keyword">for</span> ii=1:bmax
-0199         ite=ite(end)+(1:(ns-ii));
-0200         iXmat(ite)=(ns+1)*ii-ns+1:ii*ns;
-0201         iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
-0202     <span class="keyword">end</span>
-0203 <span class="keyword">end</span>
-0204 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0205 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0206 <span class="comment">%computation of the inter-distances</span>
-0207 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
-0208 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0209 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0210 <span class="comment">%store variables</span>
-0211 ret.used.sampling=samplingIn;
-0212 ret.used.dist=distC;
-0213 ret.used.resp=respIn;
-0214 ret.used.availGrad=availGrad;
-0215 ret.used.grad=gradIn;
-0216 ret.used.np=np;
-0217 ret.used.ns=ns;
-0218 ret.ix.matrix=iXmat;
-0219 ret.ix.sampling=iXsampling;
-0220 <span class="keyword">if</span> availGrad
-0221     ret.ix.matrixA=iXmatA;
-0222     ret.ix.matrixAb=iXmatAb;
-0223     ret.ix.matrixI=iXmatI;
-0224     ret.ix.dev=iXdev;
-0225     ret.ix.devb=iXdevb;
-0226 <span class="keyword">end</span>
-0227 ret.build.y=YY;
-0228 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0229 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0230 <span class="comment">%% Computation of the MSE of the  Cross-Validation</span>
-0231 <span class="comment">%display CV is required</span>
-0232 CvOld=metaData.cv;
-0233 dispCvOld=metaData.cv.disp;
-0234 metaData.cv.disp=false;
-0235 
-0236 <span class="keyword">if</span> metaData.para.estim&amp;&amp;metaData.para.dispEstim
-0237     valPara=linspace(metaData.para.l.min,metaData.para.l.max,50);
-0238     <span class="comment">% load progress bar</span>
-0239     cpb = <a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>();
-0240     minVal = 0;
-0241     maxVal = 100;
-0242     cpb.setMinimum(minVal);
-0243     cpb.setMaximum(maxVal);
-0244     cpb.setLength(20);
-0245     cpb.setRemainedTimeVisible(1);
-0246     cpb.setRemainedTimePosition(<span class="string">'left'</span>);
-0247     cpb.start();
-0248     <span class="comment">%for anisotropy (with 2 design variables)</span>
-0249     <span class="keyword">if</span> metaData.para.aniso&amp;&amp;np==2
-0250         <span class="comment">%building of the studied grid</span>
-0251         [valX,valY]=meshgrid(valPara,valPara);
-0252         <span class="comment">%initialize matrix for storing MSE</span>
-0253         valMSEp=zeros(size(valX));
-0254         <span class="keyword">for</span> itli=1:numel(valX)
-0255             <span class="comment">%computation of the MSE and storage</span>
-0256             valMSEp(itli)=<a href="RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>(ret,metaData,[valX(itli) valY(itli)]);
-0257             <span class="comment">%show progress and time</span>
-0258             cpb.setValue(itli/numel(valX)*100);
-0259         <span class="keyword">end</span>
-0260         cpb.stop();
-0261         <span class="comment">%plot MSE</span>
-0262         figure;
-0263         [C,h]=contourf(valX,valY,valMSEp);
-0264         text_handle = clabel(C,h);
-0265         set(text_handle,<span class="string">'BackgroundColor'</span>,[1 1 .6],<span class="keyword">...</span>
-0266             <span class="string">'Edgecolor'</span>,[.7 .7 .7])
-0267         set(h,<span class="string">'LineWidth'</span>,2)
-0268         <span class="comment">%store figure in TeX/Tikz file</span>
-0269         <span class="keyword">if</span> dispData.save
-0270             matlab2tikz([dispData.doss <span class="string">'/RBFmse.tex'</span>])
-0271         <span class="keyword">end</span>
-0272         
-0273     <span class="keyword">elseif</span> ~metaData.para.aniso||np==1
-0274         <span class="comment">%initialize matrix for storing MSE</span>
-0275         valMSEp=zeros(1,length(valPara));
-0276         cvRippa=valMSEp;
-0277         cvCustom=valMSEp;
-0278         <span class="keyword">for</span> itli=1:length(valPara)
-0279             <span class="comment">%computation of the MSE and storage</span>
-0280             [~,buildRBF]=RBFbloc(ret,metaData,valPara(itli),<span class="string">'etud'</span>);
-0281             cvRippa(itli)=buildRBF.cv.and.eloot;
-0282             cvCustom(itli)=buildRBF.cv.then.eloot;
-0283             <span class="comment">%show progress and time</span>
-0284             cpb.setValue(itli/numel(valPara));
-0285         <span class="keyword">end</span>
-0286         cpb.stop();
-0287         
-0288         <span class="comment">%store in .dat file</span>
-0289         <span class="keyword">if</span> metaData.save
-0290             ss=[valPara' valMSEp'];
-0291             save([dispData.directory <span class="string">'/RBFmse.dat'</span>],<span class="string">'ss'</span>,<span class="string">'-ascii'</span>);
-0292         <span class="keyword">end</span>
-0293         
-0294         <span class="comment">%plot MSE</span>
-0295         figure;
-0296         semilogy(valPara,cvRippa,<span class="string">'r'</span>);
-0297         hold on
-0298         semilogy(valPara,cvCustom,<span class="string">'k'</span>);
-0299         legend(<span class="string">'Rippa (Bompard)'</span>,<span class="string">'Custom'</span>);
-0300         title(<span class="string">'CV'</span>);
-0301     <span class="keyword">end</span>
-0302     
-0303     <span class="comment">%store graphs (if active)</span>
-0304     <span class="keyword">if</span> dispData.save&amp;&amp;(ns&lt;=2)
-0305         fileStore=<a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>(<span class="string">'fig_mse_cv'</span>,dispData.directory);
-0306         <span class="keyword">if</span> dispData.tex
-0307             fid=fopen([dispData.directory <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
-0308             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fileStore,<span class="string">'MSE'</span>,fileStore);
-0309             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
-0310             fclose(fid);
-0311         <span class="keyword">end</span>
-0312     <span class="keyword">end</span>
-0313 <span class="keyword">end</span>
-0314 <span class="comment">%reload initial configurations</span>
-0315 metaData.cv.disp=dispCvOld;
-0316 metaData.cv=CvOld;
-0317 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0318 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0319 <span class="comment">%%Building of the various elements with and without estimation of the</span>
-0320 <span class="comment">%%hyperparameters if no estimation the values of the hyperparameters are</span>
-0321 <span class="comment">%%chosen using empirical choice of  Hardy/Franke</span>
-0322 <span class="keyword">if</span> metaData.para.estim
-0323     paraEstim=<a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>(ret,metaData,<span class="string">'RBFBloc'</span>);
-0324     ret.build.paraEstim=paraEstim;
-0325     metaData.para.l.val=paraEstim.l.val;
-0326     metaData.para.val=paraEstim.val;
-0327     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'p'</span>)
-0328         metaData.para.p.val=paraEstim.p.val;
-0329     <span class="keyword">end</span>
-0330     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'nu'</span>)
-0331         metaData.para.nu.val=paraEstim.nu.val;
-0332     <span class="keyword">end</span>
-0333 <span class="keyword">else</span>
-0334     valL=<a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>(samplingIn,metaData);
-0335     <span class="keyword">if</span> numel(valL)==1;
-0336         metaData.para.l.val=valL*ones(1,np);
-0337     <span class="keyword">else</span>
-0338         metaData.para.l.val=valL;
-0339     <span class="keyword">end</span>
-0340     <span class="keyword">switch</span> metaData.kern
-0341         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
-0342             metaData.para.val=[metaData.para.l.val metaData.para.p.val];
-0343         <span class="keyword">case</span> {<span class="string">'matern'</span>}
-0344             metaData.para.val=[metaData.para.l.val metaData.para.nu.val];
-0345         <span class="keyword">otherwise</span>
-0346             metaData.para.val=metaData.para.l.val;
-0347     <span class="keyword">end</span>
-0348 <span class="keyword">end</span>
-0349 
+0068 fprintf(<span class="string">'\n'</span>);
+0069 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0070 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0071 <span class="comment">%load global variables</span>
+0072 <span class="keyword">global</span> dispData
+0073 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0074 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0075 <span class="comment">%% Initialisation of the variables</span>
+0076 <span class="comment">%number of sample points</span>
+0077 ns=size(respIn,1);
+0078 <span class="comment">%number of design variables</span>
+0079 np=size(samplingIn,2);
+0080 
+0081 <span class="comment">%check availability of the gradients</span>
+0082 availGrad=~isempty(gradIn);
+0083 <span class="comment">%check missing data</span>
+0084 <span class="keyword">if</span> isfield(metaData,<span class="string">'miss'</span>)
+0085     missResp=metaData.miss.resp.on;
+0086     missGrad=metaData.miss.grad.on;
+0087     availGrad=(~metaData.miss.grad.all&amp;&amp;metaData.miss.grad.on)||(availGrad&amp;&amp;~metaData.miss.grad.on);
+0088 <span class="keyword">else</span>
+0089     metaData.miss.resp.on=false;
+0090     metaData.miss.grad.on=false;
+0091     missResp=missData.resp.on;
+0092     missGrad=metaData.miss.grad.on;
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0096 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0097 <span class="comment">%Responses and gradients at sample points</span>
+0098 YY=respIn;
+0099 <span class="comment">%remove missing response(s)</span>
+0100 <span class="keyword">if</span> missResp
+0101     YY=YY(metaData.miss.resp.ixAvail);
+0102 <span class="keyword">end</span>
+0103 <span class="keyword">if</span> availGrad
+0104     tmp=gradIn';
+0105     der=tmp(:);
+0106     <span class="comment">%remove missing gradient(s)</span>
+0107     <span class="keyword">if</span> missGrad
+0108         der=der(metaData.miss.grad.ixtAvailLine);
+0109     <span class="keyword">end</span>
+0110     YY=vertcat(YY,der);
+0111 <span class="keyword">end</span>
+0112 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0113 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0114 <span class="comment">% Building indexes system for building RBF/GRBF matrices</span>
+0115 <span class="keyword">if</span> availGrad
+0116     sizeMatRc=(ns^2+ns)/2;
+0117     sizeMatRa=np*(ns^2+ns)/2;
+0118     sizeMatRi=np^2*(ns^2+ns)/2;
+0119     iXmat=zeros(sizeMatRc,1);
+0120     iXmatA=zeros(sizeMatRa,1);
+0121     iXmatAb=zeros(sizeMatRa,1);
+0122     iXmatI=zeros(sizeMatRi,1);
+0123     iXdev=zeros(sizeMatRa,1);
+0124     iXsampling=zeros(sizeMatRc,2);
+0125     
+0126     tmpList=zeros(sizeMatRc,np);
+0127     tmpList(:)=1:sizeMatRc*np;
+0128     
+0129     ite=0;
+0130     iteA=0;
+0131     iteAb=0;
+0132     pres=0;
+0133     <span class="comment">%table of indexes for inter-lengths (1), responses (1) and 1st</span>
+0134     <span class="comment">%derivatives (2)</span>
+0135     <span class="keyword">for</span> ii=1:ns
+0136         
+0137         ite=ite(end)+(1:(ns-ii+1));
+0138         iXmat(ite)=(ns+1)*ii-ns:ii*ns;
+0139         iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];
+0140         iteAb=iteAb(end)+(1:((ns-ii+1)*np));
+0141         
+0142         debb=(ii-1)*np*ns+ii;
+0143         finb=ns^2*np-(ns-ii);
+0144         lib=debb:ns:finb;
+0145         
+0146         iXmatAb(iteAb)=lib;
+0147         
+0148         <span class="keyword">for</span> jj=1:np
+0149             iteA=iteA(end)+(1:(ns-ii+1));
+0150             shiftA=(ii-1);
+0151             deb=pres+shiftA;
+0152             li=deb + (1:(ns-ii+1));
+0153             iXmatA(iteA)=li;
+0154             pres=li(end);
+0155             liste_tmpB=reshape(tmpList',[],1);
+0156             iXdev(iteA)=tmpList(ite,jj);
+0157             iXdevb=liste_tmpB;
+0158         <span class="keyword">end</span>
+0159     <span class="keyword">end</span>
+0160     <span class="comment">%table of indexes for second derivatives</span>
+0161     a=zeros(ns*np,np);
+0162     shiftA=0;
+0163     precI=0;
+0164     iteI=0;
+0165     <span class="keyword">for</span> ii=1:ns
+0166         li=1:ns*np^2;
+0167         a(:)=shiftA+li;
+0168         shiftA=a(end);
+0169         b=a';
+0170         
+0171         iteI=precI+(1:(np^2*(ns-(ii-1))));
+0172         
+0173         debb=(ii-1)*np^2+1;
+0174         finb=np^2*ns;
+0175         iteb=debb:finb;
+0176         iXmatI(iteI)=b(iteb);
+0177         precI=iteI(end);
+0178     <span class="keyword">end</span>
+0179 <span class="keyword">else</span>
+0180     <span class="comment">%table of indexes for inter-lenghts  (1), responses (1)</span>
+0181     bmax=ns-1;
+0182     iXmat=zeros(ns*(ns-1)/2,1);
+0183     iXsampling=zeros(ns*(ns-1)/2,2);
+0184     ite=0;
+0185     <span class="keyword">for</span> ii=1:bmax
+0186         ite=ite(end)+(1:(ns-ii));
+0187         iXmat(ite)=(ns+1)*ii-ns+1:ii*ns;
+0188         iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
+0189     <span class="keyword">end</span>
+0190 <span class="keyword">end</span>
+0191 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0192 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0193 <span class="comment">%computation of the inter-distances</span>
+0194 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
+0195 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0196 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0197 <span class="comment">%store variables</span>
+0198 ret.used.sampling=samplingIn;
+0199 ret.used.dist=distC;
+0200 ret.used.resp=respIn;
+0201 ret.used.availGrad=availGrad;
+0202 ret.used.grad=gradIn;
+0203 ret.used.np=np;
+0204 ret.used.ns=ns;
+0205 ret.ix.matrix=iXmat;
+0206 ret.ix.sampling=iXsampling;
+0207 <span class="keyword">if</span> availGrad
+0208     ret.ix.matrixA=iXmatA;
+0209     ret.ix.matrixAb=iXmatAb;
+0210     ret.ix.matrixI=iXmatI;
+0211     ret.ix.dev=iXdev;
+0212     ret.ix.devb=iXdevb;
+0213 <span class="keyword">end</span>
+0214 ret.build.y=YY;
+0215 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0216 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0217 <span class="comment">%% Computation of the MSE of the  Cross-Validation</span>
+0218 <span class="comment">%display CV is required</span>
+0219 CvOld=metaData.cv;
+0220 dispCvOld=metaData.cv.disp;
+0221 metaData.cv.disp=false;
+0222 
+0223 <span class="keyword">if</span> metaData.estim.on&amp;&amp;metaData.estim.disp
+0224     valPara=linspace(metaData.para.l.min,metaData.para.l.max,50);
+0225     <span class="comment">% load progress bar</span>
+0226     cpb = <a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>();
+0227     minVal = 0;
+0228     maxVal = 100;
+0229     cpb.setMinimum(minVal);
+0230     cpb.setMaximum(maxVal);
+0231     cpb.setLength(20);
+0232     cpb.setRemainedTimeVisible(1);
+0233     cpb.setRemainedTimePosition(<span class="string">'left'</span>);
+0234     cpb.start();
+0235     <span class="comment">%for anisotropy (with 2 design variables)</span>
+0236     <span class="keyword">if</span> metaData.para.aniso&amp;&amp;np==2
+0237         <span class="comment">%building of the studied grid</span>
+0238         [valX,valY]=meshgrid(valPara,valPara);
+0239         <span class="comment">%initialize matrix for storing MSE</span>
+0240         valMSEp=zeros(size(valX));
+0241         <span class="keyword">for</span> itli=1:numel(valX)
+0242             <span class="comment">%computation of the MSE and storage</span>
+0243             valMSEp(itli)=RBFBloc(ret,metaData,[valX(itli) valY(itli)]);
+0244             <span class="comment">%show progress and time</span>
+0245             cpb.setValue(itli/numel(valX)*100);
+0246         <span class="keyword">end</span>
+0247         cpb.stop();
+0248         <span class="comment">%plot MSE</span>
+0249         figure;
+0250         [C,h]=contourf(valX,valY,valMSEp);
+0251         text_handle = clabel(C,h);
+0252         set(text_handle,<span class="string">'BackgroundColor'</span>,[1 1 .6],<span class="keyword">...</span>
+0253             <span class="string">'Edgecolor'</span>,[.7 .7 .7])
+0254         set(h,<span class="string">'LineWidth'</span>,2)
+0255         <span class="comment">%store figure in TeX/Tikz file</span>
+0256         <span class="keyword">if</span> dispData.save
+0257             matlab2tikz([dispData.doss <span class="string">'/RBFmse.tex'</span>])
+0258         <span class="keyword">end</span>
+0259         
+0260     <span class="keyword">elseif</span> ~metaData.para.aniso||np==1
+0261         <span class="comment">%initialize matrix for storing MSE</span>
+0262         valMSEp=zeros(1,length(valPara));
+0263         cvRippa=valMSEp;
+0264         cvCustom=valMSEp;
+0265         <span class="keyword">for</span> itli=1:length(valPara)
+0266             <span class="comment">%computation of the MSE and storage</span>
+0267             [~,buildRBF]=<a href="RBFbloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFbloc</a>(ret,metaData,valPara(itli),<span class="string">'etud'</span>);
+0268             cvRippa(itli)=buildRBF.cv.and.eloot;
+0269             cvCustom(itli)=buildRBF.cv.then.eloot;
+0270             <span class="comment">%show progress and time</span>
+0271             cpb.setValue(itli/numel(valPara));
+0272         <span class="keyword">end</span>
+0273         cpb.stop();
+0274         
+0275         <span class="comment">%store in .dat file</span>
+0276         <span class="keyword">if</span> metaData.save
+0277             ss=[valPara' valMSEp'];
+0278             save([dispData.directory <span class="string">'/RBFmse.dat'</span>],<span class="string">'ss'</span>,<span class="string">'-ascii'</span>);
+0279         <span class="keyword">end</span>
+0280         
+0281         <span class="comment">%plot MSE</span>
+0282         figure;
+0283         semilogy(valPara,cvRippa,<span class="string">'r'</span>);
+0284         hold on
+0285         semilogy(valPara,cvCustom,<span class="string">'k'</span>);
+0286         legend(<span class="string">'Rippa (Bompard)'</span>,<span class="string">'Custom'</span>);
+0287         title(<span class="string">'CV'</span>);
+0288     <span class="keyword">end</span>
+0289     
+0290     <span class="comment">%store graphs (if active)</span>
+0291     <span class="keyword">if</span> dispData.save&amp;&amp;(ns&lt;=2)
+0292         fileStore=<a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>(<span class="string">'fig_mse_cv'</span>,dispData.directory);
+0293         <span class="keyword">if</span> dispData.tex
+0294             fid=fopen([dispData.directory <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
+0295             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fileStore,<span class="string">'MSE'</span>,fileStore);
+0296             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
+0297             fclose(fid);
+0298         <span class="keyword">end</span>
+0299     <span class="keyword">end</span>
+0300 <span class="keyword">end</span>
+0301 <span class="comment">%reload initial configurations</span>
+0302 metaData.cv.disp=dispCvOld;
+0303 metaData.cv=CvOld;
+0304 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0305 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0306 <span class="comment">%%Building of the various elements with and without estimation of the</span>
+0307 <span class="comment">%%hyperparameters if no estimation the values of the hyperparameters are</span>
+0308 <span class="comment">%%chosen using empirical choice of  Hardy/Franke</span>
+0309 <span class="keyword">if</span> metaData.estim.on
+0310     paraEstim=<a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>(ret,metaData,<span class="string">'RBFBloc'</span>);
+0311     ret.build.paraEstim=paraEstim;
+0312     metaData.para.l.Val=paraEstim.l.Val;
+0313     metaData.para.Val=paraEstim.Val;
+0314     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'p'</span>)
+0315         metaData.para.p.Val=paraEstim.p.Val;
+0316     <span class="keyword">end</span>
+0317     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'nu'</span>)
+0318         metaData.para.nu.Val=paraEstim.nu.Val;
+0319     <span class="keyword">end</span>
+0320 <span class="keyword">else</span>
+0321     valL=<a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>(samplingIn,metaData);
+0322     <span class="keyword">if</span> numel(valL)==1;
+0323         metaData.para.l.Val=valL*ones(1,np);
+0324     <span class="keyword">else</span>
+0325         metaData.para.l.Val=valL;
+0326     <span class="keyword">end</span>
+0327     <span class="keyword">switch</span> metaData.kern
+0328         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
+0329             metaData.para.val=[metaData.para.l.Val metaData.para.p.Val];
+0330         <span class="keyword">case</span> {<span class="string">'matern'</span>}
+0331             metaData.para.val=[metaData.para.l.Val metaData.para.nu.Val];
+0332         <span class="keyword">otherwise</span>
+0333             metaData.para.val=metaData.para.l.Val;
+0334     <span class="keyword">end</span>
+0335 <span class="keyword">end</span>
+0336 
+0337 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0338 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0339 <span class="comment">% Building final elements of the RBF surrogate model (matrices, coefficients &amp; CV)</span>
+0340 <span class="comment">% by taking into account the values of hyperparameters obtained previously</span>
+0341 [~,blocRBF]=RBFBloc(ret,metaData);
+0342 <span class="comment">%save information</span>
+0343 tmp=<a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>(ret.build,blocRBF.build);
+0344 ret.build=tmp;
+0345 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0346 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0347 <span class="keyword">if</span> availGrad;txt=<span class="string">'GRBF'</span>;<span class="keyword">else</span> txt=<span class="string">'RBF'</span>;<span class="keyword">end</span>
+0348 fprintf(<span class="string">'\n &gt;&gt; END Building %s\n'</span>,txt);
+0349 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0350 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0351 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0352 <span class="comment">% Building final elements of the RBF surrogate model (matrices, coefficients &amp; CV)</span>
-0353 <span class="comment">% by taking into account the values of hyperparameters obtained previously</span>
-0354 [~,blocRBF]=<a href="RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>(ret,metaData);
-0355 <span class="comment">%save information</span>
-0356 tmp=<a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>(ret.build,blocRBF.build);
-0357 ret.build=tmp;
-0358 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0359 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0360 <span class="keyword">if</span> availGrad;txt=<span class="string">'GRBF'</span>;<span class="keyword">else</span> txt=<span class="string">'RBF'</span>;<span class="keyword">end</span>
-0361 fprintf(<span class="string">'\n &gt;&gt; END Building %s\n'</span>,txt);
-0362 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0363 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0364 <span class="keyword">end</span>
-0365 
-0366</pre></div>
-<hr><address>Generated on Thu 02-Jun-2016 11:26:37 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0351 <span class="keyword">end</span>
+0352 
+0353 <span class="comment">%% function for display information</span>
+0354 <a name="_sub1" href="#_subfunctions" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a>
+0355 boolOut=boolIn;
+0356 <span class="keyword">if</span> nargin==2
+0357     txtInFalse=[];
+0358     returnLine=false;
+0359 <span class="keyword">elseif</span> nargin==3
+0360     returnLine=false;
+0361 <span class="keyword">end</span>
+0362 <span class="keyword">if</span> isempty(txtInFalse)
+0363     fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">if</span> boolIn; fprintf(<span class="string">'Yes'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No'</span>);<span class="keyword">end</span>
+0364 <span class="keyword">else</span>
+0365     <span class="keyword">if</span> boolIn; fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">else</span> fprintf(<span class="string">'%s'</span>,txtInFalse);<span class="keyword">end</span>
+0366 <span class="keyword">end</span>
+0367 <span class="keyword">if</span> returnLine
+0368     fprintf(<span class="string">'\n'</span>)
+0369 <span class="keyword">end</span>
+0370 <span class="keyword">end</span>
+0371 
+0372</pre></div>
+<hr><address>Generated on Thu 04-Aug-2016 12:37:32 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

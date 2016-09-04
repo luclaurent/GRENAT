@@ -139,6 +139,10 @@ classdef GRENAT < handle
                 initRunEval(obj,true);
             end
         end
+         %setter for the type of metamodel
+        function set.type(obj,typeIn)
+            obj.confMeta.type=typeIn;
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -254,7 +254,11 @@ classdef GRENAT < handle
                     case 'Resp'
                         dataOut=NormRenorm(dataIn,'norm',infoDataR);
                     case 'Grad'
-                        dataOut=NormRenormG(dataIn,'norm',infoDataS,infoDataR);
+                        if ~isempty(dataIn)
+                            dataOut=NormRenormG(dataIn,'norm',infoDataS,infoDataR);
+                        else
+                            dataOut=[];
+                        end
                 end
             else
                 if nargout>2

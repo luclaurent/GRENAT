@@ -686,7 +686,9 @@ spaceA=maxA-sizeA+3;
 spaceTxt=' ';
 %display table
 for itT=1:numel(tableFiedIn)
-    fprintf('%s%s%s\n',tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
+    if isfield(structIn,tableFiedIn{itT})
+        fprintf('%s%s%s\n',tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
+    end
 end
 end
 
@@ -699,7 +701,7 @@ maxA=max(sizeA);
 spaceA=maxA-sizeA+3;
 spaceTxt=' ';
 %display table
-for itT=1:numel(tableA)
-    fprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
+for itT=1:numel(tableA)    
+        fprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
 end
 end

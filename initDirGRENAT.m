@@ -31,7 +31,7 @@ function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)
 % case of the use of this toolbox on a nested position (called by another
 % toolbox). In this case, the  MultiDOE toolbox will be not
 % loaded. The default value is false.
-if nargin<3;flagNested=false;
+if nargin<3;flagNested=false;end
 
 %folders of the GRENAToolbox
 foldersLoad={'funTest',...

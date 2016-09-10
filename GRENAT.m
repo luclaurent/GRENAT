@@ -108,7 +108,11 @@ classdef GRENAT < handle
         %setter for the sampling
         function set.sampling(obj,samplingIn)
             if ~isempty(samplingIn)
-                obj.sampling=samplingIn;
+                if isempty(obj.sampling)
+                    obj.sampling=samplingIn;
+                else
+                    obj.sampling=[obj.sampling;samplingIn];
+                end
                 initRunTrain(obj,true);
                 resetNorm(obj);
             else
@@ -118,7 +122,11 @@ classdef GRENAT < handle
         %setter for the responses
         function set.resp(obj,respIn)
             if ~isempty(respIn)
-                obj.resp=respIn;
+                if isempty(obj.resp)
+                    obj.resp=respIn;
+                else
+                    obj.resp=[obj.resp;respIn];
+                end
                 initRunTrain(obj,true);
             else
                 fprintf('ERROR: Empty array of responses\n');
@@ -127,7 +135,11 @@ classdef GRENAT < handle
         %setter for the gradients
         function set.grad(obj,gradIn)
             if ~isempty(gradIn)
-                obj.grad=gradIn;
+                if isempty(obj.gradIn)
+                    obj.gradIn=gradIn;
+                else
+                    obj.gradIn=[obj.gradIn;gradIn];
+                end
                 initRunTrain(obj,true);
                 initGradAvail(obj,true);
             end
@@ -198,6 +210,12 @@ classdef GRENAT < handle
         end
         function initRunEval(obj,flag)
             obj.runEval=flag;
+        end
+        %initialize data (remove saved data)
+        function initData(obj)
+            obj.sampling=[];
+            obj.resp=[];
+            obj.grad=[]
         end
         %ordering data (for manipulating nd-arrays)
         function dataOut=orderData(obj,dataIn,type)
@@ -322,6 +340,11 @@ classdef GRENAT < handle
             % if metaData.norm.on&&~isempty(metaData.norm.resp.std)
             %     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
             % end
+        end
+        %update the metamodel by adding sample points and associated
+        %responses and gradients
+        function update(samplingIn,respIn,gradIn,paraFind)
+            
         end
         %evaluate the metamodel
         function [Z,GZ,variance]=eval(obj,nonsamplePts)

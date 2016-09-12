@@ -135,10 +135,10 @@ classdef GRENAT < handle
         %setter for the gradients
         function set.grad(obj,gradIn)
             if ~isempty(gradIn)
-                if isempty(obj.gradIn)
-                    obj.gradIn=gradIn;
+                if isempty(obj.grad)
+                    obj.grad=gradIn;
                 else
-                    obj.gradIn=[obj.gradIn;gradIn];
+                    obj.grad=[obj.grad;gradIn];
                 end
                 initRunTrain(obj,true);
                 initGradAvail(obj,true);
@@ -151,7 +151,7 @@ classdef GRENAT < handle
                 initRunEval(obj,true);
             end
         end
-         %setter for the type of metamodel
+        %setter for the type of metamodel
         function set.type(obj,typeIn)
             obj.confMeta.type=typeIn;
         end
@@ -215,7 +215,7 @@ classdef GRENAT < handle
         function initData(obj)
             obj.sampling=[];
             obj.resp=[];
-            obj.grad=[]
+            obj.grad=[];
         end
         %ordering data (for manipulating nd-arrays)
         function dataOut=orderData(obj,dataIn,type)
@@ -343,8 +343,22 @@ classdef GRENAT < handle
         end
         %update the metamodel by adding sample points and associated
         %responses and gradients
-        function update(samplingIn,respIn,gradIn,paraFind)
-            
+        function update(samplingIn,respIn,gradIn,paraFind,varargin)
+            %add data
+            if ~isempty(samplingIn)
+                obj.sampling=samplingIn;
+                obj.resp=respIn;
+                obj.grad=gradIn;
+                %initialize flags
+                initRunTrain(obj,true);
+                initRunEval(obj,true);
+                %change status of the estimation of the parameters
+                obj.confMeta.conf('estimOn',paraFind);
+                %deal with additional options
+                if nargin>4;
+                    obj.confMeta.conf(varargin{:});
+                end
+            end
         end
         %evaluate the metamodel
         function [Z,GZ,variance]=eval(obj,nonsamplePts)
@@ -724,7 +738,7 @@ maxA=max(sizeA);
 spaceA=maxA-sizeA+3;
 spaceTxt=' ';
 %display table
-for itT=1:numel(tableA)    
-        fprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
+for itT=1:numel(tableA)
+    fprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
 end
 end

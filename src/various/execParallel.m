@@ -29,8 +29,8 @@ classdef execParallel < handle
     methods
         %constructor
         function obj=execParallel(stateIn,numW)
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-            fprintf('  Define Parallelism\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            Gfprintf('Define Parallelism\n');
             %depending of the input arguments
             if nargin>0;obj.on=stateIn;end
             if checkRun&&obj.on
@@ -66,14 +66,14 @@ classdef execParallel < handle
             if isempty(obj.defaultParallel);defaultConf(obj);end
             %check if the required number of workers is available
             if numReq>obj.defaultParallel.NumWorkers
-                fprintf('Too large number of required workers\n');
+                Gfprintf('Too large number of required workers\n');
             elseif numReq<=0
-                fprintf('Wrong number of required workers\n');
+                Gfprintf('Wrong number of required workers\n');
                 numReq=1;
             end
             %choose the number of worker
             obj.numWorkers=min(numReq,obj.defaultParallel.NumWorkers);
-            fprintf(' >> Number of workers required/available: %i/%i\n',obj.numWorkers,obj.defaultParallel.NumWorkers);
+            Gfprintf(' >> Number of workers required/available: %i/%i\n',obj.numWorkers,obj.defaultParallel.NumWorkers);
         end
         %start parallel workers
         function start(obj)
@@ -86,12 +86,11 @@ classdef execParallel < handle
                 end
                 %now start the cluster
                 try
-                    keyboard
                     parpool(obj.numWorkers);
-                    fprintf(' >>> Parallel workers started <<<\n');
+                    Gfprintf(' >>> Parallel workers started <<<\n');
                 catch
-                    fprintf('##>> Parallel starting issue <<##\n');
-                    fprintf('##>> Start without parallelism <<##\n');
+                    Gfprintf('##>> Parallel starting issue <<##\n');
+                    Gfprintf('##>> Start without parallelism <<##\n');
                 end
             end
         end
@@ -101,10 +100,10 @@ classdef execParallel < handle
             currentConf(obj);
             %close it if available
             if obj.on&&obj.currentParallel.NumWorkers>0
-                fprintf(' >>> Stop parallel workers <<<\n');
+                Gfprintf(' >>> Stop parallel workers <<<\n');
                 delete(gcp('nocreate'));
             else
-                fprintf(' >>> Workers already stopped\n');
+                Gfprintf(' >>> Workers already stopped\n');
             end
         end
         %load default configuration
@@ -132,8 +131,8 @@ javaOk=usejava('jvm');
 matlabOk=~isOctave;
 parallelOk=license('test','Distrib_Computing_Toolbox');
 runOk=javaOk&matlabOk&parallelOk;
-if ~javaOk;fprintf('>> Matlab started without java support (remove -nojvm flag)\n');end
-if ~matlabOk;fprintf('>> Code run with Octave (no parallelism)\n');end
-if ~parallelOk;fprintf('>> The Distibuted Computing Toolbox is unavailable\n');end
+if ~javaOk;Gfprintf('>> Matlab started without java support (remove -nojvm flag)\n');end
+if ~matlabOk;Gfprintf('>> Code run with Octave (no parallelism)\n');end
+if ~parallelOk;Gfprintf('>> The Distibuted Computing Toolbox is unavailable\n');end
 end
 

@@ -87,7 +87,7 @@ if metaData.recond
     %origCond=condest(KK);
     KK=KK+coefRecond*speye(size(KK));
     %newCond=condest(KK);
-%          fprintf('>>> Improving of the condition number: \n%g >> %g (%g) <<<\n',...
+%          Gfprintf('>>> Improving of the condition number: \n%g >> %g (%g) <<<\n',...
 %              origCond,newCond,abs(origCond-newCond)/origCond);
     
 end
@@ -96,9 +96,9 @@ end
 %condition number of the RBF/GRBF Matrix
 if nargin==2 % in the phase of building
     newCond=condest(KK);
-    fprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond)
+    Gfprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond)
     if newCond>1e16
-        fprintf('+++ //!\\ Bad condition number\n');
+        Gfprintf('+++ //!\\ Bad condition number\n');
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

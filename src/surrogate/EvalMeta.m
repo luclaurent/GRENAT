@@ -68,8 +68,8 @@ valGrad=zeros(nbReqEval,np);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 if nbReqEval>1&&Verb
-    fprintf('#############################################\n');
-    fprintf('  >>> EVALUATION of the surrogate model <<<\n');
+    Gfprintf('#############################################\n');
+    Gfprintf('  >>> EVALUATION of the surrogate model <<<\n');
 end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
@@ -248,9 +248,9 @@ end
 
 %end of evaluations
 if nbReqEval>1&&Verb
-    fprintf('++ Evaluation at %i points\n',nbReqEval);
+    Gfprintf('++ Evaluation at %i points\n',nbReqEval);
     countTime.stop;
-    fprintf('#########################################\n');
+    Gfprintf('#########################################\n');
 end
 
 end

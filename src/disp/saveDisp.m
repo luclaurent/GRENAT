@@ -42,7 +42,7 @@ end
 set(gcf,'Renderer','painters');      %for saving figure in nodisplay mode
 nameFig=[foldS '/' nameFile '.eps'];
 namefigM=[foldS '/' nameFile '.fig'];
-fprintf('>>Save figure: \n fichier %s\n',nameFig)
+Gfprintf('>>Save figure: \n fichier %s\n',nameFig)
 saveas(gcf, nameFig,'psc2');
 saveas(gcf, namefigM,'fig');
 fileFig=nameFig;

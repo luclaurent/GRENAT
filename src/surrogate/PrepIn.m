@@ -23,7 +23,7 @@ function ret=PrepIn(samplingIn,respIn,gradIn,metaData,missData)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Display information about the function
-fprintf('>>> Preparation of data for Indirect Gradient-Based Surrogate Models  \n');
+Gfprintf('>>> Preparation of data for Indirect Gradient-Based Surrogate Models  \n');
 
 %dimension of the problem (number of parameters)
 np=size(samplingIn,2);
@@ -38,9 +38,9 @@ end
 
 %with respect with the kind of gradient data
 if ~isstruct(gradIn)
-    fprintf('>> Step of the Taylor expansion (manu):')
-    fprintf(' %d',metaData.para.stepTaylor);
-    fprintf('\n')
+    Gfprintf('>> Step of the Taylor expansion (manu):')
+    Gfprintf(' %d',metaData.para.stepTaylor);
+    Gfprintf('\n')
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,9 +75,9 @@ if ~isstruct(gradIn)
     posR=[];
     if missData.resp.on
         pos_tmp=missData.eval.ix_manq;
-        fprintf(' >>> Remove information (missing data at point(s):');
-        fprintf(' %i',posR);
-        fprintf('\n');
+        Gfprintf(' >>> Remove information (missing data at point(s):');
+        Gfprintf(' %i',posR);
+        Gfprintf('\n');
         %renumber for extracting right values
         pos_tmp=(pos_tmp-1)*(np+1)+1;
         for ii=1:numel(pos_tmp)
@@ -145,9 +145,9 @@ else
         newResp(li_tirg)=gradIn.eval{ii};
     end
     
-    fprintf('>> Step of the Taylor expansion (auto):')
-    fprintf(' %d',stepTaylor);
-    fprintf('\n')
+    Gfprintf('>> Step of the Taylor expansion (auto):')
+    Gfprintf(' %d',stepTaylor);
+    Gfprintf('\n')
     
 end
 %store and extract information

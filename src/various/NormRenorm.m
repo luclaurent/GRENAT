@@ -121,5 +121,6 @@ switch type
             out=in;
         end
     otherwise
-        error(['Wrong kind of normalisation/renormalisation (cf. ',mfilename,')'])
+        Gfprintf('Wrong kind of normalisation/renormalisation');
+        error(['Error in ' mfilename ']);
 end

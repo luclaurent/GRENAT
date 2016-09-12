@@ -26,12 +26,12 @@ function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)
 % Display Building information
 textd='++ Type: ';
 textf='';
-fprintf('\n%s\n',[textd 'Kriging ((G)KRG)' textf]);
+Gfprintf('\n%s\n',[textd 'Kriging ((G)KRG)' textf]);
 %
-fprintf('>>> Building : ');
+Gfprintf('>>> Building : ');
 dispTxtOnOff(~isempty(gradIn),'GKRG','KRG',true);
-fprintf('>> Kernel function: %s\n',metaData.kern);
-fprintf('>> Deg : %i ',metaData.polyOrder);
+Gfprintf('>> Kernel function: %s\n',metaData.kern);
+Gfprintf('>> Deg : %i ',metaData.polyOrder);
 dispTxtOnOff(metaData.para.polyOrder==0,'(Ordinary)','(Universal)',true);
 %
 if dispTxtOnOff(metaData.cv.on,'>> CV: ',[],true)
@@ -41,30 +41,30 @@ end
 %
 dispTxtOnOff(metaData.recond,'>> Correction of matrix condition:',[],true);
 if dispTxtOnOff(metaData.estim.on,'>> Estimation of the hyperparameters: ',[],true)
-    fprintf('>> Algorithm for estimation: %s\n',metaData.estim.method);
-    fprintf('>> Bounds: [%d , %d]\n',metaData.para.l.Min,metaData.para.l.Max);
+    Gfprintf('>> Algorithm for estimation: %s\n',metaData.estim.method);
+    Gfprintf('>> Bounds: [%d , %d]\n',metaData.para.l.Min,metaData.para.l.Max);
     switch metaData.kern
         case {'expg','expgg'}
-            fprintf('>> Bounds for exponent: [%d , %d]\n',metaData.para.p.Min,metaData.para.p.Max);
+            Gfprintf('>> Bounds for exponent: [%d , %d]\n',metaData.para.p.Min,metaData.para.p.Max);
         case 'matern'
-            fprintf('>> Bounds for nu (Matern): [%d , %d]\n',metaData.para.nu.Min,metaData.para.nu.Max);
+            Gfprintf('>> Bounds for nu (Matern): [%d , %d]\n',metaData.para.nu.Min,metaData.para.nu.Max);
     end
     dispTxtOnOff(metaData.estim.aniso,'>> Anisotropy: ',[],true);
     dispTxtOnOff(metaData.estim.dispIterCmd,'>> Show estimation steps in console: ',[],true);
     dispTxtOnOff(metaData.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
 else
-    fprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
+    Gfprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
     switch metaData.kern
         case {'expg','expgg'}
-            fprintf('>> Value of the exponent:')
-            fprintf(' %d',metaData.para.p.val);
-            fprintf('\n');
+            Gfprintf('>> Value of the exponent:')
+            Gfprintf(' %d',metaData.para.p.val);
+            Gfprintf('\n');
         case {'matern'}
-            fprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.val);
+            Gfprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.val);
     end
 end
 %
-fprintf('\n');
+Gfprintf('\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load global variables
@@ -295,7 +295,7 @@ if metaData.estim.on&&metaData.estim.disp
             %show progress and time
             cpb.setValue(itli/numel(valX)*100);
         end
-        fprintf('\n');
+        Gfprintf('\n');
         cpb.stop();
         %plot log-vraisemblance
         figure;
@@ -317,7 +317,7 @@ if metaData.estim.on&&metaData.estim.disp
             valLik(itli)=KRGBloc(ret,metaData,valPara(itli));
             cpb.setValue(itli/numel(valPara)*100);
         end
-        fprintf('\n');
+        Gfprintf('\n');
         cpb.stop();
         
         %store in .dat file
@@ -337,8 +337,8 @@ if metaData.estim.on&&metaData.estim.disp
         fileStore=saveDisp('fig_likelihood',dispData.directory);
         if dispData.tex
             fid=fopen([dispData.directory '/fig.tex'],'a+');
-            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
-            %fprintf(fid,'\\verb{%s}\n',fich);
+            Gfprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
+            %Gfprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
         end
     end
@@ -386,14 +386,14 @@ ret.build.lilog=lilog;
 %% Cross-validation (compute various errors)
 if metaData.cv.on
     %countTime=mesuTime;
-    fprintf(' > Computation CV\n');
+    Gfprintf(' > Computation CV\n');
     [ret.build.cv]=KRGCV(ret,metaData);
     %countTime.stop;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if availGrad;txt='GKRG';else txt='KRG';end
-fprintf('\n >> END Building %s\n',txt);
+Gfprintf('\n >> END Building %s\n',txt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
@@ -409,12 +409,12 @@ elseif nargin==3
     returnLine=false;
 end
 if isempty(txtInFalse)
-    fprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else fprintf('No');end
+    Gfprintf('%s',txtInTrue);if boolIn; Gfprintf('Yes');else Gfprintf('No');end
 else
-    if boolIn; fprintf('%s',txtInTrue);else fprintf('%s',txtInFalse);end
+    if boolIn; Gfprintf('%s',txtInTrue);else Gfprintf('%s',txtInFalse);end
 end
 if returnLine
-    fprintf('\n')
+    Gfprintf('\n')
 end
 end
 

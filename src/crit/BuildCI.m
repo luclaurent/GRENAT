@@ -25,7 +25,7 @@ function [ci68,ci95,ci99]=BuildCI(ZZ,var)
 
 % numerical problem of negative variance
 if any(var<0)
-    fprintf(' >> Negative variance (changed to absolute value)\n');
+    Gfprintf(' >> Negative variance (changed to absolute value)\n');
 end
 v=abs(var);
 

@@ -22,7 +22,7 @@ function [ret]=CheckInputData(sampling,resp,grad)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf(' >> Check missing data \n');
+Gfprintf(' >> Check missing data \n');
 
 %number of variables
 np=size(sampling,2);
@@ -69,31 +69,31 @@ end
 
 %display information
 if nbMissResp==0&&nbMissGrad==0
-    fprintf('>>> No missing data\n');
+    Gfprintf('>>> No missing data\n');
 end
 
 if nbMissResp~=0
-    fprintf('>>> Missing response(s) at point(s):\n')
+    Gfprintf('>>> Missing response(s) at point(s):\n')
     for ii=1:nbMissResp
         num_pts=ixMissResp(ii);
-        fprintf(' n%s %i (%4.2f',char(176),num_pts,sampling(num_pts,1));
-        if np>1;fprintf(',%4.2f',sampling(num_pts,2:end));end
-        fprintf(')\n');
+        Gfprintf(' n%s %i (%4.2f',char(176),num_pts,sampling(num_pts,1));
+        if np>1;Gfprintf(',%4.2f',sampling(num_pts,2:end));end
+        Gfprintf(')\n');
     end
 end
 if ~emptyGrad
     if nbMissGrad~=0
-        fprintf('>>> Missing gradient(s) at point(s):\n')
+        Gfprintf('>>> Missing gradient(s) at point(s):\n')
         keyboard
         for ii=1:nbMissGrad
             num_pts=ixMissGrad(ii,1);
             component=ixMissGrad(ii,2);
-            fprintf(' n%s %i (%4.2f',char(176),num_pts,sampling(num_pts,1));
-            if np>1;fprintf(',%4.2f',sampling(num_pts,2:end));end
-            fprintf(')');
-            fprintf('  component: %i\n',component)
+            Gfprintf(' n%s %i (%4.2f',char(176),num_pts,sampling(num_pts,1));
+            if np>1;Gfprintf(',%4.2f',sampling(num_pts,2:end));end
+            Gfprintf(')');
+            Gfprintf('  component: %i\n',component)
         end
-        fprintf('----------------\n')
+        Gfprintf('----------------\n')
     end
 end
 

@@ -20,8 +20,8 @@
 
 function [err,errV,errNAME]=critErrDisp(Zap,Zref,data)
 
-fprintf('#########################################\n');
-fprintf('   >>> Compute error criteria <<<\n');
+Gfprintf('#########################################\n');
+Gfprintf('   >>> Compute error criteria <<<\n');
 countTime=mesuTime;
 
 %Reordering data
@@ -52,7 +52,7 @@ if ~isempty(Zref)
     [err.eq1,err.eq2,err.eq3]=qualError(Zref,Zap);
     txt=dispERR(err,errREF,errREFname);
     [TMPval,TMPname]=concatERR(err,errREF,'ref');
-    if ~isempty(txt);fprintf(txt);end
+    if ~isempty(txt);Gfprintf(txt);end
     TMPerrV=[TMPerrV TMPval];
     TMPErrNAME=[TMPErrNAME TMPname];
 else
@@ -60,42 +60,42 @@ else
 end
 if nargin==3
     if isfield(data,'cv')&&~isempty(data.cv)
-        fprintf('\n>>>Cross-Validation<<<\n');
+        Gfprintf('\n>>>Cross-Validation<<<\n');
         if isfield(data.cv,'final');
             err.cv=data.cv.final;
             txt=dispERR(data.cv.final,errCV,errCVname);
             [TMPval,TMPname]=concatERR(err,errREF,'cv');
-            if ~isempty(txt);fprintf(txt);end
+            if ~isempty(txt);Gfprintf(txt);end
             TMPerrV=[TMPerrV TMPval];
             TMPErrNAME=[TMPErrNAME TMPname];
         end
         if isfield(data.cv,'and');
-            fprintf('\n>>>REP and GR<<<\n');
+            Gfprintf('\n>>>REP and GR<<<\n');
             txt=dispERR(data.cv.and,errCV,errCVname);
             err.and=data.cv.and;
             [TMPval,TMPname]=concatERR(err,errREF,'cvA');
-            if ~isempty(txt);fprintf(txt);end
+            if ~isempty(txt);Gfprintf(txt);end
             TMPerrV=[TMPerrV TMPval];
             TMPErrNAME=[TMPErrNAME TMPname];
         end
         if isfield(data.cv,'then');
-            fprintf('\n>>>REP then GR<<<\n');
+            Gfprintf('\n>>>REP then GR<<<\n');
             txt=dispERR(data.cv.then,errCV,errCVname);
             err.then=data.cv.then;
             [TMPval,TMPname]=concatERR(err,errREF,'cvT');
-            if ~isempty(txt);fprintf(txt);end
+            if ~isempty(txt);Gfprintf(txt);end
             TMPerrV=[TMPerrV TMPval];
             TMPErrNAME=[TMPErrNAME TMPname];
         end
     end
     
     if isfield(data,'li')||isfield(data,'logli')
-        fprintf('\n>>>Likelihood<<<\n');
+        Gfprintf('\n>>>Likelihood<<<\n');
         txt=dispERR(data,vLI,nameLI);
         if isfield(data,'li');err.li=data.li;end
         if isfield(data,'logli');err.logli=data.logli;end
         [TMPval,TMPname]=concatERR(donnee,vLI,'');
-        if ~isempty(txt);fprintf(txt);end
+        if ~isempty(txt);Gfprintf(txt);end
         TMPerrV=[TMPerrV TMPval];
         TMPErrNAME=[TMPErrNAME TMPname];
     end
@@ -105,7 +105,7 @@ if nargin==3
     end
 end
 countTime.stop;
-fprintf('#########################################\n');
+Gfprintf('#########################################\n');
 end
 
 %function for displaying existing errors

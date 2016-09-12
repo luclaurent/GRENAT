@@ -27,8 +27,8 @@ countTime=mesuTime;
 switch type
     %evaluate sample points (X is a matrix: 1var per column)
     case 'eval'
-        fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-        fprintf('  >>>   EVALUATION of the FUNCTION  <<<\n');
+        Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+        Gfprintf('  >>>   EVALUATION of the FUNCTION  <<<\n');
         %% X matrix of sample points:
         % columns: each design parameters
         % rows: one set of parameters
@@ -43,8 +43,8 @@ switch type
         end
         %evalaution for display (X est a nd-array)
     case 'disp'
-        fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-        fprintf('  >>> EVALUATION of the FUNCTION (display) <<<\n');
+        Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+        Gfprintf('  >>> EVALUATION of the FUNCTION (display) <<<\n');
         Xeval=X;
         np=size(X,3);
         ns=size(X,1);

@@ -58,8 +58,8 @@ end
 dispData.nbSteps=nbSteps;
 dispData.step=abs(doeData.Xmax-doeData.Xmin)./nbSteps;
 
-fprintf(' >> Number of points on the grid %i (%i',nbSteps^spaDim,nbSteps);
-fprintf('x%i',nbSteps*ones(1,spaDim-1));fprintf(')\n');
+Gfprintf(' >> Number of points on the grid %i (%i',nbSteps^spaDim,nbSteps);
+Gfprintf('x%i',nbSteps*ones(1,spaDim-1));fprintf(')\n');
 
 countTime.stop;
-fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')

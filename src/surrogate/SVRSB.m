@@ -47,7 +47,7 @@ end
 % if nargin==3
 %     switch type
 %         case 'debug'  %debug mode (display criteria)
-%             fprintf('+++ CV KRG in DEBUG mode\n');
+%             Gfprintf('+++ CV KRG in DEBUG mode\n');
 %             modDebug=true;
 %         case 'study'  %study mode (use both methods for calculating criteria)
 %             modStudy=true;
@@ -233,14 +233,14 @@ spanBound=1/sizePsi...
 % cv.bm=1/ns*sum(esR);
 % %display information
 % if modDebug||modFinal
-%     fprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');
-%     fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
+%     Gfprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');
+%     Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
 %     if availGrad
-%         fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
-%         fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
+%         Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
+%         Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
 %     end
-%     fprintf('+++ Total error %4.2e\n',cv.then.eloot);
-%     fprintf('+++ PRESS %4.2e\n',cv.then.press);
+%     Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);
+%     Gfprintf('+++ PRESS %4.2e\n',cv.then.press);
 % end
 % 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -385,20 +385,20 @@ spanBound=1/sizePsi...
 %     [cv.then]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
 %     %display information
 %     if modDebug||modFinal
-%         fprintf('\n=== CV-LOO with remove responses THEN the gradients (debug)\n');
-%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
+%         Gfprintf('\n=== CV-LOO with remove responses THEN the gradients (debug)\n');
+%         Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
 %         if availGrad
-%             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
-%             fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
+%             Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
+%             Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
 %         end
-%         fprintf('+++ Total error %4.2e\n',cv.then.eloot);
-%         fprintf('+++ Mean bias %4.2e\n',cv.then.bm);
-%         fprintf('+++ PRESS %4.2e\n',cv.then.press);
-%         fprintf('+++ Custom error %4.2e\n',cv.then.errp);
-%         fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
-%         fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
-%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
-%         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
+%         Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);
+%         Gfprintf('+++ Mean bias %4.2e\n',cv.then.bm);
+%         Gfprintf('+++ PRESS %4.2e\n',cv.then.press);
+%         Gfprintf('+++ Custom error %4.2e\n',cv.then.errp);
+%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
+%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
+%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
+%         Gfprintf('+++ Adequation %4.2e\n',cv.then.adequ);
 %     end
 %     mesuTime(tMesuDebugA,tInitDebugA);
 % end
@@ -500,20 +500,20 @@ spanBound=1/sizePsi...
 %     [cv.and]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
 %     %display informations
 %     if modDebug||modFinal
-%         fprintf('\n=== CV-LOO with remove responses AND the gradients\n');
-%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
+%         Gfprintf('\n=== CV-LOO with remove responses AND the gradients\n');
+%         Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
 %         if availGrad
-%             fprintf('+++ Error on responses %4.2e\n',cv.and.eloor);
-%             fprintf('+++ Error on gradients %4.2e\n',cv.and.eloog);
+%             Gfprintf('+++ Error on responses %4.2e\n',cv.and.eloor);
+%             Gfprintf('+++ Error on gradients %4.2e\n',cv.and.eloog);
 %         end
-%         fprintf('+++ Total error %4.2e\n',cv.and.eloot);
-%         fprintf('+++ Mean bias %4.2e\n',cv.and.bm);
-%         fprintf('+++ PRESS %4.2e\n',cv.and.press);
-%         fprintf('+++ Custom error %4.2e\n',cv.and.errp);
-%         fprintf('+++ SCVR (Min) %4.2e\n',cv.and.scvr_min);
-%         fprintf('+++ SCVR (Max) %4.2e\n',cv.and.scvr_max);
-%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);
-%         fprintf('+++ Adequation %4.2e\n',cv.and.adequ);
+%         Gfprintf('+++ Total error %4.2e\n',cv.and.eloot);
+%         Gfprintf('+++ Mean bias %4.2e\n',cv.and.bm);
+%         Gfprintf('+++ PRESS %4.2e\n',cv.and.press);
+%         Gfprintf('+++ Custom error %4.2e\n',cv.and.errp);
+%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.and.scvr_min);
+%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.and.scvr_max);
+%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);
+%         Gfprintf('+++ Adequation %4.2e\n',cv.and.adequ);
 %     end
 %     mesuTime(tMesuDebugB,tInitDebugB);
 % end
@@ -592,20 +592,20 @@ spanBound=1/sizePsi...
 %     [cv.then]=LOOCalcError(resp,cvZR,cvVarR,grad,cvGZ,ns,np,normLOO);
 %     %display information
 %     if modDebug||modFinal
-%         fprintf('\n=== CV-LOO with remove responses THEN the gradients\n');
-%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
+%         Gfprintf('\n=== CV-LOO with remove responses THEN the gradients\n');
+%         Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
 %         if availGrad
-%             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
-%             fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
+%             Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
+%             Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
 %         end
-%         fprintf('+++ Total error %4.2e\n',cv.then.eloot);
-%         fprintf('+++ Mean bias %4.2e\n',cv.then.bm);
-%         fprintf('+++ PRESS %4.2e\n',cv.then.press);
-%         fprintf('+++ Custom error %4.2e\n',cv.then.errp);
-%         fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
-%         fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
-%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
-%         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);
+%         Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);
+%         Gfprintf('+++ Mean bias %4.2e\n',cv.then.bm);
+%         Gfprintf('+++ PRESS %4.2e\n',cv.then.press);
+%         Gfprintf('+++ Custom error %4.2e\n',cv.then.errp);
+%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);
+%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);
+%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);
+%         Gfprintf('+++ Adequation %4.2e\n',cv.then.adequ);
 %     end
 %     mesuTime(tMesuDebugC,tInitDebugC);
 % end
@@ -662,10 +662,10 @@ spanBound=1/sizePsi...
 %     cv.then.scvr_mean=cv.final.scvr_mean;
 %     %display information
 %     if modDebug||modFinal
-%         fprintf('\n=== CV-LOO SCVR\n');
-%         fprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);
-%         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
-%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
+%         Gfprintf('\n=== CV-LOO SCVR\n');
+%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);
+%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);
+%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);
 %     end
 %     mesuTime(tMesuDebugD,tInitDebugD);
 % end

@@ -20,7 +20,7 @@
 
 function [ZI,detInfill]=InfillCrit(respMin,Z,varZ,infillData)
 
-%fprintf('  >>> Compute infill criteria\n');
+%Gfprintf('  >>> Compute infill criteria\n');
 
 %depending on the kind of infill criteria to be computed
 calcEI=false;
@@ -61,15 +61,15 @@ nbv=size(Z);
 %check variance
 ixInf=find(varZ<0);
 if ~isempty(ixInf)
-    fprintf('Issue: variance lower than zero at %i points \n',numel(ixInf))
+    Gfprintf('Issue: variance lower than zero at %i points \n',numel(ixInf))
     disp(varZ(ixInf))
-    fprintf('> Correction to zero\n')
+    Gfprintf('> Correction to zero\n')
     varZ(ixInf)=0;
 end
 ixInf=find(varZ<eps);
 if ~isempty(ixInf)
-    fprintf('Issue: variance close to zero at %i points \n',numel(ixInf))
-    fprintf('> Correction to zero\n')
+    Gfprintf('Issue: variance close to zero at %i points \n',numel(ixInf))
+    Gfprintf('> Correction to zero\n')
     varZ(ixInf)=0;
 end
 

@@ -20,8 +20,8 @@
 
 function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)
 
-fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-fprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
 countTime=mesuTime;
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
@@ -32,14 +32,14 @@ if  ~isempty(gradIn);
     availGrad=true;
     availGradTxt='Yes';
 end
-fprintf('\n++ Gradients are available: %s\n',availGradTxt);
+Gfprintf('\n++ Gradients are available: %s\n',availGradTxt);
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %number of design variables
 np=size(samplingIn,2);
 %number of sample points
 ns=size(samplingIn,1);
-fprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n',np,ns);
+Gfprintf(' >> Number of design variables: %d \n >> Number of sample points: %d\n',np,ns);
 
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
@@ -57,7 +57,7 @@ if InGE
     samplingOk=IndirectData.new.sampling;
     respOk=IndirectData.new.resp;
     gradOk=[];
-    fprintf('\n%s\n','>> Indirect gradient-enhanced approach');
+    Gfprintf('\n%s\n','>> Indirect gradient-enhanced approach');
 elseif cGE
     samplingOk=samplingIn;
     respOk=respIn;
@@ -96,7 +96,7 @@ switch typeMeta
         %%%%%%%%=================================%%%%%%%%
     case {'DACE','InDACE'}
         %% Construction du metamodele de Krigeage (DACE)
-        fprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
+        Gfprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
         if metaData.para.estim
             switch metaData.corr
                 case {'correxpg'}
@@ -126,7 +126,7 @@ switch typeMeta
         for degre=metaData.deg
             %% Construction du metamodele de Regression polynomiale
             dd=['-- Degre du polynome \n',num2str(degre)];
-            fprintf(dd);
+            Gfprintf(dd);
             [prg.coef,prg.MSE]=meta_prg(samplingN,respN,degre);
             outMeta.prg{ite_prg}=prg;
             ite_prg=ite_prg+1;
@@ -135,12 +135,12 @@ switch typeMeta
         %%%%%%%%=================================%%%%%%%%
     case 'ILIN'
         %% Construction du metamodele d'interpolation lineaire
-        fprintf('\n%s\n',[textd  'Interpolation par fonction de base ' textf]);
+        Gfprintf('\n%s\n',[textd  'Interpolation par fonction de base ' textf]);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'ILAG'
         %% interpolation par fonction de base lineaire
-        fprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
+        Gfprintf('\n%s\n',[textd  'Interpolation par fonction polynomiale de Lagrange' textf]);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     otherwise
@@ -161,7 +161,7 @@ outMeta.norm=metaData.norm;
 outMeta.miss=metaData.miss;
 
 countTime.stop;
-fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
 end
 
 %function for checking if the surrogate model is a classical

@@ -179,7 +179,7 @@ if metaData.recond
     %origCond=condest(rcc);
     KK=KK+coefRecond*speye(size(KK));
     %newCond=condest(rcc);
-    %fprintf('>>> Improving of the condition number: \n%g >> %g  <<<\n',...
+    %Gfprintf('>>> Improving of the condition number: \n%g >> %g  <<<\n',...
     %    origCond,newCond);
     
 end
@@ -188,9 +188,9 @@ end
 %condition number of the KRG/GKRG Matrix
 if final   % in the phase of building
     newCond=condest(KK);
-    fprintf('Condition number KRG/GKRG matrix: %4.2e\n',newCond)
+    Gfprintf('Condition number KRG/GKRG matrix: %4.2e\n',newCond)
     if newCond>1e16
-        fprintf('+++ //!\\ Bad condition number\n');
+        Gfprintf('+++ //!\\ Bad condition number\n');
     end
 end
 

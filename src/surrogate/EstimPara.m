@@ -27,9 +27,9 @@ critOpti=dataMeta.estim.critOpti;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
-fprintf('    > Estimation of hyperparameters <\n');
-fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
+Gfprintf(' - - - - - - - - - - - - - - - - - - - - \n');
+Gfprintf('    > Estimation of hyperparameters <\n');
+Gfprintf(' - - - - - - - - - - - - - - - - - - - - \n');
 countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -198,7 +198,7 @@ end
 if sampleMinOk
     nbSample=nbPOptim*10;
     samplingType='LHS_O1';
-    fprintf('||SampleMin + opti||  Sampling %s on %i points\n',samplingType,nbSample);
+    Gfprintf('||SampleMin + opti||  Sampling %s on %i points\n',samplingType,nbSample);
     doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSample;doePop.disp=false;doePop.type=samplingType;
     samplePop=buildDOE(doePop);
     critS=zeros(1,nbSample);
@@ -224,8 +224,8 @@ switch methodOptim
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'simplex'  %simplix method
-        fprintf('||Simplex|| Starting point:\n');
-        fprintf('%g ',x0); fprintf('\n');
+        Gfprintf('||Simplex|| Starting point:\n');
+        Gfprintf('%g ',x0); Gfprintf('\n');
         if ~dispWarning;warning off all;end
         [x, fmax, nf] = nmsmax(fun, x0, [], []);
         %store results from the algorithm
@@ -239,7 +239,7 @@ switch methodOptim
     case 'SampleMin'
         nbSample=nbP*50;
         samplingType='LHS_O1';
-        fprintf('||SampleMin||  Sample %s on %i points\n',samplingType,nbSample);
+        Gfprintf('||SampleMin||  Sample %s on %i points\n',samplingType,nbSample);
         doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSample;doePop.disp=false;doePop.type=samplingType;
         samplePop=buildDOE(doePop);
         critS=zeros(1,nbSample);
@@ -256,8 +256,8 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'sqp'
-        fprintf('||Fmincon (SQP)|| Starting point:\n');
-        fprintf('%g ',x0); fprintf('\n');
+        Gfprintf('||Fmincon (SQP)|| Starting point:\n');
+        Gfprintf('%g ',x0); Gfprintf('\n');
         %deal with undefined starting point
         if ~dispWarning;warning off all;end
         %minimization
@@ -270,7 +270,7 @@ switch methodOptim
             paraEstim.outAlgo.exitflag=exitflag;
             if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
-            fprintf('Issue SQP\n');
+            Gfprintf('Issue SQP\n');
         end
         if ~dispWarning;warning on all;end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -278,8 +278,8 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminbnd'
-        fprintf('||Fminbnd|| Starting point:\n');
-        fprintf('%g ',x0); fprintf('\n');
+        Gfprintf('||Fminbnd|| Starting point:\n');
+        Gfprintf('%g ',x0); Gfprintf('\n');
         %minimization
         if ~dispWarning;warning off all;end
         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsFminbnd);
@@ -292,15 +292,15 @@ switch methodOptim
             paraEstim.outAlgo.exitflag=exitflag;
             if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
-            fprintf('Issue SQP\n');
+            Gfprintf('Issue SQP\n');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminsearch'
-        fprintf('||Fminsearch|| Starting point:\n');
-        fprintf('%g ',x0); fprintf('\n');
+        Gfprintf('||Fminsearch|| Starting point:\n');
+        Gfprintf('%g ',x0); Gfprintf('\n');
         %minimization
         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
         %stop minimization
@@ -311,15 +311,15 @@ switch methodOptim
             paraEstim.outAlgo.exitflag=exitflag;
             if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
-            fprintf('Issue Fminsearch\n');
+            Gfprintf('Issue Fminsearch\n');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fmincon'
-        fprintf('||Fmincon|| Starting point:\n');
-        fprintf('%g ',x0); fprintf('\n');
+        Gfprintf('||Fmincon|| Starting point:\n');
+        Gfprintf('%g ',x0); Gfprintf('\n');
         %deal with undefined starting point
         if ~dispWarning;warning off all;end
         %minimization
@@ -332,7 +332,7 @@ switch methodOptim
             paraEstim.outAlgo.exitflag=exitflag;
             if exist(fval1,'var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
-            fprintf('Issue Fmincon\n');
+            Gfprintf('Issue Fmincon\n');
         end
         if ~dispWarning;warning on all;end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -340,7 +340,7 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'ga'
-        fprintf('||Ga|| Initialisation with sampling %s:\n',sampManuOn);
+        Gfprintf('||Ga|| Initialisation with sampling %s:\n',sampManuOn);
         if ~dispWarning;warning off all;end
         [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsGA);
         %stop minimization
@@ -351,7 +351,7 @@ switch methodOptim
             paraEstim.outAlgo.exitflag=exitflag;
             if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
-            fprintf('Issue Ga\n');
+            Gfprintf('Issue Ga\n');
         end
         
         if ~dispWarning;warning on all;end
@@ -360,7 +360,7 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'pso'
-        if sampManuOn;fprintf('||PSOt|| Initialisation with sampling %s:\n',sampManuOn);end
+        if sampManuOn;Gfprintf('||PSOt|| Initialisation with sampling %s:\n',sampManuOn);end
         if ~dispWarning;warning off all;end
         %vectorized version of PSOt
         [psoOut,...    %minimum point and associated responses
@@ -416,25 +416,25 @@ switch dataMeta.kern
         paraEstim.p.Val=x(nbP+1:end);
 end
 %display values of HyperParameters
-fprintf(' >>> Optimal HyperParameters\n');
+Gfprintf(' >>> Optimal HyperParameters\n');
 dispHyperParameter('l ',paraEstim.l.Val);
 if ~isnan(paraEstim.p.Val);dispHyperParameter('p ',paraEstim.p.Val);end
 if ~isnan(paraEstim.nu.Val);dispHyperParameter('nu',paraEstim.nu.Val);end
 %
 countTime.stop;
-fprintf(' - - - - - - - - - - - - - - - - - - - - \n');
+Gfprintf(' - - - - - - - - - - - - - - - - - - - - \n');
 end
 
 %function for displaying hyperparameters in the command window
 function dispHyperParameter(nameHP,valHP)
-fprintf(' >> %s:',nameHP);
+Gfprintf(' >> %s:',nameHP);
 if numel(valHP)==1
-    fprintf(' %g',valHP);
+    Gfprintf(' %g',valHP);
 else
-    fprintf(' %g |',valHP(1:end-1));
-    fprintf(' %g',valHP(end));
+    Gfprintf(' %g |',valHP(1:end-1));
+    Gfprintf(' %g',valHP(end));
 end
-fprintf('\n');
+Gfprintf('\n');
 end
 
 %wrapper to optimset and gaoptimset function (actual functions requires the

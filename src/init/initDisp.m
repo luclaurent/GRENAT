@@ -59,9 +59,9 @@ classdef initDisp < handle
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            fprintf('=========================================\n')
-            fprintf(' >>> Initialization of the display configuration\n');
-            fprintf('=========================================\n')
+            Gfprintf('=========================================\n')
+            Gfprintf(' >>> Initialization of the display configuration\n');
+            Gfprintf('=========================================\n')
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,7 +69,7 @@ classdef initDisp < handle
         function set.scale(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.scale,boolIn)
-                    fprintf(' >>> Scaling of gradients: ');
+                    Gfprintf(' >>> Scaling of gradients: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.scale=boolIn;
@@ -79,7 +79,7 @@ classdef initDisp < handle
         function set.on(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.on,boolIn)
-                    fprintf(' >>> Display: ');
+                    Gfprintf(' >>> Display: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.on=boolIn;
@@ -89,7 +89,7 @@ classdef initDisp < handle
         function set.d3(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.d3,boolIn)
-                    fprintf(' >>> 3D display: ');
+                    Gfprintf(' >>> 3D display: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.d3=boolIn;
@@ -99,7 +99,7 @@ classdef initDisp < handle
         function set.d2(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.d2,boolIn)
-                    fprintf(' >>> 2D display: ');
+                    Gfprintf(' >>> 2D display: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.d2=boolIn;
@@ -109,7 +109,7 @@ classdef initDisp < handle
         function set.contour(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.contour,boolIn)
-                    fprintf(' >>> Display contour: ');
+                    Gfprintf(' >>> Display contour: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.contour=boolIn;
@@ -119,7 +119,7 @@ classdef initDisp < handle
         function set.tikz(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.tikz,boolIn)
-                    fprintf(' >>> Save display using tikz (matlab2tikz): ');
+                    Gfprintf(' >>> Save display using tikz (matlab2tikz): ');
                     SwitchOnOff(boolIn);
                 end
                 obj.tikz=boolIn;
@@ -129,7 +129,7 @@ classdef initDisp < handle
         function set.save(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.save,boolIn)
-                    fprintf(' >>> Save display using fig: ');
+                    Gfprintf(' >>> Save display using fig: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.save=boolIn;
@@ -139,7 +139,7 @@ classdef initDisp < handle
         function set.directory(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.directory,charIn)
-                    fprintf(' >>> Saving directory : %s (previous %s)',charIn,obj.directory);
+                    Gfprintf(' >>> Saving directory : %s (previous %s)',charIn,obj.directory);
                 end
                 obj.directory=charIn;
             end
@@ -148,7 +148,7 @@ classdef initDisp < handle
         function set.gridGrad(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.gridGrad,boolIn)
-                    fprintf(' >>> Show gradients on the grid: ');
+                    Gfprintf(' >>> Show gradients on the grid: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.gridGrad=boolIn;
@@ -158,7 +158,7 @@ classdef initDisp < handle
         function set.sampleGrad(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.sampleGrad,boolIn)
-                    fprintf(' >>> Show gradients at the sample points: ');
+                    Gfprintf(' >>> Show gradients at the sample points: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.sampleGrad=boolIn;
@@ -168,7 +168,7 @@ classdef initDisp < handle
         function set.ciOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.ciOn,boolIn)
-                    fprintf(' >>> Show confidence intervals (if available): ');
+                    Gfprintf(' >>> Show confidence intervals (if available): ');
                     SwitchOnOff(boolIn);
                 end
                 obj.ciOn=boolIn;
@@ -178,7 +178,7 @@ classdef initDisp < handle
         function set.ciType(obj,charIn)
             if isG(charIn,'char')
                 if xor(obj.ciType,charIn)
-                    fprintf(' >>> Type of confidence interval : %s (previous %s)',charIn,obj.ciType);
+                    Gfprintf(' >>> Type of confidence interval : %s (previous %s)',charIn,obj.ciType);
                 end
                 obj.ciType=charIn;
             end
@@ -187,7 +187,7 @@ classdef initDisp < handle
         function set.newFig(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.newFig,boolIn)
-                    fprintf(' >>> Show in new figure: ');
+                    Gfprintf(' >>> Show in new figure: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.newFig=boolIn;
@@ -197,7 +197,7 @@ classdef initDisp < handle
         function set.opt(obj,charIn)
             if isG(charIn,'char')
                 if xor(obj.opt,charIn)
-                    fprintf(' >>> Plot options : %s (previous %s)',charIn,obj.opt);
+                    Gfprintf(' >>> Plot options : %s (previous %s)',charIn,obj.opt);
                 end
                 obj.opt=charIn;
             end
@@ -206,7 +206,7 @@ classdef initDisp < handle
         function set.xlabel(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.xlabel,charIn)
-                    fprintf(' >>> X label : %s (previous %s)',charIn,obj.xlabel);
+                    Gfprintf(' >>> X label : %s (previous %s)',charIn,obj.xlabel);
                 end
                 obj.xlabel=charIn;
             end
@@ -215,7 +215,7 @@ classdef initDisp < handle
         function set.ylabel(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.ylabel,charIn)
-                    fprintf(' >>> Y label : %s (previous %s)',charIn,obj.ylabel);
+                    Gfprintf(' >>> Y label : %s (previous %s)',charIn,obj.ylabel);
                 end
                 obj.ylabel=charIn;
             end
@@ -224,7 +224,7 @@ classdef initDisp < handle
         function set.zlabel(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.zlabel,charIn)
-                    fprintf(' >>> Z label : %s (previous %s)',charIn,obj.zlabel);
+                    Gfprintf(' >>> Z label : %s (previous %s)',charIn,obj.zlabel);
                 end
                 obj.zlabel=charIn;
             end
@@ -233,7 +233,7 @@ classdef initDisp < handle
         function set.title(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.title,charIn)
-                    fprintf(' >>> Z label : %s (previous %s)',charIn,obj.title);
+                    Gfprintf(' >>> Z label : %s (previous %s)',charIn,obj.title);
                 end
                 obj.title=charIn;
             end
@@ -242,7 +242,7 @@ classdef initDisp < handle
         function set.color(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.color,charIn)
-                    fprintf(' >>> Color for uniform display : %s (previous %s)',charIn,obj.color);
+                    Gfprintf(' >>> Color for uniform display : %s (previous %s)',charIn,obj.color);
                 end
                 obj.color=charIn;
             end
@@ -251,7 +251,7 @@ classdef initDisp < handle
         function set.uni(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.uni,boolIn)
-                    fprintf(' >>> Uniform color: ');
+                    Gfprintf(' >>> Uniform color: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.uni=boolIn;
@@ -261,7 +261,7 @@ classdef initDisp < handle
         function set.render(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.render,boolIn)
-                    fprintf(' >>> 3D rendering: ');
+                    Gfprintf(' >>> 3D rendering: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.render=boolIn;
@@ -271,7 +271,7 @@ classdef initDisp < handle
         function set.samplePts(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.samplePts,boolIn)
-                    fprintf(' >>> Show sample points: ');
+                    Gfprintf(' >>> Show sample points: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.samplePts=boolIn;
@@ -281,7 +281,7 @@ classdef initDisp < handle
         function set.num(obj,doubleIn)
             if isG(doubleIn,'double')
                 if all(obj.num~=doubleIn)
-                    fprintf(' >>> Number of the plot: %d (previous %d)',doubleIn,obj.num);
+                    Gfprintf(' >>> Number of the plot: %d (previous %d)',doubleIn,obj.num);
                 end
                 obj.num=doubleIn;
             end
@@ -290,7 +290,7 @@ classdef initDisp < handle
         function set.nbSteps(obj,doubleIn)
             if isG(doubleIn,'double')
                 if all(obj.nbSteps~=doubleIn)
-                    fprintf(' >>> Number of steps of the reference grid: %d (previous %d)',doubleIn,obj.nbSteps);
+                    Gfprintf(' >>> Number of steps of the reference grid: %d (previous %d)',doubleIn,obj.nbSteps);
                 end
                 obj.nbSteps=doubleIn;
             end
@@ -299,7 +299,7 @@ classdef initDisp < handle
         function set.step(obj,doubleIn)
             if isG(doubleIn,'double')
                 if all(obj.step~=doubleIn)
-                    fprintf(' >>> Size of steps of the reference grid: %d (previous %d)',doubleIn,obj.step);
+                    Gfprintf(' >>> Size of steps of the reference grid: %d (previous %d)',doubleIn,obj.step);
                 end
                 obj.step=doubleIn;
             end
@@ -308,7 +308,7 @@ classdef initDisp < handle
         function set.nv(obj,doubleIn)
             if isG(doubleIn,'double')
                 if all(obj.nv~=doubleIn)
-                    fprintf(' >>> Number of sample points of the reference grid: %d (previous %d)',doubleIn,obj.nv);
+                    Gfprintf(' >>> Number of sample points of the reference grid: %d (previous %d)',doubleIn,obj.nv);
                 end
                 obj.nv=doubleIn;
             end
@@ -317,7 +317,7 @@ classdef initDisp < handle
         function set.tex(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.tex,boolIn)
-                    fprintf(' >>> Save data in TeX file: ');
+                    Gfprintf(' >>> Save data in TeX file: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.tex=boolIn;
@@ -327,7 +327,7 @@ classdef initDisp < handle
         function set.bar(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.bar,boolIn)
-                    fprintf(' >>> Use bar on plot: ');
+                    Gfprintf(' >>> Use bar on plot: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.bar=boolIn;
@@ -337,7 +337,7 @@ classdef initDisp < handle
         function set.trans(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.trans,boolIn)
-                    fprintf(' >>> Transparency: ');
+                    Gfprintf(' >>> Transparency: ');
                     SwitchOnOff(boolIn);
                 end
                 obj.trans=boolIn;
@@ -366,19 +366,19 @@ classdef initDisp < handle
                                 okConf=true;
                                 obj.(keyW)=keyV;
                             else
-                                fprintf('>> Wrong keyword %s\n',keyW);
+                                Gfprintf('>> Wrong keyword %s\n',keyW);
                             end
                         end
                     end
                 end
                 if ~okConf
-                    fprintf('\nWrong syntax used for conf method\n')
-                    fprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
-                    fprintf('\nList of the avilable keywords:\n');
+                    Gfprintf('\nWrong syntax used for conf method\n')
+                    Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
+                    Gfprintf('\nList of the avilable keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
                 end
             else
-                fprintf('Current configuration\n');
+                Gfprintf('Current configuration\n');
                 disp(obj);
             end
         end
@@ -430,22 +430,22 @@ spaceA=maxA-sizeA+3;
 spaceTxt=' ';
 %display table
 for itT=1:numel(tableFiedIn)
-    fprintf('%s%s%s\n',tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
+    Gfprintf('%s%s%s\n',tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
 end
 end
 
 %function for checking type a variable and display erro message
 function okG=isG(varIn,typeIn)
 okG=isa(varIn,typeIn);
-if ~okG;fprintf(' Wrong input variable. Required: %s (current: %s)\n',typeIn,class(varIn));end
+if ~okG;Gfprintf(' Wrong input variable. Required: %s (current: %s)\n',typeIn,class(varIn));end
 end
 
 %display change of state
 function SwitchOnOff(boolIn)
 if boolIn;
-    fprintf(' On (previous Off)\n');
+    Gfprintf(' On (previous Off)\n');
 else
-    fprintf(' Off (previous On)\n');
+    Gfprintf(' Off (previous On)\n');
 end
 end
 

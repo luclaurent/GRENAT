@@ -29,12 +29,12 @@ function displaySurrogateCI(Xpts,ic,dispData,Z)
 % fMiss=setxor(fDef,fAvail);
 % %add missing options
 % if ~isempty(fMiss)
-%     fprintf('Missing display options (add)\n');
+%     Gfprintf('Missing display options (add)\n');
 %     for ii=1:numel(fMiss)
-%         fprintf('%s ',fMiss{ii});
+%         Gfprintf('%s ',fMiss{ii});
 %         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
 %     end
-%     fprintf('\n')
+%     Gfprintf('\n')
 % end
 
 %new figure or not

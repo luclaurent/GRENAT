@@ -65,12 +65,12 @@ function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)
 % fMiss=setxor(fDef,fAvail);
 % %adding missing options
 % if ~isempty(fMiss)
-%     fprintf('Some display options are missing (add its)\n');
+%     Gfprintf('Some display options are missing (add its)\n');
 %     for ii=1:numel(fMiss)
-%         fprintf('%s ',fMiss{ii});
+%         Gfprintf('%s ',fMiss{ii});
 %         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
 %     end
-%     fprintf('\n');
+%     Gfprintf('\n');
 % end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -445,8 +445,8 @@ if dispData.on
         fich=saveDisp(numPlot,dispData.directory);
         if dispData.tex
             fid=fopen([dispData.directory '/fig.tex'],'a+');
-            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,dispData.title,fich);
-            %fprintf(fid,'\\verb{%s}\n',fich);
+            Gfprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,dispData.title,fich);
+            %Gfprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
         end
     end

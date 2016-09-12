@@ -109,9 +109,9 @@ classdef initMeta < handle
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            fprintf('=========================================\n')
-            fprintf(' >> Initialization of the metamodel configuration\n');
-            fprintf('=========================================\n')
+            Gfprintf('=========================================\n')
+            Gfprintf(' >> Initialization of the metamodel configuration\n');
+            Gfprintf('=========================================\n')
             %listeners
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%add listener for specific event (execute method after the set
@@ -129,7 +129,7 @@ classdef initMeta < handle
         function set.useGrad(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.useGrad,boolIn)
-                    fprintf(' >>> Use input gradients : ');
+                    Gfprintf(' >>> Use input gradients : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.useGrad=boolIn;
@@ -139,11 +139,11 @@ classdef initMeta < handle
             if isG(charIn,'char')
                 if ismember(charIn,obj.typeAvail)
                     if ~strcmp(obj.type,charIn)
-                        fprintf(' >>> Type of metamodel : %s (previous %s)\n',charIn,obj.type);
+                        Gfprintf(' >>> Type of metamodel : %s (previous %s)\n',charIn,obj.type);
                     end
                     obj.type=charIn;
                 else
-                    fprintf(' Type %s not available\n',charIn);
+                    Gfprintf(' Type %s not available\n',charIn);
                     availableType(obj);
                 end
             end
@@ -241,7 +241,7 @@ classdef initMeta < handle
         function set.estimOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.estimOn,boolIn)
-                    fprintf(' >>> Estimation of the hyperparameters : ');
+                    Gfprintf(' >>> Estimation of the hyperparameters : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.estimOn=boolIn;
@@ -250,7 +250,7 @@ classdef initMeta < handle
         function set.aniso(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.aniso,boolIn)
-                    fprintf(' >>> anisotropic model : ');
+                    Gfprintf(' >>> anisotropic model : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.aniso=boolIn;
@@ -259,7 +259,7 @@ classdef initMeta < handle
         function set.dispEstim(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.dispEstim,boolIn)
-                    fprintf(' >>> Show estimation process : ');
+                    Gfprintf(' >>> Show estimation process : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.dispEstim=boolIn;
@@ -268,7 +268,7 @@ classdef initMeta < handle
         function set.saveEstim(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.saveEstim,boolIn)
-                    fprintf(' >>> Save function used for finding hyperparameters : ');
+                    Gfprintf(' >>> Save function used for finding hyperparameters : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.saveEstim=boolIn;
@@ -277,7 +277,7 @@ classdef initMeta < handle
         function set.dispIterGraph(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.dispIterGraph,boolIn)
-                    fprintf(' >>> Plot iterations estimation process : ');
+                    Gfprintf(' >>> Plot iterations estimation process : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.dispIterGraph=boolIn;
@@ -286,7 +286,7 @@ classdef initMeta < handle
         function set.dispIterCmd(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.dispIterCmd,boolIn)
-                    fprintf(' >>> Display iterations in command windows : ');
+                    Gfprintf(' >>> Display iterations in command windows : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.dispIterCmd=boolIn;
@@ -295,7 +295,7 @@ classdef initMeta < handle
         function set.dispPlotAlgo(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.dispPlotAlgo,boolIn)
-                    fprintf(' >>> Plot convergence information on figures : ');
+                    Gfprintf(' >>> Plot convergence information on figures : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.dispPlotAlgo=boolIn;
@@ -304,7 +304,7 @@ classdef initMeta < handle
         function set.method(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.method,charIn)
-                    fprintf(' >>> Optimizer for estimating hyperparameters : %s (previous %s)',charIn,obj.method);
+                    Gfprintf(' >>> Optimizer for estimating hyperparameters : %s (previous %s)',charIn,obj.method);
                 end
                 obj.method=charIn;
             end
@@ -312,7 +312,7 @@ classdef initMeta < handle
         function set.sampManu(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.sampManu,charIn)
-                    fprintf(' >>> DOE for initial sampling GA : %s (previous %s)',charIn,obj.sampManu);
+                    Gfprintf(' >>> DOE for initial sampling GA : %s (previous %s)',charIn,obj.sampManu);
                 end
                 obj.sampManu=charIn;
             end
@@ -320,7 +320,7 @@ classdef initMeta < handle
         function set.sampManuOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.sampManuOn,boolIn)
-                    fprintf(' >>> Plot convergence information on figures : ');
+                    Gfprintf(' >>> Plot convergence information on figures : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.sampManuOn=boolIn;
@@ -340,11 +340,11 @@ classdef initMeta < handle
             if isG(charIn,'char')
                 if ismember(charIn,obj.kernAvail)
                     if strcmp(obj.kern,charIn)
-                        fprintf(' >>> Kernel function : %s (previous %s)',charIn,obj.kern);
+                        Gfprintf(' >>> Kernel function : %s (previous %s)',charIn,obj.kern);
                     end
                     obj.kern=charIn;
                 else
-                    fprintf(' Kernel function %s not available\n',charIn);
+                    Gfprintf(' Kernel function %s not available\n',charIn);
                     availableKern(obj);
                 end
             end
@@ -352,7 +352,7 @@ classdef initMeta < handle
         function set.normOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.normOn,boolIn)
-                    fprintf(' >>> Normalization of the data : ');
+                    Gfprintf(' >>> Normalization of the data : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.normOn=boolIn;
@@ -361,7 +361,7 @@ classdef initMeta < handle
         function set.recond(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.recond,boolIn)
-                    fprintf(' >>> Improve condition number of matrices (KRG, RBF...) : ');
+                    Gfprintf(' >>> Improve condition number of matrices (KRG, RBF...) : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.recond=boolIn;
@@ -370,7 +370,7 @@ classdef initMeta < handle
         function set.cvOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.cvOn,boolIn)
-                    fprintf(' >>> Cross-validation : ');
+                    Gfprintf(' >>> Cross-validation : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.cvOn=boolIn;
@@ -379,7 +379,7 @@ classdef initMeta < handle
         function set.cvFull(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.cvFull,boolIn)
-                    fprintf(' >>> All CV criteria : ');
+                    Gfprintf(' >>> All CV criteria : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.cvFull=boolIn;
@@ -388,7 +388,7 @@ classdef initMeta < handle
         function set.cvDisp(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.cvDisp,boolIn)
-                    fprintf(' >>> Display QQ plot CV : ');
+                    Gfprintf(' >>> Display QQ plot CV : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.cvDisp=boolIn;
@@ -398,7 +398,7 @@ classdef initMeta < handle
         function set.infillOn(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.infillOn,boolIn)
-                    fprintf(' >>> Computation of the infill criterion : ');
+                    Gfprintf(' >>> Computation of the infill criterion : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.infillOn=boolIn;
@@ -407,7 +407,7 @@ classdef initMeta < handle
         function set.infillCrit(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.infillCrit,charIn)
-                    fprintf(' >>> Infill criterion : %s (previous %s)',charIn,obj.kern);
+                    Gfprintf(' >>> Infill criterion : %s (previous %s)',charIn,obj.kern);
                 end
                 obj.infillCrit=charIn;
             end
@@ -430,7 +430,7 @@ classdef initMeta < handle
         function set.checkInterp(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.checkInterp,boolIn)
-                    fprintf(' >>> Check interpolation property : ');
+                    Gfprintf(' >>> Check interpolation property : ');
                     SwitchOnOff(boolIn);
                 end
                 obj.checkInterp=boolIn;
@@ -440,19 +440,19 @@ classdef initMeta < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %list available techniques
         function availableType(obj)
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-            fprintf('Available techniques for surrogate models\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            Gfprintf('Available techniques for surrogate models\n')
             dispTableTwoColumns(obj.typeAvail,obj.typeTxt);
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %list available kernel function
         function availableKernel(obj)
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-            fprintf('Available kernel functions for surrogate models\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            Gfprintf('Available kernel functions for surrogate models\n')
             dispTableTwoColumns(obj.typeAvail,obj.typeTxt);
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -544,19 +544,19 @@ classdef initMeta < handle
                                 okConf=true;
                                 obj.(keyW)=keyV;
                             else
-                                fprintf('>> Wrong keyword %s\n',keyW);
+                                Gfprintf('>> Wrong keyword %s\n',keyW);
                             end
                         end
                     end
                 end
                 if ~okConf
-                    fprintf('\nWrong syntax used for conf method\n')
-                    fprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
-                    fprintf('\nList of the avilable keywords:\n');
+                    Gfprintf('\nWrong syntax used for conf method\n')
+                    Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
+                    Gfprintf('\nList of the avilable keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
                 end
             else
-                fprintf('Current configuration\n');
+                Gfprintf('Current configuration\n');
                 disp(obj);
             end
         end
@@ -632,7 +632,7 @@ spaceA=maxA-sizeA+3;
 spaceTxt=' ';
 %display table
 for itT=1:numel(tableFiedIn)
-    fprintf('%s%s%s\n',tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
+    Gfprintf('%s%s%s\n',tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
 end
 end
 
@@ -646,14 +646,14 @@ spaceA=maxA-sizeA+3;
 spaceTxt=' ';
 %display table
 for itT=1:numel(tableA)
-    fprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
+    Gfprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
 end
 end
 
 %function for checking type a variable and display error message
 function okG=isG(varIn,typeIn)
 okG=isa(varIn,typeIn);
-if ~okG;fprintf(' Wrong input variable. Required: %s (current: %s)\n',typeIn,class(varIn));end
+if ~okG;Gfprintf(' Wrong input variable. Required: %s (current: %s)\n',typeIn,class(varIn));end
 end
 
 %function for checking 'double' input of a setter function (with bound
@@ -681,18 +681,18 @@ if isG(varIn,'double')
             okuB=all(varIn<=uB);
         end
         if ~oklB||~okuB
-            fprintf(' >>> %s: Wrong variable',TxtIn);
+            Gfprintf(' >>> %s: Wrong variable',TxtIn);
             if ~isempty(lB)
-                fprintf('Lower bound:');fprintf(' %d',lB);fprintf('\n');
+                Gfprintf('Lower bound:');Gfprintf(' %d',lB);Gfprintf('\n');
             end
             if ~isempty(uB)
-                fprintf('Upper bound:');fprintf(' %d',uB);fprintf('\n');
+                Gfprintf('Upper bound:');Gfprintf(' %d',uB);Gfprintf('\n');
             end
-            fprintf('Proposed value:');fprintf(' %d',varIn);fprintf('\n');
+            Gfprintf('Proposed value:');Gfprintf(' %d',varIn);Gfprintf('\n');
         else
-            fprintf(' >>> %s : [',TxtIn);
-            fprintf('%i ',varIn);fprintf('] ');
-            fprintf('(previous [');fprintf('%d ',varOld);fprintf('])\n');
+            Gfprintf(' >>> %s : [',TxtIn);
+            Gfprintf('%i ',varIn);Gfprintf('] ');
+            Gfprintf('(previous [');Gfprintf('%d ',varOld);Gfprintf('])\n');
             okCD=true;
         end
     end
@@ -702,9 +702,9 @@ end
 %display change of state
 function SwitchOnOff(boolIn)
 if boolIn;
-    fprintf(' On (previous Off)\n');
+    Gfprintf(' On (previous Off)\n');
 else
-    fprintf(' Off (previous On)\n');
+    Gfprintf(' Off (previous On)\n');
 end
 end
 

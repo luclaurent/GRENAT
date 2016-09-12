@@ -41,7 +41,7 @@ if (nargin>=3&&~isempty(infoDataS.std))||nargin==2
             out=in.*repmat(correct(:),ns/nbv,1);
         otherwise
             Gfprintf('Wrong kind of normalisation/renormalisation');
-            error(['Error in ' mfilename ']);
+            error(['Error in ' mfilename ]);
     end
 else
     out=in;

@@ -38,9 +38,9 @@ end
 
 %with respect with the kind of gradient data
 if ~isstruct(gradIn)
-    Gfprintf('>> Step of the Taylor expansion (manu):')
-    Gfprintf(' %d',metaData.para.stepTaylor);
-    Gfprintf('\n')
+    Gfprintf('>> Step of the Taylor expansion (manu):');
+    fprintf(' %d',metaData.para.stepTaylor);
+    fprintf('\n');
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,8 +76,8 @@ if ~isstruct(gradIn)
     if missData.resp.on
         pos_tmp=missData.eval.ix_manq;
         Gfprintf(' >>> Remove information (missing data at point(s):');
-        Gfprintf(' %i',posR);
-        Gfprintf('\n');
+        fprintf(' %i',posR);
+        fprintf('\n');
         %renumber for extracting right values
         pos_tmp=(pos_tmp-1)*(np+1)+1;
         for ii=1:numel(pos_tmp)
@@ -145,9 +145,9 @@ else
         newResp(li_tirg)=gradIn.eval{ii};
     end
     
-    Gfprintf('>> Step of the Taylor expansion (auto):')
-    Gfprintf(' %d',stepTaylor);
-    Gfprintf('\n')
+    Gfprintf('>> Step of the Taylor expansion (auto):');
+    fprintf(' %d',stepTaylor);
+    fprintf('\n');
     
 end
 %store and extract information

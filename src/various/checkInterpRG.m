@@ -35,7 +35,7 @@ switch type
         diffZ=abs(ZApp-ZRef);
         IXZcheck=find(diffZ>limitResp);
         if ~isempty(IXZcheck)
-            Gfprintf('Interpolation issue (responses)\n')
+            Gfprintf('Interpolation issue (responses)\n');
             Gfprintf('Num\t||DiffZ \t||Eval \t\t||Zcheck\n');
             conc=vertcat(IXZcheck',diffZ(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
             Gfprintf('%d\t||%4.2e\t||%4.2e\t||%4.2e\n',conc(:));
@@ -47,22 +47,22 @@ switch type
         if ~isempty(IXGZcheck)
             [IXi,~]=ind2sub(size(diffGZ),IXGZcheck);
             IXi=unique(IXi);
-            Gfprintf('Interpolation issue (gradient)\n')
+            Gfprintf('Interpolation issue (gradient)\n');
             nb_var=size(ZApp,2);
             tt=repmat('\t',1,nb_var);
             Gfprintf(['Num\t||DiffGZ' tt '||Grad\t' tt '||GZcheck\n']);
             conc=[IXi,diffGZ(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
             tt=repmat('%4.2e\t',1,nb_var);
             tt=['%d\t||' tt '||' tt '||' tt '\n'];
-            Gfprintf(tt,conc(:))
+            Gfprintf(tt,conc(:));
             statusI=false;
         end
         diffNG=abs(sqrt(sum(ZRef.^2,2))-sqrt(sum(ZApp.^2,2)));
         IXNGZverif=find(diffNG>limitGrad);
         if ~isempty(IXNGZverif)
-            Gfprintf('Interpolation issue (gradient)\n')
-            Gfprintf('DiffNG\n')
-            Gfprintf('%4.2e\n',diffNG(IXNGZverif))
+            Gfprintf('Interpolation issue (gradient)\n');
+            Gfprintf('DiffNG\n');
+            Gfprintf('%4.2e\n',diffNG(IXNGZverif));
         end
 end
 end

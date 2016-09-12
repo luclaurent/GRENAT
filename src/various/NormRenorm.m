@@ -122,5 +122,5 @@ switch type
         end
     otherwise
         Gfprintf('Wrong kind of normalisation/renormalisation');
-        error(['Error in ' mfilename ']);
+        error(['Error in ' mfilename ]);
 end

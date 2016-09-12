@@ -225,7 +225,7 @@ switch methodOptim
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'simplex'  %simplix method
         Gfprintf('||Simplex|| Starting point:\n');
-        Gfprintf('%g ',x0); Gfprintf('\n');
+        fprintf('%g ',x0); fprintf('\n');
         if ~dispWarning;warning off all;end
         [x, fmax, nf] = nmsmax(fun, x0, [], []);
         %store results from the algorithm
@@ -257,7 +257,7 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'sqp'
         Gfprintf('||Fmincon (SQP)|| Starting point:\n');
-        Gfprintf('%g ',x0); Gfprintf('\n');
+        fprintf('%g ',x0); fprintf('\n');
         %deal with undefined starting point
         if ~dispWarning;warning off all;end
         %minimization
@@ -279,7 +279,7 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminbnd'
         Gfprintf('||Fminbnd|| Starting point:\n');
-        Gfprintf('%g ',x0); Gfprintf('\n');
+        fprintf('%g ',x0); fprintf('\n');
         %minimization
         if ~dispWarning;warning off all;end
         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsFminbnd);
@@ -300,7 +300,7 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminsearch'
         Gfprintf('||Fminsearch|| Starting point:\n');
-        Gfprintf('%g ',x0); Gfprintf('\n');
+        fprintf('%g ',x0); fprintf('\n');
         %minimization
         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
         %stop minimization
@@ -319,7 +319,7 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fmincon'
         Gfprintf('||Fmincon|| Starting point:\n');
-        Gfprintf('%g ',x0); Gfprintf('\n');
+        fprintf('%g ',x0); fprintf('\n');
         %deal with undefined starting point
         if ~dispWarning;warning off all;end
         %minimization
@@ -429,12 +429,12 @@ end
 function dispHyperParameter(nameHP,valHP)
 Gfprintf(' >> %s:',nameHP);
 if numel(valHP)==1
-    Gfprintf(' %g',valHP);
+    fprintf(' %g',valHP);
 else
-    Gfprintf(' %g |',valHP(1:end-1));
-    Gfprintf(' %g',valHP(end));
+    fprintf(' %g |',valHP(1:end-1));
+    fprintf(' %g',valHP(end));
 end
-Gfprintf('\n');
+fprintf('\n');
 end
 
 %wrapper to optimset and gaoptimset function (actual functions requires the

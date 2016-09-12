@@ -271,7 +271,7 @@ This function is called by:
 0225     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0226     <span class="keyword">case</span> <span class="string">'simplex'</span>  <span class="comment">%simplix method</span>
 0227         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Simplex|| Starting point:\n'</span>);
-0228         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%g '</span>,x0); <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0228         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
 0229         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
 0230         [x, fmax, nf] = nmsmax(fun, x0, [], []);
 0231         <span class="comment">%store results from the algorithm</span>
@@ -303,7 +303,7 @@ This function is called by:
 0257         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0258     <span class="keyword">case</span> <span class="string">'sqp'</span>
 0259         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fmincon (SQP)|| Starting point:\n'</span>);
-0260         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%g '</span>,x0); <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0260         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
 0261         <span class="comment">%deal with undefined starting point</span>
 0262         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
 0263         <span class="comment">%minimization</span>
@@ -325,7 +325,7 @@ This function is called by:
 0279         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0280     <span class="keyword">case</span> <span class="string">'fminbnd'</span>
 0281         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fminbnd|| Starting point:\n'</span>);
-0282         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%g '</span>,x0); <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0282         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
 0283         <span class="comment">%minimization</span>
 0284         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
 0285         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsFminbnd);
@@ -346,7 +346,7 @@ This function is called by:
 0300         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0301     <span class="keyword">case</span> <span class="string">'fminsearch'</span>
 0302         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fminsearch|| Starting point:\n'</span>);
-0303         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%g '</span>,x0); <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0303         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
 0304         <span class="comment">%minimization</span>
 0305         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
 0306         <span class="comment">%stop minimization</span>
@@ -365,7 +365,7 @@ This function is called by:
 0319         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0320     <span class="keyword">case</span> <span class="string">'fmincon'</span>
 0321         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fmincon|| Starting point:\n'</span>);
-0322         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%g '</span>,x0); <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0322         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
 0323         <span class="comment">%deal with undefined starting point</span>
 0324         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
 0325         <span class="comment">%minimization</span>
@@ -475,12 +475,12 @@ This function is called by:
 0429 <a name="_sub1" href="#_subfunctions" class="code">function dispHyperParameter(nameHP,valHP)</a>
 0430 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt; %s:'</span>,nameHP);
 0431 <span class="keyword">if</span> numel(valHP)==1
-0432     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' %g'</span>,valHP);
+0432     fprintf(<span class="string">' %g'</span>,valHP);
 0433 <span class="keyword">else</span>
-0434     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' %g |'</span>,valHP(1:end-1));
-0435     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' %g'</span>,valHP(end));
+0434     fprintf(<span class="string">' %g |'</span>,valHP(1:end-1));
+0435     fprintf(<span class="string">' %g'</span>,valHP(end));
 0436 <span class="keyword">end</span>
-0437 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0437 fprintf(<span class="string">'\n'</span>);
 0438 <span class="keyword">end</span>
 0439 
 0440 <span class="comment">%wrapper to optimset and gaoptimset function (actual functions requires the</span>
@@ -500,6 +500,6 @@ This function is called by:
 0454     varargout{1}=[];
 0455 <span class="keyword">end</span>
 0456 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

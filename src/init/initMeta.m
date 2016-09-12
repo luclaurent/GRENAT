@@ -109,9 +109,9 @@ classdef initMeta < handle
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            Gfprintf('=========================================\n')
+            Gfprintf('=========================================\n');
             Gfprintf(' >> Initialization of the metamodel configuration\n');
-            Gfprintf('=========================================\n')
+            Gfprintf('=========================================\n');
             %listeners
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%add listener for specific event (execute method after the set
@@ -440,19 +440,19 @@ classdef initMeta < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %list available techniques
         function availableType(obj)
-            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-            Gfprintf('Available techniques for surrogate models\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            Gfprintf('Available techniques for surrogate models\n');
             dispTableTwoColumns(obj.typeAvail,obj.typeTxt);
-            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %list available kernel function
         function availableKernel(obj)
-            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-            Gfprintf('Available kernel functions for surrogate models\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            Gfprintf('Available kernel functions for surrogate models\n');
             dispTableTwoColumns(obj.typeAvail,obj.typeTxt);
-            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -550,8 +550,8 @@ classdef initMeta < handle
                     end
                 end
                 if ~okConf
-                    Gfprintf('\nWrong syntax used for conf method\n')
-                    Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
+                    Gfprintf('\nWrong syntax used for conf method\n');
+                    Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n');
                     Gfprintf('\nList of the avilable keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
                 end
@@ -683,16 +683,16 @@ if isG(varIn,'double')
         if ~oklB||~okuB
             Gfprintf(' >>> %s: Wrong variable',TxtIn);
             if ~isempty(lB)
-                Gfprintf('Lower bound:');Gfprintf(' %d',lB);Gfprintf('\n');
+                Gfprintf('Lower bound:');fprintf(' %d',lB);fprintf('\n');
             end
             if ~isempty(uB)
-                Gfprintf('Upper bound:');Gfprintf(' %d',uB);Gfprintf('\n');
+                Gfprintf('Upper bound:');fprintf(' %d',uB);fprintf('\n');
             end
-            Gfprintf('Proposed value:');Gfprintf(' %d',varIn);Gfprintf('\n');
+            Gfprintf('Proposed value:');fprintf(' %d',varIn);fprintf('\n');
         else
             Gfprintf(' >>> %s : [',TxtIn);
-            Gfprintf('%i ',varIn);Gfprintf('] ');
-            Gfprintf('(previous [');Gfprintf('%d ',varOld);Gfprintf('])\n');
+            fprintf('%i ',varIn);fprintf('] ');
+            fprintf('(previous [');fprintf('%d ',varOld);fprintf('])\n');
             okCD=true;
         end
     end
@@ -702,9 +702,9 @@ end
 %display change of state
 function SwitchOnOff(boolIn)
 if boolIn;
-    Gfprintf(' On (previous Off)\n');
+    fprintf(' On (previous Off)\n');
 else
-    Gfprintf(' Off (previous On)\n');
+    fprintf(' Off (previous On)\n');
 end
 end
 

@@ -35,9 +35,9 @@ elseif dim>=6
     nbV=3;  
 else 
     Gfprintf('##############################\n');
-    Gfprintf('### The dimension of the problem is too large:\n')
-    Gfprintf('### Unable to generate the the right number of\n')
-    Gfprintf('### sample points for the reference grid\n')
+    Gfprintf('### The dimension of the problem is too large:\n');
+    Gfprintf('### Unable to generate the the right number of\n');
+    Gfprintf('### sample points for the reference grid\n');
     Gfprintf(['### Define it manually (or See',mfilename,')\n'])
     Gfprintf('##############################\n');
     nbV=NaN;

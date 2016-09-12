@@ -59,9 +59,9 @@ classdef initDisp < handle
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            Gfprintf('=========================================\n')
+            Gfprintf('=========================================\n');
             Gfprintf(' >>> Initialization of the display configuration\n');
-            Gfprintf('=========================================\n')
+            Gfprintf('=========================================\n');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -372,8 +372,8 @@ classdef initDisp < handle
                     end
                 end
                 if ~okConf
-                    Gfprintf('\nWrong syntax used for conf method\n')
-                    Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
+                    Gfprintf('\nWrong syntax used for conf method\n');
+                    Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n');
                     Gfprintf('\nList of the avilable keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
                 end
@@ -443,9 +443,9 @@ end
 %display change of state
 function SwitchOnOff(boolIn)
 if boolIn;
-    Gfprintf(' On (previous Off)\n');
+    fprintf(' On (previous Off)\n');
 else
-    Gfprintf(' Off (previous On)\n');
+    fprintf(' Off (previous On)\n');
 end
 end
 

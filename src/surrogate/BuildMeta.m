@@ -20,7 +20,7 @@
 
 function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)
 
-Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
 Gfprintf('    >>> BUILDING SURROGATE MODEL <<<\n');
 countTime=mesuTime;
 %%%%%%%%=================================%%%%%%%%
@@ -161,7 +161,7 @@ outMeta.norm=metaData.norm;
 outMeta.miss=metaData.miss;
 
 countTime.stop;
-Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
 end
 
 %function for checking if the surrogate model is a classical

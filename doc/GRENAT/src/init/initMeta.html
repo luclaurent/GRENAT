@@ -155,9 +155,9 @@ This function is called by:
 0109             <span class="comment">%if they are input variables</span>
 0110             <span class="keyword">if</span> nargin&gt;0;<a href="#_sub53" class="code" title="subfunction conf(obj,varargin)">conf</a>(obj,varargin{:});<span class="keyword">end</span>
 0111             <span class="comment">%display message</span>
-0112             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=========================================\n'</span>)
+0112             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=========================================\n'</span>);
 0113             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt; Initialization of the metamodel configuration\n'</span>);
-0114             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=========================================\n'</span>)
+0114             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=========================================\n'</span>);
 0115             <span class="comment">%listeners</span>
 0116             <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0117             <span class="comment">%%add listener for specific event (execute method after the set</span>
@@ -486,19 +486,19 @@ This function is called by:
 0440         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0441         <span class="comment">%list available techniques</span>
 0442         <a name="_sub45" href="#_subfunctions" class="code">function availableType(obj)</a>
-0443             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
-0444             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Available techniques for surrogate models\n'</span>)
+0443             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>);
+0444             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Available techniques for surrogate models\n'</span>);
 0445             <a href="#_sub57" class="code" title="subfunction dispTableTwoColumns(tableA,tableB)">dispTableTwoColumns</a>(obj.typeAvail,obj.typeTxt);
-0446             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
+0446             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>);
 0447         <span class="keyword">end</span>
 0448         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0449         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0450         <span class="comment">%list available kernel function</span>
 0451         <a name="_sub46" href="#_subfunctions" class="code">function availableKernel(obj)</a>
-0452             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
-0453             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Available kernel functions for surrogate models\n'</span>)
+0452             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>);
+0453             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Available kernel functions for surrogate models\n'</span>);
 0454             <a href="#_sub57" class="code" title="subfunction dispTableTwoColumns(tableA,tableB)">dispTableTwoColumns</a>(obj.typeAvail,obj.typeTxt);
-0455             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>)
+0455             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>);
 0456         <span class="keyword">end</span>
 0457         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0458         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -596,8 +596,8 @@ This function is called by:
 0550                     <span class="keyword">end</span>
 0551                 <span class="keyword">end</span>
 0552                 <span class="keyword">if</span> ~okConf
-0553                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\nWrong syntax used for conf method\n'</span>)
-0554                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'use: conf(''key1'',val1,''key2'',val2...)\n'</span>)
+0553                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\nWrong syntax used for conf method\n'</span>);
+0554                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'use: conf(''key1'',val1,''key2'',val2...)\n'</span>);
 0555                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\nList of the avilable keywords:\n'</span>);
 0556                     <a href="#_sub56" class="code" title="subfunction dispTableTwoColumnsStruct(tableFiedIn,structIn)">dispTableTwoColumnsStruct</a>(listProp,obj.infoProp);
 0557                 <span class="keyword">end</span>
@@ -729,16 +729,16 @@ This function is called by:
 0683         <span class="keyword">if</span> ~oklB||~okuB
 0684             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; %s: Wrong variable'</span>,TxtIn);
 0685             <span class="keyword">if</span> ~isempty(lB)
-0686                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Lower bound:'</span>);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' %d'</span>,lB);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0686                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Lower bound:'</span>);fprintf(<span class="string">' %d'</span>,lB);fprintf(<span class="string">'\n'</span>);
 0687             <span class="keyword">end</span>
 0688             <span class="keyword">if</span> ~isempty(uB)
-0689                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Upper bound:'</span>);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' %d'</span>,uB);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0689                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Upper bound:'</span>);fprintf(<span class="string">' %d'</span>,uB);fprintf(<span class="string">'\n'</span>);
 0690             <span class="keyword">end</span>
-0691             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Proposed value:'</span>);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' %d'</span>,varIn);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0691             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Proposed value:'</span>);fprintf(<span class="string">' %d'</span>,varIn);fprintf(<span class="string">'\n'</span>);
 0692         <span class="keyword">else</span>
 0693             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; %s : ['</span>,TxtIn);
-0694             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%i '</span>,varIn);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'] '</span>);
-0695             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'(previous ['</span>);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%d '</span>,varOld);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'])\n'</span>);
+0694             fprintf(<span class="string">'%i '</span>,varIn);fprintf(<span class="string">'] '</span>);
+0695             fprintf(<span class="string">'(previous ['</span>);fprintf(<span class="string">'%d '</span>,varOld);fprintf(<span class="string">'])\n'</span>);
 0696             okCD=true;
 0697         <span class="keyword">end</span>
 0698     <span class="keyword">end</span>
@@ -748,9 +748,9 @@ This function is called by:
 0702 <span class="comment">%display change of state</span>
 0703 <a name="_sub59" href="#_subfunctions" class="code">function SwitchOnOff(boolIn)</a>
 0704 <span class="keyword">if</span> boolIn;
-0705     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' On (previous Off)\n'</span>);
+0705     fprintf(<span class="string">' On (previous Off)\n'</span>);
 0706 <span class="keyword">else</span>
-0707     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' Off (previous On)\n'</span>);
+0707     fprintf(<span class="string">' Off (previous On)\n'</span>);
 0708 <span class="keyword">end</span>
 0709 <span class="keyword">end</span>
 0710 
@@ -891,6 +891,6 @@ This function is called by:
 0845 <span class="comment">% end</span>
 0846 
 0847</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

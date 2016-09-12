@@ -445,8 +445,8 @@ if dispData.on
         fich=saveDisp(numPlot,dispData.directory);
         if dispData.tex
             fid=fopen([dispData.directory '/fig.tex'],'a+');
-            Gfprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,dispData.title,fich);
-            %Gfprintf(fid,'\\verb{%s}\n',fich);
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fich,dispData.title,fich);
+            %fprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
         end
     end

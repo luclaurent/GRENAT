@@ -59,7 +59,7 @@ dispData.nbSteps=nbSteps;
 dispData.step=abs(doeData.Xmax-doeData.Xmin)./nbSteps;
 
 Gfprintf(' >> Number of points on the grid %i (%i',nbSteps^spaDim,nbSteps);
-Gfprintf('x%i',nbSteps*ones(1,spaDim-1));fprintf(')\n');
+fprintf('x%i',nbSteps*ones(1,spaDim-1));fprintf(')\n');
 
 countTime.stop;
-Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');

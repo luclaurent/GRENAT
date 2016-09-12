@@ -96,7 +96,7 @@ end
 %condition number of the RBF/GRBF Matrix
 if nargin==2 % in the phase of building
     newCond=condest(KK);
-    Gfprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond)
+    Gfprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond);
     if newCond>1e16
         Gfprintf('+++ //!\\ Bad condition number\n');
     end

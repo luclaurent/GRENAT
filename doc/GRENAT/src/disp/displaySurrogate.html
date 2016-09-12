@@ -33,7 +33,7 @@ L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+<li><a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
@@ -489,8 +489,8 @@ This function is called by:
 0445         fich=<a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>(numPlot,dispData.directory);
 0446         <span class="keyword">if</span> dispData.tex
 0447             fid=fopen([dispData.directory <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
-0448             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fich,dispData.title,fich);
-0449             <span class="comment">%Gfprintf(fid,'\\verb{%s}\n',fich);</span>
+0448             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fich,dispData.title,fich);
+0449             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
 0450             fclose(fid);
 0451         <span class="keyword">end</span>
 0452     <span class="keyword">end</span>
@@ -525,6 +525,6 @@ This function is called by:
 0481 <span class="keyword">end</span>
 0482 <span class="keyword">end</span>
 0483</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -61,15 +61,15 @@ nbv=size(Z);
 %check variance
 ixInf=find(varZ<0);
 if ~isempty(ixInf)
-    Gfprintf('Issue: variance lower than zero at %i points \n',numel(ixInf))
+    Gfprintf('Issue: variance lower than zero at %i points \n',numel(ixInf));
     disp(varZ(ixInf))
-    Gfprintf('> Correction to zero\n')
+    Gfprintf('> Correction to zero\n');
     varZ(ixInf)=0;
 end
 ixInf=find(varZ<eps);
 if ~isempty(ixInf)
-    Gfprintf('Issue: variance close to zero at %i points \n',numel(ixInf))
-    Gfprintf('> Correction to zero\n')
+    Gfprintf('Issue: variance close to zero at %i points \n',numel(ixInf));
+    Gfprintf('> Correction to zero\n');
     varZ(ixInf)=0;
 end
 

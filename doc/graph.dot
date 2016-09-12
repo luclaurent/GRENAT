@@ -51,7 +51,6 @@ digraph m2html {
   critErrDisp -> mesuTime;
   dispDate -> Gfprintf;
   displaySurrogate -> saveDisp;
-  displaySurrogate -> Gfprintf;
   saveDisp -> Gfprintf;
   initDisp -> initDisp;
   initDisp -> Gfprintf;

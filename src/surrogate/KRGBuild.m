@@ -56,9 +56,9 @@ else
     Gfprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
     switch metaData.kern
         case {'expg','expgg'}
-            Gfprintf('>> Value of the exponent:')
-            Gfprintf(' %d',metaData.para.p.val);
-            Gfprintf('\n');
+            Gfprintf('>> Value of the exponent:');
+            fprintf(' %d',metaData.para.p.val);
+            fprintf('\n');
         case {'matern'}
             Gfprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.val);
     end
@@ -337,8 +337,8 @@ if metaData.estim.on&&metaData.estim.disp
         fileStore=saveDisp('fig_likelihood',dispData.directory);
         if dispData.tex
             fid=fopen([dispData.directory '/fig.tex'],'a+');
-            Gfprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
-            %Gfprintf(fid,'\\verb{%s}\n',fich);
+            fprintf(fid,'\\figcen{%2.1f}{../%s}{%s}{%s}\n',0.7,fileStore,'Log-Likelihood',fileStore);
+            %fprintf(fid,'\\verb{%s}\n',fich);
             fclose(fid);
         end
     end
@@ -409,12 +409,12 @@ elseif nargin==3
     returnLine=false;
 end
 if isempty(txtInFalse)
-    Gfprintf('%s',txtInTrue);if boolIn; Gfprintf('Yes');else Gfprintf('No');end
+    Gfprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else fprintf('No');end
 else
-    if boolIn; Gfprintf('%s',txtInTrue);else Gfprintf('%s',txtInFalse);end
+    if boolIn; fprintf('%s',txtInTrue);else fprintf('%s',txtInFalse);end
 end
 if returnLine
-    Gfprintf('\n')
+    fprintf('\n');
 end
 end
 

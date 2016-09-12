@@ -73,25 +73,25 @@ if nbMissResp==0&&nbMissGrad==0
 end
 
 if nbMissResp~=0
-    Gfprintf('>>> Missing response(s) at point(s):\n')
+    Gfprintf('>>> Missing response(s) at point(s):\n');
     for ii=1:nbMissResp
         num_pts=ixMissResp(ii);
         Gfprintf(' n%s %i (%4.2f',char(176),num_pts,sampling(num_pts,1));
-        if np>1;Gfprintf(',%4.2f',sampling(num_pts,2:end));end
-        Gfprintf(')\n');
+        if np>1;fprintf(',%4.2f',sampling(num_pts,2:end));end
+        fprintf(')\n');
     end
 end
 if ~emptyGrad
     if nbMissGrad~=0
-        Gfprintf('>>> Missing gradient(s) at point(s):\n')
+        Gfprintf('>>> Missing gradient(s) at point(s):\n');
         keyboard
         for ii=1:nbMissGrad
             num_pts=ixMissGrad(ii,1);
             component=ixMissGrad(ii,2);
             Gfprintf(' n%s %i (%4.2f',char(176),num_pts,sampling(num_pts,1));
-            if np>1;Gfprintf(',%4.2f',sampling(num_pts,2:end));end
-            Gfprintf(')');
-            Gfprintf('  component: %i\n',component)
+            if np>1;fprintf(',%4.2f',sampling(num_pts,2:end));end
+            fprintf(')');
+            fprintf('  component: %i\n',component);
         end
         Gfprintf('----------------\n')
     end

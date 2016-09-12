@@ -81,7 +81,7 @@ This function is called by:
 0035         diffZ=abs(ZApp-ZRef);
 0036         IXZcheck=find(diffZ&gt;limitResp);
 0037         <span class="keyword">if</span> ~isempty(IXZcheck)
-0038             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Interpolation issue (responses)\n'</span>)
+0038             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Interpolation issue (responses)\n'</span>);
 0039             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Num\t||DiffZ \t||Eval \t\t||Zcheck\n'</span>);
 0040             conc=vertcat(IXZcheck',diffZ(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
 0041             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%d\t||%4.2e\t||%4.2e\t||%4.2e\n'</span>,conc(:));
@@ -93,25 +93,25 @@ This function is called by:
 0047         <span class="keyword">if</span> ~isempty(IXGZcheck)
 0048             [IXi,~]=ind2sub(size(diffGZ),IXGZcheck);
 0049             IXi=unique(IXi);
-0050             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Interpolation issue (gradient)\n'</span>)
+0050             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Interpolation issue (gradient)\n'</span>);
 0051             nb_var=size(ZApp,2);
 0052             tt=repmat(<span class="string">'\t'</span>,1,nb_var);
 0053             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>([<span class="string">'Num\t||DiffGZ'</span> tt <span class="string">'||Grad\t'</span> tt <span class="string">'||GZcheck\n'</span>]);
 0054             conc=[IXi,diffGZ(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
 0055             tt=repmat(<span class="string">'%4.2e\t'</span>,1,nb_var);
 0056             tt=[<span class="string">'%d\t||'</span> tt <span class="string">'||'</span> tt <span class="string">'||'</span> tt <span class="string">'\n'</span>];
-0057             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(tt,conc(:))
+0057             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(tt,conc(:));
 0058             statusI=false;
 0059         <span class="keyword">end</span>
 0060         diffNG=abs(sqrt(sum(ZRef.^2,2))-sqrt(sum(ZApp.^2,2)));
 0061         IXNGZverif=find(diffNG&gt;limitGrad);
 0062         <span class="keyword">if</span> ~isempty(IXNGZverif)
-0063             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Interpolation issue (gradient)\n'</span>)
-0064             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'DiffNG\n'</span>)
-0065             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%4.2e\n'</span>,diffNG(IXNGZverif))
+0063             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Interpolation issue (gradient)\n'</span>);
+0064             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'DiffNG\n'</span>);
+0065             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%4.2e\n'</span>,diffNG(IXNGZverif));
 0066         <span class="keyword">end</span>
 0067 <span class="keyword">end</span>
 0068 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

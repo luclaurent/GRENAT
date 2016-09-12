@@ -38,7 +38,7 @@ hyperparameters via optimization</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="KRGLikelihood.html" class="code" title="function [logLi,Li,liSack]=KRGLikelihood(dataKRG)">KRGLikelihood</a>	% Function for computing Likelihood and Log-likelihood of the krigind</li><li><a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li></ul>
+<li><a href="KRGLikelihood.html" class="code" title="function [logLi,Li,liSack]=KRGLikelihood(dataKRG)">KRGLikelihood</a>	% Function for computing Likelihood and Log-likelihood of the krigind</li><li><a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
@@ -228,7 +228,7 @@ This function is called by:
 0179     <span class="comment">%origCond=condest(rcc);</span>
 0180     KK=KK+coefRecond*speye(size(KK));
 0181     <span class="comment">%newCond=condest(rcc);</span>
-0182     <span class="comment">%fprintf('&gt;&gt;&gt; Improving of the condition number: \n%g &gt;&gt; %g  &lt;&lt;&lt;\n',...</span>
+0182     <span class="comment">%Gfprintf('&gt;&gt;&gt; Improving of the condition number: \n%g &gt;&gt; %g  &lt;&lt;&lt;\n',...</span>
 0183     <span class="comment">%    origCond,newCond);</span>
 0184     
 0185 <span class="keyword">end</span>
@@ -237,9 +237,9 @@ This function is called by:
 0188 <span class="comment">%condition number of the KRG/GKRG Matrix</span>
 0189 <span class="keyword">if</span> final   <span class="comment">% in the phase of building</span>
 0190     newCond=condest(KK);
-0191     fprintf(<span class="string">'Condition number KRG/GKRG matrix: %4.2e\n'</span>,newCond)
+0191     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Condition number KRG/GKRG matrix: %4.2e\n'</span>,newCond)
 0192     <span class="keyword">if</span> newCond&gt;1e16
-0193         fprintf(<span class="string">'+++ //!\\ Bad condition number\n'</span>);
+0193         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ //!\\ Bad condition number\n'</span>);
 0194     <span class="keyword">end</span>
 0195 <span class="keyword">end</span>
 0196 
@@ -383,6 +383,6 @@ This function is called by:
 0334     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
 0335 <span class="keyword">end</span>
 0336 <span class="comment">%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

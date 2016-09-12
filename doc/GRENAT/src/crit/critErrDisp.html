@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="calcMSE.html" class="code" title="function emse=calcMSE(Zex,Zap)">calcMSE</a>	% function for calculating MSE</li><li><a href="calcRAAE.html" class="code" title="function raae=calcRAAE(Zex,Zap)">calcRAAE</a>	% function for calculating RAAE (Relative Average Absolute Error)</li><li><a href="calcRMAE.html" class="code" title="function rmae=calcRMAE(Zex,Zap)">calcRMAE</a>	% function for calculating RMAE (Relative Maximum Absolute Error)</li><li><a href="calcRMSE.html" class="code" title="function rmse=calcRMSE(Zex,Zap)">calcRMSE</a>	% function for calculating RMSE</li><li><a href="corrFact.html" class="code" title="function [r,radj,r2,r2adj,rccc]=corrFact(Zex,Zap)">corrFact</a>	% function for calculating R2 (correlation errors</li><li><a href="qualError.html" class="code" title="function [q1,q2,q3]=qualError(Zex,Zap)">qualError</a>	% Function for computing 3 custom quality errors</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
+<li><a href="calcMSE.html" class="code" title="function emse=calcMSE(Zex,Zap)">calcMSE</a>	% function for calculating MSE</li><li><a href="calcRAAE.html" class="code" title="function raae=calcRAAE(Zex,Zap)">calcRAAE</a>	% function for calculating RAAE (Relative Average Absolute Error)</li><li><a href="calcRMAE.html" class="code" title="function rmae=calcRMAE(Zex,Zap)">calcRMAE</a>	% function for calculating RMAE (Relative Maximum Absolute Error)</li><li><a href="calcRMSE.html" class="code" title="function rmse=calcRMSE(Zex,Zap)">calcRMSE</a>	% function for calculating RMSE</li><li><a href="corrFact.html" class="code" title="function [r,radj,r2,r2adj,rccc]=corrFact(Zex,Zap)">corrFact</a>	% function for calculating R2 (correlation errors</li><li><a href="qualError.html" class="code" title="function [q1,q2,q3]=qualError(Zex,Zap)">qualError</a>	% Function for computing 3 custom quality errors</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
@@ -66,8 +66,8 @@ This function is called by:
 0020 
 0021 <a name="_sub0" href="#_subfunctions" class="code">function [err,errV,errNAME]=critErrDisp(Zap,Zref,data)</a>
 0022 
-0023 fprintf(<span class="string">'#########################################\n'</span>);
-0024 fprintf(<span class="string">'   &gt;&gt;&gt; Compute error criteria &lt;&lt;&lt;\n'</span>);
+0023 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'#########################################\n'</span>);
+0024 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'   &gt;&gt;&gt; Compute error criteria &lt;&lt;&lt;\n'</span>);
 0025 countTime=<a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0026 
 0027 <span class="comment">%Reordering data</span>
@@ -98,7 +98,7 @@ This function is called by:
 0052     [err.eq1,err.eq2,err.eq3]=<a href="qualError.html" class="code" title="function [q1,q2,q3]=qualError(Zex,Zap)">qualError</a>(Zref,Zap);
 0053     txt=<a href="#_sub1" class="code" title="subfunction txt=dispERR(err,type,errName)">dispERR</a>(err,errREF,errREFname);
 0054     [TMPval,TMPname]=<a href="#_sub2" class="code" title="subfunction [Vval,Vname]=concatERR(err,type,errName)">concatERR</a>(err,errREF,<span class="string">'ref'</span>);
-0055     <span class="keyword">if</span> ~isempty(txt);fprintf(txt);<span class="keyword">end</span>
+0055     <span class="keyword">if</span> ~isempty(txt);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(txt);<span class="keyword">end</span>
 0056     TMPerrV=[TMPerrV TMPval];
 0057     TMPErrNAME=[TMPErrNAME TMPname];
 0058 <span class="keyword">else</span>
@@ -106,42 +106,42 @@ This function is called by:
 0060 <span class="keyword">end</span>
 0061 <span class="keyword">if</span> nargin==3
 0062     <span class="keyword">if</span> isfield(data,<span class="string">'cv'</span>)&amp;&amp;~isempty(data.cv)
-0063         fprintf(<span class="string">'\n&gt;&gt;&gt;Cross-Validation&lt;&lt;&lt;\n'</span>);
+0063         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n&gt;&gt;&gt;Cross-Validation&lt;&lt;&lt;\n'</span>);
 0064         <span class="keyword">if</span> isfield(data.cv,<span class="string">'final'</span>);
 0065             err.cv=data.cv.final;
 0066             txt=<a href="#_sub1" class="code" title="subfunction txt=dispERR(err,type,errName)">dispERR</a>(data.cv.final,errCV,errCVname);
 0067             [TMPval,TMPname]=<a href="#_sub2" class="code" title="subfunction [Vval,Vname]=concatERR(err,type,errName)">concatERR</a>(err,errREF,<span class="string">'cv'</span>);
-0068             <span class="keyword">if</span> ~isempty(txt);fprintf(txt);<span class="keyword">end</span>
+0068             <span class="keyword">if</span> ~isempty(txt);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(txt);<span class="keyword">end</span>
 0069             TMPerrV=[TMPerrV TMPval];
 0070             TMPErrNAME=[TMPErrNAME TMPname];
 0071         <span class="keyword">end</span>
 0072         <span class="keyword">if</span> isfield(data.cv,<span class="string">'and'</span>);
-0073             fprintf(<span class="string">'\n&gt;&gt;&gt;REP and GR&lt;&lt;&lt;\n'</span>);
+0073             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n&gt;&gt;&gt;REP and GR&lt;&lt;&lt;\n'</span>);
 0074             txt=<a href="#_sub1" class="code" title="subfunction txt=dispERR(err,type,errName)">dispERR</a>(data.cv.and,errCV,errCVname);
 0075             err.and=data.cv.and;
 0076             [TMPval,TMPname]=<a href="#_sub2" class="code" title="subfunction [Vval,Vname]=concatERR(err,type,errName)">concatERR</a>(err,errREF,<span class="string">'cvA'</span>);
-0077             <span class="keyword">if</span> ~isempty(txt);fprintf(txt);<span class="keyword">end</span>
+0077             <span class="keyword">if</span> ~isempty(txt);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(txt);<span class="keyword">end</span>
 0078             TMPerrV=[TMPerrV TMPval];
 0079             TMPErrNAME=[TMPErrNAME TMPname];
 0080         <span class="keyword">end</span>
 0081         <span class="keyword">if</span> isfield(data.cv,<span class="string">'then'</span>);
-0082             fprintf(<span class="string">'\n&gt;&gt;&gt;REP then GR&lt;&lt;&lt;\n'</span>);
+0082             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n&gt;&gt;&gt;REP then GR&lt;&lt;&lt;\n'</span>);
 0083             txt=<a href="#_sub1" class="code" title="subfunction txt=dispERR(err,type,errName)">dispERR</a>(data.cv.then,errCV,errCVname);
 0084             err.then=data.cv.then;
 0085             [TMPval,TMPname]=<a href="#_sub2" class="code" title="subfunction [Vval,Vname]=concatERR(err,type,errName)">concatERR</a>(err,errREF,<span class="string">'cvT'</span>);
-0086             <span class="keyword">if</span> ~isempty(txt);fprintf(txt);<span class="keyword">end</span>
+0086             <span class="keyword">if</span> ~isempty(txt);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(txt);<span class="keyword">end</span>
 0087             TMPerrV=[TMPerrV TMPval];
 0088             TMPErrNAME=[TMPErrNAME TMPname];
 0089         <span class="keyword">end</span>
 0090     <span class="keyword">end</span>
 0091     
 0092     <span class="keyword">if</span> isfield(data,<span class="string">'li'</span>)||isfield(data,<span class="string">'logli'</span>)
-0093         fprintf(<span class="string">'\n&gt;&gt;&gt;Likelihood&lt;&lt;&lt;\n'</span>);
+0093         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n&gt;&gt;&gt;Likelihood&lt;&lt;&lt;\n'</span>);
 0094         txt=<a href="#_sub1" class="code" title="subfunction txt=dispERR(err,type,errName)">dispERR</a>(data,vLI,nameLI);
 0095         <span class="keyword">if</span> isfield(data,<span class="string">'li'</span>);err.li=data.li;<span class="keyword">end</span>
 0096         <span class="keyword">if</span> isfield(data,<span class="string">'logli'</span>);err.logli=data.logli;<span class="keyword">end</span>
 0097         [TMPval,TMPname]=<a href="#_sub2" class="code" title="subfunction [Vval,Vname]=concatERR(err,type,errName)">concatERR</a>(donnee,vLI,<span class="string">''</span>);
-0098         <span class="keyword">if</span> ~isempty(txt);fprintf(txt);<span class="keyword">end</span>
+0098         <span class="keyword">if</span> ~isempty(txt);<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(txt);<span class="keyword">end</span>
 0099         TMPerrV=[TMPerrV TMPval];
 0100         TMPErrNAME=[TMPErrNAME TMPname];
 0101     <span class="keyword">end</span>
@@ -151,7 +151,7 @@ This function is called by:
 0105     <span class="keyword">end</span>
 0106 <span class="keyword">end</span>
 0107 countTime.stop;
-0108 fprintf(<span class="string">'#########################################\n'</span>);
+0108 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'#########################################\n'</span>);
 0109 <span class="keyword">end</span>
 0110 
 0111 <span class="comment">%function for displaying existing errors</span>
@@ -181,6 +181,6 @@ This function is called by:
 0135     <span class="keyword">end</span>
 0136 <span class="keyword">end</span>
 0137 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

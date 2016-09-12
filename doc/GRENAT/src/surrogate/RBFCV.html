@@ -34,7 +34,7 @@ new version: 31/05/2012</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>	% Function for calculating error of LOO (Cross-Validation)</li><li><a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>	% Plot QQ plot (for cross validation)</li><li><a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>	% Plot SCVR (for cross validation)</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>	% check input data for finding missing information</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
+<li><a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>	% Function for calculating error of LOO (Cross-Validation)</li><li><a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>	% Plot QQ plot (for cross validation)</li><li><a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>	% Plot SCVR (for cross validation)</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>	% check input data for finding missing information</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="RBFbloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFbloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
@@ -95,7 +95,7 @@ This function is called by:
 0048 <span class="keyword">if</span> nargin==4
 0049     <span class="keyword">switch</span> type
 0050         <span class="keyword">case</span> <span class="string">'debug'</span> <span class="comment">%debug mode (display criteria)</span>
-0051             fprintf(<span class="string">'+++ CV RBF/GRBF in DEBUG mode\n'</span>);
+0051             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ CV RBF/GRBF in DEBUG mode\n'</span>);
 0052             modDebug=true;
 0053         <span class="keyword">case</span> <span class="string">'study'</span>  <span class="comment">%study mode (use both methods for calculating criteria)</span>
 0054             modStudy=true;
@@ -170,14 +170,14 @@ This function is called by:
 0123 cv.bm=1/ns*sum(esR);
 0124 <span class="comment">%display information</span>
 0125 <span class="keyword">if</span> modDebug||modFinal
-0126     fprintf(<span class="string">'\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n'</span>);
-0127     fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0126     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n'</span>);
+0127     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
 0128     <span class="keyword">if</span> availGrad
-0129         fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
-0130         fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
+0129         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
+0130         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
 0131     <span class="keyword">end</span>
-0132     fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
-0133     fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
+0132     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
+0133     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
 0134 <span class="keyword">end</span>
 0135 
 0136 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -282,20 +282,20 @@ This function is called by:
 0235     [cv.then]=<a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
 0236     <span class="comment">%display information</span>
 0237     <span class="keyword">if</span> modDebug||modFinal
-0238         fprintf(<span class="string">'\n=== CV-LOO with remove responses THEN the gradients (debug)\n'</span>);
-0239         fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0238         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n=== CV-LOO with remove responses THEN the gradients (debug)\n'</span>);
+0239         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
 0240         <span class="keyword">if</span> availGrad
-0241             fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
-0242             fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
+0241             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
+0242             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
 0243         <span class="keyword">end</span>
-0244         fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
-0245         fprintf(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.then.bm);
-0246         fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
-0247         fprintf(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.then.errp);
-0248         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.then.scvr_min);
-0249         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.then.scvr_max);
-0250         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
-0251         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
+0244         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
+0245         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.then.bm);
+0246         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
+0247         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.then.errp);
+0248         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.then.scvr_min);
+0249         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.then.scvr_max);
+0250         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
+0251         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
 0252     <span class="keyword">end</span>
 0253     countTimeA.stop;
 0254 <span class="keyword">end</span>
@@ -384,20 +384,20 @@ This function is called by:
 0337     [cv.and]=<a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);
 0338     <span class="comment">%display informations</span>
 0339     <span class="keyword">if</span> modDebug||modFinal
-0340         fprintf(<span class="string">'\n=== CV-LOO with remove responses AND the gradients\n'</span>);
-0341         fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0340         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n=== CV-LOO with remove responses AND the gradients\n'</span>);
+0341         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
 0342         <span class="keyword">if</span> availGrad
-0343             fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.and.eloor);
-0344             fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.and.eloog);
+0343             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.and.eloor);
+0344             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.and.eloog);
 0345         <span class="keyword">end</span>
-0346         fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.and.eloot);
-0347         fprintf(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.and.bm);
-0348         fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.and.press);
-0349         fprintf(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.and.errp);
-0350         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.and.scvr_min);
-0351         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.and.scvr_max);
-0352         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.and.scvr_mean);
-0353         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.and.adequ);
+0346         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Total error %4.2e\n'</span>,cv.and.eloot);
+0347         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.and.bm);
+0348         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.and.press);
+0349         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.and.errp);
+0350         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.and.scvr_min);
+0351         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.and.scvr_max);
+0352         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.and.scvr_mean);
+0353         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.and.adequ);
 0354     <span class="keyword">end</span>
 0355     countTimeB.stop;
 0356 <span class="keyword">end</span>
@@ -460,20 +460,20 @@ This function is called by:
 0413     [cv.then]=<a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>(resp,cvZR,cvVarR,grad,cvGZ,ns,np,normLOO);
 0414     <span class="comment">%display information</span>
 0415     <span class="keyword">if</span> modDebug||modFinal
-0416         fprintf(<span class="string">'\n=== CV-LOO with remove responses THEN the gradients\n'</span>);
-0417         fprintf(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
+0416         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n=== CV-LOO with remove responses THEN the gradients\n'</span>);
+0417         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Used norm for calculate CV-LOO: %s\n'</span>,normLOO);
 0418         <span class="keyword">if</span> availGrad
-0419             fprintf(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
-0420             fprintf(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
+0419             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on responses %4.2e\n'</span>,cv.then.eloor);
+0420             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Error on gradients %4.2e\n'</span>,cv.then.eloog);
 0421         <span class="keyword">end</span>
-0422         fprintf(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
-0423         fprintf(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.then.bm);
-0424         fprintf(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
-0425         fprintf(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.then.errp);
-0426         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.then.scvr_min);
-0427         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.then.scvr_max);
-0428         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
-0429         fprintf(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
+0422         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Total error %4.2e\n'</span>,cv.then.eloot);
+0423         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Mean bias %4.2e\n'</span>,cv.then.bm);
+0424         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ PRESS %4.2e\n'</span>,cv.then.press);
+0425         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Custom error %4.2e\n'</span>,cv.then.errp);
+0426         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.then.scvr_min);
+0427         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.then.scvr_max);
+0428         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.then.scvr_mean);
+0429         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ Adequation %4.2e\n'</span>,cv.then.adequ);
 0430     <span class="keyword">end</span>
 0431     countTimeC.stop;
 0432 <span class="keyword">end</span>
@@ -511,10 +511,10 @@ This function is called by:
 0464     cv.then.scvr_mean=cv.final.scvr_mean;
 0465     <span class="comment">%display information</span>
 0466     <span class="keyword">if</span> modDebug||modFinal
-0467         fprintf(<span class="string">'\n=== CV-LOO SCVR\n'</span>);
-0468         fprintf(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.final.scvr_min);
-0469         fprintf(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.final.scvr_max);
-0470         fprintf(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.final.scvr_mean);
+0467         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n=== CV-LOO SCVR\n'</span>);
+0468         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Min) %4.2e\n'</span>,cv.final.scvr_min);
+0469         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Max) %4.2e\n'</span>,cv.final.scvr_max);
+0470         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ SCVR (Mean) %4.2e\n'</span>,cv.final.scvr_mean);
 0471     <span class="keyword">end</span>
 0472     countTimeD.stop;
 0473 <span class="keyword">end</span>
@@ -574,6 +574,6 @@ This function is called by:
 0527     <span class="keyword">end</span>
 0528 <span class="keyword">end</span>
 0529 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

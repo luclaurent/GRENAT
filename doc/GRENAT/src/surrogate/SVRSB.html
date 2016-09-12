@@ -93,7 +93,7 @@ This function is called by:
 0047 <span class="comment">% if nargin==3</span>
 0048 <span class="comment">%     switch type</span>
 0049 <span class="comment">%         case 'debug'  %debug mode (display criteria)</span>
-0050 <span class="comment">%             fprintf('+++ CV KRG in DEBUG mode\n');</span>
+0050 <span class="comment">%             Gfprintf('+++ CV KRG in DEBUG mode\n');</span>
 0051 <span class="comment">%             modDebug=true;</span>
 0052 <span class="comment">%         case 'study'  %study mode (use both methods for calculating criteria)</span>
 0053 <span class="comment">%             modStudy=true;</span>
@@ -279,14 +279,14 @@ This function is called by:
 0233 <span class="comment">% cv.bm=1/ns*sum(esR);</span>
 0234 <span class="comment">% %display information</span>
 0235 <span class="comment">% if modDebug||modFinal</span>
-0236 <span class="comment">%     fprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');</span>
-0237 <span class="comment">%     fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0236 <span class="comment">%     Gfprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');</span>
+0237 <span class="comment">%     Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
 0238 <span class="comment">%     if availGrad</span>
-0239 <span class="comment">%         fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
-0240 <span class="comment">%         fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
+0239 <span class="comment">%         Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
+0240 <span class="comment">%         Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
 0241 <span class="comment">%     end</span>
-0242 <span class="comment">%     fprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
-0243 <span class="comment">%     fprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
+0242 <span class="comment">%     Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
+0243 <span class="comment">%     Gfprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
 0244 <span class="comment">% end</span>
 0245 <span class="comment">%</span>
 0246 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -431,20 +431,20 @@ This function is called by:
 0385 <span class="comment">%     [cv.then]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);</span>
 0386 <span class="comment">%     %display information</span>
 0387 <span class="comment">%     if modDebug||modFinal</span>
-0388 <span class="comment">%         fprintf('\n=== CV-LOO with remove responses THEN the gradients (debug)\n');</span>
-0389 <span class="comment">%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0388 <span class="comment">%         Gfprintf('\n=== CV-LOO with remove responses THEN the gradients (debug)\n');</span>
+0389 <span class="comment">%         Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
 0390 <span class="comment">%         if availGrad</span>
-0391 <span class="comment">%             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
-0392 <span class="comment">%             fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
+0391 <span class="comment">%             Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
+0392 <span class="comment">%             Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
 0393 <span class="comment">%         end</span>
-0394 <span class="comment">%         fprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
-0395 <span class="comment">%         fprintf('+++ Mean bias %4.2e\n',cv.then.bm);</span>
-0396 <span class="comment">%         fprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
-0397 <span class="comment">%         fprintf('+++ Custom error %4.2e\n',cv.then.errp);</span>
-0398 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);</span>
-0399 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);</span>
-0400 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);</span>
-0401 <span class="comment">%         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);</span>
+0394 <span class="comment">%         Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
+0395 <span class="comment">%         Gfprintf('+++ Mean bias %4.2e\n',cv.then.bm);</span>
+0396 <span class="comment">%         Gfprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
+0397 <span class="comment">%         Gfprintf('+++ Custom error %4.2e\n',cv.then.errp);</span>
+0398 <span class="comment">%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);</span>
+0399 <span class="comment">%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);</span>
+0400 <span class="comment">%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);</span>
+0401 <span class="comment">%         Gfprintf('+++ Adequation %4.2e\n',cv.then.adequ);</span>
 0402 <span class="comment">%     end</span>
 0403 <span class="comment">%     mesuTime(tMesuDebugA,tInitDebugA);</span>
 0404 <span class="comment">% end</span>
@@ -546,20 +546,20 @@ This function is called by:
 0500 <span class="comment">%     [cv.and]=LOOCalcError(resp,cvZ,cvVar,grad,cvGZ,ns,np,normLOO);</span>
 0501 <span class="comment">%     %display informations</span>
 0502 <span class="comment">%     if modDebug||modFinal</span>
-0503 <span class="comment">%         fprintf('\n=== CV-LOO with remove responses AND the gradients\n');</span>
-0504 <span class="comment">%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0503 <span class="comment">%         Gfprintf('\n=== CV-LOO with remove responses AND the gradients\n');</span>
+0504 <span class="comment">%         Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
 0505 <span class="comment">%         if availGrad</span>
-0506 <span class="comment">%             fprintf('+++ Error on responses %4.2e\n',cv.and.eloor);</span>
-0507 <span class="comment">%             fprintf('+++ Error on gradients %4.2e\n',cv.and.eloog);</span>
+0506 <span class="comment">%             Gfprintf('+++ Error on responses %4.2e\n',cv.and.eloor);</span>
+0507 <span class="comment">%             Gfprintf('+++ Error on gradients %4.2e\n',cv.and.eloog);</span>
 0508 <span class="comment">%         end</span>
-0509 <span class="comment">%         fprintf('+++ Total error %4.2e\n',cv.and.eloot);</span>
-0510 <span class="comment">%         fprintf('+++ Mean bias %4.2e\n',cv.and.bm);</span>
-0511 <span class="comment">%         fprintf('+++ PRESS %4.2e\n',cv.and.press);</span>
-0512 <span class="comment">%         fprintf('+++ Custom error %4.2e\n',cv.and.errp);</span>
-0513 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.and.scvr_min);</span>
-0514 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.and.scvr_max);</span>
-0515 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);</span>
-0516 <span class="comment">%         fprintf('+++ Adequation %4.2e\n',cv.and.adequ);</span>
+0509 <span class="comment">%         Gfprintf('+++ Total error %4.2e\n',cv.and.eloot);</span>
+0510 <span class="comment">%         Gfprintf('+++ Mean bias %4.2e\n',cv.and.bm);</span>
+0511 <span class="comment">%         Gfprintf('+++ PRESS %4.2e\n',cv.and.press);</span>
+0512 <span class="comment">%         Gfprintf('+++ Custom error %4.2e\n',cv.and.errp);</span>
+0513 <span class="comment">%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.and.scvr_min);</span>
+0514 <span class="comment">%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.and.scvr_max);</span>
+0515 <span class="comment">%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.and.scvr_mean);</span>
+0516 <span class="comment">%         Gfprintf('+++ Adequation %4.2e\n',cv.and.adequ);</span>
 0517 <span class="comment">%     end</span>
 0518 <span class="comment">%     mesuTime(tMesuDebugB,tInitDebugB);</span>
 0519 <span class="comment">% end</span>
@@ -638,20 +638,20 @@ This function is called by:
 0592 <span class="comment">%     [cv.then]=LOOCalcError(resp,cvZR,cvVarR,grad,cvGZ,ns,np,normLOO);</span>
 0593 <span class="comment">%     %display information</span>
 0594 <span class="comment">%     if modDebug||modFinal</span>
-0595 <span class="comment">%         fprintf('\n=== CV-LOO with remove responses THEN the gradients\n');</span>
-0596 <span class="comment">%         fprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
+0595 <span class="comment">%         Gfprintf('\n=== CV-LOO with remove responses THEN the gradients\n');</span>
+0596 <span class="comment">%         Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);</span>
 0597 <span class="comment">%         if availGrad</span>
-0598 <span class="comment">%             fprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
-0599 <span class="comment">%             fprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
+0598 <span class="comment">%             Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);</span>
+0599 <span class="comment">%             Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);</span>
 0600 <span class="comment">%         end</span>
-0601 <span class="comment">%         fprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
-0602 <span class="comment">%         fprintf('+++ Mean bias %4.2e\n',cv.then.bm);</span>
-0603 <span class="comment">%         fprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
-0604 <span class="comment">%         fprintf('+++ Custom error %4.2e\n',cv.then.errp);</span>
-0605 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);</span>
-0606 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);</span>
-0607 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);</span>
-0608 <span class="comment">%         fprintf('+++ Adequation %4.2e\n',cv.then.adequ);</span>
+0601 <span class="comment">%         Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);</span>
+0602 <span class="comment">%         Gfprintf('+++ Mean bias %4.2e\n',cv.then.bm);</span>
+0603 <span class="comment">%         Gfprintf('+++ PRESS %4.2e\n',cv.then.press);</span>
+0604 <span class="comment">%         Gfprintf('+++ Custom error %4.2e\n',cv.then.errp);</span>
+0605 <span class="comment">%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.then.scvr_min);</span>
+0606 <span class="comment">%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.then.scvr_max);</span>
+0607 <span class="comment">%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.then.scvr_mean);</span>
+0608 <span class="comment">%         Gfprintf('+++ Adequation %4.2e\n',cv.then.adequ);</span>
 0609 <span class="comment">%     end</span>
 0610 <span class="comment">%     mesuTime(tMesuDebugC,tInitDebugC);</span>
 0611 <span class="comment">% end</span>
@@ -708,10 +708,10 @@ This function is called by:
 0662 <span class="comment">%     cv.then.scvr_mean=cv.final.scvr_mean;</span>
 0663 <span class="comment">%     %display information</span>
 0664 <span class="comment">%     if modDebug||modFinal</span>
-0665 <span class="comment">%         fprintf('\n=== CV-LOO SCVR\n');</span>
-0666 <span class="comment">%         fprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);</span>
-0667 <span class="comment">%         fprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);</span>
-0668 <span class="comment">%         fprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);</span>
+0665 <span class="comment">%         Gfprintf('\n=== CV-LOO SCVR\n');</span>
+0666 <span class="comment">%         Gfprintf('+++ SCVR (Min) %4.2e\n',cv.final.scvr_min);</span>
+0667 <span class="comment">%         Gfprintf('+++ SCVR (Max) %4.2e\n',cv.final.scvr_max);</span>
+0668 <span class="comment">%         Gfprintf('+++ SCVR (Mean) %4.2e\n',cv.final.scvr_mean);</span>
 0669 <span class="comment">%     end</span>
 0670 <span class="comment">%     mesuTime(tMesuDebugD,tInitDebugD);</span>
 0671 <span class="comment">% end</span>
@@ -771,6 +771,6 @@ This function is called by:
 0725 <span class="keyword">end</span>
 0726 <span class="keyword">end</span>
 0727</pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -36,7 +36,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>	% function for automatic calculation of the empirical value of the hyperparameters</li><li><a href="RBFbloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFbloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
+<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="RBFComputePara.html" class="code" title="function para=RBFComputePara(samplingIn,dataRBF)">RBFComputePara</a>	% function for automatic calculation of the empirical value of the hyperparameters</li><li><a href="RBFbloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFbloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li></ul>
@@ -77,11 +77,11 @@ This function is called by:
 0028 <span class="comment">% Display Building information</span>
 0029 textd=<span class="string">'++ Type: '</span>;
 0030 textf=<span class="string">''</span>;
-0031 fprintf(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Radial Basis Function ((G)RBF)'</span> textf]);
+0031 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Radial Basis Function ((G)RBF)'</span> textf]);
 0032 <span class="comment">%</span>
-0033 fprintf(<span class="string">'&gt;&gt;&gt; Building : '</span>);
+0033 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; Building : '</span>);
 0034 <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(~isempty(gradIn),<span class="string">'GRBF'</span>,<span class="string">'RBF'</span>,true);
-0035 fprintf(<span class="string">'&gt;&gt; Kernel function: %s\n'</span>,metaData.kern);
+0035 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Kernel function: %s\n'</span>,metaData.kern);
 0036 <span class="comment">%</span>
 0037 <span class="keyword">if</span> <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.on,<span class="string">'&gt;&gt; CV: '</span>,[],true)
 0038     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.full,<span class="string">'&gt;&gt; Computation all CV criteria: '</span>,[],true);
@@ -91,30 +91,30 @@ This function is called by:
 0042 <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.recond,<span class="string">'&gt;&gt; Correction of matrix condition:'</span>,[],true);
 0043 <span class="comment">%</span>
 0044 <span class="keyword">if</span> <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.on,<span class="string">'&gt;&gt; Estimation of the hyperparameters: '</span>,[],true)
-0045     fprintf(<span class="string">'&gt;&gt; Algorithm for estimation: %s\n'</span>,metaData.estim.method);
-0046     fprintf(<span class="string">'&gt;&gt; Bounds: [%d , %d]\n'</span>,metaData.para.l.Min,metaData.para.l.Max);
+0045     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Algorithm for estimation: %s\n'</span>,metaData.estim.method);
+0046     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Bounds: [%d , %d]\n'</span>,metaData.para.l.Min,metaData.para.l.Max);
 0047     <span class="keyword">switch</span> metaData.kern
 0048         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
-0049             fprintf(<span class="string">'&gt;&gt; Bounds for exponent: [%d , %d]\n'</span>,metaData.para.p.Min,metaData.para.p.Max);
+0049             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Bounds for exponent: [%d , %d]\n'</span>,metaData.para.p.Min,metaData.para.p.Max);
 0050         <span class="keyword">case</span> <span class="string">'matern'</span>
-0051             fprintf(<span class="string">'&gt;&gt; Bounds for nu (Matern): [%d , %d]\n'</span>,metaData.para.nu.Min,metaData.para.nu.Max);
+0051             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Bounds for nu (Matern): [%d , %d]\n'</span>,metaData.para.nu.Min,metaData.para.nu.Max);
 0052     <span class="keyword">end</span>
 0053     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.aniso,<span class="string">'&gt;&gt; Anisotropy: '</span>,[],true);
 0054     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.dispIterCmd,<span class="string">'&gt;&gt; Show estimation steps in console: '</span>,[],true);
 0055     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.dispIterGraph,<span class="string">'&gt;&gt; Plot estimation steps: '</span>,[],true);
 0056 <span class="keyword">else</span>
-0057     fprintf(<span class="string">'&gt;&gt; Value hyperparameter: %d\n'</span>,metaData.para.l.val);
+0057     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value hyperparameter: %d\n'</span>,metaData.para.l.val);
 0058     <span class="keyword">switch</span> metaData.kern
 0059         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
-0060             fprintf(<span class="string">'&gt;&gt; Value of the exponent:'</span>)
-0061             fprintf(<span class="string">' %d'</span>,metaData.para.p.val);
-0062             fprintf(<span class="string">'\n'</span>);
+0060             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of the exponent:'</span>)
+0061             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' %d'</span>,metaData.para.p.val);
+0062             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
 0063         <span class="keyword">case</span> {<span class="string">'matern'</span>}
-0064             fprintf(<span class="string">'&gt;&gt; Value of nu (Matern): %d \n'</span>,metaData.para.nu.val);
+0064             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of nu (Matern): %d \n'</span>,metaData.para.nu.val);
 0065     <span class="keyword">end</span>
 0066 <span class="keyword">end</span>
 0067 <span class="comment">%</span>
-0068 fprintf(<span class="string">'\n'</span>);
+0068 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
 0069 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0070 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0071 <span class="comment">%load global variables</span>
@@ -341,8 +341,8 @@ This function is called by:
 0292         fileStore=<a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>(<span class="string">'fig_mse_cv'</span>,dispData.directory);
 0293         <span class="keyword">if</span> dispData.tex
 0294             fid=fopen([dispData.directory <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
-0295             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fileStore,<span class="string">'MSE'</span>,fileStore);
-0296             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
+0295             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fileStore,<span class="string">'MSE'</span>,fileStore);
+0296             <span class="comment">%Gfprintf(fid,'\\verb{%s}\n',fich);</span>
 0297             fclose(fid);
 0298         <span class="keyword">end</span>
 0299     <span class="keyword">end</span>
@@ -394,7 +394,7 @@ This function is called by:
 0345 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0346 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0347 <span class="keyword">if</span> availGrad;txt=<span class="string">'GRBF'</span>;<span class="keyword">else</span> txt=<span class="string">'RBF'</span>;<span class="keyword">end</span>
-0348 fprintf(<span class="string">'\n &gt;&gt; END Building %s\n'</span>,txt);
+0348 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n &gt;&gt; END Building %s\n'</span>,txt);
 0349 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0350 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0351 <span class="keyword">end</span>
@@ -409,16 +409,16 @@ This function is called by:
 0360     returnLine=false;
 0361 <span class="keyword">end</span>
 0362 <span class="keyword">if</span> isempty(txtInFalse)
-0363     fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">if</span> boolIn; fprintf(<span class="string">'Yes'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No'</span>);<span class="keyword">end</span>
+0363     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">if</span> boolIn; <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Yes'</span>);<span class="keyword">else</span> <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'No'</span>);<span class="keyword">end</span>
 0364 <span class="keyword">else</span>
-0365     <span class="keyword">if</span> boolIn; fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">else</span> fprintf(<span class="string">'%s'</span>,txtInFalse);<span class="keyword">end</span>
+0365     <span class="keyword">if</span> boolIn; <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">else</span> <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s'</span>,txtInFalse);<span class="keyword">end</span>
 0366 <span class="keyword">end</span>
 0367 <span class="keyword">if</span> returnLine
-0368     fprintf(<span class="string">'\n'</span>)
+0368     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>)
 0369 <span class="keyword">end</span>
 0370 <span class="keyword">end</span>
 0371 
 0372</pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

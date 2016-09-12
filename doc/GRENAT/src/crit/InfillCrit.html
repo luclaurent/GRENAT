@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
@@ -64,7 +64,7 @@ This function is called by:
 0020 
 0021 <a name="_sub0" href="#_subfunctions" class="code">function [ZI,detInfill]=InfillCrit(respMin,Z,varZ,infillData)</a>
 0022 
-0023 <span class="comment">%fprintf('  &gt;&gt;&gt; Compute infill criteria\n');</span>
+0023 <span class="comment">%Gfprintf('  &gt;&gt;&gt; Compute infill criteria\n');</span>
 0024 
 0025 <span class="comment">%depending on the kind of infill criteria to be computed</span>
 0026 calcEI=false;
@@ -105,15 +105,15 @@ This function is called by:
 0061 <span class="comment">%check variance</span>
 0062 ixInf=find(varZ&lt;0);
 0063 <span class="keyword">if</span> ~isempty(ixInf)
-0064     fprintf(<span class="string">'Issue: variance lower than zero at %i points \n'</span>,numel(ixInf))
+0064     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue: variance lower than zero at %i points \n'</span>,numel(ixInf))
 0065     disp(varZ(ixInf))
-0066     fprintf(<span class="string">'&gt; Correction to zero\n'</span>)
+0066     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt; Correction to zero\n'</span>)
 0067     varZ(ixInf)=0;
 0068 <span class="keyword">end</span>
 0069 ixInf=find(varZ&lt;eps);
 0070 <span class="keyword">if</span> ~isempty(ixInf)
-0071     fprintf(<span class="string">'Issue: variance close to zero at %i points \n'</span>,numel(ixInf))
-0072     fprintf(<span class="string">'&gt; Correction to zero\n'</span>)
+0071     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue: variance close to zero at %i points \n'</span>,numel(ixInf))
+0072     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt; Correction to zero\n'</span>)
 0073     varZ(ixInf)=0;
 0074 <span class="keyword">end</span>
 0075 
@@ -229,6 +229,6 @@ This function is called by:
 0185 <span class="comment">%details of the enrichement</span>
 0186 detInfill.exploitEI=exploitEI;
 0187 detInfill.explorEI=explorEI;</pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

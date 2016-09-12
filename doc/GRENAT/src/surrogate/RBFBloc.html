@@ -36,7 +36,7 @@ hyperparameters via optimization</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li></ul>
+<li><a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li></ul>
@@ -136,7 +136,7 @@ This function is called by:
 0087     <span class="comment">%origCond=condest(KK);</span>
 0088     KK=KK+coefRecond*speye(size(KK));
 0089     <span class="comment">%newCond=condest(KK);</span>
-0090 <span class="comment">%          fprintf('&gt;&gt;&gt; Improving of the condition number: \n%g &gt;&gt; %g (%g) &lt;&lt;&lt;\n',...</span>
+0090 <span class="comment">%          Gfprintf('&gt;&gt;&gt; Improving of the condition number: \n%g &gt;&gt; %g (%g) &lt;&lt;&lt;\n',...</span>
 0091 <span class="comment">%              origCond,newCond,abs(origCond-newCond)/origCond);</span>
 0092     
 0093 <span class="keyword">end</span>
@@ -145,9 +145,9 @@ This function is called by:
 0096 <span class="comment">%condition number of the RBF/GRBF Matrix</span>
 0097 <span class="keyword">if</span> nargin==2 <span class="comment">% in the phase of building</span>
 0098     newCond=condest(KK);
-0099     fprintf(<span class="string">'Condition number RBF/GRBF matrix: %4.2e\n'</span>,newCond)
+0099     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Condition number RBF/GRBF matrix: %4.2e\n'</span>,newCond)
 0100     <span class="keyword">if</span> newCond&gt;1e16
-0101         fprintf(<span class="string">'+++ //!\\ Bad condition number\n'</span>);
+0101         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ //!\\ Bad condition number\n'</span>);
 0102     <span class="keyword">end</span>
 0103 <span class="keyword">end</span>
 0104 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -236,6 +236,6 @@ This function is called by:
 0187 <span class="keyword">end</span>
 0188 <span class="keyword">end</span>
 0189</pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

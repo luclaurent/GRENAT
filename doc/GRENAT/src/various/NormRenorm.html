@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
@@ -165,8 +165,9 @@ This function is called by:
 0121             out=in;
 0122         <span class="keyword">end</span>
 0123     <span class="keyword">otherwise</span>
-0124         error([<span class="string">'Wrong kind of normalisation/renormalisation (cf. '</span>,mfilename,<span class="string">')'</span>])
-0125 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0124         <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Wrong kind of normalisation/renormalisation'</span>);
+0125         error([<span class="string">'Error in '</span> mfilename <span class="string">']);</span>
+0126 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

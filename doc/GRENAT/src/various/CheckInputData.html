@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-</ul>
+<li><a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="../../../GRENAT/src/surrogate/RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li></ul>
@@ -66,7 +66,7 @@ This function is called by:
 0022 
 0023 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0025 fprintf(<span class="string">' &gt;&gt; Check missing data \n'</span>);
+0025 <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt; Check missing data \n'</span>);
 0026 
 0027 <span class="comment">%number of variables</span>
 0028 np=size(sampling,2);
@@ -113,31 +113,31 @@ This function is called by:
 0069 
 0070 <span class="comment">%display information</span>
 0071 <span class="keyword">if</span> nbMissResp==0&amp;&amp;nbMissGrad==0
-0072     fprintf(<span class="string">'&gt;&gt;&gt; No missing data\n'</span>);
+0072     <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; No missing data\n'</span>);
 0073 <span class="keyword">end</span>
 0074 
 0075 <span class="keyword">if</span> nbMissResp~=0
-0076     fprintf(<span class="string">'&gt;&gt;&gt; Missing response(s) at point(s):\n'</span>)
+0076     <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; Missing response(s) at point(s):\n'</span>)
 0077     <span class="keyword">for</span> ii=1:nbMissResp
 0078         num_pts=ixMissResp(ii);
-0079         fprintf(<span class="string">' n%s %i (%4.2f'</span>,char(176),num_pts,sampling(num_pts,1));
-0080         <span class="keyword">if</span> np&gt;1;fprintf(<span class="string">',%4.2f'</span>,sampling(num_pts,2:end));<span class="keyword">end</span>
-0081         fprintf(<span class="string">')\n'</span>);
+0079         <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' n%s %i (%4.2f'</span>,char(176),num_pts,sampling(num_pts,1));
+0080         <span class="keyword">if</span> np&gt;1;<a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">',%4.2f'</span>,sampling(num_pts,2:end));<span class="keyword">end</span>
+0081         <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">')\n'</span>);
 0082     <span class="keyword">end</span>
 0083 <span class="keyword">end</span>
 0084 <span class="keyword">if</span> ~emptyGrad
 0085     <span class="keyword">if</span> nbMissGrad~=0
-0086         fprintf(<span class="string">'&gt;&gt;&gt; Missing gradient(s) at point(s):\n'</span>)
+0086         <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; Missing gradient(s) at point(s):\n'</span>)
 0087         keyboard
 0088         <span class="keyword">for</span> ii=1:nbMissGrad
 0089             num_pts=ixMissGrad(ii,1);
 0090             component=ixMissGrad(ii,2);
-0091             fprintf(<span class="string">' n%s %i (%4.2f'</span>,char(176),num_pts,sampling(num_pts,1));
-0092             <span class="keyword">if</span> np&gt;1;fprintf(<span class="string">',%4.2f'</span>,sampling(num_pts,2:end));<span class="keyword">end</span>
-0093             fprintf(<span class="string">')'</span>);
-0094             fprintf(<span class="string">'  component: %i\n'</span>,component)
+0091             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' n%s %i (%4.2f'</span>,char(176),num_pts,sampling(num_pts,1));
+0092             <span class="keyword">if</span> np&gt;1;<a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">',%4.2f'</span>,sampling(num_pts,2:end));<span class="keyword">end</span>
+0093             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">')'</span>);
+0094             <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'  component: %i\n'</span>,component)
 0095         <span class="keyword">end</span>
-0096         fprintf(<span class="string">'----------------\n'</span>)
+0096         <a href="Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'----------------\n'</span>)
 0097     <span class="keyword">end</span>
 0098 <span class="keyword">end</span>
 0099 
@@ -173,6 +173,6 @@ This function is called by:
 0129     ret.grad.nb=0;
 0130     ret.grad.all=false;
 0131 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Fri 09-Sep-2016 20:02:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Mon 12-Sep-2016 17:29:34 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

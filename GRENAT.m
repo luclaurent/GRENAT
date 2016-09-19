@@ -343,7 +343,7 @@ classdef GRENAT < handle
         end
         %update the metamodel by adding sample points and associated
         %responses and gradients
-        function update(samplingIn,respIn,gradIn,paraFind,varargin)
+        function update(obj,samplingIn,respIn,gradIn,paraFind,varargin)
             %add data
             if ~isempty(samplingIn)
                 obj.sampling=samplingIn;
@@ -361,7 +361,8 @@ classdef GRENAT < handle
             end
         end
         %evaluate the metamodel
-        function [Z,GZ,variance]=eval(obj,nonsamplePts)
+        function [Z,GZ,variance]=eval(obj,nonsamplePts,Verb)
+            if nargin<3;Verb=true;end
             %check if the metamodel has been already trained
             if obj.runTrain;train(obj);end
             %store non sample points
@@ -371,7 +372,7 @@ classdef GRENAT < handle
                 %normalization of the input data
                 obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePtsOrder);
                 %evaluation of the metamodel
-                [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta);
+                [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta,Verb);
                 %store data from the evaluation
                 obj.nonsampleRespN=K.Z;
                 obj.nonsampleGradN=K.GZ;
@@ -389,11 +390,12 @@ classdef GRENAT < handle
             variance=obj.nonsampleVar;
         end
         %check interpolation
-        function [ZI,detI]=evalInfill(obj,nonsamplePts)
+        function [ZI,detI]=evalInfill(obj,nonsamplePts,Verb)
+            if nargin<3;Verb=true;end
             %store non sample points
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %evaluation
-            eval(obj);
+            obj.eval([],Verb);
             %smallest response
             respMin=min(obj.resp);
             %computation of infill criteria

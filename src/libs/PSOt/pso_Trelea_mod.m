@@ -359,7 +359,7 @@ for i=1:me  % start epoch loop (iterations)
     %------------------------------------------------------------------------
     % this section does the plots during iterations
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
-    if (mod(i,10)==0)|| (i==1)     %correction Luc: display every 5 iterations
+    if (mod(i,100)==0)|| (i==1)     %correction Luc: display every 5 iterations
         fprintf(message,i,gbestval);        
     end
     if plotflg==1

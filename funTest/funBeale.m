@@ -1,7 +1,7 @@
 %% Beale function
 %L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
 %
-%global minimum : f(x1,x2)=0 pour (x1,x2)=(3,-0.5)
+%global minimum : f(x1,x2)=0 pour (x1,x2)=(3,0.5)
 %
 %Design space: -4.5<x1<4.5, -4.5<x<4.5
 
@@ -24,20 +24,25 @@
 
 function [p,dp,infos]=funBeale(xx,dim)
 
+%space
+Xmin=-4.5;
+Xmax=4.5;
 
 % demo mode
 dem=false;
 if nargin==0
-    pas=50;
-    [x,y]=meshgrid(linspace(-2,2,pas));
-    xx=zeros(pas,pas,2);
+    stepM=50;
+    xl=linspace(Xmin,Xmax,stepM);
+    yl=linspace(Xmin,Xmax,stepM);
+    [x,y]=meshgrid(xl,yl);
+    xx=zeros(stepM,stepM,2);
     xx(:,:,1)=x;xx(:,:,2)=y;
     dem=true;
 end
 
 if ~isempty(xx)
     if size(xx,3)>2
-        error('The Beale's function is a 2 dimensional function');
+        error('The Beale''s function is a 2 dimensional function');
     elseif size(xx,3)==1
         if size(xx,2)==2
             xxx=xx(:,1);yyy=xx(:,2);
@@ -71,6 +76,8 @@ else
 end
 % output: information about the function
 if nargout==3
+    infos.Xmin=Xmin*ones(1,nbvar);
+    infos.Xmax=Xmax*ones(1,nbvar);
     infos.min_glob.Z=0;
     infos.min_glob.X=[3 0.5];
     infos.min_loc.Z=0;

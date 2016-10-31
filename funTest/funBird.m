@@ -1,9 +1,10 @@
-%% Booth's function
-%L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
+%% Bird's function
+%L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net
 %
-%global minimum: f(x1,x2)=0 pour (x1,x2)=(1,3)
+%one local minimum
+%1 global minimum : x={(4.70104,3.15294),(?1.58214, ?3.13024)} >> f(x)=?106.764537
 %
-%Design space: -10<x1<10, -10<x<10
+%design space -2pi<xi<2pi
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -22,26 +23,30 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [p,dp,infos]=funBooth(xx,dim)
+function [p,dp,infos]=funBird(xx,dim)
 
 %space
-Xmin=-10;
-Xmax=10;
+Xmin=[-2*pi -2*pi];
+Xmax=[2*pi 2*pi];
+
+%default dimension
+if nargin==1;dim=2;end
+
 % demo mode
 dem=false;
 if nargin==0
     stepM=50;
-    xl=linspace(Xmin,Xmax,stepM);
-    yl=linspace(Xmin,Xmax,stepM);
+    xl=linspace(Xmin(1),Xmax(1),stepM);
+    yl=linspace(Xmin(2),Xmax(2),stepM);
     [x,y]=meshgrid(xl,yl);
     xx=zeros(stepM,stepM,2);
     xx(:,:,1)=x;xx(:,:,2)=y;
     dem=true;
 end
 if ~isempty(xx)
-    if size(xx,3)>2
-        error('The Booth function is a 2 dimensional function');
-    elseif size(xx,3)==1
+    %number of design variables
+    nbvar=size(xx,3);
+    if nbvar==1
         if size(xx,2)==2
             xxx=xx(:,1);yyy=xx(:,2);
         elseif size(xx,1)==2
@@ -49,17 +54,24 @@ if ~isempty(xx)
         else
             error(['Wrong input variables ',mfilename]);
         end
-        
+    elseif nbvar>2
+        error('The Bird''s function is a 2 dimensional function');
     else
-        xxx=xx(:,:,1);yyy=xx(:,:,2);
+        xxx=xx(:,:,1);
+        yyy=xx(:,:,2);
     end
-    
-    p = (xxx+2*yyy-7).^2+(2*xxx+yyy-5).^2;
-    
-    
+        
+    sx=sin(xxx);
+    cy=cos(yyy);
+    ex1=exp((1-cy).^2);
+    ex2=exp((1-sx).^2);
+    fxy=(xxx-yyy).^2;
+    p=sx.*ex1+cy.*ex2+fxy;
     if nargout==2||dem
-        dp(:,:,1)=2*(xxx+2*yyy-7)+4*(2*xxx+yyy-5);
-        dp(:,:,2)=4*(xxx+2*yyy-7)+2*(2*xxx+yyy-5);
+        cx=cos(xxx);
+        sy=sin(yyy);
+        dp(:,:,1)=cx.*ex1-2*cy.*cx.*(1-sx).*ex2+2*(xxx-yyy);
+        dp(:,:,2)=2*sx.*sy.*(1-cy).*ex1-sy.*ex2-2*(xxx-yyy);
     end
 else
     if nargin==2
@@ -68,30 +80,30 @@ else
     p=[];
     dp=[];
 end
-% output: information about the function
+%output of information about the function
 if nargout==3
-    infos.Xmin=Xmin*ones(1,nbvar);
-    infos.Xmax=Xmax*ones(1,nbvar);
-    infos.min_glob.Z=0;
-    infos.min_glob.X=[1 3];
+    infos.Xmin=Xmin;
+    infos.Xmax=Xmax;
+    infos.min_glob.Z=-106.764537;
+    infos.min_glob.X=[4.70104,3.15294;-1.58214, -3.13024];
     infos.min_loc.Z=NaN;
     infos.min_loc.X=NaN;
 end
 
-% demo mode
+%demo display
 if nargin==0
     figure
     subplot(1,3,1)
     surf(x,y,p);
     axis('tight','square')
-    xlabel('x'), ylabel('y'), title('Booth')
+    xlabel('x'), ylabel('y'), title('Bird')
     subplot(1,3,2)
     surf(x,y,dp(:,:,1));
     axis('tight','square')
-    xlabel('x'), ylabel('y'), title('Grad. X Booth')
+    xlabel('x'), ylabel('y'), title('Grad. X Bird')
     subplot(1,3,3)
     surf(x,y,dp(:,:,2));
     axis('tight','square')
-    xlabel('x'), ylabel('y'), title('Grad. Y Booth')
+    xlabel('x'), ylabel('y'), title('Grad. Y Bird')
 end
 end

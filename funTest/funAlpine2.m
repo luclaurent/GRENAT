@@ -1,9 +1,10 @@
-%% Booth's function
-%L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
+%% Alpine's function 2
+%L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net
 %
-%global minimum: f(x1,x2)=0 pour (x1,x2)=(1,3)
+%numerous local minima
+%1 global minimum : x=(7.917,7.917,...,7.917) >> f(x)=2.808^p
 %
-%Design space: -10<x1<10, -10<x<10
+%design space 0<xi<10
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -22,26 +23,26 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [p,dp,infos]=funBooth(xx,dim)
+function [p,dp,infos]=funAlpine2(xx,dim)
+
 
 %space
-Xmin=-10;
+Xmin=0;
 Xmax=10;
+
 % demo mode
 dem=false;
 if nargin==0
     stepM=50;
-    xl=linspace(Xmin,Xmax,stepM);
-    yl=linspace(Xmin,Xmax,stepM);
-    [x,y]=meshgrid(xl,yl);
+    [x,y]=meshgrid(linspace(Xmin,Xmax,stepM));
     xx=zeros(stepM,stepM,2);
     xx(:,:,1)=x;xx(:,:,2)=y;
     dem=true;
 end
 if ~isempty(xx)
-    if size(xx,3)>2
-        error('The Booth function is a 2 dimensional function');
-    elseif size(xx,3)==1
+    %number of design variables
+    nbvar=size(xx,3);
+    if nbvar==1
         if size(xx,2)==2
             xxx=xx(:,1);yyy=xx(:,2);
         elseif size(xx,1)==2
@@ -49,17 +50,25 @@ if ~isempty(xx)
         else
             error(['Wrong input variables ',mfilename]);
         end
+        fx=sqrt(xxx).*sin(xxx);
+        fy=sqrt(yyy).*sin(yyy);
+        p=abs(fx)+abs(fy);
+        if nargout==2||dem
+            dp(:,:,1)=fy.*(0.5./sqrt(xxx).*sin(xxx)+sqrt(xxx).*cos(xxx));
+            dp(:,:,2)=fx.*(0.5./sqrt(yyy).*sin(yyy)+sqrt(yyy).*cos(yyy));
+        end
         
     else
-        xxx=xx(:,:,1);yyy=xx(:,:,2);
-    end
-    
-    p = (xxx+2*yyy-7).^2+(2*xxx+yyy-5).^2;
-    
-    
-    if nargout==2||dem
-        dp(:,:,1)=2*(xxx+2*yyy-7)+4*(2*xxx+yyy-5);
-        dp(:,:,2)=4*(xxx+2*yyy-7)+2*(2*xxx+yyy-5);
+        fx=sqrt(xx).*sin(xx);
+        p=prod(fx,3);
+        if nargout==2||dem
+            dp=zeros(size(xx));
+            for itV=1:nbvar
+                itF=[1:(itV-1) (itV+1):nbvar];
+                dp(:,:,itV)=prod(fx(:,:,itF),3).*...
+                    (0.5./sqrt(xx(:,:,itV)).*sin(xx(:,:,itV))+sqrt(xx(:,:,itV)).*cos(xx(:,:,itV)));
+            end
+        end
     end
 else
     if nargin==2
@@ -68,30 +77,30 @@ else
     p=[];
     dp=[];
 end
-% output: information about the function
+%output of information about the function
 if nargout==3
     infos.Xmin=Xmin*ones(1,nbvar);
     infos.Xmax=Xmax*ones(1,nbvar);
-    infos.min_glob.Z=0;
-    infos.min_glob.X=[1 3];
+    infos.min_glob.Z=2.808^nbvar;
+    infos.min_glob.X=7.917*ones(1,nbvar);
     infos.min_loc.Z=NaN;
     infos.min_loc.X=NaN;
 end
 
-% demo mode
+%demo display
 if nargin==0
     figure
     subplot(1,3,1)
     surf(x,y,p);
     axis('tight','square')
-    xlabel('x'), ylabel('y'), title('Booth')
+    xlabel('x'), ylabel('y'), title('Alpine 2')
     subplot(1,3,2)
     surf(x,y,dp(:,:,1));
     axis('tight','square')
-    xlabel('x'), ylabel('y'), title('Grad. X Booth')
+    xlabel('x'), ylabel('y'), title('Grad. X Alpine 2')
     subplot(1,3,3)
     surf(x,y,dp(:,:,2));
     axis('tight','square')
-    xlabel('x'), ylabel('y'), title('Grad. Y Booth')
+    xlabel('x'), ylabel('y'), title('Grad. Y Alpine 2')
 end
 end

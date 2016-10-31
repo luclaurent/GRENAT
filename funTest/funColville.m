@@ -25,7 +25,7 @@
 function [p,dp,infos]=funColville(xx,dim)
 
 if ~isempty(xx)
-    if size(xx,3)>2
+    if size(xx,3)~=4
         error('The Coleville function is a 4 dimensional function');
     elseif size(xx,3)==1
         if size(xx,2)==4
@@ -33,7 +33,7 @@ if ~isempty(xx)
         elseif size(xx,1)==4
             xxx=xx(1,:);yyy=xx(2,:);zzz=xx(3,:);vvv=xx(4,:);
         else
-            error('Mauvais format varibale entr�e fct Colville');
+            error('Wrong input variable fct Coleville');
         end
         
     else

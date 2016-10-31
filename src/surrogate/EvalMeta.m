@@ -29,7 +29,7 @@ Z=struct;
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %choose verbosity of the function
-if nargin==3
+if nargin<4
     Verb=true;
 end
 %%%%%%%%=================================%%%%%%%%
@@ -249,7 +249,9 @@ end
 %end of evaluations
 if nbReqEval>1&&Verb
     Gfprintf('++ Evaluation at %i points\n',nbReqEval);
-    countTime.stop;
+end
+countTime.stop(Verb);
+if nbReqEval>1&&Verb
     Gfprintf('#########################################\n');
 end
 

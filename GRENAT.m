@@ -93,12 +93,12 @@ classdef GRENAT < handle
             %load default configuration
             obj.confMeta=initMeta;
             %load display configuration
-            obj.confDisp=initDisp;
+            obj.confDisp=initDisp;            
             %specific configuration
             if nargin>0;obj.confMeta.type=typeIn;end
             if nargin>1;obj.sampling=samplingIn;end
             if nargin>2;obj.resp=respIn;end
-            if nargin>3;obj.grad=gradIn;end
+            if nargin>3;obj.grad=gradIn;end            
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -331,8 +331,12 @@ classdef GRENAT < handle
             checkMissingData(obj);
             %store normalization data
             obj.confMeta.norm=obj.norm;
-            %train surrogate model
+            %train surrogate model  
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
+            %save estimate parameters 
+            obj.confMeta.definePara(obj.dataTrain.build.para);
+            obj.confMeta.updatePara;
+            %change state of flags
             obj.runTrain=false;
             obj.runErr=true;
             
@@ -343,7 +347,7 @@ classdef GRENAT < handle
         end
         %update the metamodel by adding sample points and associated
         %responses and gradients
-        function update(samplingIn,respIn,gradIn,paraFind,varargin)
+        function update(obj,samplingIn,respIn,gradIn,paraFind,varargin)
             %add data
             if ~isempty(samplingIn)
                 obj.sampling=samplingIn;
@@ -355,13 +359,16 @@ classdef GRENAT < handle
                 %change status of the estimation of the parameters
                 obj.confMeta.conf('estimOn',paraFind);
                 %deal with additional options
-                if nargin>4;
+                if nargin>5;
                     obj.confMeta.conf(varargin{:});
                 end
+                %train the metamodel
+                obj.train();
             end
         end
         %evaluate the metamodel
-        function [Z,GZ,variance]=eval(obj,nonsamplePts)
+        function [Z,GZ,variance]=eval(obj,nonsamplePts,Verb)
+            if nargin<3;Verb=true;end
             %check if the metamodel has been already trained
             if obj.runTrain;train(obj);end
             %store non sample points
@@ -371,7 +378,7 @@ classdef GRENAT < handle
                 %normalization of the input data
                 obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePtsOrder);
                 %evaluation of the metamodel
-                [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta);
+                [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta,Verb);
                 %store data from the evaluation
                 obj.nonsampleRespN=K.Z;
                 obj.nonsampleGradN=K.GZ;
@@ -389,11 +396,12 @@ classdef GRENAT < handle
             variance=obj.nonsampleVar;
         end
         %check interpolation
-        function [ZI,detI]=evalInfill(obj,nonsamplePts)
+        function [ZI,detI]=evalInfill(obj,nonsamplePts,Verb)
+            if nargin<3;Verb=true;end
             %store non sample points
             if nargin>1;obj.nonsamplePts=nonsamplePts;end
             %evaluation
-            eval(obj);
+            obj.eval([],Verb);
             %smallest response
             respMin=min(obj.resp);
             %computation of infill criteria
@@ -510,9 +518,9 @@ classdef GRENAT < handle
             end
             okAll=okSample&&okResp&&okGrad;
             %display error messages
-            if ~okSample;fprintf('>> Wrong definition of the reference sample points\n');end
-            if ~okResp;fprintf('>> Wrong definition of the reference responses\n');end
-            if ~okGrad;fprintf('>> Wrong definition of the reference gradients\n');end
+            if ~okSample;Gfprintf('>> Wrong definition of the reference sample points\n');end
+            if ~okResp;Gfprintf('>> Wrong definition of the reference responses\n');end
+            if ~okGrad;Gfprintf('>> Wrong definition of the reference gradients\n');end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -521,7 +529,7 @@ classdef GRENAT < handle
             %list properties
             listProp=properties(obj);
             okConf=false;
-            %if a input variable is specifiec
+            %if a input variable is specified
             if nargin>2
                 %if the number of input argument is even
                 if  mod(nargin-1,2)==0
@@ -543,9 +551,9 @@ classdef GRENAT < handle
                     end
                 end
                 if ~okConf
-                    fprintf('\nWrong syntax used for conf method\n')
-                    fprintf('use: conf(''key1'',val1,''key2'',val2...)\n')
-                    fprintf('\nList of the available keywords:\n');
+                    Gfprintf('\nWrong syntax used for conf method\n');
+                    Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n');
+                    Gfprintf('\nList of the available keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
                 end
             else

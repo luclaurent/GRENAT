@@ -342,7 +342,7 @@ for i=1:me  % start epoch loop (iterations)
     %assignin('base','bestpos',bestpos(i,1:D+1));
     %------------------------------------------------------------------------
     % this section does the plots during iterations
-    if (mod(i,10)==0)|| (i==1)     %correction Luc: affichage ts les 5 iterations
+    if (mod(i,100)==0)|| (i==1)     %correction Luc: affichage ts les 5 iterations
         fprintf(message,i,gbestval);
     end
     if plotflg==1

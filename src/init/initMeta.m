@@ -189,13 +189,17 @@ classdef initMeta < handle
             end
         end
         function set.pVal(obj,doubleIn)
-            if checkDouble(doubleIn,obj.pVal,'Power exponent generalized exponential kernel',0,[])
-                obj.pVal=doubleIn;
+            if ~isnan(doubleIn)
+                if checkDouble(doubleIn,obj.pVal,'Power exponent generalized exponential kernel',0,[])
+                    obj.pVal=doubleIn;
+                end
             end
         end
         function set.nuVal(obj,doubleIn)
-            if checkDouble(doubleIn,obj.nuVal,'Smoothness coefficient for Matern kernel function',0,[])
-                obj.nuVal=doubleIn;
+            if ~isnan(doubleIn)
+                if checkDouble(doubleIn,obj.nuVal,'Smoothness coefficient for Matern kernel function',0,[])
+                    obj.nuVal=doubleIn;
+                end
             end
         end
         function set.polyOrder(obj,doubleIn)
@@ -436,6 +440,7 @@ classdef initMeta < handle
                 obj.checkInterp=boolIn;
             end
         end
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %list available techniques
@@ -454,6 +459,41 @@ classdef initMeta < handle
             dispTableTwoColumns(obj.typeAvail,obj.typeTxt);
             Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
         end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %function for defining parameters
+        function definePara(obj,paraIn)
+            paraOk=false;
+            if ~isempty(paraIn)
+                if isa(paraIn,'struct')
+                    obj.lVal=paraIn.l.Val;
+                    obj.lMin=paraIn.l.Min;
+                    obj.lMax=paraIn.l.Max;
+                    obj.pVal=paraIn.p.Val;
+                    obj.pMin=paraIn.p.Min;
+                    obj.pMax=paraIn.p.Max;
+                    obj.nuVal=paraIn.nu.Val;
+                    obj.nuMin=paraIn.nu.Min;
+                    obj.nuMax=paraIn.nu.Max;
+                    obj.stepTaylor=paraIn.stepTaylor;
+                    obj.polyOrder=paraIn.polyOrder;
+                    obj.swfPara=paraIn.swfPara;
+                    obj.e0=paraIn.e0;
+                    obj.ek =paraIn.ek;
+                    obj.c0=paraIn.c0;
+                    obj.ck=paraIn.ck;
+                    obj.nuSVR=paraIn.nuSVR;
+                    obj.nuGSVR=paraIn.nuGSVR;
+                    paraOk=true;
+                    %update structure of parameters
+                    obj.updatePara;
+                end
+            end
+            if ~paraOk
+                Gfprintf('Wrong structure used for declaraing parameters\n')
+            end
+        end
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %update para struct
@@ -675,7 +715,7 @@ if isG(varIn,'double')
     if checkS
         %check if the bounds are respected
         if ~isempty(lB)
-            oklB=all(varIn>=uB);
+            oklB=all(varIn>=lB);
         end
         if ~isempty(uB)
             okuB=all(varIn<=uB);

@@ -92,3 +92,9 @@ else
         KK=KK+KK'+eye(ns);
     end
 end
+if any(eig(KK)<0)
+    fprintf('Negative\n')
+    keyboard
+end
+end
+

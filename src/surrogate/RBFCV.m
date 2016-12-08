@@ -223,7 +223,7 @@ if modDebug
                 dataCV.in.ns=ns;
                 dataCV.in.sampling=cvSampling;
                 dataCV.infill.on=false;
-                %evaluate gradients on removed sample points
+                %evaluate grients on removed sample points
                 [~,GZ,~]=RBFEval(sampling(itS,:),dataCV);
                 cvGZ(itS,posGr)=GZ(posGr);
             end

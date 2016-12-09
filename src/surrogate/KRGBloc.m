@@ -193,7 +193,6 @@ if final   % in the phase of building
         Gfprintf('+++ //!\\ Bad condition number\n');
     end
 end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Factorization of the matrix

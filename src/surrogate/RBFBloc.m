@@ -61,7 +61,7 @@ end
 %Build of the RBF/GRBF matrix
 if dataIn.used.availGrad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,paraVal);
-    KK=[KK KKa;-KKa' KKi];
+    KK=[KK -KKa;-KKa' -KKi];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
 end
@@ -98,7 +98,7 @@ if nargin==2 % in the phase of building
     newCond=condest(KK);
     Gfprintf('Condition number RBF/GRBF matrix: %4.2e\n',newCond);
     if newCond>1e16
-        Gfprintf('+++ //!\\ Bad condition number\n');
+        Gfprintf('+++ !!!!! Bad condition number\n');
     end
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -122,7 +122,7 @@ switch factKK
         LKK=chol(KK,'lower');
         iKK=LKK'\inv(LKK);
         yL=LKK\dataIn.build.y;
-        w=LKK'\yL;
+        w=LKK'\yL;        
     otherwise
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

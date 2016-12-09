@@ -10,7 +10,7 @@ else
     type='Manu';
 end
 % Aniso or not
-aniso=dataRBF.para.aniso;
+aniso=dataRBF.aniso;
 
 %Nb of variables and points
 np=size(samplingIn,2);
@@ -58,5 +58,5 @@ switch type
         para=1.25*1/ns*D;
         
     otherwise
-        para=dataRBF.para.l.val;
+        para=dataRBF.para.l.Val;
 end

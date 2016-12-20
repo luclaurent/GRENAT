@@ -251,38 +251,53 @@ classdef GRENAT < handle
         end
         %Normalization of the input data
         function dataOut=normInputData(obj,type,dataIn)
-            if obj.confMeta.normOn
-                %preparing data structures
-                infoDataS=obj.norm.sampling;
-                infoDataR=obj.norm.resp;
-                %for various situations
-                switch type
-                    case 'initSamplePts'
+            if nargin>2
+                dataOut=dataIn;
+            end
+            %preparing data structures
+            infoDataS=obj.norm.sampling;
+            infoDataR=obj.norm.resp;
+            %for various situations
+            switch type
+                case 'initSamplePts'
+                    if obj.confMeta.normOn
                         [obj.samplingN,infoDataS]=NormRenorm(obj.sampling,'norm');
                         obj.normMeanS=infoDataS.mean;
                         obj.normStdS=infoDataS.std;
-                        obj.normSamplePtsIn=true;
-                    case 'initResp'
+                    else
+                        obj.samplingN=obj.sampling;
+                        obj.normMeanS=NaN;
+                        obj.normStdS=NaN;
+                    end
+                    obj.normSamplePtsIn=true;
+                case 'initResp'
+                    if obj.confMeta.normOn
                         [obj.respN,infoDataR]=NormRenorm(obj.resp,'norm');
                         obj.normMeanR=infoDataR.mean;
                         obj.normStdR=infoDataR.std;
-                        obj.normRespIn=true;
-                    case 'SamplePts'
+                    else
+                        obj.respN=obj.resp;
+                        obj.normMeanR=NaN;
+                        obj.normStdR=NaN;
+                    end
+                    obj.normRespIn=true;
+                case 'SamplePts'
+                    if obj.confMeta.normOn
                         dataOut=NormRenorm(dataIn,'norm',infoDataS);
-                    case 'Resp'
+                    end
+                case 'Resp'
+                    if obj.confMeta.normOn
                         dataOut=NormRenorm(dataIn,'norm',infoDataR);
-                    case 'Grad'
+                    end
+                case 'Grad'
+                    if obj.confMeta.normOn
                         if ~isempty(dataIn)
                             dataOut=NormRenormG(dataIn,'norm',infoDataS,infoDataR);
                         else
                             dataOut=[];
                         end
-                end
-            else
-                if nargout>2
-                    dataOut=dataIn;
-                end
-            end
+                    end
+            end            
         end
         %ReNormalization of the input data
         function dataOut=reNormInputData(obj,type,dataIn)
@@ -300,7 +315,7 @@ classdef GRENAT < handle
                         dataOut=NormRenormG(dataIn,'renorm',infoDataS,infoDataR);
                 end
             else
-                if nargout>2
+                if nargin>2
                     dataOut=dataIn;
                 end
             end
@@ -331,7 +346,7 @@ classdef GRENAT < handle
             checkMissingData(obj);
             %store normalization data
             obj.confMeta.norm=obj.norm;
-            %train surrogate model  
+            %train surrogate model 
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
             %save estimate parameters 
             obj.confMeta.definePara(obj.dataTrain.build.para);

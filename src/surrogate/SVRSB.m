@@ -83,7 +83,7 @@ DiKSV=diag(iKUSV);
 %compute St^2
 St2b=zeros(sizePsi,1);
 St2b(iXsvUSV)=1./DiKSV(1:nbUSV);
- if nbBSV>0;
+ if nbBSV>0
      PsiBSV=PsiR(iXsvBSV(:),iXsvBSV(:));
      Vb=[PsiR(iXsvUSV,iXsvBSV); ones(1,nbBSV)];
      St2b(iXsvBSV)=diag(PsiBSV)-diag(Vb'*iKUSV*Vb);

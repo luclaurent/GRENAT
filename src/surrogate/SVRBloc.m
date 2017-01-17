@@ -110,6 +110,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Solving the Convex Constrained Quadaratic Optimization problem
 [solQP, obj, info, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub);
+keyboard
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Specific data for none-gradient-based SVR

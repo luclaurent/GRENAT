@@ -32,7 +32,7 @@ paraCluster=execParallel(false);
 dimPB=2; %number of design parameters
 ns=20; %number if sample points
 typeDOE='LHS'; %type of DOE
-testFunction='Mystery'; %test function
+testFunction='Schwefel'; %test function
 %
 mDOE=multiDOE(dimPB,typeDOE,ns,[],[],testFunction);
 %mDOE.show;
@@ -47,7 +47,7 @@ samplePts=mDOE.sorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('GRBF',samplePts,resp,grad);
+metaGRENAT=GRENAT('InRBF',samplePts,resp,grad);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

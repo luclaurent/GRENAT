@@ -52,14 +52,14 @@ if dispTxtOnOff(metaData.estim.on,'>> Estimation of the hyperparameters: ',[],tr
     dispTxtOnOff(metaData.estim.dispIterCmd,'>> Show estimation steps in console: ',[],true);
     dispTxtOnOff(metaData.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
 else
-    Gfprintf('>> Value hyperparameter: %d\n',metaData.para.l.val);
+    Gfprintf('>> Value hyperparameter: %d\n',metaData.para.l.Val);
     switch metaData.kern
         case {'expg','expgg'}
             Gfprintf('>> Value of the exponent:');
-            fprintf(' %d',metaData.para.p.val);
+            fprintf(' %d',metaData.para.p.Val);
             fprintf('\n');
         case {'matern'}
-            Gfprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.val);
+            Gfprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.Val);
     end
 end
 %

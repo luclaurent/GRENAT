@@ -54,9 +54,9 @@ classdef initMeta < handle
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)
         ek=1e-2;            %thickness of the tube of gradient (not used for nu-SVR)
-        c0=1e6;             %constant for trade off between flatness of the function and the amount up to
+        c0=1e2;             %constant for trade off between flatness of the function and the amount up to
         %which deviations larger to e0 are tolerated
-        ck=1e6;             %same trade off constant as before
+        ck=1e2;             %same trade off constant as before
         nuSVR=0.6;          %parameter of the nu-SVR (nu in [0,1])
         nuGSVR=0.6;         %idem for nu-GSVR
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%

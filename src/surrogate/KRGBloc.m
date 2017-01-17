@@ -53,12 +53,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Build of the KRG/GRKG matrix
+
+stC=cputime;
 if dataIn.used.availGrad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,paraVal);
     KK=[KK -KKa;-KKa' -KKi];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
 end
+global timK
+timK=cputime-stC;
+timK
+
 %in the case of missing data
 %responses
 if metaData.miss.resp.on

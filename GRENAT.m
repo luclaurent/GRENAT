@@ -251,6 +251,9 @@ classdef GRENAT < handle
         end
         %Normalization of the input data
         function dataOut=normInputData(obj,type,dataIn)
+            %values for non normalized approachs
+            obj.samplingN=obj.sampling;
+            obj.respN=obj.resp;
             if obj.confMeta.normOn
                 %preparing data structures
                 infoDataS=obj.norm.sampling;
@@ -279,7 +282,7 @@ classdef GRENAT < handle
                         end
                 end
             else
-                if nargout>2
+                if nargin>2
                     dataOut=dataIn;
                 end
             end
@@ -300,7 +303,7 @@ classdef GRENAT < handle
                         dataOut=NormRenormG(dataIn,'renorm',infoDataS,infoDataR);
                 end
             else
-                if nargout>2
+                if nargin>2
                     dataOut=dataIn;
                 end
             end
@@ -331,7 +334,7 @@ classdef GRENAT < handle
             checkMissingData(obj);
             %store normalization data
             obj.confMeta.norm=obj.norm;
-            %train surrogate model  
+            %train surrogate model 
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
             %save estimate parameters 
             obj.confMeta.definePara(obj.dataTrain.build.para);

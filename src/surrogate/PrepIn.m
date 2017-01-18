@@ -54,7 +54,7 @@ if ~isstruct(gradIn)
     
     %Reordering sampled points and duplicates
     reordS=reshape(samplingIn',1,[]);
-    dupS=repmat(reordS,np+1,[]);
+    dupS=repmat(reordS,np+1,1);
     %create shift per direction
     matStep=diag(stepTaylor);
     matStepDup=[zeros(1,np*ns_init);repmat(matStep,1,ns_init)];

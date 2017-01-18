@@ -1,20 +1,20 @@
 %% Initialization of the directories (MATLAB's path)
 % L. LAURENT -- 30/01/2014  -- luc.laurent@lecnam.net
 
-%     GRENAT - GRadient ENhanced Approximation Toolbox 
+%     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
 %     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
-% 
+%
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
 %     (at your option) any later version.
-% 
+%
 %     This program is distributed in the hope that it will be useful,
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
+%
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -46,6 +46,7 @@ foldersLoad={'funTest',...
     'src/libs',...
     'src/libs/PSOt',...
     'src/libs/multidoe',...
+    'src/libs/MultiDOE',...
     'src/libs/matlab2tikz'};
 
 %depending on the parameters
@@ -63,46 +64,58 @@ if ~specifDir
 end
 
 %absolute paths
-pathAbsolute=cellfun(@(c)[pathcustom '/' c],foldersLoad,'uni',false);
+pathAbsolute=cellfun(@(c)fullfile(pathcustom,c),foldersLoad,'uni',false);
 
 %add to the PATH
-cellfun(@(x)addpathExisted(x),pathAbsolute);
+flA=cellfun(@(x)addpathExisted(x),pathAbsolute);
 
 %if PSOt is available the PSOt files will be loaded
 if exist('initPSOt','file')
-    initPSOt([pathcustom '/src/libs/']);
+    initPSOt(fullfile(pathcustom,'/src/libs'));
 end
 
 %if matlab2tikz is available the matlab2tikz files will be loaded
 if exist('initMatlab2tikz','file')&&~flagNested
-    initMatlab2tikz([pathcustom '/src/libs/']);
+    initMatlab2tikz(fullfile(pathcustom,'/src/libs'));
 end
 
 %if MultiDOE is available the MultiDOE files will be loaded
 if exist('initDirMultiDOE','file')&&~flagNested
-    initDirMultiDOE([pathcustom '/src/libs/multidoe'],[],true);
+    initDirMultiDOE(fullfile(pathcustom,'/src/libs/multidoe'),[]);
 end
 
+flB=[];
 if nargin>=2
     if ~isempty(other)
         %Load other toolbox
         if ~iscell(other);other={other};end
         %absolute paths
-        pathAbsolute=cellfun(@(c)[pathcustom '/../' c],other,'uni',false);
+        pathAbsolute=cellfun(@(c)fullfile(pathcustom,'/../',c),other,'uni',false);
         %add to the PATH
         cellfun(@(x)addpathExisted(x),pathAbsolute);
         %add other toolbox to the PATH
         namFun=cellfun(@(c)['initDir' c],other,'uni',false);
-        cellfun(@feval,namFun,pathAbsolute,'uni',false)
+        flB=cellfun(@feval,namFun,pathAbsolute,'uni',false);
     end
 end
-
-fprintf(' ## Toolbox: GRENAT loaded\n');
+if any([flA flB]==2)
+    %display
+    Gfprintf(' ## Toolbox: GRENAT loaded\n');
+end
 end
 
-%check if a directory exists or not and add it to the path if not
-function addpathExisted(folder)
-if exist(folder,'dir')
+%check if a directory exists in the path or not and add it to the path if not
+function flag=addpathExisted(folder)
+flag=1;
+folder=fullfile(folder);
+if ispc
+    % Windows is not case-sensitive
+    onPath = ~isempty(strfind(lower(path),lower(folder)));
+else
+    onPath = ~isempty(strfind(path,folder));
+end
+if exist(folder,'dir')&&~onPath
+    flag=2;
     addpath(folder)
 end
 end

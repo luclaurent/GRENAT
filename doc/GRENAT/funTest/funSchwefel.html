@@ -77,86 +77,90 @@ This function is called by:
 0027 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=funSchwefel(xx,dim)</a>
 0028 
 0029 coef=418.9829;
-0030 <span class="comment">% demo mode</span>
-0031 dem=false;
-0032 <span class="keyword">if</span> nargin==0
-0033     pas=50;
-0034     borne=500;
-0035     [x,y]=meshgrid(linspace(-borne,borne,pas));
-0036     xx=zeros(pas,pas,2);
-0037     xx(:,:,1)=x;xx(:,:,2)=y;
-0038     dem=true;
-0039 <span class="keyword">end</span>
-0040 <span class="keyword">if</span> ~isempty(xx)
-0041     <span class="comment">% number of design variables</span>
-0042     nbvar=size(xx,3);
-0043     
-0044     <span class="keyword">if</span> nbvar==1
-0045         <span class="keyword">if</span> nargout==2
-0046             
-0047             <span class="keyword">if</span> size(xx,2)==2
-0048                 xxx=xx(:,1);yyy=xx(:,2);
-0049             <span class="keyword">elseif</span> size(xx,1)==2
-0050                 xxx=xx(:,2);yyy=xx(:,1);
-0051             <span class="keyword">else</span>
-0052                 error([<span class="string">'Wrong input variables '</span>,mfilename]);
-0053             <span class="keyword">end</span>
-0054             cal=xxx.*sin(sqrt(abs(xxx)))+yyy.*sin(sqrt(abs(yyy)));
-0055             p=coef*nbvar-cal;
-0056             <span class="keyword">if</span> nargout==2||dem
-0057                 dpX=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
-0058                 iXZ=find(abs(xxx)&lt;eps);dpX(iXZ)=0;
-0059                 dpY=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
-0060                 iXZ=find(abs(yyy)&lt;eps);dpY(iXZ)=0;
-0061                 dp(:,:,1)=dpX;
-0062                 dp(:,:,2)=dpY;
-0063             <span class="keyword">end</span>
-0064         <span class="keyword">end</span>
-0065         
-0066     <span class="keyword">else</span>
-0067         cal=xx.*sin(sqrt(abs(xx)));
-0068         p=coef*nbvar-sum(cal,3);
-0069         
-0070         <span class="keyword">if</span> nargout==2||dem
-0071             dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
-0072             iXZ=find(abs(xx)&lt;eps);dp(iXZ)=0;
-0073         <span class="keyword">end</span>
-0074         
-0075     <span class="keyword">end</span>
-0076 <span class="keyword">else</span>
-0077     nbvar=dim;
-0078     p=[];
-0079     dp=[];
-0080 <span class="keyword">end</span>
-0081 <span class="comment">% output: information about the function</span>
-0082 <span class="keyword">if</span> nargout==3
-0083     pts=ones(1,nbvar);
-0084     infos.min_glob.X=pts;
-0085     cal=pts(:,1).*sin(sqrt(abs(pts(:,1))))+pts(:,2).*sin(sqrt(abs(pts(:,2))));
-0086     infos.min_glob.Z=coef*nbvar-cal;
-0087     infos.min_loc.Z=NaN;
-0088     infos.min_loc.X=NaN;
-0089 <span class="keyword">end</span>
-0090 
-0091 <span class="comment">% demo mode</span>
-0092 <span class="keyword">if</span> nargin==0
-0093     figure
-0094     subplot(1,3,1)
-0095     surf(x,y,p);
-0096     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0097     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Schwefel'</span>)
-0098     subplot(1,3,2)
-0099     surf(x,y,dp(:,:,1));
+0030 
+0031 <span class="comment">% demo mode</span>
+0032 dem=false;
+0033 <span class="keyword">if</span> nargin==0
+0034     pas=50;
+0035     borne=500;
+0036     [x,y]=meshgrid(linspace(-borne,borne,pas));
+0037     xx=zeros(pas,pas,2);
+0038     xx(:,:,1)=x;xx(:,:,2)=y;
+0039     dem=true;
+0040 <span class="keyword">elseif</span> nargin==1
+0041     dim=NaN;
+0042 <span class="keyword">end</span>
+0043 <span class="keyword">if</span> ~isempty(xx)
+0044     <span class="comment">% number of design variables</span>
+0045     nbvar=size(xx,3);
+0046     
+0047     <span class="keyword">if</span> nbvar==1
+0048         <span class="keyword">if</span> nargout==2
+0049             
+0050             <span class="keyword">if</span> size(xx,2)==2
+0051                 xxx=xx(:,1);yyy=xx(:,2);
+0052             <span class="keyword">elseif</span> size(xx,1)==2
+0053                 xxx=xx(:,2);yyy=xx(:,1);
+0054             <span class="keyword">else</span>
+0055                 error([<span class="string">'Wrong input variables '</span>,mfilename]);
+0056             <span class="keyword">end</span>
+0057             cal=xxx.*sin(sqrt(abs(xxx)))+yyy.*sin(sqrt(abs(yyy)));
+0058             p=coef*nbvar-cal;
+0059             <span class="keyword">if</span> nargout==2||dem
+0060                 dpX=-sin(sqrt(abs(xxx)))-xxx.*sign(xxx).*cos(sqrt(abs(xxx)))./(2*sqrt(abs(xxx)));
+0061                 iXZ=find(abs(xxx)&lt;eps);dpX(iXZ)=0;
+0062                 dpY=-sin(sqrt(abs(yyy)))-xxx.*sign(yyy).*cos(sqrt(abs(yyy)))./(2*sqrt(abs(yyy)));
+0063                 iXZ=find(abs(yyy)&lt;eps);dpY(iXZ)=0;
+0064                 dp(:,:,1)=dpX;
+0065                 dp(:,:,2)=dpY;
+0066             <span class="keyword">end</span>
+0067         <span class="keyword">end</span>
+0068         
+0069     <span class="keyword">else</span>
+0070         cal=xx.*sin(sqrt(abs(xx)));
+0071         p=coef*nbvar-sum(cal,3);
+0072         
+0073         <span class="keyword">if</span> nargout==2||dem
+0074             dp=-sin(sqrt(abs(xx)))-xx.*sign(xx).*cos(sqrt(abs(xx)))./(2*sqrt(abs(xx)));
+0075             iXZ=find(abs(xx)&lt;eps);dp(iXZ)=0;
+0076         <span class="keyword">end</span>
+0077         
+0078     <span class="keyword">end</span>
+0079 <span class="keyword">else</span>
+0080     nbvar=dim;
+0081     p=[];
+0082     dp=[];
+0083 <span class="keyword">end</span>
+0084 
+0085 <span class="comment">% output: information about the function</span>
+0086 <span class="keyword">if</span> nargout==3
+0087     pts=ones(1,nbvar);
+0088     infos.min_glob.X=pts;
+0089     cal=pts(:,1).*sin(sqrt(abs(pts(:,1))))+pts(:,2).*sin(sqrt(abs(pts(:,2))));
+0090     infos.min_glob.Z=coef*nbvar-cal;
+0091     infos.min_loc.Z=NaN;
+0092     infos.min_loc.X=NaN;
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="comment">% demo mode</span>
+0096 <span class="keyword">if</span> nargin==0
+0097     figure
+0098     subplot(1,3,1)
+0099     surf(x,y,p);
 0100     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0101     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Schwefel'</span>)
-0102     subplot(1,3,3)
-0103     surf(x,y,dp(:,:,2));
+0101     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Schwefel'</span>)
+0102     subplot(1,3,2)
+0103     surf(x,y,dp(:,:,1));
 0104     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0105     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Schwefel'</span>)
-0106     p=[];
-0107 <span class="keyword">end</span>
-0108 
-0109 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0105     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Schwefel'</span>)
+0106     subplot(1,3,3)
+0107     surf(x,y,dp(:,:,2));
+0108     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0109     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Schwefel'</span>)
+0110     p=[];
+0111 <span class="keyword">end</span>
+0112 
+0113 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

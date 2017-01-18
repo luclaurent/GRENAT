@@ -29,7 +29,7 @@
 <div class="fragment"><pre class="comment">% Beale function
 L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net
 
-global minimum : f(x1,x2)=0 pour (x1,x2)=(3,-0.5)
+global minimum : f(x1,x2)=0 pour (x1,x2)=(3,0.5)
 
 Design space: -4.5&lt;x1&lt;4.5, -4.5&lt;x&lt;4.5</pre></div>
 
@@ -49,7 +49,7 @@ This function is called by:
 <div class="fragment"><pre>0001 <span class="comment">%% Beale function</span>
 0002 <span class="comment">%L. LAURENT -- 16/09/2011 -- luc.laurent@lecnam.net</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">%global minimum : f(x1,x2)=0 pour (x1,x2)=(3,-0.5)</span>
+0004 <span class="comment">%global minimum : f(x1,x2)=0 pour (x1,x2)=(3,0.5)</span>
 0005 <span class="comment">%</span>
 0006 <span class="comment">%Design space: -4.5&lt;x1&lt;4.5, -4.5&lt;x&lt;4.5</span>
 0007 
@@ -72,77 +72,84 @@ This function is called by:
 0024 
 0025 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=funBeale(xx,dim)</a>
 0026 
-0027 
-0028 <span class="comment">% demo mode</span>
-0029 dem=false;
-0030 <span class="keyword">if</span> nargin==0
-0031     pas=50;
-0032     [x,y]=meshgrid(linspace(-2,2,pas));
-0033     xx=zeros(pas,pas,2);
-0034     xx(:,:,1)=x;xx(:,:,2)=y;
-0035     dem=true;
-0036 <span class="keyword">end</span>
-0037 
-0038 <span class="keyword">if</span> ~isempty(xx)
-0039     <span class="keyword">if</span> size(xx,3)&gt;2
-0040         error(<span class="string">'The Beale'</span>s <span class="keyword">function</span> is a 2 dimensional <span class="keyword">function</span>');
-0041     <span class="keyword">elseif</span> size(xx,3)==1
-0042         <span class="keyword">if</span> size(xx,2)==2
-0043             xxx=xx(:,1);yyy=xx(:,2);
-0044         <span class="keyword">elseif</span> size(xx,1)==2
-0045             xxx=xx(:,2);yyy=xx(:,1);
-0046         <span class="keyword">else</span>
-0047             error([<span class="string">'Wrong input variables '</span>,mfilename]);
-0048         <span class="keyword">end</span>
-0049         
-0050     <span class="keyword">else</span>
-0051         xxx=xx(:,:,1);yyy=xx(:,:,2);
-0052     <span class="keyword">end</span>
-0053     
-0054     p = (1.5 - xxx + xxx.*yyy).^2 + (2.25 - xxx + xxx.*yyy.^2).^2 + (2.625 - xxx + xxx.*yyy.^3).^2;
-0055     
-0056     
-0057     <span class="keyword">if</span> nargout==2||dem
-0058         dp(:,:,1)=2*(yyy-1).*(1.5-xxx+xxx.*yyy)+<span class="keyword">...</span>
-0059             2*(yyy.^2-1).*(2.25 - xxx + xxx.*yyy.^2) +<span class="keyword">...</span>
-0060             2*(yyy.^3-1).*(2.625 - xxx + xxx.*yyy.^3);
-0061         dp(:,:,2)=2*xxx.*(1.5-xxx+xxx.*yyy)+<span class="keyword">...</span>
-0062             4*xxx.*yyy.*(2.25 - xxx + xxx.*yyy.^2) +<span class="keyword">...</span>
-0063             6*xxx.*yyy.^2.*(2.625 - xxx + xxx.*yyy.^3);
-0064     <span class="keyword">end</span>
-0065 <span class="keyword">else</span>
-0066     <span class="keyword">if</span> nargin==2
-0067         nbvar=dim;
-0068     <span class="keyword">end</span>
-0069     p=[];
-0070     dp=[];
-0071 <span class="keyword">end</span>
-0072 <span class="comment">% output: information about the function</span>
-0073 <span class="keyword">if</span> nargout==3
-0074     infos.min_glob.Z=0;
-0075     infos.min_glob.X=[3 0.5];
-0076     infos.min_loc.Z=0;
-0077     infos.min_loc.X=[3 0.5];
-0078 <span class="keyword">end</span>
-0079 
-0080 <span class="comment">% demo mode</span>
-0081 <span class="keyword">if</span> nargin==0
-0082     figure
-0083     subplot(1,3,1)
-0084     surf(x,y,p);
-0085     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0086     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Beale'</span>)
-0087     subplot(1,3,2)
-0088     surf(x,y,dp(:,:,1));
-0089     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0090     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Beale'</span>)
-0091     subplot(1,3,3)
-0092     surf(x,y,dp(:,:,2));
-0093     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
-0094     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Beale'</span>)
-0095 <span class="keyword">end</span>
-0096 <span class="keyword">end</span>
-0097</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0027 <span class="comment">%space</span>
+0028 Xmin=-4.5;
+0029 Xmax=4.5;
+0030 
+0031 <span class="comment">% demo mode</span>
+0032 dem=false;
+0033 <span class="keyword">if</span> nargin==0
+0034     stepM=50;
+0035     xl=linspace(Xmin,Xmax,stepM);
+0036     yl=linspace(Xmin,Xmax,stepM);
+0037     [x,y]=meshgrid(xl,yl);
+0038     xx=zeros(stepM,stepM,2);
+0039     xx(:,:,1)=x;xx(:,:,2)=y;
+0040     dem=true;
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="keyword">if</span> ~isempty(xx)
+0044     <span class="keyword">if</span> size(xx,3)&gt;2
+0045         error(<span class="string">'The Beale''s function is a 2 dimensional function'</span>);
+0046     <span class="keyword">elseif</span> size(xx,3)==1
+0047         <span class="keyword">if</span> size(xx,2)==2
+0048             xxx=xx(:,1);yyy=xx(:,2);
+0049         <span class="keyword">elseif</span> size(xx,1)==2
+0050             xxx=xx(:,2);yyy=xx(:,1);
+0051         <span class="keyword">else</span>
+0052             error([<span class="string">'Wrong input variables '</span>,mfilename]);
+0053         <span class="keyword">end</span>
+0054         
+0055     <span class="keyword">else</span>
+0056         xxx=xx(:,:,1);yyy=xx(:,:,2);
+0057     <span class="keyword">end</span>
+0058     
+0059     p = (1.5 - xxx + xxx.*yyy).^2 + (2.25 - xxx + xxx.*yyy.^2).^2 + (2.625 - xxx + xxx.*yyy.^3).^2;
+0060     
+0061     
+0062     <span class="keyword">if</span> nargout==2||dem
+0063         dp(:,:,1)=2*(yyy-1).*(1.5-xxx+xxx.*yyy)+<span class="keyword">...</span>
+0064             2*(yyy.^2-1).*(2.25 - xxx + xxx.*yyy.^2) +<span class="keyword">...</span>
+0065             2*(yyy.^3-1).*(2.625 - xxx + xxx.*yyy.^3);
+0066         dp(:,:,2)=2*xxx.*(1.5-xxx+xxx.*yyy)+<span class="keyword">...</span>
+0067             4*xxx.*yyy.*(2.25 - xxx + xxx.*yyy.^2) +<span class="keyword">...</span>
+0068             6*xxx.*yyy.^2.*(2.625 - xxx + xxx.*yyy.^3);
+0069     <span class="keyword">end</span>
+0070 <span class="keyword">else</span>
+0071     <span class="keyword">if</span> nargin==2
+0072         nbvar=dim;
+0073     <span class="keyword">end</span>
+0074     p=[];
+0075     dp=[];
+0076 <span class="keyword">end</span>
+0077 <span class="comment">% output: information about the function</span>
+0078 <span class="keyword">if</span> nargout==3
+0079     infos.Xmin=Xmin*ones(1,nbvar);
+0080     infos.Xmax=Xmax*ones(1,nbvar);
+0081     infos.min_glob.Z=0;
+0082     infos.min_glob.X=[3 0.5];
+0083     infos.min_loc.Z=0;
+0084     infos.min_loc.X=[3 0.5];
+0085 <span class="keyword">end</span>
+0086 
+0087 <span class="comment">% demo mode</span>
+0088 <span class="keyword">if</span> nargin==0
+0089     figure
+0090     subplot(1,3,1)
+0091     surf(x,y,p);
+0092     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0093     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Beale'</span>)
+0094     subplot(1,3,2)
+0095     surf(x,y,dp(:,:,1));
+0096     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0097     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Beale'</span>)
+0098     subplot(1,3,3)
+0099     surf(x,y,dp(:,:,2));
+0100     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0101     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Beale'</span>)
+0102 <span class="keyword">end</span>
+0103 <span class="keyword">end</span>
+0104</pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -110,7 +110,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Solving the Convex Constrained Quadaratic Optimization problem
 [solQP, obj, info, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub);
-keyboard
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Specific data for none-gradient-based SVR
@@ -169,10 +168,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute epsilon
-eM=0.5*(dataIn.used.resp(svMidPIX)...
-    -dataIn.used.resp(svMidMIX)...
-    -FullAlphaLambdaPM(iXsvT)'*PsiR(svMidPIX,iXsvT)'...
-    +FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidMIX));
+%eM=0.5*(dataIn.used.resp(svMidPIX)...
+%    -dataIn.used.resp(svMidMIX)...
+%    -FullAlphaLambdaPM(iXsvT)'*PsiR(svMidPIX,iXsvT)'...
+%    +FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidMIX));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute the base term
@@ -183,8 +182,8 @@ eM=0.5*(dataIn.used.resp(svMidPIX)...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %lagrange multipliers give the values of mu and epsilon
 e=lmQP.ineqlin(1);
-eM
-e
+%eM
+%e
 SVRmu=lmQP.eqlin;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

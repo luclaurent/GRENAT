@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of funAlpine1</title>
+  <meta name="keywords" content="funAlpine1">
+  <meta name="description" content="% Alpine's function 1">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GRENAT --><!-- menu.html funTest -->
+<h1>funAlpine1
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Alpine's function 1</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [p,dp,infos]=funAlpine1(xx,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Alpine's function 1
+L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net
+
+numerous local minima
+1 global minimum : x=(0,0,...,0) &gt;&gt; f(x)=0
+
+design space -10&lt;xi&lt;10</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Alpine's function 1</span>
+0002 <span class="comment">%L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%numerous local minima</span>
+0005 <span class="comment">%1 global minimum : x=(0,0,...,0) &gt;&gt; f(x)=0</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%design space -10&lt;xi&lt;10</span>
+0008 
+0009 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0010 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0011 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0014 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0015 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0016 <span class="comment">%     (at your option) any later version.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0019 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0020 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0021 <span class="comment">%     GNU General Public License for more details.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0024 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0025 
+0026 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=funAlpine1(xx,dim)</a>
+0027 
+0028 <span class="comment">%constants</span>
+0029 a=0.1;
+0030 
+0031 <span class="comment">%space</span>
+0032 Xmin=-10;
+0033 Xmax=10;
+0034 
+0035 <span class="comment">% demo mode</span>
+0036 dem=false;
+0037 <span class="keyword">if</span> nargin==0
+0038     stepM=50;
+0039     [x,y]=meshgrid(linspace(Xmin,Xmax,stepM));
+0040     xx=zeros(stepM,stepM,2);
+0041     xx(:,:,1)=x;xx(:,:,2)=y;
+0042     dem=true;
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">if</span> ~isempty(xx)
+0045     <span class="comment">%number of design variables</span>
+0046     nbvar=size(xx,3);
+0047     <span class="keyword">if</span> nbvar==1
+0048         <span class="keyword">if</span> size(xx,2)==2
+0049             xxx=xx(:,1);yyy=xx(:,2);
+0050         <span class="keyword">elseif</span> size(xx,1)==2
+0051             xxx=xx(:,2);yyy=xx(:,1);
+0052         <span class="keyword">else</span>
+0053             error([<span class="string">'Wrong input variables '</span>,mfilename]);
+0054         <span class="keyword">end</span>
+0055         fx=xxx.*sin(xxx)+a*xxx;
+0056         fy=yyy.*sin(yyy)+a*yyy;
+0057         p=abs(fx)+abs(fy);
+0058         <span class="keyword">if</span> nargout==2||dem
+0059             dp(:,:,1)=sign(xxx.*sin(xxx)+0.1*xxx).*abs(sin(xxx)+0.1+xxx.*cos(xxx));
+0060             dp(:,:,2)=sign(yyy.*sin(yyy)+0.1*yyy).*abs(sin(yyy)+0.1+yyy.*cos(yyy));
+0061         <span class="keyword">end</span>
+0062         
+0063     <span class="keyword">else</span>
+0064         fx=xx.*sin(xx)+a*xx;
+0065         p=sum(abs(fx),3);
+0066         <span class="keyword">if</span> nargout==2||dem
+0067             dp=sign(fx).*abs(sin(xx)+0.1+xx.*cos(xx));
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">end</span>
+0070 <span class="keyword">else</span>
+0071     <span class="keyword">if</span> nargin==2
+0072         nbvar=dim;
+0073     <span class="keyword">end</span>
+0074     p=[];
+0075     dp=[];
+0076 <span class="keyword">end</span>
+0077 <span class="comment">%output of information about the function</span>
+0078 <span class="keyword">if</span> nargout==3
+0079     infos.Xmin=Xmin*ones(1,nbvar);
+0080     infos.Xmax=Xmax*ones(1,nbvar);
+0081     infos.min_glob.Z=0;
+0082     infos.min_glob.X=zeros(1,nbvar);
+0083     infos.min_loc.Z=NaN;
+0084     infos.min_loc.X=NaN;
+0085 <span class="keyword">end</span>
+0086 
+0087 <span class="comment">%demo display</span>
+0088 <span class="keyword">if</span> nargin==0
+0089     figure
+0090     subplot(1,3,1)
+0091     surf(x,y,p);
+0092     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0093     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Alpine 1'</span>)
+0094     subplot(1,3,2)
+0095     surf(x,y,dp(:,:,1));
+0096     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0097     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Alpine 1'</span>)
+0098     subplot(1,3,3)
+0099     surf(x,y,dp(:,:,2));
+0100     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0101     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Alpine 1'</span>)
+0102 <span class="keyword">end</span>
+0103 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

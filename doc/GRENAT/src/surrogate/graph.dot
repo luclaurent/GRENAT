@@ -14,12 +14,12 @@ digraph m2html {
   KRGBuild -> KRGBloc;
   KRGBuild -> KRGCV;
   KRGCV -> KRGEval;
+  RBFBloc -> KernMatrix;
+  RBFBloc -> RBFCV;
   RBFBuild -> EstimPara;
+  RBFBuild -> RBFBloc;
   RBFBuild -> RBFComputePara;
-  RBFBuild -> RBFbloc;
   RBFCV -> RBFEval;
-  RBFbloc -> KernMatrix;
-  RBFbloc -> RBFCV;
   SVRBloc -> KernMatrix;
   SVRBloc -> SVRSB;
   SVRBuild -> EstimPara;
@@ -36,11 +36,11 @@ digraph m2html {
   KRGLikelihood [URL="KRGLikelihood.html"];
   KernMatrix [URL="KernMatrix.html"];
   PrepIn [URL="PrepIn.html"];
+  RBFBloc [URL="RBFBloc.html"];
   RBFBuild [URL="RBFBuild.html"];
   RBFCV [URL="RBFCV.html"];
   RBFComputePara [URL="RBFComputePara.html"];
   RBFEval [URL="RBFEval.html"];
-  RBFbloc [URL="RBFbloc.html"];
   SVRBloc [URL="SVRBloc.html"];
   SVRBuild [URL="SVRBuild.html"];
   SVREval [URL="SVREval.html"];

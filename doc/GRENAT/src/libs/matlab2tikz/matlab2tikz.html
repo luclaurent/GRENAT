@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of matlab2tikz</title>
+  <meta name="keywords" content="matlab2tikz">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html libs --><!-- menu.html matlab2tikz -->
+<h1>matlab2tikz
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/src/disp/displaySurrogate.html" class="code" title="function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)">displaySurrogate</a>	% function for displaying response surfaces</li><li><a href="AUTHORS.html" class="code" title="">AUTHORS</a>	</li><li><a href="CHANGELOG.html" class="code" title="">CHANGELOG</a>	</li><li><a href="CONTRIBUTING.html" class="code" title="">CONTRIBUTING</a>	</li><li><a href="README.html" class="code" title="">README</a>	</li><li><a href="../../../../GRENAT/src/surrogate/KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="../../../../GRENAT/src/surrogate/RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="../../../../GRENAT/src/surrogate/SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 {
+0002     &quot;folders&quot;:
+0003     [
+0004         {
+0005             &quot;path&quot;: &quot;.&quot;
+0006         }
+0007     ],
+0008     &quot;build_systems&quot;:
+0009      [
+0010         {
+0011             &quot;name&quot;: &quot;CI tests (Octave)&quot;,
+0012             &quot;selector&quot;: &quot;source.matlab&quot;,
+0013             &quot;working_dir&quot;: &quot;${project_path}&quot;,
+0014             &quot;cmd&quot;:  [&quot;./runtests.sh&quot;, &quot;octave&quot;]
+0015         },
+0016         {
+0017             &quot;name&quot;: &quot;CI tests (MATLAB)&quot;,
+0018             &quot;selector&quot;: &quot;source.matlab&quot;,
+0019             &quot;working_dir&quot;: &quot;${project_path}&quot;,
+0020             &quot;cmd&quot;:  [&quot;./runtests.sh&quot;, &quot;matlab&quot;]
+0021         },
+0022         {
+0023             &quot;name&quot;: &quot;CI tests (MATLAB HG1)&quot;,
+0024             &quot;selector&quot;: &quot;source.matlab&quot;,
+0025             &quot;working_dir&quot;: &quot;${project_path}&quot;,
+0026             &quot;cmd&quot;:  [&quot;./runtests.sh&quot;, &quot;matlab-hg1&quot;]
+0027         },
+0028         {
+0029             &quot;name&quot;: &quot;CI tests (MATLAB HG2)&quot;,
+0030             &quot;selector&quot;: &quot;source.matlab&quot;,
+0031             &quot;working_dir&quot;: &quot;${project_path}&quot;,
+0032             &quot;cmd&quot;:  [&quot;./runtests.sh&quot;, &quot;matlab-hg2&quot;]
+0033         },
+0034         {
+0035             &quot;name&quot;: &quot;ACID: make&quot;,
+0036             &quot;working_dir&quot;: &quot;${project_path}/test/tex&quot;,
+0037             &quot;cmd&quot;:  [&quot;make&quot;,&quot;-j8&quot;]
+0038         },
+0039         {
+0040             &quot;name&quot;: &quot;ACID: distclean&quot;,
+0041             &quot;working_dir&quot;: &quot;${project_path}/test/tex&quot;,
+0042             &quot;cmd&quot;:  [&quot;make&quot;,&quot;distclean&quot;]
+0043         }
+0044     ],
+0045     &quot;settings&quot;:
+0046     {
+0047         &quot;FuzzyFilePath&quot;:{}
+0048     }
+0049 }</pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

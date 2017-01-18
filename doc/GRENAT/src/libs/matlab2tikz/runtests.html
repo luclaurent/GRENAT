@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of runtests</title>
+  <meta name="keywords" content="runtests">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html libs --><!-- menu.html matlab2tikz -->
+<h1>runtests
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function exitIfError {</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 #!/usr/bin/env bash
+0002 #
+0003 # Test script runner <span class="keyword">for</span> MATLAB2TIKZ continuous integration
+0004 #
+0005 # You can influence the execution by passing one or two parameters
+0006 # to this <span class="keyword">function</span>, as
+0007 #
+0008 #     ./runtests.sh RUNNER SWITCHES
+0009 #
+0010 # Arguments:
+0011 #   - RUNNER: (path of) the binary you want to use to execute the tests
+0012 #         default value: &quot;octave&quot;
+0013 #   - SWITCHES: switches you want to pass to the executable
+0014 #         default value: * &quot;-nodesktop -r&quot; <span class="keyword">if</span> runner contains &quot;matlab&quot;
+0015 #                        * &quot;--no-gui --eval&quot; <span class="keyword">if</span> runner contains &quot;octave&quot; and <span class="keyword">otherwise</span>
+0016 #
+0017 
+0018 # Used resources:
+0019 #  - http://askubuntu.com/questions/299710/how-to-determine-<span class="keyword">if</span>-a-string-is-a-substring-of-another-in-bash
+0020 #  - http://www.thegeekstuff.com/2010/07/bash-<span class="keyword">case</span>-statement/
+0021 #  - http://stackoverflow.com/questions/229551/string-contains-in-bash
+0022 #  - http://stackoverflow.com/questions/2870992/automatic-exit-from-bash-shell-script-on-error
+0023 #  - http://www.davidpashley.com/articles/writing-robust-shell-scripts/
+0024 #  - http://stackoverflow.com/questions/13998941/how-can-i-propagate-an-exit-status-from-expect-to-its-parent-bash-script
+0025 #  - http://tldp.org/HOWTO/Bash-Prog-Intro-HOWTO-8.html
+0026 
+0027 ## Make sure some failures are detected by the CI runners
+0028 <a name="_sub0" href="#_subfunctions" class="code">function exitIfError {</a>
+0029     # pass &quot;$?&quot; as argument: i.e. the exit status of the last call
+0030     <span class="keyword">if</span> [ &quot;$1&quot; -ne 0 ]; then
+0031         exit $1;
+0032     fi
+0033 }
+0034 
+0035 ## Handle Runner and Switches variables
+0036 Runner=$1
+0037 Switches=$2
+0038 <span class="keyword">if</span> [ -z &quot;$Runner&quot; ] ; then
+0039     Runner=&quot;octave&quot;
+0040 fi
+0041 <span class="keyword">if</span> [ -z &quot;$Switches&quot; ] ; then
+0042     <span class="keyword">case</span> &quot;$Runner&quot; in
+0043         *matlab* )
+0044             Switches=&quot;-nodesktop -r&quot;
+0045             ;;
+0046 
+0047         *octave* )
+0048             Switches=&quot;--no-gui --eval&quot;
+0049             ;;
+0050 
+0051         * )
+0052             # Fall back to Octave switches
+0053             Switches=&quot;--no-gui --eval&quot;
+0054             ;;
+0055     esac
+0056 fi
+0057 
+0058 ## Make sure MATLAB/Octave know the intent
+0059 # note: the export is required
+0060 export CONTINUOUS_INTEGRATION=true
+0061 export CI=true
+0062 
+0063 ## Actually run the test suite
+0064 cd test
+0065 TESTDIR=`pwd`
+0066 # also CD in MATLAB/Octave to make sure that startup files
+0067 # cannot play any role in setting the path
+0068 ${Runner} ${Switches} &quot;cd(<span class="string">'${TESTDIR}'</span>); runMatlab2TikzTests&quot;
+0069 <a href="#_sub1" class="code" title="subfunction exitIfError {">exitIfError</a> $?
+0070 cd ..
+0071 
+0072 ## Post-processing
+0073 
+0074 # convert MD report into HTML using pandoc <span class="keyword">if</span> available
+0075 MDFILE=&quot;test/results.test.md&quot;
+0076 <span class="keyword">if</span> [ ! -z `which pandoc` ]; then
+0077     <span class="keyword">if</span> [ -f $MDFILE ]; then
+0078         HTMLFILE=${MDFILE/md/html}
+0079         # replace the emoji <span class="keyword">while</span> we're at it
+0080         pandoc -f markdown -t html $MDFILE -o $HTMLFILE
+0081         sed -i -- <span class="string">'s/:heavy_exclamation_mark:/❗️/g'</span> $HTMLFILE
+0082         sed -i -- <span class="string">'s/:white_check_mark:/✅/g'</span> $HTMLFILE
+0083         sed -i -- <span class="string">'s/:grey_question:/❔/g'</span> $HTMLFILE
+0084     fi
+0085 fi
+0086</pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

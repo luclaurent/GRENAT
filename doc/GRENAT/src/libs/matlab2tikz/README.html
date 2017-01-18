@@ -32,20 +32,20 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../../matlabicon.gif)">
-</ul>
+<li><a href="CONTRIBUTING.html" class="code" title="">CONTRIBUTING</a>	</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
-<div class="fragment"><pre>0001 **The updater in matlab2tikz 0.6.0 (and older) no longer works.**
-0002 **Please [update manually](http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz?download=true) <span class="keyword">if</span> you are not using matlab2tikz 1.0.0 or newer!**
+<div class="fragment"><pre>0001 **The updater in <a href="matlab2tikz.html" class="code" title="">matlab2tikz</a> 0.6.0 (and older) no longer works.**
+0002 **Please [update manually](http://www.mathworks.com/matlabcentral/fileexchange/22022-<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>-matlab2tikz?download=true) <span class="keyword">if</span> you are not using <a href="matlab2tikz.html" class="code" title="">matlab2tikz</a> 1.0.0 or newer!**
 0003 
-0004 [![Build Status](https://travis-ci.org/matlab2tikz/matlab2tikz.svg?branch=master)](https://travis-ci.org/matlab2tikz/matlab2tikz) [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.18605.svg)](http://dx.doi.org/10.5281/zenodo.18605)
-0005 ![matlab2tikz](https://raw.githubusercontent.com/wiki/matlab2tikz/matlab2tikz/matlab2tikz.png)
+0004 [![Build Status](https://travis-ci.org/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/matlab2tikz.svg?branch=master)](https://travis-ci.org/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>) [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.18605.svg)](http://dx.doi.org/10.5281/zenodo.18605)
+0005 ![<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>](https://raw.githubusercontent.com/wiki/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/matlab2tikz.png)
 0006 
 0007 `matlab2tikz` is a MATLAB(R) script to convert native MATLAB(R) figures to TikZ/Pgfplots figures that integrate seamlessly in LaTeX documents.
 0008 
@@ -57,79 +57,85 @@ This function is called by:
 0014 Installation
 0015 ============
 0016 
-0017 Place the `matlab2tikz` functions (contents of `src/` folder) somewhere where MATLAB(R) can find them: either your working directory or add `src/` to the path using `addpath`.
-0018 
-0019 Make sure that your LaTeX installation is up-to-date and includes:
-0020 
-0021 * [TikZ/PGF](http://www.ctan.org/pkg/pgf) version 3.0 or higher
-0022 * [Pgfplots](http://www.ctan.org/pkg/pgfplots) version 1.12.1 or higher
-0023 * [Amsmath](https://www.ctan.org/pkg/amsmath) version 2.14 or higher
-0024 * [Standalone](http://www.ctan.org/pkg/standalone) (optional)
-0025 
-0026 It is recommended to use the latest stable version of these packages.
-0027 Older versions may work depending on the actual MATLAB(R) figure you are converting.
+0017 1. Extract the ZIP file (or clone the git repository) somewhere you can easily reach it. 
+0018 2. Add the `src/` folder to your path in MATLAB/Octave: e.g. 
+0019     - using the &quot;Set Path&quot; dialog in MATLAB, or 
+0020     - by running the `addpath` <span class="keyword">function</span> from your command window or `startup` script.
+0021 
+0022 Make sure that your LaTeX installation is up-to-date and includes:
+0023 
+0024 * [TikZ/PGF](http://www.ctan.org/pkg/pgf) version 3.0 or higher
+0025 * [Pgfplots](http://www.ctan.org/pkg/pgfplots) version 1.13 or higher
+0026 * [Amsmath](https://www.ctan.org/pkg/amsmath) version 2.14 or higher
+0027 * [Standalone](http://www.ctan.org/pkg/standalone) (optional)
 0028 
-0029 Usage
-0030 =====
+0029 It is recommended to use the latest stable version of these packages.
+0030 Older versions may work depending on the actual MATLAB(R) figure you are converting.
 0031 
-0032 Typical usage of `matlab2tikz` consists of converting your MATLAB plot to a TikZ/LaTeX file and then running a LaTeX compiler to produce your document.
-0033 
-0034 MATLAB
-0035 ------
-0036   1. Generate your plot in MATLAB(R).
-0037 
-0038   2. Run `matlab2tikz`, e.g. using
-0039 
-0040 ```matlab
-0041 matlab2tikz(<span class="string">'myfile.tex'</span>);
-0042 ```
-0043 
-0044 LaTeX
-0045 -----
-0046 Add the contents of `myfile.tex` into your LaTeX source code, <span class="keyword">for</span> example using `\input{myfile.tex}`. 
-0047 Make sure that the required packages (such as `pgfplots`) are loaded in the preamble of your document as in the example:
-0048 
-0049 ```latex
-0050 \documentclass{article}
+0032 Usage
+0033 =====
+0034 
+0035 Typical usage of `matlab2tikz` consists of converting your MATLAB plot to a TikZ/LaTeX file and then running a LaTeX compiler to produce your document.
+0036 
+0037 MATLAB
+0038 ------
+0039   1. Generate your plot in MATLAB(R).
+0040 
+0041   2. Run `matlab2tikz`, e.g. using
+0042 
+0043 ```matlab
+0044 <a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>(<span class="string">'myfile.tex'</span>);
+0045 ```
+0046 
+0047 LaTeX
+0048 -----
+0049 Add the contents of `myfile.tex` into your LaTeX source code, <span class="keyword">for</span> example using `\input{myfile.tex}`. 
+0050 Make sure that the required packages (such as `pgfplots`) are loaded in the preamble of your document as in the example:
 0051 
-0052   \usepackage{pgfplots}
-0053   \pgfplotsset{compat=newest}
-0054   <span class="comment">%% the following commands are sometimes needed</span>
-0055   \usetikzlibrary{plotmarks}
-0056   \usepackage{grffile}
-0057   \usepackage{amsmath}
-0058   <span class="comment">%% you may also want the following commands</span>
-0059   <span class="comment">%\pgfplotsset{plot coordinates/math parser=false}</span>
-0060   <span class="comment">%\newlength\figureheight</span>
-0061   <span class="comment">%\newlength\figurewidth</span>
-0062 
-0063 \begin{document}
-0064   \input{myfile.tex}
-0065 \end{document}
-0066 ```
-0067 
-0068 Remarks
-0069 -------
-0070 Most functions accept numerous options; you can check them out by inspecting their help:
-0071 
-0072 ```matlab
-0073 help matlab2tikz
-0074 ```
-0075 
-0076 Sometimes, MATLAB(R) plots contain some features that impede conversion to LaTeX; e.g. points that are far outside of the actual bounding box.
-0077 You can invoke the `cleanfigure` <span class="keyword">function</span> to remove such unwanted entities before calling `matlab2tikz`:
-0078 
-0079 ```matlab
-0080 cleanfigure;
-0081 matlab2tikz(<span class="string">'myfile.tex'</span>);
-0082 ```
-0083 
-0084 More information
-0085 ================
-0086 
-0087 * For more information about `matlab2tikz`, have a look at our [GitHub repository](https://github.com/matlab2tikz/matlab2tikz). If you are a good MATLAB(R) programmer or LaTeX writer, you are always welcome to help improving `matlab2tikz`!
-0088 * Some common problems and pit-falls are documented in our [wiki](https://github.com/matlab2tikz/matlab2tikz/wiki/Common-problems).
-0089 * If you experience (other) bugs or would like to request a feature, please visit our [issue tracker](https://github.com/matlab2tikz/matlab2tikz/issues).</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0052 ```latex
+0053 \documentclass{article}
+0054 
+0055   \usepackage{pgfplots}
+0056   \pgfplotsset{compat=newest}
+0057   <span class="comment">%% the following commands are needed for some matlab2tikz features</span>
+0058   \usetikzlibrary{plotmarks}
+0059   \usetikzlibrary{arrows.meta}
+0060   \usepgfplotslibrary{patchplots}
+0061   \usepackage{grffile}
+0062   \usepackage{amsmath}
+0063 
+0064   <span class="comment">%% you may also want the following commands</span>
+0065   <span class="comment">%\pgfplotsset{plot coordinates/math parser=false}</span>
+0066   <span class="comment">%\newlength\figureheight</span>
+0067   <span class="comment">%\newlength\figurewidth</span>
+0068 
+0069 \begin{document}
+0070   \input{myfile.tex}
+0071 \end{document}
+0072 ```
+0073 
+0074 Remarks
+0075 -------
+0076 Most functions accept numerous options; you can check them out by inspecting their help:
+0077 
+0078 ```matlab
+0079 help <a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>
+0080 ```
+0081 
+0082 Sometimes, MATLAB(R) plots contain some features that impede conversion to LaTeX; e.g. points that are far outside of the actual bounding box.
+0083 You can invoke the `cleanfigure` <span class="keyword">function</span> to remove such unwanted entities before calling `matlab2tikz`:
+0084 
+0085 ```matlab
+0086 cleanfigure;
+0087 <a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>(<span class="string">'myfile.tex'</span>);
+0088 ```
+0089 
+0090 More information
+0091 ================
+0092 
+0093 * For more information about `matlab2tikz`, have a look at our [GitHub repository](https://github.com/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>). If you are a good MATLAB(R) programmer or LaTeX writer, you are always welcome to help improving `matlab2tikz`!
+0094 * Some common problems and pit-falls are documented in our [wiki](https://github.com/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/wiki/Common-problems).
+0095 * If you experience (other) bugs or would like to request a feature, please visit our [issue tracker](https://github.com/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/<a href="matlab2tikz.html" class="code" title="">matlab2tikz</a>/issues).</pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

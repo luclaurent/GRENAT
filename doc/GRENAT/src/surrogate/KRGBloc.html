@@ -102,287 +102,288 @@ This function is called by:
 0053 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0054 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0055 <span class="comment">%Build of the KRG/GRKG matrix</span>
-0056 <span class="keyword">if</span> dataIn.used.availGrad
-0057     [KK,KKa,KKi]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
-0058     KK=[KK -KKa;-KKa' -KKi];
-0059 <span class="keyword">else</span>
-0060     [KK]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
-0061 <span class="keyword">end</span>
-0062 <span class="comment">%in the case of missing data</span>
-0063 <span class="comment">%responses</span>
-0064 <span class="keyword">if</span> metaData.miss.resp.on
-0065     KK(metaData.miss.resp.ix_miss,:)=[];
-0066     KK(:,metaData.miss.resp.ix_miss)=[];
-0067 <span class="keyword">end</span>
-0068 <span class="comment">%gradients</span>
-0069 <span class="keyword">if</span> dataIn.used.availGrad
-0070     <span class="keyword">if</span> metaData.miss.grad.on
-0071         rep_ev=ns-metaData.miss.resp.nb;
-0072         KK(rep_ev+metaData.miss.grad.ixt_miss_line,:)=[];
-0073         KK(:,rep_ev+metaData.miss.grad.ixt_miss_line)=[];
-0074     <span class="keyword">end</span>
-0075 <span class="keyword">end</span>
-0076 
-0077 <span class="comment">% if datain.used.pres_grad</span>
-0078 <span class="comment">%     %si parallelisme actif ou non</span>
-0079 <span class="comment">%     if metaData.worker_parallel&gt;=2</span>
-0080 <span class="comment">%         %%%%%% PARALLEL %%%%%%</span>
-0081 <span class="comment">%         %morceaux de la matrice GKRG</span>
-0082 <span class="comment">%         rc=zeros(ns,ns);</span>
-0083 <span class="comment">%         rca=cell(1,ns);</span>
-0084 <span class="comment">%         rci=cell(1,ns);</span>
-0085 <span class="comment">%         parfor ii=1:ns</span>
-0086 <span class="comment">%             %distance 1 tirages aux autres (construction par colonne)</span>
-0087 <span class="comment">%             one_tir=tiragesn(ii,:);</span>
-0088 <span class="comment">%             dist=one_tir(ones(1,ns),:)-tiragesn;</span>
-0089 <span class="comment">%             % evaluation de la fonction de correlation</span>
-0090 <span class="comment">%             [ev,dev,ddev]=feval(fctKern,dist,paraVal);</span>
-0091 <span class="comment">%             %morceau de la matrice issue du modele KRG classique</span>
-0092 <span class="comment">%             rc(:,ii)=ev;</span>
-0093 <span class="comment">%             %morceau des derivees premieres</span>
-0094 <span class="comment">%             rca{ii}=dev;</span>
-0095 <span class="comment">%             %matrice des derivees secondes</span>
-0096 <span class="comment">%             rci{ii}=-reshape(ddev,np,ns*np);</span>
-0097 <span class="comment">%         end</span>
-0098 <span class="comment">%         %%construction des matrices completes</span>
-0099 <span class="comment">%         rcaC=horzcat(rca{:});</span>
-0100 <span class="comment">%         rciC=vertcat(rci{:});</span>
-0101 <span class="comment">%         %Matrice de complete</span>
-0102 <span class="comment">%         rcc=[rc rcaC;rcaC' rciC];</span>
-0103 <span class="comment">%     else</span>
-0104 <span class="comment">%</span>
-0105 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0106 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0107 <span class="comment">%         %evaluation de la fonction de correlation pour les differents</span>
-0108 <span class="comment">%         %intersites</span>
-0109 <span class="comment">%         [ev,dev,ddev]=feval(fctKern,datain.used.dist,paraVal);</span>
-0110 <span class="comment">%</span>
-0111 <span class="comment">%         %morceau de la matrice issu du krigeage</span>
-0112 <span class="comment">%         rc=zeros(ns,ns);</span>
-0113 <span class="comment">%         rca=zeros(ns,np*ns);</span>
-0114 <span class="comment">%         rci=zeros(ns*np,ns*np);</span>
-0115 <span class="comment">%</span>
-0116 <span class="comment">%         rc(datain.usedd.matrix)=ev;</span>
-0117 <span class="comment">%         rc=rc+rc'-eye(datain.used.nb_val);</span>
-0118 <span class="comment">%</span>
-0119 <span class="comment">%         rca(datain.usedd.matrixA)=dev(datain.usedd.dev);</span>
-0120 <span class="comment">%         rca(datain.usedd.matrixAb)=-dev(datain.usedd.devb);</span>
-0121 <span class="comment">%         rci(datain.usedd.matrixI)=-ddev(:);</span>
-0122 <span class="comment">%         %extraction de la diagonale (procedure pour eviter les doublons)</span>
-0123 <span class="comment">%         diago=0;   % //!!\\ corrections envisageables ici</span>
-0124 <span class="comment">%         val_diag=spdiags(rci,diago);</span>
-0125 <span class="comment">%         rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons</span>
-0126 <span class="comment">%</span>
-0127 <span class="comment">%         %Matrice de correlation du Cokrigeage</span>
-0128 <span class="comment">%         rcc=[rc rca;rca' rci];</span>
-0129 <span class="comment">%     end</span>
-0130 <span class="comment">%     %si donnees manquantes</span>
-0131 <span class="comment">%     if dataIn.manq.eval.on</span>
-0132 <span class="comment">%         rcc(dataIn.manq.eval.ix_manq,:)=[];</span>
-0133 <span class="comment">%         rcc(:,dataIn.manq.eval.ix_manq)=[];</span>
-0134 <span class="comment">%     end</span>
-0135 <span class="comment">%</span>
-0136 <span class="comment">%     %si donnees manquantes</span>
-0137 <span class="comment">%     if dataIn.manq.grad.on</span>
-0138 <span class="comment">%         rep_ev=ns-dataIn.manq.eval.nb;</span>
-0139 <span class="comment">%         rcc(rep_ev+dataIn.manq.grad.ixt_manq_line,:)=[];</span>
-0140 <span class="comment">%         rcc(:,rep_ev+dataIn.manq.grad.ixt_manq_line)=[];</span>
-0141 <span class="comment">%     end</span>
-0142 <span class="comment">% else</span>
-0143 <span class="comment">%</span>
-0144 <span class="comment">%     if metaData.worker_parallel&gt;=2</span>
-0145 <span class="comment">%         %%%%%% PARALLEL %%%%%%</span>
-0146 <span class="comment">%         %matrice de KRG classique par bloc</span>
-0147 <span class="comment">%         rcc=zeros(ns,ns);</span>
-0148 <span class="comment">%         parfor ii=1:ns</span>
-0149 <span class="comment">%             %distance 1 tirages aux autres (construction par colonne)</span>
-0150 <span class="comment">%             one_tir=tiragesn(ii,:);</span>
-0151 <span class="comment">%             dist=one_tir(ones(1,ns),:)-tiragesn;</span>
-0152 <span class="comment">%             % evaluation de la fonction de correlation</span>
-0153 <span class="comment">%             [ev]=feval(fctKern,dist,paraVal);</span>
-0154 <span class="comment">%             %morceau de la matrice issue du modele RBF classique</span>
-0155 <span class="comment">%             rcc(:,ii)=ev;</span>
-0156 <span class="comment">%         end</span>
-0157 <span class="comment">%     else</span>
-0158 <span class="comment">%         %matrice de correlation du Krigeage par matrice triangulaire inferieure</span>
-0159 <span class="comment">%         %sans diagonale</span>
-0160 <span class="comment">%         rcc=zeros(ns,ns);</span>
-0161 <span class="comment">%         % evaluation de la fonction de correlation</span>
-0162 <span class="comment">%         [ev]=feval(fctKern,datain.used.dist,paraVal);</span>
-0163 <span class="comment">%         rcc(datain.usedd.matrix)=ev;</span>
-0164 <span class="comment">%         %Construction matrice complete</span>
-0165 <span class="comment">%         rcc=rcc+rcc'+eye(ns);</span>
-0166 <span class="comment">%     end</span>
-0167 <span class="comment">%     %toc</span>
-0168 <span class="comment">%     %si donnees manquantes</span>
-0169 <span class="comment">%     if dataIn.manq.eval.on</span>
-0170 <span class="comment">%         rcc(dataIn.manq.eval.ix_manq,:)=[];</span>
-0171 <span class="comment">%         rcc(:,dataIn.manq.eval.ix_manq)=[];</span>
-0172 <span class="comment">%     end</span>
-0173 <span class="comment">% end</span>
-0174 
-0175 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0176 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0177 <span class="comment">%Improve condition number of the KRG/GKRG Matrix</span>
-0178 <span class="keyword">if</span> metaData.recond
-0179     <span class="comment">%origCond=condest(rcc);</span>
-0180     KK=KK+coefRecond*speye(size(KK));
-0181     <span class="comment">%newCond=condest(rcc);</span>
-0182     <span class="comment">%Gfprintf('&gt;&gt;&gt; Improving of the condition number: \n%g &gt;&gt; %g  &lt;&lt;&lt;\n',...</span>
-0183     <span class="comment">%    origCond,newCond);</span>
-0184     
-0185 <span class="keyword">end</span>
-0186 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0187 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0188 <span class="comment">%condition number of the KRG/GKRG Matrix</span>
-0189 <span class="keyword">if</span> final   <span class="comment">% in the phase of building</span>
-0190     newCond=condest(KK);
-0191     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Condition number KRG/GKRG matrix: %4.2e\n'</span>,newCond);
-0192     <span class="keyword">if</span> newCond&gt;1e16
-0193         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ //!\\ Bad condition number\n'</span>);
-0194     <span class="keyword">end</span>
-0195 <span class="keyword">end</span>
-0196 
-0197 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0056 
+0057 <span class="keyword">if</span> dataIn.used.availGrad
+0058     [KK,KKa,KKi]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0059     KK=[KK -KKa;-KKa' -KKi];
+0060 <span class="keyword">else</span>
+0061     [KK]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="comment">%in the case of missing data</span>
+0065 <span class="comment">%responses</span>
+0066 <span class="keyword">if</span> metaData.miss.resp.on
+0067     KK(metaData.miss.resp.ix_miss,:)=[];
+0068     KK(:,metaData.miss.resp.ix_miss)=[];
+0069 <span class="keyword">end</span>
+0070 <span class="comment">%gradients</span>
+0071 <span class="keyword">if</span> dataIn.used.availGrad
+0072     <span class="keyword">if</span> metaData.miss.grad.on
+0073         rep_ev=ns-metaData.miss.resp.nb;
+0074         KK(rep_ev+metaData.miss.grad.ixt_miss_line,:)=[];
+0075         KK(:,rep_ev+metaData.miss.grad.ixt_miss_line)=[];
+0076     <span class="keyword">end</span>
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">% if datain.used.pres_grad</span>
+0080 <span class="comment">%     %si parallelisme actif ou non</span>
+0081 <span class="comment">%     if metaData.worker_parallel&gt;=2</span>
+0082 <span class="comment">%         %%%%%% PARALLEL %%%%%%</span>
+0083 <span class="comment">%         %morceaux de la matrice GKRG</span>
+0084 <span class="comment">%         rc=zeros(ns,ns);</span>
+0085 <span class="comment">%         rca=cell(1,ns);</span>
+0086 <span class="comment">%         rci=cell(1,ns);</span>
+0087 <span class="comment">%         parfor ii=1:ns</span>
+0088 <span class="comment">%             %distance 1 tirages aux autres (construction par colonne)</span>
+0089 <span class="comment">%             one_tir=tiragesn(ii,:);</span>
+0090 <span class="comment">%             dist=one_tir(ones(1,ns),:)-tiragesn;</span>
+0091 <span class="comment">%             % evaluation de la fonction de correlation</span>
+0092 <span class="comment">%             [ev,dev,ddev]=feval(fctKern,dist,paraVal);</span>
+0093 <span class="comment">%             %morceau de la matrice issue du modele KRG classique</span>
+0094 <span class="comment">%             rc(:,ii)=ev;</span>
+0095 <span class="comment">%             %morceau des derivees premieres</span>
+0096 <span class="comment">%             rca{ii}=dev;</span>
+0097 <span class="comment">%             %matrice des derivees secondes</span>
+0098 <span class="comment">%             rci{ii}=-reshape(ddev,np,ns*np);</span>
+0099 <span class="comment">%         end</span>
+0100 <span class="comment">%         %%construction des matrices completes</span>
+0101 <span class="comment">%         rcaC=horzcat(rca{:});</span>
+0102 <span class="comment">%         rciC=vertcat(rci{:});</span>
+0103 <span class="comment">%         %Matrice de complete</span>
+0104 <span class="comment">%         rcc=[rc rcaC;rcaC' rciC];</span>
+0105 <span class="comment">%     else</span>
+0106 <span class="comment">%</span>
+0107 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0108 <span class="comment">%         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0109 <span class="comment">%         %evaluation de la fonction de correlation pour les differents</span>
+0110 <span class="comment">%         %intersites</span>
+0111 <span class="comment">%         [ev,dev,ddev]=feval(fctKern,datain.used.dist,paraVal);</span>
+0112 <span class="comment">%</span>
+0113 <span class="comment">%         %morceau de la matrice issu du krigeage</span>
+0114 <span class="comment">%         rc=zeros(ns,ns);</span>
+0115 <span class="comment">%         rca=zeros(ns,np*ns);</span>
+0116 <span class="comment">%         rci=zeros(ns*np,ns*np);</span>
+0117 <span class="comment">%</span>
+0118 <span class="comment">%         rc(datain.usedd.matrix)=ev;</span>
+0119 <span class="comment">%         rc=rc+rc'-eye(datain.used.nb_val);</span>
+0120 <span class="comment">%</span>
+0121 <span class="comment">%         rca(datain.usedd.matrixA)=dev(datain.usedd.dev);</span>
+0122 <span class="comment">%         rca(datain.usedd.matrixAb)=-dev(datain.usedd.devb);</span>
+0123 <span class="comment">%         rci(datain.usedd.matrixI)=-ddev(:);</span>
+0124 <span class="comment">%         %extraction de la diagonale (procedure pour eviter les doublons)</span>
+0125 <span class="comment">%         diago=0;   % //!!\\ corrections envisageables ici</span>
+0126 <span class="comment">%         val_diag=spdiags(rci,diago);</span>
+0127 <span class="comment">%         rci=rci+rci'-spdiags(val_diag,diago,zeros(size(rci))); %correction termes diagonaux pour eviter les doublons</span>
+0128 <span class="comment">%</span>
+0129 <span class="comment">%         %Matrice de correlation du Cokrigeage</span>
+0130 <span class="comment">%         rcc=[rc rca;rca' rci];</span>
+0131 <span class="comment">%     end</span>
+0132 <span class="comment">%     %si donnees manquantes</span>
+0133 <span class="comment">%     if dataIn.manq.eval.on</span>
+0134 <span class="comment">%         rcc(dataIn.manq.eval.ix_manq,:)=[];</span>
+0135 <span class="comment">%         rcc(:,dataIn.manq.eval.ix_manq)=[];</span>
+0136 <span class="comment">%     end</span>
+0137 <span class="comment">%</span>
+0138 <span class="comment">%     %si donnees manquantes</span>
+0139 <span class="comment">%     if dataIn.manq.grad.on</span>
+0140 <span class="comment">%         rep_ev=ns-dataIn.manq.eval.nb;</span>
+0141 <span class="comment">%         rcc(rep_ev+dataIn.manq.grad.ixt_manq_line,:)=[];</span>
+0142 <span class="comment">%         rcc(:,rep_ev+dataIn.manq.grad.ixt_manq_line)=[];</span>
+0143 <span class="comment">%     end</span>
+0144 <span class="comment">% else</span>
+0145 <span class="comment">%</span>
+0146 <span class="comment">%     if metaData.worker_parallel&gt;=2</span>
+0147 <span class="comment">%         %%%%%% PARALLEL %%%%%%</span>
+0148 <span class="comment">%         %matrice de KRG classique par bloc</span>
+0149 <span class="comment">%         rcc=zeros(ns,ns);</span>
+0150 <span class="comment">%         parfor ii=1:ns</span>
+0151 <span class="comment">%             %distance 1 tirages aux autres (construction par colonne)</span>
+0152 <span class="comment">%             one_tir=tiragesn(ii,:);</span>
+0153 <span class="comment">%             dist=one_tir(ones(1,ns),:)-tiragesn;</span>
+0154 <span class="comment">%             % evaluation de la fonction de correlation</span>
+0155 <span class="comment">%             [ev]=feval(fctKern,dist,paraVal);</span>
+0156 <span class="comment">%             %morceau de la matrice issue du modele RBF classique</span>
+0157 <span class="comment">%             rcc(:,ii)=ev;</span>
+0158 <span class="comment">%         end</span>
+0159 <span class="comment">%     else</span>
+0160 <span class="comment">%         %matrice de correlation du Krigeage par matrice triangulaire inferieure</span>
+0161 <span class="comment">%         %sans diagonale</span>
+0162 <span class="comment">%         rcc=zeros(ns,ns);</span>
+0163 <span class="comment">%         % evaluation de la fonction de correlation</span>
+0164 <span class="comment">%         [ev]=feval(fctKern,datain.used.dist,paraVal);</span>
+0165 <span class="comment">%         rcc(datain.usedd.matrix)=ev;</span>
+0166 <span class="comment">%         %Construction matrice complete</span>
+0167 <span class="comment">%         rcc=rcc+rcc'+eye(ns);</span>
+0168 <span class="comment">%     end</span>
+0169 <span class="comment">%     %toc</span>
+0170 <span class="comment">%     %si donnees manquantes</span>
+0171 <span class="comment">%     if dataIn.manq.eval.on</span>
+0172 <span class="comment">%         rcc(dataIn.manq.eval.ix_manq,:)=[];</span>
+0173 <span class="comment">%         rcc(:,dataIn.manq.eval.ix_manq)=[];</span>
+0174 <span class="comment">%     end</span>
+0175 <span class="comment">% end</span>
+0176 
+0177 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0178 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0179 <span class="comment">%Improve condition number of the KRG/GKRG Matrix</span>
+0180 <span class="keyword">if</span> metaData.recond
+0181     <span class="comment">%origCond=condest(rcc);</span>
+0182     KK=KK+coefRecond*speye(size(KK));
+0183     <span class="comment">%newCond=condest(rcc);</span>
+0184     <span class="comment">%Gfprintf('&gt;&gt;&gt; Improving of the condition number: \n%g &gt;&gt; %g  &lt;&lt;&lt;\n',...</span>
+0185     <span class="comment">%    origCond,newCond);</span>
+0186     
+0187 <span class="keyword">end</span>
+0188 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0189 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0190 <span class="comment">%condition number of the KRG/GKRG Matrix</span>
+0191 <span class="keyword">if</span> final   <span class="comment">% in the phase of building</span>
+0192     newCond=condest(KK);
+0193     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Condition number KRG/GKRG matrix: %4.2e\n'</span>,newCond);
+0194     <span class="keyword">if</span> newCond&gt;1e16
+0195         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ //!\\ Bad condition number\n'</span>);
+0196     <span class="keyword">end</span>
+0197 <span class="keyword">end</span>
 0198 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0199 <span class="comment">%Factorization of the matrix</span>
-0200 <span class="keyword">switch</span> factKK
-0201     <span class="keyword">case</span> <span class="string">'QR'</span>
-0202         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0199 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0200 <span class="comment">%Factorization of the matrix</span>
+0201 <span class="keyword">switch</span> factKK
+0202     <span class="keyword">case</span> <span class="string">'QR'</span>
 0203         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0204         <span class="comment">%QR factorization</span>
-0205         [QK,RK,PK]=qr(KK);
-0206         QtK=QK';
-0207         yQ=QtK*dataIn.build.y;
-0208         fctQ=QtK*dataIn.build.fct;
-0209         fcK=dataIn.build.fc*PK/RK;
-0210         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0204         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0205         <span class="comment">%QR factorization</span>
+0206         [QK,RK,PK]=qr(KK);
+0207         QtK=QK';
+0208         yQ=QtK*dataIn.build.y;
+0209         fctQ=QtK*dataIn.build.fct;
+0210         fcK=dataIn.build.fc*PK/RK;
 0211         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0212         <span class="comment">%compute beta coefficient</span>
-0213         fcCfct=fcK*fctQ;
-0214         block2=fcK*yQ;
-0215         beta=fcCfct\block2;
-0216         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0212         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0213         <span class="comment">%compute beta coefficient</span>
+0214         fcCfct=fcK*fctQ;
+0215         block2=fcK*yQ;
+0216         beta=fcCfct\block2;
 0217         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0218         <span class="comment">%compute gamma coefficient</span>
-0219         gamma=PK*(RK\(yQ-fctQ*beta));
-0220         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0218         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0219         <span class="comment">%compute gamma coefficient</span>
+0220         gamma=PK*(RK\(yQ-fctQ*beta));
 0221         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0222         <span class="comment">%save variables</span>
-0223         buildData.yQ=yQ;
-0224         buildData.fctQ=fctQ;
-0225         buildData.fcK=fcK;
-0226         buildData.fcCfct=fcCfct;
-0227         buildData.RK=RK;
-0228         buildData.QK=QK;
-0229         buildData.QtK=QtK;
-0230         buildData.PK=PK;
-0231         
-0232     <span class="keyword">case</span> <span class="string">'LU'</span>
-0233         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0222         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0223         <span class="comment">%save variables</span>
+0224         buildData.yQ=yQ;
+0225         buildData.fctQ=fctQ;
+0226         buildData.fcK=fcK;
+0227         buildData.fcCfct=fcCfct;
+0228         buildData.RK=RK;
+0229         buildData.QK=QK;
+0230         buildData.QtK=QtK;
+0231         buildData.PK=PK;
+0232         
+0233     <span class="keyword">case</span> <span class="string">'LU'</span>
 0234         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0235         <span class="comment">%LU factorization</span>
-0236         [LK,UK,PK]=lu(KK,<span class="string">'vector'</span>);
-0237         yP=dataIn.build.y(PK,:);
-0238         fctP=dataIn.build.fct(PK,:);
-0239         yL=LK\yP;
-0240         fctL=LK\fctP;
-0241         fcU=dataIn.build.fc/UK;
-0242         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0235         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0236         <span class="comment">%LU factorization</span>
+0237         [LK,UK,PK]=lu(KK,<span class="string">'vector'</span>);
+0238         yP=dataIn.build.y(PK,:);
+0239         fctP=dataIn.build.fct(PK,:);
+0240         yL=LK\yP;
+0241         fctL=LK\fctP;
+0242         fcU=dataIn.build.fc/UK;
 0243         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0244         <span class="comment">%compute beta coefficient</span>
-0245         fcCfct=fcU*fctL;
-0246         block2=fcU*yL;
-0247         beta=fcCfct\block2;
-0248         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0244         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0245         <span class="comment">%compute beta coefficient</span>
+0246         fcCfct=fcU*fctL;
+0247         block2=fcU*yL;
+0248         beta=fcCfct\block2;
 0249         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0250         <span class="comment">%compute gamma coefficient</span>
-0251         gamma=UK\(yL-fctL*beta);
-0252         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0250         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0251         <span class="comment">%compute gamma coefficient</span>
+0252         gamma=UK\(yL-fctL*beta);
 0253         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0254         <span class="comment">%save variables</span>
-0255         buildData.yL=yL;
-0256         buildData.fcU=fcU;
-0257         buildData.fctL=fctL;
-0258         buildData.fcCfct=fcCfct;
-0259         buildData.LK=LK;
-0260         buildData.UK=UK;
-0261         buildData.PK=PK;
-0262     <span class="keyword">case</span> <span class="string">'LL'</span>
-0263         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0254         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0255         <span class="comment">%save variables</span>
+0256         buildData.yL=yL;
+0257         buildData.fcU=fcU;
+0258         buildData.fctL=fctL;
+0259         buildData.fcCfct=fcCfct;
+0260         buildData.LK=LK;
+0261         buildData.UK=UK;
+0262         buildData.PK=PK;
+0263     <span class="keyword">case</span> <span class="string">'LL'</span>
 0264         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0265         <span class="comment">%Cholesky's fatorization</span>
-0266         <span class="comment">%%% to be degugged</span>
-0267         LK=chol(KK,<span class="string">'lower'</span>);
-0268         LtK=LK';
-0269         yL=LK\dataIn.build.y;
-0270         fctL=LK\dataIn.build.fct;
-0271         fcL=dataIn.build.fc/LtK;
-0272         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0265         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0266         <span class="comment">%Cholesky's fatorization</span>
+0267         <span class="comment">%%% to be degugged</span>
+0268         LK=chol(KK,<span class="string">'lower'</span>);
+0269         LtK=LK';
+0270         yL=LK\dataIn.build.y;
+0271         fctL=LK\dataIn.build.fct;
+0272         fcL=dataIn.build.fc/LtK;
 0273         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0274         <span class="comment">%compute beta coefficient</span>
-0275         fcCfct=fcL*fctL;
-0276         block2=fcL*yL;
-0277         beta=fcCfct\block2;
-0278         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0274         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0275         <span class="comment">%compute beta coefficient</span>
+0276         fcCfct=fcL*fctL;
+0277         block2=fcL*yL;
+0278         beta=fcCfct\block2;
 0279         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0280         <span class="comment">%compute gamma coefficient</span>
-0281         gamma=LtK\(yL-fctL*beta);
-0282         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0280         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0281         <span class="comment">%compute gamma coefficient</span>
+0282         gamma=LtK\(yL-fctL*beta);
 0283         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0284         <span class="comment">%save variables</span>
-0285         buildData.yL=yL;
-0286         buildData.fcL=fcL;
-0287         buildData.fctL=fctL;
-0288         buildData.fcCfct=fcCfct;
-0289         buildData.LtK=LtK;
-0290         buildData.LK=LK;
-0291     <span class="keyword">otherwise</span>
-0292         <span class="comment">%classical approach</span>
-0293         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0284         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0285         <span class="comment">%save variables</span>
+0286         buildData.yL=yL;
+0287         buildData.fcL=fcL;
+0288         buildData.fctL=fctL;
+0289         buildData.fcCfct=fcCfct;
+0290         buildData.LtK=LtK;
+0291         buildData.LK=LK;
+0292     <span class="keyword">otherwise</span>
+0293         <span class="comment">%classical approach</span>
 0294         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0295         <span class="comment">%compute gamma and beta coefficients</span>
-0296         fcC=dataIn.build.fc/KK;
-0297         fcCfct=fcC*dataIn.build.fct;
-0298         block2=((dataIn.build.fc/KK)*dataIn.build.y);
-0299         beta=fcCfct\block2;
-0300         gamma=KK\(dataIn.build.y-dataIn.build.fct*beta);
-0301         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0295         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0296         <span class="comment">%compute gamma and beta coefficients</span>
+0297         fcC=dataIn.build.fc/KK;
+0298         fcCfct=fcC*dataIn.build.fct;
+0299         block2=((dataIn.build.fc/KK)*dataIn.build.y);
+0300         beta=fcCfct\block2;
+0301         gamma=KK\(dataIn.build.y-dataIn.build.fct*beta);
 0302         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0303         <span class="comment">%save variables</span>
-0304         buildData.fcC=fcC;
-0305         buildData.fcCfct=fcCfct;
-0306 <span class="keyword">end</span>
-0307 
-0308 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0303         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0304         <span class="comment">%save variables</span>
+0305         buildData.fcC=fcC;
+0306         buildData.fcCfct=fcCfct;
+0307 <span class="keyword">end</span>
+0308 
 0309 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0310 <span class="comment">%store variables</span>
-0311 <span class="keyword">if</span> exist(<span class="string">'origCond'</span>,<span class="string">'var'</span>);buildData.origCond=origCond;<span class="keyword">end</span>
-0312 <span class="keyword">if</span> exist(<span class="string">'newCond'</span>,<span class="string">'var'</span>);buildData.newCond=newCond;<span class="keyword">end</span>
-0313 
-0314 buildData.beta=beta;
-0315 buildData.gamma=gamma;
-0316 buildData.KK=KK;
-0317 buildData.polyOrder=metaData.polyOrder;
-0318 buildData.para=metaData.para;
-0319 buildData.factKK=factKK;
-0320 ret.build=buildData;
-0321 
-0322 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0310 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0311 <span class="comment">%store variables</span>
+0312 <span class="keyword">if</span> exist(<span class="string">'origCond'</span>,<span class="string">'var'</span>);buildData.origCond=origCond;<span class="keyword">end</span>
+0313 <span class="keyword">if</span> exist(<span class="string">'newCond'</span>,<span class="string">'var'</span>);buildData.newCond=newCond;<span class="keyword">end</span>
+0314 
+0315 buildData.beta=beta;
+0316 buildData.gamma=gamma;
+0317 buildData.KK=KK;
+0318 buildData.polyOrder=metaData.polyOrder;
+0319 buildData.para=metaData.para;
+0320 buildData.factKK=factKK;
+0321 ret.build=buildData;
+0322 
 0323 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0324 <span class="comment">%variance of the Gaussian process</span>
-0325 ret.build.sig2=1/size(KK,1)*<span class="keyword">...</span>
-0326     ((dataIn.build.y-dataIn.build.fct*ret.build.beta)'*ret.build.gamma);
-0327 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0324 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0325 <span class="comment">%variance of the Gaussian process</span>
+0326 ret.build.sig2=1/size(KK,1)*<span class="keyword">...</span>
+0327     ((dataIn.build.y-dataIn.build.fct*ret.build.beta)'*ret.build.gamma);
 0328 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0329 <span class="comment">%compute of the Likelihood (and log-likelihood)</span>
-0330 [lilog,ret.li]=<a href="KRGLikelihood.html" class="code" title="function [logLi,Li,liSack]=KRGLikelihood(dataKRG)">KRGLikelihood</a>(ret);
-0331 ret.lilog=lilog;
-0332 <span class="comment">%</span>
-0333 <span class="keyword">if</span> metaData.norm.on&amp;&amp;~isempty(metaData.norm.resp.std)
-0334     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
-0335 <span class="keyword">end</span>
-0336 <span class="comment">%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0329 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0330 <span class="comment">%compute of the Likelihood (and log-likelihood)</span>
+0331 [lilog,ret.li]=<a href="KRGLikelihood.html" class="code" title="function [logLi,Li,liSack]=KRGLikelihood(dataKRG)">KRGLikelihood</a>(ret);
+0332 ret.lilog=lilog;
+0333 <span class="comment">%</span>
+0334 <span class="keyword">if</span> metaData.norm.on&amp;&amp;~isempty(metaData.norm.resp.std)
+0335     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
+0336 <span class="keyword">end</span>
+0337 <span class="comment">%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -59,9 +59,7 @@ classdef initDisp < handle
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            Gfprintf('=========================================\n');
             Gfprintf(' >>> Initialization of the display configuration\n');
-            Gfprintf('=========================================\n');
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

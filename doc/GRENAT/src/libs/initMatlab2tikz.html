@@ -39,7 +39,9 @@ This function is called by:
 <li><a href="../../../GRENAT/initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li></ul>
 <!-- crossreference -->
 
-
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function flag=addpathExisted(folder)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <span class="comment">%% Initialization of the matlab2tikz's files (MATLAB's path)</span>
@@ -67,22 +69,41 @@ This function is called by:
 0023 <span class="comment">%directories in the matlab2tikz toolbox</span>
 0024 folderToolbox={<span class="string">'src'</span>};
 0025 
-0026 <span class="keyword">if</span> exist(pathCustom,<span class="string">'dir'</span>)
-0027     <span class="comment">%if no specified directory</span>
-0028     <span class="keyword">if</span> nargin==0
-0029         pathCustom=pwd;
-0030     <span class="keyword">end</span>
-0031     
-0032     <span class="comment">%absolute path</span>
-0033     absolutePath=cellfun(@(c)[pathCustom <span class="string">'/matlab2tikz/'</span> c],folderToolbox,<span class="string">'uni'</span>,false);
-0034     
-0035     <span class="comment">%add to the PATH</span>
-0036     cellfun(@addpath,absolutePath);
-0037     
-0038     <span class="comment">%display</span>
-0039     fprintf(<span class="string">' ## Toolbox: matlab2tikz loaded\n'</span>);
-0040 <span class="keyword">end</span>
-0041 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0026 <span class="comment">%if no specified directory</span>
+0027 <span class="keyword">if</span> nargin==0
+0028     pathCustom=pwd;
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">if</span> exist(pathCustom,<span class="string">'dir'</span>)
+0032     
+0033     <span class="comment">%absolute path</span>
+0034     absolutePath=cellfun(@(c)fullfile(pathCustom,<span class="string">'matlab2tikz/'</span>,c),folderToolbox,<span class="string">'uni'</span>,false);
+0035     
+0036     <span class="comment">%add to the PATH</span>
+0037     flA=cellfun(@(x)<a href="#_sub1" class="code" title="subfunction flag=addpathExisted(folder)">addpathExisted</a>(x),absolutePath);
+0038     
+0039     <span class="comment">%display</span>
+0040     <span class="keyword">if</span> any(flA==2)
+0041         fprintf(<span class="string">' ## Toolbox: matlab2tikz loaded\n'</span>);
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="comment">%check if a directory exists in the path or not and add it to the path if not</span>
+0047 <a name="_sub1" href="#_subfunctions" class="code">function flag=addpathExisted(folder)</a>
+0048 flag=1;
+0049 folder=fullfile(folder);
+0050 <span class="keyword">if</span> ispc
+0051     <span class="comment">% Windows is not case-sensitive</span>
+0052     onPath = ~isempty(strfind(lower(path),lower(folder)));
+0053 <span class="keyword">else</span>
+0054     onPath = ~isempty(strfind(path,folder));
+0055 <span class="keyword">end</span>
+0056 <span class="keyword">if</span> exist(folder,<span class="string">'dir'</span>)&amp;&amp;~onPath
+0057     flag=2;
+0058     addpath(folder)
+0059 <span class="keyword">end</span>
+0060 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

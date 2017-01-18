@@ -101,10 +101,10 @@ if ~isstruct(gradIn)
     %Reordering responses
     tmpR=[respIn zeros(ns_init,np-1)];
     reordR=reshape(tmpR',1,[]);
-    dup_ev=repmat(reordR,np+1,[]);
+    dup_ev=repmat(reordR,np+1,1);
     %Reordering gradients
-    reord_grad=reshape(gradIn',1,[]);
-    dup_grad=repmat(reord_grad,np+1,[]);
+    reord_grad=reshape(gradIn',1,[]);    
+    dup_grad=repmat(reord_grad,np+1,1);
     tmp=matStepDup.*dup_grad;
     %if missing data, sepcific proces for avoiding NaN
     if missData.grad.on||missData.resp.on

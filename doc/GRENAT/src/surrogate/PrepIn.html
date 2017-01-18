@@ -145,10 +145,10 @@ This function is called by:
 0101     <span class="comment">%Reordering responses</span>
 0102     tmpR=[respIn zeros(ns_init,np-1)];
 0103     reordR=reshape(tmpR',1,[]);
-0104     dup_ev=repmat(reordR,np+1,[]);
+0104     dup_ev=repmat(reordR,np+1,1);
 0105     <span class="comment">%Reordering gradients</span>
-0106     reord_grad=reshape(gradIn',1,[]);
-0107     dup_grad=repmat(reord_grad,np+1,[]);
+0106     reord_grad=reshape(gradIn',1,[]);    
+0107     dup_grad=repmat(reord_grad,np+1,1);
 0108     tmp=matStepDup.*dup_grad;
 0109     <span class="comment">%if missing data, sepcific proces for avoiding NaN</span>
 0110     <span class="keyword">if</span> missData.grad.on||missData.resp.on
@@ -201,6 +201,6 @@ This function is called by:
 0157 ret.new.sampling=newSampling;
 0158 ret.new.resp=newResp;
 0159 ret.stepTaylor=stepTaylor;</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

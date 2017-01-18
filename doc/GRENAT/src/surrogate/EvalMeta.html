@@ -34,7 +34,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
+<li><a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
@@ -74,7 +74,7 @@ This function is called by:
 0029 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0030 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0031 <span class="comment">%choose verbosity of the function</span>
-0032 <span class="keyword">if</span> nargin==3
+0032 <span class="keyword">if</span> nargin&lt;4
 0033     Verb=true;
 0034 <span class="keyword">end</span>
 0035 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
@@ -294,16 +294,18 @@ This function is called by:
 0249 <span class="comment">%end of evaluations</span>
 0250 <span class="keyword">if</span> nbReqEval&gt;1&amp;&amp;Verb
 0251     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'++ Evaluation at %i points\n'</span>,nbReqEval);
-0252     countTime.stop;
-0253     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'#########################################\n'</span>);
-0254 <span class="keyword">end</span>
-0255 
+0252 <span class="keyword">end</span>
+0253 countTime.stop(Verb);
+0254 <span class="keyword">if</span> nbReqEval&gt;1&amp;&amp;Verb
+0255     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'#########################################\n'</span>);
 0256 <span class="keyword">end</span>
 0257 
-0258 
+0258 <span class="keyword">end</span>
 0259 
 0260 
-0261</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0261 
+0262 
+0263</pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

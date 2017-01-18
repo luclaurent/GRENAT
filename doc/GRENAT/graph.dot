@@ -8,14 +8,31 @@ digraph m2html {
   ExampleUseDOE -> initDirGRENAT;
   GRENAT -> GRENAT;
   GRENAT -> initDirGRENAT;
+  GSVR_ACME -> GRENAT;
+  GSVR_ACME -> initDirGRENAT;
   LICENSE -> LICENSE;
   README -> GRENAT;
+  Sch5DKRG -> GRENAT;
+  Sch5DKRG -> initDirGRENAT;
+  debug_1D -> GRENAT;
+  debug_1D -> initDirGRENAT;
+  debug_2D -> GRENAT;
+  debug_2D -> initDirGRENAT;
+  time_measure_matrix -> GRENAT;
+  time_measure_matrix -> initDirGRENAT;
 
   ExampleUse1D [URL="ExampleUse1D.html"];
   ExampleUse2D [URL="ExampleUse2D.html"];
   ExampleUseDOE [URL="ExampleUseDOE.html"];
   GRENAT [URL="GRENAT.html"];
+  GSVR_ACME [URL="GSVR_ACME.html"];
+  GSVR_ACME_export [URL="GSVR_ACME_export.html"];
   LICENSE [URL="LICENSE.html"];
+  LOQO [URL="LOQO.html"];
   README [URL="README.html"];
+  Sch5DKRG [URL="Sch5DKRG.html"];
+  debug_1D [URL="debug_1D.html"];
+  debug_2D [URL="debug_2D.html"];
   initDirGRENAT [URL="initDirGRENAT.html"];
+  time_measure_matrix [URL="time_measure_matrix.html"];
 }

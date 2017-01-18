@@ -129,7 +129,7 @@ This function is called by:
 0083 <span class="comment">%compute St^2</span>
 0084 St2b=zeros(sizePsi,1);
 0085 St2b(iXsvUSV)=1./DiKSV(1:nbUSV);
-0086  <span class="keyword">if</span> nbBSV&gt;0;
+0086  <span class="keyword">if</span> nbBSV&gt;0
 0087      PsiBSV=PsiR(iXsvBSV(:),iXsvBSV(:));
 0088      Vb=[PsiR(iXsvUSV,iXsvBSV); ones(1,nbBSV)];
 0089      St2b(iXsvBSV)=diag(PsiBSV)-diag(Vb'*iKUSV*Vb);
@@ -771,6 +771,6 @@ This function is called by:
 0725 <span class="keyword">end</span>
 0726 <span class="keyword">end</span>
 0727</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

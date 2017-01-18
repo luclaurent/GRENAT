@@ -109,9 +109,7 @@ classdef initMeta < handle
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            Gfprintf('=========================================\n');
-            Gfprintf(' >> Initialization of the metamodel configuration\n');
-            Gfprintf('=========================================\n');
+            Gfprintf(' >>> Initialization of the metamodel configuration\n');
             %listeners
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%add listener for specific event (execute method after the set

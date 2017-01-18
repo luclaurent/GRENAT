@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of funBard</title>
+  <meta name="keywords" content="funBard">
+  <meta name="description" content="% Bard's function">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GRENAT --><!-- menu.html funTest -->
+<h1>funBard
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Bard's function</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [p,dp,infos]=funBard(xx,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Bard's function
+L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net
+
+one local minimum
+1 global minimum : x=(0.0824, 1.133, 2.3437) &gt;&gt; f(x)=0.00821487
+
+design space -0.25&lt;x1&lt;0.25, 0.01&lt;x2,x3&lt;2.5</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Bard's function</span>
+0002 <span class="comment">%L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%one local minimum</span>
+0005 <span class="comment">%1 global minimum : x=(0.0824, 1.133, 2.3437) &gt;&gt; f(x)=0.00821487</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%design space -0.25&lt;x1&lt;0.25, 0.01&lt;x2,x3&lt;2.5</span>
+0008 
+0009 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0010 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0011 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0014 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0015 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0016 <span class="comment">%     (at your option) any later version.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0019 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0020 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0021 <span class="comment">%     GNU General Public License for more details.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0024 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0025 
+0026 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=funBard(xx,dim)</a>
+0027 fprintf(<span class="string">'NE TO BE DEBUGGED'</span>);
+0028 <span class="comment">%constants</span>
+0029 nbt=15;
+0030 u=1:nbt;
+0031 v=16-u;
+0032 w=min([u',v'],[],2);
+0033 y=[0.14, 0.18, 0.22, 0.25, 0.29, 0.32, 0.35, 0.39, 0.37, 0.58, 0.73, 0.96, 1.34, 2.10, 4.39];
+0034 
+0035 <span class="comment">%space</span>
+0036 Xmin=[-0.25 0.01 0.01];
+0037 Xmax=[0.25 2.5 2.5];
+0038 
+0039 <span class="comment">%default dimension</span>
+0040 <span class="keyword">if</span> nargin==1;dim=3;<span class="keyword">end</span>
+0041 
+0042 <span class="comment">% demo mode</span>
+0043 dem=false;
+0044 <span class="keyword">if</span> nargin==0
+0045 fprintf(<span class="string">'3-dimensional function (no demo mode\n'</span>)
+0046 <span class="keyword">end</span>
+0047 <span class="keyword">if</span> ~isempty(xx)
+0048     <span class="comment">%number of design variables</span>
+0049     nbvar=size(xx,3);
+0050     <span class="keyword">if</span> nbvar==1
+0051         <span class="keyword">if</span> size(xx,2)==3
+0052             xxx=xx(:,1);yyy=xx(:,2);zzz=xx(:,3);
+0053         <span class="keyword">elseif</span> size(xx,1)==3
+0054             xxx=xx(1,:);yyy=xx(2,:);zzz=xx(3,:);
+0055         <span class="keyword">else</span>
+0056             error([<span class="string">'Wrong input variables '</span>,mfilename]);
+0057         <span class="keyword">end</span>
+0058     <span class="keyword">elseif</span> nbvar==2||nbvar&gt;3
+0059         error(<span class="string">'The Bard''s function is a 3 dimensional function'</span>);
+0060     <span class="keyword">else</span>
+0061         xxx=xx(:,:,1);
+0062         yyy=xx(:,:,2);
+0063         zzz=xx(:,:,3);
+0064     <span class="keyword">end</span>
+0065     
+0066     p=zeros(size(xxx));
+0067     <span class="keyword">for</span> it=1:nbt
+0068         p=p+((y(it)-xxx-u(it))./(v(it).*yyy+w(it).*zzz)).^2;
+0069     <span class="keyword">end</span>
+0070     <span class="keyword">if</span> nargout==2||dem
+0071         dp=zeros(size(xxx,1),size(xxx,2),3);
+0072         <span class="keyword">for</span> it=1:nbt
+0073             mult=(y(it)-xxx-u(it))./(v(it).*yyy+w(it).*zzz);
+0074             dp(:,:,1)=dp(:,:,1)-2./(v(it).*yyy+w(it).*zzz).*mult;
+0075             dp(:,:,2)=dp(:,:,2)-(y(it)-xxx-u(it))*v(it)./(v(it).*yyy+w(it).*zzz).^2.*mult;
+0076             dp(:,:,3)=dp(:,:,3)-(y(it)-xxx-u(it))*w(it)./(v(it).*yyy+w(it).*zzz).^2.*mult;
+0077         <span class="keyword">end</span>
+0078     <span class="keyword">end</span>
+0079 <span class="keyword">else</span>
+0080     <span class="keyword">if</span> nargin==2
+0081         nbvar=dim;
+0082     <span class="keyword">end</span>
+0083     p=[];
+0084     dp=[];
+0085 <span class="keyword">end</span>
+0086 <span class="comment">%output of information about the function</span>
+0087 <span class="keyword">if</span> nargout==3
+0088     infos.Xmin=Xmin;
+0089     infos.Xmax=Xmax;
+0090     infos.min_glob.Z=0.00821487;
+0091     infos.min_glob.X=[0.0824,1.133,2.3437];
+0092     infos.min_loc.Z=NaN;
+0093     infos.min_loc.X=NaN;
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

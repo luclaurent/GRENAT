@@ -34,10 +34,10 @@ new version: 31/05/2012</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>	% Function for calculating error of LOO (Cross-Validation)</li><li><a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>	% Plot QQ plot (for cross validation)</li><li><a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>	% Plot SCVR (for cross validation)</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>	% check input data for finding missing information</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
+<li><a href="../../../GRENAT/src/crit/LOOCalcError.html" class="code" title="function [ret]=LOOCalcError(Zref,Zap,variance,GZref,GZap,ns,np,LOO_norm)">LOOCalcError</a>	% Function for calculating error of LOO (Cross-Validation)</li><li><a href="../../../GRENAT/src/disp/QQplot.html" class="code" title="function QQplot(Zref,Zap,opt)">QQplot</a>	% Plot QQ plot (for cross validation)</li><li><a href="../../../GRENAT/src/disp/SCVRplot.html" class="code" title="function SCVRplot(Zap,scvr,opt)">SCVRplot</a>	% Plot SCVR (for cross validation)</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/various/CheckInputData.html" class="code" title="function [ret]=CheckInputData(sampling,resp,grad)">CheckInputData</a>	% check input data for finding missing information</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="RBFbloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFbloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
+<li><a href="RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -270,7 +270,7 @@ This function is called by:
 0223                 dataCV.in.ns=ns;
 0224                 dataCV.in.sampling=cvSampling;
 0225                 dataCV.infill.on=false;
-0226                 <span class="comment">%evaluate gradients on removed sample points</span>
+0226                 <span class="comment">%evaluate grients on removed sample points</span>
 0227                 [~,GZ,~]=<a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>(sampling(itS,:),dataCV);
 0228                 cvGZ(itS,posGr)=GZ(posGr);
 0229             <span class="keyword">end</span>
@@ -574,6 +574,6 @@ This function is called by:
 0527     <span class="keyword">end</span>
 0528 <span class="keyword">end</span>
 0529 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

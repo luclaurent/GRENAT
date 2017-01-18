@@ -1,9 +1,25 @@
 /* Created by mdot for Matlab */
 digraph m2html {
 
+  checkFun [URL="checkFun.html"];
   funAHE [URL="funAHE.html"];
   funAckley [URL="funAckley.html"];
+  funAckley1 [URL="funAckley1.html"];
+  funAckley2 [URL="funAckley2.html"];
+  funAckley3 [URL="funAckley3.html"];
+  funAckley4 [URL="funAckley4.html"];
+  funAdjiman [URL="funAdjiman.html"];
+  funAlpine1 [URL="funAlpine1.html"];
+  funAlpine2 [URL="funAlpine2.html"];
+  funBard [URL="funBard.html"];
+  funBartelsConn [URL="funBartelsConn.html"];
   funBeale [URL="funBeale.html"];
+  funBiggsExp2 [URL="funBiggsExp2.html"];
+  funBiggsExp3 [URL="funBiggsExp3.html"];
+  funBiggsExp4 [URL="funBiggsExp4.html"];
+  funBiggsExp5 [URL="funBiggsExp5.html"];
+  funBiggsExp6 [URL="funBiggsExp6.html"];
+  funBird [URL="funBird.html"];
   funBohachevsky1 [URL="funBohachevsky1.html"];
   funBohachevsky2 [URL="funBohachevsky2.html"];
   funBohachevsky3 [URL="funBohachevsky3.html"];

@@ -35,7 +35,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>	% Building of the KRG/GKRG matrix and computation of the log-likelihood</li><li><a href="KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>	% Function for computing various Cross-Validation criteria for KRG/GKRG</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+<li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li><li><a href="../../../GRENAT/src/libs/matlab2tikz/matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li><li><a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>	MERGESTRUCT Merge structures with unique fields.</li><li><a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>	% Building of the KRG/GKRG matrix and computation of the log-likelihood</li><li><a href="KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>	% Function for computing various Cross-Validation criteria for KRG/GKRG</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li></ul>
@@ -101,371 +101,373 @@ This function is called by:
 0053     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.dispIterCmd,<span class="string">'&gt;&gt; Show estimation steps in console: '</span>,[],true);
 0054     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.estim.dispIterGraph,<span class="string">'&gt;&gt; Plot estimation steps: '</span>,[],true);
 0055 <span class="keyword">else</span>
-0056     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value hyperparameter: %d\n'</span>,metaData.para.l.val);
-0057     <span class="keyword">switch</span> metaData.kern
-0058         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
-0059             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of the exponent:'</span>);
-0060             fprintf(<span class="string">' %d'</span>,metaData.para.p.val);
-0061             fprintf(<span class="string">'\n'</span>);
-0062         <span class="keyword">case</span> {<span class="string">'matern'</span>}
-0063             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of nu (Matern): %d \n'</span>,metaData.para.nu.val);
-0064     <span class="keyword">end</span>
-0065 <span class="keyword">end</span>
-0066 <span class="comment">%</span>
-0067 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
-0068 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0069 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0070 <span class="comment">%load global variables</span>
-0071 <span class="keyword">global</span> dispData
-0072 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0073 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0074 <span class="comment">%% Initialisation of the variables</span>
-0075 <span class="comment">%number of sample points</span>
-0076 ns=size(respIn,1);
-0077 <span class="comment">%number of design variables</span>
-0078 np=size(samplingIn,2);
-0079 
-0080 <span class="comment">%check availability of the gradients</span>
-0081 availGrad=~isempty(gradIn);
-0082 <span class="comment">%check missing data</span>
-0083 <span class="keyword">if</span> isfield(metaData,<span class="string">'miss'</span>)
-0084     missResp=metaData.miss.resp.on;
-0085     missGrad=metaData.miss.grad.on;
-0086     availGrad=(~metaData.miss.grad.all&amp;&amp;metaData.miss.grad.on)||(availGrad&amp;&amp;~metaData.miss.grad.on);
-0087 <span class="keyword">else</span>
-0088     metaData.miss.resp.on=false;
-0089     metaData.miss.grad.on=false;
-0090     missResp=missData.miss.resp.on;
-0091     missGrad=metaData.miss.grad.on;
-0092 <span class="keyword">end</span>
-0093 
-0094 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0095 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0096 <span class="comment">%Responses and gradients at sample points</span>
-0097 YY=respIn;
-0098 <span class="comment">%remove missing response(s)</span>
-0099 <span class="keyword">if</span> missResp
-0100     YY=YY(metaData.miss.resp.ixAvail);
-0101 <span class="keyword">end</span>
-0102 
-0103 <span class="keyword">if</span> availGrad
-0104     tmp=gradIn';
-0105     der=tmp(:);
-0106     <span class="comment">%remove missing gradient(s)</span>
-0107     <span class="keyword">if</span> missGrad
-0108         der=der(missData.grad.ixAvailLine);
-0109     <span class="keyword">end</span>
-0110     YY=vertcat(YY,der);
-0111 <span class="keyword">end</span>
-0112 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0113 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0114 <span class="comment">% Building indexes system for building KRG/GKRG matrices</span>
-0115 <span class="keyword">if</span> availGrad
-0116     
-0117     sizeMatRc=(ns^2+ns)/2;
-0118     sizeMatRa=np*(ns^2+ns)/2;
-0119     sizeMatRi=np^2*(ns^2+ns)/2;
-0120     iXmatrix=zeros(sizeMatRc,1);
-0121     iXmatrixA=zeros(sizeMatRa,1);
-0122     iXmatrixAb=zeros(sizeMatRa,1);
-0123     iXmatrixI=zeros(sizeMatRi,1);
-0124     iXdev=zeros(sizeMatRa,1);
-0125     iXsampling=zeros(sizeMatRc,2);
-0126     
-0127     tmpList=zeros(sizeMatRc,np);
-0128     tmpList(:)=1:sizeMatRc*np;
-0129     
-0130     ite=0;
-0131     iteA=0;
-0132     iteAb=0;
-0133     pres=0;
-0134     <span class="comment">%table of indexes for inter-lengths (1), responses (1) and 1st</span>
-0135     <span class="comment">%derivatives (2)</span>
-0136     <span class="keyword">for</span> ii=1:ns
-0137         
-0138         ite=ite(end)+(1:(ns-ii+1));
-0139         iXmatrix(ite)=(ns+1)*ii-ns:ii*ns;
-0140         iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];
-0141         iteAb=iteAb(end)+(1:((ns-ii+1)*np));
-0142         
-0143         debb=(ii-1)*np*ns+ii;
-0144         finb=ns^2*np-(ns-ii);
-0145         lib=debb:ns:finb;
-0146         
-0147         iXmatrixAb(iteAb)=lib;
+0056     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value(s) hyperparameter(s):'</span>);
+0057     fprintf(<span class="string">'%d'</span>,metaData.para.l.Val);
+0058     fprintf(<span class="string">'\n'</span>);
+0059     <span class="keyword">switch</span> metaData.kern
+0060         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
+0061             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of the exponent:'</span>);
+0062             fprintf(<span class="string">' %d'</span>,metaData.para.p.Val);
+0063             fprintf(<span class="string">'\n'</span>);
+0064         <span class="keyword">case</span> {<span class="string">'matern'</span>}
+0065             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of nu (Matern): %d \n'</span>,metaData.para.nu.Val);
+0066     <span class="keyword">end</span>
+0067 <span class="keyword">end</span>
+0068 <span class="comment">%</span>
+0069 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0070 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0071 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0072 <span class="comment">%load global variables</span>
+0073 <span class="keyword">global</span> dispData
+0074 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0075 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0076 <span class="comment">%% Initialisation of the variables</span>
+0077 <span class="comment">%number of sample points</span>
+0078 ns=size(respIn,1);
+0079 <span class="comment">%number of design variables</span>
+0080 np=size(samplingIn,2);
+0081 
+0082 <span class="comment">%check availability of the gradients</span>
+0083 availGrad=~isempty(gradIn);
+0084 <span class="comment">%check missing data</span>
+0085 <span class="keyword">if</span> isfield(metaData,<span class="string">'miss'</span>)
+0086     missResp=metaData.miss.resp.on;
+0087     missGrad=metaData.miss.grad.on;
+0088     availGrad=(~metaData.miss.grad.all&amp;&amp;metaData.miss.grad.on)||(availGrad&amp;&amp;~metaData.miss.grad.on);
+0089 <span class="keyword">else</span>
+0090     metaData.miss.resp.on=false;
+0091     metaData.miss.grad.on=false;
+0092     missResp=missData.miss.resp.on;
+0093     missGrad=metaData.miss.grad.on;
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0097 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0098 <span class="comment">%Responses and gradients at sample points</span>
+0099 YY=respIn;
+0100 <span class="comment">%remove missing response(s)</span>
+0101 <span class="keyword">if</span> missResp
+0102     YY=YY(metaData.miss.resp.ixAvail);
+0103 <span class="keyword">end</span>
+0104 
+0105 <span class="keyword">if</span> availGrad
+0106     tmp=gradIn';
+0107     der=tmp(:);
+0108     <span class="comment">%remove missing gradient(s)</span>
+0109     <span class="keyword">if</span> missGrad
+0110         der=der(missData.grad.ixAvailLine);
+0111     <span class="keyword">end</span>
+0112     YY=vertcat(YY,der);
+0113 <span class="keyword">end</span>
+0114 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0115 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0116 <span class="comment">% Building indexes system for building KRG/GKRG matrices</span>
+0117 <span class="keyword">if</span> availGrad
+0118     
+0119     sizeMatRc=(ns^2+ns)/2;
+0120     sizeMatRa=np*(ns^2+ns)/2;
+0121     sizeMatRi=np^2*(ns^2+ns)/2;
+0122     iXmatrix=zeros(sizeMatRc,1);
+0123     iXmatrixA=zeros(sizeMatRa,1);
+0124     iXmatrixAb=zeros(sizeMatRa,1);
+0125     iXmatrixI=zeros(sizeMatRi,1);
+0126     iXdev=zeros(sizeMatRa,1);
+0127     iXsampling=zeros(sizeMatRc,2);
+0128     
+0129     tmpList=zeros(sizeMatRc,np);
+0130     tmpList(:)=1:sizeMatRc*np;
+0131     
+0132     ite=0;
+0133     iteA=0;
+0134     iteAb=0;
+0135     pres=0;
+0136     <span class="comment">%table of indexes for inter-lengths (1), responses (1) and 1st</span>
+0137     <span class="comment">%derivatives (2)</span>
+0138     <span class="keyword">for</span> ii=1:ns
+0139         
+0140         ite=ite(end)+(1:(ns-ii+1));
+0141         iXmatrix(ite)=(ns+1)*ii-ns:ii*ns;
+0142         iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];
+0143         iteAb=iteAb(end)+(1:((ns-ii+1)*np));
+0144         
+0145         debb=(ii-1)*np*ns+ii;
+0146         finb=ns^2*np-(ns-ii);
+0147         lib=debb:ns:finb;
 0148         
-0149         <span class="keyword">for</span> jj=1:np
-0150             iteA=iteA(end)+(1:(ns-ii+1));
-0151             decal=(ii-1);
-0152             deb=pres+decal;
-0153             li=deb + (1:(ns-ii+1));
-0154             iXmatrixA(iteA)=li;
-0155             pres=li(end);
-0156             liste_tmpB=reshape(tmpList',[],1);
-0157             iXdev(iteA)=tmpList(ite,jj);
-0158             iXdevb=liste_tmpB;
-0159         <span class="keyword">end</span>
-0160     <span class="keyword">end</span>
-0161     <span class="comment">%table of indexes for second derivatives</span>
-0162     a=zeros(ns*np,np);
-0163     decal=0;
-0164     precI=0;
-0165     iteI=0;
-0166     <span class="keyword">for</span> ii=1:ns
-0167         li=1:ns*np^2;
-0168         a(:)=decal+li;
-0169         decal=a(end);
-0170         b=a';
-0171         
-0172         iteI=precI+(1:(np^2*(ns-(ii-1))));
+0149         iXmatrixAb(iteAb)=lib;
+0150         
+0151         <span class="keyword">for</span> jj=1:np
+0152             iteA=iteA(end)+(1:(ns-ii+1));
+0153             decal=(ii-1);
+0154             deb=pres+decal;
+0155             li=deb + (1:(ns-ii+1));
+0156             iXmatrixA(iteA)=li;
+0157             pres=li(end);
+0158             liste_tmpB=reshape(tmpList',[],1);
+0159             iXdev(iteA)=tmpList(ite,jj);
+0160             iXdevb=liste_tmpB;
+0161         <span class="keyword">end</span>
+0162     <span class="keyword">end</span>
+0163     <span class="comment">%table of indexes for second derivatives</span>
+0164     a=zeros(ns*np,np);
+0165     decal=0;
+0166     precI=0;
+0167     iteI=0;
+0168     <span class="keyword">for</span> ii=1:ns
+0169         li=1:ns*np^2;
+0170         a(:)=decal+li;
+0171         decal=a(end);
+0172         b=a';
 0173         
-0174         debb=(ii-1)*np^2+1;
-0175         finb=np^2*ns;
-0176         iteb=debb:finb;
-0177         iXmatrixI(iteI)=b(iteb);
-0178         precI=iteI(end);
-0179     <span class="keyword">end</span>
-0180 <span class="keyword">else</span>
-0181     <span class="comment">%table of indexes for inter-lenghts  (1), responses (1)</span>
-0182     bmax=ns-1;
-0183     iXmatrix=zeros(ns*(ns-1)/2,1);
-0184     iXsampling=zeros(ns*(ns-1)/2,2);
-0185     ite=0;
-0186     <span class="keyword">for</span> ii=1:bmax
-0187         ite=ite(end)+(1:(ns-ii));
-0188         iXmatrix(ite)=(ns+1)*ii-ns+1:ii*ns;
-0189         iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
-0190     <span class="keyword">end</span>
-0191 <span class="keyword">end</span>
-0192 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0193 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0194 <span class="comment">%compute distances between sample points</span>
-0195 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
-0196 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0197 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0198 <span class="comment">%% Build regression matrix (for the trend model)</span>
-0199 <span class="comment">%choose polynomial function</span>
-0200 funPoly=[<span class="string">'mono_'</span> num2str(metaData.polyOrder,<span class="string">'%02i'</span>) <span class="string">'_'</span> num2str(np,<span class="string">'%03i'</span>)];
-0201 
-0202 <span class="comment">%depending on the availability of the gradients</span>
-0203 <span class="keyword">if</span> ~availGrad
-0204     valFunPoly=feval(funPoly,samplingIn);
-0205     <span class="keyword">if</span> missResp
-0206         <span class="comment">%remove missing response(s)</span>
-0207         valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
-0208     <span class="keyword">end</span>
-0209 <span class="keyword">else</span>
-0210     <span class="comment">%GKRG</span>
-0211     [Reg,nbMonomialTerms,DReg,~]=feval(funPoly,samplingIn);
-0212     <span class="keyword">if</span> missResp||missGrad
-0213         sizeResp=ns-missData.resp.nb;
-0214         sizeGrad=ns*np-missData.grad.nb;
-0215         sizeTotal=sizeResp+sizeGrad;
-0216     <span class="keyword">else</span>
-0217         sizeResp=ns;
-0218         sizeGrad=ns*np;
-0219         sizeTotal=sizeResp+sizeGrad;
-0220     <span class="keyword">end</span>
-0221     <span class="comment">%initialize regression matrix</span>
-0222     valFunPoly=zeros(sizeTotal,nbMonomialTerms);
-0223     <span class="keyword">if</span> missResp
-0224         <span class="comment">%remove missing response(s)</span>
-0225         Reg=Reg(metaData.miss.resp.ixAvail,:);
-0226     <span class="keyword">end</span>
-0227     <span class="comment">%load monomial terms of the polynomial regression</span>
-0228     valFunPoly(1:sizeResp,:)=Reg;
-0229     <span class="comment">%load derivatives of the monomial terms</span>
-0230     <span class="keyword">if</span> iscell(DReg)
-0231         tmp=horzcat(DReg{:})';
-0232         tmp=reshape(tmp,nbMonomialTerms,[])';
-0233     <span class="keyword">else</span>
-0234         tmp=DReg';
-0235         tmp=tmp(:);
-0236     <span class="keyword">end</span>
-0237     
-0238     <span class="keyword">if</span> missGrad
-0239         <span class="comment">%remove missing gradient(s)</span>
-0240         tmp=tmp(missData.grad.ixt_dispo_line,:);
-0241     <span class="keyword">end</span>
-0242     <span class="comment">%add derivatives to the regression matrix</span>
-0243     valFunPoly(sizeResp+1:<span class="keyword">end</span>,:)=tmp;
-0244 <span class="keyword">end</span>
-0245 
-0246 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0247 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0248 <span class="comment">%store variables</span>
-0249 ret.used.sampling=samplingIn;
-0250 ret.used.dist=distC;
-0251 ret.used.resp=respIn;
-0252 ret.used.availGrad=availGrad;
-0253 ret.used.grad=gradIn;
-0254 ret.used.np=np;
-0255 ret.used.ns=ns;
-0256 ret.ix.matrix=iXmatrix;
-0257 ret.ix.sampling=iXsampling;
-0258 <span class="keyword">if</span> availGrad
-0259     ret.ix.matrixA=iXmatrixA;
-0260     ret.ix.matrixAb=iXmatrixAb;
-0261     ret.ix.matrixI=iXmatrixI;
-0262     ret.ix.dev=iXdev;
-0263     ret.ix.devb=iXdevb;
-0264 <span class="keyword">end</span>
-0265 ret.build.fct=valFunPoly;
-0266 ret.build.fc=valFunPoly';
-0267 ret.build.sizeFc=size(valFunPoly,2);
-0268 ret.build.y=YY;
-0269 ret.build.funPoly=funPoly;
-0270 ret.build.kern=metaData.kern;
-0271 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0272 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0273 <span class="comment">%% Compute log-likelihood for estimating parameters</span>
-0274 <span class="keyword">if</span> metaData.estim.on&amp;&amp;metaData.estim.disp
-0275     valPara=linspace(metaData.para.l.Min,metaData.para.l.Max,100);
-0276     <span class="comment">% load progress bar</span>
-0277     cpb = <a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>();
-0278     minVal = 0;
-0279     maxVal = 100;
-0280     cpb.setMinimum(minVal);
-0281     cpb.setMaximum(maxVal);
-0282     cpb.setLength(20);
-0283     cpb.setRemainedTimeVisible(1);
-0284     cpb.setRemainedTimePosition(<span class="string">'left'</span>);
-0285     cpb.start();
-0286     <span class="comment">%for anisotropy (with 2 design variables)</span>
-0287     <span class="keyword">if</span> metaData.estim.aniso&amp;&amp;np==2
-0288         <span class="comment">%building of the studied grid</span>
-0289         [valX,valY]=meshgrid(valPara,valPara);
-0290         <span class="comment">%initialize matrix for storing log-likelihood</span>
-0291         valLik=zeros(size(valX));
-0292         <span class="keyword">for</span> itli=1:numel(valX)
-0293             <span class="comment">%compute log-likelihood and storage</span>
-0294             valLik(itli)=<a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>(ret,metaData,[valX(itli) valY(itli)]);
-0295             <span class="comment">%show progress and time</span>
-0296             cpb.setValue(itli/numel(valX)*100);
-0297         <span class="keyword">end</span>
-0298         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
-0299         cpb.stop();
-0300         <span class="comment">%plot log-vraisemblance</span>
-0301         figure;
-0302         [C,h]=contourf(valX,valY,valLik);
-0303         text_handle = clabel(C,h);
-0304         set(text_handle,<span class="string">'BackgroundColor'</span>,[1 1 .6],<span class="keyword">...</span>
-0305             <span class="string">'Edgecolor'</span>,[.7 .7 .7])
-0306         set(h,<span class="string">'LineWidth'</span>,2)
-0307         <span class="comment">%store figure in TeX/Tikz file</span>
-0308         <span class="keyword">if</span> metaData.estim.save
-0309             matlab2tikz([dispData.directory <span class="string">'/KRGlogli.tex'</span>])
-0310         <span class="keyword">end</span>
-0311         
-0312     <span class="keyword">elseif</span> ~metaData.estim.aniso||np==1
-0313         <span class="comment">%initialize matrix for storing log-likelihood</span>
-0314         valLik=zeros(1,length(valPara));
-0315         <span class="keyword">for</span> itli=1:length(valPara)
-0316             <span class="comment">%compute log-likelihood and storage</span>
-0317             valLik(itli)=<a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>(ret,metaData,valPara(itli));
-0318             cpb.setValue(itli/numel(valPara)*100);
-0319         <span class="keyword">end</span>
-0320         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
-0321         cpb.stop();
-0322         
-0323         <span class="comment">%store in .dat file</span>
-0324         <span class="keyword">if</span> metaData.estim.save
-0325             ss=[valPara' valLik'];
-0326             save([dispData.directory <span class="string">'/KRGlogli.dat'</span>],<span class="string">'ss'</span>,<span class="string">'-ascii'</span>);
-0327         <span class="keyword">end</span>
-0328         
-0329         <span class="comment">%plot log-vraisemblance</span>
-0330         figure;
-0331         plot(valPara,valLik);
-0332         title(<span class="string">'Evolution of the log-likelihood'</span>);
-0333     <span class="keyword">end</span>
-0334     
-0335     <span class="comment">%store graphs (if active)</span>
-0336     <span class="keyword">if</span> dispData.save&amp;&amp;(ns&lt;=2)
-0337         fileStore=<a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>(<span class="string">'fig_likelihood'</span>,dispData.directory);
-0338         <span class="keyword">if</span> dispData.tex
-0339             fid=fopen([dispData.directory <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
-0340             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fileStore,<span class="string">'Log-Likelihood'</span>,fileStore);
-0341             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
-0342             fclose(fid);
-0343         <span class="keyword">end</span>
-0344     <span class="keyword">end</span>
-0345 <span class="keyword">end</span>
-0346 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0347 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0348 <span class="comment">%% Building of the various elements with and without estimation of the</span>
-0349 <span class="comment">% hyperparameters</span>
-0350 <span class="keyword">if</span> metaData.estim.on
-0351     paraEstim=<a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>(ret,metaData,<span class="string">'KRGBloc'</span>);
-0352     ret.build.paraEstim=paraEstim;
-0353     metaData.para.l.Val=paraEstim.l.Val;
-0354     metaData.para.Val=paraEstim.Val;
-0355     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'p'</span>)
-0356         metaData.para.p.Val=paraEstim.p.Val;
-0357     <span class="keyword">end</span>
-0358     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'nu'</span>)
-0359         metaData.para.nu.Val=paraEstim.nu.Val;
-0360     <span class="keyword">end</span>
-0361 <span class="keyword">else</span>
-0362     <span class="comment">%w/o estimation, the initial values of hyperparameters are chosen</span>
-0363     <span class="keyword">switch</span> metaData.kern
-0364         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
-0365             metaData.para.Val=[metaData.para.l.Val metaData.para.p.Val];
-0366         <span class="keyword">case</span> {<span class="string">'matern'</span>}
-0367             metaData.para.Val=[metaData.para.l.Val metaData.para.nu.Val];
-0368         <span class="keyword">otherwise</span>
-0369             metaData.para.Val=metaData.para.l.Val;
-0370     <span class="keyword">end</span>
-0371 <span class="keyword">end</span>
-0372 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0373 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0374 <span class="comment">% Building final elements of the KRG surrogate model (matrices, coefficients &amp; log-likelihood)</span>
-0375 <span class="comment">% by taking into account the values of hyperparameters obtained previously</span>
-0376 [lilog,blocKRG]=<a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>(ret,metaData);
-0377 
-0378 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0379 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0380 <span class="comment">%store informations</span>
-0381 tmp=<a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>(ret.build,blocKRG.build);
-0382 ret.build=tmp;
-0383 ret.build.lilog=lilog;
-0384 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0385 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0386 <span class="comment">%% Cross-validation (compute various errors)</span>
-0387 <span class="keyword">if</span> metaData.cv.on
-0388     <span class="comment">%countTime=mesuTime;</span>
-0389     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt; Computation CV\n'</span>);
-0390     [ret.build.cv]=<a href="KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>(ret,metaData);
-0391     <span class="comment">%countTime.stop;</span>
-0392 <span class="keyword">end</span>
-0393 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0394 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0395 <span class="keyword">if</span> availGrad;txt=<span class="string">'GKRG'</span>;<span class="keyword">else</span> txt=<span class="string">'KRG'</span>;<span class="keyword">end</span>
-0396 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n &gt;&gt; END Building %s\n'</span>,txt);
-0397 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0398 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0399 <span class="keyword">end</span>
-0400 
-0401 
-0402 <span class="comment">%% function for display information</span>
-0403 <a name="_sub1" href="#_subfunctions" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a>
-0404 boolOut=boolIn;
-0405 <span class="keyword">if</span> nargin==2
-0406     txtInFalse=[];
-0407     returnLine=false;
-0408 <span class="keyword">elseif</span> nargin==3
+0174         iteI=precI+(1:(np^2*(ns-(ii-1))));
+0175         
+0176         debb=(ii-1)*np^2+1;
+0177         finb=np^2*ns;
+0178         iteb=debb:finb;
+0179         iXmatrixI(iteI)=b(iteb);
+0180         precI=iteI(end);
+0181     <span class="keyword">end</span>
+0182 <span class="keyword">else</span>
+0183     <span class="comment">%table of indexes for inter-lenghts  (1), responses (1)</span>
+0184     bmax=ns-1;
+0185     iXmatrix=zeros(ns*(ns-1)/2,1);
+0186     iXsampling=zeros(ns*(ns-1)/2,2);
+0187     ite=0;
+0188     <span class="keyword">for</span> ii=1:bmax
+0189         ite=ite(end)+(1:(ns-ii));
+0190         iXmatrix(ite)=(ns+1)*ii-ns+1:ii*ns;
+0191         iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
+0192     <span class="keyword">end</span>
+0193 <span class="keyword">end</span>
+0194 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0195 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0196 <span class="comment">%compute distances between sample points</span>
+0197 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
+0198 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0199 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0200 <span class="comment">%% Build regression matrix (for the trend model)</span>
+0201 <span class="comment">%choose polynomial function</span>
+0202 funPoly=[<span class="string">'mono_'</span> num2str(metaData.polyOrder,<span class="string">'%02i'</span>) <span class="string">'_'</span> num2str(np,<span class="string">'%03i'</span>)];
+0203 
+0204 <span class="comment">%depending on the availability of the gradients</span>
+0205 <span class="keyword">if</span> ~availGrad
+0206     valFunPoly=feval(funPoly,samplingIn);
+0207     <span class="keyword">if</span> missResp
+0208         <span class="comment">%remove missing response(s)</span>
+0209         valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
+0210     <span class="keyword">end</span>
+0211 <span class="keyword">else</span>
+0212     <span class="comment">%GKRG</span>
+0213     [Reg,nbMonomialTerms,DReg,~]=feval(funPoly,samplingIn);
+0214     <span class="keyword">if</span> missResp||missGrad
+0215         sizeResp=ns-missData.resp.nb;
+0216         sizeGrad=ns*np-missData.grad.nb;
+0217         sizeTotal=sizeResp+sizeGrad;
+0218     <span class="keyword">else</span>
+0219         sizeResp=ns;
+0220         sizeGrad=ns*np;
+0221         sizeTotal=sizeResp+sizeGrad;
+0222     <span class="keyword">end</span>
+0223     <span class="comment">%initialize regression matrix</span>
+0224     valFunPoly=zeros(sizeTotal,nbMonomialTerms);
+0225     <span class="keyword">if</span> missResp
+0226         <span class="comment">%remove missing response(s)</span>
+0227         Reg=Reg(metaData.miss.resp.ixAvail,:);
+0228     <span class="keyword">end</span>
+0229     <span class="comment">%load monomial terms of the polynomial regression</span>
+0230     valFunPoly(1:sizeResp,:)=Reg;
+0231     <span class="comment">%load derivatives of the monomial terms</span>
+0232     <span class="keyword">if</span> iscell(DReg)
+0233         tmp=horzcat(DReg{:})';
+0234         tmp=reshape(tmp,nbMonomialTerms,[])';
+0235     <span class="keyword">else</span>
+0236         tmp=DReg';
+0237         tmp=tmp(:);
+0238     <span class="keyword">end</span>
+0239     
+0240     <span class="keyword">if</span> missGrad
+0241         <span class="comment">%remove missing gradient(s)</span>
+0242         tmp=tmp(missData.grad.ixt_dispo_line,:);
+0243     <span class="keyword">end</span>
+0244     <span class="comment">%add derivatives to the regression matrix</span>
+0245     valFunPoly(sizeResp+1:<span class="keyword">end</span>,:)=tmp;
+0246 <span class="keyword">end</span>
+0247 
+0248 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0249 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0250 <span class="comment">%store variables</span>
+0251 ret.used.sampling=samplingIn;
+0252 ret.used.dist=distC;
+0253 ret.used.resp=respIn;
+0254 ret.used.availGrad=availGrad;
+0255 ret.used.grad=gradIn;
+0256 ret.used.np=np;
+0257 ret.used.ns=ns;
+0258 ret.ix.matrix=iXmatrix;
+0259 ret.ix.sampling=iXsampling;
+0260 <span class="keyword">if</span> availGrad
+0261     ret.ix.matrixA=iXmatrixA;
+0262     ret.ix.matrixAb=iXmatrixAb;
+0263     ret.ix.matrixI=iXmatrixI;
+0264     ret.ix.dev=iXdev;
+0265     ret.ix.devb=iXdevb;
+0266 <span class="keyword">end</span>
+0267 ret.build.fct=valFunPoly;
+0268 ret.build.fc=valFunPoly';
+0269 ret.build.sizeFc=size(valFunPoly,2);
+0270 ret.build.y=YY;
+0271 ret.build.funPoly=funPoly;
+0272 ret.build.kern=metaData.kern;
+0273 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0274 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0275 <span class="comment">%% Compute log-likelihood for estimating parameters</span>
+0276 <span class="keyword">if</span> metaData.estim.on&amp;&amp;metaData.estim.disp
+0277     valPara=linspace(metaData.para.l.Min,metaData.para.l.Max,100);
+0278     <span class="comment">% load progress bar</span>
+0279     cpb = <a href="../../../GRENAT/src/libs/ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>();
+0280     minVal = 0;
+0281     maxVal = 100;
+0282     cpb.setMinimum(minVal);
+0283     cpb.setMaximum(maxVal);
+0284     cpb.setLength(20);
+0285     cpb.setRemainedTimeVisible(1);
+0286     cpb.setRemainedTimePosition(<span class="string">'left'</span>);
+0287     cpb.start();
+0288     <span class="comment">%for anisotropy (with 2 design variables)</span>
+0289     <span class="keyword">if</span> metaData.estim.aniso&amp;&amp;np==2
+0290         <span class="comment">%building of the studied grid</span>
+0291         [valX,valY]=meshgrid(valPara,valPara);
+0292         <span class="comment">%initialize matrix for storing log-likelihood</span>
+0293         valLik=zeros(size(valX));
+0294         <span class="keyword">for</span> itli=1:numel(valX)
+0295             <span class="comment">%compute log-likelihood and storage</span>
+0296             valLik(itli)=<a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>(ret,metaData,[valX(itli) valY(itli)]);
+0297             <span class="comment">%show progress and time</span>
+0298             cpb.setValue(itli/numel(valX)*100);
+0299         <span class="keyword">end</span>
+0300         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0301         cpb.stop();
+0302         <span class="comment">%plot log-vraisemblance</span>
+0303         figure;
+0304         [C,h]=contourf(valX,valY,valLik);
+0305         text_handle = clabel(C,h);
+0306         set(text_handle,<span class="string">'BackgroundColor'</span>,[1 1 .6],<span class="keyword">...</span>
+0307             <span class="string">'Edgecolor'</span>,[.7 .7 .7])
+0308         set(h,<span class="string">'LineWidth'</span>,2)
+0309         <span class="comment">%store figure in TeX/Tikz file</span>
+0310         <span class="keyword">if</span> metaData.estim.save
+0311             <a href="../../../GRENAT/src/libs/matlab2tikz/matlab2tikz.html" class="code" title="">matlab2tikz</a>([dispData.directory <span class="string">'/KRGlogli.tex'</span>])
+0312         <span class="keyword">end</span>
+0313         
+0314     <span class="keyword">elseif</span> ~metaData.estim.aniso||np==1
+0315         <span class="comment">%initialize matrix for storing log-likelihood</span>
+0316         valLik=zeros(1,length(valPara));
+0317         <span class="keyword">for</span> itli=1:length(valPara)
+0318             <span class="comment">%compute log-likelihood and storage</span>
+0319             valLik(itli)=<a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>(ret,metaData,valPara(itli));
+0320             cpb.setValue(itli/numel(valPara)*100);
+0321         <span class="keyword">end</span>
+0322         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0323         cpb.stop();
+0324         
+0325         <span class="comment">%store in .dat file</span>
+0326         <span class="keyword">if</span> metaData.estim.save
+0327             ss=[valPara' valLik'];
+0328             save([dispData.directory <span class="string">'/KRGlogli.dat'</span>],<span class="string">'ss'</span>,<span class="string">'-ascii'</span>);
+0329         <span class="keyword">end</span>
+0330         
+0331         <span class="comment">%plot log-vraisemblance</span>
+0332         figure;
+0333         plot(valPara,valLik);
+0334         title(<span class="string">'Evolution of the log-likelihood'</span>);
+0335     <span class="keyword">end</span>
+0336     
+0337     <span class="comment">%store graphs (if active)</span>
+0338     <span class="keyword">if</span> dispData.save&amp;&amp;(ns&lt;=2)
+0339         fileStore=<a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>(<span class="string">'fig_likelihood'</span>,dispData.directory);
+0340         <span class="keyword">if</span> dispData.tex
+0341             fid=fopen([dispData.directory <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
+0342             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fileStore,<span class="string">'Log-Likelihood'</span>,fileStore);
+0343             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
+0344             fclose(fid);
+0345         <span class="keyword">end</span>
+0346     <span class="keyword">end</span>
+0347 <span class="keyword">end</span>
+0348 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0349 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0350 <span class="comment">%% Building of the various elements with and without estimation of the</span>
+0351 <span class="comment">% hyperparameters</span>
+0352 <span class="keyword">if</span> metaData.estim.on
+0353     paraEstim=<a href="EstimPara.html" class="code" title="function paraEstim=EstimPara(dataProb,dataMeta,funObj)">EstimPara</a>(ret,metaData,<span class="string">'KRGBloc'</span>);
+0354     ret.build.paraEstim=paraEstim;
+0355     metaData.para.l.Val=paraEstim.l.Val;
+0356     metaData.para.Val=paraEstim.Val;
+0357     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'p'</span>)
+0358         metaData.para.p.Val=paraEstim.p.Val;
+0359     <span class="keyword">end</span>
+0360     <span class="keyword">if</span> isfield(paraEstim,<span class="string">'nu'</span>)
+0361         metaData.para.nu.Val=paraEstim.nu.Val;
+0362     <span class="keyword">end</span>
+0363 <span class="keyword">else</span>
+0364     <span class="comment">%w/o estimation, the initial values of hyperparameters are chosen</span>
+0365     <span class="keyword">switch</span> metaData.kern
+0366         <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
+0367             metaData.para.Val=[metaData.para.l.Val metaData.para.p.Val];
+0368         <span class="keyword">case</span> {<span class="string">'matern'</span>}
+0369             metaData.para.Val=[metaData.para.l.Val metaData.para.nu.Val];
+0370         <span class="keyword">otherwise</span>
+0371             metaData.para.Val=metaData.para.l.Val;
+0372     <span class="keyword">end</span>
+0373 <span class="keyword">end</span>
+0374 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0375 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0376 <span class="comment">% Building final elements of the KRG surrogate model (matrices, coefficients &amp; log-likelihood)</span>
+0377 <span class="comment">% by taking into account the values of hyperparameters obtained previously</span>
+0378 [lilog,blocKRG]=<a href="KRGBloc.html" class="code" title="function [lilog,ret]=KRGBloc(dataIn,metaData,paraValIn,type)">KRGBloc</a>(ret,metaData);
+0379 
+0380 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0381 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0382 <span class="comment">%store informations</span>
+0383 tmp=<a href="../../../GRENAT/src/libs/mergestruct.html" class="code" title="function sout = mergestruct(varargin)">mergestruct</a>(ret.build,blocKRG.build);
+0384 ret.build=tmp;
+0385 ret.build.lilog=lilog;
+0386 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0387 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0388 <span class="comment">%% Cross-validation (compute various errors)</span>
+0389 <span class="keyword">if</span> metaData.cv.on
+0390     <span class="comment">%countTime=mesuTime;</span>
+0391     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt; Computation CV\n'</span>);
+0392     [ret.build.cv]=<a href="KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>(ret,metaData);
+0393     <span class="comment">%countTime.stop;</span>
+0394 <span class="keyword">end</span>
+0395 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0396 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0397 <span class="keyword">if</span> availGrad;txt=<span class="string">'GKRG'</span>;<span class="keyword">else</span> txt=<span class="string">'KRG'</span>;<span class="keyword">end</span>
+0398 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n &gt;&gt; END Building %s\n'</span>,txt);
+0399 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0400 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0401 <span class="keyword">end</span>
+0402 
+0403 
+0404 <span class="comment">%% function for display information</span>
+0405 <a name="_sub1" href="#_subfunctions" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a>
+0406 boolOut=boolIn;
+0407 <span class="keyword">if</span> nargin==2
+0408     txtInFalse=[];
 0409     returnLine=false;
-0410 <span class="keyword">end</span>
-0411 <span class="keyword">if</span> isempty(txtInFalse)
-0412     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">if</span> boolIn; fprintf(<span class="string">'Yes'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No'</span>);<span class="keyword">end</span>
-0413 <span class="keyword">else</span>
-0414     <span class="keyword">if</span> boolIn; fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">else</span> fprintf(<span class="string">'%s'</span>,txtInFalse);<span class="keyword">end</span>
-0415 <span class="keyword">end</span>
-0416 <span class="keyword">if</span> returnLine
-0417     fprintf(<span class="string">'\n'</span>);
-0418 <span class="keyword">end</span>
-0419 <span class="keyword">end</span>
-0420</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0410 <span class="keyword">elseif</span> nargin==3
+0411     returnLine=false;
+0412 <span class="keyword">end</span>
+0413 <span class="keyword">if</span> isempty(txtInFalse)
+0414     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">if</span> boolIn; fprintf(<span class="string">'Yes'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No'</span>);<span class="keyword">end</span>
+0415 <span class="keyword">else</span>
+0416     <span class="keyword">if</span> boolIn; fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">else</span> fprintf(<span class="string">'%s'</span>,txtInFalse);<span class="keyword">end</span>
+0417 <span class="keyword">end</span>
+0418 <span class="keyword">if</span> returnLine
+0419     fprintf(<span class="string">'\n'</span>);
+0420 <span class="keyword">end</span>
+0421 <span class="keyword">end</span>
+0422</pre></div>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

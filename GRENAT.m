@@ -85,20 +85,20 @@ classdef GRENAT < handle
             %load directories on the path
             initDirGRENAT;
             %
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            fprintf(' Create GRENAT Object \n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            Gfprintf(' Create GRENAT Object \n');
             %the date and time
             dispDate;
             %load default configuration
             obj.confMeta=initMeta;
             %load display configuration
-            obj.confDisp=initDisp;            
+            obj.confDisp=initDisp;
             %specific configuration
             if nargin>0;obj.confMeta.type=typeIn;end
             if nargin>1;obj.sampling=samplingIn;end
             if nargin>2;obj.resp=respIn;end
-            if nargin>3;obj.grad=gradIn;end            
+            if nargin>3;obj.grad=gradIn;end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,6 +115,7 @@ classdef GRENAT < handle
                 end
                 initRunTrain(obj,true);
                 resetNorm(obj);
+                initData(obj,'Sampling');
             else
                 fprintf('ERROR: Empty array of sample points\n');
             end
@@ -128,6 +129,7 @@ classdef GRENAT < handle
                     obj.resp=[obj.resp;respIn];
                 end
                 initRunTrain(obj,true);
+                initData(obj,'Resp');
             else
                 fprintf('ERROR: Empty array of responses\n');
             end
@@ -142,6 +144,7 @@ classdef GRENAT < handle
                 end
                 initRunTrain(obj,true);
                 initGradAvail(obj,true);
+                initData(obj,'Grad');
             end
         end
         %setter for the non sample points
@@ -212,10 +215,21 @@ classdef GRENAT < handle
             obj.runEval=flag;
         end
         %initialize data (remove saved data)
-        function initData(obj)
-            obj.sampling=[];
-            obj.resp=[];
-            obj.grad=[];
+        function initData(obj,type)
+            if nargin==1
+                obj.sampling=[];
+                obj.resp=[];
+                obj.grad=[];
+            elseif nargin==2
+                switch type
+                    case 'Sampling'
+                        obj.samplingN=obj.sampling;
+                    case 'Resp'
+                        obj.respN=obj.resp;
+                    case 'Grad'
+                        obj.gradN=obj.grad;
+                end
+            end
         end
         %ordering data (for manipulating nd-arrays)
         function dataOut=orderData(obj,dataIn,type)
@@ -251,9 +265,6 @@ classdef GRENAT < handle
         end
         %Normalization of the input data
         function dataOut=normInputData(obj,type,dataIn)
-            %values for non normalized approachs
-            obj.samplingN=obj.sampling;
-            obj.respN=obj.resp;
             if obj.confMeta.normOn
                 %preparing data structures
                 infoDataS=obj.norm.sampling;
@@ -334,9 +345,9 @@ classdef GRENAT < handle
             checkMissingData(obj);
             %store normalization data
             obj.confMeta.norm=obj.norm;
-            %train surrogate model 
+            %train surrogate model
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
-            %save estimate parameters 
+            %save estimate parameters
             obj.confMeta.definePara(obj.dataTrain.build.para);
             obj.confMeta.updatePara;
             %change state of flags
@@ -587,7 +598,7 @@ classdef GRENAT < handle
         function show1D(obj)
             figure;
             %depend if the reference is available or not
-            if checkRef(obj);
+            if checkRef(obj)
                 obj.nbSubplot=231;
                 subplot(obj.nbSubplot);
                 obj.confDisp.conf('samplePts',true,'sampleGrad',false);

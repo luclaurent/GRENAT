@@ -73,7 +73,7 @@ This function is called by:
 0025 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=funColville(xx,dim)</a>
 0026 
 0027 <span class="keyword">if</span> ~isempty(xx)
-0028     <span class="keyword">if</span> size(xx,3)&gt;2
+0028     <span class="keyword">if</span> size(xx,3)~=4
 0029         error(<span class="string">'The Coleville function is a 4 dimensional function'</span>);
 0030     <span class="keyword">elseif</span> size(xx,3)==1
 0031         <span class="keyword">if</span> size(xx,2)==4
@@ -81,7 +81,7 @@ This function is called by:
 0033         <span class="keyword">elseif</span> size(xx,1)==4
 0034             xxx=xx(1,:);yyy=xx(2,:);zzz=xx(3,:);vvv=xx(4,:);
 0035         <span class="keyword">else</span>
-0036             error(<span class="string">'Mauvais format varibale entr�e fct Colville'</span>);
+0036             error(<span class="string">'Wrong input variable fct Coleville'</span>);
 0037         <span class="keyword">end</span>
 0038         
 0039     <span class="keyword">else</span>
@@ -116,6 +116,6 @@ This function is called by:
 0068     infos.min_loc.X=pts;
 0069 <span class="keyword">end</span>
 0070 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

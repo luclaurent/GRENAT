@@ -49,7 +49,7 @@ classdef initMeta < handle
         pMin=1.001;
         nuMin=1.5;
         nuMax=5;
-        polyOrder=1;        %polynomial order for kriging, xLS
+        polyOrder=2;        %polynomial order for kriging, xLS
         swfPara=1;          %swf parameter
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)

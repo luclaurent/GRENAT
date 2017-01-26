@@ -29,9 +29,9 @@ paraCluster=execParallel(false);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %define the sampling using MultiDOE toolbox
-dimPB=3; %number of design parameters
+dimPB=2; %number of design parameters
 ns=20; %number if sample points
-typeDOE='LHS'; %type of DOE
+typeDOE='IHS'; %type of DOE
 testFunction='Schwefel'; %test function
 %
 mDOE=multiDOE(dimPB,typeDOE,ns,[],[],testFunction);

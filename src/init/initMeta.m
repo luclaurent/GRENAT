@@ -68,7 +68,7 @@ classdef initMeta < handle
         dispIterGraph=false;% display iterations of the optimisation process on a figure (1D/2D)
         dispIterCmd=false;  % display iteration in the console
         dispPlotAlgo=false; % display convergence information on figures
-        method='sqp';       % optimizer used for finding internal parameter
+        method='SampleMin_sqp';       % optimizer used for finding internal parameter
         sampManuOn=0;       % initial sampling or not
         sampManu='IHS';     % method used for the initial sampling for GA ('', 'LHS','IHS'...)
         nbSampInit=[];      % number of sample points of the initial sampling for GA

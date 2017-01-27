@@ -49,7 +49,7 @@ classdef initMeta < handle
         pMin=1.001;
         nuMin=1.5;
         nuMax=5;
-        polyOrder=2;        %polynomial order for kriging, xLS
+        polyOrder=0;        %polynomial order for kriging, xLS
         swfPara=1;          %swf parameter
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)
@@ -68,7 +68,7 @@ classdef initMeta < handle
         dispIterGraph=false;% display iterations of the optimisation process on a figure (1D/2D)
         dispIterCmd=false;  % display iteration in the console
         dispPlotAlgo=false; % display convergence information on figures
-        method='SampleMin_sqp';       % optimizer used for finding internal parameter
+        method='sqp';       % optimizer used for finding internal parameter
         sampManuOn=0;       % initial sampling or not
         sampManu='IHS';     % method used for the initial sampling for GA ('', 'LHS','IHS'...)
         nbSampInit=[];      % number of sample points of the initial sampling for GA

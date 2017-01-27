@@ -348,8 +348,10 @@ classdef GRENAT < handle
             %train surrogate model
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
             %save estimate parameters
-            obj.confMeta.definePara(obj.dataTrain.build.para);
-            obj.confMeta.updatePara;
+            if isfield(obj.dataTrain.build,'para');
+                obj.confMeta.definePara(obj.dataTrain.build.para);
+                obj.confMeta.updatePara;
+            end
             %change state of flags
             obj.runTrain=false;
             obj.runErr=true;

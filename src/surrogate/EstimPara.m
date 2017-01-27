@@ -238,10 +238,9 @@ switch methodOptim
         nbSample=nbP*50;
         samplingType='LHS_O1';
         Gfprintf('||SampleMin||  Sample %s on %i points\n',samplingType,nbSample);
-        doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSample;doePop.disp=false;doePop.type=samplingType;
-        samplePop=buildDOE(doePop);
+        samplePop=buildDOE(samplingType,nbSample,lb,ub);
         critS=zeros(1,nbSample);
-        parfor itSample=1:nbSample
+        for itSample=1:nbSample
             critS(itSample)=fun(samplePop(itSample,:));
         end
         [fval,IX]=min(critS);

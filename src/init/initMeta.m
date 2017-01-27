@@ -49,7 +49,7 @@ classdef initMeta < handle
         pMin=1.001;
         nuMin=1.5;
         nuMax=5;
-        polyOrder=0;        %polynomial order for kriging, xLS
+        polyOrder=10;        %polynomial order for kriging, xLS
         swfPara=1;          %swf parameter
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)
@@ -68,7 +68,7 @@ classdef initMeta < handle
         dispIterGraph=false;% display iterations of the optimisation process on a figure (1D/2D)
         dispIterCmd=false;  % display iteration in the console
         dispPlotAlgo=false; % display convergence information on figures
-        method='sqp';       % optimizer used for finding internal parameter
+        method='pso';       % optimizer used for finding internal parameter
         sampManuOn=0;       % initial sampling or not
         sampManu='IHS';     % method used for the initial sampling for GA ('', 'LHS','IHS'...)
         nbSampInit=[];      % number of sample points of the initial sampling for GA
@@ -88,7 +88,7 @@ classdef initMeta < handle
     properties (Access = private,Constant)
         infoProp=affectTxtProp;
         kernAvail={'matern','matern32','matern52','sexp'};
-        typeAvail={'SWF','IDW','RBF','InRBF','GRBF','KRG','InKRG','GKRG','SVR','InSVR','GSVR','DACE','InDACE'};%,'PRG','ILIN','ILAG'};
+        typeAvail={'SWF','IDW','RBF','InRBF','GRBF','KRG','InKRG','GKRG','SVR','InSVR','GSVR','DACE','InDACE','LS','GLS','InLS'};%,'PRG','ILIN','ILAG'};
         typeTxt={'Shepard Weighting Function or Inverse Distance Weighting',...
             'idem',...
             'Radial Basis Function',...
@@ -101,7 +101,10 @@ classdef initMeta < handle
             'Gradient-Based Indirect Support Vector Regression',...
             'Gradient-Based Support Vector Regression',...
             'DACE',...
-            'Gradient-Based Indirect DACE'};
+            'Gradient-Based Indirect DACE',...
+            'Least-squares',...
+            'Gradient-Based Least-squares',...
+            'Gradient-Based Indirect Least-squares'};
     end
     methods
         %constructor
@@ -143,6 +146,7 @@ classdef initMeta < handle
                 else
                     Gfprintf(' Type %s not available\n',charIn);
                     availableType(obj);
+                    error('STOP');
                 end
             end
         end

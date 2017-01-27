@@ -20,11 +20,11 @@
 
 clear all
 % order
-orderMin=1;
-orderMax=2;
-% nb of ariables
+orderMin=3;
+orderMax=10;
+% nb of variables
 npMin=1;
-npMax=10;
+npMax=5;
 
 %directory of storage
 dirMB='monomial_basis';
@@ -82,7 +82,7 @@ for deg=orderMin:orderMax
         %suppression ligne td sum term>deg
         ind=[];
         
-        parfor cc=1:size(combinaison,1)
+        for cc=1:size(combinaison,1)
             if sum(combinaison(cc,:))>deg
                 ind=[ind cc];
             end
@@ -132,7 +132,7 @@ for deg=orderMin:orderMax
             end
         end
         %coef_der2=reshape(monomes_der2,,nbv)
-        parfor cc=1:numel(monomes_der2)
+        for cc=1:numel(monomes_der2)
             if monomes_der2(cc)<0
                 monomes_der2(cc)=0;
             end

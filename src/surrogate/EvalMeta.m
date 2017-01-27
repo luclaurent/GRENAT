@@ -150,15 +150,10 @@ switch metaConf.type
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
-    case 'PRG'
-        for degre=dataTrain.deg
-            %% Evaluation of the polynomial regression surrogate model
-            parfor (jj=1:nbReqEval,numWorkers)
-                valResp(jj)=LSEval(dataTrain.prg.coef,reqResp(jj,1),evalSample(jj,2),dataTrain);
-                %calculation of the gradients
-                [GRG1,GRG2]=LSEvalD(dataTrain.prg.coef,reqResp(jj,1),evalSample(jj,2),dataTrain);
-                valGrad(jj,:)=[GRG1,GRG2];
-            end
+    case {'LS','GLS','InLS'}
+        for jj=1:nbReqEval
+            [valResp(jj),G]=LSEval(reqResp(jj,:),dataTrain);
+            valGrad(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%

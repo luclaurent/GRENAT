@@ -16,7 +16,7 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function [fct,dfct,infos,ddfct]=funManu(x,~)
-v=2;
+v=6;
 
 
 %prepare for demo mode
@@ -96,6 +96,25 @@ elseif v==5
     
     if nargout>=2||dem
         dfct=-exp(-x/a).*(sin(x)+1/a.*cos(x))+1/a;
+    end
+    %information about the function
+    if nargout>=3
+        %on [-1,15]
+        %pts=[1;3;5;7;9;11;13;15;17;19]*pi/4;
+        %infos.min_glob.Z=cos(4*pts);
+        % infos.min_glob.X=pts;
+        %infos.min_loc.Z=infos.min_glob.Z;
+        infos.min_loc.X=[];%pts;
+    end
+elseif v==6
+    a=1;
+    b=25;
+    c=5;
+    
+    fct=a./(a+b.*x.^2);
+    
+    if nargout>=2||dem
+        dfct=-a*b.*x./(a+b.*x.^2).^2;
     end
     %information about the function
     if nargout>=3

@@ -211,8 +211,11 @@ end
 %determine regressors
 fct=valFunPoly'*valFunPoly;
 fcY=valFunPoly'*YY;
-beta=fct\fcY;
-
+if condest(fct)>1e15
+    beta=pinv(fct)*fcY;
+else
+    beta=fct\fcY;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store variables

@@ -20,11 +20,11 @@
 
 clear all
 % order
-orderMin=3;
+orderMin=10;
 orderMax=10;
 % nb of variables
-npMin=1;
-npMax=5;
+npMin=7;
+npMax=10;
 
 %directory of storage
 dirMB='monomial_basis';
@@ -81,13 +81,17 @@ for deg=orderMin:orderMax
         %combinaison=sparse(fullfact(levels)-1);
         %suppression ligne td sum term>deg
         ind=[];
-        
-        for cc=1:size(combinaison,1)
-            if sum(combinaison(cc,:))>deg
-                ind=[ind cc];
-            end
-        end
-        %[ind]=find(sum(combinaison,2)>deg);
+        indt=[];
+%         tic
+%         for cc=1:size(combinaison,1)
+%             if sum(combinaison(cc,:))>deg
+%                 indt=[indt cc];
+%             end
+%         end
+%         toc
+        tic
+        [ind]=find(sum(combinaison,2)>deg);
+        toc
         monomes_pow=combinaison;
         
         clear combinaison

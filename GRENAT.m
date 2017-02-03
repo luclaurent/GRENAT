@@ -660,9 +660,12 @@ classdef GRENAT < handle
         %display the reference gradients surface
         function showGradRef(obj,nbG)
             %default value
-            if nargin==1;nbG=1;end
-            obj.confDisp.title=(['Gradients Reference /x' num2str(nbG)]);
-            displaySurrogate(obj.sampleRef,obj.gradRef(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            if nargin==1;nbG=1:size(obj.nonsampleGrad,3);end
+            for itG=1:numel(nbG)
+                obj.confDisp.title=(['Gradients Reference /x' num2str(nbG(itG))]);
+                if ~obj.confDisp.newFig;figure;end
+                displaySurrogate(obj.sampleRef,obj.gradRef(:,:,nbG(itG)),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            end
         end
         %display the response approximated by the metamodel
         function showResp(obj)
@@ -672,9 +675,12 @@ classdef GRENAT < handle
         %display the gradients approximated by the metamodel
         function showGrad(obj,nbG)
             %default value
-            if nargin==1;nbG=1;end
-            obj.confDisp.title=(['Approximated gradients /x' num2str(nbG)]);
-            displaySurrogate(obj.nonsamplePts,obj.nonsampleGrad(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            if nargin==1;nbG=1:size(obj.nonsampleGrad,3);end
+            for itG=1:numel(nbG)
+                obj.confDisp.title=(['Approximated gradients /x' num2str(nbG(itG))]);
+                if ~obj.confDisp.newFig;figure;end
+                displaySurrogate(obj.nonsamplePts,obj.nonsampleGrad(:,:,nbG(itG)),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            end
         end
         %display the confidence intervals approximated by the metamodel
         function showCI(obj,ciVal,nonsamplePts)

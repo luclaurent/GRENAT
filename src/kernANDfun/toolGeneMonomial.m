@@ -20,11 +20,13 @@
 
 clear all
 % order
+
 orderMin=8;
 orderMax=8;
 % nb of variables
 npMin=10;
 npMax=10;
+
 
 %directory of storage
 dirMB='monomial_basis';

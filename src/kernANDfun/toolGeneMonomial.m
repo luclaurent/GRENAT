@@ -20,11 +20,11 @@
 
 clear all
 % order
-orderMin=3;
+orderMin=8;
 orderMax=10;
 % nb of variables
-npMin=1;
-npMax=5;
+npMin=8;
+npMax=8;
 
 %directory of storage
 dirMB='monomial_basis';
@@ -76,18 +76,19 @@ for deg=orderMin:orderMax
         end
         combinaison=uint8(combinaison);
         
-        % génération combinaison
+        % gï¿½nï¿½ration combinaison
         %levels=(deg+1)*ones(1,nbv,'uint8');
         %combinaison=sparse(fullfact(levels)-1);
         %suppression ligne td sum term>deg
-        ind=[];
+        %ind=[];
         
-        for cc=1:size(combinaison,1)
-            if sum(combinaison(cc,:))>deg
-                ind=[ind cc];
-            end
-        end
-        %[ind]=find(sum(combinaison,2)>deg);
+        %parfor cc=1:size(combinaison,1)
+        %    if sum(combinaison(cc,:))>deg
+        %        ind=[ind cc];
+        %    end
+        %end
+        [ind]=find(sum(combinaison,2)>deg);
+        ind=ind';
         monomes_pow=combinaison;
         
         clear combinaison
@@ -96,7 +97,7 @@ for deg=orderMin:orderMax
         monomes_pow(ind,:)=[];
         nbMono=size(monomes_pow,1);
         clear ind
-        %coef derivées première et monomes dérivées premières
+        %coef derivï¿½es premiï¿½re et monomes dï¿½rivï¿½es premiï¿½res
         coef_der1=monomes_pow;
         monomes_der1=repmat(monomes_pow,1,nbv);
         for pp=1:nbv
@@ -111,7 +112,7 @@ for deg=orderMin:orderMax
         %[ind]=find(monomes_der1<0);
         %monomes_der1(ind)=0;
         clear ind
-        %coef derivées secondes et monomes dérivées secondes
+        %coef derivï¿½es secondes et monomes dï¿½rivï¿½es secondes
         tt=[];
         for hh=1:size(coef_der1,2)
             tt=[tt repmat(coef_der1(:,hh),1,nbv)];
@@ -140,7 +141,7 @@ for deg=orderMin:orderMax
         %[ind]=find(monomes_der2<0);
         %monomes_der2(ind)=0;
         clear ind
-        %sauvegarde résultats
+        %sauvegarde rï¿½sultats
         mono1{deg,nbv}=monomes_pow;
         monod1{deg,nbv}=monomes_der1;
         monod2{deg,nbv}=monomes_der2;
@@ -168,7 +169,7 @@ for ii=orderMin:orderMax
         fprintf(fid,'MatX=[\n');
         mat=mono1{ii,jj};
         %balayage des puissances du monome et construction de la matrice
-        %associée
+        %associï¿½e
         indic=true;
         for mm=1:size(mat,1)
             if sum(mat(mm,:))==0
@@ -202,7 +203,7 @@ for ii=orderMin:orderMax
         end
         fprintf(fid,'];\n');
         fprintf(fid,'nbmono=%i;\n\n',size(mat,1));
-        %ecriture dérivée première
+        %ecriture dï¿½rivï¿½e premiï¿½re
         fprintf(fid,'if derprem\n');
         fprintf(fid,'MatDX=cell(1,nb_var);\n\n');
         matD=monod1{ii,jj};
@@ -254,7 +255,7 @@ for ii=orderMin:orderMax
             fprintf(fid,'];\n\n');
         end
         
-        %ecriture coefficients dérivée première
+        %ecriture coefficients dï¿½rivï¿½e premiï¿½re
         
         fprintf(fid,'CoefDX=[\n');
         mat=cmonod1{ii,jj}';
@@ -263,7 +264,7 @@ for ii=orderMin:orderMax
             fprintf(fid,'\n');
         end
         fprintf(fid,'];\n');
-        %ecriture dérivée seconde
+        %ecriture dï¿½rivï¿½e seconde
         fprintf(fid,'end\n\n');
         fprintf(fid,'if dersecond\n');
         fprintf(fid,'MatDDX=cell(nb_var,nb_var);\n\n');
@@ -315,7 +316,7 @@ for ii=orderMin:orderMax
             end
             fprintf(fid,'];\n\n');
         end
-        %ecriture coefficients dérivée seconde
+        %ecriture coefficients dï¿½rivï¿½e seconde
         fprintf(fid,'CoefDDX=[\n');
         mat=cmonod2{ii,jj}';
         for ll=1:size(mat,1);

@@ -49,6 +49,7 @@ classdef initDisp < handle
         nv=Inf;                 %number of sample points on the reference grid
         nbSteps=0;              %number of steps on the reference grid
         step=[];                %size of the step of the grid
+        view=[];                %azimut/elevation for 3D display
     end
     properties (Access = private,Constant)
         infoProp=affectTxtProp;

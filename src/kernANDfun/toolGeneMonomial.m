@@ -21,10 +21,10 @@
 clear all
 % order
 orderMin=8;
-orderMax=10;
+orderMax=8;
 % nb of variables
-npMin=8;
-npMax=8;
+npMin=10;
+npMax=10;
 
 %directory of storage
 dirMB='monomial_basis';
@@ -68,11 +68,12 @@ for deg=orderMin:orderMax
             for jj=1:length(val_var{ii})
                 temp=repmat(val_var{ii}(jj),nb_ter_pre,1);
                 temp1=uint8([temp1;temp]);
+                clear  temp
             end
             temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
             clear temp1 temp
             combinaison(:,ii)=temp2;
-            clear temp2;
+            clear temp2
         end
         combinaison=uint8(combinaison);
         
@@ -87,14 +88,14 @@ for deg=orderMin:orderMax
         %        ind=[ind cc];
         %    end
         %end
-        [ind]=find(sum(combinaison,2)>deg);
+        [ind]=find(sum(combinaison,2)<=deg);
         ind=ind';
-        monomes_pow=combinaison;
+        monomes_pow=combinaison(ind,:);
         
         clear combinaison
         %puissance monomes
         
-        monomes_pow(ind,:)=[];
+        %monomes_pow(ind,:)=[];
         nbMono=size(monomes_pow,1);
         clear ind
         %coef deriv�es premi�re et monomes d�riv�es premi�res

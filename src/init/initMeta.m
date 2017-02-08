@@ -43,13 +43,13 @@ classdef initMeta < handle
         lVal=1;             %internal length (correlation length)
         pVal=2;             %power exponent for generalized exponential kernel function
         nuVal=0.6;          %smoothness coefficient for Matern kernel function
-        lMin=1e-1;
-        lMax=100;
+        lMin=1e-5;
+        lMax=30;
         pMax=2;
         pMin=1.001;
         nuMin=1.5;
         nuMax=5;
-        polyOrder=10;        %polynomial order for kriging, xLS
+        polyOrder=0;        %polynomial order for kriging, xLS
         swfPara=1;          %swf parameter
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)

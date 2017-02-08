@@ -21,11 +21,11 @@
 clear all
 % order
 
-orderMin=8;
-orderMax=8;
+orderMin=2;
+orderMax=2;
 % nb of variables
-npMin=10;
-npMax=10;
+npMin=2;
+npMax=2;
 
 
 %directory of storage
@@ -155,6 +155,7 @@ for deg=orderMin:orderMax
     end
 end
 
+keyboard
 
 %stockage des monomes
 for ii=orderMin:orderMax

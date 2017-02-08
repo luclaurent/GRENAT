@@ -626,7 +626,7 @@ classdef GRENAT < handle
         function show2D(obj)
             figure;
             %depend if the reference is available or not
-            if checkRef(obj);
+            if checkRef(obj)
                 obj.nbSubplot=331;
                 subplot(obj.nbSubplot);
                 obj.confDisp.conf('samplePts',true);
@@ -663,7 +663,6 @@ classdef GRENAT < handle
             if nargin==1;nbG=1:size(obj.nonsampleGrad,3);end
             for itG=1:numel(nbG)
                 obj.confDisp.title=(['Gradients Reference /x' num2str(nbG(itG))]);
-                if ~obj.confDisp.newFig;figure;end
                 displaySurrogate(obj.sampleRef,obj.gradRef(:,:,nbG(itG)),obj.sampling,obj.resp,obj.grad,obj.confDisp);
             end
         end
@@ -678,7 +677,6 @@ classdef GRENAT < handle
             if nargin==1;nbG=1:size(obj.nonsampleGrad,3);end
             for itG=1:numel(nbG)
                 obj.confDisp.title=(['Approximated gradients /x' num2str(nbG(itG))]);
-                if ~obj.confDisp.newFig;figure;end
                 displaySurrogate(obj.nonsamplePts,obj.nonsampleGrad(:,:,nbG(itG)),obj.sampling,obj.resp,obj.grad,obj.confDisp);
             end
         end

@@ -22,11 +22,11 @@ function toolGeneMonomial(polyOrder,nbVar)
 
 if nargin<2
     % order
-    orderMin=1;
-    orderMax=10;
+    orderMin=0;
+    orderMax=2;
     % nb of variables
-    npMin=1;
-    npMax=8;
+    npMin=8;
+    npMax=17;
 else
     orderMin=polyOrder;
     orderMax=polyOrder;
@@ -55,8 +55,11 @@ monod2=mono1;
 cmonod1=mono1;
 cmonod2=mono1;
 %matlabpool(8)
-for deg=orderMin:orderMax
+listOrder=orderMin:orderMax;
+
+for itD=1:numel(listOrder)
     for nbv=npMin:npMax
+        deg=listOrder(itD);
         fprintf('deg = %i  dim = %i\n',deg,nbv)
         %valeurs pour chaques variables
         val_var=cell(nbv,1);
@@ -162,11 +165,11 @@ for deg=orderMin:orderMax
         %monomes_der2(ind)=0;
         clear ind
         %sauvegarde r�sultats
-        mono1{deg,nbv}=monomes_pow;
-        monod1{deg,nbv}=monomes_der1;
-        monod2{deg,nbv}=monomes_der2;
-        cmonod1{deg,nbv}=coef_der1;
-        cmonod2{deg,nbv}=coef_der2;
+        mono1{itD,nbv}=monomes_pow;
+        monod1{itD,nbv}=monomes_der1;
+        monod2{itD,nbv}=monomes_der2;
+        cmonod1{itD,nbv}=coef_der1;
+        cmonod2{itD,nbv}=coef_der2;
         clear combinaison comb_mod temp temp1 temp2 ind indd
         clear monomes_pow monomes_der1 monomes_der2 coef_der2 coef_der1
     end
@@ -175,9 +178,10 @@ end
 %keyboard
 
 %stockage des monomes
-for ii=orderMin:orderMax
+for itD=1:numel(listOrder)
     for jj=npMin:npMax
-        fonction=[file '_' num2str(ii,'%02i') '_' num2str(jj,'%03i') 'B'];
+        
+        fonction=[file '_' num2str(listOrder(itD),'%02i') '_' num2str(jj,'%03i')];
         fichier=[dirMB '/' fonction ext];
         fid=fopen(fichier,'w');
         fprintf(fid,'%s\n\n',['function [poly,polyD,polyDD]=' fonction '()']);
@@ -187,7 +191,7 @@ for ii=orderMin:orderMax
         %fprintf(fid,'nb_val=size(X,1);\n nb_var=size(X,2);\n\n');
         %fprintf(fid,'Vones=ones(nb_val,1);\n');
         %fprintf(fid,'Vzeros=zeros(nb_val,1);\n\n');
-        mat=mono1{ii,jj}';
+        mat=mono1{itD,jj}';
         %balayage des puissances du monome et construction de la matrice
         %associ�e
         Smat=size(mat);
@@ -202,8 +206,8 @@ for ii=orderMin:orderMax
         fprintf(fid,'poly.nbMono=%i;\n\n',Smat(2));
         %keyboard
         %writing first derivatives
-        matD=monod1{ii,jj}';
-        matC=cmonod1{ii,jj}';
+        matD=monod1{itD,jj}';
+        matC=cmonod1{itD,jj}';
         fprintf(fid,'if derprem\n');
         fprintf(fid,'DXpow=[\n');
         fprintf(fid,[repmat('%i ',1,Smat(2)) '\n'],matD');
@@ -217,8 +221,8 @@ for ii=orderMin:orderMax
         fprintf(fid,'end\n\n');
         %keyboard
         %writing second derivatives
-        matDD=monod2{ii,jj}';
-        matCC=cmonod2{ii,jj}';
+        matDD=monod2{itD,jj}';
+        matCC=cmonod2{itD,jj}';
         fprintf(fid,'if dersecond\n');
         fprintf(fid,'DDXpow=[\n');
         fprintf(fid,[repmat('%i ',1,Smat(2)) '\n'],matDD');

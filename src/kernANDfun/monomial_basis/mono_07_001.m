@@ -1,63 +1,39 @@
-function [MatX,nbmono,MatDX,CoefDX,MatDDX,CoefDDX]=mono_07_001(X)
+function [poly,polyD,polyDD]=mono_07_001()
 
 derprem=false;dersecond=false;
-if nargout>=4;derprem=true;end
-if nargout==6;dersecond=true;end
+if nargout>=2;derprem=true;end
+if nargout==3;dersecond=true;end
 
-nb_val=size(X,1);
- nb_var=size(X,2);
-
-Vones=ones(nb_val,1);
-Vzeros=zeros(nb_val,1);
-
-MatX=[
- Vones ...
-X(:,1) ...
-X(:,1).^2 ...
-X(:,1).^3 ...
-X(:,1).^4 ...
-X(:,1).^5 ...
-X(:,1).^6 ...
-X(:,1).^7
-];
-nbmono=8;
-
-if derprem
-MatDX=cell(1,nb_var);
-
-MatDX{1}=[
-Vzeros ...
-Vones ...
-2.*X(:,1) ...
-3.*X(:,1).^2 ...
-4.*X(:,1).^3 ...
-5.*X(:,1).^4 ...
-6.*X(:,1).^5 ...
-7.*X(:,1).^6
-];
-
-CoefDX=[
+Xpow=[
 0 1 2 3 4 5 6 7 
 ];
+poly.Xpow=reshape(Xpow',[1,8,1]);
+Xcoef=[
+1 1 1 1 1 1 1 1 
+];
+poly.Xcoef=reshape(Xcoef,[1,8,1]);
+poly.nbMono=8;
+
+if derprem
+DXpow=[
+0 0 1 2 3 4 5 6 
+];
+polyD.Xpow=permute(reshape(DXpow',8,1,1,1),[2 1 3 4]);
+DXcoef=[
+0 1 2 3 4 5 6 7 
+];
+polyD.Xcoef=reshape(DXcoef',[1,8,1]);
 end
 
 if dersecond
-MatDDX=cell(nb_var,nb_var);
-
-MatDDX{1}=[
-Vzeros ...
-Vzeros ...
-2.*Vones ...
-6.*X(:,1) ...
-12.*X(:,1).^2 ...
-20.*X(:,1).^3 ...
-30.*X(:,1).^4 ...
-42.*X(:,1).^5
+DDXpow=[
+0 0 0 1 2 3 4 5 
 ];
-
-CoefDDX=[
+polyDD.Xpow=permute(reshape(DDXpow',8,1,1,1),[2 1 3 4]);
+DDXcoef=[
 0 0 2 6 12 20 30 42 
 ];
+polyDD.Xcoef=reshape(DDXcoef',[1,8,1]);
 end
 
 end

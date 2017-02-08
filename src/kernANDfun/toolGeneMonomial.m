@@ -22,11 +22,11 @@ function toolGeneMonomial(polyOrder,nbVar)
 
 if nargin<2
     % order
-    orderMin=0;
-    orderMax=2;
+    orderMin=7;
+    orderMax=10;
     % nb of variables
-    npMin=8;
-    npMax=17;
+    npMin=7;
+    npMax=8;
 else
     orderMin=polyOrder;
     orderMax=polyOrder;

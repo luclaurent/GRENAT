@@ -25,12 +25,11 @@ ns=size(X,1);
 np=size(X,2);
 
 %choose polynomial function
-funPoly=['mono_' num2str(polyOrder,'%02i') '_' num2str(np,'%03i') 'B'];
-funPolyO=['mono_' num2str(polyOrder,'%02i') '_' num2str(np,'%03i')];
+funPoly=['mono_' num2str(polyOrder,'%02i') '_' num2str(np,'%03i')];
 %check if the function exist (if not create it)
-%if ~exist(funPoly,'file')
-    toolGeneMonomialb(polyOrder,np);
-%end
+if ~exist(funPoly,'file')
+    toolGeneMonomial(polyOrder,np);
+end
 
 %deal with what quantities is required
 derFirst=false;
@@ -54,19 +53,14 @@ end
 %X reshaped
 Xr=reshape(X,[ns,1,np]);
 
-
-[Reg,nbMonomialTerms,DReg,CDReg,DDReg,CDDReg]=feval(funPolyO,X);
-
 %evaluation
 matX=prod(Xr.^poly.Xpow,3);
-if ~all(matX==Reg);keyboard;end
 %first derivatives
 if derFirst
     matTmpA=zeros(ns,poly.nbMono,np);
     matTmpA(:)=prod(Xr(:,:,:,ones(1,np)).^polyD.Xpow,3);
     matTmpB=polyD.Xcoef(ones(1,ns),:,:).*matTmpA;
     matDX=reshape(permute(matTmpB,[1 3 2]),np*ns,poly.nbMono);
-    if ~all(matDX==vertcat(DReg{:}));keyboard;end
 end
 
 %second derivatives
@@ -75,6 +69,5 @@ if derSecond
     matTmpA(:)=prod(Xr(:,:,:,ones(1,np*np)).^polyDD.Xpow,3);
     matTmpB=polyDD.Xcoef(ones(1,ns),:,:).*matTmpA;
     matDDX=reshape(permute(matTmpB,[1 3 2]),np*np*ns,poly.nbMono);
-    if ~all(matDDX==vertcat(DDReg{:}));keyboard;end
 end
 end

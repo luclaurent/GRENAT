@@ -159,19 +159,18 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Build regression matrix (for the trend model)
-%choose polynomial function
-funPoly=['mono_' num2str(metaData.polyOrder,'%02i') '_' num2str(np,'%03i')];
 
 %depending on the availability of the gradients
 if ~availGrad
-    valFunPoly=feval(funPoly,samplingIn);
+    valFunPoly=MultiMono(samplingIn,metaData.polyOrder);
     if missResp
         %remove missing response(s)
         valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
     end
 else
     %gradient-based
-    [Reg,nbMonomialTerms,DReg,~]=feval(funPoly,samplingIn);
+    [MatX,MatDX]=MultiMono(samplingIn,metaData.polyOrder);
+    nbMonomialTerms=size(MatX,2);
     if missResp||missGrad
         sizeResp=ns-missData.resp.nb;
         sizeGrad=ns*np-missData.grad.nb;
@@ -185,25 +184,17 @@ else
     valFunPoly=zeros(sizeTotal,nbMonomialTerms);
     if missResp
         %remove missing response(s)
-        Reg=Reg(metaData.miss.resp.ixAvail,:);
+        MatX=MatX(metaData.miss.resp.ixAvail,:);
     end
     %load monomial terms of the polynomial regression
-    valFunPoly(1:sizeResp,:)=Reg;
-    %load derivatives of the monomial terms
-    if iscell(DReg)
-        tmp=horzcat(DReg{:})';
-        tmp=reshape(tmp,nbMonomialTerms,[])';
-    else
-        tmp=DReg';
-        tmp=tmp(:);
-    end
+    valFunPoly(1:sizeResp,:)=MatX;
     
     if missGrad
         %remove missing gradient(s)
-        tmp=tmp(missData.grad.ixt_dispo_line,:);
+        MatDX=MatDX(missData.grad.ixt_dispo_line,:);
     end
     %add derivatives to the regression matrix
-    valFunPoly(sizeResp+1:end,:)=tmp;
+    valFunPoly(sizeResp+1:end,:)=MatDX;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -232,7 +223,7 @@ ret.build.fc=valFunPoly';
 ret.build.beta=beta;
 ret.build.sizeFc=size(valFunPoly,2);
 ret.build.y=YY;
-ret.build.funPoly=funPoly;
+ret.build.polyOrder=metaData.polyOrder;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Cross-validation (compute various errors)

@@ -180,79 +180,75 @@ This function is called by:
 0132         <span class="keyword">if</span> nV&gt;1;maskM=[1 1];<span class="keyword">else</span> maskM=1;<span class="keyword">end</span>
 0133         mm=[maskM 3:nV];
 0134         mask1=mm(ones(nV,1),:); <span class="comment">%shift indexes</span>
-0135         mask1=tril(ones(nV),1);
-0136         <span class="keyword">if</span> numel(mask1)&gt;1
-0137           mask1=triu(mask1,2)+mask1;
-0138         <span class="keyword">end</span>
-0139         <span class="comment">%</span>
-0140         pcc=reshape([ones(1,nE);uniR'],1,nV+1,nE);
-0141         M=reshape(pcc(1,mask1,:),nV,nV,nE);
-0142         <span class="comment">%</span>
-0143         mask2=triu(ones(nV));
-0144         M=cumprod(M,2);
-0145         M=M.*repmat(mask2,[1 1 nE]);
-0146         LUMt=<a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(Lr,Ur,2).*M;
-0147         LUM=LUMt+<a href="../../../GRENAT/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>(LUMt);        
-0148         LUM(ixDiag)=LdU';
-0149         <span class="comment">%second derivatives</span>
-0150         dderK=LUM.*prd;
-0151     <span class="keyword">end</span>
-0152 <span class="keyword">end</span>
-0153 
-0154 <span class="comment">%figure en mode demo</span>
-0155 <span class="keyword">if</span> demo
-0156     figure
-0157     <span class="keyword">if</span> moddemo==1
-0158         plot(X,respK,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2)
-0159         hold on
-0160         plot(X,derK,<span class="string">'b'</span>,<span class="string">'LineWidth'</span>,2)
-0161         ddG=vertcat(dderK(:));
-0162         plot(X,ddG,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2)
-0163         hold off
-0164         ax = gca;
-0165         ax.XAxisLocation = <span class="string">'origin'</span>;
-0166         ax.YAxisLocation = <span class="string">'origin'</span>;
-0167         legend(<span class="string">'h(r)'</span>,<span class="string">'f''(r)'</span>,<span class="string">'f''''(r)'</span>)
-0168     <span class="keyword">elseif</span> moddemo==2
-0169         subplot(231)
-0170         Gp=zeros(nEDemo);
-0171         Gp(:)=respK;
+0135         mask1=triu(mask1,2)+tril(ones(nV),1);
+0136         pcc=reshape([ones(1,nE);uniR'],1,nV+1,nE);
+0137         M=reshape(pcc(1,mask1,:),nV,nV,nE);
+0138         <span class="comment">%</span>
+0139         mask2=triu(ones(nV));
+0140         M=cumprod(M,2);
+0141         M=M.*repmat(mask2,[1 1 nE]);
+0142         LUMt=<a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(Lr,Ur,2).*M;
+0143         LUM=LUMt+<a href="../../../GRENAT/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>(LUMt);        
+0144         LUM(ixDiag)=LdU';
+0145         <span class="comment">%second derivatives</span>
+0146         dderK=LUM.*prd;
+0147     <span class="keyword">end</span>
+0148 <span class="keyword">end</span>
+0149 
+0150 <span class="comment">%figure en mode demo</span>
+0151 <span class="keyword">if</span> demo
+0152     figure
+0153     <span class="keyword">if</span> moddemo==1
+0154         plot(X,respK,<span class="string">'r'</span>,<span class="string">'LineWidth'</span>,2)
+0155         hold on
+0156         plot(X,derK,<span class="string">'b'</span>,<span class="string">'LineWidth'</span>,2)
+0157         ddG=vertcat(dderK(:));
+0158         plot(X,ddG,<span class="string">'k'</span>,<span class="string">'LineWidth'</span>,2)
+0159         hold off
+0160         ax = gca;
+0161         ax.XAxisLocation = <span class="string">'origin'</span>;
+0162         ax.YAxisLocation = <span class="string">'origin'</span>;
+0163         legend(<span class="string">'h(r)'</span>,<span class="string">'f''(r)'</span>,<span class="string">'f''''(r)'</span>)
+0164     <span class="keyword">elseif</span> moddemo==2
+0165         subplot(231)
+0166         Gp=zeros(nEDemo);
+0167         Gp(:)=respK;
+0168         surfc(XX,YY,Gp)
+0169         title(<span class="string">'f(x,y)'</span>)
+0170         subplot(232)
+0171         Gp(:)=derK(:,1);
 0172         surfc(XX,YY,Gp)
-0173         title(<span class="string">'f(x,y)'</span>)
-0174         subplot(232)
-0175         Gp(:)=derK(:,1);
+0173         title(<span class="string">'f''(x,y) (x)'</span>)
+0174         subplot(233)
+0175         Gp(:)=derK(:,2);
 0176         surfc(XX,YY,Gp)
-0177         title(<span class="string">'f''(x,y) (x)'</span>)
-0178         subplot(233)
-0179         Gp(:)=derK(:,2);
+0177         title(<span class="string">'f''(x,y) (y)'</span>)
+0178         subplot(234)
+0179         Gp(:)=vertcat(dderK(1,1,:));
 0180         surfc(XX,YY,Gp)
-0181         title(<span class="string">'f''(x,y) (y)'</span>)
-0182         subplot(234)
-0183         Gp(:)=vertcat(dderK(1,1,:));
+0181         title(<span class="string">'f''''(x,y) (x)'</span>)
+0182         subplot(235)
+0183         Gp(:)=vertcat(dderK(1,2,:));
 0184         surfc(XX,YY,Gp)
-0185         title(<span class="string">'f''''(x,y) (x)'</span>)
-0186         subplot(235)
-0187         Gp(:)=vertcat(dderK(1,2,:));
+0185         title(<span class="string">'f''''(x,y) (x,y)'</span>)
+0186         subplot(236)
+0187         Gp(:)=vertcat(dderK(2,2,:));
 0188         surfc(XX,YY,Gp)
-0189         title(<span class="string">'f''''(x,y) (x,y)'</span>)
-0190         subplot(236)
-0191         Gp(:)=vertcat(dderK(2,2,:));
-0192         surfc(XX,YY,Gp)
-0193         title(<span class="string">'f''''(x,y) (y)'</span>)
-0194     <span class="keyword">end</span>
-0195 <span class="keyword">end</span>
-0196 <span class="keyword">end</span>
-0197 
-0198 <span class="comment">%initialize hyperparameters for various kinds of kernel function</span>
-0199 <a name="_sub1" href="#_subfunctions" class="code">function paraV=initPara(kernelFun,Dim)</a>
-0200 paraInit=[1 0.9];
-0201 <span class="keyword">switch</span> kernelFun
-0202     <span class="keyword">case</span> <span class="string">'matern'</span>
-0203         paraV=[paraInit paraInit(1:Dim)];
-0204     <span class="keyword">otherwise</span>
-0205         paraV=paraInit(1:Dim);
-0206 <span class="keyword">end</span>
-0207 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0189         title(<span class="string">'f''''(x,y) (y)'</span>)
+0190     <span class="keyword">end</span>
+0191 <span class="keyword">end</span>
+0192 <span class="keyword">end</span>
+0193 
+0194 <span class="comment">%initialize hyperparameters for various kinds of kernel function</span>
+0195 <a name="_sub1" href="#_subfunctions" class="code">function paraV=initPara(kernelFun,Dim)</a>
+0196 paraInit=[1 0.9];
+0197 <span class="keyword">switch</span> kernelFun
+0198     <span class="keyword">case</span> <span class="string">'matern'</span>
+0199         paraV=[paraInit paraInit(1:Dim)];
+0200     <span class="keyword">otherwise</span>
+0201         paraV=paraInit(1:Dim);
+0202 <span class="keyword">end</span>
+0203 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -1,6 +1,8 @@
 /* Created by mdot for Matlab */
 digraph m2html {
+  MultiMono -> toolGeneMonomial;
 
+  MultiMono [URL="MultiMono.html"];
   matern [URL="matern.html"];
   matern32 [URL="matern32.html"];
   matern52 [URL="matern52.html"];

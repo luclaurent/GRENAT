@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of LSBuild</title>
+  <meta name="keywords" content="LSBuild">
+  <meta name="description" content="% function for least-sqaures surrogate model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<h1>LSBuild
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% function for least-sqaures surrogate model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [ret]=LSBuild(samplingIn,respIn,gradIn,metaData,missData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function for least-sqaures surrogate model
+ LS: Least-Squares
+ GLS: gradient-base Least Squares
+ L. LAURENT -- 27/01/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/src/kernANDfun/MultiMono.html" class="code" title="function [matX,matDX,matDDX]=MultiMono(X,polyOrder)">MultiMono</a>	% Function for evaluating the monomial terms and builds matrix of regressors</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% function for least-sqaures surrogate model</span>
+0002 <span class="comment">% LS: Least-Squares</span>
+0003 <span class="comment">% GLS: gradient-base Least Squares</span>
+0004 <span class="comment">% L. LAURENT -- 27/01/2017 -- luc.laurent@lecnam.net</span>
+0005 
+0006 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0007 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0008 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0011 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0012 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0013 <span class="comment">%     (at your option) any later version.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0016 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0017 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0018 <span class="comment">%     GNU General Public License for more details.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0021 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0022 
+0023 <a name="_sub0" href="#_subfunctions" class="code">function [ret]=LSBuild(samplingIn,respIn,gradIn,metaData,missData)</a>
+0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0025 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0026 <span class="comment">% Display Building information</span>
+0027 textd=<span class="string">'++ Type: '</span>;
+0028 textf=<span class="string">''</span>;
+0029 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Least-Squares ((G)LS)'</span> textf]);
+0030 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Deg : %i \n'</span>,metaData.polyOrder);
+0031 <span class="comment">%</span>
+0032 <span class="keyword">if</span> <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.on,<span class="string">'&gt;&gt; CV: '</span>,[],true)
+0033     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.full,<span class="string">'&gt;&gt; Computation all CV criteria: '</span>,[],true);
+0034     <a href="#_sub1" class="code" title="subfunction boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(metaData.cv.disp,<span class="string">'&gt;&gt; Show CV: '</span>,[],true);
+0035 <span class="keyword">end</span>
+0036 <span class="comment">%</span>
+0037 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0038 
+0039 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0040 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0041 <span class="comment">%% Initialisation of the variables</span>
+0042 <span class="comment">%number of sample points</span>
+0043 ns=size(respIn,1);
+0044 <span class="comment">%number of design variables</span>
+0045 np=size(samplingIn,2);
+0046 
+0047 <span class="comment">%check availability of the gradients</span>
+0048 availGrad=~isempty(gradIn);
+0049 <span class="comment">%check missing data</span>
+0050 <span class="keyword">if</span> isfield(metaData,<span class="string">'miss'</span>)
+0051     missResp=metaData.miss.resp.on;
+0052     missGrad=metaData.miss.grad.on;
+0053     availGrad=(~metaData.miss.grad.all&amp;&amp;metaData.miss.grad.on)||(availGrad&amp;&amp;~metaData.miss.grad.on);
+0054 <span class="keyword">else</span>
+0055     metaData.miss.resp.on=false;
+0056     metaData.miss.grad.on=false;
+0057     missResp=missData.miss.resp.on;
+0058     missGrad=metaData.miss.grad.on;
+0059 <span class="keyword">end</span>
+0060 
+0061 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0062 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0063 <span class="comment">%Responses and gradients at sample points</span>
+0064 YY=respIn;
+0065 <span class="comment">%remove missing response(s)</span>
+0066 <span class="keyword">if</span> missResp
+0067     YY=YY(metaData.miss.resp.ixAvail);
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="keyword">if</span> availGrad
+0071     tmp=gradIn';
+0072     der=tmp(:);
+0073     <span class="comment">%remove missing gradient(s)</span>
+0074     <span class="keyword">if</span> missGrad
+0075         der=der(missData.grad.ixAvailLine);
+0076     <span class="keyword">end</span>
+0077     YY=vertcat(YY,der);
+0078 <span class="keyword">end</span>
+0079 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0080 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0081 <span class="comment">% Building indexes system for building KRG/GKRG matrices</span>
+0082 <span class="keyword">if</span> availGrad
+0083     
+0084     sizeMatRc=(ns^2+ns)/2;
+0085     sizeMatRa=np*(ns^2+ns)/2;
+0086     sizeMatRi=np^2*(ns^2+ns)/2;
+0087     iXmatrix=zeros(sizeMatRc,1);
+0088     iXmatrixA=zeros(sizeMatRa,1);
+0089     iXmatrixAb=zeros(sizeMatRa,1);
+0090     iXmatrixI=zeros(sizeMatRi,1);
+0091     iXdev=zeros(sizeMatRa,1);
+0092     iXsampling=zeros(sizeMatRc,2);
+0093     
+0094     tmpList=zeros(sizeMatRc,np);
+0095     tmpList(:)=1:sizeMatRc*np;
+0096     
+0097     ite=0;
+0098     iteA=0;
+0099     iteAb=0;
+0100     pres=0;
+0101     <span class="comment">%table of indexes for inter-lengths (1), responses (1) and 1st</span>
+0102     <span class="comment">%derivatives (2)</span>
+0103     <span class="keyword">for</span> ii=1:ns
+0104         
+0105         ite=ite(end)+(1:(ns-ii+1));
+0106         iXmatrix(ite)=(ns+1)*ii-ns:ii*ns;
+0107         iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];
+0108         iteAb=iteAb(end)+(1:((ns-ii+1)*np));
+0109         
+0110         debb=(ii-1)*np*ns+ii;
+0111         finb=ns^2*np-(ns-ii);
+0112         lib=debb:ns:finb;
+0113         
+0114         iXmatrixAb(iteAb)=lib;
+0115         
+0116         <span class="keyword">for</span> jj=1:np
+0117             iteA=iteA(end)+(1:(ns-ii+1));
+0118             decal=(ii-1);
+0119             deb=pres+decal;
+0120             li=deb + (1:(ns-ii+1));
+0121             iXmatrixA(iteA)=li;
+0122             pres=li(end);
+0123             liste_tmpB=reshape(tmpList',[],1);
+0124             iXdev(iteA)=tmpList(ite,jj);
+0125             iXdevb=liste_tmpB;
+0126         <span class="keyword">end</span>
+0127     <span class="keyword">end</span>
+0128     <span class="comment">%table of indexes for second derivatives</span>
+0129     a=zeros(ns*np,np);
+0130     decal=0;
+0131     precI=0;
+0132     iteI=0;
+0133     <span class="keyword">for</span> ii=1:ns
+0134         li=1:ns*np^2;
+0135         a(:)=decal+li;
+0136         decal=a(end);
+0137         b=a';
+0138         
+0139         iteI=precI+(1:(np^2*(ns-(ii-1))));
+0140         
+0141         debb=(ii-1)*np^2+1;
+0142         finb=np^2*ns;
+0143         iteb=debb:finb;
+0144         iXmatrixI(iteI)=b(iteb);
+0145         precI=iteI(end);
+0146     <span class="keyword">end</span>
+0147 <span class="keyword">else</span>
+0148     <span class="comment">%table of indexes for inter-lenghts  (1), responses (1)</span>
+0149     bmax=ns-1;
+0150     iXmatrix=zeros(ns*(ns-1)/2,1);
+0151     iXsampling=zeros(ns*(ns-1)/2,2);
+0152     ite=0;
+0153     <span class="keyword">for</span> ii=1:bmax
+0154         ite=ite(end)+(1:(ns-ii));
+0155         iXmatrix(ite)=(ns+1)*ii-ns+1:ii*ns;
+0156         iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
+0157     <span class="keyword">end</span>
+0158 <span class="keyword">end</span>
+0159 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0160 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0161 <span class="comment">%% Build regression matrix (for the trend model)</span>
+0162 
+0163 <span class="comment">%depending on the availability of the gradients</span>
+0164 <span class="keyword">if</span> ~availGrad
+0165     valFunPoly=<a href="../../../GRENAT/src/kernANDfun/MultiMono.html" class="code" title="function [matX,matDX,matDDX]=MultiMono(X,polyOrder)">MultiMono</a>(samplingIn,metaData.polyOrder);
+0166     <span class="keyword">if</span> missResp
+0167         <span class="comment">%remove missing response(s)</span>
+0168         valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
+0169     <span class="keyword">end</span>
+0170 <span class="keyword">else</span>
+0171     <span class="comment">%gradient-based</span>
+0172     [MatX,MatDX]=<a href="../../../GRENAT/src/kernANDfun/MultiMono.html" class="code" title="function [matX,matDX,matDDX]=MultiMono(X,polyOrder)">MultiMono</a>(samplingIn,metaData.polyOrder);
+0173     nbMonomialTerms=size(MatX,2);
+0174     <span class="keyword">if</span> missResp||missGrad
+0175         sizeResp=ns-missData.resp.nb;
+0176         sizeGrad=ns*np-missData.grad.nb;
+0177         sizeTotal=sizeResp+sizeGrad;
+0178     <span class="keyword">else</span>
+0179         sizeResp=ns;
+0180         sizeGrad=ns*np;
+0181         sizeTotal=sizeResp+sizeGrad;
+0182     <span class="keyword">end</span>
+0183     <span class="comment">%initialize regression matrix</span>
+0184     valFunPoly=zeros(sizeTotal,nbMonomialTerms);
+0185     <span class="keyword">if</span> missResp
+0186         <span class="comment">%remove missing response(s)</span>
+0187         MatX=MatX(metaData.miss.resp.ixAvail,:);
+0188     <span class="keyword">end</span>
+0189     <span class="comment">%load monomial terms of the polynomial regression</span>
+0190     valFunPoly(1:sizeResp,:)=MatX;
+0191     
+0192     <span class="keyword">if</span> missGrad
+0193         <span class="comment">%remove missing gradient(s)</span>
+0194         MatDX=MatDX(missData.grad.ixt_dispo_line,:);
+0195     <span class="keyword">end</span>
+0196     <span class="comment">%add derivatives to the regression matrix</span>
+0197     valFunPoly(sizeResp+1:<span class="keyword">end</span>,:)=MatDX;
+0198 <span class="keyword">end</span>
+0199 
+0200 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0201 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0202 <span class="comment">%determine regressors</span>
+0203 fct=valFunPoly'*valFunPoly;
+0204 fcY=valFunPoly'*YY;
+0205 <span class="keyword">if</span> condest(fct)&gt;1e15
+0206     beta=pinv(fct)*fcY;
+0207 <span class="keyword">else</span>
+0208     beta=fct\fcY;
+0209 <span class="keyword">end</span>
+0210 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0211 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0212 <span class="comment">%store variables</span>
+0213 ret.used.sampling=samplingIn;
+0214 ret.used.resp=respIn;
+0215 ret.used.availGrad=availGrad;
+0216 ret.used.grad=gradIn;
+0217 ret.used.np=np;
+0218 ret.used.ns=ns;
+0219 ret.ix.matrix=iXmatrix;
+0220 ret.ix.sampling=iXsampling;
+0221 ret.build.fct=valFunPoly;
+0222 ret.build.fc=valFunPoly';
+0223 ret.build.beta=beta;
+0224 ret.build.sizeFc=size(valFunPoly,2);
+0225 ret.build.y=YY;
+0226 ret.build.polyOrder=metaData.polyOrder;
+0227 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0228 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0229 <span class="comment">%% Cross-validation (compute various errors)</span>
+0230 <span class="keyword">if</span> metaData.cv.on
+0231     <span class="comment">%countTime=mesuTime;</span>
+0232     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt; Computation CV\n'</span>);
+0233 <span class="comment">%    [ret.build.cv]=LSCV(ret,metaData);</span>
+0234     <span class="comment">%countTime.stop;</span>
+0235 <span class="keyword">end</span>
+0236 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0237 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0238 <span class="keyword">if</span> availGrad;txt=<span class="string">'GLS'</span>;<span class="keyword">else</span> txt=<span class="string">'LS'</span>;<span class="keyword">end</span>
+0239 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n &gt;&gt; END Building %s\n'</span>,txt);
+0240 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0241 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0242 <span class="keyword">end</span>
+0243 
+0244 
+0245 <span class="comment">%% function for display information</span>
+0246 <a name="_sub1" href="#_subfunctions" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a>
+0247 boolOut=boolIn;
+0248 <span class="keyword">if</span> nargin==2
+0249     txtInFalse=[];
+0250     returnLine=false;
+0251 <span class="keyword">elseif</span> nargin==3
+0252     returnLine=false;
+0253 <span class="keyword">end</span>
+0254 <span class="keyword">if</span> isempty(txtInFalse)
+0255     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">if</span> boolIn; fprintf(<span class="string">'Yes'</span>);<span class="keyword">else</span> fprintf(<span class="string">'No'</span>);<span class="keyword">end</span>
+0256 <span class="keyword">else</span>
+0257     <span class="keyword">if</span> boolIn; fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">else</span> fprintf(<span class="string">'%s'</span>,txtInFalse);<span class="keyword">end</span>
+0258 <span class="keyword">end</span>
+0259 <span class="keyword">if</span> returnLine
+0260     fprintf(<span class="string">'\n'</span>);
+0261 <span class="keyword">end</span>
+0262 <span class="keyword">end</span>
+0263</pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

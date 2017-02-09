@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="PrepIn.html" class="code" title="function ret=PrepIn(samplingIn,respIn,gradIn,metaData,missData)">PrepIn</a>	% Preparation for Indirect Gradient-Enhanced Surrogate Models</li><li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
+<li><a href="KRGBuild.html" class="code" title="function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)">KRGBuild</a>	% function for building kriging and cokriging surrogate model</li><li><a href="LSBuild.html" class="code" title="function [ret]=LSBuild(samplingIn,respIn,gradIn,metaData,missData)">LSBuild</a>	% function for least-sqaures surrogate model</li><li><a href="PrepIn.html" class="code" title="function ret=PrepIn(samplingIn,respIn,gradIn,metaData,missData)">PrepIn</a>	% Preparation for Indirect Gradient-Enhanced Surrogate Models</li><li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li><li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
@@ -141,8 +141,8 @@ This function is called by:
 0095         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0096         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0097     <span class="keyword">case</span> {<span class="string">'DACE'</span>,<span class="string">'InDACE'</span>}
-0098         <span class="comment">%% Construction du metamodele de Krigeage (DACE)</span>
-0099         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Krigeage (Toolbox DACE)'</span> textf]);
+0098         <span class="comment">%% Building of kriging (DACE)</span>
+0099         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Kriging (DACE toolbox)'</span> textf]);
 0100         <span class="keyword">if</span> metaData.para.estim
 0101             <span class="keyword">switch</span> metaData.corr
 0102                 <span class="keyword">case</span> {<span class="string">'correxpg'</span>}
@@ -166,60 +166,51 @@ This function is called by:
 0120         outMeta=dace;
 0121         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0122         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0123     <span class="keyword">case</span> <span class="string">'PRG'</span>
-0124         ite_prg=1;
-0125         outMeta{numMeta}.prg=length(metaData.deg);
-0126         <span class="keyword">for</span> degre=metaData.deg
-0127             <span class="comment">%% Construction du metamodele de Regression polynomiale</span>
-0128             dd=[<span class="string">'-- Degre du polynome \n'</span>,num2str(degre)];
-0129             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(dd);
-0130             [prg.coef,prg.MSE]=meta_prg(samplingN,respN,degre);
-0131             outMeta.prg{ite_prg}=prg;
-0132             ite_prg=ite_prg+1;
-0133         <span class="keyword">end</span>
-0134         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0123     <span class="keyword">case</span> {<span class="string">'LS'</span>,<span class="string">'GLS'</span>,<span class="string">'InLS'</span>}
+0124         outMeta=<a href="LSBuild.html" class="code" title="function [ret]=LSBuild(samplingIn,respIn,gradIn,metaData,missData)">LSBuild</a>(samplingOk,respOk,gradOk,metaData);
+0125         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0126         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0127     <span class="keyword">case</span> <span class="string">'ILIN'</span>
+0128         <span class="comment">%% Construction du metamodele d'interpolation lineaire</span>
+0129         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction de base '</span> textf]);
+0130         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0131         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0132     <span class="keyword">case</span> <span class="string">'ILAG'</span>
+0133         <span class="comment">%% interpolation par fonction de base lineaire</span>
+0134         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction polynomiale de Lagrange'</span> textf]);
 0135         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0136     <span class="keyword">case</span> <span class="string">'ILIN'</span>
-0137         <span class="comment">%% Construction du metamodele d'interpolation lineaire</span>
-0138         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction de base '</span> textf]);
-0139         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0140         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0141     <span class="keyword">case</span> <span class="string">'ILAG'</span>
-0142         <span class="comment">%% interpolation par fonction de base lineaire</span>
-0143         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd  <span class="string">'Interpolation par fonction polynomiale de Lagrange'</span> textf]);
-0144         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0145         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0146     <span class="keyword">otherwise</span>
-0147         error([<span class="string">'Wrong type of surrogate model (see. on '</span>,mfilename,<span class="string">')'</span>]);
-0148 <span class="keyword">end</span>
-0149 
-0150 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0151 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0152 <span class="comment">%concatenate data</span>
-0153 outMeta.used.sampling=samplingOk;
-0154 outMeta.used.resp=respOk;
-0155 outMeta.used.grad=gradOk;
-0156 outMeta.in.sampling=samplingIn;
-0157 outMeta.in.resp=respIn;
-0158 outMeta.in.grad=gradIn;
-0159 <span class="comment">%outMeta=mergestruct(outMeta,metaData);</span>
-0160 outMeta.norm=metaData.norm;
-0161 outMeta.miss=metaData.miss;
-0162 
-0163 countTime.stop;
-0164 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>);
-0165 <span class="keyword">end</span>
-0166 
-0167 <span class="comment">%function for checking if the surrogate model is a classical</span>
-0168 <span class="comment">%gradient-enhanced or indirect gradient-enhanced surrogate model</span>
-0169 <a name="_sub1" href="#_subfunctions" class="code">function [Indirect,Classical]=CheckGE(typeSurrogate)</a>
-0170 <span class="comment">%check Indirect</span>
-0171 nn=regexp(typeSurrogate,<span class="string">'^In'</span>,<span class="string">'ONCE'</span>);
-0172 Indirect=~isempty(nn);
-0173 <span class="comment">%check gradient-enhanced</span>
-0174 nn=regexp(typeSurrogate,<span class="string">'^G'</span>,<span class="string">'ONCE'</span>);
-0175 Classical=~isempty(nn);
-0176 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0136         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0137     <span class="keyword">otherwise</span>
+0138         error([<span class="string">'Wrong type of surrogate model (see. on '</span>,mfilename,<span class="string">')'</span>]);
+0139 <span class="keyword">end</span>
+0140 
+0141 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0142 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0143 <span class="comment">%concatenate data</span>
+0144 outMeta.used.sampling=samplingOk;
+0145 outMeta.used.resp=respOk;
+0146 outMeta.used.grad=gradOk;
+0147 outMeta.in.sampling=samplingIn;
+0148 outMeta.in.resp=respIn;
+0149 outMeta.in.grad=gradIn;
+0150 <span class="comment">%outMeta=mergestruct(outMeta,metaData);</span>
+0151 outMeta.norm=metaData.norm;
+0152 outMeta.miss=metaData.miss;
+0153 
+0154 countTime.stop;
+0155 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>);
+0156 <span class="keyword">end</span>
+0157 
+0158 <span class="comment">%function for checking if the surrogate model is a classical</span>
+0159 <span class="comment">%gradient-enhanced or indirect gradient-enhanced surrogate model</span>
+0160 <a name="_sub1" href="#_subfunctions" class="code">function [Indirect,Classical]=CheckGE(typeSurrogate)</a>
+0161 <span class="comment">%check Indirect</span>
+0162 nn=regexp(typeSurrogate,<span class="string">'^In'</span>,<span class="string">'ONCE'</span>);
+0163 Indirect=~isempty(nn);
+0164 <span class="comment">%check gradient-enhanced</span>
+0165 nn=regexp(typeSurrogate,<span class="string">'^G'</span>,<span class="string">'ONCE'</span>);
+0166 Classical=~isempty(nn);
+0167 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

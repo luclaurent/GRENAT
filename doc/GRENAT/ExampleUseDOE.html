@@ -74,9 +74,9 @@ This function is called by:
 0030 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0031 <span class="comment">%define the sampling using MultiDOE toolbox</span>
 0032 dimPB=2; <span class="comment">%number of design parameters</span>
-0033 ns=20; <span class="comment">%number if sample points</span>
-0034 typeDOE=<span class="string">'LHS'</span>; <span class="comment">%type of DOE</span>
-0035 testFunction=<span class="string">'Schwefel'</span>; <span class="comment">%test function</span>
+0033 ns=5; <span class="comment">%number if sample points</span>
+0034 typeDOE=<span class="string">'ffact'</span>; <span class="comment">%type of DOE</span>
+0035 testFunction=<span class="string">'Rosenbrock'</span>; <span class="comment">%test function</span>
 0036 <span class="comment">%</span>
 0037 mDOE=<a href="../GRENAT/src/libs/MultiDOE/multiDOE.html" class="code" title="">multiDOE</a>(dimPB,typeDOE,ns,[],[],testFunction);
 0038 <span class="comment">%mDOE.show;</span>
@@ -91,7 +91,7 @@ This function is called by:
 0047 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0048 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0049 <span class="comment">%create GRENAT Object</span>
-0050 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'RBF'</span>,samplePts,resp,grad);
+0050 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'LS'</span>,samplePts,resp,grad);
 0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0052 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0053 <span class="comment">%building of the surrogate model</span>
@@ -115,6 +115,6 @@ This function is called by:
 0071 
 0072 countTime.stop();
 0073</pre></div>
-<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 09-Feb-2017 11:46:30 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -95,406 +95,407 @@ This function is called by:
 0049         nv=Inf;                 <span class="comment">%number of sample points on the reference grid</span>
 0050         nbSteps=0;              <span class="comment">%number of steps on the reference grid</span>
 0051         step=[];                <span class="comment">%size of the step of the grid</span>
-0052     <span class="keyword">end</span>
-0053     properties (Access = private,Constant)
-0054         infoProp=<a href="#_sub32" class="code" title="subfunction info=affectTxtProp()">affectTxtProp</a>;
-0055     <span class="keyword">end</span>
-0056     methods
-0057         <span class="comment">%constructor</span>
-0058         <a name="_sub0" href="#_subfunctions" class="code">function obj=initDisp(varargin)            </a>
-0059             <span class="comment">%if they are input variables</span>
-0060             <span class="keyword">if</span> nargin&gt;0;<a href="#_sub31" class="code" title="subfunction conf(obj,varargin)">conf</a>(obj,varargin{:});<span class="keyword">end</span>
-0061             <span class="comment">%display message</span>
-0062             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Initialization of the display configuration\n'</span>);
-0063         <span class="keyword">end</span>
-0064         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0052         view=[];                <span class="comment">%azimut/elevation for 3D display</span>
+0053     <span class="keyword">end</span>
+0054     properties (Access = private,Constant)
+0055         infoProp=<a href="#_sub32" class="code" title="subfunction info=affectTxtProp()">affectTxtProp</a>;
+0056     <span class="keyword">end</span>
+0057     methods
+0058         <span class="comment">%constructor</span>
+0059         <a name="_sub0" href="#_subfunctions" class="code">function obj=initDisp(varargin)            </a>
+0060             <span class="comment">%if they are input variables</span>
+0061             <span class="keyword">if</span> nargin&gt;0;<a href="#_sub31" class="code" title="subfunction conf(obj,varargin)">conf</a>(obj,varargin{:});<span class="keyword">end</span>
+0062             <span class="comment">%display message</span>
+0063             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Initialization of the display configuration\n'</span>);
+0064         <span class="keyword">end</span>
 0065         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0066         <span class="comment">%%setters</span>
-0067         <a name="_sub1" href="#_subfunctions" class="code">function set.scale(obj,boolIn)</a>
-0068             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0069                 <span class="keyword">if</span> xor(obj.scale,boolIn)
-0070                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Scaling of gradients: '</span>);
-0071                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0072                 <span class="keyword">end</span>
-0073                 obj.scale=boolIn;
-0074             <span class="keyword">end</span>
-0075         <span class="keyword">end</span>
-0076         <span class="comment">%</span>
-0077         <a name="_sub2" href="#_subfunctions" class="code">function set.on(obj,boolIn)</a>
-0078             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0079                 <span class="keyword">if</span> xor(obj.on,boolIn)
-0080                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Display: '</span>);
-0081                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0082                 <span class="keyword">end</span>
-0083                 obj.on=boolIn;
-0084             <span class="keyword">end</span>
-0085         <span class="keyword">end</span>
-0086         <span class="comment">%</span>
-0087         <a name="_sub3" href="#_subfunctions" class="code">function set.d3(obj,boolIn)</a>
-0088             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0089                 <span class="keyword">if</span> xor(obj.d3,boolIn)
-0090                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; 3D display: '</span>);
-0091                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0092                 <span class="keyword">end</span>
-0093                 obj.d3=boolIn;
-0094             <span class="keyword">end</span>
-0095         <span class="keyword">end</span>
-0096         <span class="comment">%</span>
-0097         <a name="_sub4" href="#_subfunctions" class="code">function set.d2(obj,boolIn)</a>
-0098             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0099                 <span class="keyword">if</span> xor(obj.d2,boolIn)
-0100                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; 2D display: '</span>);
-0101                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0102                 <span class="keyword">end</span>
-0103                 obj.d2=boolIn;
-0104             <span class="keyword">end</span>
-0105         <span class="keyword">end</span>
-0106         <span class="comment">%</span>
-0107         <a name="_sub5" href="#_subfunctions" class="code">function set.contour(obj,boolIn)</a>
-0108             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0109                 <span class="keyword">if</span> xor(obj.contour,boolIn)
-0110                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Display contour: '</span>);
-0111                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0112                 <span class="keyword">end</span>
-0113                 obj.contour=boolIn;
-0114             <span class="keyword">end</span>
-0115         <span class="keyword">end</span>
-0116         <span class="comment">%</span>
-0117         <a name="_sub6" href="#_subfunctions" class="code">function set.tikz(obj,boolIn)</a>
-0118             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0119                 <span class="keyword">if</span> xor(obj.tikz,boolIn)
-0120                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Save display using tikz (matlab2tikz): '</span>);
-0121                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0122                 <span class="keyword">end</span>
-0123                 obj.tikz=boolIn;
-0124             <span class="keyword">end</span>
-0125         <span class="keyword">end</span>
-0126         <span class="comment">%</span>
-0127         <a name="_sub7" href="#_subfunctions" class="code">function set.save(obj,boolIn)</a>
-0128             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0129                 <span class="keyword">if</span> xor(obj.save,boolIn)
-0130                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Save display using fig: '</span>);
-0131                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0132                 <span class="keyword">end</span>
-0133                 obj.save=boolIn;
-0134             <span class="keyword">end</span>
-0135         <span class="keyword">end</span>
-0136         <span class="comment">%</span>
-0137         <a name="_sub8" href="#_subfunctions" class="code">function set.directory(obj,charIn)</a>
-0138             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0139                 <span class="keyword">if</span> strcmp(obj.directory,charIn)
-0140                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Saving directory : %s (previous %s)'</span>,charIn,obj.directory);
-0141                 <span class="keyword">end</span>
-0142                 obj.directory=charIn;
-0143             <span class="keyword">end</span>
-0144         <span class="keyword">end</span>
-0145         <span class="comment">%</span>
-0146         <a name="_sub9" href="#_subfunctions" class="code">function set.gridGrad(obj,boolIn)</a>
-0147             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0148                 <span class="keyword">if</span> xor(obj.gridGrad,boolIn)
-0149                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show gradients on the grid: '</span>);
-0150                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0151                 <span class="keyword">end</span>
-0152                 obj.gridGrad=boolIn;
-0153             <span class="keyword">end</span>
-0154         <span class="keyword">end</span>
-0155         <span class="comment">%</span>
-0156         <a name="_sub10" href="#_subfunctions" class="code">function set.sampleGrad(obj,boolIn)</a>
-0157             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0158                 <span class="keyword">if</span> xor(obj.sampleGrad,boolIn)
-0159                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show gradients at the sample points: '</span>);
-0160                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0161                 <span class="keyword">end</span>
-0162                 obj.sampleGrad=boolIn;
-0163             <span class="keyword">end</span>
-0164         <span class="keyword">end</span>
-0165         <span class="comment">%</span>
-0166         <a name="_sub11" href="#_subfunctions" class="code">function set.ciOn(obj,boolIn)</a>
-0167             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0168                 <span class="keyword">if</span> xor(obj.ciOn,boolIn)
-0169                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show confidence intervals (if available): '</span>);
-0170                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0171                 <span class="keyword">end</span>
-0172                 obj.ciOn=boolIn;
-0173             <span class="keyword">end</span>
-0174         <span class="keyword">end</span>
-0175         <span class="comment">%</span>
-0176         <a name="_sub12" href="#_subfunctions" class="code">function set.ciType(obj,charIn)</a>
-0177             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0178                 <span class="keyword">if</span> xor(obj.ciType,charIn)
-0179                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Type of confidence interval : %s (previous %s)'</span>,charIn,obj.ciType);
-0180                 <span class="keyword">end</span>
-0181                 obj.ciType=charIn;
-0182             <span class="keyword">end</span>
-0183         <span class="keyword">end</span>
-0184         <span class="comment">%</span>
-0185         <a name="_sub13" href="#_subfunctions" class="code">function set.newFig(obj,boolIn)</a>
-0186             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0187                 <span class="keyword">if</span> xor(obj.newFig,boolIn)
-0188                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show in new figure: '</span>);
-0189                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0190                 <span class="keyword">end</span>
-0191                 obj.newFig=boolIn;
-0192             <span class="keyword">end</span>
-0193         <span class="keyword">end</span>
-0194         <span class="comment">%</span>
-0195         <a name="_sub14" href="#_subfunctions" class="code">function set.opt(obj,charIn)</a>
-0196             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0197                 <span class="keyword">if</span> xor(obj.opt,charIn)
-0198                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Plot options : %s (previous %s)'</span>,charIn,obj.opt);
-0199                 <span class="keyword">end</span>
-0200                 obj.opt=charIn;
-0201             <span class="keyword">end</span>
-0202         <span class="keyword">end</span>
-0203         <span class="comment">%</span>
-0204         <a name="_sub15" href="#_subfunctions" class="code">function set.xlabel(obj,charIn)</a>
-0205             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0206                 <span class="keyword">if</span> strcmp(obj.xlabel,charIn)
-0207                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; X label : %s (previous %s)'</span>,charIn,obj.xlabel);
-0208                 <span class="keyword">end</span>
-0209                 obj.xlabel=charIn;
-0210             <span class="keyword">end</span>
-0211         <span class="keyword">end</span>
-0212         <span class="comment">%</span>
-0213         <a name="_sub16" href="#_subfunctions" class="code">function set.ylabel(obj,charIn)</a>
-0214             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0215                 <span class="keyword">if</span> strcmp(obj.ylabel,charIn)
-0216                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Y label : %s (previous %s)'</span>,charIn,obj.ylabel);
-0217                 <span class="keyword">end</span>
-0218                 obj.ylabel=charIn;
-0219             <span class="keyword">end</span>
-0220         <span class="keyword">end</span>
-0221         <span class="comment">%</span>
-0222         <a name="_sub17" href="#_subfunctions" class="code">function set.zlabel(obj,charIn)</a>
-0223             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0224                 <span class="keyword">if</span> strcmp(obj.zlabel,charIn)
-0225                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Z label : %s (previous %s)'</span>,charIn,obj.zlabel);
-0226                 <span class="keyword">end</span>
-0227                 obj.zlabel=charIn;
-0228             <span class="keyword">end</span>
-0229         <span class="keyword">end</span>
-0230         <span class="comment">%</span>
-0231         <a name="_sub18" href="#_subfunctions" class="code">function set.title(obj,charIn)</a>
-0232             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0233                 <span class="keyword">if</span> strcmp(obj.title,charIn)
-0234                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Z label : %s (previous %s)'</span>,charIn,obj.title);
-0235                 <span class="keyword">end</span>
-0236                 obj.title=charIn;
-0237             <span class="keyword">end</span>
-0238         <span class="keyword">end</span>
-0239         <span class="comment">%</span>
-0240         <a name="_sub19" href="#_subfunctions" class="code">function set.color(obj,charIn)</a>
-0241             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
-0242                 <span class="keyword">if</span> strcmp(obj.color,charIn)
-0243                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Color for uniform display : %s (previous %s)'</span>,charIn,obj.color);
-0244                 <span class="keyword">end</span>
-0245                 obj.color=charIn;
-0246             <span class="keyword">end</span>
-0247         <span class="keyword">end</span>
-0248         <span class="comment">%</span>
-0249         <a name="_sub20" href="#_subfunctions" class="code">function set.uni(obj,boolIn)</a>
-0250             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0251                 <span class="keyword">if</span> xor(obj.uni,boolIn)
-0252                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Uniform color: '</span>);
-0253                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0254                 <span class="keyword">end</span>
-0255                 obj.uni=boolIn;
-0256             <span class="keyword">end</span>
-0257         <span class="keyword">end</span>
-0258         <span class="comment">%</span>
-0259         <a name="_sub21" href="#_subfunctions" class="code">function set.render(obj,boolIn)</a>
-0260             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0261                 <span class="keyword">if</span> xor(obj.render,boolIn)
-0262                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; 3D rendering: '</span>);
-0263                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0264                 <span class="keyword">end</span>
-0265                 obj.render=boolIn;
-0266             <span class="keyword">end</span>
-0267         <span class="keyword">end</span>
-0268         <span class="comment">%</span>
-0269         <a name="_sub22" href="#_subfunctions" class="code">function set.samplePts(obj,boolIn)</a>
-0270             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0271                 <span class="keyword">if</span> xor(obj.samplePts,boolIn)
-0272                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show sample points: '</span>);
-0273                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0274                 <span class="keyword">end</span>
-0275                 obj.samplePts=boolIn;
-0276             <span class="keyword">end</span>
-0277         <span class="keyword">end</span>
-0278         <span class="comment">%</span>
-0279         <a name="_sub23" href="#_subfunctions" class="code">function set.num(obj,doubleIn)</a>
-0280             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
-0281                 <span class="keyword">if</span> all(obj.num~=doubleIn)
-0282                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Number of the plot: %d (previous %d)'</span>,doubleIn,obj.num);
-0283                 <span class="keyword">end</span>
-0284                 obj.num=doubleIn;
-0285             <span class="keyword">end</span>
-0286         <span class="keyword">end</span>
-0287         <span class="comment">%</span>
-0288         <a name="_sub24" href="#_subfunctions" class="code">function set.nbSteps(obj,doubleIn)</a>
-0289             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
-0290                 <span class="keyword">if</span> all(obj.nbSteps~=doubleIn)
-0291                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Number of steps of the reference grid: %d (previous %d)'</span>,doubleIn,obj.nbSteps);
-0292                 <span class="keyword">end</span>
-0293                 obj.nbSteps=doubleIn;
-0294             <span class="keyword">end</span>
-0295         <span class="keyword">end</span>
-0296         <span class="comment">%</span>
-0297         <a name="_sub25" href="#_subfunctions" class="code">function set.step(obj,doubleIn)</a>
-0298             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
-0299                 <span class="keyword">if</span> all(obj.step~=doubleIn)
-0300                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Size of steps of the reference grid: %d (previous %d)'</span>,doubleIn,obj.step);
-0301                 <span class="keyword">end</span>
-0302                 obj.step=doubleIn;
-0303             <span class="keyword">end</span>
-0304         <span class="keyword">end</span>
-0305         <span class="comment">%</span>
-0306         <a name="_sub26" href="#_subfunctions" class="code">function set.nv(obj,doubleIn)</a>
-0307             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
-0308                 <span class="keyword">if</span> all(obj.nv~=doubleIn)
-0309                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Number of sample points of the reference grid: %d (previous %d)'</span>,doubleIn,obj.nv);
-0310                 <span class="keyword">end</span>
-0311                 obj.nv=doubleIn;
-0312             <span class="keyword">end</span>
-0313         <span class="keyword">end</span>
-0314         <span class="comment">%</span>
-0315         <a name="_sub27" href="#_subfunctions" class="code">function set.tex(obj,boolIn)</a>
-0316             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0317                 <span class="keyword">if</span> xor(obj.tex,boolIn)
-0318                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Save data in TeX file: '</span>);
-0319                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0320                 <span class="keyword">end</span>
-0321                 obj.tex=boolIn;
-0322             <span class="keyword">end</span>
-0323         <span class="keyword">end</span>
-0324         <span class="comment">%</span>
-0325         <a name="_sub28" href="#_subfunctions" class="code">function set.bar(obj,boolIn)</a>
-0326             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0327                 <span class="keyword">if</span> xor(obj.bar,boolIn)
-0328                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Use bar on plot: '</span>);
-0329                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0330                 <span class="keyword">end</span>
-0331                 obj.bar=boolIn;
-0332             <span class="keyword">end</span>
-0333         <span class="keyword">end</span>
-0334         <span class="comment">%</span>
-0335         <a name="_sub29" href="#_subfunctions" class="code">function set.trans(obj,boolIn)</a>
-0336             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
-0337                 <span class="keyword">if</span> xor(obj.trans,boolIn)
-0338                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Transparency: '</span>);
-0339                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
-0340                 <span class="keyword">end</span>
-0341                 obj.trans=boolIn;
-0342             <span class="keyword">end</span>
-0343         <span class="keyword">end</span>  
-0344         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0066         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0067         <span class="comment">%%setters</span>
+0068         <a name="_sub1" href="#_subfunctions" class="code">function set.scale(obj,boolIn)</a>
+0069             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0070                 <span class="keyword">if</span> xor(obj.scale,boolIn)
+0071                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Scaling of gradients: '</span>);
+0072                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0073                 <span class="keyword">end</span>
+0074                 obj.scale=boolIn;
+0075             <span class="keyword">end</span>
+0076         <span class="keyword">end</span>
+0077         <span class="comment">%</span>
+0078         <a name="_sub2" href="#_subfunctions" class="code">function set.on(obj,boolIn)</a>
+0079             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0080                 <span class="keyword">if</span> xor(obj.on,boolIn)
+0081                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Display: '</span>);
+0082                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0083                 <span class="keyword">end</span>
+0084                 obj.on=boolIn;
+0085             <span class="keyword">end</span>
+0086         <span class="keyword">end</span>
+0087         <span class="comment">%</span>
+0088         <a name="_sub3" href="#_subfunctions" class="code">function set.d3(obj,boolIn)</a>
+0089             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0090                 <span class="keyword">if</span> xor(obj.d3,boolIn)
+0091                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; 3D display: '</span>);
+0092                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0093                 <span class="keyword">end</span>
+0094                 obj.d3=boolIn;
+0095             <span class="keyword">end</span>
+0096         <span class="keyword">end</span>
+0097         <span class="comment">%</span>
+0098         <a name="_sub4" href="#_subfunctions" class="code">function set.d2(obj,boolIn)</a>
+0099             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0100                 <span class="keyword">if</span> xor(obj.d2,boolIn)
+0101                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; 2D display: '</span>);
+0102                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0103                 <span class="keyword">end</span>
+0104                 obj.d2=boolIn;
+0105             <span class="keyword">end</span>
+0106         <span class="keyword">end</span>
+0107         <span class="comment">%</span>
+0108         <a name="_sub5" href="#_subfunctions" class="code">function set.contour(obj,boolIn)</a>
+0109             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0110                 <span class="keyword">if</span> xor(obj.contour,boolIn)
+0111                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Display contour: '</span>);
+0112                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0113                 <span class="keyword">end</span>
+0114                 obj.contour=boolIn;
+0115             <span class="keyword">end</span>
+0116         <span class="keyword">end</span>
+0117         <span class="comment">%</span>
+0118         <a name="_sub6" href="#_subfunctions" class="code">function set.tikz(obj,boolIn)</a>
+0119             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0120                 <span class="keyword">if</span> xor(obj.tikz,boolIn)
+0121                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Save display using tikz (matlab2tikz): '</span>);
+0122                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0123                 <span class="keyword">end</span>
+0124                 obj.tikz=boolIn;
+0125             <span class="keyword">end</span>
+0126         <span class="keyword">end</span>
+0127         <span class="comment">%</span>
+0128         <a name="_sub7" href="#_subfunctions" class="code">function set.save(obj,boolIn)</a>
+0129             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0130                 <span class="keyword">if</span> xor(obj.save,boolIn)
+0131                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Save display using fig: '</span>);
+0132                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0133                 <span class="keyword">end</span>
+0134                 obj.save=boolIn;
+0135             <span class="keyword">end</span>
+0136         <span class="keyword">end</span>
+0137         <span class="comment">%</span>
+0138         <a name="_sub8" href="#_subfunctions" class="code">function set.directory(obj,charIn)</a>
+0139             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0140                 <span class="keyword">if</span> strcmp(obj.directory,charIn)
+0141                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Saving directory : %s (previous %s)'</span>,charIn,obj.directory);
+0142                 <span class="keyword">end</span>
+0143                 obj.directory=charIn;
+0144             <span class="keyword">end</span>
+0145         <span class="keyword">end</span>
+0146         <span class="comment">%</span>
+0147         <a name="_sub9" href="#_subfunctions" class="code">function set.gridGrad(obj,boolIn)</a>
+0148             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0149                 <span class="keyword">if</span> xor(obj.gridGrad,boolIn)
+0150                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show gradients on the grid: '</span>);
+0151                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0152                 <span class="keyword">end</span>
+0153                 obj.gridGrad=boolIn;
+0154             <span class="keyword">end</span>
+0155         <span class="keyword">end</span>
+0156         <span class="comment">%</span>
+0157         <a name="_sub10" href="#_subfunctions" class="code">function set.sampleGrad(obj,boolIn)</a>
+0158             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0159                 <span class="keyword">if</span> xor(obj.sampleGrad,boolIn)
+0160                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show gradients at the sample points: '</span>);
+0161                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0162                 <span class="keyword">end</span>
+0163                 obj.sampleGrad=boolIn;
+0164             <span class="keyword">end</span>
+0165         <span class="keyword">end</span>
+0166         <span class="comment">%</span>
+0167         <a name="_sub11" href="#_subfunctions" class="code">function set.ciOn(obj,boolIn)</a>
+0168             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0169                 <span class="keyword">if</span> xor(obj.ciOn,boolIn)
+0170                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show confidence intervals (if available): '</span>);
+0171                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0172                 <span class="keyword">end</span>
+0173                 obj.ciOn=boolIn;
+0174             <span class="keyword">end</span>
+0175         <span class="keyword">end</span>
+0176         <span class="comment">%</span>
+0177         <a name="_sub12" href="#_subfunctions" class="code">function set.ciType(obj,charIn)</a>
+0178             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0179                 <span class="keyword">if</span> xor(obj.ciType,charIn)
+0180                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Type of confidence interval : %s (previous %s)'</span>,charIn,obj.ciType);
+0181                 <span class="keyword">end</span>
+0182                 obj.ciType=charIn;
+0183             <span class="keyword">end</span>
+0184         <span class="keyword">end</span>
+0185         <span class="comment">%</span>
+0186         <a name="_sub13" href="#_subfunctions" class="code">function set.newFig(obj,boolIn)</a>
+0187             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0188                 <span class="keyword">if</span> xor(obj.newFig,boolIn)
+0189                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show in new figure: '</span>);
+0190                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0191                 <span class="keyword">end</span>
+0192                 obj.newFig=boolIn;
+0193             <span class="keyword">end</span>
+0194         <span class="keyword">end</span>
+0195         <span class="comment">%</span>
+0196         <a name="_sub14" href="#_subfunctions" class="code">function set.opt(obj,charIn)</a>
+0197             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0198                 <span class="keyword">if</span> xor(obj.opt,charIn)
+0199                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Plot options : %s (previous %s)'</span>,charIn,obj.opt);
+0200                 <span class="keyword">end</span>
+0201                 obj.opt=charIn;
+0202             <span class="keyword">end</span>
+0203         <span class="keyword">end</span>
+0204         <span class="comment">%</span>
+0205         <a name="_sub15" href="#_subfunctions" class="code">function set.xlabel(obj,charIn)</a>
+0206             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0207                 <span class="keyword">if</span> strcmp(obj.xlabel,charIn)
+0208                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; X label : %s (previous %s)'</span>,charIn,obj.xlabel);
+0209                 <span class="keyword">end</span>
+0210                 obj.xlabel=charIn;
+0211             <span class="keyword">end</span>
+0212         <span class="keyword">end</span>
+0213         <span class="comment">%</span>
+0214         <a name="_sub16" href="#_subfunctions" class="code">function set.ylabel(obj,charIn)</a>
+0215             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0216                 <span class="keyword">if</span> strcmp(obj.ylabel,charIn)
+0217                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Y label : %s (previous %s)'</span>,charIn,obj.ylabel);
+0218                 <span class="keyword">end</span>
+0219                 obj.ylabel=charIn;
+0220             <span class="keyword">end</span>
+0221         <span class="keyword">end</span>
+0222         <span class="comment">%</span>
+0223         <a name="_sub17" href="#_subfunctions" class="code">function set.zlabel(obj,charIn)</a>
+0224             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0225                 <span class="keyword">if</span> strcmp(obj.zlabel,charIn)
+0226                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Z label : %s (previous %s)'</span>,charIn,obj.zlabel);
+0227                 <span class="keyword">end</span>
+0228                 obj.zlabel=charIn;
+0229             <span class="keyword">end</span>
+0230         <span class="keyword">end</span>
+0231         <span class="comment">%</span>
+0232         <a name="_sub18" href="#_subfunctions" class="code">function set.title(obj,charIn)</a>
+0233             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0234                 <span class="keyword">if</span> strcmp(obj.title,charIn)
+0235                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Z label : %s (previous %s)'</span>,charIn,obj.title);
+0236                 <span class="keyword">end</span>
+0237                 obj.title=charIn;
+0238             <span class="keyword">end</span>
+0239         <span class="keyword">end</span>
+0240         <span class="comment">%</span>
+0241         <a name="_sub19" href="#_subfunctions" class="code">function set.color(obj,charIn)</a>
+0242             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(charIn,<span class="string">'char'</span>)
+0243                 <span class="keyword">if</span> strcmp(obj.color,charIn)
+0244                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Color for uniform display : %s (previous %s)'</span>,charIn,obj.color);
+0245                 <span class="keyword">end</span>
+0246                 obj.color=charIn;
+0247             <span class="keyword">end</span>
+0248         <span class="keyword">end</span>
+0249         <span class="comment">%</span>
+0250         <a name="_sub20" href="#_subfunctions" class="code">function set.uni(obj,boolIn)</a>
+0251             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0252                 <span class="keyword">if</span> xor(obj.uni,boolIn)
+0253                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Uniform color: '</span>);
+0254                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0255                 <span class="keyword">end</span>
+0256                 obj.uni=boolIn;
+0257             <span class="keyword">end</span>
+0258         <span class="keyword">end</span>
+0259         <span class="comment">%</span>
+0260         <a name="_sub21" href="#_subfunctions" class="code">function set.render(obj,boolIn)</a>
+0261             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0262                 <span class="keyword">if</span> xor(obj.render,boolIn)
+0263                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; 3D rendering: '</span>);
+0264                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0265                 <span class="keyword">end</span>
+0266                 obj.render=boolIn;
+0267             <span class="keyword">end</span>
+0268         <span class="keyword">end</span>
+0269         <span class="comment">%</span>
+0270         <a name="_sub22" href="#_subfunctions" class="code">function set.samplePts(obj,boolIn)</a>
+0271             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0272                 <span class="keyword">if</span> xor(obj.samplePts,boolIn)
+0273                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Show sample points: '</span>);
+0274                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0275                 <span class="keyword">end</span>
+0276                 obj.samplePts=boolIn;
+0277             <span class="keyword">end</span>
+0278         <span class="keyword">end</span>
+0279         <span class="comment">%</span>
+0280         <a name="_sub23" href="#_subfunctions" class="code">function set.num(obj,doubleIn)</a>
+0281             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
+0282                 <span class="keyword">if</span> all(obj.num~=doubleIn)
+0283                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Number of the plot: %d (previous %d)'</span>,doubleIn,obj.num);
+0284                 <span class="keyword">end</span>
+0285                 obj.num=doubleIn;
+0286             <span class="keyword">end</span>
+0287         <span class="keyword">end</span>
+0288         <span class="comment">%</span>
+0289         <a name="_sub24" href="#_subfunctions" class="code">function set.nbSteps(obj,doubleIn)</a>
+0290             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
+0291                 <span class="keyword">if</span> all(obj.nbSteps~=doubleIn)
+0292                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Number of steps of the reference grid: %d (previous %d)'</span>,doubleIn,obj.nbSteps);
+0293                 <span class="keyword">end</span>
+0294                 obj.nbSteps=doubleIn;
+0295             <span class="keyword">end</span>
+0296         <span class="keyword">end</span>
+0297         <span class="comment">%</span>
+0298         <a name="_sub25" href="#_subfunctions" class="code">function set.step(obj,doubleIn)</a>
+0299             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
+0300                 <span class="keyword">if</span> all(obj.step~=doubleIn)
+0301                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Size of steps of the reference grid: %d (previous %d)'</span>,doubleIn,obj.step);
+0302                 <span class="keyword">end</span>
+0303                 obj.step=doubleIn;
+0304             <span class="keyword">end</span>
+0305         <span class="keyword">end</span>
+0306         <span class="comment">%</span>
+0307         <a name="_sub26" href="#_subfunctions" class="code">function set.nv(obj,doubleIn)</a>
+0308             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(doubleIn,<span class="string">'double'</span>)
+0309                 <span class="keyword">if</span> all(obj.nv~=doubleIn)
+0310                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Number of sample points of the reference grid: %d (previous %d)'</span>,doubleIn,obj.nv);
+0311                 <span class="keyword">end</span>
+0312                 obj.nv=doubleIn;
+0313             <span class="keyword">end</span>
+0314         <span class="keyword">end</span>
+0315         <span class="comment">%</span>
+0316         <a name="_sub27" href="#_subfunctions" class="code">function set.tex(obj,boolIn)</a>
+0317             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0318                 <span class="keyword">if</span> xor(obj.tex,boolIn)
+0319                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Save data in TeX file: '</span>);
+0320                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0321                 <span class="keyword">end</span>
+0322                 obj.tex=boolIn;
+0323             <span class="keyword">end</span>
+0324         <span class="keyword">end</span>
+0325         <span class="comment">%</span>
+0326         <a name="_sub28" href="#_subfunctions" class="code">function set.bar(obj,boolIn)</a>
+0327             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0328                 <span class="keyword">if</span> xor(obj.bar,boolIn)
+0329                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Use bar on plot: '</span>);
+0330                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0331                 <span class="keyword">end</span>
+0332                 obj.bar=boolIn;
+0333             <span class="keyword">end</span>
+0334         <span class="keyword">end</span>
+0335         <span class="comment">%</span>
+0336         <a name="_sub29" href="#_subfunctions" class="code">function set.trans(obj,boolIn)</a>
+0337             <span class="keyword">if</span> <a href="#_sub34" class="code" title="subfunction okG=isG(varIn,typeIn)">isG</a>(boolIn,<span class="string">'logical'</span>)
+0338                 <span class="keyword">if</span> xor(obj.trans,boolIn)
+0339                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Transparency: '</span>);
+0340                     <a href="#_sub35" class="code" title="subfunction SwitchOnOff(boolIn)">SwitchOnOff</a>(boolIn);
+0341                 <span class="keyword">end</span>
+0342                 obj.trans=boolIn;
+0343             <span class="keyword">end</span>
+0344         <span class="keyword">end</span>  
 0345         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0346         <span class="comment">%define properties</span>
-0347         <a name="_sub30" href="#_subfunctions" class="code">function conf(obj,varargin)</a>
-0348             <span class="comment">%list properties</span>
-0349             listProp=properties(obj);
-0350             okConf=false;
-0351             <span class="comment">%if a input variable is specifiec</span>
-0352             <span class="keyword">if</span> nargin&gt;2
-0353                 <span class="comment">%if the number of input argument is even</span>
-0354                 <span class="keyword">if</span>  mod(nargin-1,2)==0
-0355                     <span class="comment">%along the argument</span>
-0356                     <span class="keyword">for</span> itV=1:2:nargin-1
-0357                         <span class="comment">%extract keyword and associated value</span>
-0358                         keyW=varargin{itV};
-0359                         keyV=varargin{itV+1};
-0360                         <span class="comment">%if the first argument is a string</span>
-0361                         <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
-0362                             <span class="comment">%check if the keyword is acceptable</span>
-0363                             <span class="keyword">if</span> ismember(keyW,listProp)
-0364                                 okConf=true;
-0365                                 obj.(keyW)=keyV;
-0366                             <span class="keyword">else</span>
-0367                                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Wrong keyword %s\n'</span>,keyW);
-0368                             <span class="keyword">end</span>
-0369                         <span class="keyword">end</span>
-0370                     <span class="keyword">end</span>
-0371                 <span class="keyword">end</span>
-0372                 <span class="keyword">if</span> ~okConf
-0373                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\nWrong syntax used for conf method\n'</span>);
-0374                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'use: conf(''key1'',val1,''key2'',val2...)\n'</span>);
-0375                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\nList of the avilable keywords:\n'</span>);
-0376                     <a href="#_sub33" class="code" title="subfunction dispTableTwoColumnsStruct(tableFiedIn,structIn)">dispTableTwoColumnsStruct</a>(listProp,obj.infoProp);
-0377                 <span class="keyword">end</span>
-0378             <span class="keyword">else</span>
-0379                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Current configuration\n'</span>);
-0380                 disp(obj);
-0381             <span class="keyword">end</span>
-0382         <span class="keyword">end</span>
-0383     <span class="keyword">end</span>
-0384 <span class="keyword">end</span>
-0385 
-0386 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0346         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0347         <span class="comment">%define properties</span>
+0348         <a name="_sub30" href="#_subfunctions" class="code">function conf(obj,varargin)</a>
+0349             <span class="comment">%list properties</span>
+0350             listProp=properties(obj);
+0351             okConf=false;
+0352             <span class="comment">%if a input variable is specifiec</span>
+0353             <span class="keyword">if</span> nargin&gt;2
+0354                 <span class="comment">%if the number of input argument is even</span>
+0355                 <span class="keyword">if</span>  mod(nargin-1,2)==0
+0356                     <span class="comment">%along the argument</span>
+0357                     <span class="keyword">for</span> itV=1:2:nargin-1
+0358                         <span class="comment">%extract keyword and associated value</span>
+0359                         keyW=varargin{itV};
+0360                         keyV=varargin{itV+1};
+0361                         <span class="comment">%if the first argument is a string</span>
+0362                         <span class="keyword">if</span> isa(varargin{1},<span class="string">'char'</span>)
+0363                             <span class="comment">%check if the keyword is acceptable</span>
+0364                             <span class="keyword">if</span> ismember(keyW,listProp)
+0365                                 okConf=true;
+0366                                 obj.(keyW)=keyV;
+0367                             <span class="keyword">else</span>
+0368                                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Wrong keyword %s\n'</span>,keyW);
+0369                             <span class="keyword">end</span>
+0370                         <span class="keyword">end</span>
+0371                     <span class="keyword">end</span>
+0372                 <span class="keyword">end</span>
+0373                 <span class="keyword">if</span> ~okConf
+0374                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\nWrong syntax used for conf method\n'</span>);
+0375                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'use: conf(''key1'',val1,''key2'',val2...)\n'</span>);
+0376                     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\nList of the avilable keywords:\n'</span>);
+0377                     <a href="#_sub33" class="code" title="subfunction dispTableTwoColumnsStruct(tableFiedIn,structIn)">dispTableTwoColumnsStruct</a>(listProp,obj.infoProp);
+0378                 <span class="keyword">end</span>
+0379             <span class="keyword">else</span>
+0380                 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Current configuration\n'</span>);
+0381                 disp(obj);
+0382             <span class="keyword">end</span>
+0383         <span class="keyword">end</span>
+0384     <span class="keyword">end</span>
+0385 <span class="keyword">end</span>
+0386 
 0387 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0388 <span class="comment">%function for declaring the purpose of each properties</span>
-0389 <a name="_sub31" href="#_subfunctions" class="code">function info=affectTxtProp()</a>
-0390 info.scale=<span class="string">'scale for displaying gradients'</span>;
-0391 info.tikz=<span class="string">'save on tikz''s format'</span>;
-0392 info.on=<span class="string">'enable/disable display'</span>;
-0393 info.d3=<span class="string">'3D display'</span>;
-0394 info.d2=<span class="string">'2D display'</span>;
-0395 info.contour=<span class="string">'display contour'</span>;
-0396 info.save=<span class="string">'save display'</span>;
-0397 info.directory=<span class="string">'directory for saving figures'</span>;
-0398 info.gridGrad=<span class="string">'display gradients at the points of the grid'</span>;
-0399 info.sampleGrad=<span class="string">'display gradients at sample points'</span>;
-0400 info.ciOn=<span class="string">'display confidence intervals (if available)'</span>;
-0401 info.ciType=<span class="string">'choose CI to display'</span>;
-0402 info.newFig=<span class="string">'display in new figure'</span>;
-0403 info.opt=<span class="string">'plot options'</span>;
-0404 info.uni=<span class="string">'use uniform color'</span>;
-0405 info.color=<span class="string">'choose display color'</span>;
-0406 info.xlabel=<span class="string">'X-axis label'</span>;
-0407 info.ylabel=<span class="string">'Y-axis label'</span>;
-0408 info.zlabel=<span class="string">'Z-axis label'</span>;
-0409 info.title=<span class="string">'title of the figure'</span>;
-0410 info.render=<span class="string">'enable/disable 3D rendering'</span>;
-0411 info.samplePts=<span class="string">'display sample points'</span>;
-0412 info.num=<span class="string">'number of the display numérotation affichage'</span>;
-0413 info.tex=<span class="string">'save data in TeX file'</span>;
-0414 info.bar=<span class="string">'display using bar'</span>;
-0415 info.trans=<span class="string">'display using transparency'</span>;
-0416 info.nv=<span class="string">'number of sample points on the reference grid'</span>;
-0417 info.nbSteps=<span class="string">'number of steps on the reference grid'</span>;
-0418 info.step=<span class="string">'size of the step of the grid'</span>;
-0419 <span class="keyword">end</span>
-0420 
-0421 <span class="comment">%function display table with two columns of text</span>
-0422 <a name="_sub32" href="#_subfunctions" class="code">function dispTableTwoColumnsStruct(tableFiedIn,structIn)</a>
-0423 <span class="comment">%size of every components in tableA</span>
-0424 sizeA=cellfun(@numel,tableFiedIn);
-0425 maxA=max(sizeA);
-0426 <span class="comment">%space after each component</span>
-0427 spaceA=maxA-sizeA+3;
-0428 spaceTxt=<span class="string">' '</span>;
-0429 <span class="comment">%display table</span>
-0430 <span class="keyword">for</span> itT=1:numel(tableFiedIn)
-0431     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s%s%s\n'</span>,tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
-0432 <span class="keyword">end</span>
+0388 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0389 <span class="comment">%function for declaring the purpose of each properties</span>
+0390 <a name="_sub31" href="#_subfunctions" class="code">function info=affectTxtProp()</a>
+0391 info.scale=<span class="string">'scale for displaying gradients'</span>;
+0392 info.tikz=<span class="string">'save on tikz''s format'</span>;
+0393 info.on=<span class="string">'enable/disable display'</span>;
+0394 info.d3=<span class="string">'3D display'</span>;
+0395 info.d2=<span class="string">'2D display'</span>;
+0396 info.contour=<span class="string">'display contour'</span>;
+0397 info.save=<span class="string">'save display'</span>;
+0398 info.directory=<span class="string">'directory for saving figures'</span>;
+0399 info.gridGrad=<span class="string">'display gradients at the points of the grid'</span>;
+0400 info.sampleGrad=<span class="string">'display gradients at sample points'</span>;
+0401 info.ciOn=<span class="string">'display confidence intervals (if available)'</span>;
+0402 info.ciType=<span class="string">'choose CI to display'</span>;
+0403 info.newFig=<span class="string">'display in new figure'</span>;
+0404 info.opt=<span class="string">'plot options'</span>;
+0405 info.uni=<span class="string">'use uniform color'</span>;
+0406 info.color=<span class="string">'choose display color'</span>;
+0407 info.xlabel=<span class="string">'X-axis label'</span>;
+0408 info.ylabel=<span class="string">'Y-axis label'</span>;
+0409 info.zlabel=<span class="string">'Z-axis label'</span>;
+0410 info.title=<span class="string">'title of the figure'</span>;
+0411 info.render=<span class="string">'enable/disable 3D rendering'</span>;
+0412 info.samplePts=<span class="string">'display sample points'</span>;
+0413 info.num=<span class="string">'number of the display numérotation affichage'</span>;
+0414 info.tex=<span class="string">'save data in TeX file'</span>;
+0415 info.bar=<span class="string">'display using bar'</span>;
+0416 info.trans=<span class="string">'display using transparency'</span>;
+0417 info.nv=<span class="string">'number of sample points on the reference grid'</span>;
+0418 info.nbSteps=<span class="string">'number of steps on the reference grid'</span>;
+0419 info.step=<span class="string">'size of the step of the grid'</span>;
+0420 <span class="keyword">end</span>
+0421 
+0422 <span class="comment">%function display table with two columns of text</span>
+0423 <a name="_sub32" href="#_subfunctions" class="code">function dispTableTwoColumnsStruct(tableFiedIn,structIn)</a>
+0424 <span class="comment">%size of every components in tableA</span>
+0425 sizeA=cellfun(@numel,tableFiedIn);
+0426 maxA=max(sizeA);
+0427 <span class="comment">%space after each component</span>
+0428 spaceA=maxA-sizeA+3;
+0429 spaceTxt=<span class="string">' '</span>;
+0430 <span class="comment">%display table</span>
+0431 <span class="keyword">for</span> itT=1:numel(tableFiedIn)
+0432     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s%s%s\n'</span>,tableFiedIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFiedIn{itT}));
 0433 <span class="keyword">end</span>
-0434 
-0435 <span class="comment">%function for checking type a variable and display erro message</span>
-0436 <a name="_sub33" href="#_subfunctions" class="code">function okG=isG(varIn,typeIn)</a>
-0437 okG=isa(varIn,typeIn);
-0438 <span class="keyword">if</span> ~okG;<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' Wrong input variable. Required: %s (current: %s)\n'</span>,typeIn,class(varIn));<span class="keyword">end</span>
-0439 <span class="keyword">end</span>
-0440 
-0441 <span class="comment">%display change of state</span>
-0442 <a name="_sub34" href="#_subfunctions" class="code">function SwitchOnOff(boolIn)</a>
-0443 <span class="keyword">if</span> boolIn;
-0444     fprintf(<span class="string">' On (previous Off)\n'</span>);
-0445 <span class="keyword">else</span>
-0446     fprintf(<span class="string">' Off (previous On)\n'</span>);
-0447 <span class="keyword">end</span>
+0434 <span class="keyword">end</span>
+0435 
+0436 <span class="comment">%function for checking type a variable and display erro message</span>
+0437 <a name="_sub33" href="#_subfunctions" class="code">function okG=isG(varIn,typeIn)</a>
+0438 okG=isa(varIn,typeIn);
+0439 <span class="keyword">if</span> ~okG;<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' Wrong input variable. Required: %s (current: %s)\n'</span>,typeIn,class(varIn));<span class="keyword">end</span>
+0440 <span class="keyword">end</span>
+0441 
+0442 <span class="comment">%display change of state</span>
+0443 <a name="_sub34" href="#_subfunctions" class="code">function SwitchOnOff(boolIn)</a>
+0444 <span class="keyword">if</span> boolIn;
+0445     fprintf(<span class="string">' On (previous Off)\n'</span>);
+0446 <span class="keyword">else</span>
+0447     fprintf(<span class="string">' Off (previous On)\n'</span>);
 0448 <span class="keyword">end</span>
-0449 
+0449 <span class="keyword">end</span>
 0450 
-0451</pre></div>
-<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0451 
+0452</pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 11:46:30 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

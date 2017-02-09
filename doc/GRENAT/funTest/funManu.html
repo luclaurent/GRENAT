@@ -50,7 +50,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../../matlabicon.gif)">
-<li><a href="../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../GRENAT/GSVR_ACME.html" class="code" title="">GSVR_ACME</a>	Example of use of GRENAT without the sampling toolbox</li></ul>
+<li><a href="../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="../../GRENAT/studyLS.html" class="code" title="">studyLS</a>	</li></ul>
 <!-- crossreference -->
 
 
@@ -164,19 +164,38 @@ This function is called by:
 0106         <span class="comment">%infos.min_loc.Z=infos.min_glob.Z;</span>
 0107         infos.min_loc.X=[];<span class="comment">%pts;</span>
 0108     <span class="keyword">end</span>
-0109 <span class="keyword">end</span>
-0110 <span class="comment">%demo</span>
-0111 <span class="keyword">if</span> dem
-0112     figure
-0113     subplot(1,2,1)
-0114     plot(x,fct)
-0115     title(<span class="string">'Manu'</span>);
-0116     subplot(1,2,2)
-0117     plot(x,dfct)
-0118     title(<span class="string">'D Manu'</span>);
-0119 <span class="keyword">end</span>
-0120 
-0121 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0109 <span class="keyword">elseif</span> v==6
+0110     a=1;
+0111     b=25;
+0112     c=5;
+0113     
+0114     fct=a./(a+b.*x.^2);
+0115     
+0116     <span class="keyword">if</span> nargout&gt;=2||dem
+0117         dfct=-a*b.*x./(a+b.*x.^2).^2;
+0118     <span class="keyword">end</span>
+0119     <span class="comment">%information about the function</span>
+0120     <span class="keyword">if</span> nargout&gt;=3
+0121         <span class="comment">%on [-1,15]</span>
+0122         <span class="comment">%pts=[1;3;5;7;9;11;13;15;17;19]*pi/4;</span>
+0123         <span class="comment">%infos.min_glob.Z=cos(4*pts);</span>
+0124         <span class="comment">% infos.min_glob.X=pts;</span>
+0125         <span class="comment">%infos.min_loc.Z=infos.min_glob.Z;</span>
+0126         infos.min_loc.X=[];<span class="comment">%pts;</span>
+0127     <span class="keyword">end</span>
+0128 <span class="keyword">end</span>
+0129 <span class="comment">%demo</span>
+0130 <span class="keyword">if</span> dem
+0131     figure
+0132     subplot(1,2,1)
+0133     plot(x,fct)
+0134     title(<span class="string">'Manu'</span>);
+0135     subplot(1,2,2)
+0136     plot(x,dfct)
+0137     title(<span class="string">'D Manu'</span>);
+0138 <span class="keyword">end</span>
+0139 
+0140 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 11:46:30 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

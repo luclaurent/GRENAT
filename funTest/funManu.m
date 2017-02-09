@@ -16,7 +16,7 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function [fct,dfct,infos,ddfct]=funManu(x,~)
-v=6;
+v=2;
 
 
 %prepare for demo mode

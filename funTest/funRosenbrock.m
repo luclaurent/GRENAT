@@ -60,7 +60,7 @@ if ~isempty(xx)
                 if iter==1
                     dp(:,:,iter)=400*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1);
                 elseif iter==nbvar
-                    dp(:,:,iter)=200*(xx(:,:,iter)- xx(:,:,iter-1).^2)+2*(xx(:,:,iter)-1);
+                    dp(:,:,iter)=200*(xx(:,:,iter)- xx(:,:,iter-1).^2);
                 else
                     dp(:,:,iter)=200*(xx(:,:,iter)-xx(:,:,iter-1).^2)+...
                         400*xx(:,:,iter).*(xx(:,:,iter).^2-xx(:,:,iter+1))+2*(xx(:,:,iter)-1);

@@ -203,7 +203,7 @@ end
 fct=valFunPoly'*valFunPoly;
 fcY=valFunPoly'*YY;
 if condest(fct)>1e15
-    Gfprintf(' //!\\ matrix ill-conditionned!!\n');
+    Gfprintf(' > !! matrix ill-conditionned!!\n');
     beta=pinv(fct)*fcY;
 else
     beta=fct\fcY;

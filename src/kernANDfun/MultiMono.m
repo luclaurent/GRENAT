@@ -60,7 +60,8 @@ if derFirst
     matTmpA=zeros(ns,poly.nbMono,np);
     matTmpA(:)=prod(Xr(:,:,:,ones(1,np)).^polyD.Xpow,3);
     matTmpB=polyD.Xcoef(ones(1,ns),:,:).*matTmpA;
-    matDX=reshape(permute(matTmpB,[1 3 2]),np*ns,poly.nbMono);
+   % matDX=reshape(permute(matTmpB,[1 3 2]),np*ns,poly.nbMono);
+    matDX=reshape(horzcat(matTmpB(:,:))',poly.nbMono,[])';
 end
 
 %second derivatives
@@ -68,6 +69,7 @@ if derSecond
     matTmpA=zeros(ns,poly.nbMono,np*np);
     matTmpA(:)=prod(Xr(:,:,:,ones(1,np*np)).^polyDD.Xpow,3);
     matTmpB=polyDD.Xcoef(ones(1,ns),:,:).*matTmpA;
-    matDDX=reshape(permute(matTmpB,[1 3 2]),np*np*ns,poly.nbMono);
+    %matDDX=reshape(permute(matTmpB,[1 3 2]),np*np*ns,poly.nbMono);
+    matDX=reshape(horzcat(matTmpB(:,:))',poly.nbMono,[])';
 end
 end

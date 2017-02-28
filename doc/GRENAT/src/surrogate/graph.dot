@@ -1,11 +1,13 @@
 /* Created by mdot for Matlab */
 digraph m2html {
   BuildMeta -> KRGBuild;
+  BuildMeta -> LSBuild;
   BuildMeta -> PrepIn;
   BuildMeta -> RBFBuild;
   BuildMeta -> SVRBuild;
   EstimPara -> stopEstim;
   EvalMeta -> KRGEval;
+  EvalMeta -> LSEval;
   EvalMeta -> RBFEval;
   EvalMeta -> SVREval;
   KRGBloc -> KRGLikelihood;
@@ -35,6 +37,8 @@ digraph m2html {
   KRGEval [URL="KRGEval.html"];
   KRGLikelihood [URL="KRGLikelihood.html"];
   KernMatrix [URL="KernMatrix.html"];
+  LSBuild [URL="LSBuild.html"];
+  LSEval [URL="LSEval.html"];
   PrepIn [URL="PrepIn.html"];
   RBFBloc [URL="RBFBloc.html"];
   RBFBuild [URL="RBFBuild.html"];

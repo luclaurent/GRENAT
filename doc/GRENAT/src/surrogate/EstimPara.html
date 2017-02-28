@@ -121,7 +121,7 @@ This function is called by:
 0075     <span class="keyword">if</span> nbSampleSpecif;nbSampInit=dataMeta.estim.nbSampInit;<span class="keyword">end</span>
 0076 <span class="keyword">end</span>
 0077 <span class="comment">%definition valeur de depart de la variable</span>
-0078 x0=0.1*(ub-lb);
+0078 x0=0.01*(ub-lb);
 0079 <span class="comment">%function to minimised</span>
 0080 fun=@(para)feval(funObj,dataProb,dataMeta,para,<span class="string">'estim'</span>);
 0081 <span class="comment">%options depending on the algorithm</span>
@@ -245,261 +245,258 @@ This function is called by:
 0199     nbSample=nbPOptim*10;
 0200     samplingType=<span class="string">'LHS_O1'</span>;
 0201     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||SampleMin + opti||  Sampling %s on %i points\n'</span>,samplingType,nbSample);
-0202     doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSample;doePop.disp=false;doePop.type=samplingType;
-0203     samplePop=buildDOE(doePop);
-0204     critS=zeros(1,nbSample);
-0205     <span class="keyword">for</span> tir=1:nbSample
-0206         critS(tir)=fun(samplePop.sorted(tir,:));
-0207     <span class="keyword">end</span>
-0208     [fval1,IX]=min(critS);
-0209     x0=samplePop.sorted(IX,:);
-0210 <span class="keyword">end</span>
-0211 <span class="comment">%manual definition of the initial population for GA or PSOt</span>
-0212 <span class="keyword">if</span> sampManuOn&amp;&amp;sampleMinOk
-0213     doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSampInit;doePop.disp=false;doePop.type=dataMeta.para.sampManu;
-0214     samplePop=buildDOE(doePop);
-0215     optionsGA=<a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(optionsGA,<span class="string">'PopulationSize'</span>,nbSampInit,<span class="string">'InitialPopulation'</span>,samplePop);
-0216     <span class="comment">%PSOt</span>
-0217     PSOTsampling=samplePop;
-0218     PSOTOptions(13)=1;
-0219 <span class="keyword">end</span>
-0220 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0221 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0222 <span class="comment">%minimisation of the chosen objective function</span>
-0223 <span class="keyword">switch</span> methodOptim
-0224     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0225     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0226     <span class="keyword">case</span> <span class="string">'simplex'</span>  <span class="comment">%simplix method</span>
-0227         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Simplex|| Starting point:\n'</span>);
-0228         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
-0229         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
-0230         [x, fmax, nf] = nmsmax(fun, x0, [], []);
-0231         <span class="comment">%store results from the algorithm</span>
-0232         paraEstim.outAlgo.fmax=fmax;
-0233         paraEstim.outAlgo.nf=nf;
-0234         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0202     samplePop=buildDOE(samplingType,nbSample,lb,ub);    
+0203     critS=zeros(1,nbSample);
+0204     <span class="keyword">for</span> tir=1:nbSample
+0205         critS(tir)=fun(samplePop(tir,:));
+0206     <span class="keyword">end</span>
+0207     [fval1,IX]=min(critS);
+0208     x0=samplePop(IX,:);    
+0209 <span class="keyword">end</span>
+0210 <span class="comment">%manual definition of the initial population for GA or PSOt</span>
+0211 <span class="keyword">if</span> sampManuOn&amp;&amp;sampleMinOk    
+0212     samplePop=buildDOE(dataMeta.para.sampManu,nbSampInit,lb,ub);
+0213     optionsGA=<a href="#_sub3" class="code" title="subfunction varargout=gaoptimsetMOD(varargin)">gaoptimsetMOD</a>(optionsGA,<span class="string">'PopulationSize'</span>,nbSampInit,<span class="string">'InitialPopulation'</span>,samplePop);
+0214     <span class="comment">%PSOt</span>
+0215     PSOTsampling=samplePop.sorted;
+0216     PSOTOptions(13)=1;
+0217 <span class="keyword">end</span>
+0218 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0219 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0220 <span class="comment">%minimisation of the chosen objective function</span>
+0221 <span class="keyword">switch</span> methodOptim
+0222     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0223     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0224     <span class="keyword">case</span> <span class="string">'simplex'</span>  <span class="comment">%simplix method</span>
+0225         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Simplex|| Starting point:\n'</span>);
+0226         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0227         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0228         [x, fmax, nf] = nmsmax(fun, x0, [], []);
+0229         <span class="comment">%store results from the algorithm</span>
+0230         paraEstim.outAlgo.fmax=fmax;
+0231         paraEstim.outAlgo.nf=nf;
+0232         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0233         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0234         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0235         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0236         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0237         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0238         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0239     <span class="keyword">case</span> <span class="string">'SampleMin'</span>
-0240         nbSample=nbP*50;
-0241         samplingType=<span class="string">'LHS_O1'</span>;
-0242         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||SampleMin||  Sample %s on %i points\n'</span>,samplingType,nbSample);
-0243         doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSample;doePop.disp=false;doePop.type=samplingType;
-0244         samplePop=buildDOE(doePop);
-0245         critS=zeros(1,nbSample);
-0246         parfor itSample=1:nbSample
-0247             critS(itSample)=fun(samplePop(itSample,:));
-0248         <span class="keyword">end</span>
-0249         [fval,IX]=min(critS);
-0250         x=samplePop(IX,:);
-0251         
-0252         <span class="comment">%store results from the algorithm</span>
-0253         paraEstim.outAlgo.fval=fval;
+0237     <span class="keyword">case</span> <span class="string">'SampleMin'</span>
+0238         nbSample=nbP*50;
+0239         samplingType=<span class="string">'LHS_O1'</span>;
+0240         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||SampleMin||  Sample %s on %i points\n'</span>,samplingType,nbSample);
+0241         samplePop=buildDOE(samplingType,nbSample,lb,ub);
+0242         critS=zeros(1,nbSample);
+0243         <span class="keyword">for</span> itSample=1:nbSample
+0244             critS(itSample)=fun(samplePop(itSample,:));
+0245         <span class="keyword">end</span>
+0246         [fval,IX]=min(critS);
+0247         x=samplePop(IX,:);
+0248         
+0249         <span class="comment">%store results from the algorithm</span>
+0250         paraEstim.outAlgo.fval=fval;
+0251         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0252         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0253         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0254         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0255         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0256         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0257         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0258     <span class="keyword">case</span> <span class="string">'sqp'</span>
-0259         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fmincon (SQP)|| Starting point:\n'</span>);
-0260         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
-0261         <span class="comment">%deal with undefined starting point</span>
-0262         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
-0263         <span class="comment">%minimization</span>
-0264         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsSQP);
-0265         <span class="comment">%stop minimiszation</span>
-0266         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0267             disp(<span class="string">'Stop'</span>);
-0268             paraEstim.outAlgo=output;
-0269             paraEstim.outAlgo.fval=fval;
-0270             paraEstim.outAlgo.exitflag=exitflag;
-0271             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
-0272         <span class="keyword">elseif</span> exitflag==-2
-0273             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue SQP\n'</span>);
-0274         <span class="keyword">end</span>
-0275         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0255     <span class="keyword">case</span> <span class="string">'sqp'</span>
+0256         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fmincon (SQP)|| Starting point:\n'</span>);
+0257         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0258         <span class="comment">%deal with undefined starting point</span>
+0259         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0260         <span class="comment">%minimization</span>
+0261         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsSQP);
+0262         <span class="comment">%stop minimiszation</span>
+0263         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0264             disp(<span class="string">'Stop'</span>);
+0265             paraEstim.outAlgo=output;
+0266             paraEstim.outAlgo.fval=fval;
+0267             paraEstim.outAlgo.exitflag=exitflag;
+0268             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0269         <span class="keyword">elseif</span> exitflag==-2
+0270             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue SQP\n'</span>);
+0271         <span class="keyword">end</span>
+0272         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0273         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0274         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0275         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0276         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0277         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0278         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0279         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0280     <span class="keyword">case</span> <span class="string">'fminbnd'</span>
-0281         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fminbnd|| Starting point:\n'</span>);
-0282         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
-0283         <span class="comment">%minimization</span>
-0284         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
-0285         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsFminbnd);
-0286         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
-0287         <span class="comment">%stop minimization</span>
-0288         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0289             disp(<span class="string">'Stop'</span>);
-0290             paraEstim.outAlgo=output;
-0291             paraEstim.outAlgo.fval=fval;
-0292             paraEstim.outAlgo.exitflag=exitflag;
-0293             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
-0294         <span class="keyword">elseif</span> exitflag==-2
-0295             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue SQP\n'</span>);
-0296         <span class="keyword">end</span>
+0277     <span class="keyword">case</span> <span class="string">'fminbnd'</span>
+0278         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fminbnd|| Starting point:\n'</span>);
+0279         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0280         <span class="comment">%minimization</span>
+0281         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0282         [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsFminbnd);
+0283         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0284         <span class="comment">%stop minimization</span>
+0285         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0286             disp(<span class="string">'Stop'</span>);
+0287             paraEstim.outAlgo=output;
+0288             paraEstim.outAlgo.fval=fval;
+0289             paraEstim.outAlgo.exitflag=exitflag;
+0290             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0291         <span class="keyword">elseif</span> exitflag==-2
+0292             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue SQP\n'</span>);
+0293         <span class="keyword">end</span>
+0294         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0295         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0296         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0297         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0298         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0299         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0300         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0301     <span class="keyword">case</span> <span class="string">'fminsearch'</span>
-0302         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fminsearch|| Starting point:\n'</span>);
-0303         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
-0304         <span class="comment">%minimization</span>
-0305         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
-0306         <span class="comment">%stop minimization</span>
-0307         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0308             disp(<span class="string">'Stop'</span>);
-0309             paraEstim.outAlgo=output;
-0310             paraEstim.outAlgo.fval=fval;
-0311             paraEstim.outAlgo.exitflag=exitflag;
-0312             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
-0313         <span class="keyword">elseif</span> exitflag==-2
-0314             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue Fminsearch\n'</span>);
-0315         <span class="keyword">end</span>
+0298     <span class="keyword">case</span> <span class="string">'fminsearch'</span>
+0299         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fminsearch|| Starting point:\n'</span>);
+0300         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0301         <span class="comment">%minimization</span>
+0302         [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
+0303         <span class="comment">%stop minimization</span>
+0304         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0305             disp(<span class="string">'Stop'</span>);
+0306             paraEstim.outAlgo=output;
+0307             paraEstim.outAlgo.fval=fval;
+0308             paraEstim.outAlgo.exitflag=exitflag;
+0309             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0310         <span class="keyword">elseif</span> exitflag==-2
+0311             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue Fminsearch\n'</span>);
+0312         <span class="keyword">end</span>
+0313         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0314         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0315         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0316         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0317         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0318         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0319         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0320     <span class="keyword">case</span> <span class="string">'fmincon'</span>
-0321         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fmincon|| Starting point:\n'</span>);
-0322         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
-0323         <span class="comment">%deal with undefined starting point</span>
-0324         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
-0325         <span class="comment">%minimization</span>
-0326         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsFmincon);
-0327         <span class="comment">%stop minimization</span>
-0328         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0329             disp(<span class="string">'Stop'</span>);
-0330             paraEstim.outAlgo=output;
-0331             paraEstim.outAlgo.fval=fval;
-0332             paraEstim.outAlgo.exitflag=exitflag;
-0333             <span class="keyword">if</span> exist(fval1,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
-0334         <span class="keyword">elseif</span> exitflag==-2
-0335             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue Fmincon\n'</span>);
-0336         <span class="keyword">end</span>
-0337         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0317     <span class="keyword">case</span> <span class="string">'fmincon'</span>
+0318         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Fmincon|| Starting point:\n'</span>);
+0319         fprintf(<span class="string">'%g '</span>,x0); fprintf(<span class="string">'\n'</span>);
+0320         <span class="comment">%deal with undefined starting point</span>
+0321         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0322         <span class="comment">%minimization</span>
+0323         [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsFmincon);
+0324         <span class="comment">%stop minimization</span>
+0325         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0326             disp(<span class="string">'Stop'</span>);
+0327             paraEstim.outAlgo=output;
+0328             paraEstim.outAlgo.fval=fval;
+0329             paraEstim.outAlgo.exitflag=exitflag;
+0330             <span class="keyword">if</span> exist(fval1,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0331         <span class="keyword">elseif</span> exitflag==-2
+0332             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue Fmincon\n'</span>);
+0333         <span class="keyword">end</span>
+0334         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0335         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0336         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0337         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0338         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0339         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0340         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0341         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0342     <span class="keyword">case</span> <span class="string">'ga'</span>
-0343         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Ga|| Initialisation with sampling %s:\n'</span>,sampManuOn);
-0344         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
-0345         [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsGA);
-0346         <span class="comment">%stop minimization</span>
-0347         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
-0348             disp(<span class="string">'Stop'</span>);
-0349             paraEstim.outAlgo=output;
-0350             paraEstim.outAlgo.fval=fval;
-0351             paraEstim.outAlgo.exitflag=exitflag;
-0352             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
-0353         <span class="keyword">elseif</span> exitflag==-2
-0354             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue Ga\n'</span>);
-0355         <span class="keyword">end</span>
-0356         
-0357         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0339     <span class="keyword">case</span> <span class="string">'ga'</span>
+0340         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||Ga|| Initialisation with sampling %s:\n'</span>,sampManuOn);
+0341         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0342         [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsGA);
+0343         <span class="comment">%stop minimization</span>
+0344         <span class="keyword">if</span> exitflag==1||exitflag==0||exitflag==2
+0345             disp(<span class="string">'Stop'</span>);
+0346             paraEstim.outAlgo=output;
+0347             paraEstim.outAlgo.fval=fval;
+0348             paraEstim.outAlgo.exitflag=exitflag;
+0349             <span class="keyword">if</span> exist(<span class="string">'fval1'</span>,<span class="string">'var'</span>);paraEstim.outAlgo.fval1=fval1;<span class="keyword">end</span>
+0350         <span class="keyword">elseif</span> exitflag==-2
+0351             <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue Ga\n'</span>);
+0352         <span class="keyword">end</span>
+0353         
+0354         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0355         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0356         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0357         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0358         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0359         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0360         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0361         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0362     <span class="keyword">case</span> <span class="string">'pso'</span>
-0363         <span class="keyword">if</span> sampManuOn;<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||PSOt|| Initialisation with sampling %s:\n'</span>,sampManuOn);<span class="keyword">end</span>
-0364         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
-0365         <span class="comment">%vectorized version of PSOt</span>
-0366         [psoOut,<span class="keyword">...</span><span class="comment">    %minimum point and associated responses</span>
-0367             tr,<span class="keyword">...</span><span class="comment">      %minimum point at each iteration</span>
-0368             te<span class="keyword">...</span><span class="comment">       %epoch iterations</span>
-0369             ]=<a href="../../../GRENAT/src/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>(<span class="keyword">...</span>
-0370             fun,<span class="keyword">...</span><span class="comment">             %function</span>
-0371             nbPOptim,<span class="keyword">...</span><span class="comment">         %number variables</span>
-0372             PSOTmv,<span class="keyword">...</span><span class="comment">         %maximal speed particles (def. 4)</span>
-0373             PSOTVarRange,<span class="keyword">...</span><span class="comment">   %matrix of the range of the parameters</span>
-0374             PSOTMinMax,<span class="keyword">...</span><span class="comment">     %minimization (=0 def), maximization (=1) or other (=2)</span>
-0375             PSOTOptions,<span class="keyword">...</span><span class="comment">    %vector of options</span>
-0376             PSOTplot,<span class="keyword">...</span><span class="comment">       %plotting function (optional)</span>
-0377             PSOTsampling);     <span class="comment">%initial random sampling (=0) other iuser defined  (=1)</span>
-0378         
-0379         <span class="comment">%store information of algorithm</span>
-0380         Xmin=psoOut(1:end-1)';
-0381         Zmin=psoOut(end);
-0382         exitflag=[];
-0383         output.tr=tr;
-0384         output.te=te;
-0385         disp(<span class="string">'Stop'</span>);
-0386         paraEstim.outAlgo=output;
-0387         paraEstim.outAlgo.xval=Xmin;
-0388         paraEstim.outAlgo.fval=Zmin;
-0389         paraEstim.outAlgo.exitflag=exitflag;
-0390         x=Xmin;
-0391         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0359     <span class="keyword">case</span> <span class="string">'pso'</span>
+0360         <span class="keyword">if</span> sampManuOn;<a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'||PSOt|| Initialisation with sampling %s:\n'</span>,sampManuOn);<span class="keyword">end</span>
+0361         <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0362         <span class="comment">%vectorized version of PSOt</span>
+0363         [psoOut,<span class="keyword">...</span><span class="comment">    %minimum point and associated responses</span>
+0364             tr,<span class="keyword">...</span><span class="comment">      %minimum point at each iteration</span>
+0365             te<span class="keyword">...</span><span class="comment">       %epoch iterations</span>
+0366             ]=<a href="../../../GRENAT/src/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>(<span class="keyword">...</span>
+0367             fun,<span class="keyword">...</span><span class="comment">             %function</span>
+0368             nbPOptim,<span class="keyword">...</span><span class="comment">         %number variables</span>
+0369             PSOTmv,<span class="keyword">...</span><span class="comment">         %maximal speed particles (def. 4)</span>
+0370             PSOTVarRange,<span class="keyword">...</span><span class="comment">   %matrix of the range of the parameters</span>
+0371             PSOTMinMax,<span class="keyword">...</span><span class="comment">     %minimization (=0 def), maximization (=1) or other (=2)</span>
+0372             PSOTOptions,<span class="keyword">...</span><span class="comment">    %vector of options</span>
+0373             PSOTplot,<span class="keyword">...</span><span class="comment">       %plotting function (optional)</span>
+0374             PSOTsampling);     <span class="comment">%initial random sampling (=0) other iuser defined  (=1)</span>
+0375         
+0376         <span class="comment">%store information of algorithm</span>
+0377         Xmin=psoOut(1:end-1)';
+0378         Zmin=psoOut(end);
+0379         exitflag=[];
+0380         output.tr=tr;
+0381         output.te=te;
+0382         disp(<span class="string">'Stop'</span>);
+0383         paraEstim.outAlgo=output;
+0384         paraEstim.outAlgo.xval=Xmin;
+0385         paraEstim.outAlgo.fval=Zmin;
+0386         paraEstim.outAlgo.exitflag=exitflag;
+0387         x=Xmin;
+0388         <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0389         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0390         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0391         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0392         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0393         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0394         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0395         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0396     <span class="keyword">otherwise</span>
-0397         error([<span class="string">'Wrong kind of minimization method ('</span>,mfilename,<span class="string">')'</span>]);
-0398 <span class="keyword">end</span>
+0393     <span class="keyword">otherwise</span>
+0394         error([<span class="string">'Wrong kind of minimization method ('</span>,mfilename,<span class="string">')'</span>]);
+0395 <span class="keyword">end</span>
+0396 
+0397 
+0398 
 0399 
-0400 
-0401 
-0402 
-0403 <span class="comment">%store obtained value of the hyperparameters obtained with the minimization</span>
-0404 paraEstim.Val=x;
-0405 <span class="comment">%deal with various kind of kernel functions</span>
-0406 paraEstim.l.Val=x(1:nbP);
-0407 paraEstim.p.Val=NaN;
-0408 paraEstim.nu.Val=NaN;
-0409 
-0410 <span class="keyword">switch</span> dataMeta.kern
-0411     <span class="keyword">case</span> <span class="string">'matern'</span>
-0412         paraEstim.nu.Val=x(end);
-0413     <span class="keyword">case</span> <span class="string">'expg'</span>
-0414         paraEstim.p.Val=x(end);
-0415     <span class="keyword">case</span> <span class="string">'expgg'</span>
-0416         paraEstim.p.Val=x(nbP+1:end);
-0417 <span class="keyword">end</span>
-0418 <span class="comment">%display values of HyperParameters</span>
-0419 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Optimal HyperParameters\n'</span>);
-0420 <a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'l '</span>,paraEstim.l.Val);
-0421 <span class="keyword">if</span> ~isnan(paraEstim.p.Val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'p '</span>,paraEstim.p.Val);<span class="keyword">end</span>
-0422 <span class="keyword">if</span> ~isnan(paraEstim.nu.Val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'nu'</span>,paraEstim.nu.Val);<span class="keyword">end</span>
-0423 <span class="comment">%</span>
-0424 countTime.stop;
-0425 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>);
-0426 <span class="keyword">end</span>
-0427 
-0428 <span class="comment">%function for displaying hyperparameters in the command window</span>
-0429 <a name="_sub1" href="#_subfunctions" class="code">function dispHyperParameter(nameHP,valHP)</a>
-0430 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt; %s:'</span>,nameHP);
-0431 <span class="keyword">if</span> numel(valHP)==1
-0432     fprintf(<span class="string">' %g'</span>,valHP);
-0433 <span class="keyword">else</span>
-0434     fprintf(<span class="string">' %g |'</span>,valHP(1:end-1));
-0435     fprintf(<span class="string">' %g'</span>,valHP(end));
-0436 <span class="keyword">end</span>
-0437 fprintf(<span class="string">'\n'</span>);
-0438 <span class="keyword">end</span>
-0439 
-0440 <span class="comment">%wrapper to optimset and gaoptimset function (actual functions requires the</span>
-0441 <span class="comment">%Matlab's optimization toolbox)</span>
-0442 <a name="_sub2" href="#_subfunctions" class="code">function varargout=optimsetMOD(varargin)</a>
-0443 <span class="keyword">if</span> exist(<span class="string">'optimset'</span>,<span class="string">'file'</span>)&amp;&amp;~<a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
-0444     [varargout{1:nargout}] = optimset( varargin{:} );
-0445 <span class="keyword">else</span>
-0446     varargout{1}=[];
-0447 <span class="keyword">end</span>
-0448 <span class="keyword">end</span>
-0449 
-0450 <a name="_sub3" href="#_subfunctions" class="code">function varargout=gaoptimsetMOD(varargin)</a>
-0451 <span class="keyword">if</span> exist(<span class="string">'gaoptimset'</span>,<span class="string">'file'</span>)&amp;&amp;~<a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
-0452     [varargout{1:nargout}] = gaoptimset( varargin{:} );
-0453 <span class="keyword">else</span>
-0454     varargout{1}=[];
-0455 <span class="keyword">end</span>
-0456 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Wed 18-Jan-2017 10:43:21 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0400 <span class="comment">%store obtained value of the hyperparameters obtained with the minimization</span>
+0401 paraEstim.Val=x;
+0402 <span class="comment">%deal with various kind of kernel functions</span>
+0403 paraEstim.l.Val=x(1:nbP);
+0404 paraEstim.p.Val=NaN;
+0405 paraEstim.nu.Val=NaN;
+0406 
+0407 <span class="keyword">switch</span> dataMeta.kern
+0408     <span class="keyword">case</span> <span class="string">'matern'</span>
+0409         paraEstim.nu.Val=x(end);
+0410     <span class="keyword">case</span> <span class="string">'expg'</span>
+0411         paraEstim.p.Val=x(end);
+0412     <span class="keyword">case</span> <span class="string">'expgg'</span>
+0413         paraEstim.p.Val=x(nbP+1:end);
+0414 <span class="keyword">end</span>
+0415 <span class="comment">%display values of HyperParameters</span>
+0416 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Optimal HyperParameters\n'</span>);
+0417 <a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'l '</span>,paraEstim.l.Val);
+0418 <span class="keyword">if</span> ~isnan(paraEstim.p.Val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'p '</span>,paraEstim.p.Val);<span class="keyword">end</span>
+0419 <span class="keyword">if</span> ~isnan(paraEstim.nu.Val);<a href="#_sub1" class="code" title="subfunction dispHyperParameter(nameHP,valHP)">dispHyperParameter</a>(<span class="string">'nu'</span>,paraEstim.nu.Val);<span class="keyword">end</span>
+0420 <span class="comment">%</span>
+0421 countTime.stop;
+0422 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' - - - - - - - - - - - - - - - - - - - - \n'</span>);
+0423 <span class="keyword">end</span>
+0424 
+0425 <span class="comment">%function for displaying hyperparameters in the command window</span>
+0426 <a name="_sub1" href="#_subfunctions" class="code">function dispHyperParameter(nameHP,valHP)</a>
+0427 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt; %s:'</span>,nameHP);
+0428 <span class="keyword">if</span> numel(valHP)==1
+0429     fprintf(<span class="string">' %g'</span>,valHP);
+0430 <span class="keyword">else</span>
+0431     fprintf(<span class="string">' %g |'</span>,valHP(1:end-1));
+0432     fprintf(<span class="string">' %g'</span>,valHP(end));
+0433 <span class="keyword">end</span>
+0434 fprintf(<span class="string">'\n'</span>);
+0435 <span class="keyword">end</span>
+0436 
+0437 <span class="comment">%wrapper to optimset and gaoptimset function (actual functions requires the</span>
+0438 <span class="comment">%Matlab's optimization toolbox)</span>
+0439 <a name="_sub2" href="#_subfunctions" class="code">function varargout=optimsetMOD(varargin)</a>
+0440 <span class="keyword">if</span> exist(<span class="string">'optimset'</span>,<span class="string">'file'</span>)&amp;&amp;~<a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
+0441     [varargout{1:nargout}] = optimset( varargin{:} );
+0442 <span class="keyword">else</span>
+0443     varargout{1}=[];
+0444 <span class="keyword">end</span>
+0445 <span class="keyword">end</span>
+0446 
+0447 <a name="_sub3" href="#_subfunctions" class="code">function varargout=gaoptimsetMOD(varargin)</a>
+0448 <span class="keyword">if</span> exist(<span class="string">'gaoptimset'</span>,<span class="string">'file'</span>)&amp;&amp;~<a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
+0449     [varargout{1:nargout}] = gaoptimset( varargin{:} );
+0450 <span class="keyword">else</span>
+0451     varargout{1}=[];
+0452 <span class="keyword">end</span>
+0453 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

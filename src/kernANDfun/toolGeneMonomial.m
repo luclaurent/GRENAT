@@ -60,7 +60,7 @@ listOrder=orderMin:orderMax;
 for itD=1:numel(listOrder)
     for nbv=npMin:npMax
         deg=listOrder(itD);
-        fprintf('deg = %i  dim = %i\n',deg,nbv)
+        fprintf('Build Monomials: deg = %i  dim = %i\n',deg,nbv)
         %valeurs pour chaques variables
         val_var=cell(nbv,1);
         for ii=1:nbv

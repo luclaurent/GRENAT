@@ -22,11 +22,11 @@ function toolGeneMonomial(polyOrder,nbVar)
 
 if nargin<2
     % order
-    orderMin=7;
+    orderMin=10;
     orderMax=10;
     % nb of variables
-    npMin=7;
-    npMax=8;
+    npMin=10;
+    npMax=10;
 else
     orderMin=polyOrder;
     orderMax=polyOrder;
@@ -72,25 +72,38 @@ for itD=1:numel(listOrder)
         % generation de la matrice des tirages
         % parcours des variables
         
-        for ii=1:nbv
-            if ii>1
-                nb_ter_pre=prod(nb_tir(1:ii-1));
-            else
-                nb_ter_pre=1;
+        %         for ii=1:nbv
+        %             if ii>1
+        %                 nb_ter_pre=prod(nb_tir(1:ii-1));
+        %             else
+        %                 nb_ter_pre=1;
+        %             end
+        %             %parcours des valeurs par variables
+        %             temp1=[];
+        %             for jj=1:length(val_var{ii})
+        %                 temp=repmat(val_var{ii}(jj),nb_ter_pre,1);
+        %                 temp1=uint8([temp1;temp]);
+        %                 clear  temp
+        %             end
+        %             temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
+        %             clear temp1 temp
+        %             combinaison(:,ii)=temp2;
+        %             clear temp2
+        %         end
+        %         combinaison=combinaison;
+        
+        for itD=1:numel(listOrder)
+            for nbv=npMin:npMax
+                deg=listOrder(itD);
+                nbTerms=nchoosek(nbv+deg,deg);
+                %
+                combMono=uint8(zeros(nbTerms,nbv));
+                for itT=1:nbTerms-1
+                    combMono(itT+1,:)=mono_upto_next_grlex(nbv,deg,combMono(itT,:));
+                end
             end
-            %parcours des valeurs par variables
-            temp1=[];
-            for jj=1:length(val_var{ii})
-                temp=repmat(val_var{ii}(jj),nb_ter_pre,1);
-                temp1=uint8([temp1;temp]);
-                clear  temp
-            end
-            temp2=repmat(temp1,prod(nb_tir(ii+1:end)),1);
-            clear temp1 temp
-            combinaison(:,ii)=temp2;
-            clear temp2
         end
-        combinaison=uint8(combinaison);
+        combinaison=combMono;
         
         % g�n�ration combinaison
         %levels=(deg+1)*ones(1,nbv,'uint8');
@@ -175,8 +188,7 @@ for itD=1:numel(listOrder)
     end
 end
 
-%keyboard
-
+fprintf('Start storing data in files\n')
 %stockage des monomes
 for itD=1:numel(listOrder)
     for jj=npMin:npMax
@@ -238,6 +250,6 @@ for itD=1:numel(listOrder)
         %keyboard
         %
         fclose(fid);
-    end    
+    end
 end
 end

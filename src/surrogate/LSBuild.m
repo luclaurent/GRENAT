@@ -163,6 +163,7 @@ end
 %depending on the availability of the gradients
 if ~availGrad
     valFunPoly=MultiMono(samplingIn,metaData.polyOrder);
+    nbMonomialTerms=size(valFunPoly,2);
     if missResp
         %remove missing response(s)
         valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
@@ -202,7 +203,8 @@ end
 %determine regressors
 fct=valFunPoly'*valFunPoly;
 fcY=valFunPoly'*YY;
-if condest(fct)>1e15
+%deal with unsifficent number of equations
+if nbMonomialTerms>size(YY,1)
     Gfprintf(' > !! matrix ill-conditionned!!\n');
     beta=pinv(fct)*fcY;
 else

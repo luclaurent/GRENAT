@@ -201,6 +201,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %determine regressors
+global tpsCPU
+t=cputime;
 fct=valFunPoly'*valFunPoly;
 fcY=valFunPoly'*YY;
 %deal with unsifficent number of equations
@@ -208,8 +210,14 @@ if nbMonomialTerms>size(YY,1)
     Gfprintf(' > !! matrix ill-conditionned!!\n');
     beta=pinv(fct)*fcY;
 else
-    beta=fct\fcY;
-end
+    [Q,R]=qr(fct);
+    beta=R\(Q'*fcY);
+   %beta=inv(fct)*fcY;
+   
+ end
+
+tpsCPU=cputime-t;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %store variables

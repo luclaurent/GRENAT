@@ -120,9 +120,7 @@ if availGrad
             li=deb + (1:(ns-ii+1));
             iXmatrixA(iteA)=li;
             pres=li(end);
-            liste_tmpB=reshape(tmpList',[],1);
             iXdev(iteA)=tmpList(ite,jj);
-            iXdevb=liste_tmpB;
         end
     end
     %table of indexes for second derivatives

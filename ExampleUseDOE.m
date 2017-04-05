@@ -29,15 +29,15 @@ paraCluster=execParallel(false);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %define the sampling using MultiDOE toolbox
-dimPB=10; %number of design parameters
-ns=100; %number if sample points
-typeDOE='IHS'; %type of DOE
+dimPB=2; %number of design parameters
+ns=10000; %number if sample points
+typeDOE='LHS'; %type of DOE
 testFunction='Rosenbrock'; %test function
 %
 mDOE=multiDOE(dimPB,typeDOE,ns,[],[],testFunction);
 %mDOE.show;
 %
-samplePts=mDOE.sorted;
+samplePts=mDOE.unsorted;
 %
 %evaluate function at sample points
 [resp,grad]=evalFunGrad(mDOE.funTest,samplePts,'eval');

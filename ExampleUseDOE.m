@@ -30,12 +30,12 @@ paraCluster=execParallel(false);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %define the sampling using MultiDOE toolbox
 dimPB=2; %number of design parameters
-ns=10000; %number if sample points
-typeDOE='LHS'; %type of DOE
-testFunction='Rosenbrock'; %test function
+ns=20; %number if sample points
+typeDOE='IHS'; %type of DOE
+testFunction='Peaks'; %test function
 %
 mDOE=multiDOE(dimPB,typeDOE,ns,[],[],testFunction);
-%mDOE.show;
+mDOE.show;
 %
 samplePts=mDOE.unsorted;
 %
@@ -47,9 +47,7 @@ samplePts=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('GLS',samplePts,resp,grad);
-metaGRENAT.confMeta.polyOrder=3;
-metaGRENAT.confMeta.cvOn=false;
+metaGRENAT=GRENAT('KRG',samplePts,resp,grad);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

@@ -196,7 +196,7 @@ if dispData.on
         if dispData.d3
             %shwo contour
             if dispData.contour
-                surfc(gridX,gridY,vZ);
+                h=surfc(gridX,gridY,vZ);
                 if dispData.uni
                     %show surface with unique color
                     set(h,'FaceColor',dispData.color,'EdgeColor',dispData.color);

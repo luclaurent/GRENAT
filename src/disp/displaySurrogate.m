@@ -76,6 +76,11 @@ function figHandle=displaySurrogate(gridXY,Z,sampling,resp,grad,dispData)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figHandle=[];
 
+%load default
+if isempty(dispData.view)
+    dispData.view=3;
+end
+
 %deal with 1D/2D plots
 spa1D=false;spa2D=false;
 if size(sampling,2)==1
@@ -191,7 +196,7 @@ if dispData.on
         if dispData.d3
             %shwo contour
             if dispData.contour
-                surfc(gridX,gridY,vZ);
+                h=surfc(gridX,gridY,vZ);
                 if dispData.uni
                     %show surface with unique color
                     set(h,'FaceColor',dispData.color,'EdgeColor',dispData.color);
@@ -367,7 +372,7 @@ if dispData.on
         ylabel(dispData.ylabel);
         if dispData.d3
             zlabel(dispData.zlabel);
-            view(3);
+            view(dispData.view);
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

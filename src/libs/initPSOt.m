@@ -32,19 +32,30 @@ if exist(pathCustom,'dir')
     
     
     %absolute path
-    absolutePath=cellfun(@(c)[pathCustom '/PSOt/' c],folderToolbox,'uni',false);
+    absolutePath=cellfun(@(c)fullfile(pathCustom,'/PSOt/',c),folderToolbox,'uni',false);
     
     %add to the PATH
-    cellfun(@(x)addpathExisted(x),absolutePath);
+    flA=cellfun(@(x)addpathExisted(x),absolutePath);
     
     %display
-    fprintf(' ## Toolbox: PSOt loaded\n');
+    if any(flA==2)
+        fprintf(' ## Toolbox: PSOt loaded\n');
+    end
 end
 end
 
-%check if a directory exists or not and add it to the path if not
-function addpathExisted(folder)
-if exist(folder,'dir')
+%check if a directory exists in the path or not and add it to the path if not
+function flag=addpathExisted(folder)
+flag=1;
+folder=fullfile(folder);
+if ispc
+  % Windows is not case-sensitive
+  onPath = ~isempty(strfind(lower(path),lower(folder)));
+else
+  onPath = ~isempty(strfind(path,folder));
+end
+if exist(folder,'dir')&&~onPath
+    flag=2;
     addpath(folder)
 end
 end

@@ -58,14 +58,14 @@ if metaData.used.availGrad
         [ev,dev,ddev]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
         %reordering responses and gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        P=[ev' reshape(dev',1,ns*np)];
+        P=[ev' -reshape(dev',1,ns*np)];
         
         %P=[ev;dda(:)];
         %reordering first and second derivatives
         %dP=[(dF1/dx1 dF1/dx2 ... dF1/dxp)' (dF2/dx1 dF2/dx2 ...dFn/dxp)' ]
         %dP=horzcat(-dda,reshape(ddev,nb_var,[]));
         %derivatives of the vector of the evaluation of kernel function
-        dP=[dev' reshape(ddev,np,[])];
+        dP=[dev' -reshape(ddev,np,[])];
         
         %if missing responses
         if metaData.miss.resp.on
@@ -85,7 +85,7 @@ if metaData.used.availGrad
         [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
         %reordering responses and gradients
         %P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]
-        P=[ev' reshape(dev',1,ns*np)];
+        P=[ev' -reshape(dev',1,ns*np)];
         %if missing responses
         if metaData.miss.resp.on
             P(metaData.miss.resp.ixMiss)=[];
@@ -125,13 +125,6 @@ if nargout >=3
         Pb(ns+1:end)=-Pb(ns+1:end);
     end
     variance=1-P*(metaData.build.KK\Pb');
-    %if variance<0
-    
-    %data.build.KK
-    % P*(data.build.KK\P')
-    %variance
-    %pause
-    %end
     if ~dispWarning;warning on all;end
 end
 end

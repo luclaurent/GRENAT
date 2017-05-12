@@ -1,8 +1,16 @@
 /* Created by mdot for Matlab */
 digraph m2html {
+  AUTHORS -> matlab2tikz;
+  CHANGELOG -> matlab2tikz;
+  CONTRIBUTING -> README;
+  CONTRIBUTING -> matlab2tikz;
+  README -> matlab2tikz;
 
   AUTHORS [URL="AUTHORS.html"];
   CHANGELOG [URL="CHANGELOG.html"];
+  CONTRIBUTING [URL="CONTRIBUTING.html"];
   LICENSE [URL="LICENSE.html"];
   README [URL="README.html"];
+  matlab2tikz [URL="matlab2tikz.html"];
+  runtests [URL="runtests.html"];
 }

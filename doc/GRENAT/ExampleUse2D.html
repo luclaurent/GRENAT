@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
+<li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -62,59 +62,58 @@ This function is called by:
 0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
 0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 0020 
-0021 
-0022 <span class="comment">%customClean;</span>
-0023 countTime=<a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
-0024 <span class="comment">%load folder structure</span>
-0025 <a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>;
-0026 <span class="comment">%parallel execution (options and starting of the workers)</span>
-0027 paraCluster=<a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>(false);
-0028 
+0021 <span class="comment">%load folder structure</span>
+0022 <a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>;
+0023 <span class="comment">%customClean;</span>
+0024 countTime=<a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
+0025 <span class="comment">%parallel execution (options and starting of the workers)</span>
+0026 paraCluster=<a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>(false);
+0027 
+0028 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0030 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0031 <span class="comment">%%Load of a set of 2D data</span>
-0032 C=load(<span class="string">'src/various/example2D.mat'</span>);
-0033 <span class="comment">%sampling points</span>
-0034 sampling=C.samples.sampling;
-0035 <span class="comment">%responses at sample points</span>
-0036 resp=C.samples.resp;
-0037 <span class="comment">%gradients at sample points</span>
-0038 grad=C.samples.grad;
-0039 
-0040 <span class="comment">%%for displaying and comparing with the actual function</span>
-0041 <span class="comment">%regular grid</span>
-0042 gridRef=C.ref.grid;
-0043 <span class="comment">%responses at the grid points</span>
-0044 respRef=C.ref.resp;
-0045 <span class="comment">%responses at the grid points</span>
-0046 gradRef=C.ref.grad;
+0030 <span class="comment">%%Load of a set of 2D data</span>
+0031 C=load(<span class="string">'src/various/example2D.mat'</span>);
+0032 <span class="comment">%sampling points</span>
+0033 sampling=C.samples.sampling;
+0034 <span class="comment">%responses at sample points</span>
+0035 resp=C.samples.resp;
+0036 <span class="comment">%gradients at sample points</span>
+0037 grad=C.samples.grad;
+0038 
+0039 <span class="comment">%%for displaying and comparing with the actual function</span>
+0040 <span class="comment">%regular grid</span>
+0041 gridRef=C.ref.grid;
+0042 <span class="comment">%responses at the grid points</span>
+0043 respRef=C.ref.resp;
+0044 <span class="comment">%responses at the grid points</span>
+0045 gradRef=C.ref.grad;
+0046 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0047 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0048 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0049 <span class="comment">%create GRENAT Object</span>
-0050 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'KRG'</span>,sampling,resp,grad);
+0048 <span class="comment">%create GRENAT Object</span>
+0049 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'LS'</span>,sampling,resp,grad);
+0050 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0052 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0053 <span class="comment">%building of the surrogate model</span>
-0054 metaGRENAT.train;
-0055 <span class="comment">%define the reference (optional)</span>
-0056 metaGRENAT.defineRef(gridRef,respRef,gradRef);
-0057 <span class="comment">%evaluation of the surrogate model at the grid points</span>
-0058 metaGRENAT.eval(gridRef);
+0052 <span class="comment">%building of the surrogate model</span>
+0053 metaGRENAT.train;
+0054 <span class="comment">%define the reference (optional)</span>
+0055 metaGRENAT.defineRef(gridRef,respRef,gradRef);
+0056 <span class="comment">%evaluation of the surrogate model at the grid points</span>
+0057 metaGRENAT.eval(gridRef);
+0058 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0059 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0060 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0061 <span class="comment">%display the result</span>
-0062 metaGRENAT.show;
+0060 <span class="comment">%display the result</span>
+0061 metaGRENAT.show;
+0062 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0063 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0064 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0065 <span class="comment">%compute display error</span>
-0066 metaGRENAT.errCalc;
+0064 <span class="comment">%compute display error</span>
+0065 metaGRENAT.errCalc;
+0066 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0067 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0068 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0069 <span class="comment">%%Stop workers</span>
-0070 paraCluster.stop();
-0071 
-0072 countTime.stop();
-0073</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0068 <span class="comment">%%Stop workers</span>
+0069 paraCluster.stop();
+0070 
+0071 countTime.stop();
+0072</pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

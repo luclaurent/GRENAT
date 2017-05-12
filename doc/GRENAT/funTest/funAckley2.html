@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of funAckley2</title>
+  <meta name="keywords" content="funAckley2">
+  <meta name="description" content="% Ackley's function 2">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GRENAT --><!-- menu.html funTest -->
+<h1>funAckley2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% Ackley's function 2</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [p,dp,infos]=funAckley2(xx,dim) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Ackley's function 2
+L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net
+
+one local minimum
+1 global minimum : x=(0,0) &gt;&gt; f(x)=-200
+
+design space -32&lt;xi&lt;32</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Ackley's function 2</span>
+0002 <span class="comment">%L. LAURENT -- 31/10/2016 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%one local minimum</span>
+0005 <span class="comment">%1 global minimum : x=(0,0) &gt;&gt; f(x)=-200</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%design space -32&lt;xi&lt;32</span>
+0008 
+0009 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0010 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0011 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0014 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0015 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0016 <span class="comment">%     (at your option) any later version.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0019 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0020 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0021 <span class="comment">%     GNU General Public License for more details.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0024 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0025 
+0026 <a name="_sub0" href="#_subfunctions" class="code">function [p,dp,infos]=funAckley2(xx,dim)</a>
+0027 
+0028 <span class="comment">%constants</span>
+0029 a=200;
+0030 b=0.02;
+0031 
+0032 <span class="comment">%space</span>
+0033 Xmin=-32;
+0034 Xmax=32;
+0035 
+0036 <span class="comment">%default dimension</span>
+0037 <span class="keyword">if</span> nargin==1;dim=2;<span class="keyword">end</span>
+0038 
+0039 <span class="comment">% demo mode</span>
+0040 dem=false;
+0041 <span class="keyword">if</span> nargin==0
+0042     stepM=50;
+0043     [x,y]=meshgrid(linspace(Xmin,Xmax,stepM));
+0044     xx=zeros(stepM,stepM,2);
+0045     xx(:,:,1)=x;xx(:,:,2)=y;
+0046     dem=true;
+0047 <span class="keyword">end</span>
+0048 <span class="keyword">if</span> ~isempty(xx)
+0049     <span class="comment">%number of design variables</span>
+0050     nbvar=size(xx,3);
+0051     <span class="keyword">if</span> nbvar==1
+0052         <span class="keyword">if</span> size(xx,2)==2
+0053             xxx=xx(:,1);yyy=xx(:,2);
+0054         <span class="keyword">elseif</span> size(xx,1)==2
+0055             xxx=xx(:,2);yyy=xx(:,1);
+0056         <span class="keyword">else</span>
+0057             error([<span class="string">'Wrong input variables '</span>,mfilename]);
+0058         <span class="keyword">end</span>
+0059     <span class="keyword">elseif</span> nbvar&gt;2
+0060         error(<span class="string">'The Ackley 2 function is a 2 dimensional function'</span>);
+0061     <span class="keyword">else</span>
+0062         xxx=xx(:,:,1);
+0063         yyy=xx(:,:,2);
+0064     <span class="keyword">end</span>
+0065         
+0066     normP=sqrt(xxx.^2+yyy.^2);
+0067     ex1=exp(-b*normP);
+0068     p=-a*ex1;
+0069     <span class="keyword">if</span> nargout==2||dem
+0070         dp(:,:,1)=a*b.*xxx./normP.*ex1;
+0071         dp(:,:,2)=a*b.*yyy./normP.*ex1;
+0072     <span class="keyword">end</span>
+0073 <span class="keyword">else</span>
+0074     <span class="keyword">if</span> nargin==2
+0075         nbvar=dim;
+0076     <span class="keyword">end</span>
+0077     p=[];
+0078     dp=[];
+0079 <span class="keyword">end</span>
+0080 <span class="comment">%output of information about the function</span>
+0081 <span class="keyword">if</span> nargout==3
+0082     infos.Xmin=Xmin*ones(1,nbvar);
+0083     infos.Xmax=Xmax*ones(1,nbvar);
+0084     infos.min_glob.Z=-200;
+0085     infos.min_glob.X=zeros(1,nbvar);
+0086     infos.min_loc.Z=NaN;
+0087     infos.min_loc.X=NaN;
+0088 <span class="keyword">end</span>
+0089 
+0090 <span class="comment">%demo display</span>
+0091 <span class="keyword">if</span> nargin==0
+0092     figure
+0093     subplot(1,3,1)
+0094     surf(x,y,p);
+0095     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0096     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Ackley 2'</span>)
+0097     subplot(1,3,2)
+0098     surf(x,y,dp(:,:,1));
+0099     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0100     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. X Ackley 2'</span>)
+0101     subplot(1,3,3)
+0102     surf(x,y,dp(:,:,2));
+0103     axis(<span class="string">'tight'</span>,<span class="string">'square'</span>)
+0104     xlabel(<span class="string">'x'</span>), ylabel(<span class="string">'y'</span>), title(<span class="string">'Grad. Y Ackley 2'</span>)
+0105 <span class="keyword">end</span>
+0106 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

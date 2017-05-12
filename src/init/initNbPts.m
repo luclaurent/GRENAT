@@ -29,7 +29,7 @@ elseif dim==3
     nbV=10;
 elseif dim==4
     nbV=6;
-elseif dim==5;
+elseif dim==5
     nbV=4;
 elseif dim>=6
     nbV=3;  

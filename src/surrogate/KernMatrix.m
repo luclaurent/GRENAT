@@ -92,3 +92,5 @@ else
         KK=KK+KK'+eye(ns);
     end
 end
+end
+

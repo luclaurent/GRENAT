@@ -34,7 +34,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	MultiDOE - Toolbox for sampling a bounded space</li></ul>
+<li><a href="KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="LSEval.html" class="code" title="function [Z,GZ,details]=LSEval(U,metaData)">LSEval</a>	% function for evaluating the least-squares model at many points</li><li><a href="RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
@@ -74,7 +74,7 @@ This function is called by:
 0029 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0030 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0031 <span class="comment">%choose verbosity of the function</span>
-0032 <span class="keyword">if</span> nargin==3
+0032 <span class="keyword">if</span> nargin&lt;4
 0033     Verb=true;
 0034 <span class="keyword">end</span>
 0035 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
@@ -195,115 +195,112 @@ This function is called by:
 0150         <span class="keyword">end</span>
 0151         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
 0152         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0153     <span class="keyword">case</span> <span class="string">'PRG'</span>
-0154         <span class="keyword">for</span> degre=dataTrain.deg
-0155             <span class="comment">%% Evaluation of the polynomial regression surrogate model</span>
-0156             parfor (jj=1:nbReqEval,numWorkers)
-0157                 valResp(jj)=LSEval(dataTrain.prg.coef,reqResp(jj,1),evalSample(jj,2),dataTrain);
-0158                 <span class="comment">%calculation of the gradients</span>
-0159                 [GRG1,GRG2]=LSEvalD(dataTrain.prg.coef,reqResp(jj,1),evalSample(jj,2),dataTrain);
-0160                 valGrad(jj,:)=[GRG1,GRG2];
-0161             <span class="keyword">end</span>
-0162         <span class="keyword">end</span>
-0163         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0164         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0165     <span class="keyword">case</span> <span class="string">'ILIN'</span>
-0166         <span class="comment">%% interpolation using linear shape functions</span>
-0167         parfor (jj=1:nbReqEval,numWorkers)
-0168             [valResp(jj),G]=LInterpEval(reqResp(jj,:),dataTrain);
-0169             valGrad(jj,:)=G;
-0170         <span class="keyword">end</span>
-0171         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0172         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0173     <span class="keyword">case</span> <span class="string">'ILAG'</span>
-0174         <span class="comment">%% interpolation using linear shape functions based on Lagrange polynoms</span>
-0175         parfor (jj=1:nbReqEval,numWorkers)
-0176             [valResp(jj),G]=LagInterpEval(reqResp(jj,:),dataTrain);
-0177             valGrad(jj,:)=G;
-0178             
-0179         <span class="keyword">end</span>
-0180     <span class="keyword">otherwise</span>
-0181         error([<span class="string">'Wrong type of surrogate model (see. on '</span>,mfilename,<span class="string">')'</span>]);
-0182         
-0183 <span class="keyword">end</span>
-0184 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0185 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0186 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0187 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0188 <span class="comment">%reordering gradients</span>
-0189 <span class="keyword">if</span> np&gt;1
-0190     <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
-0191         stoGZFinal=zeros(nv);
-0192         trGZFinal=zeros(nv);
-0193     <span class="keyword">end</span>
-0194     GZ=zeros(nv);
-0195     <span class="keyword">if</span> nv(3)&gt;1
-0196         GZ=reshape(GZ,[nv(1),nv(2),nv(3)]);
-0197         <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
-0198             stoGZFinal=reshape(stoGZ,[nv(1),nv(2),nv(3)]);
-0199             trGZFinal=reshape(trGZ,[nv(1),nv(2),nv(3)]);
-0200         <span class="keyword">end</span>
-0201     <span class="keyword">else</span>
-0202         GZ=valGrad;
-0203         <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
-0204             stoGZFinal=stoGZ;
-0205             trGZFinal=trGZ;
-0206         <span class="keyword">end</span>
-0207     <span class="keyword">end</span>
-0208 <span class="keyword">else</span>
-0209     GZ=valGrad;
-0210     <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
-0211         stoGZFinal=stoGZ;
-0212         trGZFinal=trGZ;
-0213     <span class="keyword">end</span>
-0214 <span class="keyword">end</span>
-0215 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0216 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0217 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0218 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
-0219 <span class="comment">%Storage of evaluations</span>
-0220 <span class="keyword">if</span> np&gt;1
-0221     <span class="keyword">if</span> nv(3)==1
-0222         <span class="keyword">if</span> exist(<span class="string">'stoZFinal'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZFinal'</span>,<span class="string">'var'</span>)
-0223             Z.stoZ=stoZFinal;
-0224             Z.trZ=trZFinal;
-0225         <span class="keyword">end</span>
-0226         Z.Z=valResp;
-0227         <span class="keyword">if</span> ~isempty(varResp);Z.var=varResp;<span class="keyword">end</span>
-0228     <span class="keyword">else</span>
-0229         <span class="keyword">if</span> exist(<span class="string">'stoZFinal'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZFinal'</span>,<span class="string">'var'</span>)
-0230             Z.stoZ=reshape(stoZFinal,nv(1),nv(2));
-0231             Z.trZ=reshape(trZFinal,nv(1),nv(2));
-0232         <span class="keyword">end</span>
-0233         Z.Z=reshape(valResp,nv(1),nv(2));
-0234         <span class="keyword">if</span> ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));<span class="keyword">end</span>
+0153     <span class="keyword">case</span> {<span class="string">'LS'</span>,<span class="string">'GLS'</span>,<span class="string">'InLS'</span>}
+0154         <span class="keyword">for</span> jj=1:nbReqEval
+0155             [valResp(jj),G]=<a href="LSEval.html" class="code" title="function [Z,GZ,details]=LSEval(U,metaData)">LSEval</a>(reqResp(jj,:),dataTrain);
+0156             valGrad(jj,:)=G;
+0157         <span class="keyword">end</span>
+0158         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0159         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0160     <span class="keyword">case</span> <span class="string">'ILIN'</span>
+0161         <span class="comment">%% interpolation using linear shape functions</span>
+0162         parfor (jj=1:nbReqEval,numWorkers)
+0163             [valResp(jj),G]=LInterpEval(reqResp(jj,:),dataTrain);
+0164             valGrad(jj,:)=G;
+0165         <span class="keyword">end</span>
+0166         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0167         <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0168     <span class="keyword">case</span> <span class="string">'ILAG'</span>
+0169         <span class="comment">%% interpolation using linear shape functions based on Lagrange polynoms</span>
+0170         parfor (jj=1:nbReqEval,numWorkers)
+0171             [valResp(jj),G]=LagInterpEval(reqResp(jj,:),dataTrain);
+0172             valGrad(jj,:)=G;
+0173             
+0174         <span class="keyword">end</span>
+0175     <span class="keyword">otherwise</span>
+0176         error([<span class="string">'Wrong type of surrogate model (see. on '</span>,mfilename,<span class="string">')'</span>]);
+0177         
+0178 <span class="keyword">end</span>
+0179 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0180 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0181 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0182 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0183 <span class="comment">%reordering gradients</span>
+0184 <span class="keyword">if</span> np&gt;1
+0185     <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0186         stoGZFinal=zeros(nv);
+0187         trGZFinal=zeros(nv);
+0188     <span class="keyword">end</span>
+0189     GZ=zeros(nv);
+0190     <span class="keyword">if</span> nv(3)&gt;1
+0191         GZ=reshape(GZ,[nv(1),nv(2),nv(3)]);
+0192         <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0193             stoGZFinal=reshape(stoGZ,[nv(1),nv(2),nv(3)]);
+0194             trGZFinal=reshape(trGZ,[nv(1),nv(2),nv(3)]);
+0195         <span class="keyword">end</span>
+0196     <span class="keyword">else</span>
+0197         GZ=valGrad;
+0198         <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0199             stoGZFinal=stoGZ;
+0200             trGZFinal=trGZ;
+0201         <span class="keyword">end</span>
+0202     <span class="keyword">end</span>
+0203 <span class="keyword">else</span>
+0204     GZ=valGrad;
+0205     <span class="keyword">if</span> exist(<span class="string">'stoGZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trGZ'</span>,<span class="string">'var'</span>)
+0206         stoGZFinal=stoGZ;
+0207         trGZFinal=trGZ;
+0208     <span class="keyword">end</span>
+0209 <span class="keyword">end</span>
+0210 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0211 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0212 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0213 <span class="comment">%%%%%%%%=================================%%%%%%%%</span>
+0214 <span class="comment">%Storage of evaluations</span>
+0215 <span class="keyword">if</span> np&gt;1
+0216     <span class="keyword">if</span> nv(3)==1
+0217         <span class="keyword">if</span> exist(<span class="string">'stoZFinal'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZFinal'</span>,<span class="string">'var'</span>)
+0218             Z.stoZ=stoZFinal;
+0219             Z.trZ=trZFinal;
+0220         <span class="keyword">end</span>
+0221         Z.Z=valResp;
+0222         <span class="keyword">if</span> ~isempty(varResp);Z.var=varResp;<span class="keyword">end</span>
+0223     <span class="keyword">else</span>
+0224         <span class="keyword">if</span> exist(<span class="string">'stoZFinal'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZFinal'</span>,<span class="string">'var'</span>)
+0225             Z.stoZ=reshape(stoZFinal,nv(1),nv(2));
+0226             Z.trZ=reshape(trZFinal,nv(1),nv(2));
+0227         <span class="keyword">end</span>
+0228         Z.Z=reshape(valResp,nv(1),nv(2));
+0229         <span class="keyword">if</span> ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));<span class="keyword">end</span>
+0230     <span class="keyword">end</span>
+0231 <span class="keyword">else</span>
+0232     <span class="keyword">if</span> exist(<span class="string">'stoZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZ'</span>,<span class="string">'var'</span>)
+0233         Z.stoZ=reshape(stoZ,nv(1),nv(2));
+0234         Z.trZ=reshape(trZ,nv(1),nv(2));
 0235     <span class="keyword">end</span>
-0236 <span class="keyword">else</span>
-0237     <span class="keyword">if</span> exist(<span class="string">'stoZ'</span>,<span class="string">'var'</span>)&amp;&amp;exist(<span class="string">'trZ'</span>,<span class="string">'var'</span>)
-0238         Z.stoZ=reshape(stoZ,nv(1),nv(2));
-0239         Z.trZ=reshape(trZ,nv(1),nv(2));
-0240     <span class="keyword">end</span>
-0241     Z.Z=reshape(valResp,nv(1),nv(2));
-0242     <span class="keyword">if</span> ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));<span class="keyword">end</span>
-0243 <span class="keyword">end</span>
-0244 Z.GZ=GZ;
-0245 <span class="keyword">if</span> exist(<span class="string">'stoGZFinal'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'trGZFinal'</span>,<span class="string">'var'</span>)==1
-0246     Z.stoGZ=stoGZFinal;Z.trGZ=trGZFinal;
+0236     Z.Z=reshape(valResp,nv(1),nv(2));
+0237     <span class="keyword">if</span> ~isempty(varResp);Z.var=reshape(varResp,nv(1),nv(2));<span class="keyword">end</span>
+0238 <span class="keyword">end</span>
+0239 Z.GZ=GZ;
+0240 <span class="keyword">if</span> exist(<span class="string">'stoGZFinal'</span>,<span class="string">'var'</span>)==1&amp;&amp;exist(<span class="string">'trGZFinal'</span>,<span class="string">'var'</span>)==1
+0241     Z.stoGZ=stoGZFinal;Z.trGZ=trGZFinal;
+0242 <span class="keyword">end</span>
+0243 
+0244 <span class="comment">%end of evaluations</span>
+0245 <span class="keyword">if</span> nbReqEval&gt;1&amp;&amp;Verb
+0246     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'++ Evaluation at %i points\n'</span>,nbReqEval);
 0247 <span class="keyword">end</span>
-0248 
-0249 <span class="comment">%end of evaluations</span>
-0250 <span class="keyword">if</span> nbReqEval&gt;1&amp;&amp;Verb
-0251     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'++ Evaluation at %i points\n'</span>,nbReqEval);
-0252     countTime.stop;
-0253     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'#########################################\n'</span>);
-0254 <span class="keyword">end</span>
+0248 countTime.stop(Verb);
+0249 <span class="keyword">if</span> nbReqEval&gt;1&amp;&amp;Verb
+0250     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'#########################################\n'</span>);
+0251 <span class="keyword">end</span>
+0252 
+0253 <span class="keyword">end</span>
+0254 
 0255 
-0256 <span class="keyword">end</span>
+0256 
 0257 
-0258 
-0259 
-0260 
-0261</pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0258</pre></div>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

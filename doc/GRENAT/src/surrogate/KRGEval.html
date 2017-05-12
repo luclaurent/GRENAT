@@ -35,7 +35,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>	% function for evaluating multidimensional kernel function</li></ul>
+<li><a href="../../../GRENAT/src/kernANDfun/MultiMono.html" class="code" title="function [matX,matDX,matDDX]=MultiMono(X,polyOrder)">MultiMono</a>	% Function for evaluating the monomial terms and builds matrix of regressors</li><li><a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>	% function for evaluating multidimensional kernel function</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="EvalMeta.html" class="code" title="function [Z]=EvalMeta(evalSample,dataTrain,metaConf,Verb)">EvalMeta</a>	% Evaluation of the surrogate model</li><li><a href="KRGCV.html" class="code" title="function cv=KRGCV(dataBloc,metaData,type)">KRGCV</a>	% Function for computing various Cross-Validation criteria for KRG/GKRG</li></ul>
@@ -172,56 +172,56 @@ This function is called by:
 0126 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0127 <span class="comment">%regression matrix at the non-sample points</span>
 0128 <span class="keyword">if</span> calcGrad
-0129     [ff,~,jf,~]=feval(metaData.build.funPoly,X);
-0130     jf=vertcat(jf{:});
-0131 <span class="keyword">else</span>
-0132     ff=feval(metaData.build.funPoly,X);
-0133 <span class="keyword">end</span>
-0134 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0135 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0136 <span class="comment">%evaluation of the surrogate model at point X</span>
-0137 trZ=ff*metaData.build.beta;
-0138 stoZ=rr'*metaData.build.gamma;
-0139 Z=trZ+stoZ;
-0140 <span class="keyword">if</span> calcGrad
-0141     <span class="comment">%%verif in 2D+</span>
-0142     trGZ=jf*metaData.build.beta;
-0143     stoGZ=jr'*metaData.build.gamma;
-0144     GZ=trGZ+stoGZ;
-0145 <span class="keyword">end</span>
+0129     [ff,jf]=<a href="../../../GRENAT/src/kernANDfun/MultiMono.html" class="code" title="function [matX,matDX,matDDX]=MultiMono(X,polyOrder)">MultiMono</a>(X,metaData.build.polyOrder);
+0130 <span class="keyword">else</span>
+0131     [ff]=<a href="../../../GRENAT/src/kernANDfun/MultiMono.html" class="code" title="function [matX,matDX,matDDX]=MultiMono(X,polyOrder)">MultiMono</a>(X,metaData.build.polyOrder);
+0132 <span class="keyword">end</span>
+0133 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0134 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0135 <span class="comment">%evaluation of the surrogate model at point X</span>
+0136 trZ=ff*metaData.build.beta;
+0137 stoZ=rr'*metaData.build.gamma;
+0138 Z=trZ+stoZ;
+0139 <span class="keyword">if</span> calcGrad
+0140     <span class="comment">%%verif in 2D+</span>
+0141     trGZ=jf*metaData.build.beta;
+0142     stoGZ=jr'*metaData.build.gamma;
+0143     GZ=trGZ+stoGZ;
+0144 <span class="keyword">end</span>
+0145 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0146 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0147 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0148 <span class="comment">%compute the prediction variance (MSE) (Lophaven, Nielsen &amp; Sondergaard</span>
-0149 <span class="comment">%2004 / Marcelet 2008 / Chauvet 1999)</span>
-0150 <span class="keyword">if</span> nargout &gt;=3
-0151     <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
-0152     <span class="comment">%depending on the factorization</span>
-0153     <span class="keyword">switch</span> metaData.build.factKK
-0154         <span class="keyword">case</span> <span class="string">'QR'</span>
-0155             rrP=rr'*metaData.build.PK;
-0156             Qrr=metaData.build.QtK*rr;
-0157             u=metaData.build.fcR*Qrr-ff';
-0158             variance=metaData.build.sig2*(ones(dimX,1)-(rrP/metaData.build.RK)*Qrr+<span class="keyword">...</span>
-0159                 u'/metaData.build.fcCfct*u);
-0160         <span class="keyword">case</span> <span class="string">'LU'</span>
-0161             rrP=rr(metaData.build.PK,:);
-0162             Lrr=metaData.build.LK\rrP;
-0163             u=metaData.build.fcU*Lrr-ff';
-0164             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.UK)*Lrr+<span class="keyword">...</span>
-0165                 u'/metaData.build.fcCfct*u);
-0166         <span class="keyword">case</span> <span class="string">'LL'</span>
-0167             Lrr=metaData.build.LK\rr;
-0168             u=metaData.build.fcL*Lrr-ff';
-0169             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.LtK)*Lrr+<span class="keyword">...</span>
-0170                 u'/metaData.build.fcCfct*u);
-0171         <span class="keyword">otherwise</span>
-0172             rKrr=metaData.build.KK \ rr;
-0173             u=metaData.build.fc*rKrr-ff';
-0174             variance=metaData.build.sig2*(ones(dimX,1)+u'/metaData.build.fcCfct*u - rr'*rKrr);
-0175     <span class="keyword">end</span>
-0176     <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
-0177     
-0178 <span class="keyword">end</span>
+0147 <span class="comment">%compute the prediction variance (MSE) (Lophaven, Nielsen &amp; Sondergaard</span>
+0148 <span class="comment">%2004 / Marcelet 2008 / Chauvet 1999)</span>
+0149 <span class="keyword">if</span> nargout &gt;=3
+0150     <span class="keyword">if</span> ~dispWarning;warning off all;<span class="keyword">end</span>
+0151     <span class="comment">%depending on the factorization</span>
+0152     <span class="keyword">switch</span> metaData.build.factKK
+0153         <span class="keyword">case</span> <span class="string">'QR'</span>
+0154             rrP=rr'*metaData.build.PK;
+0155             Qrr=metaData.build.QtK*rr;
+0156             u=metaData.build.fcR*Qrr-ff';
+0157             variance=metaData.build.sig2*(ones(dimX,1)-(rrP/metaData.build.RK)*Qrr+<span class="keyword">...</span>
+0158                 u'/metaData.build.fcCfct*u);
+0159         <span class="keyword">case</span> <span class="string">'LU'</span>
+0160             rrP=rr(metaData.build.PK,:);
+0161             Lrr=metaData.build.LK\rrP;
+0162             u=metaData.build.fcU*Lrr-ff';
+0163             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.UK)*Lrr+<span class="keyword">...</span>
+0164                 u'/metaData.build.fcCfct*u);
+0165         <span class="keyword">case</span> <span class="string">'LL'</span>
+0166             Lrr=metaData.build.LK\rr;
+0167             u=metaData.build.fcL*Lrr-ff';
+0168             variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.LtK)*Lrr+<span class="keyword">...</span>
+0169                 u'/metaData.build.fcCfct*u);
+0170         <span class="keyword">otherwise</span>
+0171             rKrr=metaData.build.KK \ rr;
+0172             u=metaData.build.fc*rKrr-ff';
+0173             variance=metaData.build.sig2*(ones(dimX,1)+u'/metaData.build.fcCfct*u - rr'*rKrr);
+0174     <span class="keyword">end</span>
+0175     <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
+0176     
+0177 <span class="keyword">end</span>
+0178 
 0179 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0180 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0181 <span class="comment">%extraction details</span>
@@ -232,6 +232,6 @@ This function is called by:
 0186     details.stoGZ=stoGZ;
 0187 <span class="keyword">end</span>
 0188 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 12-Sep-2016 18:26:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

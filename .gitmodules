@@ -4,3 +4,6 @@
 [submodule "MultiDOE"]
 	path = src/libs/multidoe
 	url = git@bitbucket.org:luclaurent/multidoe.git
+[submodule "src/libs/m2html"]
+	path = src/libs/m2html
+	url = git@github.com:l2/m2html.git

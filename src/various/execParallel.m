@@ -112,7 +112,10 @@ classdef execParallel < handle
         end
         %load current configuration
         function currentConf(obj)
-            p=gcp('nocreate');
+            p=[];
+            if exist('gcp','file')
+                p=gcp('nocreate');
+            end
             %none current parallel cluster defined
             if isempty(p)
                 obj.currentParallel.NumWorkers=0;

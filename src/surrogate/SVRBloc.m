@@ -168,10 +168,10 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute epsilon
-% eM=0.5*(dataIn.used.resp(svMidPIX)...
-%     -dataIn.used.resp(svMidMIX)...
-%     -FullAlphaLambdaPM(iXsvT)'*PsiR(svMidPIX,iXsvT)'...
-%     +FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidMIX));
+%eM=0.5*(dataIn.used.resp(svMidPIX)...
+%    -dataIn.used.resp(svMidMIX)...
+%    -FullAlphaLambdaPM(iXsvT)'*PsiR(svMidPIX,iXsvT)'...
+%    +FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidMIX));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute the base term
@@ -182,6 +182,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %lagrange multipliers give the values of mu and epsilon
 e=lmQP.ineqlin(1);
+%eM
+%e
 SVRmu=lmQP.eqlin;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

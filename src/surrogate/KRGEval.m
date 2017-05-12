@@ -126,10 +126,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %regression matrix at the non-sample points
 if calcGrad
-    [ff,~,jf,~]=feval(metaData.build.funPoly,X);
-    jf=vertcat(jf{:});
+    [ff,jf]=MultiMono(X,metaData.build.polyOrder);
 else
-    ff=feval(metaData.build.funPoly,X);
+    [ff]=MultiMono(X,metaData.build.polyOrder);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,6 +175,7 @@ if nargout >=3
     if ~dispWarning;warning on all;end
     
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %extraction details

@@ -27,6 +27,7 @@
 function [p,dp,infos]=funSchwefel(xx,dim)
 
 coef=418.9829;
+
 % demo mode
 dem=false;
 if nargin==0
@@ -36,6 +37,8 @@ if nargin==0
     xx=zeros(pas,pas,2);
     xx(:,:,1)=x;xx(:,:,2)=y;
     dem=true;
+elseif nargin==1
+    dim=NaN;
 end
 if ~isempty(xx)
     % number of design variables
@@ -78,6 +81,7 @@ else
     p=[];
     dp=[];
 end
+
 % output: information about the function
 if nargout==3
     pts=ones(1,nbvar);

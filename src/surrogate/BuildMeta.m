@@ -95,8 +95,8 @@ switch typeMeta
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case {'DACE','InDACE'}
-        %% Construction du metamodele de Krigeage (DACE)
-        Gfprintf('\n%s\n',[textd 'Krigeage (Toolbox DACE)' textf]);
+        %% Building of kriging (DACE)
+        Gfprintf('\n%s\n',[textd 'Kriging (DACE toolbox)' textf]);
         if metaData.para.estim
             switch metaData.corr
                 case {'correxpg'}
@@ -120,17 +120,8 @@ switch typeMeta
         outMeta=dace;
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
-    case 'PRG'
-        ite_prg=1;
-        outMeta{numMeta}.prg=length(metaData.deg);
-        for degre=metaData.deg
-            %% Construction du metamodele de Regression polynomiale
-            dd=['-- Degre du polynome \n',num2str(degre)];
-            Gfprintf(dd);
-            [prg.coef,prg.MSE]=meta_prg(samplingN,respN,degre);
-            outMeta.prg{ite_prg}=prg;
-            ite_prg=ite_prg+1;
-        end
+    case {'LS','GLS','InLS'}
+        outMeta=LSBuild(samplingOk,respOk,gradOk,metaData);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'ILIN'

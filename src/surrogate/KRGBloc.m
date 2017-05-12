@@ -53,12 +53,14 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Build of the KRG/GRKG matrix
+
 if dataIn.used.availGrad
     [KK,KKa,KKi]=KernMatrix(fctKern,dataIn,paraVal);
     KK=[KK -KKa;-KKa' -KKi];
 else
     [KK]=KernMatrix(fctKern,dataIn,paraVal);
 end
+
 %in the case of missing data
 %responses
 if metaData.miss.resp.on
@@ -193,7 +195,6 @@ if final   % in the phase of building
         Gfprintf('+++ //!\\ Bad condition number\n');
     end
 end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Factorization of the matrix

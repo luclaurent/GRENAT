@@ -41,7 +41,7 @@ classdef GRENAT < handle
         sizeNonSample=zeros(1,3);
         nonsampleVar=[];
         nonsampleVarOrder=[];
-        nonsampleCI=struct('ci68',[],'ci95',[],'ci98',[]);
+        nonsampleCI=struct('ci68',[],'ci95',[],'ci99',[]);
         nonsampleEI=[];
         %normalization data
         norm;
@@ -85,20 +85,20 @@ classdef GRENAT < handle
             %load directories on the path
             initDirGRENAT;
             %
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            fprintf(' Create GRENAT Object \n')
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
+            Gfprintf(' Create GRENAT Object \n');
             %the date and time
             dispDate;
             %load default configuration
             obj.confMeta=initMeta;
             %load display configuration
-            obj.confDisp=initDisp;            
+            obj.confDisp=initDisp;
             %specific configuration
             if nargin>0;obj.confMeta.type=typeIn;end
             if nargin>1;obj.sampling=samplingIn;end
             if nargin>2;obj.resp=respIn;end
-            if nargin>3;obj.grad=gradIn;end            
+            if nargin>3;obj.grad=gradIn;end
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,6 +115,7 @@ classdef GRENAT < handle
                 end
                 initRunTrain(obj,true);
                 resetNorm(obj);
+                initData(obj,'Sampling');
             else
                 fprintf('ERROR: Empty array of sample points\n');
             end
@@ -128,6 +129,7 @@ classdef GRENAT < handle
                     obj.resp=[obj.resp;respIn];
                 end
                 initRunTrain(obj,true);
+                initData(obj,'Resp');
             else
                 fprintf('ERROR: Empty array of responses\n');
             end
@@ -142,6 +144,7 @@ classdef GRENAT < handle
                 end
                 initRunTrain(obj,true);
                 initGradAvail(obj,true);
+                initData(obj,'Grad');
             end
         end
         %setter for the non sample points
@@ -212,10 +215,21 @@ classdef GRENAT < handle
             obj.runEval=flag;
         end
         %initialize data (remove saved data)
-        function initData(obj)
-            obj.sampling=[];
-            obj.resp=[];
-            obj.grad=[];
+        function initData(obj,type)
+            if nargin==1
+                obj.sampling=[];
+                obj.resp=[];
+                obj.grad=[];
+            elseif nargin==2
+                switch type
+                    case 'Sampling'
+                        obj.samplingN=obj.sampling;
+                    case 'Resp'
+                        obj.respN=obj.resp;
+                    case 'Grad'
+                        obj.gradN=obj.grad;
+                end
+            end
         end
         %ordering data (for manipulating nd-arrays)
         function dataOut=orderData(obj,dataIn,type)
@@ -279,7 +293,7 @@ classdef GRENAT < handle
                         end
                 end
             else
-                if nargout>2
+                if nargin>2
                     dataOut=dataIn;
                 end
             end
@@ -300,7 +314,7 @@ classdef GRENAT < handle
                         dataOut=NormRenormG(dataIn,'renorm',infoDataS,infoDataR);
                 end
             else
-                if nargout>2
+                if nargin>2
                     dataOut=dataIn;
                 end
             end
@@ -331,11 +345,13 @@ classdef GRENAT < handle
             checkMissingData(obj);
             %store normalization data
             obj.confMeta.norm=obj.norm;
-            %train surrogate model  
+            %train surrogate model
             obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
-            %save estimate parameters 
-            obj.confMeta.definePara(obj.dataTrain.build.para);
-            obj.confMeta.updatePara;
+            %save estimate parameters
+            if isfield(obj.dataTrain.build,'para');
+                obj.confMeta.definePara(obj.dataTrain.build.para);
+                obj.confMeta.updatePara;
+            end
             %change state of flags
             obj.runTrain=false;
             obj.runErr=true;
@@ -584,12 +600,12 @@ classdef GRENAT < handle
         function show1D(obj)
             figure;
             %depend if the reference is available or not
-            if checkRef(obj);
+            if checkRef(obj)
                 obj.nbSubplot=231;
-                subplot(obj.nbSubplot);
+                if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
                 obj.confDisp.conf('samplePts',true,'sampleGrad',false);
                 showRespRef(obj);
-                obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
+                obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
                 %remove display of sample points
                 obj.confDisp.conf('samplePts',true,'sampleGrad',true);
                 showGradRef(obj);
@@ -597,43 +613,43 @@ classdef GRENAT < handle
             else
                 obj.nbSubplot=221;
             end
-            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
             obj.confDisp.conf('samplePts',true,'sampleGrad',false);
             showResp(obj);
-            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
             %remove display of sample points
             obj.confDisp.conf('samplePts',true,'sampleGrad',true);
             showGrad(obj);
-            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
             showCI(obj,[]);
         end
         function show2D(obj)
             figure;
             %depend if the reference is available or not
-            if checkRef(obj);
+            if checkRef(obj)
                 obj.nbSubplot=331;
-                subplot(obj.nbSubplot);
+                if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
                 obj.confDisp.conf('samplePts',true);
                 showRespRef(obj);
-                obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
+                obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
                 %remove display of sample points
                 obj.confDisp.conf('samplePts',false,'sampleGrad',false);
                 showGradRef(obj,1);
-                obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot)
+                obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
                 showGradRef(obj,2);
             else
                 obj.nbSubplot=231;
             end
-            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
             obj.confDisp.conf('samplePts',true);
             showResp(obj);
-            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
             %remove display of sample points
             obj.confDisp.conf('samplePts',false,'sampleGrad',false,'gridGrad',false);
             showGrad(obj,1);
-            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
             showGrad(obj,2);
-            obj.nbSubplot=obj.nbSubplot+1;subplot(obj.nbSubplot);
+            obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
             showCI(obj,[]);
         end
         %display the reference surface
@@ -644,9 +660,11 @@ classdef GRENAT < handle
         %display the reference gradients surface
         function showGradRef(obj,nbG)
             %default value
-            if nargin==1;nbG=1;end
-            obj.confDisp.title=(['Gradients Reference /x' num2str(nbG)]);
-            displaySurrogate(obj.sampleRef,obj.gradRef(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            if nargin==1;nbG=1:size(obj.nonsampleGrad,3);end
+            for itG=1:numel(nbG)
+                obj.confDisp.title=(['Gradients Reference /x' num2str(nbG(itG))]);
+                displaySurrogate(obj.sampleRef,obj.gradRef(:,:,nbG(itG)),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            end
         end
         %display the response approximated by the metamodel
         function showResp(obj)
@@ -656,9 +674,11 @@ classdef GRENAT < handle
         %display the gradients approximated by the metamodel
         function showGrad(obj,nbG)
             %default value
-            if nargin==1;nbG=1;end
-            obj.confDisp.title=(['Approximated gradients /x' num2str(nbG)]);
-            displaySurrogate(obj.nonsamplePts,obj.nonsampleGrad(:,:,nbG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            if nargin==1;nbG=1:size(obj.nonsampleGrad,3);end
+            for itG=1:numel(nbG)
+                obj.confDisp.title=(['Approximated gradients /x' num2str(nbG(itG))]);
+                displaySurrogate(obj.nonsamplePts,obj.nonsampleGrad(:,:,nbG(itG)),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+            end
         end
         %display the confidence intervals approximated by the metamodel
         function showCI(obj,ciVal,nonsamplePts)

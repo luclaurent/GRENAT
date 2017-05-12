@@ -24,13 +24,17 @@
 
 function [p,dp,infos]=funBooth(xx,dim)
 
+%space
+Xmin=-10;
+Xmax=10;
 % demo mode
 dem=false;
 if nargin==0
-    pas=50;
-    borne=10;
-    [x,y]=meshgrid(linspace(-borne,borne,pas));
-    xx=zeros(pas,pas,2);
+    stepM=50;
+    xl=linspace(Xmin,Xmax,stepM);
+    yl=linspace(Xmin,Xmax,stepM);
+    [x,y]=meshgrid(xl,yl);
+    xx=zeros(stepM,stepM,2);
     xx(:,:,1)=x;xx(:,:,2)=y;
     dem=true;
 end
@@ -54,8 +58,8 @@ if ~isempty(xx)
     
     
     if nargout==2||dem
-        dp(:,:,1)=2*(xxx+2*yyy-7)+4*(2*xxx-yyy-5);
-        dp(:,:,2)=4*(xxx+2*yyy-7)+2*(2*xxx-yyy-5);
+        dp(:,:,1)=2*(xxx+2*yyy-7)+4*(2*xxx+yyy-5);
+        dp(:,:,2)=4*(xxx+2*yyy-7)+2*(2*xxx+yyy-5);
     end
 else
     if nargin==2
@@ -66,6 +70,8 @@ else
 end
 % output: information about the function
 if nargout==3
+    infos.Xmin=Xmin*ones(1,nbvar);
+    infos.Xmax=Xmax*ones(1,nbvar);
     infos.min_glob.Z=0;
     infos.min_glob.X=[1 3];
     infos.min_loc.Z=NaN;

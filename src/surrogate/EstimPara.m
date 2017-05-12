@@ -75,7 +75,7 @@ if sampManuOn
     if nbSampleSpecif;nbSampInit=dataMeta.estim.nbSampInit;end
 end
 %definition valeur de depart de la variable
-x0=0.1*(ub-lb);
+x0=0.01*(ub-lb);
 %function to minimised
 fun=@(para)feval(funObj,dataProb,dataMeta,para,'estim');
 %options depending on the algorithm
@@ -199,22 +199,20 @@ if sampleMinOk
     nbSample=nbPOptim*10;
     samplingType='LHS_O1';
     Gfprintf('||SampleMin + opti||  Sampling %s on %i points\n',samplingType,nbSample);
-    doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSample;doePop.disp=false;doePop.type=samplingType;
-    samplePop=buildDOE(doePop);
+    samplePop=buildDOE(samplingType,nbSample,lb,ub);    
     critS=zeros(1,nbSample);
     for tir=1:nbSample
-        critS(tir)=fun(samplePop.sorted(tir,:));
+        critS(tir)=fun(samplePop(tir,:));
     end
     [fval1,IX]=min(critS);
-    x0=samplePop.sorted(IX,:);
+    x0=samplePop(IX,:);    
 end
 %manual definition of the initial population for GA or PSOt
-if sampManuOn&&sampleMinOk
-    doePop.Xmin=lb;doePop.Xmax=ub;doePop.ns=nbSampInit;doePop.disp=false;doePop.type=dataMeta.para.sampManu;
-    samplePop=buildDOE(doePop);
+if sampManuOn&&sampleMinOk    
+    samplePop=buildDOE(dataMeta.para.sampManu,nbSampInit,lb,ub);
     optionsGA=gaoptimsetMOD(optionsGA,'PopulationSize',nbSampInit,'InitialPopulation',samplePop);
     %PSOt
-    PSOTsampling=samplePop;
+    PSOTsampling=samplePop.sorted;
     PSOTOptions(13)=1;
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -240,10 +238,9 @@ switch methodOptim
         nbSample=nbP*50;
         samplingType='LHS_O1';
         Gfprintf('||SampleMin||  Sample %s on %i points\n',samplingType,nbSample);
-        doePop.Xmin=lb;doePop.Xmax=ub;doePop.nbSamples=nbSample;doePop.disp=false;doePop.type=samplingType;
-        samplePop=buildDOE(doePop);
+        samplePop=buildDOE(samplingType,nbSample,lb,ub);
         critS=zeros(1,nbSample);
-        parfor itSample=1:nbSample
+        for itSample=1:nbSample
             critS(itSample)=fun(samplePop(itSample,:));
         end
         [fval,IX]=min(critS);

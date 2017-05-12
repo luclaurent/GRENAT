@@ -43,20 +43,20 @@ classdef initMeta < handle
         lVal=1;             %internal length (correlation length)
         pVal=2;             %power exponent for generalized exponential kernel function
         nuVal=0.6;          %smoothness coefficient for Matern kernel function
-        lMin=1e-1;
-        lMax=100;
+        lMin=1e-6;
+        lMax=30;
         pMax=2;
         pMin=1.001;
         nuMin=1.5;
         nuMax=5;
-        polyOrder=1;        %polynomial order for kriging, xLS
+        polyOrder=0;        %polynomial order for kriging, xLS
         swfPara=1;          %swf parameter
         %% internal parameters for SVR/GSVR
         e0=1e-2;            %thickness of the tube (not used for nu-SVR)
         ek=1e-2;            %thickness of the tube of gradient (not used for nu-SVR)
-        c0=1e6;             %constant for trade off between flatness of the function and the amount up to
+        c0=1e2;             %constant for trade off between flatness of the function and the amount up to
         %which deviations larger to e0 are tolerated
-        ck=1e6;             %same trade off constant as before
+        ck=1e2;             %same trade off constant as before
         nuSVR=0.6;          %parameter of the nu-SVR (nu in [0,1])
         nuGSVR=0.6;         %idem for nu-GSVR
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,7 +68,7 @@ classdef initMeta < handle
         dispIterGraph=false;% display iterations of the optimisation process on a figure (1D/2D)
         dispIterCmd=false;  % display iteration in the console
         dispPlotAlgo=false; % display convergence information on figures
-        method='pso';       % optimizer used for finding internal parameter
+        method='ga';       % optimizer used for finding internal parameter
         sampManuOn=0;       % initial sampling or not
         sampManu='IHS';     % method used for the initial sampling for GA ('', 'LHS','IHS'...)
         nbSampInit=[];      % number of sample points of the initial sampling for GA
@@ -88,7 +88,7 @@ classdef initMeta < handle
     properties (Access = private,Constant)
         infoProp=affectTxtProp;
         kernAvail={'matern','matern32','matern52','sexp'};
-        typeAvail={'SWF','IDW','RBF','InRBF','GRBF','KRG','InKRG','GKRG','SVR','InSVR','GSVR','DACE','InDACE'};%,'PRG','ILIN','ILAG'};
+        typeAvail={'SWF','IDW','RBF','InRBF','GRBF','KRG','InKRG','GKRG','SVR','InSVR','GSVR','DACE','InDACE','LS','GLS','InLS'};%,'PRG','ILIN','ILAG'};
         typeTxt={'Shepard Weighting Function or Inverse Distance Weighting',...
             'idem',...
             'Radial Basis Function',...
@@ -101,7 +101,10 @@ classdef initMeta < handle
             'Gradient-Based Indirect Support Vector Regression',...
             'Gradient-Based Support Vector Regression',...
             'DACE',...
-            'Gradient-Based Indirect DACE'};
+            'Gradient-Based Indirect DACE',...
+            'Least-squares',...
+            'Gradient-Based Least-squares',...
+            'Gradient-Based Indirect Least-squares'};
     end
     methods
         %constructor
@@ -109,9 +112,7 @@ classdef initMeta < handle
             %if they are input variables
             if nargin>0;conf(obj,varargin{:});end
             %display message
-            Gfprintf('=========================================\n');
-            Gfprintf(' >> Initialization of the metamodel configuration\n');
-            Gfprintf('=========================================\n');
+            Gfprintf(' >>> Initialization of the metamodel configuration\n');
             %listeners
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%add listener for specific event (execute method after the set
@@ -145,6 +146,7 @@ classdef initMeta < handle
                 else
                     Gfprintf(' Type %s not available\n',charIn);
                     availableType(obj);
+                    error('STOP');
                 end
             end
         end

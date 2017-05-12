@@ -84,7 +84,7 @@ end
 if ~emptyGrad
     if nbMissGrad~=0
         Gfprintf('>>> Missing gradient(s) at point(s):\n');
-        keyboard
+        %keyboard
         for ii=1:nbMissGrad
             num_pts=ixMissGrad(ii,1);
             component=ixMissGrad(ii,2);

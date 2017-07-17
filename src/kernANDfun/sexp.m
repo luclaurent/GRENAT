@@ -2,7 +2,7 @@
 %%L. LAURENT -- 18/01/2012 -- luc.laurent@cnam.fr
 %revision of the 13/11/2012
 %change of the 19/12/2012: change correlation length
-%revision of the31/08/2015: change of the name of the function
+%revision of the 31/08/2015: change of the name of the function
 %change of the 02/05/2016: change to unidimensional function
 %
 %Rasmussen 2006 p. 83

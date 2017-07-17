@@ -74,6 +74,7 @@ classdef GRENAT < handle
         normRespIn=false; %flag for checking if the input data are normalized
         runMissingData=true; %flag for checking missing data
         nbSubplot=0; %number of subplot for display
+        requireUpdate=false; %flag for checking if GRENAT requires an update
     end
     properties (Access = private,Constant)
         infoProp=affectTxtProp;
@@ -163,6 +164,10 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %getter for checking if GRENAT could be updated
+        function s=get.requireUpdate(obj)
+            s=obj.checkUpdate();
+        end
         %getter for the type of metamodel
         function type=get.type(obj)
             type=obj.confMeta.type;
@@ -204,6 +209,45 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %check if update could be done
+        function s=checkUpdate(obj)
+            s=false;
+            obj.requireUpdate=false;
+            %load folder of GRENAT
+            f=fileparts(mfilename('fullpath'));
+           if exist(fullfile('.git'),'dir')
+               [e,~]=system(['cd ' f ' && git status -uno | grep up-to-date && exit 3']);
+               if e==3
+                   Gfprintf('GRENAT is up to date\n');
+               else
+                   Gfprintf('GRENAT could be update\n');
+                   s=true;
+                   obj.requireUpdate=true;
+               end
+           else
+               Gfprintf('Not a git version: checking update not available\n');
+           end
+        end
+        %check if update could be done
+        function s=selfUpdate(obj,flag)
+            if nargin==1
+                flag=obj.requireUpdate;
+            end
+            %load folder of GRENAT
+            f=fileparts(mfilename('fullpath'));
+            if flag
+                if exist(fullfile('.git'),'dir')
+                    [e,s]=system(['cd ' f ' && git pull origin']);
+                    if e==0
+                        Gfprintf('GRENAT has been update\n');
+                        s=false;
+                        obj.requireUpdate=false;
+                    end
+                else
+                    Gfprintf('Not a git version: update not available\n');
+                end
+            end
+        end
         %initialize flags
         function initRunTrain(obj,flag)
             obj.runTrain=flag;

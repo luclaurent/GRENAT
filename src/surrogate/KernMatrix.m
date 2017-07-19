@@ -29,6 +29,8 @@ classdef KernMatrix < handle
         sampling=[];        % sampling points
         newSample=[];       % in the cas of adding new sample points
         distC=[];           % vector of inter-points distances
+        distN=[];           % vector of inter-points distances for new sample points
+        distNO=[];          % vector of inter-points distances for new sample points (distance to the old ones)
         fctKern='sexp';     % chosen kernel function    
     end
     properties (Dependent)
@@ -107,17 +109,43 @@ classdef KernMatrix < handle
         end
         
         %% other methods
+        %initialize all flag
+        function init(obj)
+            obj.requireRun=true;     % flag if a full building is required
+            obj.requireUpdate=false; % flag if an update is required
+            obj.requireIndices=true; % flag if an update of indices is required
+        end
+        %check matrices
+        function f=checkMatrix(obj)
+           %check symetry
+           fS=all(all(obj.KK==obj.KK'));
+           %check eye
+           fE=all(diag(obj.KK)==1);
+           %check the adding process
+           KKold=obj.KK;
+           obj.sampling=[obj.sampling;obj.newSample];
+           obj.requireRun=true;
+           obj.requireIndices=true;
+           KKnew=obj.buildMatrix();           
+           fA=all(all(KKold==KKnew));
+           %
+           f=(fS&&fE&&fA);
+           %
+           fprintf('Matrix ');
+           if f; fprintf('OK'); else fprintf('NOK');end
+           fprintf('\n');
+           if ~f;keyboard;end
+        end
         %load list Kernel functions
         function l=loadKern(obj)
             l=obj.listKernel;
         end
         %compute indices
         function iX=computeIX(obj)
-            keyboard
             if obj.requireIndices
                 ns=obj.nS;
                 np=obj.nP;
-                % Building indexes system
+                % Building indices system
                 if obj.computeD
                     %
                     sizeMatRc=(ns^2+ns)/2;
@@ -137,7 +165,7 @@ classdef KernMatrix < handle
                     iteA=0;
                     iteAb=0;
                     pres=0;
-                    %table of indexes for inter-lengths (1), responses (1) and 1st
+                    %table of indices for inter-lengths (1), responses (1) and 1st
                     %derivatives (2)
                     tmpIX=allcomb(1:ns,1:ns);
                     iXsampling=tmpIX(tmpIX(:,1)<tmpIX(:,2),:);
@@ -164,7 +192,7 @@ classdef KernMatrix < handle
                             iXdev(iteA)=tmpList(ite,jj);
                         end
                     end
-                    %table of indexes for second derivatives
+                    %table of indices for second derivatives
                     a=zeros(ns*np,np);
                     decal=0;
                     precI=0;
@@ -183,9 +211,9 @@ classdef KernMatrix < handle
                         precI=iteI(end);
                     end
                 else
-                    %table of indexes for inter-lenghts  (1), responses (1)
+                    %table of indices for inter-lenghts  (1), responses (1)
                     tmpIX=allcomb(1:ns,1:ns);
-                    iXsampling=tmpIX(tmpIX(:,1)<tmpIX(:,2),:);
+                    iXsampling=tmpIX(tmpIX(:,1)<=tmpIX(:,2),:);
                     iXmatrix=(iXsampling(:,1)-1)*ns+iXsampling(:,2);
 %                     bmax=ns-1;
 %                     iXmatrix=zeros(ns*(ns-1)/2,1);
@@ -199,21 +227,22 @@ classdef KernMatrix < handle
                 end
                 %
                 iX.iXsampling=iXsampling;
+                iX.matrix=iXmatrix;
                 obj.iX=iX;
                 %
-                keyboard
+                %keyboard
                 obj.requireIndices=false;
             else
                 iX=obj.iX;
             end
-            keyboard
+            
         end
         %compute new indices (after adding new sample points)
         function iX=computeNewIX(obj)
             oldNs=obj.nS;
             newNs=obj.NnS;
             np=obj.nP;
-            % Building indexes system
+            % Building indices system
             if obj.computeD
                 %
                 sizeMatRc=newNs*(oldNs+1);
@@ -233,7 +262,7 @@ classdef KernMatrix < handle
                 iteA=0;
                 iteAb=0;
                 pres=0;
-                %table of indexes for inter-lengths (1), responses (1) and 1st
+                %table of indices for inter-lengths (1), responses (1) and 1st
                 %derivatives (2)
                 %                     for ii=1:ns
                 %
@@ -259,7 +288,7 @@ classdef KernMatrix < handle
                 %                             iXdev(iteA)=tmpList(ite,jj);
                 %                         end
                 %                     end
-                %                     %table of indexes for second derivatives
+                %                     %table of indices for second derivatives
                 %                     a=zeros(ns*np,np);
                 %                     decal=0;
                 %                     precI=0;
@@ -278,13 +307,15 @@ classdef KernMatrix < handle
                 %                         precI=iteI(end);
                 %                     end
             else
-                %table of indexes for inter-lenghts  (1), responses (1)
-                keyboard
-                tmpIX=allcomb(1:newNs,1:oldNs);
-                iXsampling=tmpIX(tmpIX(:,1)<tmpIX(:,2),:);
-                iXmatrix=(iXsampling(:,1)-1)*(newNs+oldNs)+iXsampling(:,2);
+                %table of indices for inter-lenghts  (1), responses (1)
+                iXsamplingNO=allcomb(1:newNs,1:oldNs);      %old and new
+                tmpIX=allcomb(1:newNs,1:newNs);
+                iXsamplingN=tmpIX(tmpIX(:,1)<=tmpIX(:,2),:); %new only
+                %linear indices
+                iXmatrixNO=(iXsamplingNO(:,1)-1)*oldNs+iXsamplingNO(:,2);
+                iXmatrixN=(iXsamplingN(:,1)-1)*newNs+iXsamplingN(:,2);
                 %
-                keyboard
+                %keyboard
 %                 bmax=ns-1;
 %                 iXmatrix=zeros(newNs*(oldNs+1),1);
 %                 iXsampling=zeros(newNs*(oldNs+1),2);
@@ -296,15 +327,25 @@ classdef KernMatrix < handle
 %                 end
             end
             %
-            iX.iXsampling=iXsampling;
+            iX.iXsamplingNO=iXsamplingNO;
+            iX.iXsamplingN=iXsamplingN;
+            iX.iXmatrixNO=iXmatrixNO;
+            iX.iXmatrixN=iXmatrixN;
             obj.NiX=iX;
         end
         
         %compute inter-points distances
-        function distC=computeDist(obj)
-            keyboard
+        function distC=computeDist(obj)            
             distC=obj.sampling(obj.iX.iXsampling(:,1),:)-obj.sampling(obj.iX.iXsampling(:,2),:);
             obj.distC=distC;
+        end
+        %compute new inter-points distances (since new sample points are
+        %added)
+        function [distN,distNO]=computeNewDist(obj)
+            distN=obj.newSample(obj.NiX.iXsamplingN(:,1),:)-obj.newSample(obj.NiX.iXsamplingN(:,2),:);
+            distNO=obj.newSample(obj.NiX.iXsamplingNO(:,1),:)-obj.sampling(obj.NiX.iXsamplingNO(:,2),:);
+            obj.distN=distN;
+            obj.distNO=distNO;
         end
         %new run required
         function fRun(obj);obj.requireRun=true;end
@@ -337,25 +378,26 @@ classdef KernMatrix < handle
                 if obj.computeD
                     %if parallel workers are available
                     if obj.parallelOk
-                        %%%%%% PARALLEL %%%%%%
-                        %various parts of the Kernel Matrix
-                        KK=zeros(ns,ns);
-                        KKa=cell(1,ns);
-                        KKi=cell(1,ns);                    
-                        %
-                        parfor ii=1:ns
-                            %Building by column & evaluation of the Kernel function
-                            [ev,dev,ddev]=multiKernel(fctK,dC(:,ii),pVl);
-                            %classical part
-                            KK(:,ii)=ev;
-                            %part of the first derivatives
-                            KKa{ii}=dev;
-                            %part of the second derivatives
-                            KKi{ii}=reshape(ddev,np,ns*np);
-                        end
-                        %Reordering matrices
-                        KKd=horzcat(KKa{:});
-                        KKdd=vertcat(KKi{:});
+                        %%REWRITE
+%                         %%%%%% PARALLEL %%%%%%
+%                         %various parts of the Kernel Matrix
+%                         KK=zeros(ns,ns);
+%                         KKa=cell(1,ns);
+%                         KKi=cell(1,ns);                    
+%                         %
+%                         parfor ii=1:ns
+%                             %Building by column & evaluation of the Kernel function
+%                             [ev,dev,ddev]=multiKernel(fctK,dC(:,ii),pVl);
+%                             %classical part
+%                             KK(:,ii)=ev;
+%                             %part of the first derivatives
+%                             KKa{ii}=dev;
+%                             %part of the second derivatives
+%                             KKi{ii}=reshape(ddev,np,ns*np);
+%                         end
+%                         %Reordering matrices
+%                         KKd=horzcat(KKa{:});
+%                         KKdd=vertcat(KKi{:});
                     else
                         %evaluation of the kernel function for all inter-points
                         [ev,dev,ddev]=multiKernel(fctK,dC,pVl);
@@ -378,25 +420,28 @@ classdef KernMatrix < handle
                     end
                 else
                     if obj.parallelOk
-                        %%%%%% PARALLEL %%%%%%
-                        %classical kernel matrix by column
-                        KK=zeros(ns,ns);
-                        parfor ii=1:ns
-                            % evaluate kernel function
-                            [ev]=multiKernel(fctK,dC(:,ii),pVl);
-                            % kernel matrix by column
-                            KK(:,ii)=ev;
-                        end
+                        %REWRITE
+%                         %%%%%% PARALLEL %%%%%%
+%                         %classical kernel matrix by column
+%                         KK=zeros(ns,ns);
+%                         parfor ii=1:ns
+%                             % evaluate kernel function
+%                             [ev]=multiKernel(fctK,dC(:,ii),pVl);
+%                             % kernel matrix by column
+%                             KK(:,ii)=ev;
+%                         end
                     else
                         %classical kernel matrix (lower triangular matrix)
                         %without diagonal
                         KK=zeros(ns,ns);
                         % evaluate kernel function
                         [ev]=multiKernel(fctK,dC,pVl);
+                        %keyboard
                         KK(obj.iX.matrix)=ev;
                         %Build full kernel matrix
-                        KK=KK+KK'+eye(ns);
+                        KK=KK+KK'-eye(ns);
                     end
+                    obj.KK=KK;
                 end
                 obj.requireRun=false;
             else
@@ -408,30 +453,131 @@ classdef KernMatrix < handle
         end
         %add new sample points
         function addSample(obj,newS)
+            %check if new sample point already exists
             obj.newSample=newS;
+            obj.requireUpdate=true;
         end
         
-        %function for updating the 
+        %function for updating the
         function [KK,KKd,KKdd]=updateMatrix(obj,newS)
-            %depending on the number of output arguments
-            if nargout>1
-                obj.computeD=true;
-                %if the first and second derivatives matrices have not been
-                %calculated before, we calculate it yet
-                if isempty(obj.KKd)
-                    obj.sampling=[obj.sampling;newS];
-                    obj.requireRun=true;
-                    obj.requireIndices=true;
-                    [KK,KKd,KKdd]=obj.buildMatrix;
-                end
-            end
             %store the new sample points
-            obj.addSample(newS);
-            %calculation of the new distances and indices
-            obj.computeNewIX();
-            obj.computeNewdist();
-            
+            if nargin>1;if ~isempty(newS);obj.addSample(newS); end, end
+            if obj.requireUpdate
+                %calculation of the new distances and indices
+                obj.computeNewIX();
+                obj.computeNewDist();
+                %
+                oldNs=obj.nS;
+                newNs=obj.NnS;
+                np=obj.nP;
+                %
+                dN=obj.distN;
+                dNO=obj.distNO;
+                distM=[dNO;dN];
+                nbNO=size(dNO,1);
+                nbN=size(dN,1);
+                %
+                fctK=obj.fctKern;
+                pVl=obj.paraVal;
+                %depending on the number of output arguments
+                if nargout>1
+                    obj.computeD=true;
+                    %if the first and second derivatives matrices have not been
+                    %calculated before, we calculate it yet
+                    if isempty(obj.KKd)
+                        obj.sampling=[obj.sampling;newS];
+                        obj.requireRun=true;
+                        obj.requireIndices=true;
+                        [KK,KKd,KKdd]=obj.buildMatrix;
+                    else
+                        if obj.parallelOk
+                            %%REWRITE
+                            %                         %%%%%% PARALLEL %%%%%%
+                            %                         %various parts of the Kernel Matrix
+                            %                         KKON=zeros(oldNs,newNs);
+                            %                         KKN=zeros(newNs,newNs);
+                            %                         KKUa=cell(1,ns);
+                            %                         KKUi=cell(1,ns);
+                            %                         %%
+                            %                         %
+                            %                         parfor ii=1:ns
+                            %                             %Building by column & evaluation of the Kernel function
+                            %                             [ev,dev,ddev]=multiKernel(fctK,distM(:,ii),pVl);
+                            %                             %classical part
+                            %                             KK(:,ii)=ev;
+                            %                             %part of the first derivatives
+                            %                             KKa{ii}=dev;
+                            %                             %part of the second derivatives
+                            %                             KKi{ii}=reshape(ddev,np,ns*np);
+                            %                         end
+                            %                         %Reordering matrices
+                            %                         KKd=horzcat(KKa{:});
+                            %                         KKdd=vertcat(KKi{:});
+                        else
+                            %evaluation of the kernel function for all inter-points
+                            [ev,dev,ddev]=multiKernel(fctK,distM,pVl);
+                            %various parts of the kernel Matrix
+                            KKNO=zeros(oldNs,newNs);
+                            KKN=zeros(newNs,newNs);
+                            KKUa=cell(1,ns);
+                            KKUi=cell(1,ns);
+                            KK=zeros(ns,ns);
+                            KKd=zeros(ns,np*ns);
+                            KKdd=zeros(ns*np,ns*np);
+                            %classical part
+                            KKNO(obj.NiX.iXmatrixNO)=ev(1:nbNO);
+                            KKN(obj.NiX.iXmatrixN)=ev(nbNO+(1:nbN));
+                            %correction of the duplicated terms on the diagonal
+                            KKN=KKN+KKN'-eye(ns);
+                            %first and second derivatives of the kernel function
+                            KKd(obj.iX.matrixA)=-dev(obj.iX.dev);
+                            KKd(obj.iX.matrixAb)=dev(obj.iX.devb);
+                            KKdd(obj.iX.matrixI)=ddev(:);
+                            %extract diagonal (process for avoiding duplicate terms)
+                            diago=0;   % //!!\\ corrections possible here
+                            val_diag=spdiags(KKdd,diago);
+                            KKdd=KKdd+KKdd'-spdiags(val_diag,diago,zeros(size(KKdd))); %correction of the duplicated terms on the diagonal
+                        end
+                    end                          
+                else
+                    if obj.parallelOk
+                        %REWRITE
+%                         %%%%%% PARALLEL %%%%%%
+%                         %classical kernel matrix by column
+%                         KK=zeros(ns,ns);
+%                         parfor ii=1:ns
+%                             % evaluate kernel function
+%                             [ev]=multiKernel(fctK,dC(:,ii),pVl);
+%                             % kernel matrix by column
+%                             KK(:,ii)=ev;
+%                         end
+                    else
+                        %classical kernel matrix (lower triangular matrix)
+                        %without diagonal
+                        KKNO=zeros(oldNs,newNs);
+                        KKN=zeros(newNs,newNs);
+                        % evaluate kernel function
+                        [ev]=multiKernel(fctK,distM,pVl);
+                        %classical part
+                        KKNO(obj.NiX.iXmatrixNO)=ev(1:nbNO);
+                        KKN(obj.NiX.iXmatrixN)=ev(nbNO+(1:nbN));
+                        %correction of the new sample point kernel matrix
+                        KKN=KKN+KKN'-eye(newNs);
+                        %assembly of the updated kernel matrix
+                        KK=[obj.KK KKNO;KKNO' KKN];
+                        obj.KK=KK;
+                    end
+                end
+                obj.requireUpdate=false;
+                obj.sampling=[obj.sampling;obj.newSample];
+                obj.newSample=[];
+            else
+                %if already computed then load it
+                keyboard
+                KK=obj.KK;
+            end
         end
+        
         %show the list of available kernel functions
         function showKernel(obj)
             fprintf('List of available kernel functions\n');

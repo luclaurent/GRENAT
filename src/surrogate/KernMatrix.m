@@ -411,7 +411,6 @@ classdef KernMatrix < handle
                         %without diagonal
                         KK=zeros(ns,ns);
                         % evaluate kernel function
-                        keyboard
                         [ev]=multiKernel(fctK,dC,pVl);
                         %keyboard
                         KK(obj.iX.matrix)=ev;
@@ -430,23 +429,36 @@ classdef KernMatrix < handle
         end
         %add new sample points
         function addSample(obj,newS)
-            %check if new sample point already exists
+            %check if new sample point already exists            
             newS=unique(newS,'rows');
             [~,Ln]=ismember(obj.sampling,newS,'rows');
             %
             Ln=Ln(Ln>0);
             if ~isempty(Ln)
                 fprintf(' >> Duplicate sample points detected: remove it\n');
-                newS(Ln)=[];
+                newS(Ln,:)=[];
             end
             obj.newSample=newS;
-            obj.requireUpdate=true;
+            if ~isempty(obj.newSample)
+                obj.requireUpdate=true;
+            end            
         end
         
         %function for updating the
         function [KK,KKd,KKdd]=updateMatrix(obj,newS)
             %store the new sample points
             if nargin>1;if ~isempty(newS);obj.addSample(newS); end, end
+            %if nothing have been already built
+            if obj.requireRun
+                obj.requireUpdate=false;
+                obj.sampling=[obj.sampling;obj.newSample];
+                obj.newSample=[];
+                if nargout==1
+                    KK=obj.buildMatrix;
+                else
+                    [KK,KKd,KKdd]=obj.buildMatrix;
+                end
+            end
             if obj.requireUpdate
                 %calculation of the new distances and indices
                 obj.computeNewIX();

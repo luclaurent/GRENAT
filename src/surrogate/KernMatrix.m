@@ -85,6 +85,7 @@ classdef KernMatrix < handle
             if ~oldFlag&&bool
                 obj.fRun;
             end
+            obj.computeD=bool;
         end
         
         %getter for the number of acceptable internal parameters
@@ -145,19 +146,24 @@ classdef KernMatrix < handle
             if obj.requireIndices
                 ns=obj.nS;
                 np=obj.nP;
-                % Building indices system
+                % Building indices system                
+                %table of indices for inter-lenghts  (1), responses (1)
+                tmpIX=allcomb(1:ns,1:ns);
+                iXsampling=tmpIX(tmpIX(:,1)<=tmpIX(:,2),:);
+                iXmatrix=(iXsampling(:,1)-1)*ns+iXsampling(:,2);
+                %
+                iX.iXsampling=iXsampling;
+                iX.matrix=iXmatrix;
+                %for gradients
                 if obj.computeD
                     %
                     sizeMatRc=(ns^2+ns)/2;
                     sizeMatRa=np*sizeMatRc;
                     sizeMatRi=np^2*sizeMatRc;
-                    iXmatrix=zeros(sizeMatRc,1);
                     iXmatrixA=zeros(sizeMatRa,1);
                     iXmatrixAb=zeros(sizeMatRa,1);
                     iXmatrixI=zeros(sizeMatRi,1);
-                    iXdev=zeros(sizeMatRa,1);
-                    iXsampling=zeros(sizeMatRc,2);
-                    
+                    iXdev=zeros(sizeMatRa,1);                    
                     tmpList=zeros(sizeMatRc,np);
                     tmpList(:)=1:sizeMatRa;
                     
@@ -165,11 +171,7 @@ classdef KernMatrix < handle
                     iteA=0;
                     iteAb=0;
                     pres=0;
-                    %table of indices for inter-lengths (1), responses (1) and 1st
-                    %derivatives (2)
-                    tmpIX=allcomb(1:ns,1:ns);
-                    iXsampling=tmpIX(tmpIX(:,1)<tmpIX(:,2),:);
-                    iXmatrix=(iXsampling(:,1)-1)*ns+iXsampling(:,2);
+                    %table of indices for 1st derivatives (2)
                     for ii=1:ns
                         
                         ite=ite(end)+(1:(ns-ii+1));
@@ -190,9 +192,23 @@ classdef KernMatrix < handle
                             pres=li(end);
                             list_tmpB=reshape(tmpList',[],1);
                             iXdev(iteA)=tmpList(ite,jj);
+                            iXdevb=list_tmpB;
                         end
                     end
                     %table of indices for second derivatives
+                    tic
+                    Na=(1:ns*np)';
+                    Nb=ns*np.*(0:(ns*np-1));
+                    Nt=Na(:,ones(1,ns*np))+Nb(ones(1,ns*np),:);
+                    % build a mask
+                    cT={ones(np)};
+                    mask=logical(blkdiag(cT{ones(ns,1)}))|logical(tril(ones(ns*np)));
+                    mT=Nt.*mask;
+                    %
+                    mTT = reshape( permute( reshape(mT,size(mT,1),np,[]), [1,3,2]), [], np )';
+                    mI = mTT(mTT(:)>0);
+                    toc
+                    tic
                     a=zeros(ns*np,np);
                     decal=0;
                     precI=0;
@@ -210,24 +226,16 @@ classdef KernMatrix < handle
                         iXmatrixI(iteI)=b(iteb);
                         precI=iteI(end);
                     end
-                else
-                    %table of indices for inter-lenghts  (1), responses (1)
-                    tmpIX=allcomb(1:ns,1:ns);
-                    iXsampling=tmpIX(tmpIX(:,1)<=tmpIX(:,2),:);
-                    iXmatrix=(iXsampling(:,1)-1)*ns+iXsampling(:,2);
-%                     bmax=ns-1;
-%                     iXmatrix=zeros(ns*(ns-1)/2,1);
-%                     iXsampling=zeros(ns*(ns-1)/2,2);
-%                     ite=0;
-%                     for ii=1:bmax
-%                         ite=ite(end)+(1:(ns-ii));
-%                         iXmatrix(ite)=(ns+1)*ii-ns+1:ii*ns;
-%                         iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
-%                     end
+                    toc
+                    %store indices
+                    iX.matrixA=iXmatrixA;
+                    iX.matrixAb=iXmatrixAb;
+                    iX.dev=iXdev;
+                    iX.devb=iXdevb;
+                    iX.matrixI=iXmatrixI;
+                    %keyboard
                 end
-                %
-                iX.iXsampling=iXsampling;
-                iX.matrix=iXmatrix;
+                %                
                 obj.iX=iX;
                 %
                 %keyboard
@@ -314,17 +322,6 @@ classdef KernMatrix < handle
                 %linear indices
                 iXmatrixNO=(iXsamplingNO(:,1)-1)*oldNs+iXsamplingNO(:,2);
                 iXmatrixN=(iXsamplingN(:,1)-1)*newNs+iXsamplingN(:,2);
-                %
-                %keyboard
-%                 bmax=ns-1;
-%                 iXmatrix=zeros(newNs*(oldNs+1),1);
-%                 iXsampling=zeros(newNs*(oldNs+1),2);
-%                 ite=0;
-%                 for ii=1:bmax
-%                     ite=ite(end)+(1:(ns-ii));
-%                     iXmatrix(ite)=(ns+1)*ii-ns+1:ii*ns;
-%                     iXsampling(ite,:)=[ii(ones(ns-ii,1)) (ii+1:ns)'];
-%                 end
             end
             %
             iX.iXsamplingNO=iXsamplingNO;
@@ -360,8 +357,9 @@ classdef KernMatrix < handle
         end
         %
         function [KK,KKd,KKdd]=buildMatrix(obj)
+            obj.init;
             %depending on the number of output arguments
-            if nargout>1;obj.computeD=true;end
+            if nargout>1;obj.computeD=true;end            
             %if already computed, then load it otherwise calculate it
             if obj.requireRun
                 %compute indices and distances
@@ -406,18 +404,26 @@ classdef KernMatrix < handle
                         KKd=zeros(ns,np*ns);
                         KKdd=zeros(ns*np,ns*np);
                         %classical part
-                        KK(dataIn.ix.matrix)=ev;
+                        KK(obj.iX.matrix)=ev;
                         %correction of the duplicated terms on the diagonal
                         KK=KK+KK'-eye(ns);
+                        
                         %first and second derivatives of the kernel function
-                        KKd(obj.iX.matrixA)=-dev(obj.iX.dev);
-                        KKd(obj.iX.matrixAb)=dev(obj.iX.devb);
+                        devT=dev';
+                        %KKd(obj.iX.matrixA)=-dev(obj.iX.dev);
+                        KKd(obj.iX.matrixAb)=devT(:);%dev(obj.iX.devb);
+                        KKdT=reshape(permute(reshape(KKd',[np,ns,ns]),[2,1,3]),[ns ns*np 1]);
+                        KKd=KKd-KKdT;
+                        %
                         KKdd(obj.iX.matrixI)=ddev(:);
                         %extract diagonal (process for avoiding duplicate terms)
                         diago=0;   % //!!\\ corrections possible here
                         val_diag=spdiags(KKdd,diago);
                         KKdd=KKdd+KKdd'-spdiags(val_diag,diago,zeros(size(KKdd))); %correction of the duplicated terms on the diagonal
                     end
+                    obj.KK=KK;
+                    obj.KKd=KKd;
+                    obj.KKdd=KKdd;
                 else
                     if obj.parallelOk
                         %REWRITE
@@ -435,6 +441,7 @@ classdef KernMatrix < handle
                         %without diagonal
                         KK=zeros(ns,ns);
                         % evaluate kernel function
+                        keyboard
                         [ev]=multiKernel(fctK,dC,pVl);
                         %keyboard
                         KK(obj.iX.matrix)=ev;

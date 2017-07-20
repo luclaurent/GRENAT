@@ -431,6 +431,14 @@ classdef KernMatrix < handle
         %add new sample points
         function addSample(obj,newS)
             %check if new sample point already exists
+            newS=unique(newS,'rows');
+            [~,Ln]=ismember(obj.sampling,newS,'rows');
+            %
+            Ln=Ln(Ln>0);
+            if ~isempty(Ln)
+                fprintf(' >> Duplicate sample points detected: remove it\n');
+                newS(Ln)=[];
+            end
             obj.newSample=newS;
             obj.requireUpdate=true;
         end

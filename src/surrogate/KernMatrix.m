@@ -184,6 +184,8 @@ classdef KernMatrix < handle
                         lib=debb:ns:finb;
                         %
                         iXmatrixAb(iteAb)=lib;
+                        [iteAb' lib']
+                        %keyboard
                     end
                     %table of indices for second derivatives
                     a=zeros(ns*np,np);
@@ -222,14 +224,11 @@ classdef KernMatrix < handle
             % Building indices system
             if obj.computeD
                 %
-                sizeMatRc=newNs*(oldNs+1);
+                sizeMatRc=(newNs^2+newNs)/2;
                 sizeMatRa=np*sizeMatRc;
                 sizeMatRi=np^2*sizeMatRc;
-                iXmatrix=zeros(sizeMatRc,1);
-                %iXmatrixA=zeros(sizeMatRa,1);
-                %iXmatrixAb=zeros(sizeMatRa,1);
-                %iXmatrixI=zeros(sizeMatRi,1);
-                %iXdev=zeros(sizeMatRa,1);
+                iXmatrixAb=zeros(sizeMatRa,1);
+                iXmatrixI=zeros(sizeMatRi,1);
                 iXsampling=zeros(sizeMatRc,2);
                 
                 tmpList=zeros(sizeMatRc,np);
@@ -241,62 +240,49 @@ classdef KernMatrix < handle
                 pres=0;
                 %table of indices for inter-lengths (1), responses (1) and 1st
                 %derivatives (2)
-                %                     for ii=1:ns
-                %
-                %                         ite=ite(end)+(1:(ns-ii+1));
-                %                         iXmatrix(ite)=(ns+1)*ii-ns:ii*ns;
-                %                         iXsampling(ite,:)=[ii(ones(ns-ii+1,1)) (ii:ns)'];
-                %                         iteAb=iteAb(end)+(1:((ns-ii+1)*np));
-                %
-                %                         debb=(ii-1)*np*ns+ii;
-                %                         finb=ns^2*np-(ns-ii);
-                %                         lib=debb:ns:finb;
-                %
-                %                         iXmatrixAb(iteAb)=lib;
-                %
-                %                         for jj=1:np
-                %                             iteA=iteA(end)+(1:(ns-ii+1));
-                %                             decal=(ii-1);
-                %                             deb=pres+decal;
-                %                             li=deb + (1:(ns-ii+1));
-                %                             iXmatrixA(iteA)=li;
-                %                             pres=li(end);
-                %                             list_tmpB=reshape(tmpList',[],1);
-                %                             iXdev(iteA)=tmpList(ite,jj);
-                %                         end
-                %                     end
-                %                     %table of indices for second derivatives
-                %                     a=zeros(ns*np,np);
-                %                     decal=0;
-                %                     precI=0;
-                %                     for ii=1:ns
-                %                         li=1:ns*np^2;
-                %                         a(:)=decal+li;
-                %                         decal=a(end);
-                %                         b=a';
-                %
-                %                         iteI=precI+(1:(np^2*(ns-(ii-1))));
-                %
-                %                         debb=(ii-1)*np^2+1;
-                %                         finb=np^2*ns;
-                %                         iteb=debb:finb;
-                %                         iXmatrixI(iteI)=b(iteb);
-                %                         precI=iteI(end);
-                %                     end
-            else
-                %table of indices for inter-lenghts  (1), responses (1)
-                iXsamplingNO=allcomb(1:newNs,1:oldNs);      %old and new
-                tmpIX=allcomb(1:newNs,1:newNs);
-                iXsamplingN=tmpIX(tmpIX(:,1)<=tmpIX(:,2),:); %new only
-                %linear indices
-                iXmatrixNO=(iXsamplingNO(:,1)-1)*oldNs+iXsamplingNO(:,2);
-                iXmatrixN=(iXsamplingN(:,1)-1)*newNs+iXsamplingN(:,2);
+                for ii=1:newNs
+                    %
+                    iteAb=iteAb(end)+(1:((newNs-ii+1)*np));
+                    %
+                    debb=(ii-1)*newNs*np+ii;
+                    finb=newNs*(newNs*np-1)+ii;
+                    lib=debb:newNs:finb;
+                    iXmatrixAb(iteAb)=lib;
+                end
+%                 %table of indices for second derivatives
+%                 a=zeros(ns*np,np);
+%                 decal=0;
+%                 precI=0;
+%                 for ii=1:ns
+%                     li=1:ns*np^2;
+%                     a(:)=decal+li;
+%                     decal=a(end);
+%                     b=a';
+%                     
+%                     iteI=precI+(1:(np^2*(ns-(ii-1))));
+%                     
+%                     debb=(ii-1)*np^2+1;
+%                     finb=np^2*ns;
+%                     iteb=debb:finb;
+%                     iXmatrixI(iteI)=b(iteb);
+%                     precI=iteI(end);
+%                 end
             end
+            %table of indices for inter-lenghts  (1), responses (1)
+            iXsamplingNO=allcomb(1:newNs,1:oldNs);      %old and new
+            tmpIX=allcomb(1:newNs,1:newNs);
+            iXsamplingN=tmpIX(tmpIX(:,1)<=tmpIX(:,2),:); %new only
+            %linear indices
+            iXmatrixNO=(iXsamplingNO(:,1)-1)*oldNs+iXsamplingNO(:,2);
+            iXmatrixN=(iXsamplingN(:,1)-1)*newNs+iXsamplingN(:,2);
+            %keyboard
             %
             iX.iXsamplingNO=iXsamplingNO;
             iX.iXsamplingN=iXsamplingN;
-            iX.iXmatrixNO=iXmatrixNO;
-            iX.iXmatrixN=iXmatrixN;
+            iX.matrixNO=iXmatrixNO;
+            iX.matrixN=iXmatrixN;
+            %iXmatrixAb
+            iX.matrixAb=iXmatrixAb;
             obj.NiX=iX;
         end
         
@@ -304,6 +290,9 @@ classdef KernMatrix < handle
         function distC=computeDist(obj)
             distC=obj.sampling(obj.iX.iXsampling(:,1),:)-obj.sampling(obj.iX.iXsampling(:,2),:);
             obj.distC=distC;
+            [obj.sampling(obj.iX.iXsampling(:,1),:) obj.sampling(obj.iX.iXsampling(:,2),:)]
+            %keyboard
+            
         end
         %compute new inter-points distances (since new sample points are
         %added)
@@ -312,6 +301,10 @@ classdef KernMatrix < handle
             distNO=obj.newSample(obj.NiX.iXsamplingNO(:,1),:)-obj.sampling(obj.NiX.iXsamplingNO(:,2),:);
             obj.distN=distN;
             obj.distNO=distNO;
+            
+            [obj.sampling(obj.NiX.iXsamplingNO(:,2),:) obj.newSample(obj.NiX.iXsamplingNO(:,1),:)]
+            [obj.newSample(obj.NiX.iXsamplingN(:,2),:) obj.newSample(obj.NiX.iXsamplingN(:,1),:)]
+            %keyboard
         end
         %new run required
         function fRun(obj);obj.requireRun=true;end
@@ -369,6 +362,7 @@ classdef KernMatrix < handle
                         %                         KKdd=vertcat(KKi{:});
                     else
                         %evaluation of the kernel function for all inter-points
+                        %keyboard
                         [ev,dev,ddev]=multiKernel(fctK,dC,pVl);
                         %various parts of the kernel Matrix
                         KK=zeros(ns,ns);
@@ -382,6 +376,8 @@ classdef KernMatrix < handle
                         devT=dev';
                         %KKd(obj.iX.matrixA)=-dev(obj.iX.dev);
                         KKd(obj.iX.matrixAb)=devT(:);%dev(obj.iX.devb);
+                        %keyboard
+                
                         KKdT=reshape(permute(reshape(KKd',[np,ns,ns]),[2,1,3]),[ns ns*np 1]);
                         KKd=KKd-KKdT;
                         %
@@ -390,6 +386,7 @@ classdef KernMatrix < handle
                         diago=0;   % //!!\\ possible corrections here
                         val_diag=spdiags(KKdd,diago);
                         KKdd=KKdd+KKdd'-spdiags(val_diag,diago,zeros(size(KKdd))); %correction of the duplicated terms on the diagonal
+                        %keyboard
                     end
                     obj.KK=KK;
                     obj.KKd=KKd;
@@ -428,9 +425,14 @@ classdef KernMatrix < handle
             end
         end
         %add new sample points
-        function addSample(obj,newS)
-            %check if new sample point already exists            
-            newS=unique(newS,'rows');
+        function flag=addSample(obj,newS)
+            flag=false;
+            %remove dulicate
+            [~,l,~]=unique(newS,'rows');
+            newS=newS(sort(l),:);
+            %flag at true if duplicate sample points are removed
+            if size(newS,1)==numel(l);flag=true;end
+            %check if new sample point already exists 
             [~,Ln]=ismember(obj.sampling,newS,'rows');
             %
             Ln=Ln(Ln>0);
@@ -439,6 +441,7 @@ classdef KernMatrix < handle
                 newS(Ln,:)=[];
             end
             obj.newSample=newS;
+            %%keyboard
             if ~isempty(obj.newSample)
                 obj.requireUpdate=true;
             end            
@@ -516,19 +519,45 @@ classdef KernMatrix < handle
                             %various parts of the kernel Matrix
                             KKNO=zeros(oldNs,newNs);
                             KKN=zeros(newNs,newNs);
-                            KKUa=cell(1,ns);
-                            KKUi=cell(1,ns);
-                            KK=zeros(ns,ns);
-                            KKd=zeros(ns,np*ns);
-                            KKdd=zeros(ns*np,ns*np);
                             %classical part
-                            KKNO(obj.NiX.iXmatrixNO)=ev(1:nbNO);
-                            KKN(obj.NiX.iXmatrixN)=ev(nbNO+(1:nbN));
-                            %correction of the duplicated terms on the diagonal
-                            KKN=KKN+KKN'-eye(ns);
+                            KKNO(obj.NiX.matrixNO)=ev(1:nbNO);
+                            KKN(obj.NiX.matrixN)=ev(nbNO+(1:nbN));
+                            %correction of the new sample point kernel matrix
+                            KKN=KKN+KKN'-eye(newNs);
+                            %assembly of the updated kernel matrix
+                            KK=[obj.KK KKNO;KKNO' KKN];
+                            obj.KK=KK;
+                            %
+                            %build the new cross kernel matrix (1st
+                            %derivatives)
+                            KKdN=zeros(newNs,newNs*np);
+                            %depending on the number of new sample points
+                            if newNs==1
+                                %old-new part
+                                KKdON=-dev(1:end-1,:);
+                                %new part
+                                KKdN=-dev(end,:);
+                            else
+                                %old-new part
+                                KKdON=-cell2mat(mat2cell(dev(1:newNs*oldNs,:),oldNs*ones(1,newNs),np)');
+                                %new part by "triangular" matrix
+                                devT=dev(newNs*oldNs+1:end,:)';
+                                KKdN(obj.NiX.matrixAb)=devT(:);
+                                KKdNT=reshape(permute(reshape(KKdN',[np,newNs,newNs]),[2,1,3]),[newNs newNs*np 1]);
+                                %
+                                KKdN=KKdN-KKdNT;
+                            end
+                            %new-old part
+                            KKdNO=-reshape(permute(reshape(KKdON',[np,newNs,oldNs]),[2,1,3]),[newNs,oldNs*np,1]);
+                            %build the full new cross kernel matrix (1st
+                            %derivatives)
+                            KKd=[obj.KKd KKdON;KKdNO KKdN];
+                            obj.KKd=KKd;
+                            %
+                            %build the new cross kernel matrix of second
+                            %derivatives
                             %first and second derivatives of the kernel function
-                            KKd(obj.iX.matrixA)=-dev(obj.iX.dev);
-                            KKd(obj.iX.matrixAb)=dev(obj.iX.devb);
+                            keyboard
                             KKdd(obj.iX.matrixI)=ddev(:);
                             %extract diagonal (process for avoiding duplicate terms)
                             diago=0;   % //!!\\ corrections possible here

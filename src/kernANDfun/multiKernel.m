@@ -110,7 +110,7 @@ if nbOut>2
         if nV>1;maskM=[1 1];else maskM=1;end
         mm=[maskM uniR(2:nV-1)];
         %
-        M=mm(ones(nb_comp,1),:);
+        M=mm(ones(nV,1),:);
         M=triu(M,2)+tril(ones(nV),1);
         M=cumprod(M,2);
         %

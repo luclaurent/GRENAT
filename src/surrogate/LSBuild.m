@@ -238,7 +238,7 @@ if metaData.cv.on
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if availGrad;txt='GLS';else txt='LS';end
+if availGrad;txt='GLS';else, txt='LS';end
 Gfprintf('\n >> END Building %s\n',txt);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -255,9 +255,9 @@ elseif nargin==3
     returnLine=false;
 end
 if isempty(txtInFalse)
-    Gfprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else fprintf('No');end
+    Gfprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else, fprintf('No');end
 else
-    if boolIn; fprintf('%s',txtInTrue);else fprintf('%s',txtInFalse);end
+    if boolIn; fprintf('%s',txtInTrue);else, fprintf('%s',txtInFalse);end
 end
 if returnLine
     fprintf('\n');

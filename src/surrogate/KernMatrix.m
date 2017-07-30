@@ -46,6 +46,7 @@ classdef KernMatrix < handle
         requireRun=true;     % flag if a full building is required
         requireUpdate=false; % flag if an update is required
         requireIndices=true; % flag if an update of indices is required
+        forceGrad=false;     % flag for forcing the computation of 1st and énd derivatives of the kernel matrix
         %
         nbParaOk=[];         %number of acceptable internal parameters
         listKernel={'sexp','matern','matern32','matern52'};  %list of available kernel functions
@@ -95,6 +96,14 @@ classdef KernMatrix < handle
             end
             obj.paraVal=pV;
         end
+        %setter for the flag to force gradient-matrix computation
+        function set.forceGrad(obj,boolIn)
+            oldFG=obj.forceGrad;
+            if ~oldFG&&boolIn
+                obj.fRun;
+            end
+            obj.forceGrad=boolIn;
+        end
         
         %getter for the number of acceptable internal parameters
         function nb=get.nbParaOk(obj)
@@ -116,6 +125,7 @@ classdef KernMatrix < handle
         function pO=get.parallelOk(obj)
             pO=(obj.parallelW>1);
         end
+        
         
         %% other methods
         %initialize all flag
@@ -141,7 +151,7 @@ classdef KernMatrix < handle
             f=(fS&&fE&&fA);
             %
             fprintf('Matrix ');
-            if f; fprintf('OK'); else fprintf('NOK');end
+            if f; fprintf('OK'); else, fprintf('NOK');end
             fprintf('\n');
             if ~f;keyboard;end
         end
@@ -231,32 +241,34 @@ classdef KernMatrix < handle
                 iteAb=0;
                 %table of indices for inter-lengths (1), responses (1) and 1st
                 %derivatives (2)
-                for ii=1:newNs
-                    %
-                    iteAb=iteAb(end)+(1:((newNs-ii+1)*np));
-                    %
-                    debb=(ii-1)*newNs*np+ii;
-                    finb=newNs*(newNs*np-1)+ii;
-                    lib=debb:newNs:finb;
-                    iXmatrixAb(iteAb)=lib;
-                end
-                %table of indices for second derivatives
-                a=zeros(newNs*np,np);
-                decal=0;
-                precI=0;
-                for ii=1:newNs
-                    li=1:newNs*np^2;
-                    a(:)=decal+li;
-                    decal=a(end);
-                    b=a';
-                    %
-                    iteI=precI+(1:(np^2*(newNs-(ii-1))));
-                    %
-                    debb=(ii-1)*np^2+1;
-                    finb=np^2*newNs;
-                    iteb=debb:finb;
-                    iXmatrixI(iteI)=b(iteb);
-                    precI=iteI(end);
+                if newNs>1
+                    for ii=1:newNs
+                        %
+                        iteAb=iteAb(end)+(1:((newNs-ii+1)*np));
+                        %
+                        debb=(ii-1)*newNs*np+ii;
+                        finb=newNs*(newNs*np-1)+ii;
+                        lib=debb:newNs:finb;
+                        iXmatrixAb(iteAb)=lib;
+                    end
+                    %table of indices for second derivatives
+                    a=zeros(newNs*np,np);
+                    decal=0;
+                    precI=0;
+                    for ii=1:newNs
+                        li=1:newNs*np^2;
+                        a(:)=decal+li;
+                        decal=a(end);
+                        b=a';
+                        %
+                        iteI=precI+(1:(np^2*(newNs-(ii-1))));
+                        %
+                        debb=(ii-1)*np^2+1;
+                        finb=np^2*newNs;
+                        iteb=debb:finb;
+                        iXmatrixI(iteI)=b(iteb);
+                        precI=iteI(end);
+                    end
                 end
             end
             %table of indices for inter-lenghts  (1), responses (1)
@@ -293,6 +305,10 @@ classdef KernMatrix < handle
         end
         %new run required
         function fRun(obj);obj.requireRun=true;end
+        %force gradients matrices computation
+        function fGrad(obj);obj.forceGrad=true;end
+        %force indices computation
+        function fIX(obj);obj.requireIndices=true;end
         %compute number of required internal parameters
         function nbP=computeNbPara(obj)
             switch obj.fctKern
@@ -308,7 +324,7 @@ classdef KernMatrix < handle
             %changing the values of the internal parameters
             if nargin>1;obj.paraVal=paraV;end
             %depending on the number of output arguments
-            if nargout>1;obj.computeD=true;end
+            if nargout>1||obj.forceGrad;obj.computeD=true;end
             %if already computed, then load it otherwise calculate it
             if obj.requireRun
                 %compute indices and distances
@@ -362,7 +378,7 @@ classdef KernMatrix < handle
                         %KKd(obj.iX.matrixA)=-dev(obj.iX.dev);
                         KKd(obj.iX.matrixAb)=devT(:);%dev(obj.iX.devb);
                         %keyboard
-                
+                        
                         KKdT=reshape(permute(reshape(KKd',[np,ns,ns]),[2,1,3]),[ns ns*np 1]);
                         KKd=KKd-KKdT;
                         %
@@ -417,7 +433,7 @@ classdef KernMatrix < handle
             newS=newS(sort(l),:);
             %flag at true if duplicate sample points are removed
             if size(newS,1)==numel(l);flag=true;end
-            %check if new sample point already exists 
+            %check if new sample point already exists
             [~,Ln]=ismember(obj.sampling,newS,'rows');
             %
             Ln=Ln(Ln>0);
@@ -429,7 +445,7 @@ classdef KernMatrix < handle
             %%keyboard
             if ~isempty(obj.newSample)
                 obj.requireUpdate=true;
-            end            
+            end
         end
         
         %function for updating the
@@ -598,11 +614,37 @@ classdef KernMatrix < handle
                 obj.newSample=[];
             else
                 %if already computed then load it
-                keyboard
                 KK=obj.KK;
+                KKd=obj.KKd;
+                KKdd=obj.KKdd;
             end
         end
-        
+        %manual getters for matrices
+        function K=getKK(obj)
+            if isempty(obj.KK)||obj.requireRun||obj.requireUpdate
+                K=obj.updateMatrix();
+            else
+                K=obj.KK;
+            end
+        end
+        function K=getKKd(obj)
+            obj.fGrad;
+            obj.fIX;
+            if isempty(obj.KKd)||obj.requireRun||obj.requireUpdate
+                [~,K,~]=obj.updateMatrix();
+            else
+                K=obj.KKd;
+            end
+        end
+        function K=getKKdd(obj)
+            obj.fGrad;
+            obj.fIX;
+            if isempty(obj.KKd)||obj.requireRun||obj.requireUpdate
+                [~,~,K]=obj.updateMatrix();
+            else
+                K=obj.KKdd;
+            end
+        end
         %show the list of available kernel functions
         function showKernel(obj)
             fprintf('List of available kernel functions\n');

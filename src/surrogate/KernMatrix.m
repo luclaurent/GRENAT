@@ -653,7 +653,9 @@ classdef KernMatrix < handle
     end
 end
 
-%function display table with two columns of text
+
+
+%% function display table with two columns of text
 function dispTableTwoColumnsStruct(tableFieldIn,structIn)
 %size of every components in tableA
 sizeA=cellfun(@numel,tableFieldIn);
@@ -669,7 +671,7 @@ for itT=1:numel(tableFieldIn)
 end
 end
 
-%function display table with two columns of text
+%% function display table with two columns of text
 function dispTableTwoColumns(tableA,tableB)
 %size of every components in tableA
 sizeA=cellfun(@numel,tableA);

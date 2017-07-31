@@ -1,4 +1,4 @@
-%% function for least-sqaures surrogate model
+%% function for least-squares surrogate model
 % LS: Least-Squares
 % GLS: gradient-base Least Squares
 % L. LAURENT -- 27/01/2017 -- luc.laurent@lecnam.net

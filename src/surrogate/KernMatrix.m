@@ -21,42 +21,42 @@
 
 classdef KernMatrix < handle
     properties
-        KK=[];              % matrix of kernel
-        KKd=[];             % matrix of first derivatives
-        KKdd=[];            % matrix of second derivatives
+        KK=[];                  % matrix of kernel
+        KKd=[];                 % matrix of first derivatives
+        KKdd=[];                % matrix of second derivatives
         %
-        paraVal=[];         % values of the internal parameters
-        sampling=[];        % sampling points
-        newSample=[];       % in the cas of adding new sample points
-        distC=[];           % vector of inter-points distances
-        distN=[];           % vector of inter-points distances for new sample points
-        distNO=[];          % vector of inter-points distances for new sample points (distance to the old ones)
-        fctKern='sexp';     % chosen kernel function
+        paraVal=[];             % values of the internal parameters
+        sampling=[];            % sampling points
+        newSample=[];           % in the cas of adding new sample points
+        distC=[];               % vector of inter-points distances
+        distN=[];               % vector of inter-points distances for new sample points
+        distNO=[];              % vector of inter-points distances for new sample points (distance to the old ones)
+        fctKern='sexp';         % chosen kernel function
     end
     properties (Dependent)
         
     end
     
     properties (Access = private)
-        computeD=false;      % flag for computing matrices with gradients
-        parallelW=1;         % number of workers for using parallel version
+        computeD=false;         % flag for computing matrices with gradients
+        parallelW=1;            % number of workers for using parallel version
         %
-        iX;                  % structure of indices
-        NiX;                 % structure of indices for new sampling points
-        requireRun=true;     % flag if a full building is required
-        requireUpdate=false; % flag if an update is required
-        requireIndices=true; % flag if an update of indices is required
-        forceGrad=false;     % flag for forcing the computation of 1st and énd derivatives of the kernel matrix
+        iX;                     % structure of indices
+        NiX;                    % structure of indices for new sampling points
+        requireRun=true;        % flag if a full building is required
+        requireUpdate=false;    % flag if an update is required
+        requireIndices=true;    % flag if an update of indices is required
+        forceGrad=false;        % flag for forcing the computation of 1st and énd derivatives of the kernel matrix
         %
-        nbParaOk=[];         %number of acceptable internal parameters
+        nbParaOk=[];            %number of acceptable internal parameters
         listKernel={'sexp','matern','matern32','matern52'};  %list of available kernel functions
         listKernelTxt={'Squared exponential','Matern','Matern 3/2','Matern 5/2'};  %list of available kernel functions
     end
     properties (Dependent,Access = private)
-        NnS;               % number of new sample point
-        nS;               % number of sample point
-        nP;               % dimension of the problem
-        parallelOk=false;    % flag for using parallel version
+        NnS;                    % number of new sample points
+        nS;                     % number of sample points
+        nP;                     % dimension of the problem
+        parallelOk=false;       % flag for using parallel version
         %
     end
     %

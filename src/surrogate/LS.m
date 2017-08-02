@@ -25,9 +25,18 @@ classdef LS < handle
         sampling=[];        % sample points
         resp=[];            % sample responses
         grad=[];            % sample gradients
+        %
+        missData;           % structure for missing data
+        %
+        polyOrder=0;        %polynomial order
+        %
+        beta=[];            %vector of the regressors
     end
     
     properties (Access = private)
+        respV=[];            % responses prepared for training
+        gradV=[];            % gradients prepared for training
+        %
         flagGLS=false;       % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
@@ -36,8 +45,8 @@ classdef LS < handle
         forceGrad=false;     % flag for forcing the computation of 1st and énd derivatives of the kernel matrix
     end
     properties (Dependent,Access = private)
-        NnS;               % number of new sample point
-        nS;               % number of sample point
+        NnS;               % number of new sample points
+        nS;                 % number of sample points
         nP;               % dimension of the problem
         parallelOk=false;    % flag for using parallel version
         %
@@ -45,13 +54,40 @@ classdef LS < handle
     
     methods
         %% Constructor 
-        function obj=LS(samplingIn,respIn,gradIn,metaData,missData)
+        function obj=LS(samplingIn,respIn,gradIn,missData)
+            %load data
+            obj.sampling=samplingIn;
+            obj.resp=respIn;
+            if nargin>2;obj.grad=gradIn;end
+            if nargin>3;obj.missData=missData;end
+            %if everything is ok then train
+            if obj.checkAll; obj.train();end
+        end
+        
+        %% setters
+        
+        %% getters
+        function nS=get.nS(obj)
+            nS=numel(obj.resp);
+        end
+        function nP=get.nP(obj)
+            nP=size(obj.sampling,2);
+        end
+        
+        %% check if gradients are available
+        function flagG=checkGrad(obj)
+            flagG=~isempty(obj.grad);
+            obj.flagGLS=flagG;
+        end
+        
+        %% prepare data for building (deal with missing data)
+        function setData(obj)
             
         end
         
         %% Building/training metamodel
         function train()
-            
+            obj.showInfo('start');
         end
         
         %% Update metamodel
@@ -60,9 +96,69 @@ classdef LS < handle
         end
         
         %% Evaluation of the metamodel
-        function eval()
-            
+        function [Z,GZ]=eval(obj,U)
+            calcGrad=false;
+            if nargout>1
+                calcGrad=true;
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %regression matrix at the non-sample points
+            if calcGrad
+                [ff,jf]=MultiMono(U,obj.polyOrder);
+            else
+                [ff]=MultiMono(U,obj.polyOrder);
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %evaluation of the surrogate model at point X
+            Z=ff*obj.beta;
+            if calcGrad
+                %%verif in 2D+
+                GZ=jf*obj.beta;
+            end
+        end
+        
+        %% Show information in the console
+        function showInfo(obj,type)
+            switch type
+                case {'start','START','Start'}
+                    textd='++ Type: ';
+                    textf='';
+                    Gfprintf('\n%s\n',[textd 'Least-Squares ((G)LS)' textf]);
+                    Gfprintf('>> Deg : %i \n',obj.polyOrder);
+                    %
+                    if dispTxtOnOff(obj.cv.on,'>> CV: ',[],true)
+                        dispTxtOnOff(obj.cv.full,'>> Computation all CV criteria: ',[],true);
+                        dispTxtOnOff(obj.cv.disp,'>> Show CV: ',[],true);
+                    end
+                    %
+                    Gfprintf('\n');
+                case {'cv','CV'}
+                case {'end','End','END'}
+                        
+            end
         end
     end
     
+end
+
+
+%% function for display information
+function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)
+boolOut=boolIn;
+if nargin==2
+    txtInFalse=[];
+    returnLine=false;
+elseif nargin==3
+    returnLine=false;
+end
+if isempty(txtInFalse)
+    Gfprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else, fprintf('No');end
+else
+    if boolIn; fprintf('%s',txtInTrue);else, fprintf('%s',txtInFalse);end
+end
+if returnLine
+    fprintf('\n');
+end
 end

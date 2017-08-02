@@ -21,37 +21,13 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function [Z,GZ,details]=LSEval(U,metaData)
-% display warning or not
-dispWarning=false;
-%load varibales
-ns=metaData.used.ns;
-np=metaData.used.np;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %computation of thr gradients or not (depending on the number of output variables)
-if nargout>=2
-    calcGrad=true;
-else
-    calcGrad=false;
-end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 X=U;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%regression matrix at the non-sample points
-if calcGrad
-    [ff,jf]=MultiMono(X,metaData.build.polyOrder);
-else
-    [ff]=MultiMono(X,metaData.build.polyOrder);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%evaluation of the surrogate model at point X
-Z=ff*metaData.build.beta;
-if calcGrad
-    %%verif in 2D+
-    GZ=jf*metaData.build.beta;
-end
+
 end

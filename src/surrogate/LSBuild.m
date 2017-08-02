@@ -21,28 +21,8 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function [ret]=LSBuild(samplingIn,respIn,gradIn,metaData,missData)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Display Building information
-textd='++ Type: ';
-textf='';
-Gfprintf('\n%s\n',[textd 'Least-Squares ((G)LS)' textf]);
-Gfprintf('>> Deg : %i \n',metaData.polyOrder);
-%
-if dispTxtOnOff(metaData.cv.on,'>> CV: ',[],true)
-    dispTxtOnOff(metaData.cv.full,'>> Computation all CV criteria: ',[],true);
-    dispTxtOnOff(metaData.cv.disp,'>> Show CV: ',[],true);
-end
-%
-Gfprintf('\n');
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Initialisation of the variables
-%number of sample points
-ns=size(respIn,1);
-%number of design variables
-np=size(samplingIn,2);
+
 
 %check availability of the gradients
 availGrad=~isempty(gradIn);

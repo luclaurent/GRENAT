@@ -24,38 +24,6 @@ function [ret]=LSBuild(samplingIn,respIn,gradIn,metaData,missData)
 
 
 
-%check availability of the gradients
-availGrad=~isempty(gradIn);
-%check missing data
-if isfield(metaData,'miss')
-    missResp=metaData.miss.resp.on;
-    missGrad=metaData.miss.grad.on;
-    availGrad=(~metaData.miss.grad.all&&metaData.miss.grad.on)||(availGrad&&~metaData.miss.grad.on);
-else
-    metaData.miss.resp.on=false;
-    metaData.miss.grad.on=false;
-    missResp=missData.miss.resp.on;
-    missGrad=metaData.miss.grad.on;
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Responses and gradients at sample points
-YY=respIn;
-%remove missing response(s)
-if missResp
-    YY=YY(metaData.miss.resp.ixAvail);
-end
-
-if availGrad
-    tmp=gradIn';
-    der=tmp(:);
-    %remove missing gradient(s)
-    if missGrad
-        der=der(missData.grad.ixAvailLine);
-    end
-    YY=vertcat(YY,der);
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building indexes system for building KRG/GKRG matrices
@@ -136,59 +104,7 @@ else
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Build regression matrix (for the trend model)
 
-%depending on the availability of the gradients
-if ~availGrad
-    valFunPoly=MultiMono(samplingIn,metaData.polyOrder);
-    nbMonomialTerms=size(valFunPoly,2);
-    if missResp
-        %remove missing response(s)
-        valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
-    end
-else
-    %gradient-based
-    [MatX,MatDX]=MultiMono(samplingIn,metaData.polyOrder);
-    nbMonomialTerms=size(MatX,2);
-    if missResp||missGrad
-        sizeResp=ns-missData.resp.nb;
-        sizeGrad=ns*np-missData.grad.nb;
-        sizeTotal=sizeResp+sizeGrad;
-    else
-        sizeResp=ns;
-        sizeGrad=ns*np;
-        sizeTotal=sizeResp+sizeGrad;
-    end
-    %initialize regression matrix
-    valFunPoly=zeros(sizeTotal,nbMonomialTerms);
-    if missResp
-        %remove missing response(s)
-        MatX=MatX(metaData.miss.resp.ixAvail,:);
-    end
-    %load monomial terms of the polynomial regression
-    valFunPoly(1:sizeResp,:)=MatX;
-    
-    if missGrad
-        %remove missing gradient(s)
-        MatDX=MatDX(missData.grad.ixt_dispo_line,:);
-    end
-    %add derivatives to the regression matrix
-    valFunPoly(sizeResp+1:end,:)=MatDX;
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%determine regressors
-fct=valFunPoly'*valFunPoly;
-fcY=valFunPoly'*YY;
-%deal with unsifficent number of equations
-if nbMonomialTerms>size(YY,1)
-    Gfprintf(' > !! matrix ill-conditionned!!\n');
-    beta=pinv(fct)*fcY;
-else
-    [Q,R]=qr(fct);
-    beta=R\(Q'*fcY);
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

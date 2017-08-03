@@ -47,6 +47,9 @@ classdef MissData < handle
         %
         emptyGrad;              % flag for empty gradient matrix
         %
+    end
+    properties (Dependent)
+        on;                     % flag for missing data
         onResp;                 % flag for missing data in responses
         onGrad;                 % flag for missing data in gradients
     end
@@ -71,6 +74,15 @@ classdef MissData < handle
         end
         function f=get.emptyGrad(obj)
             f=isempty(obj.grad);
+        end
+        function f=get.onResp(obj)
+            f=(obj.nbMissResp~=0);
+        end
+        function f=get.onGrad(obj)
+            f=(obj.nbMissGrad~=0);
+        end
+        function f=get.on(obj)
+            f=(obj.onResp||obj.onGrad);
         end
         
         %% check missing data

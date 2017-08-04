@@ -104,6 +104,13 @@ classdef xLS < handle
                 flagM=obj.missData.on;
             end
         end
+        %% check if there is missing newdata
+        function flagM=checkNewMiss(obj)
+            flagM=false;
+            if ~isempty(obj.missData)
+                flagM=obj.missData.onNew;
+            end
+        end
         
         %% prepare data for building (deal with missing data)
         function setData(obj)
@@ -127,6 +134,28 @@ classdef xLS < handle
             obj.YYD=der;
         end
         
+        %% prepare data for building (deal with missing data)
+        function updateData(obj,respIn,gradIn)
+            %Responses and gradients at sample points
+            YYT=respIn;
+            %remove missing response(s)
+            if obj.checkNewMiss
+                YYT=obj.missData.removeRV(YYT,'n');
+            end
+            %
+            der=[];
+            if obj.flagGLS
+                tmp=gradIn;
+                der=tmp(:);
+                %remove missing gradient(s)
+                if obj.checkNewMiss
+                    der=obj.missData.removeGV(der,'n');
+                end
+            end
+            obj.YY=[obj.YY;YYT];
+            obj.YYD=[obj.YYD;der];
+        end
+        
         %% Building/training metamodel
         function train(obj)
             obj.showInfo('start');
@@ -148,7 +177,40 @@ classdef xLS < handle
                 if obj.checkMiss
                     obj.valFunPoly=obj.missData.removeRV(MatX);
                     obj.valFunPolyD=obj.missData.removeGV(MatDX);
+                else
+                    obj.valFunPoly=MatX;
+                    obj.valFunPolyD=MatDX;
                 end
+            end
+            %compute regressors
+            obj.compute();
+            obj.showInfo('end');
+        end
+        
+        %% Building/training the updated metamodel
+        function trainUpdate(obj,samplingIn,respIn,gradIn)
+            %Prepare data
+            obj.updateData(respIn,gradIn);
+            %Build regression matrix (for the trend model)
+            
+            %depending on the availability of the gradients
+            if ~obj.flagGLS
+                newVal=MultiMono(samplingIn,obj.polyOrder);
+                if obj.checkNewMiss
+                    %remove missing response(s)
+                     newVal=obj.missData.removeRV(newVal,'n');
+                end
+                obj.valFunPoly=[obj.valFunPoly;newVal];
+            else
+                %gradient-based
+                [MatX,MatDX]=MultiMono(samplingIn,obj.polyOrder);
+                %remove lines associated to the missing data
+                if obj.checkNewMiss
+                    MatX=obj.missData.removeRV(MatX,'n');
+                    MatDX=obj.missData.removeGV(MatDX,'n');
+                end
+                obj.valFunPoly=[obj.valFunPoly;MatX];
+                obj.valFunPolyD=[obj.valFunPolyD;MatDX];
             end
             %compute regressors
             obj.compute();
@@ -165,8 +227,9 @@ classdef xLS < handle
             fct=XX'*XX;
             fcY=XX'*YYT;
             %deal with unsifficent number of equations
-            if obj.nbMonomialTerms>size(obj.YY,1)
-                Gfprintf(' > !! matrix ill-conditionned!! (use pinv)\n');
+            keyboard
+            if obj.nbMonomialTerms>numel(YYT)
+                Gfprintf(' > !! matrix ill-conditionned (%i monomials, %i responses and gradients)!! (use pinv)\n',obj.nbMonomialTerms,numel(YYT));
                 obj.beta=pinv(fct)*fcY;
             else
                 [Q,R]=qr(fct);
@@ -178,11 +241,15 @@ classdef xLS < handle
         %% Update metamodel
         function update(obj,newSample,newResp,newGrad,newMissData)
             obj.showInfo('update');
-            obj.nawSample(newSample);
-            obj.newResp(newResp);
+            %add new sample, responses and gradients
+            obj.addSample(newSample);
+            obj.addResp(newResp);
             if nargin>3;obj.addGrad(newGrad);end
             if nargin>4;obj.missData=newMissData;end
-            obj.train;
+            if nargin<4;newGrad=[];end
+            %update the data and compute
+            obj.trainUpdate(newSample,newResp,newGrad);
+            obj.showInfo('end');
         end
         
         %% Evaluation of the metamodel
@@ -224,9 +291,11 @@ classdef xLS < handle
                     %end
                     %
                     Gfprintf('\n');
+                case {'update'}
+                    Gfprintf(' ++ Update xLS\n');
                 case {'cv','CV'}
                 case {'end','End','END'}
-                    
+                    Gfprintf(' ++ END building xLS\n');
             end
         end
     end

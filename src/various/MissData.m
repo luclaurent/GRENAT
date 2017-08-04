@@ -55,8 +55,11 @@ classdef MissData < handle
     end
     properties (Dependent)
         on;                     % flag for missing data
+        onNew;                  % flag for missing data in the new added data
         onResp;                 % flag for missing data in responses
         onGrad;                 % flag for missing data in gradients
+        onNewResp;                 % flag for missing data in new responses
+        onNewGrad;                 % flag for missing data in new gradients
     end
     methods
         %% constructor
@@ -88,6 +91,17 @@ classdef MissData < handle
         end
         function f=get.on(obj)
             f=(obj.onResp||obj.onGrad);
+        end
+        function f=get.onNewResp(obj)
+            f=false;
+            if ~isempty(obj.newResp);f=(obj.newResp.nbMissResp~=0);end
+        end
+        function f=get.onNewGrad(obj)
+             f=false;
+            if ~isempty(obj.newGrad);f=(obj.newGrad.nbMissGrad~=0);end
+        end
+        function f=get.onNew(obj)
+            f=(obj.onNewResp||obj.onNewGrad);
         end
         
         %% add sampling, responses and gradients
@@ -231,7 +245,7 @@ classdef MissData < handle
             %deal with different options (in type)
             force=false;
             sizS=obj.nS;
-            maskC=~obj.maskResp;
+            maskC=obj.maskResp;
             switch type
                 case {'f','F','force','Force','FORCE'}
                     force=true;
@@ -254,7 +268,7 @@ classdef MissData < handle
             %deal with different options (in type)
             force=false;
             sizS=obj.nS;
-            maskC=~obj.ixMissResp;
+            maskC=obj.ixMissResp;
             switch type
                 case {'f','F','force','Force','FORCE'}
                     force=true;
@@ -273,7 +287,7 @@ classdef MissData < handle
         end
         
         %% remove missing data in vector/matrix (gradients)
-        function VV=removeGV(obj,V,force)
+        function VV=removeGV(obj,V,type)
             %size of the input vector
             sV=size(V);
             %deal with no force parameter
@@ -281,7 +295,7 @@ classdef MissData < handle
             %deal with different options (in type)
             force=false;
             sizS=obj.nS;
-            maskC=~obj.ixAvailGradLine;
+            maskC=obj.ixAvailGradLine;
             switch type
                 case {'f','F','force','Force','FORCE'}
                     force=true;
@@ -304,7 +318,7 @@ classdef MissData < handle
             %deal with different options (in type)
             force=false;
             sizS=obj.nS;
-            maskC=~obj.ixMissGradLine;
+            maskC=obj.ixMissGradLine;
             switch type
                 case {'f','F','force','Force','FORCE'}
                     force=true;

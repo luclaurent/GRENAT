@@ -145,7 +145,7 @@ classdef xLS < handle
             %
             der=[];
             if obj.flagGLS
-                tmp=gradIn;
+                tmp=gradIn';
                 der=tmp(:);
                 %remove missing gradient(s)
                 if obj.checkNewMiss
@@ -227,7 +227,6 @@ classdef xLS < handle
             fct=XX'*XX;
             fcY=XX'*YYT;
             %deal with unsifficent number of equations
-            keyboard
             if obj.nbMonomialTerms>numel(YYT)
                 Gfprintf(' > !! matrix ill-conditionned (%i monomials, %i responses and gradients)!! (use pinv)\n',obj.nbMonomialTerms,numel(YYT));
                 obj.beta=pinv(fct)*fcY;

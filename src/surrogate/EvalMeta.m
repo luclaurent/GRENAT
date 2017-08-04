@@ -82,17 +82,6 @@ end
 %%%%%%%%=================================%%%%%%%%
 %%%%%%%%=================================%%%%%%%%
 %%%%%%% Evaluation of the surrogate model
-
-%load used initial data (sampling, responses and gradients)
-%U: used data (normalized if normlization is active)
-%I: initial data (w/o normlization)
-samplingU=dataTrain.used.sampling;
-respU=dataTrain.used.resp;
-gradU=dataTrain.used.grad;
-samplingI=dataTrain.in.sampling;
-respI=dataTrain.in.resp;
-gradI=dataTrain.in.grad;
-
 %check or not the interpolation quality of the surrogate model
 if metaConf.checkInterp
     checkZN=zeros(ns,1);
@@ -152,7 +141,7 @@ switch metaConf.type
         %%%%%%%%=================================%%%%%%%%
     case {'LS','GLS','InLS'}
         for jj=1:nbReqEval
-            [valResp(jj),G]=LSEval(reqResp(jj,:),dataTrain);
+            [valResp(jj),G]=dataTrain.eval(reqResp(jj,:));
             valGrad(jj,:)=G;
         end
         %%%%%%%%=================================%%%%%%%%

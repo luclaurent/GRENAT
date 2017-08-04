@@ -69,7 +69,7 @@ if ~isstruct(gradIn)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%% Cleaning if missing data (Caution in the case of missing response, the Nettoyage si donnees manquantes (attention en cas de reponse
+    %%% Cleaning if missing data (Caution in the case of missing response, the 
     %%% the associated gradients is also removed because it will be unable
     %%% to estimate the response without this value)
     posR=[];

@@ -121,7 +121,7 @@ switch typeMeta
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case {'LS','GLS','InLS'}
-        outMeta=LSBuild(samplingOk,respOk,gradOk,metaData);
+        outMeta=xLS(samplingOk,respOk,gradOk,metaData);
         %%%%%%%%=================================%%%%%%%%
         %%%%%%%%=================================%%%%%%%%
     case 'ILIN'

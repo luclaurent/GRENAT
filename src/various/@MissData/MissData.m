@@ -40,7 +40,7 @@ classdef MissData < handle
         ixAvailGradLine;            % linear indices of available gradients
         missGradAll=false;          % flag at true if all gradients are missing
         %
-        newResp;                    % structure for new responses 
+        newResp;                    % structure for new responses
         newGrad;                    % structure for new gradients
         %
         NnS=0;                    % number of new sample points
@@ -97,7 +97,7 @@ classdef MissData < handle
             if ~isempty(obj.newResp);f=(obj.newResp.nbMissResp~=0);end
         end
         function f=get.onNewGrad(obj)
-             f=false;
+            f=false;
             if ~isempty(obj.newGrad);f=(obj.newGrad.nbMissGrad~=0);end
         end
         function f=get.onNew(obj)

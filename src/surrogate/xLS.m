@@ -20,7 +20,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-classdef LS < handle
+classdef xLS < handle
     properties
         sampling=[];        % sample points
         resp=[];            % sample responses
@@ -28,12 +28,14 @@ classdef LS < handle
         %
         missData;           % class for missing data
         %
-        YY=[];              % vector of responses (and gradients)
+        YY=[];              % vector of responses
+        YYD=[];              % vector of gradients
         %
         polyOrder=0;        % polynomial order
         %
         beta=[];            % vector of the regressors
         valFunPoly=[];      % matrix of the evaluation of the monomial terms
+        valFunPolyD=[];     % matrix of the evaluation of derivatives of the monomial terms
         nbMonomialTerms=0;  % number of monomial terms
     end
     
@@ -121,7 +123,8 @@ classdef LS < handle
                     der=obj.missData.removeGV(der);
                 end
             end
-            obj.YY=vertcat(YYT,der);
+            obj.YY=YYT;
+            obj.YYD=der;
         end
         
         %% Building/training metamodel
@@ -141,43 +144,26 @@ classdef LS < handle
             else
                 %gradient-based
                 [MatX,MatDX]=MultiMono(obj.sampling,obj.polyOrder);
-                obj.valFunPoly=[MatX;MatDX];
+                %remove lines associated to the missing data
                 if obj.checkMiss
-                    obj.valFunPoly=obj.missData.removeGRV(obj.valFunPoly);
+                    obj.valFunPoly=obj.missData.removeRV(MatX);
+                    obj.valFunPolyD=obj.missData.removeGV(MatDX);
                 end
-%                 
-%                 nbMonomialTerms=size(MatX,2);
-%                 if obj.checkMiss
-%                     sizeResp=ns-obj.missData.nbMissResp;
-%                     sizeGrad=ns*np-obj.missData.nbMissGrad;
-%                     sizeTotal=sizeResp+sizeGrad;
-%                 else
-%                     sizeResp=ns;
-%                     sizeGrad=ns*np;
-%                     sizeTotal=sizeResp+sizeGrad;
-%                 end
-%                 %initialize regression matrix
-%                 valFunPoly=zeros(sizeTotal,nbMonomialTerms);
-%                 if missResp
-%                     %remove missing response(s)
-%                     MatX=MatX(metaData.miss.resp.ixAvail,:);
-%                 end
-%                 %load monomial terms of the polynomial regression
-%                 valFunPoly(1:sizeResp,:)=MatX;
-%                 
-%                 if missGrad
-%                     %remove missing gradient(s)
-%                     MatDX=MatDX(missData.grad.ixt_dispo_line,:);
-%                 end
-%                 %add derivatives to the regression matrix
-%                 valFunPoly(sizeResp+1:end,:)=MatDX;
             end
+            %compute regressors
+            obj.compute();
+        end
+        
+        %% compute regressors
+        function compute(obj)
             obj.nbMonomialTerms=size(obj.valFunPoly,2);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %determine regressors
-            fct=obj.valFunPoly'*obj.valFunPoly;
-            fcY=obj.valFunPoly'*obj.YY;
+            XX=[obj.valFunPoly;obj.valFunPolyD];
+            YYT=[obj.YY;obj.YYD];
+            fct=XX'*XX;
+            fcY=XX'*YYT;
             %deal with unsifficent number of equations
             if obj.nbMonomialTerms>size(obj.YY,1)
                 Gfprintf(' > !! matrix ill-conditionned!! (use pinv)\n');
@@ -187,9 +173,11 @@ classdef LS < handle
                 obj.beta=R\(Q'*fcY);
             end
         end
+            
         
         %% Update metamodel
         function update(obj,newSample,newResp,newGrad,newMissData)
+            obj.showInfo('update');
             obj.nawSample(newSample);
             obj.newResp(newResp);
             if nargin>3;obj.addGrad(newGrad);end
@@ -230,10 +218,10 @@ classdef LS < handle
                     Gfprintf('\n%s\n',[textd 'Least-Squares ((G)LS)' textf]);
                     Gfprintf('>> Deg : %i \n',obj.polyOrder);
                     %
-                    if dispTxtOnOff(obj.cv.on,'>> CV: ',[],true)
-                        dispTxtOnOff(obj.cv.full,'>> Computation all CV criteria: ',[],true);
-                        dispTxtOnOff(obj.cv.disp,'>> Show CV: ',[],true);
-                    end
+                    %if dispTxtOnOff(obj.cvOn,'>> CV: ',[],true)
+                    %    dispTxtOnOff(obj.cvFull,'>> Computation all CV criteria: ',[],true);
+                    %    dispTxtOnOff(obj.cvDisp,'>> Show CV: ',[],true);
+                    %end
                     %
                     Gfprintf('\n');
                 case {'cv','CV'}

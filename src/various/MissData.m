@@ -39,9 +39,14 @@ classdef MissData < handle
         ixMissGradLine=[];          % linear indices of the missing gradients
         ixAvailGradLine;            % linear indices of available gradients
         missGradAll=false;          % flag at true if all gradients are missing
+        %
+        newResp;                    % structure for new responses 
+        newGrad;                    % structure for new gradients
+        %
+        NnS=0;                    % number of new sample points
     end
     properties (Dependent,Access = private)
-        NnS;                    % number of new sample points
+        %
         nS;                     % number of sample points
         nP;                     % dimension of the problem
         %
@@ -83,6 +88,20 @@ classdef MissData < handle
         end
         function f=get.on(obj)
             f=(obj.onResp||obj.onGrad);
+        end
+        
+        %% add sampling, responses and gradients
+        function addSampling(obj,in)
+            obj.sampling=[obj.sampling;in];
+            obj.NnS=size(in,1);
+        end
+        function addResp(obj,in)
+            obj.resp=[obj.resp;in];
+            obj.newResp=obj.checkResp(in);
+        end
+        function addGrad(obj,in)
+            obj.grad=[obj.grad;in];
+            obj.newGrad=obj.checkGrad(in);
         end
         
         %% check missing data
@@ -197,37 +216,59 @@ classdef MissData < handle
         %% add new sample points
         function addData(obj,samplingIn,respIn,gradIn)
             %
-            obj.sampling=[obj.sampling;samplingIn];
-            obj.resp=[obj.resp;respIn];
-            obj.grad=[obj.grad;gradIn];
+            obj.addSampling=samplingIn;
+            obj.addResp=respIn;
+            if nargin>3;obj.addGrad=gradIn;end
             %
             obj.check();
         end
         %% remove missing data in vector/matrix (responses)
-        function VV=removeRV(obj,V,force)
+        function VV=removeRV(obj,V,type)
             %size of the input vector
             sV=size(V);
             %deal with no force parameter
-            if nargin<3;force=false;end
-            if sV(1)==obj.nS||force
-                VV=V(~obj.maskResp,:);
+            if nargin<3;type='';end
+            %deal with different options (in type)
+            force=false;
+            sizS=obj.nS;
+            maskC=~obj.maskResp;
+            switch type
+                case {'f','F','force','Force','FORCE'}
+                    force=true;
+                case {'n','N','new','New','NEW'}
+                    sizS=obj.NnS;
+                    maskC=obj.newResp.maskResp;
+            end
+            if sV(1)==sizS||force
+                VV=V(~maskC,:);
             else
                 VV=V;
-                Gfprintf(' ++ Wrong size of the input vector\n ++ |%i, expected: %i| (or use force)\n',sV(1),obj.nS);
+                Gfprintf(' ++ Wrong size of the input vector\n ++ |%i, expected: %i| (or use force)\n',sV(1),sizS);
             end
         end
-        function VV=removeRM(obj,V,force)
+        function VV=removeRM(obj,V,type)
             %size of the input matrix
             sV=size(V);
             %deal with no force parameter
-            if nargin<3;force=false;end
-            if (sV(1)==obj.nS&&sV(2)==obj.nS)||force
+            if nargin<3;type='';end
+            %deal with different options (in type)
+            force=false;
+            sizS=obj.nS;
+            maskC=~obj.ixMissResp;
+            switch type
+                case {'f','F','force','Force','FORCE'}
+                    force=true;
+                case {'n','N','new','New','NEW'}
+                    sizS=obj.NnS;
+                    maskC=obj.newResp.ixMissResp;
+            end
+            if (sV(1)==sizS&&sV(2)==sizS)||force
                 VV=V;
-                VV(obj.ixMissResp,:)=[];
-                VV(:,obj.ixMissResp)=[];
+                VV(maskC,:)=[];
+                VV(:,maskC)=[];
             else
                 VV=V;
-                Gfprintf(' ++ Wrong size of the input square matrix\n ++ |(%i,%i), expected: (%i,%i)| (or use force)\n',sV(1),sV(2),obj.nS,obj.nS);
+                Gfprintf(' ++ Wrong size of the input square matrix\n ++ |(%i,%i), expected: (%i,%i)| (or use force)\n',sV(1),sV(2),sizS,sizS);
             end
         end
         
@@ -236,65 +277,111 @@ classdef MissData < handle
             %size of the input vector
             sV=size(V);
             %deal with no force parameter
-            if nargin<3;force=false;end
-            if sV(1)==obj.nS*obj.nP||force
-                VV=V(obj.ixAvailGradLine,:);
+            if nargin<3;type='';end
+            %deal with different options (in type)
+            force=false;
+            sizS=obj.nS;
+            maskC=~obj.ixAvailGradLine;
+            switch type
+                case {'f','F','force','Force','FORCE'}
+                    force=true;
+                case {'n','N','new','New','NEW'}
+                    sizS=obj.NnS;
+                    maskC=obj.newGrad.ixAvailGradLine;
+            end
+            if sV(1)==sizS*obj.nP||force
+                VV=V(maskC,:);
             else
                 VV=V;
-                Gfprintf(' ++ Wrong size of the input vector\n ++ |%i, expected: %i| (or use force)\n',sV,obj.nS*obj.nP);
+                Gfprintf(' ++ Wrong size of the input vector\n ++ |%i, expected: %i| (or use force)\n',sV,sizS*obj.nP);
             end
         end
-        function VV=removeGM(obj,V)
+        function VV=removeGM(obj,V,type)
             %size of the input vector
             sV=size(V);
             %deal with no force parameter
-            if nargin<3;force=false;end
-            if (sV(1)==obj.nS*obj.nP&&sV(2)==obj.nS*obj.nP)||force
+            if nargin<3;type='';end
+            %deal with different options (in type)
+            force=false;
+            sizS=obj.nS;
+            maskC=~obj.ixMissGradLine;
+            switch type
+                case {'f','F','force','Force','FORCE'}
+                    force=true;
+                case {'n','N','new','New','NEW'}
+                    sizS=obj.NnS;
+                    maskC=obj.newGrad.ixMissGradLine;
+            end
+            if (sV(1)==sizS*obj.nP&&sV(2)==sizS*obj.nP)||force
                 VV=V;
-                VV(obj.ixMissGradLine,:)=[];
-                VV(:,obj.ixMissGradLine)=[];
+                VV(maskC,:)=[];
+                VV(:,maskC)=[];
             else
                 VV=V;
-                Gfprintf(' ++ Wrong size of the input square matrix\n ++ |(%i,%i), expected: (%i,%i)| (or use force)\n',sV(1),sV(2),obj.nS*obj.nP,obj.nS*obj.nP);
+                Gfprintf(' ++ Wrong size of the input square matrix\n ++ |(%i,%i), expected: (%i,%i)| (or use force)\n',sV(1),sV(2),sizS*obj.nP,sizS*obj.nP);
             end
         end
         
         %% remove missing data in vector/matrix (responses+gradients)
-        function VV=removeGRV(obj,V,force)
+        function VV=removeGRV(obj,V,type)
             %size of the input vector
             sV=size(V);
             %deal with no force parameter
-            if nargin<3;force=false;end
-            if (sV(1)==obj.nS*(obj.nP+1))||force
-                Va=obj.removeRV(V(1:obj.nS,:));
-                Vb=obj.removeGV(V(obj.nS+1:end,:));
+            if nargin<3;type='';end
+            %deal with different options (in type)
+            force=false;
+            sizS=obj.nS;
+            opt='';
+            switch type
+                case {'f','F','force','Force','FORCE'}
+                    force=true;
+                    opt='f';
+                case {'n','N','new','New','NEW'}
+                    sizS=obj.NnS;
+                    opt='n';
+            end
+            if (sV(1)==sizS*(obj.nP+1))||force
+                Va=obj.removeRV(V(1:sizS,:),opt);
+                Vb=obj.removeGV(V(sizS+1:end,:),opt);
                 VV=[Va;Vb];
             else
                 VV=V;
-                Gfprintf(' ++ Wrong size of the input vector\n ++ |%i, expected: %i|\n',sV(1),obj.nS*(obj.nP+1));
+                Gfprintf(' ++ Wrong size of the input vector\n ++ |%i, expected: %i|\n',sV(1),sizS*(obj.nP+1));
             end
         end
-        function VV=removeGRM(obj,V,force)
+        function VV=removeGRM(obj,V,type)
             %size of the input vector
             sV=size(V);
             %deal with no force parameter
-            if nargin<3;force=false;end
-            if (sV(1)==obj.nS*(obj.nP+1)&&sV(2)==obj.nS*(obj.nP+1))||force
+            if nargin<3;type='';end
+            %deal with different options (in type)
+            force=false;
+            sizS=obj.nS;
+            opt='';
+            switch type
+                case {'f','F','force','Force','FORCE'}
+                    force=true;
+                    opt='f';
+                case {'n','N','new','New','NEW'}
+                    sizS=obj.NnS;
+                    opt='n';
+            end
+            if (sV(1)==sizS*(obj.nP+1)&&sV(2)==sizS*(obj.nP+1))||force
                 %split the matrix in four parts
-                Va=V(1:obj.nS,1:obj.nS);
-                Vb=V(1:obj.nS,obj.nS+1:end);
-                Vbt=V(obj.nS+1:end,1:obj.nS);
-                Vc=V(obj.nS+1:end,obj.nS+1:end);
+                Va=V(1:sizS,1:sizS);
+                Vb=V(1:sizS,sizS+1:end);
+                Vbt=V(sizS+1:end,1:sizS);
+                Vc=V(sizS+1:end,sizS+1:end);
                 %
-                VaR=obj.removeRM(Va);
-                VbR=obj.removeRV(obj.removeGV(Vb')');
-                VbtR=obj.removeRV(obj.removeGV(Vbt)')';
-                VcR=obj.removeGM(Vc);
+                VaR=obj.removeRM(Va,opt);
+                VbR=obj.removeRV(obj.removeGV(Vb',opt)',opt);
+                VbtR=obj.removeRV(obj.removeGV(Vbt,opt)',opt)';
+                VcR=obj.removeGM(Vc,opt);
                 %
                 VV=[VaR VbR;VbtR VcR];
             else
                 VV=V;
-                Gfprintf(' ++ Wrong size of the input matrix\n ++ |(%i,%i), expected: (%i,%i)|\n',sV(1),sV(2),obj.nS*(obj.nP+1),obj.nS*(obj.nP+1));
+                Gfprintf(' ++ Wrong size of the input matrix\n ++ |(%i,%i), expected: (%i,%i)|\n',sV(1),sV(2),sizS*(obj.nP+1),sizS*(obj.nP+1));
             end
         end
     end

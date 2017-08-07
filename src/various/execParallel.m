@@ -46,7 +46,7 @@ classdef execParallel < handle
                 currentConf(obj);
                 %initialize value
                 obj.numWorkers=obj.currentParallel.NumWorkers;
-            end                
+            end
         end
         %setter for on
         function set.on(obj,stateIn)
@@ -55,7 +55,7 @@ classdef execParallel < handle
                 %load default configuration
                 defaultConf(obj);
                 %set number of workers
-            obj.numWorkers=obj.defaultParallel.NumWorkers;
+                obj.numWorkers=obj.defaultParallel.NumWorkers;
             end
             %set state of parallelism
             obj.on=stateIn;

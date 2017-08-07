@@ -1,7 +1,7 @@
-%% class for least-squares surrogate model
-% LS: Least-Squares
-% GLS: gradient-based Least Squares
-% L. LAURENT -- 31/07/2017 -- luc.laurent@lecnam.net
+%% class for kriging/cokriging metamodel
+% KRG: kriging
+% GKRG: gradient-based kriging
+% L. LAURENT -- 07/08/2017 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -20,7 +20,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-classdef xLS < handle
+classdef KRG < handle
     properties
         sampling=[];        % sample points
         resp=[];            % sample responses

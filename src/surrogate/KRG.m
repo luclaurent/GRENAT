@@ -355,7 +355,7 @@ classdef KRG < handle
             %load variables
             np=obj.nP;
             ns=obj.nS;
-            availGrad=obj.flagGKRG;            
+            availGrad=obj.flagGKRG;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)
@@ -440,12 +440,9 @@ classdef KRG < handle
                 Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);
                 Gfprintf('+++ PRESS %4.2e\n',cv.then.press);
             end
-            
-            
             % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if modFinal;countTime.stop;end
-end
+            % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            if modFinal;countTime.stop;end
         end
         
         %% Show the result of the CV
@@ -455,10 +452,10 @@ end
             figure;
             subplot(1,3,1);
             opt.title='Normalized data (CV R)';
-            QQplot(dataBloc.used.resp,cvZR,opt);
+            QQplot(obj.resp,cvZR,opt);
             subplot(1,3,2);
             opt.title='Normalized data (CV F)';
-            QQplot(dataBloc.used.resp,cvZ,opt);
+            QQplot(obj.resp,cvZ,opt);
             subplot(1,3,3);
             opt.title='SCVR (Normalized)';
             opt.xlabel='Predicted' ;
@@ -567,25 +564,149 @@ end
         
         %% Evaluation of the metamodel
         function [Z,GZ]=eval(obj,U)
-            calcGrad=false;
-            if nargout>1
+            %computation of thr gradients or not (depending on the number of output variables)
+            if nargout>=2
                 calcGrad=true;
+            else
+                calcGrad=false;
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            X=U;
+            dimX=size(X,1);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            ns=obj.nS;
+            np=obj.nP;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %distance from evaluation point to sample points
+            distS=repmat(X,ns,1)-obj.sampling;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %% KRG/GKRG
+            %%compute response provided by the metamodel at the non sample point
+            %definition des dimensions of the matrix/vector for KRG or GKRG
+            if obj.flagGKRG
+                sizeMatVec=ns*(np+1);
+            else
+                sizeMatVec=ns;
+            end
+            
+            %kernel (correlation) vector between sample point and the non sample point
+            rr=zeros(sizeMatVec,1);
+            if calcGrad
+                jr=zeros(sizeMatVec,np);
+            end
+            
+            %KRG/GKRG
+            if obj.flagGKRG
+                if calcGrad  %if compute gradients
+                    %evaluate kernel function
+                    [ev,dev,ddev]=multiKernel(obj.kernelFun,distS,obj.paraVal);
+                    rr(1:ns)=ev;
+                    rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
+                    
+                    %derivative of the kernel vector between sample point and the non sample point
+                    jr(1:ns,:)=dev;
+                    
+                    % second derivatives
+                    matDer=zeros(np,np*ns);
+                    for mm=1:ns
+                        matDer(:,(mm-1)*np+1:mm*np)=ddev(:,:,mm);
+                    end
+                    jr(ns+1:sizeMatVec,:)=-matDer';
+                    
+                    %if missing responses
+                    if obj.
+                        rr(metaData.miss.resp.ixMiss)=[];
+                        jr(metaData.miss.resp.ixMiss,:)=[];
+                    end
+                    
+                    %if missing gradients
+                    if metaData.miss.grad.on
+                        repEv=metaData.used.ns-metaData.miss.resp.nb;
+                        rr(repEv+metaData.miss.grad.ixtMissLine)=[];
+                        jr(repEv+metaData.miss.grad.ixtMissLine,:)=[];
+                    end
+                    
+                else %otherwise
+                    [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+                    rr(1:ns)=ev;
+                    rr(ns+1:sizeMatVec)=reshape(dev',1,ns*np);
+                    %if missing data
+                    if metaData.miss.resp.on
+                        rr(metaData.miss.resp.ixMiss)=[];
+                        if metaData.miss.grad.on
+                            repEv=metaData.used.ns-metaData.miss.resp.nb;
+                            rr(repEv+metaData.miss.grad.ixtMissLine)=[];
+                        end
+                    end
+                end
+            else
+                if calcGrad  %if the gradients will be computed
+                    [rr,jr]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
+                else %otherwise
+                    rr=feval(metaData.build.kern,distS,metaData.build.para.Val);
+                end
+                %if missing data
+                if metaData.miss.resp.on
+                    rr(metaData.miss.resp.ixMiss)=[];
+                    jr(metaData.miss.resp.ixMiss,:)=[];
+                end
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %regression matrix at the non-sample points
             if calcGrad
-                [ff,jf]=MultiMono(U,obj.polyOrder);
+                [ff,jf]=MultiMono(X,metaData.build.polyOrder);
             else
-                [ff]=MultiMono(U,obj.polyOrder);
+                [ff]=MultiMono(X,metaData.build.polyOrder);
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %evaluation of the surrogate model at point X
-            Z=ff*obj.beta;
+            trZ=ff*metaData.build.beta;
+            stoZ=rr'*metaData.build.gamma;
+            Z=trZ+stoZ;
             if calcGrad
                 %%verif in 2D+
-                GZ=jf*obj.beta;
+                trGZ=jf*metaData.build.beta;
+                stoGZ=jr'*metaData.build.gamma;
+                GZ=trGZ+stoGZ;
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute the prediction variance (MSE) (Lophaven, Nielsen & Sondergaard
+            %2004 / Marcelet 2008 / Chauvet 1999)
+            if nargout >=3
+                if ~dispWarning;warning off all;end
+                %depending on the factorization
+                switch metaData.build.factKK
+                    case 'QR'
+                        rrP=rr'*metaData.build.PK;
+                        Qrr=metaData.build.QtK*rr;
+                        u=metaData.build.fcR*Qrr-ff';
+                        variance=metaData.build.sig2*(ones(dimX,1)-(rrP/metaData.build.RK)*Qrr+...
+                            u'/metaData.build.fcCfct*u);
+                    case 'LU'
+                        rrP=rr(metaData.build.PK,:);
+                        Lrr=metaData.build.LK\rrP;
+                        u=metaData.build.fcU*Lrr-ff';
+                        variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.UK)*Lrr+...
+                            u'/metaData.build.fcCfct*u);
+                    case 'LL'
+                        Lrr=metaData.build.LK\rr;
+                        u=metaData.build.fcL*Lrr-ff';
+                        variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.LtK)*Lrr+...
+                            u'/metaData.build.fcCfct*u);
+                    otherwise
+                        rKrr=metaData.build.KK \ rr;
+                        u=metaData.build.fc*rKrr-ff';
+                        variance=metaData.build.sig2*(ones(dimX,1)+u'/metaData.build.fcCfct*u - rr'*rKrr);
+                end
+                if ~dispWarning;warning on all;end
+                
             end
         end
         

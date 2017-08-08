@@ -20,14 +20,6 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function cv=KRGCV(dataBloc,metaData,type)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%% OPTIONS
-%choice of the norma for LOO error
-%MSE: L2-norm
-normLOO='L2';
-%debug
-debugP=false;
 
 % display warning or not
 dispWarning=false;
@@ -39,118 +31,8 @@ if ~isempty(whos('parallel','global'))
     global parallel
     numWorkers=parallel.num;
 end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%various situations
-modDebug=debugP;modStudy=metaData.cv.full;modFinal=false;
-if nargin==3
-    switch type
-        case 'debug'  %debug mode (display criteria)
-            Gfprintf('+++ CV KRG in DEBUG mode\n');
-            modDebug=true;
-        case 'study'  %study mode (use both methods for calculating criteria)
-            modStudy=true;
-        case 'estim'  %estimation mode
-            modStudy=false;
-        case 'final'    %final mode (compute variances)
-            modFinal=true;
-    end
-else
-    modFinal=true;
-end
-if modFinal;countTime=mesuTime;end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%load variables
-np=dataBloc.used.np;
-ns=dataBloc.used.ns;
-availGrad=dataBloc.used.availGrad;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%coefficient of (co)Kriging
-coefKRG=dataBloc.build.gamma;
-%partial extraction of the diagonal of the inverse of the kernel matrix
-switch dataBloc.build.factKK
-    case 'QR'
-        fcC=dataBloc.build.fcK*dataBloc.build.QtK;
-        diagMK=diag(dataBloc.build.RK\dataBloc.build.QtK)-...
-            diag(fcC'*(dataBloc.build.fcCfct\fcC));
-    case 'LU'
-        fcC=dataBloc.build.fcU/dataBloc.build.LK;
-        diagMK=diag(dataBloc.build.UK\inv(dataBloc.build.LK))-...
-            diag(fcC'*(dataBloc.build.fcCfct\fcC));
-    case 'LL'
-        fcC=dataBloc.build.fcL/dataBloc.build.LK;
-        diagMK=diag(dataBloc.build.LK\inv(dataBloc.build.LK))-...
-            diag(fcC'*(dataBloc.build.fcCfct\fcC));
-    otherwise
-        diagMK=diag(inv(dataBloc.build.KK))-...
-            diag(dataBloc.build.fcC'*(dataBloc.build.fcCfct\dataBloc.build.fcC));
-        
-end
-%vectors of the distances on removed sample points (reponses et gradients)
-esI=coefKRG./diagMK;
-esR=esI(1:ns);
-if availGrad;esG=esI(ns+1:end);end
 
-%computation of the LOO criteria (various norms)
-switch normLOO
-    case 'L1'
-        cv.then.press=esI'*esI;
-        cv.then.eloot=1/numel(esI)*sum(abs(esI));
-        cv.press=cv.then.press;
-        cv.eloot=cv.then.eloot;
-        if availGrad
-            cv.then.eloor=1/ns*sum(abs(esR));
-            cv.then.eloog=1/(ns*np)*sum(abs(esG));
-            cv.eloor=cv.then.eloor;
-            cv.eloog=cv.then.eloog;
-        end
-        
-    case 'L2' %MSE
-        cv.then.press=esI'*esI;
-        cv.then.eloot=1/numel(esI)*(cv.then.press);
-        cv.press=cv.then.press;
-        cv.eloot=cv.then.eloot;
-        if availGrad
-            cv.then.press=esR'*esR;
-            cv.then.eloor=1/ns*(cv.then.press);
-            cv.then.eloog=1/(ns*np)*(esG'*esG);
-            cv.press=cv.then.press;
-            cv.eloor=cv.then.eloor;
-            cv.eloog=cv.then.eloog;
-        end
-    case 'Linf'
-        cv.then.press=esI'*esI;
-        cv.then.eloot=1/numel(esI)*max(esI(:));
-        cv.press=cv.then.press;
-        cv.eloot=cv.then.eloot;
-        if availGrad
-            cv.then.press=esR'*esR;
-            cv.then.eloor=1/ns*max(esR(:));
-            cv.then.eloog=1/(ns*np)*max(esG(:));
-            cv.press=cv.then.press;
-            cv.eloor=cv.then.eloor;
-            cv.eloog=cv.then.eloog;
-        end
-end
-%mean of bias
-cv.bm=1/ns*sum(esR);
-%display information
-if modDebug||modFinal
-    Gfprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');
-    Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',normLOO);
-    if availGrad
-        Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
-        Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
-    end
-    Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);
-    Gfprintf('+++ PRESS %4.2e\n',cv.then.press);
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -579,43 +461,9 @@ if modFinal
     countTimeD.stop;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%Show QQ-plot
-if metaData.cv.disp&&modFinal
-    opt.newfig=false;
-    figure;
-    subplot(1,3,1);
-    opt.title='Normalized data (CV R)';
-    QQplot(dataBloc.used.resp,cvZR,opt);
-    subplot(1,3,2);
-    opt.title='Normalized data (CV F)';
-    QQplot(dataBloc.used.resp,cvZ,opt);
-    subplot(1,3,3);
-    opt.title='SCVR (Normalized)';
-    opt.xlabel='Predicted' ;
-    opt.ylabel='SCVR';
-    SCVRplot(cvZR,cv.final.scvr,opt);
-    
-    %     % original data
-    %     subplot(2,3,4);
-    %     opt.title='Original data (CV R)';
-    %     QQplot(dataBloc.used.resp,cvZR,opt)
-    %     subplot(2,3,5);
-    %     opt.title='Original data (CV F)';
-    %     QQplot(dataBloc.used.resp,cvZ,opt)
-    %     subplot(2,3,6);
-    %     opt.title='SCVR (Normalized)';
-    %     opt.xlabel='Predicted' ;
-    %     opt.ylabel='SCVR';
-    %     SCVRplot(cvZR,cv.final.scvr,opt)
-end
 %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-if modFinal;countTime.stop;end
-end
+
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % function for stopping the display of the warning and restoring initial

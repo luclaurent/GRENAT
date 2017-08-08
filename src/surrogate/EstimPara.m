@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function paraEstim=EstimPara(dataProb,dataMeta,funObj)
+function paraEstim=EstimPara(nPIn,dataMeta,funObj)
 % display warning or not
 dispWarning=false;
 
@@ -37,7 +37,7 @@ countTime=mesuTime;
 % Number of hyperparameters to estimate
 %anisotropy
 if dataMeta.estim.aniso
-    nbP=dataProb.used.np;
+    nbP=nPIn;
     nbPOptim=nbP;
 else
     nbP=1;
@@ -77,7 +77,7 @@ end
 %definition valeur de depart de la variable
 x0=0.01*(ub-lb);
 %function to minimised
-fun=@(para)feval(funObj,dataProb,dataMeta,para,'estim');
+fun=@(para)funObj(para);
 %options depending on the algorithm
 optionsFmincon = optimsetMOD(...
     'Display', 'iter',...        %display evolution

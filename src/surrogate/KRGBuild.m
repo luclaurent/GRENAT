@@ -21,96 +21,11 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function [ret]=KRGBuild(samplingIn,respIn,gradIn,metaData,missData)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Display Building information
-textd='++ Type: ';
-textf='';
-Gfprintf('\n%s\n',[textd 'Kriging ((G)KRG)' textf]);
-%
-Gfprintf('>>> Building : ');
-dispTxtOnOff(~isempty(gradIn),'GKRG','KRG',true);
-Gfprintf('>> Kernel function: %s\n',metaData.kern);
-Gfprintf('>> Deg : %i ',metaData.polyOrder);
-dispTxtOnOff(metaData.para.polyOrder==0,'(Ordinary)','(Universal)',true);
-%
-if dispTxtOnOff(metaData.cv.on,'>> CV: ',[],true)
-    dispTxtOnOff(metaData.cv.full,'>> Computation all CV criteria: ',[],true);
-    dispTxtOnOff(metaData.cv.disp,'>> Show CV: ',[],true);
-end
-%
-dispTxtOnOff(metaData.recond,'>> Correction of matrix condition:',[],true);
-if dispTxtOnOff(metaData.estim.on,'>> Estimation of the hyperparameters: ',[],true)
-    Gfprintf('>> Algorithm for estimation: %s\n',metaData.estim.method);
-    Gfprintf('>> Bounds: [%d , %d]\n',metaData.para.l.Min,metaData.para.l.Max);
-    switch metaData.kern
-        case {'expg','expgg'}
-            Gfprintf('>> Bounds for exponent: [%d , %d]\n',metaData.para.p.Min,metaData.para.p.Max);
-        case 'matern'
-            Gfprintf('>> Bounds for nu (Matern): [%d , %d]\n',metaData.para.nu.Min,metaData.para.nu.Max);
-    end
-    dispTxtOnOff(metaData.estim.aniso,'>> Anisotropy: ',[],true);
-    dispTxtOnOff(metaData.estim.dispIterCmd,'>> Show estimation steps in console: ',[],true);
-    dispTxtOnOff(metaData.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
-else
-    Gfprintf('>> Value(s) hyperparameter(s):');
-    fprintf('%d',metaData.para.l.Val);
-    fprintf('\n');
-    switch metaData.kern
-        case {'expg','expgg'}
-            Gfprintf('>> Value of the exponent:');
-            fprintf(' %d',metaData.para.p.Val);
-            fprintf('\n');
-        case {'matern'}
-            Gfprintf('>> Value of nu (Matern): %d \n',metaData.para.nu.Val);
-    end
-end
-%
-Gfprintf('\n');
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load global variables
 global dispData
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Initialisation of the variables
-%number of sample points
-ns=size(respIn,1);
-%number of design variables
-np=size(samplingIn,2);
-
-%check availability of the gradients
-availGrad=~isempty(gradIn);
-%check missing data
-if isfield(metaData,'miss')
-    missResp=metaData.miss.resp.on;
-    missGrad=metaData.miss.grad.on;
-    availGrad=(~metaData.miss.grad.all&&metaData.miss.grad.on)||(availGrad&&~metaData.miss.grad.on);
-else
-    metaData.miss.resp.on=false;
-    metaData.miss.grad.on=false;
-    missResp=missData.miss.resp.on;
-    missGrad=metaData.miss.grad.on;
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Responses and gradients at sample points
-YY=respIn;
-%remove missing response(s)
-if missResp
-    YY=YY(metaData.miss.resp.ixAvail);
-end
-
-if availGrad
-    tmp=gradIn';
-    der=tmp(:);
-    %remove missing gradient(s)
-    if missGrad
-        der=der(missData.grad.ixAvailLine);
-    end
-    YY=vertcat(YY,der);
-end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Building indexes system for building KRG/GKRG matrices
@@ -195,54 +110,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute distances between sample points
 distC=samplingIn(iXsampling(:,1),:)-samplingIn(iXsampling(:,2),:);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Build regression matrix (for the trend model)
 
-%depending on the availability of the gradients
-if ~availGrad
-    valFunPoly=MultiMono(samplingIn,metaData.polyOrder);
-    if missResp
-        %remove missing response(s)
-        valFunPoly=valFunPoly(metaData.miss.resp.ixAvail,:);
-    end
-else
-    %gradient-based
-    [MatX,MatDX]=MultiMono(samplingIn,metaData.polyOrder);
-    nbMonomialTerms=size(MatX,2);
-    if missResp||missGrad
-        sizeResp=ns-missData.resp.nb;
-        sizeGrad=ns*np-missData.grad.nb;
-        sizeTotal=sizeResp+sizeGrad;
-    else
-        sizeResp=ns;
-        sizeGrad=ns*np;
-        sizeTotal=sizeResp+sizeGrad;
-    end
-    %initialize regression matrix
-    valFunPoly=zeros(sizeTotal,nbMonomialTerms);
-    if missResp
-        %remove missing response(s)
-        MatX=MatX(metaData.miss.resp.ixAvail,:);
-    end
-    %load monomial terms of the polynomial regression
-    valFunPoly(1:sizeResp,:)=MatX;
-    %load derivatives of the monomial terms
-    if iscell(MatDX)
-        tmp=horzcat(MatDX{:})';
-        tmp=reshape(tmp,nbMonomialTerms,[])';
-    else
-        tmp=MatDX';
-        tmp=tmp(:);
-    end
-    
-    if missGrad
-        %remove missing gradient(s)
-        tmp=tmp(missData.grad.ixt_dispo_line,:);
-    end
-    %add derivatives to the regression matrix
-    valFunPoly(sizeResp+1:end,:)=tmp;
-end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -359,15 +227,7 @@ if metaData.estim.on
         metaData.para.nu.Val=paraEstim.nu.Val;
     end
 else
-    %w/o estimation, the initial values of hyperparameters are chosen
-    switch metaData.kern
-        case {'expg','expgg'}
-            metaData.para.Val=[metaData.para.l.Val metaData.para.p.Val];
-        case {'matern'}
-            metaData.para.Val=[metaData.para.l.Val metaData.para.nu.Val];
-        otherwise
-            metaData.para.Val=metaData.para.l.Val;
-    end
+
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -29,13 +29,19 @@ classdef xLS < handle
         missData;           % class for missing data
         %
         YY=[];              % vector of responses
-        YYD=[];              % vector of gradients
+        YYD=[];             % vector of gradients
         %
         polyOrder=0;        % polynomial order
+        kernelFun='sexp';   % kernel function
         %
         beta=[];            % vector of the regressors
         valFunPoly=[];      % matrix of the evaluation of the monomial terms
         valFunPolyD=[];     % matrix of the evaluation of derivatives of the monomial terms
+        %
+        XX=[];              % full matrix of monomial terms
+        YYtot=[];           % full vector of responses and gradients
+        fct=[];             % computed matrix XX'*XX
+        fcY=[];             % computed matrix XX*YYT
         nbMonomialTerms=0;  % number of monomial terms
     end
     
@@ -60,7 +66,7 @@ classdef xLS < handle
     
     methods
         %% Constructor
-        function obj=xLS(samplingIn,respIn,gradIn,orderIn,missData)
+        function obj=KRG(samplingIn,respIn,gradIn,orderIn,missData)
             %load data
             obj.sampling=samplingIn;
             obj.resp=respIn;
@@ -168,7 +174,7 @@ classdef xLS < handle
                 obj.valFunPoly=MultiMono(obj.sampling,obj.polyOrder);
                 if obj.checkMiss
                     %remove missing response(s)
-                     obj.valFunPoly=obj.missData.removeRV(obj.valFunPoly);
+                    obj.valFunPoly=obj.missData.removeRV(obj.valFunPoly);
                 end
             else
                 %gradient-based
@@ -198,7 +204,7 @@ classdef xLS < handle
                 newVal=MultiMono(samplingIn,obj.polyOrder);
                 if obj.checkNewMiss
                     %remove missing response(s)
-                     newVal=obj.missData.removeRV(newVal,'n');
+                    newVal=obj.missData.removeRV(newVal,'n');
                 end
                 obj.valFunPoly=[obj.valFunPoly;newVal];
             else
@@ -217,25 +223,31 @@ classdef xLS < handle
         end
         
         %% compute regressors
-        function compute(obj)
+        function compute(obj,flagRun)
+            %if no flagRun specified
+            if nargin==1;flagRun=true;end
             obj.nbMonomialTerms=size(obj.valFunPoly,2);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %determine regressors
-            XX=[obj.valFunPoly;obj.valFunPolyD];
-            YYT=[obj.YY;obj.YYD];
-            fct=XX'*XX;
-            fcY=XX'*YYT;
-            %deal with unsifficent number of equations
-            if obj.nbMonomialTerms>numel(YYT)
+            obj.XX=[obj.valFunPoly;obj.valFunPolyD];
+            obj.YYtot=[obj.YY;obj.YYD];
+            obj.fct=obj.XX'*obj.XX;
+            obj.fcY=obj.XX'*obj.YYtot;
+            %deal with insufficent number of equations
+            if obj.nbMonomialTerms>numel(obj.YYT)
                 Gfprintf(' > !! matrix ill-conditionned (%i monomials, %i responses and gradients)!! (use pinv)\n',obj.nbMonomialTerms,numel(YYT));
-                obj.beta=pinv(fct)*fcY;
+                if flagRun
+                    obj.beta=pinv(obj.fct)*obj.fcY;
+                end
             else
-                [Q,R]=qr(fct);
-                obj.beta=R\(Q'*fcY);
+                [obj.Q,obj.R]=qr(obj.fct);
+                if flagRun
+                    obj.beta=obj.R\(obj.Q'*obj.fcY);
+                end
             end
         end
-            
+        
         
         %% Update metamodel
         function update(obj,newSample,newResp,newGrad,newMissData)

@@ -91,7 +91,11 @@ classdef KernMatrix < handle
         %setter for internal parameter
         function set.paraVal(obj,pV)
             oldpV=obj.paraVal;
-            if ~all(oldpV==pV)
+            if ~isempty(oldpV)
+                if ~all(oldpV==pV)
+                    obj.fRun;
+                end
+            else
                 obj.fRun;
             end
             obj.paraVal=pV;

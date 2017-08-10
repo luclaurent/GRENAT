@@ -2,15 +2,13 @@
 % KRG: kriging
 % GKRG: cokriging w/- gradients
 % L. LAURENT -- 10/08/2017 -- luc.laurent@lecnam.net
-% function for stopping the display of the warning and restoring initial
-% state
 
 classdef modWarning
     properties (Access = private)
-        initStatus;     % initial status obtained when the object is created        
+        initStatus;     % initial status obtained when the object is created
     end
     properties (Dependent)
-        currentStatus;  % 
+        currentStatus;  %
     end
     methods
         %% constructor
@@ -74,7 +72,7 @@ classdef modWarning
         
         %% initialize the warning state
         function init(obj)
-           warning(obj.initStatus); 
+            warning(obj.initStatus);
         end
     end
     

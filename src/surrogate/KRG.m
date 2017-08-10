@@ -38,6 +38,7 @@ classdef KRG < handle
         %
         beta=[];            % regressors of the kriging generalized Least-Square
         gamma=[];           % coefficients of the stochastic prt of the kriging
+        sig2=[];            % variance of the Gaussian Process
         %
         polyOrder=0;        % polynomial order
         kernelFun='sexp';   % kernel function
@@ -67,6 +68,8 @@ classdef KRG < handle
         QK=[];              % matrix from factorization
         LK=[];              % matrix from factorization
         UK=[];              % matrix from factorization
+        %
+        factK='LU';      % factorization strategy (fastest: LL (Cholesky))
     end
     properties (Dependent,Access = private)
         NnS;               % number of new sample points
@@ -75,6 +78,7 @@ classdef KRG < handle
         parallelOk=false;    % flag for using parallel version
         estimOn=false;      %flag for estimation of the internal parameters
         %
+        
     end
     properties (Dependent)
         Kcond;              % condition number of the kernel matrix
@@ -82,18 +86,29 @@ classdef KRG < handle
     
     methods
         %% Constructor
-        function obj=KRG(samplingIn,respIn,gradIn,orderIn,kernIn,optIn)
+        function obj=KRG(samplingIn,respIn,gradIn,orderIn,kernIn,varargin)
             %load data
             obj.sampling=samplingIn;
             obj.resp=respIn;
             if nargin>2;obj.grad=gradIn;end
             if nargin>3;obj.polyOrder=orderIn;end
             if nargin>4;obj.kernelFun=kernIn;end
-            if nargin>5;obj.manageOpt(optIn);end
+            if nargin>5;obj.manageOpt(varargin);end
             %if everything is ok then train
             obj.train();
         end
         
+        %% function for dealing with the the input arguments of the class
+        function manageOpt(obj,optIn)
+            fun=@(x)isa(x,'MissData');
+            %look for the missing data class (MissData)
+            sM=find(cellfun(fun,optIn)~=false);
+            if ~isempty(sM);obj.missData=optIn{sM};end
+            %look for the information concerning the metamodel (class initMeta)
+            fun=@(x)isa(x,'initMeta');
+            sM=find(cellfun(fun,optIn)~=false);
+            if ~isempty(sM);obj.metaData=optIn{sM};end
+        end
         
         %% setters
         
@@ -147,10 +162,6 @@ classdef KRG < handle
             end
         end
         
-        %% manage options
-        function manageOpt(obj,optIn)
-            if isempty(obj.paraMeta);obj.paraMeta=optIn;end
-        end
         
         %% get value of the internal parameters
         function pV=getParaVal(obj)
@@ -188,14 +199,13 @@ classdef KRG < handle
             end
             obj.YY=[YYT;der];
             %build regression operators
-            obj.krgLS=xLS(obj.sampling,obj.resp,obj.grad,obj.polyOrder);
-            %initialize kenerl matrix
+            obj.krgLS=xLS(obj.sampling,obj.resp,obj.grad,obj.polyOrder,obj.missData);
+            %initialize kernel matrix
             obj.kernelMatrix=KernMatrix(obj.kernelFun,obj.sampling,obj.getParaVal);
         end
         
-        
-        %% build kernel matrix, factorization, solve the kriging problem and evaluate the log-likelihood
-        function [logLi,Li,liSack]=compute(obj,paraValIn)
+        %% build kernel matrix and remove missing part
+        function K=buildMatrix(obj,paraValIn)
             %in the case of GKRG
             if obj.flagGKRG
                 [KK,KKd,KKdd]=obj.kernelMatrix.buildMatrix(paraValIn);
@@ -207,13 +217,28 @@ classdef KRG < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %Improve condition number of the KRG/GKRG Matrix
             if obj.metaData.recond
+                %coefficient for reconditionning (co)kriging matrix
+                coefRecond=(10+size(obj.krgLS.XX,1))*eps;
+                %
                 obj.K=obj.K+coefRecond*speye(size(obj.K));
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %Factorization of the matrix
-            switch factKK
-                case 'QR'
+            %remove missing parts
+            if obj.checkMiss
+                if obj.flagGKRG
+                    obj.K=obj.missData.removeGRM(obj.K);
+                else
+                    obj.K=obj.missData.removeRM(obj.K);
+                end
+            end
+            %
+            K=obj.K;
+            %
+        end
+        
+        %% core of kriging computation using QR factorization
+        function [detK,logDetK]=coreQR(obj)
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %QR factorization
@@ -225,8 +250,8 @@ classdef KRG < handle
                     %
                     QtK=obj.QK';
                     yQ=QtK*obj.YY;
-                    fctQ=QtK*obj.krgLS.fct;
-                    fcK=dataIn.build.fct'*obj.PK/obj.RK;
+                    fctQ=QtK*obj.krgLS.XX;
+                    fcK=obj.krgLS.XX'*obj.PK/obj.RK;
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %compute beta coefficient
@@ -236,8 +261,10 @@ classdef KRG < handle
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %compute gamma coefficient
-                    obj.gamma=obj.PK*(obj.RK\(yQ-fctQ*obj.beta));
-                case 'LU'
+                    obj.gamma=obj.PK*(obj.RK\(yQ-fctQ*obj.beta));                    
+        end
+       %% core of kriging computation using LU factorization
+        function [detK,logDetK]=coreLU(obj)
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %LU factorization
@@ -248,10 +275,10 @@ classdef KRG < handle
                     logDetK=sum(log(abs(diagUK)));
                     %
                     yP=obj.YY(obj.PK,:);
-                    fctP=obj.krgLS.fct(obj.PK,:);
+                    fctP=obj.krgLS.XX(obj.PK,:);
                     yL=obj.LK\yP;
                     fctL=obj.LK\fctP;
-                    fcU=obj.krgLS.fct'/obj.UK;
+                    fcU=obj.krgLS.XX'/obj.UK;
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %compute beta coefficient
@@ -262,7 +289,9 @@ classdef KRG < handle
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %compute gamma coefficient
                     obj.gamma=obj.UK\(yL-fctL*obj.beta);
-                case 'LL'
+        end
+        %% core of kriging computation using Cholesky (LL) factorization
+        function [detK,logDetK]=coreLL(obj)
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %Cholesky's fatorization
@@ -275,8 +304,8 @@ classdef KRG < handle
                     %
                     LtK=obj.LK';
                     yL=obj.LK\obj.YY;
-                    fctL=obj.LK\obj.krgLS.fct;
-                    fcL=obj.krgLS.fct'/LtK;
+                    fctL=obj.LK\obj.krgLS.XX;
+                    fcL=obj.krgLS.XX'/LtK;
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %compute beta coefficient
@@ -287,7 +316,9 @@ classdef KRG < handle
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %compute gamma coefficient
                     obj.gamma=LtK\(yL-fctL*obj.beta);
-                otherwise
+        end
+         %% core of kriging computation using no factorization
+        function [detK,logDetK]=coreClassical(obj)
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %classical approach
@@ -297,11 +328,31 @@ classdef KRG < handle
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %compute gamma and beta coefficients
-                    fcC=obj.krgLS.fct'/obj.K;
-                    fcCfct=fcC*obj.krgLS.fct;
-                    block2=((obj.krgLS.fct'/KK)*obj.YY);
+                    fcC=obj.krgLS.XX'/obj.K;
+                    fcCfct=fcC*obj.krgLS.XX;
+                    block2=((obj.krgLS.XX'/obj.K)*obj.YY);
                     obj.beta=fcCfct\block2;
-                    obj.gamma=obj.K\(obj.YY-obj.krgLS.fct*obj.beta);
+                    obj.gamma=obj.K\(obj.YY-obj.krgLS.XX*obj.beta);
+        end
+        
+        
+        %% build factorization, solve the kriging problem and evaluate the log-likelihood
+        function [logLi,Li,liSack]=compute(obj,paraValIn)
+            if nargin==1;paraValIn=obj.paraVal;end
+            %build the kernel Matrix
+            obj.buildMatrix(paraValIn);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Factorization of the matrix
+            switch obj.factK
+                case 'QR'
+                    [detK,logDetK]=obj.coreQR;
+                case 'LU'
+                    [detK,logDetK]=obj.coreLU;
+                case 'LL'
+                    [detK,logDetK]=obj.coreLL;
+                otherwise
+                    [detK,logDetK]=obj.coreClassical;
             end
             %size of the kernel matrix
             sizeK=size(obj.K,1);
@@ -309,7 +360,7 @@ classdef KRG < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %variance of the Gaussian process
             obj.sig2=1/sizeK*...
-                ((obj.YY-obj.krgLS.fct*obj.beta)'*obj.gamma);
+                ((obj.YY-obj.krgLS.XX*obj.beta)'*obj.gamma);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %computation of the log-likelihood (Jones 1993 / Leary 2004)
@@ -462,7 +513,7 @@ classdef KRG < handle
             opt.ylabel='SCVR';
             SCVRplot(cvZR,cv.final.scvr,opt);
         end
-
+        
         
         
         %% Prepare data for building (deal with missing data)
@@ -489,7 +540,7 @@ classdef KRG < handle
         
         %% Estimate internal parameters
         function estimPara(obj)
-            obj.paraEstim=EstimPara(obj.nP,obj.metaData,obj.compute);
+            obj.paraEstim=EstimPara(obj.nP,obj.metaData,@(x)obj.compute(x));
             obj.lVal=obj.paraEstim.l.Val;
             obj.paraVal=obj.paraEstim.Val;
             if isfield(obj.paraEstim,'p')
@@ -529,7 +580,7 @@ classdef KRG < handle
                 newVal=MultiMono(samplingIn,obj.polyOrder);
                 if obj.checkNewMiss
                     %remove missing response(s)
-                     newVal=obj.missData.removeRV(newVal,'n');
+                    newVal=obj.missData.removeRV(newVal,'n');
                 end
                 obj.valFunPoly=[obj.valFunPoly;newVal];
             else
@@ -546,7 +597,7 @@ classdef KRG < handle
             %compute regressors
             obj.compute();
         end
-                         
+        
         
         %% Update metamodel
         function update(obj,newSample,newResp,newGrad,newMissData)
@@ -563,7 +614,7 @@ classdef KRG < handle
         end
         
         %% Evaluation of the metamodel
-        function [Z,GZ]=eval(obj,U)
+        function [Z,GZ,variance]=eval(obj,X)
             %computation of thr gradients or not (depending on the number of output variables)
             if nargout>=2
                 calcGrad=true;
@@ -572,16 +623,8 @@ classdef KRG < handle
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            X=U;
-            dimX=size(X,1);
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             ns=obj.nS;
             np=obj.nP;
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %distance from evaluation point to sample points
-            distS=repmat(X,ns,1)-obj.sampling;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %% KRG/GKRG
@@ -603,7 +646,7 @@ classdef KRG < handle
             if obj.flagGKRG
                 if calcGrad  %if compute gradients
                     %evaluate kernel function
-                    [ev,dev,ddev]=multiKernel(obj.kernelFun,distS,obj.paraVal);
+                    [ev,dev,ddev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
                     rr(1:ns)=ev;
                     rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
                     
@@ -617,97 +660,94 @@ classdef KRG < handle
                     end
                     jr(ns+1:sizeMatVec,:)=-matDer';
                     
-                    %if missing responses
-                    if obj.
-                        rr(metaData.miss.resp.ixMiss)=[];
-                        jr(metaData.miss.resp.ixMiss,:)=[];
-                    end
-                    
-                    %if missing gradients
-                    if metaData.miss.grad.on
-                        repEv=metaData.used.ns-metaData.miss.resp.nb;
-                        rr(repEv+metaData.miss.grad.ixtMissLine)=[];
-                        jr(repEv+metaData.miss.grad.ixtMissLine,:)=[];
-                    end
-                    
+                    %if missing data
+                    if obj.checkMiss
+                            rr=obj.missData.removeGRV(rr);
+                            jr=obj.missData.removeGRV(jr);
+                    end                    
                 else %otherwise
-                    [ev,dev]=multiKernel(metaData.build.kern,distS,metaData.build.para.val);
+                    [ev,dev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
                     rr(1:ns)=ev;
                     rr(ns+1:sizeMatVec)=reshape(dev',1,ns*np);
                     %if missing data
-                    if metaData.miss.resp.on
-                        rr(metaData.miss.resp.ixMiss)=[];
-                        if metaData.miss.grad.on
-                            repEv=metaData.used.ns-metaData.miss.resp.nb;
-                            rr(repEv+metaData.miss.grad.ixtMissLine)=[];
-                        end
+                    if obj.checkMiss
+                        rr=obj.missData.removeGRV(rr);
                     end
                 end
             else
                 if calcGrad  %if the gradients will be computed
-                    [rr,jr]=multiKernel(metaData.build.kern,distS,metaData.build.para.Val);
+                    [rr,jr]=obj.kernelMatrix.buildVector(X,obj.paraVal);
+                    %if missing data
+                    if obj.checkMiss
+                        rr=obj.missData.removeRV(rr);
+                        jr=obj.missData.removeRV(jr);
+                    end
                 else %otherwise
-                    rr=feval(metaData.build.kern,distS,metaData.build.para.Val);
-                end
-                %if missing data
-                if metaData.miss.resp.on
-                    rr(metaData.miss.resp.ixMiss)=[];
-                    jr(metaData.miss.resp.ixMiss,:)=[];
-                end
+                    rr=obj.kernelMatrix.buildVector(X,obj.paraVal);
+                    %if missing data
+                    if obj.checkMiss
+                        rr=obj.missData.removeRV(rr);
+                    end
+                end                
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %regression matrix at the non-sample points
             if calcGrad
-                [ff,jf]=MultiMono(X,metaData.build.polyOrder);
+                [ff,jf]=obj.krgLS.buildMatrixNonS(X);
             else
-                [ff]=MultiMono(X,metaData.build.polyOrder);
+                [ff]=obj.krgLS.buildMatrixNonS(X);
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %evaluation of the surrogate model at point X
-            trZ=ff*metaData.build.beta;
-            stoZ=rr'*metaData.build.gamma;
+            trZ=ff*obj.beta;
+            stoZ=rr'*obj.gamma;
             Z=trZ+stoZ;
             if calcGrad
                 %%verif in 2D+
-                trGZ=jf*metaData.build.beta;
-                stoGZ=jr'*metaData.build.gamma;
+                trGZ=jf*obj.beta;
+                stoGZ=jr'*obj.gamma;
                 GZ=trGZ+stoGZ;
             end
+            %compute variance
+            if nargout >=3
+                variance=obj.computeVariance(rr,ff);
+            end
+        end
+        
+        %% compute MSE
+        function variance=computeVariance(obj,rr,ff)
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %compute the prediction variance (MSE) (Lophaven, Nielsen & Sondergaard
             %2004 / Marcelet 2008 / Chauvet 1999)
-            if nargout >=3
-                if ~dispWarning;warning off all;end
-                %depending on the factorization
-                switch metaData.build.factKK
-                    case 'QR'
-                        rrP=rr'*metaData.build.PK;
-                        Qrr=metaData.build.QtK*rr;
-                        u=metaData.build.fcR*Qrr-ff';
-                        variance=metaData.build.sig2*(ones(dimX,1)-(rrP/metaData.build.RK)*Qrr+...
-                            u'/metaData.build.fcCfct*u);
-                    case 'LU'
-                        rrP=rr(metaData.build.PK,:);
-                        Lrr=metaData.build.LK\rrP;
-                        u=metaData.build.fcU*Lrr-ff';
-                        variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.UK)*Lrr+...
-                            u'/metaData.build.fcCfct*u);
-                    case 'LL'
-                        Lrr=metaData.build.LK\rr;
-                        u=metaData.build.fcL*Lrr-ff';
-                        variance=metaData.build.sig2*(ones(dimX,1)-(rr'/metaData.build.LtK)*Lrr+...
-                            u'/metaData.build.fcCfct*u);
-                    otherwise
-                        rKrr=metaData.build.KK \ rr;
-                        u=metaData.build.fc*rKrr-ff';
-                        variance=metaData.build.sig2*(ones(dimX,1)+u'/metaData.build.fcCfct*u - rr'*rKrr);
-                end
-                if ~dispWarning;warning on all;end
-                
+            if ~dispWarning;warning off all;end
+            %depending on the factorization
+            switch obj.factKK
+                case 'QR'
+                    rrP=rr'*obj.PK;
+                    Qrr=obj.QtK*rr;
+                    u=obj.fcR*Qrr-ff';
+                    variance=obj.sig2*(1-(rrP/obj.RK)*Qrr+...
+                        u'/obj.fcCfct*u);
+                case 'LU'
+                    rrP=rr(obj.PK,:);
+                    Lrr=obj.LK\rrP;
+                    u=obj.fcU*Lrr-ff';
+                    variance=obj.sig2*(1-(rr'/obj.UK)*Lrr+...
+                        u'/obj.fcCfct*u);
+                case 'LL'
+                    Lrr=obj.LK\rr;
+                    u=obj.fcL*Lrr-ff';
+                    variance=obj.sig2*(1-(rr'/obj.LtK)*Lrr+...
+                        u'/obj.fcCfct*u);
+                otherwise
+                    rKrr=obj.KK \ rr;
+                    u=obj.fc*rKrr-ff';
+                    variance=obj.sig2*(1+u'/obj.fcCfct*u - rr'*rKrr);
             end
+            if ~dispWarning;warning on all;end            
         end
         
         %% Show information in the console
@@ -727,35 +767,35 @@ classdef KRG < handle
                     Gfprintf('>> Deg : %i ',obj.polyOrder);
                     dispTxtOnOff(obj.polyOrder==0,'(Ordinary)','(Universal)',true);
                     %
-                    if dispTxtOnOff(obj.cv.on,'>> CV: ',[],true)
-                        dispTxtOnOff(obj.cv.full,'>> Computation all CV criteria: ',[],true);
-                        dispTxtOnOff(obj.cv.disp,'>> Show CV: ',[],true);
+                    if dispTxtOnOff(obj.metaData.cv.on,'>> CV: ',[],true)
+                        dispTxtOnOff(obj.metaData.cv.full,'>> Computation all CV criteria: ',[],true);
+                        dispTxtOnOff(obj.metaData.cv.disp,'>> Show CV: ',[],true);
                     end
                     %
-                    dispTxtOnOff(obj.recond,'>> Correction of matrix condition:',[],true);
-                    if dispTxtOnOff(obj.estim.on,'>> Estimation of the hyperparameters: ',[],true)
-                        Gfprintf('>> Algorithm for estimation: %s\n',obj.estim.method);
-                        Gfprintf('>> Bounds: [%d , %d]\n',obj.para.l.Min,obj.para.l.Max);
+                    dispTxtOnOff(obj.metaData.recond,'>> Correction of matrix condition number:',[],true);
+                    if dispTxtOnOff(obj.metaData.estim.on,'>> Estimation of the hyperparameters: ',[],true)
+                        Gfprintf('>> Algorithm for estimation: %s\n',obj.metaData.estim.method);
+                        Gfprintf('>> Bounds: [%d , %d]\n',obj.metaData.para.l.Min,obj.metaData.para.l.Max);
                         switch obj.kernelFun
                             case {'expg','expgg'}
-                                Gfprintf('>> Bounds for exponent: [%d , %d]\n',obj.para.p.Min,obj.para.p.Max);
+                                Gfprintf('>> Bounds for exponent: [%d , %d]\n',obj.metaData.para.p.Min,obj.metaData.para.p.Max);
                             case 'matern'
-                                Gfprintf('>> Bounds for nu (Matern): [%d , %d]\n',obj.para.nu.Min,obj.para.nu.Max);
+                                Gfprintf('>> Bounds for nu (Matern): [%d , %d]\n',obj.metaData.para.nu.Min,obj.metaData.para.nu.Max);
                         end
-                        dispTxtOnOff(obj.estim.aniso,'>> Anisotropy: ',[],true);
-                        dispTxtOnOff(obj.estim.dispIterCmd,'>> Show estimation steps in console: ',[],true);
-                        dispTxtOnOff(obj.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
+                        dispTxtOnOff(obj.metaData.estim.aniso,'>> Anisotropy: ',[],true);
+                        dispTxtOnOff(obj.metaData.estim.dispIterCmd,'>> Show estimation steps in console: ',[],true);
+                        dispTxtOnOff(obj.metaData.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
                     else
                         Gfprintf('>> Value(s) hyperparameter(s):');
-                        fprintf('%d',obj.para.l.Val);
+                        fprintf('%d',obj.metaData.para.l.Val);
                         fprintf('\n');
                         switch obj.kernelFun
                             case {'expg','expgg'}
                                 Gfprintf('>> Value of the exponent:');
-                                fprintf(' %d',obj.para.p.Val);
+                                fprintf(' %d',obj.metaData.para.p.Val);
                                 fprintf('\n');
                             case {'matern'}
-                                Gfprintf('>> Value of nu (Matern): %d \n',obj.para.nu.Val);
+                                Gfprintf('>> Value of nu (Matern): %d \n',obj.metaData.para.nu.Val);
                         end
                     end
                     %
@@ -767,8 +807,7 @@ classdef KRG < handle
                     Gfprintf(' ++ END building xLS\n');
             end
         end
-    end
-    
+    end    
 end
 
 

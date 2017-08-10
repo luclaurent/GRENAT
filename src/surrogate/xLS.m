@@ -43,6 +43,9 @@ classdef xLS < handle
         fct=[];             % computed matrix XX'*XX
         fcY=[];             % computed matrix XX*YYT
         nbMonomialTerms=0;  % number of monomial terms
+        %
+        R=[];               % matrices obtained from the QR factorization of the monomial matrix
+        Q=[];               %
     end
     
     properties (Access = private)
@@ -66,18 +69,29 @@ classdef xLS < handle
     
     methods
         %% Constructor
-        function obj=KRG(samplingIn,respIn,gradIn,orderIn,missData)
+        function obj=xLS(samplingIn,respIn,gradIn,orderIn,missData,flagRun)
             %load data
             obj.sampling=samplingIn;
             obj.resp=respIn;
+            nargin
             if nargin>2;obj.grad=gradIn;end
             if nargin>3;obj.polyOrder=orderIn;end
             if nargin>4;obj.missData=missData;end
-            %if everything is ok then train
-            obj.train();
+            %if everything is ok then train w/- or w/o running the
+            %computation
+            if nargin>5
+                obj.train(flagRun);
+            else
+                obj.train(false);
+            end
         end
         
         %% setters
+        function set.missData(obj,dataIn)
+            if ~isempty(dataIn)
+                obj.missData=dataIn;
+            end
+        end
         
         %% getters
         function nS=get.nS(obj)
@@ -163,12 +177,12 @@ classdef xLS < handle
         end
         
         %% Building/training metamodel
-        function train(obj)
+        function train(obj,flagRun)
+            if nargin==1;flagRun=false;end
             obj.showInfo('start');
             %Prepare data
             obj.setData;
-            %Build regression matrix (for the trend model)
-            
+            %Build regression matrix (for the trend model)            
             %depending on the availability of the gradients
             if ~obj.flagGLS
                 obj.valFunPoly=MultiMono(obj.sampling,obj.polyOrder);
@@ -189,7 +203,7 @@ classdef xLS < handle
                 end
             end
             %compute regressors
-            obj.compute();
+            obj.compute(flagRun);
             obj.showInfo('end');
         end
         
@@ -235,15 +249,38 @@ classdef xLS < handle
             obj.fct=obj.XX'*obj.XX;
             obj.fcY=obj.XX'*obj.YYtot;
             %deal with insufficent number of equations
-            if obj.nbMonomialTerms>numel(obj.YYT)
-                Gfprintf(' > !! matrix ill-conditionned (%i monomials, %i responses and gradients)!! (use pinv)\n',obj.nbMonomialTerms,numel(YYT));
-                if flagRun
+            if flagRun
+                Gfprintf(' ++ Build regressors\n');
+                if obj.nbMonomialTerms>numel(obj.YYtot)
+                    Gfprintf(' > !! matrix ill-conditionned (%i mono., %i resp. and grad.)!! (use pinv)\n',...
+                        obj.nbMonomialTerms,numel(obj.YYtot));
                     obj.beta=pinv(obj.fct)*obj.fcY;
-                end
-            else
-                [obj.Q,obj.R]=qr(obj.fct);
-                if flagRun
-                    obj.beta=obj.R\(obj.Q'*obj.fcY);
+                else
+                    obj.beta=obj.fct\obj.fcY;
+%                     
+%                     tic
+%                     obj.fct=obj.XX'*obj.XX;
+%                     [obj.Q,obj.R]=qr(obj.fct);
+%                     obj.beta=obj.R\(obj.Q'*obj.fcY);
+%                     toc
+%                     tic
+%                     fct=obj.XX'*obj.XX;
+%                     fcY=obj.XX'*obj.YYtot;
+%                     zz=fct\fcY;
+%                     toc
+%                     tic
+%                     [Q,R,e]=qr(obj.XX,'vector');
+%                     %keyboard
+%                     toc
+%                     tic
+%                      [Q,R,P]=qr(obj.XX);
+%                      toc
+%                     qy=Q'*obj.YYtot;
+%                     x=R\qy;
+%                     bb=P*x;                   
+%                     toc
+%                      all(bb(:)==obj.beta)
+%                     keyboard
                 end
             end
         end
@@ -263,6 +300,20 @@ classdef xLS < handle
             obj.showInfo('end');
         end
         
+        %% regression matrix at the non-sample points
+        function [ff,jf]=buildMatrixNonS(obj,U)
+            calcGrad=false;
+            if nargout>1
+                calcGrad=true;
+            end
+            if calcGrad
+                [ff,jf]=MultiMono(U,obj.polyOrder);
+            else
+                [ff]=MultiMono(U,obj.polyOrder);
+            end
+        end
+            
+        
         %% Evaluation of the metamodel
         function [Z,GZ]=eval(obj,U)
             calcGrad=false;
@@ -271,11 +322,11 @@ classdef xLS < handle
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %regression matrix at the non-sample points
+            %    
             if calcGrad
-                [ff,jf]=MultiMono(U,obj.polyOrder);
+                [ff,jf]=obj.buildMatrixNonS(U);
             else
-                [ff]=MultiMono(U,obj.polyOrder);
+                ff=obj.buildMatrixNonS(U);
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

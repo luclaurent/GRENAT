@@ -19,7 +19,7 @@ if modFinal;countTime=mesuTime;end
 %load variables
 np=obj.nP;
 ns=obj.nS;
-availGrad=obj.flagGKRG;
+availGrad=obj.flagG;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)
@@ -56,7 +56,7 @@ cv.cvZ=esR-obj.resp;
 %vectors of the variance on removed sample points
 evI=obj.sig2./diagMK;
 evR=evI(1:ns);
-if obj.flagGKRG;evG=evI(ns+1:end);end
+if obj.flagG;evG=evI(ns+1:end);end
 
 %computation of the LOO criteria (various norms)
 switch obj.normLOO
@@ -65,7 +65,7 @@ switch obj.normLOO
         cv.then.eloot=1/numel(esI)*sum(abs(esI));
         cv.press=cv.then.press;
         cv.eloot=cv.then.eloot;
-        if obj.flagGKRG
+        if obj.flagG
             cv.then.eloor=1/ns*sum(abs(esR));
             cv.then.eloog=1/(ns*np)*sum(abs(esG));
             cv.eloor=cv.then.eloor;
@@ -77,7 +77,7 @@ switch obj.normLOO
         cv.then.eloot=1/numel(esI)*(cv.then.press);
         cv.press=cv.then.press;
         cv.eloot=cv.then.eloot;
-        if obj.flagGKRG
+        if obj.flagG
             cv.then.press=esR'*esR;
             cv.then.eloor=1/numel(esR)*(cv.then.press);
             cv.then.eloog=1/(numel(esR)*np)*(esG'*esG);
@@ -90,7 +90,7 @@ switch obj.normLOO
         cv.then.eloot=1/numel(esI)*max(esI(:));
         cv.press=cv.then.press;
         cv.eloot=cv.then.eloot;
-        if obj.flagGKRG
+        if obj.flagG
             cv.then.press=esR'*esR;
             cv.then.eloor=1/numel(esR)*max(esR(:));
             cv.then.eloog=1/(numel(esR)*np)*max(esG(:));
@@ -108,7 +108,7 @@ cv.scvrR=(esR.^2)./evR;
 cv.scvrR_min=min(cv.scvrR(:));
 cv.scvrR_max=max(cv.scvrR(:));
 cv.scvrR_mean=mean(cv.scvrR(:));
-if obj.flagGKRG
+if obj.flagG
     cv.scvrG=(esG.^2)./evG;
     cv.scvrG_min=min(cv.scvrG(:));
     cv.scvrG_max=max(cv.scvrG(:));
@@ -123,14 +123,14 @@ diffA=(esI.^2)./evI;
 cv.adequ=1/numel(esI)*sum(diffA);
 diffA=(esR.^2)./evR;
 cv.adequR=1/numel(esR)*sum(diffA);
-if obj.flagGKRG
+if obj.flagG
     diffA=(esG.^2)./evG;
     cv.adequG=1/numel(esG)*sum(diffA);
 end
 %mean of bias
 cv.bm=1/numel(esI)*sum(esI);
 cv.bmR=1/numel(esR)*sum(esR);
-if obj.flagGKRG
+if obj.flagG
     cv.bmG=1/numel(esG)*sum(esG);
 end
 %display information
@@ -139,7 +139,7 @@ if modDebug||modFinal
     %prepare cells for display
     txtC{1}='+++ Used norm for calculate CV-LOO';
     varC{1}=obj.normLOO;
-    if obj.flagGKRG
+    if obj.flagG
         txtC{end+1}='+++ Error on responses';
         varC{end+1}=cv.then.eloor;
         txtC{end+1}='+++ Error on gradients';
@@ -149,7 +149,7 @@ if modDebug||modFinal
     varC{end+1}=cv.then.eloot;
     txtC{end+1}='+++ PRESS';
     varC{end+1}=cv.then.press;
-    if obj.flagGKRG
+    if obj.flagG
         txtC{end+1}='+++ mean SCVR (Resp)';
         varC{end+1}=cv.scvrR_mean;
         txtC{end+1}='+++ max SCVR (Resp)';
@@ -169,7 +169,7 @@ if modDebug||modFinal
     varC{end+1}=cv.scvr_max;
     txtC{end+1}='+++ min SCVR (Total)';
     varC{end+1}=cv.scvr_min;
-    if obj.flagGKRG
+    if obj.flagG
         txtC{end+1}='+++ Adequation (Resp)';
         varC{end+1}=cv.adequR;
         txtC{end+1}='+++ Adequation (Grad)';
@@ -177,7 +177,7 @@ if modDebug||modFinal
     end
     txtC{end+1}='+++ Adequation (Total)';
     varC{end+1}=cv.adequ;
-    if obj.flagGKRG
+    if obj.flagG
         txtC{end+1}='+++ Mean of bias (Resp)';
         varC{end+1}=cv.bmR;
         txtC{end+1}='+++ Mean of bias (Grad)';

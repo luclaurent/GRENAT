@@ -15,7 +15,7 @@ np=obj.nP;
 %% KRG/GKRG
 %%compute response provided by the metamodel at the non sample point
 %definition des dimensions of the matrix/vector for KRG or GKRG
-if obj.flagGKRG
+if obj.flagG
     sizeMatVec=ns*(np+1);
 else
     sizeMatVec=ns;
@@ -27,7 +27,7 @@ if calcGrad
     jr=zeros(sizeMatVec,np);
 end
 %KRG/GKRG
-if obj.flagGKRG
+if obj.flagG
     if calcGrad  %if compute gradients
         %evaluate kernel function
         [ev,dev,ddev]=obj.kernelMatrix.buildVector(X,obj.paraVal);

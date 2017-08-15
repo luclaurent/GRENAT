@@ -8,7 +8,7 @@ if obj.checkNewMiss
 end
 %
 der=[];
-if obj.flagGKRG
+if obj.flagG
     tmp=gradIn';
     der=tmp(:);
     %remove missing gradient(s)

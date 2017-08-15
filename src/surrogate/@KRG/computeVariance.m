@@ -6,7 +6,7 @@ function variance=computeVariance(obj,rr,ff)
 %2004 / Marcelet 2008 / Chauvet 1999)
 if ~dispWarning;warning off all;end
 %depending on the factorization
-switch obj.factKK
+switch obj.factK
     case 'QR'
         rrP=rr'*obj.PK;
         Qrr=obj.QtK*rr;

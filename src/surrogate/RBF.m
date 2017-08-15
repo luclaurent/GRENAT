@@ -59,7 +59,7 @@ classdef RBF < handle
         respV=[];            % responses prepared for training
         gradV=[];            % gradients prepared for training
         %
-        flagGKRG=false;      % flag for computing matrices with gradients
+        flagG=false;      % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
         requireRun=true;     % flag if a full building is required
@@ -140,7 +140,7 @@ classdef RBF < handle
         end
         
         %% getter for GKRG building
-        function flagG=get.flagGKRG(obj)
+        function flagG=get.flagG(obj)
             flagG=~isempty(obj.grad);
         end
         
@@ -212,7 +212,7 @@ classdef RBF < handle
         %% build kernel matrix and remove missing part
         function K=buildMatrix(obj,paraValIn)
             %in the case of GKRG
-            if obj.flagGKRG
+            if obj.flagG
                 [KK,KKd,KKdd]=obj.kernelMatrix.buildMatrix(paraValIn);
                 obj.K=[KK -KKd;-KKd' -KKdd];
             else
@@ -231,7 +231,7 @@ classdef RBF < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %remove missing parts
             if obj.checkMiss
-                if obj.flagGKRG
+                if obj.flagG
                     obj.K=obj.missData.removeGRM(obj.K);
                 else
                     obj.K=obj.missData.removeRM(obj.K);
@@ -419,7 +419,7 @@ classdef RBF < handle
             %load variables
             np=obj.nP;
             ns=obj.nS;
-            availGrad=obj.flagGKRG;
+            availGrad=obj.flagG;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)
@@ -456,7 +456,7 @@ classdef RBF < handle
             %vectors of the variance on removed sample points
             evI=obj.sig2./diagMK;
             evR=evI(1:ns);
-            if obj.flagGKRG;evG=evI(ns+1:end);end
+            if obj.flagG;evG=evI(ns+1:end);end
             
             %computation of the LOO criteria (various norms)
             switch obj.normLOO
@@ -465,7 +465,7 @@ classdef RBF < handle
                     cv.then.eloot=1/numel(esI)*sum(abs(esI));
                     cv.press=cv.then.press;
                     cv.eloot=cv.then.eloot;
-                    if obj.flagGKRG
+                    if obj.flagG
                         cv.then.eloor=1/ns*sum(abs(esR));
                         cv.then.eloog=1/(ns*np)*sum(abs(esG));
                         cv.eloor=cv.then.eloor;
@@ -477,7 +477,7 @@ classdef RBF < handle
                     cv.then.eloot=1/numel(esI)*(cv.then.press);
                     cv.press=cv.then.press;
                     cv.eloot=cv.then.eloot;
-                    if obj.flagGKRG
+                    if obj.flagG
                         cv.then.press=esR'*esR;
                         cv.then.eloor=1/numel(esR)*(cv.then.press);
                         cv.then.eloog=1/(numel(esR)*np)*(esG'*esG);
@@ -490,7 +490,7 @@ classdef RBF < handle
                     cv.then.eloot=1/numel(esI)*max(esI(:));
                     cv.press=cv.then.press;
                     cv.eloot=cv.then.eloot;
-                    if obj.flagGKRG
+                    if obj.flagG
                         cv.then.press=esR'*esR;
                         cv.then.eloor=1/numel(esR)*max(esR(:));
                         cv.then.eloog=1/(numel(esR)*np)*max(esG(:));
@@ -508,7 +508,7 @@ classdef RBF < handle
             cv.scvrR_min=min(cv.scvrR(:));
             cv.scvrR_max=max(cv.scvrR(:));
             cv.scvrR_mean=mean(cv.scvrR(:));
-            if obj.flagGKRG
+            if obj.flagG
                 cv.scvrG=(esG.^2)./evG;
                 cv.scvrG_min=min(cv.scvrG(:));
                 cv.scvrG_max=max(cv.scvrG(:));
@@ -523,14 +523,14 @@ classdef RBF < handle
             cv.adequ=1/numel(esI)*sum(diffA);
             diffA=(esR.^2)./evR;
             cv.adequR=1/numel(esR)*sum(diffA);
-            if obj.flagGKRG
+            if obj.flagG
                 diffA=(esG.^2)./evG;
                 cv.adequG=1/numel(esG)*sum(diffA);
             end
             %mean of bias
             cv.bm=1/numel(esI)*sum(esI);
             cv.bmR=1/numel(esR)*sum(esR);
-            if obj.flagGKRG
+            if obj.flagG
                 cv.bmG=1/numel(esG)*sum(esG);
             end
             %display information
@@ -539,7 +539,7 @@ classdef RBF < handle
                 %prepare cells for display
                 txtC{1}='+++ Used norm for calculate CV-LOO';
                 varC{1}=obj.normLOO;
-                if obj.flagGKRG
+                if obj.flagG
                     txtC{end+1}='+++ Error on responses';
                     varC{end+1}=cv.then.eloor;
                     txtC{end+1}='+++ Error on gradients';
@@ -549,7 +549,7 @@ classdef RBF < handle
                 varC{end+1}=cv.then.eloot;
                 txtC{end+1}='+++ PRESS';
                 varC{end+1}=cv.then.press;
-                if obj.flagGKRG
+                if obj.flagG
                     txtC{end+1}='+++ mean SCVR (Resp)';
                     varC{end+1}=cv.scvrR_mean;
                     txtC{end+1}='+++ max SCVR (Resp)';
@@ -569,7 +569,7 @@ classdef RBF < handle
                 varC{end+1}=cv.scvr_max;
                 txtC{end+1}='+++ min SCVR (Total)';
                 varC{end+1}=cv.scvr_min;
-                if obj.flagGKRG
+                if obj.flagG
                     txtC{end+1}='+++ Adequation (Resp)';
                     varC{end+1}=cv.adequR;
                     txtC{end+1}='+++ Adequation (Grad)';
@@ -577,7 +577,7 @@ classdef RBF < handle
                 end
                 txtC{end+1}='+++ Adequation (Total)';
                 varC{end+1}=cv.adequ;
-                if obj.flagGKRG
+                if obj.flagG
                     txtC{end+1}='+++ Mean of bias (Resp)';
                     varC{end+1}=cv.bmR;
                     txtC{end+1}='+++ Mean of bias (Grad)';
@@ -656,7 +656,7 @@ classdef RBF < handle
             end
             %
             der=[];
-            if obj.flagGKRG
+            if obj.flagG
                 tmp=obj.grad';
                 der=tmp(:);
                 %remove missing gradient(s)
@@ -684,7 +684,7 @@ classdef RBF < handle
             end
             %
             der=[];
-            if obj.flagGKRG
+            if obj.flagG
                 tmp=gradIn';
                 der=tmp(:);
                 %remove missing gradient(s)
@@ -780,7 +780,7 @@ classdef RBF < handle
             %% KRG/GKRG
             %%compute response provided by the metamodel at the non sample point
             %definition des dimensions of the matrix/vector for KRG or GKRG
-            if obj.flagGKRG
+            if obj.flagG
                 sizeMatVec=ns*(np+1);
             else
                 sizeMatVec=ns;
@@ -792,7 +792,7 @@ classdef RBF < handle
                 jr=zeros(sizeMatVec,np);
             end
             %KRG/GKRG
-            if obj.flagGKRG
+            if obj.flagG
                 if calcGrad  %if compute gradients
                     %evaluate kernel function
                     [ev,dev,ddev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
@@ -911,7 +911,7 @@ classdef RBF < handle
                     Gfprintf('\n%s\n',[textd 'Kriging ((G)KRG)' textf]);
                     %
                     Gfprintf('>>> Building : ');
-                    dispTxtOnOff(obj.flagGKRG,'GKRG','KRG',true);
+                    dispTxtOnOff(obj.flagG,'GKRG','KRG',true);
                     Gfprintf('>> Kernel function: %s\n',obj.kernelFun);
                     Gfprintf('>> Deg : %i ',obj.polyOrder);
                     dispTxtOnOff(obj.polyOrder==0,'(Ordinary)','(Universal)',true);

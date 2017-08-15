@@ -59,7 +59,7 @@ classdef KRG < handle
         respV=[];            % responses prepared for training
         gradV=[];            % gradients prepared for training
         %
-        flagGKRG=false;      % flag for computing matrices with gradients
+        flagG=false;      % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
         requireRun=true;     % flag if a full building is required

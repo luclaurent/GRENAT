@@ -10,7 +10,7 @@ switch type
         Gfprintf('\n%s\n',[textd 'Kriging ((G)KRG)' textf]);
         %
         Gfprintf('>>> Building : ');
-        dispTxtOnOff(obj.flagGKRG,'GKRG','KRG',true);
+        dispTxtOnOff(obj.flagG,'GKRG','KRG',true);
         Gfprintf('>> Kernel function: %s\n',obj.kernelFun);
         Gfprintf('>> Deg : %i ',obj.polyOrder);
         dispTxtOnOff(obj.polyOrder==0,'(Ordinary)','(Universal)',true);

@@ -1,7 +1,7 @@
 %% build kernel matrix and remove missing part
 function K=buildMatrix(obj,paraValIn)
 %in the case of GKRG
-if obj.flagGKRG
+if obj.flagG
     [KK,KKd,KKdd]=obj.kernelMatrix.buildMatrix(paraValIn);
     obj.K=[KK -KKd;-KKd' -KKdd];
 else
@@ -20,7 +20,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %remove missing parts
 if obj.checkMiss
-    if obj.flagGKRG
+    if obj.flagG
         obj.K=obj.missData.removeGRM(obj.K);
     else
         obj.K=obj.missData.removeRM(obj.K);

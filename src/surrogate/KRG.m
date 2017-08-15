@@ -33,7 +33,9 @@ classdef KRG < handle
         %
         paraEstim;          % structure for all information obtained from the estimation of the internal parameters
         %
-        YY=[];              % vector of responses and gradients
+        YY=[];              % vector of responses
+        YYD=[];             % vector of gradients
+        YYtot=[];           % full vector of responses and gradients
         K=[];               % kernel matrix
         %
         beta=[];            % regressors of the kriging generalized Least-Square
@@ -66,7 +68,7 @@ classdef KRG < handle
         %
         matrices;            % structure for storage of matrices (classical and factorized version)
         %
-        factK='LU';      % factorization strategy (fastest: LL (Cholesky))
+        factK='LL';      % factorization strategy (fastest: LL (Cholesky))
         %
         debugCV=false;      % flag for the debugging process of the Cross-Validation
         %
@@ -205,30 +207,7 @@ classdef KRG < handle
             pV=obj.paraVal;
         end
         
-        %% prepare data for building (deal with missing data)
-        function setData(obj)
-            %Responses and gradients at sample points
-            YYT=obj.resp;
-            %remove missing response(s)
-            if obj.checkMiss
-                YYT=obj.missData.removeRV(YYT);
-            end
-            %
-            der=[];
-            if obj.flagGKRG
-                tmp=obj.grad';
-                der=tmp(:);
-                %remove missing gradient(s)
-                if obj.checkMiss
-                    der=obj.missData.removeGV(der);
-                end
-            end
-            obj.YY=[YYT;der];
-            %build regression operators
-            obj.krgLS=xLS(obj.sampling,obj.resp,obj.grad,obj.polyOrder,obj.missData);
-            %initialize kernel matrix
-            obj.kernelMatrix=KernMatrix(obj.kernelFun,obj.sampling,obj.getParaVal);
-        end
+        
         
         %% build kernel matrix and remove missing part
         function K=buildMatrix(obj,paraValIn)
@@ -275,7 +254,7 @@ classdef KRG < handle
             logDetK=sum(log(abs(diagRK)));
             %
             obj.matrices.QtK=obj.matrices.QK';
-            yQ=obj.matrices.QtK*obj.YY;
+            yQ=obj.matrices.QtK*obj.YYtot;
             fctQ=obj.matrices.QtK*obj.krgLS.XX;
             obj.matrices.fcK=obj.krgLS.XX'*obj.matrices.PK/obj.matrices.RK;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -300,7 +279,7 @@ classdef KRG < handle
             detK=prod(diagUK); %L is a quasi-triangular matrix and contains ones on the diagonal
             logDetK=sum(log(abs(diagUK)));
             %
-            yP=obj.YY(obj.matrices.PK,:);
+            yP=obj.YYtot(obj.matrices.PK,:);
             fctP=obj.krgLS.XX(obj.matrices.PK,:);
             yL=obj.matrices.LK\yP;
             fctL=obj.matrices.LK\fctP;
@@ -329,7 +308,7 @@ classdef KRG < handle
             logDetK=2*sum(log(abs(diagLK)));
             %
             LtK=obj.matrices.LK';
-            yL=obj.matrices.LK\obj.YY;
+            yL=obj.matrices.LK\obj.YYtot;
             fctL=obj.matrices.LK\obj.krgLS.XX;
             obj.matrices.fcL=obj.krgLS.XX'/LtK;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -356,11 +335,10 @@ classdef KRG < handle
             %compute gamma and beta coefficients
             obj.matrices.fcC=obj.krgLS.XX'/obj.K;
             obj.matrices.fcCfct=obj.matrices.fcC*obj.krgLS.XX;
-            block2=((obj.krgLS.XX'/obj.K)*obj.YY);
+            block2=((obj.krgLS.XX'/obj.K)*obj.YYtot);
             obj.beta=obj.matrices.fcCfct\block2;
-            obj.gamma=obj.K\(obj.YY-obj.krgLS.XX*obj.beta);
+            obj.gamma=obj.K\(obj.YYtot-obj.krgLS.XX*obj.beta);
         end
-        
         
         %% build factorization, solve the kriging problem and evaluate the log-likelihood
         function [detK,logDetK]=compute(obj,paraValIn)
@@ -392,7 +370,7 @@ classdef KRG < handle
                 %variance of the Gaussian process
                 sizeK=size(obj.K,1);
                 obj.sig2=1/sizeK*...
-                    ((obj.YY-obj.krgLS.XX*obj.beta)'*obj.gamma);
+                    ((obj.YYtot-obj.krgLS.XX*obj.beta)'*obj.gamma);
             end
         end
         
@@ -648,28 +626,6 @@ classdef KRG < handle
             SCVRplot(obj.cvResults.cvZR,obj.cvResults.scvrR,opt);
         end
         
-        %% Prepare data for building (deal with missing data)
-        function updateData(obj,respIn,gradIn)
-            %Responses and gradients at sample points
-            YYT=respIn;
-            %remove missing response(s)
-            if obj.checkNewMiss
-                YYT=obj.missData.removeRV(YYT,'n');
-            end
-            %
-            der=[];
-            if obj.flagGLS
-                tmp=gradIn';
-                der=tmp(:);
-                %remove missing gradient(s)
-                if obj.checkNewMiss
-                    der=obj.missData.removeGV(der,'n');
-                end
-            end
-            obj.YY=[obj.YY;YYT];
-            obj.YYD=[obj.YYD;der];
-        end
-        
         %% Estimate internal parameters
         function estimPara(obj)
             switch obj.metaData.estim.type
@@ -688,6 +644,62 @@ classdef KRG < handle
             if isfield(obj.paraEstim,'nu')
                 obj.nuVal=obj.paraEstim.nu.Val;
             end
+        end
+        
+        %% prepare data for building (deal with missing data)
+        function setData(obj)
+            %Responses and gradients at sample points
+            YYT=obj.resp;
+            %remove missing response(s)
+            if obj.checkMiss
+                YYT=obj.missData.removeRV(YYT);
+            end
+            %
+            der=[];
+            if obj.flagGKRG
+                tmp=obj.grad';
+                der=tmp(:);
+                %remove missing gradient(s)
+                if obj.checkMiss
+                    der=obj.missData.removeGV(der);
+                end
+            end
+            obj.YY=YYT;
+            obj.YYD=der;
+            %
+            obj.YYtot=[YYT;obj.YYD];
+            %build regression operators
+            obj.krgLS=xLS(obj.sampling,obj.resp,obj.grad,obj.polyOrder,obj.missData);
+            %initialize kernel matrix
+            obj.kernelMatrix=KernMatrix(obj.kernelFun,obj.sampling,obj.getParaVal);
+        end
+        
+        %% Prepare data for building (deal with missing data)
+        function updateData(obj,samplingIn,respIn,gradIn)
+            %Responses and gradients at sample points
+            YYT=respIn;
+            %remove missing response(s)
+            if obj.checkNewMiss
+                YYT=obj.missData.removeRV(YYT,'n');
+            end
+            %
+            der=[];
+            if obj.flagGKRG
+                tmp=gradIn';
+                der=tmp(:);
+                %remove missing gradient(s)
+                if obj.checkNewMiss
+                    der=obj.missData.removeGV(der,'n');
+                end
+            end
+            obj.YY=[obj.YY;YYT];
+            obj.YYD=[obj.YYD;der];
+            %
+            obj.YYtot=[obj.YY;obj.YYD];
+            %update regressor operator
+            obj.krgLS.update(samplingIn,respIn,gradIn,obj.missData);
+            %initialize kernel matrix
+            obj.kernelMatrix.updateMatrix(samplingIn);
         end
         
         %% Building/training metamodel
@@ -716,36 +728,30 @@ classdef KRG < handle
         %% Building/training the updated metamodel
         function trainUpdate(obj,samplingIn,respIn,gradIn)
             %Prepare data
-            obj.updateData(respIn,gradIn);
-            %Build regression matrix (for the trend model)
-            
-            %depending on the availability of the gradients
-            if ~obj.flagGLS
-                newVal=MultiMono(samplingIn,obj.polyOrder);
-                if obj.checkNewMiss
-                    %remove missing response(s)
-                    newVal=obj.missData.removeRV(newVal,'n');
-                end
-                obj.valFunPoly=[obj.valFunPoly;newVal];
+            obj.updateData(samplingIn,respIn,gradIn);
+            % estimate the internal parameters or not
+            if obj.estimOn
+                obj.estimPara;
             else
-                %gradient-based
-                [MatX,MatDX]=MultiMono(samplingIn,obj.polyOrder);
-                %remove lines associated to the missing data
-                if obj.checkNewMiss
-                    MatX=obj.missData.removeRV(MatX,'n');
-                    MatDX=obj.missData.removeGV(MatDX,'n');
-                end
-                obj.valFunPoly=[obj.valFunPoly;MatX];
-                obj.valFunPolyD=[obj.valFunPolyD;MatDX];
+                obj.compute;
             end
-            %compute regressors
-            obj.compute();
+            %
+            obj.requireCompute=false;
+            %
+            obj.showInfo('end');
+            %
+            obj.cv();
+            %
+            if obj.metaData.cvDisp
+                obj.showCV();
+            end
         end
         
         
         %% Update metamodel
         function update(obj,newSample,newResp,newGrad,newMissData)
             obj.showInfo('update');
+            obj.fCompute;
             %add new sample, responses and gradients
             obj.addSample(newSample);
             obj.addResp(newResp);
@@ -791,7 +797,6 @@ classdef KRG < handle
                     %evaluate kernel function
                     [ev,dev,ddev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
                     rr(1:ns)=ev;
-                    keyboard
                     rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
                     
                     %derivative of the kernel vector between sample point and the non sample point
@@ -994,7 +999,7 @@ for itT=1:numel(tableA)
     elseif isinteger(tableB{itT})
         mask='%s%s%i\n';
     else
-        mask='%s%s%5.4e\n';
+        mask='%s%s%+5.4e\n';
     end
     %
     Gfprintf(mask,tableA{itT},[' ' spaceTxt(ones(1,spaceA(itT))) ' '],tableB{itT});

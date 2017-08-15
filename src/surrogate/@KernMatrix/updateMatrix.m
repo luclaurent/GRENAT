@@ -17,6 +17,7 @@ if obj.requireUpdate
     %calculation of the new distances and indices
     obj.computeNewIX();
     obj.computeNewDist();
+    obj.requireIndices=true;
     %
     oldNs=obj.nS;
     newNs=obj.NnS;
@@ -31,14 +32,13 @@ if obj.requireUpdate
     fctK=obj.fctKern;
     pVl=obj.paraVal;
     %depending on the number of output arguments
-    if nargout>1
+    if nargout>1||obj.computeD
         obj.computeD=true;
         %if the first and second derivatives matrices have not been
         %calculated before, we calculate it yet
         if isempty(obj.KKd)
             obj.sampling=[obj.sampling;newS];
             obj.requireRun=true;
-            obj.requireIndices=true;
             [KK,KKd,KKdd]=obj.buildMatrix;
         else
             if obj.parallelOk
@@ -150,8 +150,9 @@ if obj.requireUpdate
             % evaluate kernel function
             [ev]=multiKernel(fctK,distM,pVl);
             %classical part
-            KKNO(obj.NiX.iXmatrixNO)=ev(1:nbNO);
-            KKN(obj.NiX.iXmatrixN)=ev(nbNO+(1:nbN));
+            error('')
+            KKNO(obj.NiX.matrixNO)=ev(1:nbNO);
+            KKN(obj.NiX.matrixN)=ev(nbNO+(1:nbN));
             %correction of the new sample point kernel matrix
             KKN=KKN+KKN'-eye(newNs);
             %assembly of the updated kernel matrix

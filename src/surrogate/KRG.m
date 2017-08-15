@@ -172,7 +172,7 @@ classdef KRG < handle
                         obj.paraVal=[obj.metaData.para.l.Val obj.metaData.para.nu.Val];
                     otherwise
                         obj.paraVal=obj.metaData.para.l.Val;
-                end                
+                end
             end
             pV=obj.paraVal;
         end
@@ -237,121 +237,128 @@ classdef KRG < handle
         
         %% core of kriging computation using QR factorization
         function [detK,logDetK]=coreQR(obj)
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %QR factorization
-                    [obj.matrices.QK,obj.matrices.RK,obj.matrices.PK]=qr(obj.K);
-                    %
-                    diagRK=diag(obj.matrices.RK);
-                    detK=abs(prod(diagRK)); %Q is an unitary matrix
-                    logDetK=sum(log(abs(diagRK)));
-                    %
-                    obj.matrices.QtK=obj.matrices.QK';
-                    yQ=obj.matrices.QtK*obj.YY;
-                    fctQ=obj.matrices.QtK*obj.krgLS.XX;
-                    obj.matrices.fcK=obj.krgLS.XX'*obj.matrices.PK/obj.matrices.RK;
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %compute beta coefficient
-                    obj.matrices.fcCfct=obj.matrices.fcK*fctQ;
-                    block2=obj.matrices.fcK*yQ;
-                    obj.beta=obj.matrices.fcCfct\block2;
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %compute gamma coefficient
-                    obj.gamma=obj.matrices.PK*(obj.matrices.RK\(yQ-fctQ*obj.beta));                    
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %QR factorization
+            [obj.matrices.QK,obj.matrices.RK,obj.matrices.PK]=qr(obj.K);
+            %
+            diagRK=diag(obj.matrices.RK);
+            detK=abs(prod(diagRK)); %Q is an unitary matrix
+            logDetK=sum(log(abs(diagRK)));
+            %
+            obj.matrices.QtK=obj.matrices.QK';
+            yQ=obj.matrices.QtK*obj.YY;
+            fctQ=obj.matrices.QtK*obj.krgLS.XX;
+            obj.matrices.fcK=obj.krgLS.XX'*obj.matrices.PK/obj.matrices.RK;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute beta coefficient
+            obj.matrices.fcCfct=obj.matrices.fcK*fctQ;
+            block2=obj.matrices.fcK*yQ;
+            obj.beta=obj.matrices.fcCfct\block2;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute gamma coefficient
+            obj.gamma=obj.matrices.PK*(obj.matrices.RK\(yQ-fctQ*obj.beta));
         end
-       %% core of kriging computation using LU factorization
+        %% core of kriging computation using LU factorization
         function [detK,logDetK]=coreLU(obj)
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %LU factorization
-                    [obj.matrices.LK,obj.matrices.UK,obj.matrices.PK]=lu(obj.K,'vector');
-                    %
-                    diagUK=diag(obj.matrices.UK);
-                    detK=prod(diagUK); %L is a quasi-triangular matrix and contains ones on the diagonal
-                    logDetK=sum(log(abs(diagUK)));
-                    %
-                    yP=obj.YY(obj.matrices.PK,:);
-                    fctP=obj.krgLS.XX(obj.matrices.PK,:);
-                    yL=obj.matrices.LK\yP;
-                    fctL=obj.matrices.LK\fctP;
-                    obj.matrices.fcU=obj.krgLS.XX'/obj.matrices.UK;
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %compute beta coefficient
-                    obj.matrices.fcCfct=obj.matrices.fcU*fctL;
-                    block2=obj.matrices.fcU*yL;
-                    obj.beta=obj.matrices.fcCfct\block2;
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %compute gamma coefficient
-                    obj.gamma=obj.matrices.UK\(yL-fctL*obj.beta);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %LU factorization
+            [obj.matrices.LK,obj.matrices.UK,obj.matrices.PK]=lu(obj.K,'vector');
+            %
+            diagUK=diag(obj.matrices.UK);
+            detK=prod(diagUK); %L is a quasi-triangular matrix and contains ones on the diagonal
+            logDetK=sum(log(abs(diagUK)));
+            %
+            yP=obj.YY(obj.matrices.PK,:);
+            fctP=obj.krgLS.XX(obj.matrices.PK,:);
+            yL=obj.matrices.LK\yP;
+            fctL=obj.matrices.LK\fctP;
+            obj.matrices.fcU=obj.krgLS.XX'/obj.matrices.UK;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute beta coefficient
+            obj.matrices.fcCfct=obj.matrices.fcU*fctL;
+            block2=obj.matrices.fcU*yL;
+            obj.beta=obj.matrices.fcCfct\block2;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute gamma coefficient
+            obj.gamma=obj.matrices.UK\(yL-fctL*obj.beta);
         end
         %% core of kriging computation using Cholesky (LL) factorization
         function [detK,logDetK]=coreLL(obj)
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %Cholesky's fatorization
-                    %%% to be degugged
-                    obj.matrices.LK=chol(obj.K,'lower');
-                    %
-                    diagLK=diag(obj.matrices.LK);
-                    detK=prod(diagLK)^2;
-                    logDetK=2*sum(log(abs(diagLK)));
-                    %
-                    LtK=obj.matrices.LK';
-                    yL=obj.matrices.LK\obj.YY;
-                    fctL=obj.matrices.LK\obj.krgLS.XX;
-                    obj.matrices.fcL=obj.krgLS.XX'/LtK;
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %compute beta coefficient
-                    obj.matrices.fcCfct=obj.matrices.fcL*fctL;
-                    block2=obj.matrices.fcL*yL;
-                    obj.beta=obj.matrices.fcCfct\block2;
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %compute gamma coefficient
-                    obj.gamma=LtK\(yL-fctL*obj.beta);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Cholesky's fatorization
+            %%% to be degugged
+            obj.matrices.LK=chol(obj.K,'lower');
+            %
+            diagLK=diag(obj.matrices.LK);
+            detK=prod(diagLK)^2;
+            logDetK=2*sum(log(abs(diagLK)));
+            %
+            LtK=obj.matrices.LK';
+            yL=obj.matrices.LK\obj.YY;
+            fctL=obj.matrices.LK\obj.krgLS.XX;
+            obj.matrices.fcL=obj.krgLS.XX'/LtK;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute beta coefficient
+            obj.matrices.fcCfct=obj.matrices.fcL*fctL;
+            block2=obj.matrices.fcL*yL;
+            obj.beta=obj.matrices.fcCfct\block2;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute gamma coefficient
+            obj.gamma=LtK\(yL-fctL*obj.beta);
         end
-         %% core of kriging computation using no factorization
+        %% core of kriging computation using no factorization
         function [detK,logDetK]=coreClassical(obj)
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %classical approach
-                    eigVal=eig(obj.K);
-                    detK=prod(eigVal);
-                    logDetK=sum(log(eigVal));
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %compute gamma and beta coefficients
-                    obj.matrices.fcC=obj.krgLS.XX'/obj.K;
-                    obj.matrices.fcCfct=obj.matrices.fcC*obj.krgLS.XX;
-                    block2=((obj.krgLS.XX'/obj.K)*obj.YY);
-                    obj.beta=obj.matrices.fcCfct\block2;
-                    obj.gamma=obj.K\(obj.YY-obj.krgLS.XX*obj.beta);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %classical approach
+            eigVal=eig(obj.K);
+            detK=prod(eigVal);
+            logDetK=sum(log(eigVal));
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %compute gamma and beta coefficients
+            obj.matrices.fcC=obj.krgLS.XX'/obj.K;
+            obj.matrices.fcCfct=obj.matrices.fcC*obj.krgLS.XX;
+            block2=((obj.krgLS.XX'/obj.K)*obj.YY);
+            obj.beta=obj.matrices.fcCfct\block2;
+            obj.gamma=obj.K\(obj.YY-obj.krgLS.XX*obj.beta);
         end
         
         
         %% build factorization, solve the kriging problem and evaluate the log-likelihood
-        function [logLi,Li,liSack]=compute(obj,paraValIn)
+        function [detK,logDetK]=compute(obj,paraValIn)
             if nargin==1;paraValIn=obj.paraVal;end
             %build the kernel Matrix
             obj.buildMatrix(paraValIn);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %Factorization of the matrix
-            %switch obj.factK
-            %    case 'QR'
+            switch obj.factK
+                case 'QR'
                     [detK,logDetK]=obj.coreQR;
-            %    case 'LU'
+                case 'LU'
                     [detK,logDetK]=obj.coreLU;
-            %    case 'LL'
+                case 'LL'
                     [detK,logDetK]=obj.coreLL;
-             %   otherwise
+                otherwise
                     [detK,logDetK]=obj.coreClassical;
-            %end
+            end
+        end
+        
+        %% function evaluate likelihood
+        function [logLi,Li,liSack]=likelihood(obj,paraValIn)
+            if nargin==1;paraValIn=obj.paraVal;end
+            %compute matrices
+            [detK,logDetK]=obj.compute(paraValIn);
             %size of the kernel matrix
             sizeK=size(obj.K,1);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -377,20 +384,13 @@ classdef KRG < handle
         end
         
         %% Compute Cross-Validation
-        function cv(obj,type)
+        function [crit,cv]=cv(obj,type)
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %various situations
-            modDebug=obj.debugCV;modStudy=obj.metaData.cv.full;modFinal=false;
+            modFinal=false;
             if nargin==2
                 switch type
-                    case 'debug'  %debug mode (display criteria)
-                        Gfprintf('+++ CV KRG in DEBUG mode\n');
-                        modDebug=true;
-                    case 'study'  %study mode (use both methods for calculating criteria)
-                        modStudy=true;
-                    case 'estim'  %estimation mode
-                        modStudy=false;
                     case 'final'    %final mode (compute variances)
                         modFinal=true;
                 end
@@ -413,27 +413,32 @@ classdef KRG < handle
             %coefficient of (co)Kriging
             coefKRG=obj.gamma;
             %partial extraction of the diagonal of the inverse of the kernel matrix
-           % switch obj.factK
-            %    case 'QR'
+            switch obj.factK
+                case 'QR'
                     fcC=obj.matrices.fcK*obj.matrices.QtK;
                     diagMK=diag(obj.matrices.RK\obj.matrices.QtK)-...
                         diag(fcC'*(obj.matrices.fcCfct\fcC));
-             %   case 'LU'
+                case 'LU'
                     fcC=obj.matrices.fcU/obj.matrices.LK;
                     diagMK=diag(obj.matrices.UK\inv(obj.matrices.LK))-...
                         diag(fcC'*(obj.matrices.fcCfct\fcC));
-            %    case 'LL'
-                    obj.matrices.fcC=obj.matrices.fcL/obj.matrices.LK;
+                case 'LL'
+                    fcC=obj.matrices.fcL/obj.matrices.LK;
                     diagMK=diag(obj.matrices.LK\inv(obj.matrices.LK))-...
                         diag(fcC'*(obj.matrices.fcCfct\fcC));
-             %   otherwise
+                otherwise
                     diagMK=diag(inv(obj.K))-...
                         diag(obj.matrices.fcC'*(obj.matrices.fcCfct\obj.matrices.fcC));
-           % end
-            %vectors of the distances on removed sample points (reponses et gradients)
+            end
+            %vectors of the distances on removed sample points (reponses and gradients)
+            % formula from Rippa 1999/Dubrule 1983/Zhang 2010/Bachoc 2011
             esI=coefKRG./diagMK;
             esR=esI(1:ns);
             if availGrad;esG=esI(ns+1:end);end
+            %vectors of the variance on removed sample points
+            evI=obj.sig2./diagMK;
+            evR=evI(1:ns);
+            if availGrad;evG=evI(ns+1:end);end
             
             %computation of the LOO criteria (various norms)
             switch obj.normLOO
@@ -456,8 +461,8 @@ classdef KRG < handle
                     cv.eloot=cv.then.eloot;
                     if availGrad
                         cv.then.press=esR'*esR;
-                        cv.then.eloor=1/ns*(cv.then.press);
-                        cv.then.eloog=1/(ns*np)*(esG'*esG);
+                        cv.then.eloor=1/numel(esR)*(cv.then.press);
+                        cv.then.eloog=1/(numel(esR)*np)*(esG'*esG);
                         cv.press=cv.then.press;
                         cv.eloor=cv.then.eloor;
                         cv.eloog=cv.then.eloog;
@@ -469,26 +474,71 @@ classdef KRG < handle
                     cv.eloot=cv.then.eloot;
                     if availGrad
                         cv.then.press=esR'*esR;
-                        cv.then.eloor=1/ns*max(esR(:));
-                        cv.then.eloog=1/(ns*np)*max(esG(:));
+                        cv.then.eloor=1/numel(esR)*max(esR(:));
+                        cv.then.eloog=1/(numel(esR)*np)*max(esG(:));
                         cv.press=cv.then.press;
                         cv.eloor=cv.then.eloor;
                         cv.eloog=cv.then.eloog;
                     end
             end
+            %SCVR Keane 2005/Jones 1998
+            cv.scvr=(esI.^2)./evI;
+            cv.scvr_min=min(cv.scvr(:));
+            cv.scvr_max=max(cv.scvr(:));
+            cv.scvr_mean=mean(cv.scvr(:));
+            %scores from Bachoc 2011-2013/Zhang 2010
+            cv.mse=cv.eloot;                    %minimize
+            cv.wmse=1/numel(esI)*sum(cv.scvr);  %find close to 1
+            cv.lpp=-sum(log(evI)+cv.scvr);      %maximize
+            %%criterion of adequation (CAUTION of the norm!!!>> squared difference)
+            diffA=esR.*esR./evR;
+            cv.adequ=1/numel(esR)*sum(diffA);
             %mean of bias
-            cv.bm=1/ns*sum(esR);
+            cv.bm=1/numel(esR)*sum(esR);
             %display information
             if modDebug||modFinal
                 Gfprintf('\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n');
-                Gfprintf('+++ Used norm for calculate CV-LOO: %s\n',obj.normLOO);
+                %prepare cells for display
+                txtC{1}='+++ Used norm for calculate CV-LOO';
+                varC{1}=obj.normLOO;
                 if availGrad
-                    Gfprintf('+++ Error on responses %4.2e\n',cv.then.eloor);
-                    Gfprintf('+++ Error on gradients %4.2e\n',cv.then.eloog);
+                    txtC{end+1}='+++ Error on responses';
+                    varC{end+1}=cv.then.eloor;
+                    txtC{end+1}='+++ Error on gradients';
+                    varC{end+1}=cv.then.eloog;
                 end
-                Gfprintf('+++ Total error %4.2e\n',cv.then.eloot);
-                Gfprintf('+++ PRESS %4.2e\n',cv.then.press);
+                txtC{end+1}='+++ Total error (MSE)';
+                varC{end+1}=cv.then.eloot;
+                txtC{end+1}='+++ PRESS';
+                varC{end+1}=cv.then.press;
+                txtC{end+1}='+++ mean SCVR';
+                varC{end+1}=cv.scvr_mean;
+                txtC{end+1}='+++ max SCVR';
+                varC{end+1}=cv.scvr_max;
+                txtC{end+1}='+++ min SCVR';
+                varC{end+1}=cv.scvr_min;
+                txtC{end+1}='+++ adequation';
+                varC{end+1}=cv.adequ;
+                txtC{end+1}='+++ mean of bias';
+                varC{end+1}=cv.bm;
+                txtC{end+1}='+++ WMSE';
+                varC{end+1}=cv.wmse;
+                txtC{end+1}='+++ LPP';
+                varC{end+1}=cv.lpp;
+                dispTableTwoColumns(txtC,varC,'-');
             end
+            %%
+            obj.cv=cv;
+            %
+            switch type
+                case 'mse'
+                    crit=cv.mse;
+                case 'wmse'
+                    crit=cv.wmse;
+                case 'lpp'
+                    crit=cv.lpp;
+            end
+            
             % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             if modFinal;countTime.stop;end
@@ -509,10 +559,8 @@ classdef KRG < handle
             opt.title='SCVR (Normalized)';
             opt.xlabel='Predicted' ;
             opt.ylabel='SCVR';
-            SCVRplot(cvZR,cv.final.scvr,opt);
+            SCVRplot(cvZR,cv.scvr,opt);
         end
-        
-        
         
         %% Prepare data for building (deal with missing data)
         function updateData(obj,respIn,gradIn)
@@ -538,7 +586,7 @@ classdef KRG < handle
         
         %% Estimate internal parameters
         function estimPara(obj)
-            obj.paraEstim=EstimPara(obj.nP,obj.metaData,@(x)obj.compute(x));
+            obj.paraEstim=EstimPara(obj.nP,obj.metaData,@(x)obj.likelihood(x));
             obj.lVal=obj.paraEstim.l.Val;
             obj.paraVal=obj.paraEstim.Val;
             if isfield(obj.paraEstim,'p')
@@ -548,9 +596,6 @@ classdef KRG < handle
                 obj.nuVal=obj.paraEstim.nu.Val;
             end
         end
-        
-        
-        
         
         %% Building/training metamodel
         function train(obj)
@@ -567,6 +612,10 @@ classdef KRG < handle
             obj.showInfo('end');
             %
             obj.cv();
+            %
+            if obj.metaData.cvDisp
+                obj.showCV();
+            end
         end
         
         %% Building/training the updated metamodel
@@ -662,9 +711,9 @@ classdef KRG < handle
                     
                     %if missing data
                     if obj.checkMiss
-                            rr=obj.missData.removeGRV(rr);
-                            jr=obj.missData.removeGRV(jr);
-                    end                    
+                        rr=obj.missData.removeGRV(rr);
+                        jr=obj.missData.removeGRV(jr);
+                    end
                 else %otherwise
                     [ev,dev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
                     rr(1:ns)=ev;
@@ -688,7 +737,7 @@ classdef KRG < handle
                     if obj.checkMiss
                         rr=obj.missData.removeRV(rr);
                     end
-                end                
+                end
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -747,7 +796,7 @@ classdef KRG < handle
                     u=obj.fc*rKrr-ff';
                     variance=obj.sig2*(1+u'/obj.fcCfct*u - rr'*rKrr);
             end
-            if ~dispWarning;warning on all;end            
+            if ~dispWarning;warning on all;end
         end
         
         %% Show information in the console
@@ -807,7 +856,7 @@ classdef KRG < handle
                     Gfprintf(' ++ END building KRG\n');
             end
         end
-    end    
+    end
 end
 
 
@@ -827,5 +876,31 @@ else
 end
 if returnLine
     fprintf('\n');
+end
+end
+
+%function display table with two columns (first must be text)
+function dispTableTwoColumns(tableA,tableB,separator)
+%size of every components in tableA
+sizeA=cellfun(@numel,tableA);
+maxA=max(sizeA);
+%space after each component
+spaceA=maxA-sizeA+2;
+if nargin>2
+    spaceTxt=separator;
+else
+    spaceTxt=' ';
+end
+%display table
+for itT=1:numel(tableA)
+    if ischar(tableB{itT})
+        mask='%s%s%s\n';
+    elseif isinteger(tableB{itT})
+        mask='%s%s%i\n';
+    else
+        mask='%s%s%5.4e\n';
+    end
+    %
+    Gfprintf(mask,tableA{itT},[' ' spaceTxt(ones(1,spaceA(itT))) ' '],tableB{itT});
 end
 end

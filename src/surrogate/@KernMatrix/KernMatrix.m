@@ -92,7 +92,11 @@ classdef KernMatrix < handle
         function set.paraVal(obj,pV)
             oldpV=obj.paraVal;
             if ~isempty(oldpV)
-                if ~all(oldpV==pV)
+                if numel(oldpV(:))==numel(pV(:))
+                    if ~all(oldpV(:)==pV(:))
+                        obj.fRun;
+                    end
+                else
                     obj.fRun;
                 end
             else

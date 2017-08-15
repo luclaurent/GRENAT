@@ -45,7 +45,7 @@ else
         %                         end
     else
         % evaluate kernel function
-        [V]=multiKernel(fctK,dC,pVl);
+        [V]=multiKernel(fctK,distS,pVl);
     end
 end
 end

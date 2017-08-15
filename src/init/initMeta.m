@@ -65,7 +65,7 @@ classdef initMeta < handle
         aniso=true;         % anisotropic model (one internal length per variable)
         dispEstim=false;    % display objective function to be minimised
         saveEstim=false;    % save evolution function to be minimized
-        typeEstim='logli';  % type of criterion used for estimated the parameters (logli or cv)
+        typeEstim='logli';  % type of criterion used for estimated the parameters (logli or cv or cvmse or cvwmse or cvlpp)
         dispIterGraph=false;% display iterations of the optimisation process on a figure (1D/2D)
         dispIterCmd=false;  % display iteration in the console
         dispPlotAlgo=false; % display converg ence information on figures

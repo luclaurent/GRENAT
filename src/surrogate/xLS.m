@@ -73,7 +73,6 @@ classdef xLS < handle
             %load data
             obj.sampling=samplingIn;
             obj.resp=respIn;
-            nargin
             if nargin>2;obj.grad=gradIn;end
             if nargin>3;obj.polyOrder=orderIn;end
             if nargin>4;obj.missData=missData;end

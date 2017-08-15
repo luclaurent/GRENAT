@@ -43,13 +43,14 @@ classdef KRG < handle
         polyOrder=0;        % polynomial order
         kernelFun='sexp';   % kernel function
         %
-        paraVal=[];         % internal parameters used for building (fixed or estimated)
+        paraVal=1;         % internal parameters used for building (fixed or estimated)
         lVal=[];            % internal parameters: length
         pVal=[];            % internal parametersfor generalized squared exponential
         nuVal=[];           % internal parameter for Matérn function
         %
         normLOO='L2';       % norm used for Leave-One-Out cross-validation
         debugLOO=false;     % flag for debug in Leave-One-Out cross-validation
+        cvResults;          % structure used for storing the CV results
     end
     
     properties (Access = private)
@@ -68,6 +69,8 @@ classdef KRG < handle
         factK='LU';      % factorization strategy (fastest: LL (Cholesky))
         %
         debugCV=false;      % flag for the debugging process of the Cross-Validation
+        %
+        requireCompute=true;   % flag used for establishing the status of computing
     end
     properties (Dependent,Access = private)
         NnS;               % number of new sample points
@@ -76,7 +79,7 @@ classdef KRG < handle
         parallelOk=false;    % flag for using parallel version
         estimOn=false;      %flag for estimation of the internal parameters
         %
-        
+        typeLOO;            % type of LOO criterion used (mse (default),wmse,lpp)
     end
     properties (Dependent)
         Kcond;              % condition number of the kernel matrix
@@ -109,6 +112,16 @@ classdef KRG < handle
         end
         
         %% setters
+        function set.paraVal(obj,pVIn)
+            if isempty(obj.paraVal)
+                obj.fCompute;
+            else
+                if ~all(obj.paraVal==pVIn)
+                    obj.fCompute;
+                    obj.paraVal=pVIn;
+                end
+            end
+        end
         
         %% getters
         function nS=get.nS(obj)
@@ -132,6 +145,17 @@ classdef KRG < handle
         %% getter for the condition number of the kernel matrix
         function valC=get.Kcond(obj)
             valC=condest(obj.K);
+        end
+        
+        %% getter for the type of LOO criterion
+        function tt=get.typeLOO(obj)
+            typeG=obj.metaData.estim.type;
+            tt='mse';   %default value
+            if ~isempty(regexp(typeG,'cv','ONCE'))
+                if numel(typeG)>2
+                    tt=typeG(3:end);
+                end
+            end
         end
         
         %% add new sample points, new responses and new gradients
@@ -160,6 +184,10 @@ classdef KRG < handle
             end
         end
         
+        %% fix flag for computing
+        function fCompute(obj)
+            obj.requireCompute=true;
+        end
         
         %% get value of the internal parameters
         function pV=getParaVal(obj)
@@ -336,21 +364,35 @@ classdef KRG < handle
         
         %% build factorization, solve the kriging problem and evaluate the log-likelihood
         function [detK,logDetK]=compute(obj,paraValIn)
-            if nargin==1;paraValIn=obj.paraVal;end
-            %build the kernel Matrix
-            obj.buildMatrix(paraValIn);
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %Factorization of the matrix
-            switch obj.factK
-                case 'QR'
-                    [detK,logDetK]=obj.coreQR;
-                case 'LU'
-                    [detK,logDetK]=obj.coreLU;
-                case 'LL'
-                    [detK,logDetK]=obj.coreLL;
-                otherwise
-                    [detK,logDetK]=obj.coreClassical;
+            if nargin==1;
+                paraValIn=obj.paraVal;
+            else
+                obj.paraVal=paraValIn;
+            end
+            %
+            if obj.requireCompute
+                %build the kernel Matrix
+                obj.buildMatrix(paraValIn);
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %Factorization of the matrix
+                switch obj.factK
+                    case 'QR'
+                        [detK,logDetK]=obj.coreQR;
+                    case 'LU'
+                        [detK,logDetK]=obj.coreLU;
+                    case 'LL'
+                        [detK,logDetK]=obj.coreLL;
+                    otherwise
+                        [detK,logDetK]=obj.coreClassical;
+                end
+                %
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %variance of the Gaussian process
+                sizeK=size(obj.K,1);
+                obj.sig2=1/sizeK*...
+                    ((obj.YY-obj.krgLS.XX*obj.beta)'*obj.gamma);
             end
         end
         
@@ -361,11 +403,6 @@ classdef KRG < handle
             [detK,logDetK]=obj.compute(paraValIn);
             %size of the kernel matrix
             sizeK=size(obj.K,1);
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %variance of the Gaussian process
-            obj.sig2=1/sizeK*...
-                ((obj.YY-obj.krgLS.XX*obj.beta)'*obj.gamma);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %computation of the log-likelihood (Jones 1993 / Leary 2004)
@@ -388,7 +425,7 @@ classdef KRG < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %various situations
-            modFinal=true;
+            modFinal=true;modDebug=obj.debugCV;
             if nargin==2
                 switch type
                     case 'final'    %final mode (compute variances)
@@ -435,6 +472,9 @@ classdef KRG < handle
             esI=coefKRG./diagMK;
             esR=esI(1:ns);
             if availGrad;esG=esI(ns+1:end);end
+            %responses at the removed sample points
+            cv.cvZR=esR-obj.resp;
+            cv.cvZ=esR-obj.resp;
             %vectors of the variance on removed sample points
             evI=obj.sig2./diagMK;
             evR=evI(1:ns);
@@ -503,7 +543,7 @@ classdef KRG < handle
             %%criterion of adequation (CAUTION of the norm!!!>> squared difference)
             diffA=(esI.^2)./evI;
             cv.adequ=1/numel(esI)*sum(diffA);
-            diffA=(esR.^2)./evI;
+            diffA=(esR.^2)./evR;
             cv.adequR=1/numel(esR)*sum(diffA);
             if obj.flagGKRG
                 diffA=(esG.^2)./evG;
@@ -513,7 +553,7 @@ classdef KRG < handle
             cv.bm=1/numel(esI)*sum(esI);
             cv.bmR=1/numel(esR)*sum(esR);
             if obj.flagGKRG
-            cv.bmG=1/numel(esG)*sum(esG);
+                cv.bmG=1/numel(esG)*sum(esG);
             end
             %display information
             if modDebug||modFinal
@@ -531,13 +571,13 @@ classdef KRG < handle
                 varC{end+1}=cv.then.eloot;
                 txtC{end+1}='+++ PRESS';
                 varC{end+1}=cv.then.press;
-                txtC{end+1}='+++ mean SCVR (Resp)';
-                varC{end+1}=cv.scvrR_mean;
-                txtC{end+1}='+++ max SCVR (Resp)';
-                varC{end+1}=cv.scvrR_max;
-                txtC{end+1}='+++ min SCVR (Resp)';
-                varC{end+1}=cv.scvrR_min;
                 if obj.flagGKRG
+                    txtC{end+1}='+++ mean SCVR (Resp)';
+                    varC{end+1}=cv.scvrR_mean;
+                    txtC{end+1}='+++ max SCVR (Resp)';
+                    varC{end+1}=cv.scvrR_max;
+                    txtC{end+1}='+++ min SCVR (Resp)';
+                    varC{end+1}=cv.scvrR_min;
                     txtC{end+1}='+++ mean SCVR (Grad)';
                     varC{end+1}=cv.scvrG_mean;
                     txtC{end+1}='+++ max SCVR (Grad)';
@@ -551,17 +591,17 @@ classdef KRG < handle
                 varC{end+1}=cv.scvr_max;
                 txtC{end+1}='+++ min SCVR (Total)';
                 varC{end+1}=cv.scvr_min;
-                txtC{end+1}='+++ Adequation (Resp)';
-                varC{end+1}=cv.adequR;
                 if obj.flagGKRG
+                    txtC{end+1}='+++ Adequation (Resp)';
+                    varC{end+1}=cv.adequR;
                     txtC{end+1}='+++ Adequation (Grad)';
                     varC{end+1}=cv.adequG;
                 end
                 txtC{end+1}='+++ Adequation (Total)';
                 varC{end+1}=cv.adequ;
-                txtC{end+1}='+++ Mean of bias (Resp)';
-                varC{end+1}=cv.bmR;
                 if obj.flagGKRG
+                    txtC{end+1}='+++ Mean of bias (Resp)';
+                    varC{end+1}=cv.bmR;
                     txtC{end+1}='+++ Mean of bias (Grad)';
                     varC{end+1}=cv.bmG;
                 end
@@ -574,15 +614,15 @@ classdef KRG < handle
                 dispTableTwoColumns(txtC,varC,'-');
             end
             %%
-            obj.cv=cv;
+            obj.cvResults=cv;
             %
-            switch type
+            switch obj.typeLOO
                 case 'mse'
                     crit=cv.mse;
                 case 'wmse'
-                    crit=cv.wmse;
+                    crit=abs(cv.wmse-1);
                 case 'lpp'
-                    crit=cv.lpp;
+                    crit=-cv.lpp;
             end
             
             % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -597,15 +637,15 @@ classdef KRG < handle
             figure;
             subplot(1,3,1);
             opt.title='Normalized data (CV R)';
-            QQplot(obj.resp,cvZR,opt);
+            QQplot(obj.resp,obj.cvResults.cvZR,opt);
             subplot(1,3,2);
             opt.title='Normalized data (CV F)';
-            QQplot(obj.resp,cvZ,opt);
+            QQplot(obj.resp,obj.cvResults.cvZ,opt);
             subplot(1,3,3);
             opt.title='SCVR (Normalized)';
             opt.xlabel='Predicted' ;
             opt.ylabel='SCVR';
-            SCVRplot(cvZR,cv.scvr,opt);
+            SCVRplot(obj.cvResults.cvZR,obj.cvResults.scvrR,opt);
         end
         
         %% Prepare data for building (deal with missing data)
@@ -632,7 +672,14 @@ classdef KRG < handle
         
         %% Estimate internal parameters
         function estimPara(obj)
-            obj.paraEstim=EstimPara(obj.nP,obj.metaData,@(x)obj.likelihood(x));
+            switch obj.metaData.estim.type
+                case 'logli'
+                    fun=@(x)obj.likelihood(x);
+                case 'cv'
+                    fun=@(x)obj.cv(x,'estim');
+            end
+            
+            obj.paraEstim=EstimPara(obj.nP,obj.metaData,fun);
             obj.lVal=obj.paraEstim.l.Val;
             obj.paraVal=obj.paraEstim.Val;
             if isfield(obj.paraEstim,'p')
@@ -654,6 +701,8 @@ classdef KRG < handle
             else
                 obj.compute;
             end
+            %
+            obj.requireCompute=false;
             %
             obj.showInfo('end');
             %
@@ -736,13 +785,13 @@ classdef KRG < handle
             if calcGrad
                 jr=zeros(sizeMatVec,np);
             end
-            
             %KRG/GKRG
             if obj.flagGKRG
                 if calcGrad  %if compute gradients
                     %evaluate kernel function
                     [ev,dev,ddev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
                     rr(1:ns)=ev;
+                    keyboard
                     rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
                     
                     %derivative of the kernel vector between sample point and the non sample point
@@ -763,7 +812,7 @@ classdef KRG < handle
                 else %otherwise
                     [ev,dev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
                     rr(1:ns)=ev;
-                    rr(ns+1:sizeMatVec)=reshape(dev',1,ns*np);
+                    rr(ns+1:sizeMatVec)=-reshape(dev',1,ns*np);
                     %if missing data
                     if obj.checkMiss
                         rr=obj.missData.removeGRV(rr);
@@ -898,6 +947,7 @@ classdef KRG < handle
                 case {'update'}
                     Gfprintf(' ++ Update KRG\n');
                 case {'cv','CV'}
+                    Gfprintf(' ++ Run final Cross-Validation\n');
                 case {'end','End','END'}
                     Gfprintf(' ++ END building KRG\n');
             end

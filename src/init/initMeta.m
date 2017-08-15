@@ -64,7 +64,8 @@ classdef initMeta < handle
         estimOn=true;       % seek for best values of the internal parameters
         aniso=true;         % anisotropic model (one internal length per variable)
         dispEstim=false;    % display objective function to be minimised
-        saveEstim=false;         %save evolution function to be minimized
+        saveEstim=false;    % save evolution function to be minimized
+        typeEstim='logli';  % type of criterion used for estimated the parameters (logli or cv)
         dispIterGraph=false;% display iterations of the optimisation process on a figure (1D/2D)
         dispIterCmd=false;  % display iteration in the console
         dispPlotAlgo=false; % display converg ence information on figures
@@ -278,6 +279,14 @@ classdef initMeta < handle
                     SwitchOnOff(boolIn);
                 end
                 obj.saveEstim=boolIn;
+            end
+        end
+         function set.typeEstim(obj,charIn)
+            if isG(charIn,'char')
+                if strcmp(obj.typeEstim,charIn)
+                    Gfprintf(' >>> Type of criterion used for finding hyperparameters : %s (previous %s)',charIn,obj.typeEstim);
+                end
+                obj.typeEstim=charIn;
             end
         end
         function set.dispIterGraph(obj,boolIn)
@@ -537,6 +546,7 @@ classdef initMeta < handle
             obj.estim.aniso=obj.aniso;
             obj.estim.disp=obj.dispEstim;
             obj.estim.save=obj.saveEstim;
+            obj.estim.type=obj.typeEstim;
             obj.estim.dispIterGraph=obj.dispIterGraph;
             obj.estim.dispIterCmd=obj.dispIterCmd;
             obj.estim.dispPlotAlgo=obj.dispPlotAlgo;
@@ -640,6 +650,7 @@ info.estimOn='Seek for best values of the internal parameters';
 info.aniso='Anisotropic model (one internal length per variable)';
 info.dispEstim='Display objective function to be minimised';
 info.saveEstim='Save evolution function to be minimized';
+info.typeEstim='Type of criterion used for estimated the parameters (logli or cv)';
 info.dispIterGraph='Display iterations of the optimisation process on a figure (1D/2D)';
 info.dispIterCmd='Display iteration in the console';
 info.dispPlotAlgo='Display convergence information on figures';

@@ -1,10 +1,10 @@
 %% Compute Cross-Validation
-function [crit,cv]=cv(obj,type)
+function [crit,cv]=cv(obj,paraValIn,type)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %various situations
 modFinal=true;modDebug=obj.debugCV;
-if nargin==2
+if nargin==3
     switch type
         case 'final'    %final mode (compute variances)
             modFinal=true;
@@ -13,7 +13,10 @@ if nargin==2
     end
 end
 if modFinal;countTime=mesuTime;end
-
+%%
+if nargin==1;paraValIn=obj.paraVal;end
+%compute matrices
+obj.compute(paraValIn);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %load variables
@@ -51,8 +54,8 @@ esI=coefKRG./diagMK;
 esR=esI(1:ns);
 if availGrad;esG=esI(ns+1:end);end
 %responses at the removed sample points
-cv.cvZR=esR-obj.resp;
-cv.cvZ=esR-obj.resp;
+cv.cvZR=esR-obj.resp; %%check
+cv.cvZ=esR-obj.resp; %%check
 %vectors of the variance on removed sample points
 evI=obj.sig2./diagMK;
 evR=evI(1:ns);

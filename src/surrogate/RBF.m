@@ -207,7 +207,7 @@ classdef RBF < handle
         
         %% build kernel matrix and remove missing part
         function K=buildMatrix(obj,paraValIn)
-            %in the case of GKRG
+            %in the case of GRBF
             if obj.flagG
                 [KK,KKd,KKdd]=obj.kernelMatrix.buildMatrix(paraValIn);
                 obj.K=[KK -KKd;-KKd' -KKdd];
@@ -313,12 +313,12 @@ classdef RBF < handle
         end
         
         %% Compute Cross-Validation
-        function [crit,cv]=cv(obj,type)
+        function [crit,cv]=cv(obj,paraValIn,type)
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %various situations
             modFinal=true;modDebug=obj.debugCV;
-            if nargin==2
+            if nargin==3
                 switch type
                     case 'final'    %final mode (compute variances)
                         modFinal=true;
@@ -327,7 +327,10 @@ classdef RBF < handle
                 end
             end
             if modFinal;countTime=mesuTime;end
-            
+            %%
+            if nargin==1;paraValIn=obj.paraVal;end
+            %compute matrices
+            obj.compute(paraValIn);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %load variables
@@ -344,12 +347,17 @@ classdef RBF < handle
             
             %vectors of the distances on removed sample points (reponses and gradients)
             % formula from Rippa 1999/Dubrule 1983/Zhang 2010/Bachoc 2011
-            esI=coefRBF./diag(obj.matrice.iK);
+            diagMK=diag(obj.matrices.iK);
+            esI=coefRBF./diagMK;
             esR=esI(1:ns);
             if availGrad;esG=esI(ns+1:end);end
             %responses at the removed sample points
             cv.cvZR=esR-obj.resp;
             cv.cvZ=esR-obj.resp;
+            %vectors of the variance on removed sample points
+            evI=1./diagMK;
+            evR=evI(1:ns);
+            if obj.flagG;evG=evI(ns+1:end);end
             
             %computation of the LOO criteria (various norms)
             switch obj.normLOO
@@ -523,7 +531,7 @@ classdef RBF < handle
         function estimPara(obj)
             %objective function for hyperparameters estimation
             fun=@(x)obj.cv(x,'estim');
-%
+            %
             obj.paraEstim=EstimPara(obj.nP,obj.metaData,fun);
             obj.lVal=obj.paraEstim.l.Val;
             obj.paraVal=obj.paraEstim.Val;
@@ -676,7 +684,7 @@ classdef RBF < handle
             if calcGrad
                 jr=zeros(sizeMatVec,np);
             end
-            %KRG/GKRG
+            %RBF/GRBF
             if obj.flagG
                 if calcGrad  %if compute gradients
                     %evaluate kernel function
@@ -727,10 +735,10 @@ classdef RBF < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %evaluation of the surrogate model at point X
-            Z=rr*obj.W;
+            Z=rr'*obj.W;
             if calcGrad
                 %%verif in 2D+
-                GZ=jr*obj.W;
+                GZ=jr'*obj.W;
             end
             %compute variance
             if nargout >=3
@@ -746,9 +754,10 @@ classdef RBF < handle
             if ~dispWarning;warning off all;end
             %correction for taking into account gradients (debug ....)
             rrb=rr;
-    if obj.flagG
-        rrb(ns+1:end)=-rrb(ns+1:end);
-    end
+            if obj.flagG
+                iXs=ns+1-obj.missData.nbMissResp;
+                rrb(iXs:end)=-rrb(iXs:end);
+            end
             %
             variance=1-rr*(obj.matrices.iK*rrb');
             if ~dispWarning;warning on all;end

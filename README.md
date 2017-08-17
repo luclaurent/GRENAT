@@ -3,7 +3,7 @@ GRENAT
 GRENAT  = **GR**adient **EN**hanced **A**pproximation **T**oolbox
 
 
-GRENAT regroups many techniques for generating surrogate models. These surrogate models can be built using responses and gradients obtained on some sample points.
+GRENAT regroups many techniques for generating surrogate models. These surrogate models can be built using responses and gradients obtained at some sample points.
 
 The available surrogate models are
 
@@ -23,7 +23,7 @@ GRENAT is able to
 * Evaluate the surrogate model at sample and non-sample points (and calculate the gradients of the approximation)
 * Compute the variance of the prediction
 * Compute the Cross-Validation of the surrogate model
-* Compute the Expected Improvement (and derivate formulations)
+* Compute the Expected Improvement (and derivated formulations)
 
 External included toolboxes
 ------
@@ -79,10 +79,10 @@ References
 ----
 Available approachs of this toolbox are presented in the following documents:
 
-* L. Laurent, R. Le Riche, B. Soulier and P.-A. Boucard. An Overview of Gradient-Enhanced Metamodels with Applications. *Archives of Computational Methods in Engineering*, July 2017. doi: [10.1007/s11831-017-9226-3](https://doi.org/10.1007/s11831-017-9226-3)
+* L. Laurent, R. Le Riche, B. Soulier and P.-A. Boucard. An Overview of Gradient-Enhanced Metamodels with Applications. *Archives of Computational Methods in Engineering*, July 2017. doi: [10.1007/s11831-017-9226-3](https://doi.org/10.1007/s11831-017-9226-3) [hal](https://hal-emse.ccsd.cnrs.fr/emse-01525674)
 * [Luc Laurent PhD Thesis](https://tel.archives-ouvertes.fr/tel-00972299) in french
-* L. Laurent, P.-A. Boucard, and B. Soulier. Generation of a cokriging metamodel using a multiparametric strategy. *Computational Mechanics*, 51(2):151-169, February 2013. doi: [10.1007/s00466-012-0711-0](https://dx.doi.org/10.1007/s00466-012-0711-0)
-* L. Laurent, P.-A. Boucard, and B. Soulier. A dedicated multiparametric strategy for the fast construction of a cokriging metamodel. *Computers & Structures*, 124(0):61-73, 2013. doi: [10.1016/j.compstruc.2013.03.012](https://dx.doi.org/10.1016/j.compstruc.2013.03.012)
+* L. Laurent, P.-A. Boucard, and B. Soulier. Generation of a cokriging metamodel using a multiparametric strategy. *Computational Mechanics*, 51(2):151-169, February 2013. doi: [10.1007/s00466-012-0711-0](https://dx.doi.org/10.1007/s00466-012-0711-0) [hal](https://hal.archives-ouvertes.fr/hal-01376462)
+* L. Laurent, P.-A. Boucard, and B. Soulier. A dedicated multiparametric strategy for the fast construction of a cokriging metamodel. *Computers & Structures*, 124(0):61-73, 2013. doi: [10.1016/j.compstruc.2013.03.012](https://dx.doi.org/10.1016/j.compstruc.2013.03.012) [hal](https://hal.archives-ouvertes.fr/hal-01376464)
 * L. Laurent, P.-A. Boucard, and B. Soulier. Fast multilevel optimization using a multiparametric strategy and a cokriging metamodel. In Y. Tsompanakis, B.H.V. Topping, (Editors), *Proceedings of the Second International Conference on Soft Computing Technology in Civil, Structural and Environmental Engineering*, 6-9 September, number Paper 50. Civil-Comp Press, Stirlingshire, UK, 2011. doi: [10.4203/ccp.97.50](https://dx.doi.org/10.4203/ccp.97.50)
 
 License ![GNU GPLv3](http://www.gnu.org/graphics/gplv3-88x31.png)

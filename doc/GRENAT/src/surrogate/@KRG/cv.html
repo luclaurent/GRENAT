@@ -1,0 +1,261 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of cv</title>
+  <meta name="keywords" content="cv">
+  <meta name="description" content="% Compute Cross-Validation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html surrogate --><!-- menu.html @KRG -->
+<h1>cv
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Compute Cross-Validation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [crit,cv]=cv(obj,paraValIn,type) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Compute Cross-Validation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+various situations</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Compute Cross-Validation</li><li><a href="../../../../GRENATdevel/src/surrogate/@RBF/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Compute Cross-Validation</li><li><a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../../GRENATdevel/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/src/init/initMeta.html" class="code" title="">initMeta</a>	% Initialization of the surrogate model</li><li><a href="cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Compute Cross-Validation</li><li><a href="../../../../GRENATdevel/src/surrogate/@RBF/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Compute Cross-Validation</li><li><a href="../../../../GRENATdevel/src/surrogate/RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Compute Cross-Validation</span>
+0002 <a name="_sub0" href="#_subfunctions" class="code">function [crit,cv]=cv(obj,paraValIn,type)</a>
+0003 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0004 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0005 <span class="comment">%various situations</span>
+0006 modFinal=true;modDebug=obj.debugCV;
+0007 <span class="keyword">if</span> nargin==3
+0008     <span class="keyword">switch</span> type
+0009         <span class="keyword">case</span> <span class="string">'final'</span>    <span class="comment">%final mode (compute variances)</span>
+0010             modFinal=true;
+0011         <span class="keyword">otherwise</span>
+0012             modFinal=false;
+0013     <span class="keyword">end</span>
+0014 <span class="keyword">end</span>
+0015 <span class="keyword">if</span> modFinal;countTime=<a href="../../../../GRENATdevel/src/various/mesuTime.html" class="code" title="">mesuTime</a>;<span class="keyword">end</span>
+0016 <span class="comment">%%</span>
+0017 <span class="keyword">if</span> nargin==1;paraValIn=obj.paraVal;<span class="keyword">end</span>
+0018 <span class="comment">%compute matrices</span>
+0019 obj.compute(paraValIn);
+0020 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0021 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0022 <span class="comment">%load variables</span>
+0023 np=obj.nP;
+0024 ns=obj.nS;
+0025 availGrad=obj.flagG;
+0026 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0027 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0028 <span class="comment">%%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)</span>
+0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0030 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0031 <span class="comment">%coefficient of (co)Kriging</span>
+0032 coefKRG=obj.gamma;
+0033 <span class="comment">%partial extraction of the diagonal of the inverse of the kernel matrix</span>
+0034 <span class="keyword">switch</span> obj.factK
+0035     <span class="keyword">case</span> <span class="string">'QR'</span>
+0036         fcC=obj.matrices.fcK*obj.matrices.QtK;
+0037         diagMK=diag(obj.matrices.RK\obj.matrices.QtK)-<span class="keyword">...</span>
+0038             diag(fcC'*(obj.matrices.fcCfct\fcC));
+0039     <span class="keyword">case</span> <span class="string">'LU'</span>
+0040         fcC=obj.matrices.fcU/obj.matrices.LK;
+0041         diagMK=diag(obj.matrices.UK\inv(obj.matrices.LK))-<span class="keyword">...</span>
+0042             diag(fcC'*(obj.matrices.fcCfct\fcC));
+0043     <span class="keyword">case</span> <span class="string">'LL'</span>
+0044         fcC=obj.matrices.fcL/obj.matrices.LK;
+0045         diagMK=diag(obj.matrices.LK\inv(obj.matrices.LK))-<span class="keyword">...</span>
+0046             diag(fcC'*(obj.matrices.fcCfct\fcC));
+0047     <span class="keyword">otherwise</span>
+0048         diagMK=diag(inv(obj.K))-<span class="keyword">...</span>
+0049             diag(obj.matrices.fcC'*(obj.matrices.fcCfct\obj.matrices.fcC));
+0050 <span class="keyword">end</span>
+0051 <span class="comment">%vectors of the distances on removed sample points (reponses and gradients)</span>
+0052 <span class="comment">% formula from Rippa 1999/Dubrule 1983/Zhang 2010/Bachoc 2011</span>
+0053 esI=coefKRG./diagMK;
+0054 esR=esI(1:ns);
+0055 <span class="keyword">if</span> availGrad;esG=esI(ns+1:end);<span class="keyword">end</span>
+0056 <span class="comment">%responses at the removed sample points</span>
+0057 cv.cvZR=esR-obj.resp; <span class="comment">%%check</span>
+0058 cv.cvZ=esR-obj.resp; <span class="comment">%%check</span>
+0059 <span class="comment">%vectors of the variance on removed sample points</span>
+0060 evI=obj.sig2./diagMK;
+0061 evR=evI(1:ns);
+0062 <span class="keyword">if</span> obj.flagG;evG=evI(ns+1:end);<span class="keyword">end</span>
+0063 
+0064 <span class="comment">%computation of the LOO criteria (various norms)</span>
+0065 <span class="keyword">switch</span> obj.normLOO
+0066     <span class="keyword">case</span> <span class="string">'L1'</span>
+0067         cv.then.press=esI'*esI;
+0068         cv.then.eloot=1/numel(esI)*sum(abs(esI));
+0069         cv.press=cv.then.press;
+0070         cv.eloot=cv.then.eloot;
+0071         <span class="keyword">if</span> obj.flagG
+0072             cv.then.eloor=1/ns*sum(abs(esR));
+0073             cv.then.eloog=1/(ns*np)*sum(abs(esG));
+0074             cv.eloor=cv.then.eloor;
+0075             cv.eloog=cv.then.eloog;
+0076         <span class="keyword">end</span>
+0077         
+0078     <span class="keyword">case</span> <span class="string">'L2'</span> <span class="comment">%MSE</span>
+0079         cv.then.press=esI'*esI;
+0080         cv.then.eloot=1/numel(esI)*(cv.then.press);
+0081         cv.press=cv.then.press;
+0082         cv.eloot=cv.then.eloot;
+0083         <span class="keyword">if</span> obj.flagG
+0084             cv.then.press=esR'*esR;
+0085             cv.then.eloor=1/numel(esR)*(cv.then.press);
+0086             cv.then.eloog=1/(numel(esR)*np)*(esG'*esG);
+0087             cv.press=cv.then.press;
+0088             cv.eloor=cv.then.eloor;
+0089             cv.eloog=cv.then.eloog;
+0090         <span class="keyword">end</span>
+0091     <span class="keyword">case</span> <span class="string">'Linf'</span>
+0092         cv.then.press=esI'*esI;
+0093         cv.then.eloot=1/numel(esI)*max(esI(:));
+0094         cv.press=cv.then.press;
+0095         cv.eloot=cv.then.eloot;
+0096         <span class="keyword">if</span> obj.flagG
+0097             cv.then.press=esR'*esR;
+0098             cv.then.eloor=1/numel(esR)*max(esR(:));
+0099             cv.then.eloog=1/(numel(esR)*np)*max(esG(:));
+0100             cv.press=cv.then.press;
+0101             cv.eloor=cv.then.eloor;
+0102             cv.eloog=cv.then.eloog;
+0103         <span class="keyword">end</span>
+0104 <span class="keyword">end</span>
+0105 <span class="comment">%SCVR Keane 2005/Jones 1998</span>
+0106 cv.scvr=(esI.^2)./evI;
+0107 cv.scvr_min=min(cv.scvr(:));
+0108 cv.scvr_max=max(cv.scvr(:));
+0109 cv.scvr_mean=mean(cv.scvr(:));
+0110 cv.scvrR=(esR.^2)./evR;
+0111 cv.scvrR_min=min(cv.scvrR(:));
+0112 cv.scvrR_max=max(cv.scvrR(:));
+0113 cv.scvrR_mean=mean(cv.scvrR(:));
+0114 <span class="keyword">if</span> obj.flagG
+0115     cv.scvrG=(esG.^2)./evG;
+0116     cv.scvrG_min=min(cv.scvrG(:));
+0117     cv.scvrG_max=max(cv.scvrG(:));
+0118     cv.scvrG_mean=mean(cv.scvrG(:));
+0119 <span class="keyword">end</span>
+0120 <span class="comment">%scores from Bachoc 2011-2013/Zhang 2010</span>
+0121 cv.mse=cv.eloot;                    <span class="comment">%minimize</span>
+0122 cv.wmse=1/numel(esI)*sum(cv.scvr);  <span class="comment">%find close to 1</span>
+0123 cv.lpp=-sum(log(evI)+cv.scvr);      <span class="comment">%maximize</span>
+0124 <span class="comment">%%criterion of adequation (CAUTION of the norm!!!&gt;&gt; squared difference)</span>
+0125 diffA=(esI.^2)./evI;
+0126 cv.adequ=1/numel(esI)*sum(diffA);
+0127 diffA=(esR.^2)./evR;
+0128 cv.adequR=1/numel(esR)*sum(diffA);
+0129 <span class="keyword">if</span> obj.flagG
+0130     diffA=(esG.^2)./evG;
+0131     cv.adequG=1/numel(esG)*sum(diffA);
+0132 <span class="keyword">end</span>
+0133 <span class="comment">%mean of bias</span>
+0134 cv.bm=1/numel(esI)*sum(esI);
+0135 cv.bmR=1/numel(esR)*sum(esR);
+0136 <span class="keyword">if</span> obj.flagG
+0137     cv.bmG=1/numel(esG)*sum(esG);
+0138 <span class="keyword">end</span>
+0139 <span class="comment">%display information</span>
+0140 <span class="keyword">if</span> modDebug||modFinal
+0141     <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n=== CV-LOO using Rippa''s methods (1999, extension by Bompard 2011)\n'</span>);
+0142     <span class="comment">%prepare cells for display</span>
+0143     txtC{1}=<span class="string">'+++ Used norm for calculate CV-LOO'</span>;
+0144     varC{1}=obj.normLOO;
+0145     <span class="keyword">if</span> obj.flagG
+0146         txtC{end+1}=<span class="string">'+++ Error on responses'</span>;
+0147         varC{end+1}=cv.then.eloor;
+0148         txtC{end+1}=<span class="string">'+++ Error on gradients'</span>;
+0149         varC{end+1}=cv.then.eloog;
+0150     <span class="keyword">end</span>
+0151     txtC{end+1}=<span class="string">'+++ Total error (MSE)'</span>;
+0152     varC{end+1}=cv.then.eloot;
+0153     txtC{end+1}=<span class="string">'+++ PRESS'</span>;
+0154     varC{end+1}=cv.then.press;
+0155     <span class="keyword">if</span> obj.flagG
+0156         txtC{end+1}=<span class="string">'+++ mean SCVR (Resp)'</span>;
+0157         varC{end+1}=cv.scvrR_mean;
+0158         txtC{end+1}=<span class="string">'+++ max SCVR (Resp)'</span>;
+0159         varC{end+1}=cv.scvrR_max;
+0160         txtC{end+1}=<span class="string">'+++ min SCVR (Resp)'</span>;
+0161         varC{end+1}=cv.scvrR_min;
+0162         txtC{end+1}=<span class="string">'+++ mean SCVR (Grad)'</span>;
+0163         varC{end+1}=cv.scvrG_mean;
+0164         txtC{end+1}=<span class="string">'+++ max SCVR (Grad)'</span>;
+0165         varC{end+1}=cv.scvrG_max;
+0166         txtC{end+1}=<span class="string">'+++ min SCVR (Grad)'</span>;
+0167         varC{end+1}=cv.scvrG_min;
+0168     <span class="keyword">end</span>
+0169     txtC{end+1}=<span class="string">'+++ mean SCVR (Total)'</span>;
+0170     varC{end+1}=cv.scvr_mean;
+0171     txtC{end+1}=<span class="string">'+++ max SCVR (Total)'</span>;
+0172     varC{end+1}=cv.scvr_max;
+0173     txtC{end+1}=<span class="string">'+++ min SCVR (Total)'</span>;
+0174     varC{end+1}=cv.scvr_min;
+0175     <span class="keyword">if</span> obj.flagG
+0176         txtC{end+1}=<span class="string">'+++ Adequation (Resp)'</span>;
+0177         varC{end+1}=cv.adequR;
+0178         txtC{end+1}=<span class="string">'+++ Adequation (Grad)'</span>;
+0179         varC{end+1}=cv.adequG;
+0180     <span class="keyword">end</span>
+0181     txtC{end+1}=<span class="string">'+++ Adequation (Total)'</span>;
+0182     varC{end+1}=cv.adequ;
+0183     <span class="keyword">if</span> obj.flagG
+0184         txtC{end+1}=<span class="string">'+++ Mean of bias (Resp)'</span>;
+0185         varC{end+1}=cv.bmR;
+0186         txtC{end+1}=<span class="string">'+++ Mean of bias (Grad)'</span>;
+0187         varC{end+1}=cv.bmG;
+0188     <span class="keyword">end</span>
+0189     txtC{end+1}=<span class="string">'+++ Mean of bias (Total)'</span>;
+0190     varC{end+1}=cv.bm;
+0191     txtC{end+1}=<span class="string">'+++ WMSE'</span>;
+0192     varC{end+1}=cv.wmse;
+0193     txtC{end+1}=<span class="string">'+++ LPP'</span>;
+0194     varC{end+1}=cv.lpp;
+0195     dispTableTwoColumns(txtC,varC,<span class="string">'-'</span>);
+0196 <span class="keyword">end</span>
+0197 <span class="comment">%%</span>
+0198 obj.cvResults=<a href="cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>;
+0199 <span class="comment">%</span>
+0200 <span class="keyword">switch</span> obj.typeLOO
+0201     <span class="keyword">case</span> <span class="string">'mse'</span>
+0202         crit=cv.mse;
+0203     <span class="keyword">case</span> <span class="string">'wmse'</span>
+0204         crit=abs(cv.wmse-1);
+0205     <span class="keyword">case</span> <span class="string">'lpp'</span>
+0206         crit=-cv.lpp;
+0207 <span class="keyword">end</span>
+0208 
+0209 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0210 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0211 <span class="keyword">if</span> modFinal;countTime.stop;<span class="keyword">end</span>
+0212 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

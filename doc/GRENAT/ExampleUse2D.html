@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- menu.html GRENAT -->
+<!-- menu.html GRENATdevel -->
 <h1>ExampleUse2D
 </h1>
 
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
+<li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENATdevel/src/various/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENATdevel/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -65,9 +65,9 @@ This function is called by:
 0021 <span class="comment">%load folder structure</span>
 0022 <a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>;
 0023 <span class="comment">%customClean;</span>
-0024 countTime=<a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
+0024 countTime=<a href="../GRENATdevel/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0025 <span class="comment">%parallel execution (options and starting of the workers)</span>
-0026 paraCluster=<a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>(false);
+0026 paraCluster=<a href="../GRENATdevel/src/various/execParallel.html" class="code" title="">execParallel</a>(false);
 0027 
 0028 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -90,7 +90,7 @@ This function is called by:
 0046 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0047 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0048 <span class="comment">%create GRENAT Object</span>
-0049 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'LS'</span>,sampling,resp,grad);
+0049 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'GKRG'</span>,sampling,resp,grad);
 0050 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0052 <span class="comment">%building of the surrogate model</span>
@@ -114,6 +114,6 @@ This function is called by:
 0070 
 0071 countTime.stop();
 0072</pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

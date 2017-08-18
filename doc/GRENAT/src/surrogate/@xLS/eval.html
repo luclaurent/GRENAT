@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of eval</title>
+  <meta name="keywords" content="eval">
+  <meta name="description" content="% Evaluation of the metamodel">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html surrogate --><!-- menu.html @xLS -->
+<h1>eval
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Evaluation of the metamodel</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [Z,GZ]=eval(obj,U) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Evaluation of the metamodel</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="../../../../GRENATdevel/src/libs/PSOt/pso_Trelea_mod.html" class="code" title="function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)">pso_Trelea_mod</a>	%%%%%%</li><li><a href="../../../../GRENATdevel/src/libs/matlab2tikz/runtests.html" class="code" title="">runtests</a>	</li><li><a href="../../../../GRENATdevel/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>	% Evaluation of the function and the gradients</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001         <span class="comment">%% Evaluation of the metamodel</span>
+0002         <a name="_sub0" href="#_subfunctions" class="code">function [Z,GZ]=eval(obj,U)</a>
+0003             calcGrad=false;
+0004             <span class="keyword">if</span> nargout&gt;1
+0005                 calcGrad=true;
+0006             <span class="keyword">end</span>
+0007             <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0008             <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0009             <span class="comment">%</span>
+0010             <span class="keyword">if</span> calcGrad
+0011                 [ff,jf]=obj.buildMatrixNonS(U);
+0012             <span class="keyword">else</span>
+0013                 ff=obj.buildMatrixNonS(U);
+0014             <span class="keyword">end</span>
+0015             <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0016             <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0017             <span class="comment">%evaluation of the surrogate model at point X</span>
+0018             Z=ff*obj.beta;
+0019             <span class="keyword">if</span> calcGrad
+0020                 <span class="comment">%%verif in 2D+</span>
+0021                 GZ=jf*obj.beta;
+0022             <span class="keyword">end</span>
+0023         <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

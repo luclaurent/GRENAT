@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html kernANDfun -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html kernANDfun -->
 <h1>multiKernel
 </h1>
 
@@ -35,10 +35,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>	Matrix multiply each submatrix of two 3D arrays without looping.</li><li><a href="../../../GRENAT/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>	MULTITRANSP  Transposing arrays of matrices.</li></ul>
+<li><a href="../../../GRENATdevel/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>	Matrix multiply each submatrix of two 3D arrays without looping.</li><li><a href="../../../GRENATdevel/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>	MULTITRANSP  Transposing arrays of matrices.</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/surrogate/KRGEval.html" class="code" title="function [Z,GZ,variance,details]=KRGEval(U,metaData,specifSampling)">KRGEval</a>	% function for evaluating the (co)Kriging surrogate model at many points</li><li><a href="../../../GRENAT/src/surrogate/KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="../../../GRENAT/src/surrogate/RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENAT/src/surrogate/SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li></ul>
+<li><a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/buildMatrix.html" class="code" title="function [KK,KKd,KKdd]=buildMatrix(obj,paraV)">buildMatrix</a>	obj.init;</li><li><a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/buildVector.html" class="code" title="function [V,Vd,Vdd]=buildVector(obj,samplePts,paraV)">buildVector</a>	obj.init;</li><li><a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/updateMatrix.html" class="code" title="function [KK,KKd,KKdd]=updateMatrix(obj,newS)">updateMatrix</a>	function for updating the</li><li><a href="../../../GRENATdevel/src/surrogate/RBFEval.html" class="code" title="function [Z,GZ,variance]=RBFEval(U,metaData,specifSampling)">RBFEval</a>	% function for evaluating the RBF surrogate model at many points</li><li><a href="../../../GRENATdevel/src/surrogate/SVREval.html" class="code" title="function [Z,GZ,variance]=SVREval(U,metaData,specifSampling)">SVREval</a>	% function for evaluating the gradient-based and non-gradient-based SVR surrogate model at many points</li></ul>
 <!-- crossreference -->
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
@@ -158,7 +158,7 @@ This function is called by:
 0110         <span class="keyword">if</span> nV&gt;1;maskM=[1 1];<span class="keyword">else</span> maskM=1;<span class="keyword">end</span>
 0111         mm=[maskM uniR(2:nV-1)];
 0112         <span class="comment">%</span>
-0113         M=mm(ones(nb_comp,1),:);
+0113         M=mm(ones(nV,1),:);
 0114         M=triu(M,2)+tril(ones(nV),1);
 0115         M=cumprod(M,2);
 0116         <span class="comment">%</span>
@@ -175,7 +175,7 @@ This function is called by:
 0127         Lr=reshape(L',nV,1,nE); <span class="comment">% + transpose</span>
 0128         Ur=reshape(U',1,nV,nE);
 0129         <span class="comment">%</span>
-0130         prd=<a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(duniR,duniR,2.1);
+0130         prd=<a href="../../../GRENATdevel/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(duniR,duniR,2.1);
 0131         prd(ixDiag)=dduniR';
 0132         <span class="keyword">if</span> nV&gt;1;maskM=[1 1];<span class="keyword">else</span> maskM=1;<span class="keyword">end</span>
 0133         mm=[maskM 3:nV];
@@ -187,8 +187,8 @@ This function is called by:
 0139         mask2=triu(ones(nV));
 0140         M=cumprod(M,2);
 0141         M=M.*repmat(mask2,[1 1 nE]);
-0142         LUMt=<a href="../../../GRENAT/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(Lr,Ur,2).*M;
-0143         LUM=LUMt+<a href="../../../GRENAT/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>(LUMt);        
+0142         LUMt=<a href="../../../GRENATdevel/src/libs/multiTimes.html" class="code" title="function C = multiTimes( A, B, type )">multiTimes</a>(Lr,Ur,2).*M;
+0143         LUM=LUMt+<a href="../../../GRENATdevel/src/libs/multitransp.html" class="code" title="function b = multitransp(a, dim)">multitransp</a>(LUMt);        
 0144         LUM(ixDiag)=LdU';
 0145         <span class="comment">%second derivatives</span>
 0146         dderK=LUM.*prd;
@@ -249,6 +249,6 @@ This function is called by:
 0201         paraV=paraInit(1:Dim);
 0202 <span class="keyword">end</span>
 0203 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

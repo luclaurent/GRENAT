@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of buildVector</title>
+  <meta name="keywords" content="buildVector">
+  <meta name="description" content="obj.init;">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html kernANDfun --><!-- menu.html @KernMatrix -->
+<h1>buildVector
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>obj.init;</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function [V,Vd,Vdd]=buildVector(obj,samplePts,paraV) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">obj.init;
+changing the values of the internal parameters</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>	% function for evaluating multidimensional kernel function</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [V,Vd,Vdd]=buildVector(obj,samplePts,paraV)</a>
+0002 <span class="comment">%obj.init;</span>
+0003 <span class="comment">%changing the values of the internal parameters</span>
+0004 <span class="keyword">if</span> nargin&gt;1;obj.paraVal=paraV;<span class="keyword">end</span>
+0005 <span class="comment">%depending on the number of output arguments</span>
+0006 <span class="keyword">if</span> nargout&gt;1||obj.forceGrad;obj.computeD=true;<span class="keyword">end</span>
+0007 <span class="comment">%compute distance</span>
+0008 distS=repmat(samplePts,obj.nS,1)-obj.sampling;
+0009 <span class="comment">%</span>
+0010 fctK=obj.fctKern;
+0011 pVl=obj.paraVal;
+0012 <span class="comment">%if derivatives required</span>
+0013 <span class="keyword">if</span> obj.computeD
+0014     <span class="comment">%if parallel workers are available</span>
+0015     <span class="keyword">if</span> obj.parallelOk
+0016                 <span class="comment">%                         parfor ii=1:ns</span>
+0017         <span class="comment">%                             %Building by column &amp; evaluation of the Kernel function</span>
+0018         <span class="comment">%                             [V(,dev,ddev]=multiKernel(fctK,dC(:,ii),pVl);</span>
+0019         <span class="comment">%                             %classical part</span>
+0020         <span class="comment">%                             KK(:,ii)=ev;</span>
+0021         <span class="comment">%                             %part of the first derivatives</span>
+0022         <span class="comment">%                             KKa{ii}=dev;</span>
+0023         <span class="comment">%                             %part of the second derivatives</span>
+0024         <span class="comment">%                             KKi{ii}=reshape(ddev,np,ns*np);</span>
+0025         <span class="comment">%                         end</span>
+0026         <span class="comment">%                         %Reordering matrices</span>
+0027         <span class="comment">%                         KKd=horzcat(KKa{:});</span>
+0028         <span class="comment">%                         KKdd=vertcat(KKi{:});</span>
+0029     <span class="keyword">else</span>
+0030         <span class="comment">%evaluation of the kernel function for all inter-points</span>
+0031         <span class="comment">%keyboard</span>
+0032         [V,Vd,Vdd]=<a href="../../../../GRENATdevel/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(fctK,distS,pVl);
+0033     <span class="keyword">end</span>
+0034 <span class="keyword">else</span>
+0035     <span class="keyword">if</span> obj.parallelOk
+0036         <span class="comment">%REWRITE</span>
+0037         <span class="comment">%                         %%%%%% PARALLEL %%%%%%</span>
+0038         <span class="comment">%                         %classical kernel matrix by column</span>
+0039         <span class="comment">%                         KK=zeros(ns,ns);</span>
+0040         <span class="comment">%                         parfor ii=1:ns</span>
+0041         <span class="comment">%                             % evaluate kernel function</span>
+0042         <span class="comment">%                             [ev]=multiKernel(fctK,dC(:,ii),pVl);</span>
+0043         <span class="comment">%                             % kernel matrix by column</span>
+0044         <span class="comment">%                             KK(:,ii)=ev;</span>
+0045         <span class="comment">%                         end</span>
+0046     <span class="keyword">else</span>
+0047         <span class="comment">% evaluate kernel function</span>
+0048         [V]=<a href="../../../../GRENATdevel/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(fctK,distS,pVl);
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -60,39 +60,6 @@ end
 %     modFinal=true;
 % end
 % if modFinal;[tMesu,tInit]=mesuTime;end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%size of the kernel matrix
-sizePsi=size(dataBloc.build.PsiR,1);
-%Load data
-PsiR=dataBloc.build.PsiR;
-iKUSV=dataBloc.build.iKUSV;
-iXsvPM=dataBloc.build.iXsvPM;
-iXsvPP=dataBloc.build.iXsvPP;
-iXsvUSV=dataBloc.build.iXsvUSV;
-nbUSV=dataBloc.build.nbUSV;
-iXsvBSV=dataBloc.build.iXsvBSV;
-nbBSV=dataBloc.build.nbBSV;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Compute St
-%extract inverse of KUSV
-iKUSV=dataBloc.build.iKUSV;
-%diagonal
-DiKSV=diag(iKUSV);
-%compute St^2
-St2b=zeros(sizePsi,1);
-St2b(iXsvUSV)=1./DiKSV(1:nbUSV);
- if nbBSV>0
-     PsiBSV=PsiR(iXsvBSV(:),iXsvBSV(:));
-     Vb=[PsiR(iXsvUSV,iXsvBSV); ones(1,nbBSV)];
-     St2b(iXsvBSV)=diag(PsiBSV)-diag(Vb'*iKUSV*Vb);
- end;
-
-spanBound=1/sizePsi...
-    *(St2b'*dataBloc.build.alphaLambdaPP...
-    +sum(dataBloc.build.xiTau))...
-    +dataBloc.build.e0;
 
 
 % spanBoundb=0;

@@ -134,21 +134,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute the prediction variance (Bompard 2011, Gao et al. 2002)
 if nargout >=3
-    %intrinsic variance
-    c0=metaData.build.c0;
-    e0=metaData.build.e0;
-    varianceI=2/c0^+1/3*e0^2*(3+e0*c0)/(e0*c0+1);
-    
-    %reduction to the unbounded support vectors
-    %depending on gradient- or none-gradient-based GSVR
-    iXsvUSV=metaData.build.iXsvUSV;
-    %remove bounded supports vectors
-    rrUSV=rr(iXsvUSV(:));
-    PsiUSV=metaData.build.PsiR(iXsvUSV(:),iXsvUSV(:));
-    
-    %variance due to the approximation
-    varianceS=1-rrUSV'/PsiUSV*rrUSV;
-    variance=varianceI+varianceS;
+
 end
 
 end

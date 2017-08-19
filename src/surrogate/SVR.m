@@ -37,9 +37,40 @@ classdef SVR < handle
         YYtot=[];           % full vector of responses and gradients
         K=[];               % kernel matrix
         %
-        beta=[];            % regressors of the kriging generalized Least-Square
-        gamma=[];           % coefficients of the stochastic prt of the kriging
-        sig2=[];            % variance of the Gaussian Process
+        PsiT=[];            % matrix of SVR convex quadratic problem
+        %
+        fVal;               % value of the objective function obtained after solving QP
+        exitFlag;           % status flag of the QP optimizer
+        CC;                 % second member of QP
+        Aineq;              % inequality constraint matrix of QP
+        bineq;              % inequality constraint vector of QP
+        Aeq;                % equality constraint matrix of QP
+        beq;                % equality vector of QP
+        lb;                 % lower bound of QP variables
+        ub;                 % upper bound of QP variables
+        %
+        alphaRAW;           % RAW alpha variables solution of QP (SVR)
+        alphaPM;            % differences of alpha_i
+        alphaPP;            % sums of alpha_i
+        lambdaRAW;          % RAW lambda variables solution of QP (GSVR)
+        lambdaPM;           % differences of lambda_i
+        lambdaPP;           % sum of lambda_i
+        FullAlphaLambdaPM;  % full vector of differences alpha_i and lambda_i
+        FullAlphaLambdaPP;  % full vector of sum alpha_i and lambda_i
+        FullAlphaLambdaRAW; % full RW vector of alpha_i and lambda_i
+        xiTau;              % slack variables
+        %
+        e;                  % epsilon parameter
+        SVRmu;              % mu parameter
+        %
+        nbUSV;              % number of unbounded SVs
+        nbBSV;              % number of bounded SVs
+        iXsvUSV;            % indices of unbounded SVs
+        iXsvBSV;            % indices of bounded SVs
+        %
+        PsiUSV;             % matrix of quadratic problem w/o the bounded SVs
+        KUSV;               % extended PsiUSV
+        iKUSV;              % inverse of KUSV
         %
         polyOrder=0;        % polynomial order
         kernelFun='sexp';   % kernel function
@@ -47,7 +78,7 @@ classdef SVR < handle
         paraVal=1;         % internal parameters used for building (fixed or estimated)
         lVal=[];            % internal parameters: length
         pVal=[];            % internal parametersfor generalized squared exponential
-        nuVal=[];           % internal parameter for Mat?rn function
+        nuVal=[];           % internal parameter for Matern function
         %
         normLOO='L2';       % norm used for Leave-One-Out cross-validation
         debugLOO=false;     % flag for debug in Leave-One-Out cross-validation
@@ -58,7 +89,7 @@ classdef SVR < handle
         respV=[];            % responses prepared for training
         gradV=[];            % gradients prepared for training
         %
-        flagGSVR=false;      % flag for computing matrices with gradients
+        flagG=false;      % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
         requireRun=true;     % flag if a full building is required
@@ -139,7 +170,7 @@ classdef SVR < handle
         end
         
         %% getter for GSVR building
-        function flagG=get.flagGSVR(obj)
+        function flagG=get.flagG(obj)
             flagG=~isempty(obj.grad);
         end
         
@@ -210,138 +241,141 @@ classdef SVR < handle
         
         %% build kernel matrix and remove missing part
         function K=buildMatrix(obj,paraValIn)
-            %in the case of GSVR
-            if obj.flagGSVR
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Build of the SVR/GSVR matrix
+            if obj.flagG
+                %for GSVR
                 [KK,KKd,KKdd]=obj.kernelMatrix.buildMatrix(paraValIn);
+                %remove missing data
+                if obj.checkMiss
+                    KK=obj.missData.removeRM(KK);
+                    KKd=obj.missData.removeRV(KKd);
+                    KKdd=obj.missData.removeGM(KKdd);
+                end
+                %assemble matrices
                 obj.K=[KK -KKd;-KKd' -KKdd];
+                Psi=[KK -KK;-KK KK];
+                PsiDo=-[KKd -KKd; -KKd KKd];
+                PsiDDo=-[KKdd -KKdd;-KKdd KKdd];
+                obj.PsiT=[Psi PsiDo;PsiDo' PsiDDo];
             else
                 [obj.K]=obj.kernelMatrix.buildMatrix(paraValIn);
-            end
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %Improve condition number of the SVR/GSVR Matrix
-            if obj.metaData.recond
-                %coefficient for reconditionning (co)kriging matrix
-                coefRecond=(10+size(obj.SVRLS.XX,1))*eps;
-                %
-                obj.K=obj.K+coefRecond*speye(size(obj.K));
-            end
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %remove missing parts
-            if obj.checkMiss
-                if obj.flagGSVR
-                    obj.K=obj.missData.removeGRM(obj.K);
-                else
+                %remove missing data
+                if obj.checkMiss
                     obj.K=obj.missData.removeRM(obj.K);
                 end
+                %
+                obj.PsiT=[obj.K -obj.K;-obj.K obj.K];
             end
             %
             K=obj.K;
             %
         end
         
-        %% core of kriging computation using QR factorization
-        function [detK,logDetK]=coreQR(obj)
+
+        %% core of SVR computation using no factorization
+        function coreClassical(obj)
+            %load data
+            ns=obj.nS;
+            np=obj.nP;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %QR factorization
-            [obj.matrices.QK,obj.matrices.RK,obj.matrices.PK]=qr(obj.K);
+            %Solving the Convex Constrained Quadaratic Optimization problem
+            [solQP, obj.fVal, obj.exitFlag, lmQP]=ExecQP(obj.PsiT,obj.CC,...
+                obj.Aineq,obj.bineq,...
+                obj.Aeq,obj.beq,...
+                obj.lb,obj.ub);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Specific data for none-gradient-based SVR
+            obj.alphaRAW=solQP(1:2*ns);
+            obj.alphaPM=obj.alphaRAW(1:ns)-obj.alphaRAW(ns+1:2*ns);
+            obj.alphaPP=obj.alphaRAW(1:ns)+obj.alphaRAW(ns+1:2*ns);
+           
+            %find support vectors with specific property
+            svPM=find(abs(obj.alphaPM)>obj.lb(1:ns)+epsM);
+            svPP=find(obj.alphaPP>obj.lb(1:ns)+epsM);
+            
+            %Unbounded SV's or free SV's
+            svUSV=find(obj.alphaPP>obj.lb(1:ns)+epsM & obj.alphaPP<obj.ub(1:ns)-epsM);
+            %Bounded SV's
+            svBSV=find(obj.alphaPP<obj.lb(1:ns)+epsM | obj.alphaPP>obj.ub(1:ns)-epsM);
+            
+            %finding SV's corresponding to value of alpha situated in the middle of
+            %[lb,ub]
+            [svMidP,svMidPIX]=min(abs(abs(obj.alphaRAW(1:ns))-obj.ub(1:ns)/2));
+            [svMidM,svMidMIX]=min(abs(abs(obj.alphaRAW(ns+1:2*ns))-obj.ub(ns+1:2*ns)/2));
+            
+            %in the case of gradient-based approach
+            obj.lambdaPM=[];
+            obj.lambdaPP=[];
+            obj.lambdaRAW=[];
+            iXsvT=svPM;
+            iXsvPM=svPM;
+            iXsvPP=svPP;
+            obj.iXsvUSV=svUSV;
+            obj.iXsvBSV=svBSV;
             %
-            diagRK=diag(obj.matrices.RK);
-            detK=abs(prod(diagRK)); %Q is an unitary matrix
-            logDetK=sum(log(abs(diagRK)));
-            %
-            obj.matrices.QtK=obj.matrices.QK';
-            yQ=obj.matrices.QtK*obj.YYtot;
-            fctQ=obj.matrices.QtK*obj.SVRLS.XX;
-            obj.matrices.fcK=obj.SVRLS.XX'*obj.matrices.PK/obj.matrices.RK;
+            if obj.flagG
+                obj.lambdaRAW=solQP(2*ns+1:end);
+                obj.lambdaPM=obj.lambdaRAW(1:ns*np)-obj.lambdaRAW(ns*np+1:end);
+                obj.lambdaPP=obj.lambdaRAW(1:ns*np)+obj.lambdaRAW(ns*np+1:end);
+                %compute indexes of the the gradients associated to the support vectors
+                liNp=1:np;
+                repI=ones(np,1);
+                iXDsvI=liNp(ones(numel(iXsvT),1),:)+np*(iXsvT(:,repI)-1);
+                iXDsvI=iXDsvI';
+                iXsvT=[svPM;ns+iXDsvI(:)];
+                
+                %find support vectors dedicated to gradients
+                svDI=find(abs(obj.lambdaPM)>epsM);
+                [svMiddP,svMiddPIX]=min(abs(abs(obj.lambdaRAW(1:ns*np)-obj.ub(2*ns+1:ns*(np+2))/2)));
+                [svMiddM,svMiddMIX]=min(abs(abs(obj.lambdaRAW(ns*np+1:2*ns*np)-obj.ub(ns*(np+2)+1:2*ns*(1+np))/2)));
+                
+            end
+            %Full data
+            obj.FullAlphaLambdaPM=[obj.alphaPM;obj.lambdaPM];
+            obj.FullAlphaLambdaPP=[obj.alphaPP;obj.lambdaPP];
+            obj.FullAlphaLambdaRAW=solQP;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute beta coefficient
-            obj.matrices.fcCfct=obj.matrices.fcK*fctQ;
-            block2=obj.matrices.fcK*yQ;
-            obj.beta=obj.matrices.fcCfct\block2;
+            %compute epsilon
+            %eM=0.5*(dataIn.used.resp(svMidPIX)...
+            %    -dataIn.used.resp(svMidMIX)...
+            %    -FullAlphaLambdaPM(iXsvT)'*PsiR(svMidPIX,iXsvT)'...
+            %    +FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidMIX));
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute gamma coefficient
-            obj.gamma=obj.matrices.PK*(obj.matrices.RK\(yQ-fctQ*obj.beta));
-        end
-        %% core of kriging computation using LU factorization
-        function [detK,logDetK]=coreLU(obj)
+            %compute the base term
+            % SVRmuM=dataIn.used.resp(svMidPIX)...
+            %     -eM*sign(alphaPM(svMidPIX))...
+            %     -FullAlphaLambdaPM(iXsvT)'*PsiR(iXsvT,svMidPIX);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %LU factorization
-            [obj.matrices.LK,obj.matrices.UK,obj.matrices.PK]=lu(obj.K,'vector');
-            %
-            diagUK=diag(obj.matrices.UK);
-            detK=prod(diagUK); %L is a quasi-triangular matrix and contains ones on the diagonal
-            logDetK=sum(log(abs(diagUK)));
-            %
-            yP=obj.YYtot(obj.matrices.PK,:);
-            fctP=obj.SVRLS.XX(obj.matrices.PK,:);
-            yL=obj.matrices.LK\yP;
-            fctL=obj.matrices.LK\fctP;
-            obj.matrices.fcU=obj.SVRLS.XX'/obj.matrices.UK;
+            %lagrange multipliers give the values of mu and epsilon
+            obj.e=lmQP.ineqlin(1);
+            obj.xiTau=lmQP.lower;
+            %e
+            obj.SVRmu=lmQP.eqlin;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute beta coefficient
-            obj.matrices.fcCfct=obj.matrices.fcU*fctL;
-            block2=obj.matrices.fcU*yL;
-            obj.beta=obj.matrices.fcCfct\block2;
+            %Number of Unbounded and Bounded SVs
+            obj.nbUSV=numel(obj.iXsvUSV);
+            obj.nbBSV=numel(obj.iXsvBSV);
+            
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute gamma coefficient
-            obj.gamma=obj.matrices.UK\(yL-fctL*obj.beta);
-        end
-        %% core of kriging computation using Cholesky (LL) factorization
-        function [detK,logDetK]=coreLL(obj)
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %Cholesky's fatorization
-            %%% to be degugged
-            obj.matrices.LK=chol(obj.K,'lower');
-            %
-            diagLK=diag(obj.matrices.LK);
-            detK=prod(diagLK)^2;
-            logDetK=2*sum(log(abs(diagLK)));
-            %
-            LtK=obj.matrices.LK';
-            yL=obj.matrices.LK\obj.YYtot;
-            fctL=obj.matrices.LK\obj.SVRLS.XX;
-            obj.matrices.fcL=obj.SVRLS.XX'/LtK;
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute beta coefficient
-            obj.matrices.fcCfct=obj.matrices.fcL*fctL;
-            block2=obj.matrices.fcL*yL;
-            obj.beta=obj.matrices.fcCfct\block2;
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute gamma coefficient
-            obj.gamma=LtK\(yL-fctL*obj.beta);
-        end
-        %% core of kriging computation using no factorization
-        function [detK,logDetK]=coreClassical(obj)
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %classical approach
-            eigVal=eig(obj.K);
-            detK=prod(eigVal);
-            logDetK=sum(log(eigVal));
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute gamma and beta coefficients
-            obj.matrices.fcC=obj.SVRLS.XX'/obj.K;
-            obj.matrices.fcCfct=obj.matrices.fcC*obj.SVRLS.XX;
-            block2=((obj.SVRLS.XX'/obj.K)*obj.YYtot);
-            obj.beta=obj.matrices.fcCfct\block2;
-            obj.gamma=obj.K\(obj.YYtot-obj.SVRLS.XX*obj.beta);
+            %Build matrices
+            %remove bounded supports vectors
+            obj.PsiUSV=PsiR(obj.iXsvUSV(:),obj.iXsvUSV(:));
+            obj.KUSV=[obj.PsiUSV ones(obj.nbUSV,1);ones(1,obj.nbUSV) 0];
+            obj.iKUSV=inv(obj.KUSV);
         end
         
-        %% build factorization, solve the kriging problem and evaluate the log-likelihood
-        function [detK,logDetK]=compute(obj,paraValIn)
-            if nargin==1;
+        %% build factorization, solve the SVR problem and evaluate the log-likelihood
+        function compute(obj,paraValIn)
+            if nargin==1
                 paraValIn=obj.paraVal;
             else
                 obj.paraVal=paraValIn;
@@ -352,49 +386,36 @@ classdef SVR < handle
                 obj.buildMatrix(paraValIn);
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %Factorization of the matrix
-                switch obj.factK
-                    case 'QR'
-                        [detK,logDetK]=obj.coreQR;
-                    case 'LU'
-                        [detK,logDetK]=obj.coreLU;
-                    case 'LL'
-                        [detK,logDetK]=obj.coreLL;
-                    otherwise
-                        [detK,logDetK]=obj.coreClassical;
-                end
+                %solve the SVR problem
+                obj.coreClassical;
                 %
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %variance of the Gaussian process
-                sizeK=size(obj.K,1);
-                obj.sig2=1/sizeK*...
-                    ((obj.YYtot-obj.SVRLS.XX*obj.beta)'*obj.gamma);
             end
         end
         
-        %% function evaluate likelihood
-        function [logLi,Li,liSack]=likelihood(obj,paraValIn)
-            if nargin==1;paraValIn=obj.paraVal;end
-            %compute matrices
-            [detK,logDetK]=obj.compute(paraValIn);
+        %% Compute the the Span Bound of the LOO error for SVR/GSVR
+        function spanBound=sb(obj)
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %size of the kernel matrix
-            sizeK=size(obj.K,1);
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %computation of the log-likelihood (Jones 1993 / Leary 2004)
-            logLi=sizeK/2*log(2*pi*obj.sig2)+1/2*logDetK+sizeK/2;
-            if nargout>=2
-                %computation of the likelihood (Jones 1993 / Leary 2004)
-                Li=1/((2*pi*obj.sig2)^(sizeK/2)*sqrt(detK))*exp(-sizeK/2);
-            end
-            %computation of the log-likelihood from Sacks 1989
-            if nargout==3
-                liSack=abs(detK)^(1/sizeK)*obj.sig2;
-            end
-            if isinf(logLi)||isnan(logLi)
-                logLi=1e16;
-            end
+            sizePsi=size(obj.K,1);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %% Compute St
+            %diagonal of inverse of KUSV 
+            DiKSV=diag(obj.iKUSV);
+            %compute St^2
+            St2b=zeros(sizePsi,1);
+            St2b(obj.iXsvUSV)=1./DiKSV(1:obj.nbUSV);
+            if obj.nbBSV>0
+                PsiBSV=obj.K(obj.iXsvBSV(:),obj.iXsvBSV(:));
+                Vb=[obj.K(obj.iXsvUSV,obj.iXsvBSV); ones(1,obj.nbBSV)];
+                St2b(obj.iXsvBSV)=diag(PsiBSV)-diag(Vb'*obj.iKUSV*Vb);
+            end;
+            
+            spanBound=1/sizePsi...
+                *(St2b'*obj.FullAlphaLambdaPP...
+                +sum(obj.xiTau))...
+                +obj.metaData.e0;
         end
         
         %% Compute Cross-Validation
@@ -418,7 +439,7 @@ classdef SVR < handle
             %load variables
             np=obj.nP;
             ns=obj.nS;
-            availGrad=obj.flagGSVR;
+            availGrad=obj.flagG;
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)
@@ -455,7 +476,7 @@ classdef SVR < handle
             %vectors of the variance on removed sample points
             evI=obj.sig2./diagMK;
             evR=evI(1:ns);
-            if obj.flagGSVR;evG=evI(ns+1:end);end
+            if obj.flagG;evG=evI(ns+1:end);end
             
             %computation of the LOO criteria (various norms)
             switch obj.normLOO
@@ -464,7 +485,7 @@ classdef SVR < handle
                     cv.then.eloot=1/numel(esI)*sum(abs(esI));
                     cv.press=cv.then.press;
                     cv.eloot=cv.then.eloot;
-                    if obj.flagGSVR
+                    if obj.flagG
                         cv.then.eloor=1/ns*sum(abs(esR));
                         cv.then.eloog=1/(ns*np)*sum(abs(esG));
                         cv.eloor=cv.then.eloor;
@@ -476,7 +497,7 @@ classdef SVR < handle
                     cv.then.eloot=1/numel(esI)*(cv.then.press);
                     cv.press=cv.then.press;
                     cv.eloot=cv.then.eloot;
-                    if obj.flagGSVR
+                    if obj.flagG
                         cv.then.press=esR'*esR;
                         cv.then.eloor=1/numel(esR)*(cv.then.press);
                         cv.then.eloog=1/(numel(esR)*np)*(esG'*esG);
@@ -489,7 +510,7 @@ classdef SVR < handle
                     cv.then.eloot=1/numel(esI)*max(esI(:));
                     cv.press=cv.then.press;
                     cv.eloot=cv.then.eloot;
-                    if obj.flagGSVR
+                    if obj.flagG
                         cv.then.press=esR'*esR;
                         cv.then.eloor=1/numel(esR)*max(esR(:));
                         cv.then.eloog=1/(numel(esR)*np)*max(esG(:));
@@ -507,7 +528,7 @@ classdef SVR < handle
             cv.scvrR_min=min(cv.scvrR(:));
             cv.scvrR_max=max(cv.scvrR(:));
             cv.scvrR_mean=mean(cv.scvrR(:));
-            if obj.flagGSVR
+            if obj.flagG
                 cv.scvrG=(esG.^2)./evG;
                 cv.scvrG_min=min(cv.scvrG(:));
                 cv.scvrG_max=max(cv.scvrG(:));
@@ -522,14 +543,14 @@ classdef SVR < handle
             cv.adequ=1/numel(esI)*sum(diffA);
             diffA=(esR.^2)./evR;
             cv.adequR=1/numel(esR)*sum(diffA);
-            if obj.flagGSVR
+            if obj.flagG
                 diffA=(esG.^2)./evG;
                 cv.adequG=1/numel(esG)*sum(diffA);
             end
             %mean of bias
             cv.bm=1/numel(esI)*sum(esI);
             cv.bmR=1/numel(esR)*sum(esR);
-            if obj.flagGSVR
+            if obj.flagG
                 cv.bmG=1/numel(esG)*sum(esG);
             end
             %display information
@@ -538,7 +559,7 @@ classdef SVR < handle
                 %prepare cells for display
                 txtC{1}='+++ Used norm for calculate CV-LOO';
                 varC{1}=obj.normLOO;
-                if obj.flagGSVR
+                if obj.flagG
                     txtC{end+1}='+++ Error on responses';
                     varC{end+1}=cv.then.eloor;
                     txtC{end+1}='+++ Error on gradients';
@@ -548,7 +569,7 @@ classdef SVR < handle
                 varC{end+1}=cv.then.eloot;
                 txtC{end+1}='+++ PRESS';
                 varC{end+1}=cv.then.press;
-                if obj.flagGSVR
+                if obj.flagG
                     txtC{end+1}='+++ mean SCVR (Resp)';
                     varC{end+1}=cv.scvrR_mean;
                     txtC{end+1}='+++ max SCVR (Resp)';
@@ -568,7 +589,7 @@ classdef SVR < handle
                 varC{end+1}=cv.scvr_max;
                 txtC{end+1}='+++ min SCVR (Total)';
                 varC{end+1}=cv.scvr_min;
-                if obj.flagGSVR
+                if obj.flagG
                     txtC{end+1}='+++ Adequation (Resp)';
                     varC{end+1}=cv.adequR;
                     txtC{end+1}='+++ Adequation (Grad)';
@@ -576,7 +597,7 @@ classdef SVR < handle
                 end
                 txtC{end+1}='+++ Adequation (Total)';
                 varC{end+1}=cv.adequ;
-                if obj.flagGSVR
+                if obj.flagG
                     txtC{end+1}='+++ Mean of bias (Resp)';
                     varC{end+1}=cv.bmR;
                     txtC{end+1}='+++ Mean of bias (Grad)';
@@ -627,12 +648,7 @@ classdef SVR < handle
         
         %% Estimate internal parameters
         function estimPara(obj)
-            switch obj.metaData.estim.type
-                case 'logli'
-                    fun=@(x)obj.likelihood(x);
-                case 'cv'
-                    fun=@(x)obj.cv(x,'estim');
-            end
+            fun=@(x)obj.sb(x,'estim');
             
             obj.paraEstim=EstimPara(obj.nP,obj.metaData,fun);
             obj.lVal=obj.paraEstim.l.Val;
@@ -647,6 +663,13 @@ classdef SVR < handle
         
         %% prepare data for building (deal with missing data)
         function setData(obj)
+            %load data
+            ns=obj.nS;
+            np=obj.nP;
+            c0l=obj.metaData.c0;
+            ckl=obj.metaData.ck;
+            nuSVRl=obj.metaData.nuSVR;
+            nuGSVRl=obj.metaData.nuGSVR;
             %Responses and gradients at sample points
             YYT=obj.resp;
             %remove missing response(s)
@@ -655,7 +678,7 @@ classdef SVR < handle
             end
             %
             der=[];
-            if obj.flagGSVR
+            if obj.flagG
                 tmp=obj.grad';
                 der=tmp(:);
                 %remove missing gradient(s)
@@ -663,14 +686,48 @@ classdef SVR < handle
                     der=obj.missData.removeGV(der);
                 end
             end
-            obj.YY=YYT;
-            obj.YYD=der;
+            obj.YY=[-YYT;YYT];
+            obj.YYD=[-der;der];
             %
             obj.YYtot=[YYT;obj.YYD];
-            %build regression operators
-            obj.SVRLS=xLS(obj.sampling,obj.resp,obj.grad,obj.polyOrder,obj.missData);
             %initialize kernel matrix
             obj.kernelMatrix=KernMatrix(obj.kernelFun,obj.sampling,obj.getParaVal);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Bounds of the dual variables
+            obj.lb=zeros(2*ns,1);
+            cv0=c0l/ns*ones(2*ns,1);
+            obj.ub=cv0;
+            if obj.flagG
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %Conditioning data for  gradient-based approach
+                if numel(ckl)==1
+                    ck=ckl(:,ones(1,np));
+                end
+                obj.lb=[obj.lb;zeros(2*np*ns,1)];
+                ckV=ckl(:,ones(1,2*np*ns))/ns;
+                ckV=ckV(:);
+                obj.ub=[obj.ub;ckV];
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Build equality constraints
+            obj.Aeq=[ones(1,ns) -ones(1,ns)];
+            obj.beq=0;
+            if obj.flagG
+                obj.Aeq=[obj.Aeq zeros(1,2*ns*np)];
+            end
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Build inequality constraints
+            obj.Aineq=ones(1,2*ns);
+            obj.bineq=c0l*nuSVRl;
+            if dataIn.used.availGrad
+                obj.bineq=[obj.bineq;ck(:)*nuGSVRl];
+                obj.Aineq=[obj.Aineq zeros(1,2*ns*np);
+                    zeros(np,2*ns) repmat(eye(np),1,2*ns)];
+            end
         end
         
         %% Prepare data for building (deal with missing data)
@@ -683,7 +740,7 @@ classdef SVR < handle
             end
             %
             der=[];
-            if obj.flagGSVR
+            if obj.flagG
                 tmp=gradIn';
                 der=tmp(:);
                 %remove missing gradient(s)
@@ -779,7 +836,7 @@ classdef SVR < handle
             %% SVR/GSVR
             %%compute response provided by the metamodel at the non sample point
             %definition des dimensions of the matrix/vector for SVR or GSVR
-            if obj.flagGSVR
+            if obj.flagG
                 sizeMatVec=ns*(np+1);
             else
                 sizeMatVec=ns;
@@ -791,7 +848,7 @@ classdef SVR < handle
                 jr=zeros(sizeMatVec,np);
             end
             %SVR/GSVR
-            if obj.flagGSVR
+            if obj.flagG
                 if calcGrad  %if compute gradients
                     %evaluate kernel function
                     [ev,dev,ddev]=obj.kernelMatrix.buildVector(X,obj.paraVal);
@@ -840,62 +897,32 @@ classdef SVR < handle
             end
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %regression matrix at the non-sample points
-            if calcGrad
-                [ff,jf]=obj.SVRLS.buildMatrixNonS(X);
-            else
-                [ff]=obj.SVRLS.buildMatrixNonS(X);
-            end
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %evaluation of the surrogate model at point X
-            trZ=ff*obj.beta;
-            stoZ=rr'*obj.gamma;
-            Z=trZ+stoZ;
+            Z=obj.SVRmu+obj.alphaLambdaPM'*rr;
             if calcGrad
-                %%verif in 2D+
-                trGZ=jf*obj.beta;
-                stoGZ=jr'*obj.gamma;
-                GZ=trGZ+stoGZ;
+                GZ=obj.alphaLambdaPM'*jr;
             end
             %compute variance
             if nargout >=3
-                variance=obj.computeVariance(rr,ff);
+                variance=obj.computeVariance(rr);
             end
         end
         
         %% compute MSE
-        function variance=computeVariance(obj,rr,ff)
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %compute the prediction variance (MSE) (Lophaven, Nielsen & Sondergaard
-            %2004 / Marcelet 2008 / Chauvet 1999)
-            if ~dispWarning;warning off all;end
-            %depending on the factorization
-            switch obj.factKK
-                case 'QR'
-                    rrP=rr'*obj.PK;
-                    Qrr=obj.QtK*rr;
-                    u=obj.fcR*Qrr-ff';
-                    variance=obj.sig2*(1-(rrP/obj.RK)*Qrr+...
-                        u'/obj.fcCfct*u);
-                case 'LU'
-                    rrP=rr(obj.PK,:);
-                    Lrr=obj.LK\rrP;
-                    u=obj.fcU*Lrr-ff';
-                    variance=obj.sig2*(1-(rr'/obj.UK)*Lrr+...
-                        u'/obj.fcCfct*u);
-                case 'LL'
-                    Lrr=obj.LK\rr;
-                    u=obj.fcL*Lrr-ff';
-                    variance=obj.sig2*(1-(rr'/obj.LtK)*Lrr+...
-                        u'/obj.fcCfct*u);
-                otherwise
-                    rKrr=obj.KK \ rr;
-                    u=obj.fc*rKrr-ff';
-                    variance=obj.sig2*(1+u'/obj.fcCfct*u - rr'*rKrr);
-            end
-            if ~dispWarning;warning on all;end
+        function variance=computeVariance(obj,rr)
+            %intrinsic variance
+            c0=obj.c0;
+            e0=obj.e0;
+            varianceI=2/c0^+1/3*e0^2*(3+e0*c0)/(e0*c0+1);
+            
+            %reduction to the unbounded support vectors
+            %depending on gradient- or none-gradient-based GSVR
+            %remove bounded supports vectors
+            rrUSV=rr(obj.iXsvUSV(:));
+            
+            %variance due to the approximation
+            varianceS=1-rrUSV'/obj.PsiUSV*rrUSV;
+            variance=varianceI+varianceS;
         end
         
         %% Show information in the console
@@ -907,13 +934,11 @@ classdef SVR < handle
                     % Display Building information
                     textd='++ Type: ';
                     textf='';
-                    Gfprintf('\n%s\n',[textd 'Kriging ((G)SVR)' textf]);
+                    Gfprintf('\n%s\n',[textd 'Support Vector Regression ((G)SVR)' textf]);
                     %
                     Gfprintf('>>> Building : ');
-                    dispTxtOnOff(obj.flagGSVR,'GSVR','SVR',true);
+                    dispTxtOnOff(obj.flagG,'GSVR','SVR',true);
                     Gfprintf('>> Kernel function: %s\n',obj.kernelFun);
-                    Gfprintf('>> Deg : %i ',obj.polyOrder);
-                    dispTxtOnOff(obj.polyOrder==0,'(Ordinary)','(Universal)',true);
                     %
                     if dispTxtOnOff(obj.metaData.cv.on,'>> CV: ',[],true)
                         dispTxtOnOff(obj.metaData.cv.full,'>> Computation all CV criteria: ',[],true);
@@ -1002,5 +1027,20 @@ for itT=1:numel(tableA)
     end
     %
     Gfprintf(mask,tableA{itT},[' ' spaceTxt(ones(1,spaceA(itT))) ' '],tableB{itT});
+end
+end
+
+%specific execution of Quadratic Programming depending on Matlab/Octave
+function [solQP, fval, exitflag, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub)
+if isOctave
+[solQP, fval, info, lambda] = qp (zeros(size(CC)),PsiT,CC,Aeq,beq,lb,ub,[], AA, bb);
+exitflag=info.info;
+lmQP.ineqlin=lambda((end-numel(bb)+1):end);
+lmQP.eqlin=-lambda(1:numel(beq));
+lmQP.lower=lambda(numel(beq)+(1:numel(lb)));
+lmQP.upper=lambda(numel(beq)+numel(lb)+(1:numel(ub)));
+else
+opts = optimoptions('quadprog','Diagnostics','off','Display','none');
+[solQP,fval,exitflag,~,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
 end
 end

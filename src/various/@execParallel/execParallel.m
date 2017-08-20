@@ -23,30 +23,46 @@ classdef execParallel < handle
         workers=[];
         defaultParallel=[];
         currentParallel=[];
-        on=false;
+        on=true;
         numWorkers=[];
     end
     methods
         %constructor
-        function obj=execParallel(stateIn,numW)
+        function obj=execParallel(varargin)
             Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
             Gfprintf('Define Parallelism\n');
-            %depending of the input arguments
-            if nargin>0;obj.on=stateIn;end
-            if checkRun&&obj.on
+            intC=[];
+            if nargin>0
+                %scan input arguments
+                %boolean
+                boolC=cellfun(@islogical,varargin);
+                %integer
+                intC=cellfun(@isinteger,varargin);
+                %
+                if ~isempty(boolC)
+                    obj.on=varargin{boolC{1}};
+                end
+            end
+            %
+            %load current configuration
+            fl=false;
+            if nargin==0
+                fl=currentConf(obj);
+                %initialize value
+                if fl
+                    obj.numWorkers=obj.currentParallel.NumWorkers;
+                end
+            end
+            %
+            if checkRun&&obj.on&&~fl
                 %load default configuration
                 defaultConf(obj);
                 %initialize value
-                if nargin>1;obj.numWorkers=numW;else obj.numWorkers=obj.defaultParallel.NumWorkers;end
+                if ~isempty(intC);obj.numWorkers=varargin{intC(1)};else, obj.numWorkers=obj.defaultParallel.NumWorkers;end
                 %run in specific case
-                if nargin==0;start(obj);end
+                start(obj);
             end
-            %load current configuration
-            if nargin==0
-                currentConf(obj);
-                %initialize value
-                obj.numWorkers=obj.currentParallel.NumWorkers;
-            end
+            
         end
         %setter for on
         function set.on(obj,stateIn)
@@ -55,7 +71,7 @@ classdef execParallel < handle
                 %load default configuration
                 defaultConf(obj);
                 %set number of workers
-                obj.numWorkers=obj.defaultParallel.NumWorkers;
+                obj.defNumWorkers;
             end
             %set state of parallelism
             obj.on=stateIn;
@@ -63,18 +79,35 @@ classdef execParallel < handle
         %setter for numWorkers
         function set.numWorkers(obj,numReq)
             %check if the default configuration is already loaded
-            if isempty(obj.defaultParallel);defaultConf(obj);end
+            if isempty(obj.checkLoadDef);defaultConf(obj);end
             %check if the required number of workers is available
-            if numReq>obj.defaultParallel.NumWorkers
+            if numReq>obj.getDefNumWorkers
                 Gfprintf('Too large number of required workers\n');
             elseif numReq<=0
                 Gfprintf('Wrong number of required workers\n');
                 numReq=1;
             end
             %choose the number of worker
-            obj.numWorkers=min(numReq,obj.defaultParallel.NumWorkers);
-            Gfprintf(' >> Number of workers required/available: %i/%i\n',obj.numWorkers,obj.defaultParallel.NumWorkers);
+            obj.numWorkers=min(numReq,obj.getDefNumWorkers);
+            Gfprintf(' >> Number of workers required/available: %i/%i\n',obj.numWorkers,obj.getDefNumWorkers);
         end
+        %force number of workers to the default value
+        function defNumWorkers(obj)
+            obj.numWorkers=obj.defaultParallel.NumWorkers;
+        end
+        
+        %function for getting manually the number of workers
+        function nbW=getDefNumWorkers(obj)
+            nbW=obj.defaultParallel.NumWorkers;
+        end
+        
+        %function for checking if default configuration has been already
+        %loaded
+        function fl=checkLoadDef(obj)
+            fl=~isempty(obj.defaultParallel);
+        end
+        
+        
         %start parallel workers
         function start(obj)
             if obj.on
@@ -111,7 +144,8 @@ classdef execParallel < handle
             obj.defaultParallel=parcluster;
         end
         %load current configuration
-        function currentConf(obj)
+        function flag=currentConf(obj)
+            flag=false;
             p=[];
             if exist('gcp','file')
                 p=gcp('nocreate');
@@ -121,6 +155,7 @@ classdef execParallel < handle
                 obj.currentParallel.NumWorkers=0;
             else
                 obj.currentParallel=p;
+                flag=true;
             end
         end
     end

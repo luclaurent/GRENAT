@@ -19,16 +19,12 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Build a correlation (kernel) vector depending on the distance between existing sample points and specific points
-% INPUTS:
-% - samplePts: sample points on which the vector will be calculated
-% - paraV: values of the hyperparameters used for kernel computation
-% (optional)
-% OUTPUTS:
-% - V,Vd,Vdd: kernel vectors (V: responses, Vd: gradients and Vdd:
-% hessians)        
-
 %% force number of workers to the default value
-        function defNumWorkers(obj)
-            obj.numWorkers=obj.getDefNumWorkers;
-        end
+% INPUTS:
+% - none
+% OUTPUTS:
+% - none
+
+function defNumWorkers(obj)
+obj.numWorkers=obj.getDefNumWorkers;
+end

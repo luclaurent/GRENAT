@@ -1,4 +1,4 @@
-        
+
 %% Method of execParallel class
 % L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net
 
@@ -20,33 +20,30 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Build a correlation (kernel) vector depending on the distance between existing sample points and specific points
-% INPUTS:
-% - samplePts: sample points on which the vector will be calculated
-% - paraV: values of the hyperparameters used for kernel computation
-% (optional)
-% OUTPUTS:
-% - V,Vd,Vdd: kernel vectors (V: responses, Vd: gradients and Vdd:
-% hessians)        
 %% start parallel workers
-        function start(obj)
-            %load the current configuration
-            flagCurrent=obj.currentConf;
-            %if not defined fix the number of workers at the default value
-            if isempty(obj.numWorkers)
-                obj.defNumWorkers;
-            end
-            %if yes, check the size of it
-            if obj.currentParallel.NumWorkers~=obj.numWorkers&&flagCurrent
-                stop(obj);
-            end
-            %now start the cluster
-            try
-                parpool(obj.numWorkers);
-                Gfprintf(' >>> Parallel workers started <<<\n');
-                obj.on=true;
-            catch
-                Gfprintf('##>> Parallel starting issue <<##\n');
-                Gfprintf('##>> Start without parallelism <<##\n');
-            end
-        end
+% INPUTS:
+% - none
+% OUTPUTS:
+% - none
+
+function start(obj)
+%load the current configuration
+flagCurrent=obj.currentConf;
+%if not defined fix the number of workers at the default value
+if isempty(obj.numWorkers)
+    obj.defNumWorkers;
+end
+%if yes, check the size of it
+if obj.currentParallel.NumWorkers~=obj.numWorkers&&flagCurrent
+    stop(obj);
+end
+%now start the cluster
+try
+    parpool(obj.numWorkers);
+    Gfprintf(' >>> Parallel workers started <<<\n');
+    obj.on=true;
+catch
+    Gfprintf('##>> Parallel starting issue <<##\n');
+    Gfprintf('##>> Start without parallelism <<##\n');
+end
+end

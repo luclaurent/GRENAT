@@ -19,24 +19,20 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Build a correlation (kernel) vector depending on the distance between existing sample points and specific points
-% INPUTS:
-% - samplePts: sample points on which the vector will be calculated
-% - paraV: values of the hyperparameters used for kernel computation
-% (optional)
-% OUTPUTS:
-% - V,Vd,Vdd: kernel vectors (V: responses, Vd: gradients and Vdd:
-% hessians)                
-
 %% Stop parallel workers
-        function stop(obj)
-            %load current cluster
-            currentConf(obj);
-            %close it if available
-            if obj.currentParallel.NumWorkers>0
-                Gfprintf(' >>> Stop parallel workers <<<\n');
-                delete(gcp('nocreate'));
-            else
-                Gfprintf(' >>> Workers already stopped\n');
-            end
-        end
+% INPUTS:
+% - none
+% OUTPUTS:
+% - none
+
+function stop(obj)
+%load current cluster
+currentConf(obj);
+%close it if available
+if obj.currentParallel.NumWorkers>0
+    Gfprintf(' >>> Stop parallel workers <<<\n');
+    delete(gcp('nocreate'));
+else
+    Gfprintf(' >>> Workers already stopped\n');
+end
+end

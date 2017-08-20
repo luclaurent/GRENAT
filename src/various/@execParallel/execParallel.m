@@ -21,9 +21,9 @@
 classdef execParallel < handle
     properties
         defaultParallel=[];     % default configuration accepted by the computer
-        currentParallel=[];     % current configuration 
+        currentParallel=[];     % current configuration
         on=true;                % flag for running or not the pool
-        numWorkers=[];          % number of required workers 
+        numWorkers=[];          % number of required workers
     end
     methods
         %% Constructor
@@ -91,77 +91,22 @@ classdef execParallel < handle
             Gfprintf(' >> Number of workers required/available: %i/%i\n',obj.numWorkers,obj.getDefNumWorkers);
         end
         %% force number of workers to the default value
-        function defNumWorkers(obj)
-            obj.numWorkers=obj.getDefNumWorkers;
-        end
-        
+        defNumWorkers(obj);
         %% function for getting manually the number of workers
-        function nbW=getDefNumWorkers(obj)
-            nbW=obj.defaultParallel.NumWorkers;
-        end
-        
+        nbW=getDefNumWorkers(obj);
         %% Function for checking if default configuration has been already
         %loaded
-        function fl=checkLoadDef(obj)
-            fl=isempty(obj.defaultParallel);
-        end
-        
+        fl=checkLoadDef(obj);
         %% start parallel workers
-        function start(obj)
-            %load the current configuration
-            flagCurrent=obj.currentConf;
-            %if not defined fix the number of workers at the default value
-            if isempty(obj.numWorkers)
-                obj.defNumWorkers;
-            end
-            %if yes, check the size of it
-            if obj.currentParallel.NumWorkers~=obj.numWorkers&&flagCurrent
-                stop(obj);
-            end
-            %now start the cluster
-            try
-                parpool(obj.numWorkers);
-                Gfprintf(' >>> Parallel workers started <<<\n');
-                obj.on=true;
-            catch
-                Gfprintf('##>> Parallel starting issue <<##\n');
-                Gfprintf('##>> Start without parallelism <<##\n');
-            end
-        end
+        start(obj);
         %% Stop parallel workers
-        function stop(obj)
-            %load current cluster
-            currentConf(obj);
-            %close it if available
-            if obj.currentParallel.NumWorkers>0
-                Gfprintf(' >>> Stop parallel workers <<<\n');
-                delete(gcp('nocreate'));
-            else
-                Gfprintf(' >>> Workers already stopped\n');
-            end
-        end
+        stop(obj);
         %% Load default configuration
-        function defaultConf(obj)
-            obj.defaultParallel=parcluster;
-        end
+        defaultConf(obj);
         %% Load current configuration
-        function flag=currentConf(obj)
-            flag=false;
-            p=[];
-            if exist('gcp','file')
-                p=gcp('nocreate');
-            end
-            %none current parallel cluster defined
-            if isempty(p)
-                obj.currentParallel.NumWorkers=0;
-            else
-                obj.currentParallel=p;
-                flag=true;
-            end
-        end
+        flag=currentConf(obj);
     end
 end
-
 
 %%check if the parallel toolbox is available, if java is loaded and
 % if the function is executed in matlab
@@ -174,4 +119,3 @@ if ~javaOk;Gfprintf('>> Matlab started without java support (remove -nojvm flag)
 if ~matlabOk;Gfprintf('>> Code run with Octave (no parallelism)\n');end
 if ~parallelOk;Gfprintf('>> The Distibuted Computing Toolbox is unavailable\n');end
 end
-

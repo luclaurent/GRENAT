@@ -1,4 +1,4 @@
-        %% Method of execParallel class
+%% Method of execParallel class
 % L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
@@ -19,27 +19,23 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Build a correlation (kernel) vector depending on the distance between existing sample points and specific points
-% INPUTS:
-% - samplePts: sample points on which the vector will be calculated
-% - paraV: values of the hyperparameters used for kernel computation
-% (optional)
-% OUTPUTS:
-% - V,Vd,Vdd: kernel vectors (V: responses, Vd: gradients and Vdd:
-% hessians)        
-
 %% Load current configuration
-        function flag=currentConf(obj)
-            flag=false;
-            p=[];
-            if exist('gcp','file')
-                p=gcp('nocreate');
-            end
-            %none current parallel cluster defined
-            if isempty(p)
-                obj.currentParallel.NumWorkers=0;
-            else
-                obj.currentParallel=p;
-                flag=true;
-            end
-        end
+% INPUTS:
+% - none
+% OUTPUTS:
+% - flag: true if a current pool exists
+
+function flag=currentConf(obj)
+flag=false;
+p=[];
+if exist('gcp','file')
+    p=gcp('nocreate');
+end
+%none current parallel cluster defined
+if isempty(p)
+    obj.currentParallel.NumWorkers=0;
+else
+    obj.currentParallel=p;
+    flag=true;
+end
+end

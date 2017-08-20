@@ -1,4 +1,4 @@
-       %% Method of execParallel class
+%% Method of execParallel class
 % L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
@@ -19,16 +19,13 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Build a correlation (kernel) vector depending on the distance between existing sample points and specific points
+%% Load default configuration
 % INPUTS:
-% - samplePts: sample points on which the vector will be calculated
-% - paraV: values of the hyperparameters used for kernel computation
+% - none
 % (optional)
 % OUTPUTS:
-% - V,Vd,Vdd: kernel vectors (V: responses, Vd: gradients and Vdd:
-% hessians)        
+% - none
 
-%% Load default configuration
-        function defaultConf(obj)
-            obj.defaultParallel=parcluster;
-        end
+function defaultConf(obj)
+obj.defaultParallel=parcluster;
+end

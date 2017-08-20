@@ -20,7 +20,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-classdef SVR < handle
+classdef SVR  < handle
     properties
         sampling=[];        % sample points
         resp=[];            % sample responses
@@ -1197,7 +1197,7 @@ lmQP.eqlin=-lambda(1:numel(beq));
 lmQP.lower=lambda(numel(beq)+(1:numel(lb)));
 lmQP.upper=lambda(numel(beq)+numel(lb)+(1:numel(ub)));
 else
-opts = optimoptions('quadprog','Diagnostics','off','Display','final-detailed');
+opts = optimoptions('quadprog','Diagnostics','off','Display','none');
 [solQP,fval,exitflag,~,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
 end
 end

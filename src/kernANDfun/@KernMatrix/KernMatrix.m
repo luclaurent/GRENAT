@@ -215,7 +215,8 @@ classdef KernMatrix < handle
             dispTableTwoColumns(obj.listKernel,obj.listKernelTxt)
         end
         
-        
+        %add new sample points
+        flag=addSample(obj,newS)
     end
 end
 

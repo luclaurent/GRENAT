@@ -42,11 +42,21 @@ classdef SVR < handle
         fVal;               % value of the objective function obtained after solving QP
         exitFlag;           % status flag of the QP optimizer
         CC;                 % second member of QP
+        AineqR;              % inequality constraint matrix of QP
+        bineqR;              % inequality constraint vector of QP
+        AineqG;              % inequality constraint matrix of QP
+        bineqG;              % inequality constraint vector of QP
         Aineq;              % inequality constraint matrix of QP
         bineq;              % inequality constraint vector of QP
+        AeqR;                % equality constraint matrix of QP
+        AeqG;                % equality constraint matrix of QP
         Aeq;                % equality constraint matrix of QP
         beq;                % equality vector of QP
+        lbR;                 % lower bound of QP variables
+        lbG;                 % lower bound of QP variables
         lb;                 % lower bound of QP variables
+        ubR;                 % upper bound of QP variables
+        ubG;                 % upper bound of QP variables
         ub;                 % upper bound of QP variables
         %
         alphaRAW;           % RAW alpha variables solution of QP (SVR)
@@ -105,7 +115,6 @@ classdef SVR < handle
         requireCompute=true;   % flag used for establishing the status of computing
     end
     properties (Dependent,Access = private)
-        NnS;               % number of new sample points
         nS;                 % number of sample points
         nP;               % dimension of the problem
         parallelOk=false;    % flag for using parallel version
@@ -119,14 +128,13 @@ classdef SVR < handle
     
     methods
         %% Constructor
-        function obj=SVR(samplingIn,respIn,gradIn,orderIn,kernIn,varargin)
+        function obj=SVR(samplingIn,respIn,gradIn,kernIn,varargin)
             %load data
             obj.sampling=samplingIn;
             obj.resp=respIn;
             if nargin>2;obj.grad=gradIn;end
-            if nargin>3;obj.polyOrder=orderIn;end
-            if nargin>4;obj.kernelFun=kernIn;end
-            if nargin>5;obj.manageOpt(varargin);end
+            if nargin>3;obj.kernelFun=kernIn;end
+            if nargin>4;obj.manageOpt(varargin);end
             %if everything is ok then train
             obj.train();
         end
@@ -183,7 +191,7 @@ classdef SVR < handle
         function tt=get.typeLOO(obj)
             typeG=obj.metaData.estim.type;
             tt='mse';   %default value
-            if ~isempty(regexp(typeG,'cv','ONCE'))
+            if ~isempty(regexp(typeG,'cv','ONCE'))c
                 if numel(typeG)>2
                     tt=typeG(3:end);
                 end
@@ -276,6 +284,8 @@ classdef SVR < handle
 
         %% core of SVR computation using no factorization
         function coreClassical(obj)
+            %coefficients for detecting Support vector
+            epsM=eps;
             %load data
             ns=obj.nS;
             np=obj.nP;
@@ -368,7 +378,7 @@ classdef SVR < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %Build matrices
             %remove bounded supports vectors
-            obj.PsiUSV=PsiR(obj.iXsvUSV(:),obj.iXsvUSV(:));
+            obj.PsiUSV=obj.K(obj.iXsvUSV(:),obj.iXsvUSV(:));
             obj.KUSV=[obj.PsiUSV ones(obj.nbUSV,1);ones(1,obj.nbUSV) 0];
             obj.iKUSV=inv(obj.KUSV);
         end
@@ -393,7 +403,25 @@ classdef SVR < handle
         end
         
         %% Compute the the Span Bound of the LOO error for SVR/GSVR
-        function spanBound=sb(obj)
+        %from Vapnik & Chapelle 2000 / Chapelle, Vapnik, Bousquet & S. Mukherjee 2002/Chang & Lin 2005
+        function spanBound=sb(obj,paraValIn,type)
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %various situations
+            modFinal=true;
+            if nargin==3
+                switch type
+                    case 'final'    %final mode (compute variances)
+                        modFinal=true;
+                    otherwise
+                        modFinal=false;
+                end
+            end
+            if modFinal;countTime=mesuTime;end
+            %%
+            if nargin==1;paraValIn=obj.paraVal;end
+            %compute matrices
+            obj.compute(paraValIn);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %size of the kernel matrix
@@ -416,6 +444,8 @@ classdef SVR < handle
                 *(St2b'*obj.FullAlphaLambdaPP...
                 +sum(obj.xiTau))...
                 +obj.metaData.e0;
+            
+            if modFinal;countTime.stop;end
         end
         
         %% Compute Cross-Validation
@@ -445,7 +475,7 @@ classdef SVR < handle
             %%% Adaptation of the Rippa's method (Rippa 1999/Fasshauer 2007) form M. Bompard (Bompard 2011)
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %coefficient of (co)Kriging
+            %coefficient of (G)SVR
             coefSVR=obj.gamma;
             %partial extraction of the diagonal of the inverse of the kernel matrix
             switch obj.factK
@@ -686,52 +716,100 @@ classdef SVR < handle
                     der=obj.missData.removeGV(der);
                 end
             end
-            obj.YY=[-YYT;YYT];
-            obj.YYD=[-der;der];
+            obj.YY=YYT;
+            obj.YYD=der;
             %
-            obj.YYtot=[YYT;obj.YYD];
+            obj.YYtot=[YYT;der];
+            obj.CC=[-YYT;YYT;-der;der];
             %initialize kernel matrix
             obj.kernelMatrix=KernMatrix(obj.kernelFun,obj.sampling,obj.getParaVal);
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %Bounds of the dual variables
-            obj.lb=zeros(2*ns,1);
-            cv0=c0l/ns*ones(2*ns,1);
-            obj.ub=cv0;
+            %Bounds of the dual variables (R: responses and G: gradients)
+            obj.lbR=zeros(ns,1);
+            cv0=c0l/ns*ones(ns,1);
+            obj.ubR=cv0;
+            if obj.checkMiss
+                obj.ubR=obj.missData.removeRV(obj.ubR);
+                obj.lbR=obj.missData.removeRV(obj.lbR);
+            end
+            %
+            obj.lbG=[];
+            obj.ubG=[];
             if obj.flagG
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %Conditioning data for  gradient-based approach
+                %Conditioning data for gradient-based approach
                 if numel(ckl)==1
                     ck=ckl(:,ones(1,np));
                 end
-                obj.lb=[obj.lb;zeros(2*np*ns,1)];
-                ckV=ckl(:,ones(1,2*np*ns))/ns;
-                ckV=ckV(:);
-                obj.ub=[obj.ub;ckV];
+                obj.lbG=zeros(np*ns,1);
+                ckV=ckl(:,ones(1,np*ns))/ns;
+                obj.ubG=ckV(:);
+                %
+                if obj.checkMiss
+                    obj.ubG=obj.missData.removeGV(obj.ubG);
+                    obj.lbG=obj.missData.removeGV(obj.lbG);
+                end
             end
+            obj.ub=[obj.ubR;obj.ubR;obj.ubG;obj.ubG];
+            obj.lb=[obj.lbR;obj.lbR;obj.lbG;obj.lbG];
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %Build equality constraints
-            obj.Aeq=[ones(1,ns) -ones(1,ns)];
-            obj.beq=0;
-            if obj.flagG
-                obj.Aeq=[obj.Aeq zeros(1,2*ns*np)];
+            obj.AeqR=ones(1,ns);
+            if obj.checkMiss
+                obj.AeqR=obj.missData.removeRV(obj.AeqR');
+                obj.AeqR=obj.AeqR';
             end
+            obj.beq=0;
+            obj.AeqG=[];
+            if obj.flagG
+                obj.AeqG=zeros(1,ns*np);
+                if obj.checkMiss
+                    obj.AeqG=obj.missData.removeGV(obj.AeqG');
+                    obj.AeqG=obj.AeqG';
+                end
+            end
+            obj.Aeq=[obj.AeqR -obj.AeqR obj.AeqG -obj.AeqG];
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %Build inequality constraints
-            obj.Aineq=ones(1,2*ns);
-            obj.bineq=c0l*nuSVRl;
-            if dataIn.used.availGrad
-                obj.bineq=[obj.bineq;ck(:)*nuGSVRl];
-                obj.Aineq=[obj.Aineq zeros(1,2*ns*np);
-                    zeros(np,2*ns) repmat(eye(np),1,2*ns)];
+            obj.AineqR=ones(1,ns);
+            if obj.checkMiss
+                obj.AineqR=obj.missData.removeRV(obj.AineqR');
+                obj.AineqR=obj.AineqR';
             end
+            obj.bineqR=c0l*nuSVRl;
+            obj.bineqG=[];
+            obj.AineqG=[];
+            if obj.flagG
+                obj.bineqG=ck(:)*nuGSVRl;
+                obj.AineqG=repmat(eye(np),1,ns);
+                %
+                if obj.checkMiss
+                    obj.AineqG=obj.missData.removeGV(obj.AineqG');
+                    obj.AineqG=obj.AineqG';
+                end
+            end
+            if ~isempty(obj.AineqG)
+                sizA=size(obj.AineqG);
+                obj.Aineq=[obj.AineqR obj.AineqR zeros(1,2*sizA(2));
+                    zeros(sizA(1),2*ns) obj.AineqG obj.AineqG];
+            else
+                obj.Aineq=[obj.AineqR obj.AineqR];
+            end
+            obj.bineq=[obj.bineqR;obj.bineqG];
         end
         
         %% Prepare data for building (deal with missing data)
         function updateData(obj,samplingIn,respIn,gradIn)
+            %number of new data
+            NnS=numel(respIn);
+            %load data
+            np=obj.nP;
+            c0l=obj.metaData.c0;
+            ckl=obj.metaData.ck;
             %Responses and gradients at sample points
             YYT=respIn;
             %remove missing response(s)
@@ -748,14 +826,94 @@ classdef SVR < handle
                     der=obj.missData.removeGV(der,'n');
                 end
             end
-            obj.YY=[obj.YY;YYT];
-            obj.YYD=[obj.YYD;der];
+            obj.YY=[obj.YY;-YYT];
+            obj.YYD=[obj.YYD;-der];
             %
             obj.YYtot=[obj.YY;obj.YYD];
-            %update regressor operator
-            obj.SVRLS.update(samplingIn,respIn,gradIn,obj.missData);
+            obj.CC=[-obj.YY;obj.YY;-obj.YYD;obj.YYD];
             %initialize kernel matrix
             obj.kernelMatrix.updateMatrix(samplingIn);
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Bounds of the dual variables (R: responses and G: gradients)
+            nlbR=zeros(NnS,1);
+            cv0=c0l/obj.nS*ones(NnS,1);
+            obj.ubR=obj.ubR*(obj.nS-NnS)/obj.nS;
+            if obj.checkMiss
+                nlbR=obj.missData.removeRV(nlbR,'n');
+                cv0=obj.missData.removeRV(cv0,'n');
+            end
+            obj.lbR=[obj.lbR;nlbR];
+            obj.ubR=[obj.ubR;cv0];
+            %
+            obj.lbG=[];
+            obj.ubG=[];
+            if obj.flagG
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %Conditioning data for gradient-based approach
+                if numel(ckl)==1
+                    ckl=ckl(:,ones(1,np));
+                end
+                nlbG=zeros(np*NnS,1);
+                ckV=ckl(:,ones(1,np*NnS))/NnS;
+                nubG=ckV(:);
+                obj.ubG=obj.ubG*(obj.nS-NnS)/obj.nS;
+                %
+                if obj.checkMiss
+                    nubG=obj.missData.removeGV(nubG,'n');
+                    nlbG=obj.missData.removeGV(nlbG,'n');
+                end
+                obj.lbG=[obj.lbG;nlbG];
+                obj.ubG=[obj.ubG;nubG];
+            end
+            obj.ub=[obj.ubR;obj.ubR;obj.ubG;obj.ubG];
+            obj.lb=[obj.lbR;obj.lbR;obj.lbG;obj.lbG];
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Build equality constraints
+            nAeqR=ones(1,NnS);
+            if obj.checkMiss
+                nAeqR=obj.missData.removeRV(nAeqR','n');
+                nAeqR=nAeqR';
+            end
+            %
+            obj.AeqR=[obj.AeqR nAeqR];
+            if obj.flagG
+                nAeqG=zeros(1,NnS*np);
+                if obj.checkMiss
+                    nAeqG=obj.missData.removeGV(nAeqG','n');
+                    nAeqG=nAeqG';
+                end
+                obj.AeqG=[obj.AeqG nAeqG];
+            end
+            obj.Aeq=[obj.AeqR -obj.AeqR obj.AeqG -obj.AeqG];
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %Build inequality constraints
+            nAineqR=ones(1,NnS);
+            if obj.checkMiss
+                nAineqR=obj.missData.removeRV(nAineqR','n');
+                nAineqR=nAineqR';
+            end
+            %
+            obj.AineqR=[obj.AineqR nAineqR];
+            if obj.flagG
+                nAineqG=repmat(eye(np),1,NnS);
+                %
+                if obj.checkMiss
+                    nAineqG=obj.missData.removeGV(nAineqG','n');
+                    nAineqG=nAineqG';
+                end
+                obj.AineqG=[obj.AineqG nAineqG];
+            end
+            if ~isempty(obj.AineqG)
+                sizA=size(obj.AineqG);
+                obj.Aineq=[obj.AineqR obj.AineqR zeros(1,2*sizA(2));
+                    zeros(sizA(1),2*obj.nS) obj.AineqG obj.AineqG];
+            else
+                obj.Aineq=[obj.AineqR obj.AineqR];
+            end
         end
         
         %% Building/training metamodel
@@ -774,10 +932,10 @@ classdef SVR < handle
             %
             obj.showInfo('end');
             %
-            obj.cv();
+            %obj.cv();
             %
             if obj.metaData.cvDisp
-                obj.showCV();
+            %    obj.showCV();
             end
         end
         
@@ -796,10 +954,10 @@ classdef SVR < handle
             %
             obj.showInfo('end');
             %
-            obj.cv();
+%            obj.cv();
             %
             if obj.metaData.cvDisp
-                obj.showCV();
+ %               obj.showCV();
             end
         end
         
@@ -816,7 +974,6 @@ classdef SVR < handle
             if nargin<4;newGrad=[];end
             %update the data and compute
             obj.trainUpdate(newSample,newResp,newGrad);
-            obj.showInfo('end');
         end
         
         %% Evaluation of the metamodel
@@ -898,9 +1055,9 @@ classdef SVR < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             %evaluation of the surrogate model at point X
-            Z=obj.SVRmu+obj.alphaLambdaPM'*rr;
+            Z=obj.SVRmu+obj.FullAlphaLambdaPM'*rr;
             if calcGrad
-                GZ=obj.alphaLambdaPM'*jr;
+                GZ=obj.FullAlphaLambdaPM'*jr;
             end
             %compute variance
             if nargout >=3
@@ -1033,14 +1190,14 @@ end
 %specific execution of Quadratic Programming depending on Matlab/Octave
 function [solQP, fval, exitflag, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub)
 if isOctave
-[solQP, fval, info, lambda] = qp (zeros(size(CC)),PsiT,CC,Aeq,beq,lb,ub,[], AA, bb);
+[solQP, fval, info, lambda] = qp(zeros(size(CC)),PsiT,CC,Aeq,beq,lb,ub,[], AA, bb);
 exitflag=info.info;
 lmQP.ineqlin=lambda((end-numel(bb)+1):end);
 lmQP.eqlin=-lambda(1:numel(beq));
 lmQP.lower=lambda(numel(beq)+(1:numel(lb)));
 lmQP.upper=lambda(numel(beq)+numel(lb)+(1:numel(ub)));
 else
-opts = optimoptions('quadprog','Diagnostics','off','Display','none');
+opts = optimoptions('quadprog','Diagnostics','off','Display','final-detailed');
 [solQP,fval,exitflag,~,lmQP]=quadprog(PsiT,CC,AA,bb,Aeq,beq,lb,ub,[],opts);
 end
 end

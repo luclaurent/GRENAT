@@ -214,6 +214,8 @@ classdef KernMatrix < handle
             fprintf('List of available kernel functions\n');
             dispTableTwoColumns(obj.listKernel,obj.listKernelTxt)
         end
+        
+        
     end
 end
 

@@ -13,5 +13,4 @@ if nargin>4;obj.missData=newMissData;end
 if nargin<4;newGrad=[];end
 %update the data and compute
 obj.trainUpdate(newSample,newResp,newGrad);
-obj.showInfo('end');
 end

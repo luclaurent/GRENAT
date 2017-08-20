@@ -3,14 +3,14 @@ function [V,Vd,Vdd]=buildVector(obj,samplePts,paraV)
 %changing the values of the internal parameters
 if nargin>1;obj.paraVal=paraV;end
 %depending on the number of output arguments
-if nargout>1||obj.forceGrad;obj.computeD=true;end
+if nargout>1;computeGrad=true;end
 %compute distance
 distS=repmat(samplePts,obj.nS,1)-obj.sampling;
 %
 fctK=obj.fctKern;
 pVl=obj.paraVal;
 %if derivatives required
-if obj.computeD
+if computeGrad
     %if parallel workers are available
     if obj.parallelOk
                 %                         parfor ii=1:ns

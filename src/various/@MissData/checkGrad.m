@@ -9,6 +9,9 @@ if nargin>1
     runGrad=~isempty(gradCheck);
     
 end
+%
+iX=[];
+%
 if runGrad
     %classical matrix of gradients
     obj.maskGrad=isnan(gradCheck);

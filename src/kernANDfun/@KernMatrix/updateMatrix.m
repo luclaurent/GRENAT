@@ -7,7 +7,7 @@ if obj.requireRun
     obj.requireUpdate=false;
     obj.sampling=[obj.sampling;obj.newSample];
     obj.newSample=[];
-    if nargout==1
+    if nargout==1||~obj.computeD
         KK=obj.buildMatrix;
     else
         [KK,KKd,KKdd]=obj.buildMatrix;

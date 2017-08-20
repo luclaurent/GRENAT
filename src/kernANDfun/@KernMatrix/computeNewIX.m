@@ -44,6 +44,9 @@ if obj.computeD
             precI=iteI(end);
         end
     end
+    %store variables
+    iX.matrixAb=iXmatrixAb;
+    iX.matrixI=iXmatrixI;
 end
 %table of indices for inter-lenghts  (1), responses (1)
 iXsamplingNO=allcomb(1:newNs,1:oldNs);      %old and new
@@ -58,8 +61,6 @@ iX.iXsamplingNO=iXsamplingNO;
 iX.iXsamplingN=iXsamplingN;
 iX.matrixNO=iXmatrixNO;
 iX.matrixN=iXmatrixN;
-%iXmatrixAb
-iX.matrixAb=iXmatrixAb;
-iX.matrixI=iXmatrixI;
+%
 obj.NiX=iX;
 end

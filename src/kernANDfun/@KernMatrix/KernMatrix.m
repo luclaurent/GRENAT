@@ -61,7 +61,12 @@ classdef KernMatrix < handle
     end
     %
     methods
-        %%constructor
+        %% Constructor
+        % fct: chosen kernel function
+        % sampling: array of sample points
+        % val: array of value of the hyperparameters of the kernel function
+        % parallel: execParallel class
+        
         function obj=KernMatrix(fct,sampling,val,parallel)
             %load arguments
             obj.fctKern=fct;

@@ -63,6 +63,9 @@ classdef MissData < handle
     end
     methods
         %% constructor
+        % samplingIn: array of sample points
+        % respIn: vector of responses
+        % gradIn: array of gradients (optional)
         function obj=MissData(samplingIn,respIn,gradIn)
             %initialize class
             obj.sampling=samplingIn;
@@ -73,6 +76,7 @@ classdef MissData < handle
             %
             obj.check();
         end
+        
         %% getters
         function n=get.nP(obj)
             n=size(obj.sampling,2);
@@ -104,18 +108,33 @@ classdef MissData < handle
             f=(obj.onNewResp||obj.onNewGrad);
         end
         
-        %% add sampling, responses and gradients
-        function addSampling(obj,in)
-            obj.sampling=[obj.sampling;in];
-            obj.NnS=size(in,1);
-        end
-        function addResp(obj,in)
-            obj.resp=[obj.resp;in];
-            obj.newResp=obj.checkResp(in);
-        end
-        function addGrad(obj,in)
-            obj.grad=[obj.grad;in];
-            obj.newGrad=obj.checkGrad(in);
-        end
+        %% Add new data to the database
+        addData(obj,samplingIn,respIn,gradIn);
+        %% Add new gradients to the database
+        addGrad(obj,in);
+        %% Add new responses to the database
+        addResp(obj,in);
+        %% Add new sample points to the database
+        addSampling(obj,in);
+        %% Check database and display
+        check(obj);
+        %% Check missing data in gradients (specified in input as NaN as component)
+        iX=checkGrad(obj,gradIn);
+        %% Check missing data in responses (specified in input as NaN)
+        iX=checkResp(obj,respIn);
+        %% Remove missing data in matrix (gradients)
+        VV=removeGM(obj,V,type);
+        %% Remove missing data in matrix (responses+gradients)
+        VV=removeGRM(obj,V,type);
+        %% Remove missing data in vector (responses+gradients)
+        VV=removeGRV(obj,V,type);
+        %% Remove missing data in vector (gradients)
+        VV=removeGV(obj,V,type);
+        %% Remove missing data in matrix (responses)
+        VV=removeRM(obj,V,type);
+        %% Remove missing data in vector (responses)
+        VV=removeRV(obj,V,type);
+        %% Display information concerning missing data
+        show(obj);
     end
 end

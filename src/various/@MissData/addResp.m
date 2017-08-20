@@ -19,34 +19,13 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Remove missing data in vector (responses)
+%% Add new responses to the database
 % INPUTS:
-% - V: input vector 
-% - type: type of removing ('':  default, 'f': force to remove for any size 
-% of the input vector, 'n': remove data only for new added data)
+% - in: vector of responses
 % OUTPUTS:
-% - VV: output vector after removing data
+% - none
 
-function VV=removeRV(obj,V,type)
-%size of the input vector
-sV=size(V);
-%deal with no force parameter
-if nargin<3;type='';end
-%deal with different options (in type)
-force=false;
-sizS=obj.nS;
-maskC=obj.maskResp;
-switch type
-    case {'f','F','force','Force','FORCE'}
-        force=true;
-    case {'n','N','new','New','NEW'}
-        sizS=obj.NnS;
-        maskC=obj.newResp.maskResp;
-end
-if sV(1)==sizS||force
-    VV=V(~maskC,:);
-else
-    VV=V;
-    Gfprintf(' ++ Wrong size of the input vector\n ++ |%i, expected: %i| (or use force)\n',sV(1),sizS);
-end
+function addResp(obj,in)
+obj.resp=[obj.resp;in];
+obj.newResp=obj.checkResp(in);
 end

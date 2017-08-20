@@ -3,7 +3,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -20,51 +20,50 @@
 
 classdef execParallel < handle
     properties
-        workers=[];
-        defaultParallel=[];
-        currentParallel=[];
-        on=true;
-        numWorkers=[];
+        defaultParallel=[];     % default configuration accepted by the computer
+        currentParallel=[];     % current configuration 
+        on=true;                % flag for running or not the pool
+        numWorkers=[];          % number of required workers 
     end
     methods
-        %constructor
+        %% Constructor
+        % INPUTS (in any order and optional)
+        % - a boolean value for starting or not directly the parallel pool
+        % - an integer for specifying the number of required workers
         function obj=execParallel(varargin)
             Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            Gfprintf('Define Parallelism\n');
-            intC=[];
-            if nargin>0
-                %scan input arguments
-                %boolean
-                boolC=cellfun(@islogical,varargin);
-                %integer
-                intC=cellfun(@isinteger,varargin);
-                %
-                if ~isempty(boolC)
-                    obj.on=varargin{boolC{1}};
+            if checkRun
+                Gfprintf('Define Parallelism\n');
+                %load the default configuration
+                obj.defaultConf;
+                % deal with input arguments
+                if nargin>0
+                    %scan input arguments
+                    %boolean
+                    boolC=cellfun(@islogical,varargin);
+                    %integer
+                    intC=cellfun(@isnumeric,varargin);
+                    %
+                    if any(boolC)
+                        obj.on=varargin{boolC};
+                    end
+                    %initialize value
+                    if any(intC)
+                        obj.numWorkers=varargin{intC};
+                    end
                 end
-            end
-            %
-            %load current configuration
-            fl=false;
-            if nargin==0
-                fl=currentConf(obj);
-                %initialize value
-                if fl
-                    obj.numWorkers=obj.currentParallel.NumWorkers;
+                % start or not
+                if obj.on
+                    obj.start;
+                else
+                    obj.stop;
                 end
+            else
+                %kill the object because the initialization is not possible
+                delete(obj);
             end
-            %
-            if checkRun&&obj.on&&~fl
-                %load default configuration
-                defaultConf(obj);
-                %initialize value
-                if ~isempty(intC);obj.numWorkers=varargin{intC(1)};else, obj.numWorkers=obj.defaultParallel.NumWorkers;end
-                %run in specific case
-                start(obj);
-            end
-            
         end
-        %setter for on
+        %% setter for on
         function set.on(obj,stateIn)
             %check previous state and new required state
             if ~obj.on&&stateIn
@@ -76,10 +75,10 @@ classdef execParallel < handle
             %set state of parallelism
             obj.on=stateIn;
         end
-        %setter for numWorkers
+        %% setter for numWorkers
         function set.numWorkers(obj,numReq)
             %check if the default configuration is already loaded
-            if isempty(obj.checkLoadDef);defaultConf(obj);end
+            if obj.checkLoadDef;defaultConf(obj);end
             %check if the required number of workers is available
             if numReq>obj.getDefNumWorkers
                 Gfprintf('Too large number of required workers\n');
@@ -91,59 +90,61 @@ classdef execParallel < handle
             obj.numWorkers=min(numReq,obj.getDefNumWorkers);
             Gfprintf(' >> Number of workers required/available: %i/%i\n',obj.numWorkers,obj.getDefNumWorkers);
         end
-        %force number of workers to the default value
+        %% force number of workers to the default value
         function defNumWorkers(obj)
-            obj.numWorkers=obj.defaultParallel.NumWorkers;
+            obj.numWorkers=obj.getDefNumWorkers;
         end
         
-        %function for getting manually the number of workers
+        %% function for getting manually the number of workers
         function nbW=getDefNumWorkers(obj)
             nbW=obj.defaultParallel.NumWorkers;
         end
         
-        %function for checking if default configuration has been already
+        %% Function for checking if default configuration has been already
         %loaded
         function fl=checkLoadDef(obj)
-            fl=~isempty(obj.defaultParallel);
+            fl=isempty(obj.defaultParallel);
         end
         
-        
-        %start parallel workers
+        %% start parallel workers
         function start(obj)
-            if obj.on
-                %check if a cluster is already running
-                currentConf(obj);
-                %if yes, check the size of it
-                if obj.currentParallel.NumWorkers~=obj.numWorkers
-                    stop(obj);
-                end
-                %now start the cluster
-                try
-                    parpool(obj.numWorkers);
-                    Gfprintf(' >>> Parallel workers started <<<\n');
-                catch
-                    Gfprintf('##>> Parallel starting issue <<##\n');
-                    Gfprintf('##>> Start without parallelism <<##\n');
-                end
+            %load the current configuration
+            flagCurrent=obj.currentConf;
+            %if not defined fix the number of workers at the default value
+            if isempty(obj.numWorkers)
+                obj.defNumWorkers;
+            end
+            %if yes, check the size of it
+            if obj.currentParallel.NumWorkers~=obj.numWorkers&&flagCurrent
+                stop(obj);
+            end
+            %now start the cluster
+            try
+                parpool(obj.numWorkers);
+                Gfprintf(' >>> Parallel workers started <<<\n');
+                obj.on=true;
+            catch
+                Gfprintf('##>> Parallel starting issue <<##\n');
+                Gfprintf('##>> Start without parallelism <<##\n');
             end
         end
-        %stop parallel workers
+        %% Stop parallel workers
         function stop(obj)
             %load current cluster
             currentConf(obj);
             %close it if available
-            if obj.on&&obj.currentParallel.NumWorkers>0
+            if obj.currentParallel.NumWorkers>0
                 Gfprintf(' >>> Stop parallel workers <<<\n');
                 delete(gcp('nocreate'));
             else
                 Gfprintf(' >>> Workers already stopped\n');
             end
         end
-        %load default configuration
+        %% Load default configuration
         function defaultConf(obj)
             obj.defaultParallel=parcluster;
         end
-        %load current configuration
+        %% Load current configuration
         function flag=currentConf(obj)
             flag=false;
             p=[];
@@ -162,8 +163,8 @@ classdef execParallel < handle
 end
 
 
-%check if the parallel toolbox is available, if java is loaded and
-%if the function is executed in matlab
+%%check if the parallel toolbox is available, if java is loaded and
+% if the function is executed in matlab
 function runOk=checkRun()
 javaOk=usejava('jvm');
 matlabOk=~isOctave;

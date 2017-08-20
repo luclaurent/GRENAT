@@ -4,7 +4,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ classdef KernMatrix < handle
             obj.sampling=sampling;
             if nargin>3;obj.parallelW=parallel;end
         end
-        %% setter and getter
+        %% setters and getters
         %setter for kernel function
         function set.fctKern(obj,fct)
             checkKernel=any(ismember(obj.loadKern,fct));
@@ -112,7 +112,6 @@ classdef KernMatrix < handle
             end
             obj.forceGrad=boolIn;
         end
-        
         %getter for the number of acceptable internal parameters
         function nb=get.nbParaOk(obj)
             nb=obj.computeNbPara;
@@ -133,89 +132,45 @@ classdef KernMatrix < handle
         function pO=get.parallelOk(obj)
             pO=(obj.parallelW>1);
         end
+        %%
         
+        %% other methods %%
         
-        %% other methods
-        %initialize all flag
-        function init(obj)
-            obj.requireRun=true;     % flag if a full building is required
-            obj.requireUpdate=false; % flag if an update is required
-            obj.requireIndices=true; % flag if an update of indices is required
-        end
-        %check matrices
-        function f=checkMatrix(obj)
-            %check symetry
-            fS=all(all(obj.KK==obj.KK'));
-            %check eye
-            fE=all(diag(obj.KK)==1);
-            %check the adding process
-            KKold=obj.KK;
-            obj.sampling=[obj.sampling;obj.newSample];
-            obj.requireRun=true;
-            obj.requireIndices=true;
-            KKnew=obj.buildMatrix();
-            fA=all(all(KKold==KKnew));
-            %
-            f=(fS&&fE&&fA);
-            %
-            fprintf('Matrix ');
-            if f; fprintf('OK'); else, fprintf('NOK');end
-            fprintf('\n');
-            if ~f;keyboard;end
-        end
-        %load list Kernel functions
-        function l=loadKern(obj)
-            l=obj.listKernel;
-        end
-        %new run required
-        function fRun(obj);obj.requireRun=true;end
-        %force gradients matrices computation
-        function fGrad(obj);obj.forceGrad=true;end
-        %force indices computation
-        function fIX(obj);obj.requireIndices=true;end
-        %compute number of required internal parameters
-        function nbP=computeNbPara(obj)
-            switch obj.fctKern
-                case {'sexp','matern32','matern52'}
-                    nbP=unique([1,obj.nP]);
-                case {'matern'}
-                    nbP=[1,obj.nP]+1;
-            end
-        end
-        %
-        %manual getters for matrices
-        function K=getKK(obj)
-            if isempty(obj.KK)||obj.requireRun||obj.requireUpdate
-                K=obj.updateMatrix();
-            else
-                K=obj.KK;
-            end
-        end
-        function K=getKKd(obj)
-            obj.fGrad;
-            obj.fIX;
-            if isempty(obj.KKd)||obj.requireRun||obj.requireUpdate
-                [~,K,~]=obj.updateMatrix();
-            else
-                K=obj.KKd;
-            end
-        end
-        function K=getKKdd(obj)
-            obj.fGrad;
-            obj.fIX;
-            if isempty(obj.KKd)||obj.requireRun||obj.requireUpdate
-                [~,~,K]=obj.updateMatrix();
-            else
-                K=obj.KKdd;
-            end
-        end
-        %show the list of available kernel functions
-        function showKernel(obj)
-            fprintf('List of available kernel functions\n');
-            dispTableTwoColumns(obj.listKernel,obj.listKernelTxt)
-        end
-        
-        % 
-        flag=addSample(obj,newS)
+        %% initialize all flag
+        init(obj);
+        %% Check matrices
+        f=checkMatrix(obj);
+        %% Load list Kernel functions
+        l=loadKern(obj);
+        %% New run required
+        fRun(obj);
+        %% Force gradients matrices computation
+        fGrad(obj);
+        %% Force indices computation
+        fIX(obj);
+        %% Compute number of required internal parameters
+        nbP=computeNbPara(obj);
+        %% Manual getters for matrices
+        K=getKK(obj);
+        K=getKKd(obj);
+        K=getKKdd(obj);
+        %% Show the list of available kernel functions
+        showKernel(obj);
+        %% Add new sample points
+        flag=addSample(obj,newS);
+        %% Build the kernel matrices
+        [KK,KKd,KKdd]=buildMatrix(obj,paraV);
+        %% Build a correlation (kernel) vector depending on the distance between existing sample points and specific points
+        [V,Vd,Vdd]=buildVector(obj,samplePts,paraV)
+        %% Compute inter-distances between sample points
+        distC=computeDist(obj);
+        %% Compute structure of indices for building the kernel matrices
+        iX=computeIX(obj);
+        %% Compute new inter-points distances (since new sample points are added)
+        [distN,distNO]=computeNewDist(obj);
+        %% Compute new structure of indices (after adding new sample points)
+        iX=computeNewIX(obj)
+        %% Update existing kernel matrices
+        [KK,KKd,KKdd]=updateMatrix(obj,newS)
     end
 end

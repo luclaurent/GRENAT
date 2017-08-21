@@ -1,5 +1,5 @@
-%% Method of KernMatrix class
-% L. LAURENT -- 18/07/2017 -- luc.laurent@lecnam.net
+%% Method of KRG class
+% L. LAURENT -- 07/08/2017 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -19,17 +19,19 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Compute number of required internal parameters
+%% Function for dealing with the the input arguments of the class
 % INPUTS:
-% - none
+% - optiIn: object of class MissData or initMeta
 % OUTPUTS:
-% - nbP: number of required hyperparameters for the chosen kernel function
+% - none
 
-function nbP=computeNbPara(obj)
-switch obj.fctKern
-    case {'sexp','matern32','matern52'}
-        nbP=unique([1,obj.nP]);
-    case {'matern'}
-        nbP=[1,obj.nP]+1;
-end
+function manageOpt(obj,optIn)
+fun=@(x)isa(x,'MissData');
+%look for the missing data class (MissData)
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);obj.missData=optIn{sM};end
+%look for the information concerning the metamodel (class initMeta)
+fun=@(x)isa(x,'initMeta');
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);obj.metaData=optIn{sM};end
 end

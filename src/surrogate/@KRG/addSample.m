@@ -1,5 +1,5 @@
-%% Method of KernMatrix class
-% L. LAURENT -- 18/07/2017 -- luc.laurent@lecnam.net
+%% Method of KRG class
+% L. LAURENT -- 07/08/2017 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -19,17 +19,12 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Compute number of required internal parameters
+%% Add new sample points
 % INPUTS:
-% - none
+% - newS: array of new sample points
 % OUTPUTS:
-% - nbP: number of required hyperparameters for the chosen kernel function
+% - none
 
-function nbP=computeNbPara(obj)
-switch obj.fctKern
-    case {'sexp','matern32','matern52'}
-        nbP=unique([1,obj.nP]);
-    case {'matern'}
-        nbP=[1,obj.nP]+1;
-end
+function addSample(obj,newS)
+obj.sampling=[obj.sampling;newS];
 end

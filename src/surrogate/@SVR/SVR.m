@@ -42,21 +42,21 @@ classdef SVR  < handle
         fVal;               % value of the objective function obtained after solving QP
         exitFlag;           % status flag of the QP optimizer
         CC;                 % second member of QP
-        AineqR;              % inequality constraint matrix of QP
-        bineqR;              % inequality constraint vector of QP
-        AineqG;              % inequality constraint matrix of QP
-        bineqG;              % inequality constraint vector of QP
+        AineqR;             % inequality constraint matrix of QP
+        bineqR;             % inequality constraint vector of QP
+        AineqG;             % inequality constraint matrix of QP
+        bineqG;             % inequality constraint vector of QP
         Aineq;              % inequality constraint matrix of QP
         bineq;              % inequality constraint vector of QP
-        AeqR;                % equality constraint matrix of QP
-        AeqG;                % equality constraint matrix of QP
+        AeqR;               % equality constraint matrix of QP
+        AeqG;               % equality constraint matrix of QP
         Aeq;                % equality constraint matrix of QP
         beq;                % equality vector of QP
-        lbR;                 % lower bound of QP variables
-        lbG;                 % lower bound of QP variables
+        lbR;                % lower bound of QP variables
+        lbG;                % lower bound of QP variables
         lb;                 % lower bound of QP variables
-        ubR;                 % upper bound of QP variables
-        ubG;                 % upper bound of QP variables
+        ubR;                % upper bound of QP variables
+        ubG;                % upper bound of QP variables
         ub;                 % upper bound of QP variables
         %
         alphaRAW;           % RAW alpha variables solution of QP (SVR)
@@ -85,7 +85,7 @@ classdef SVR  < handle
         polyOrder=0;        % polynomial order
         kernelFun='sexp';   % kernel function
         %
-        paraVal=1;         % internal parameters used for building (fixed or estimated)
+        paraVal=1;          % internal parameters used for building (fixed or estimated)
         lVal=[];            % internal parameters: length
         pVal=[];            % internal parametersfor generalized squared exponential
         nuVal=[];           % internal parameter for Matern function
@@ -99,7 +99,7 @@ classdef SVR  < handle
         respV=[];            % responses prepared for training
         gradV=[];            % gradients prepared for training
         %
-        flagG=false;      % flag for computing matrices with gradients
+        flagG=false;         % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
         requireRun=true;     % flag if a full building is required
@@ -108,16 +108,16 @@ classdef SVR  < handle
         %
         matrices;            % structure for storage of matrices (classical and factorized version)
         %
-        factK='LL';      % factorization strategy (fastest: LL (Cholesky))
+        factK='LL';          % factorization strategy (fastest: LL (Cholesky))
         %
-        debugCV=false;      % flag for the debugging process of the Cross-Validation
+        debugCV=false;       % flag for the debugging process of the Cross-Validation
         %
-        requireCompute=true;   % flag used for establishing the status of computing
+        requireCompute=true; % flag used for establishing the status of computing
     end
     properties (Dependent,Access = private)
         nS;                 % number of sample points
-        nP;               % dimension of the problem
-        parallelOk=false;    % flag for using parallel version
+        nP;                 % dimension of the problem
+        parallelOk=false;   % flag for using parallel version
         estimOn=false;      %flag for estimation of the internal parameters
         %
         typeLOO;            % type of LOO criterion used (mse (default),wmse,lpp)
@@ -1019,31 +1019,7 @@ if returnLine
 end
 end
 
-%function display table with two columns (first must be text)
-function dispTableTwoColumns(tableA,tableB,separator)
-%size of every components in tableA
-sizeA=cellfun(@numel,tableA);
-maxA=max(sizeA);
-%space after each component
-spaceA=maxA-sizeA+2;
-if nargin>2
-    spaceTxt=separator;
-else
-    spaceTxt=' ';
-end
-%display table
-for itT=1:numel(tableA)
-    if ischar(tableB{itT})
-        mask='%s%s%s\n';
-    elseif isinteger(tableB{itT})
-        mask='%s%s%i\n';
-    else
-        mask='%s%s%+5.4e\n';
-    end
-    %
-    Gfprintf(mask,tableA{itT},[' ' spaceTxt(ones(1,spaceA(itT))) ' '],tableB{itT});
-end
-end
+
 
 %specific execution of Quadratic Programming depending on Matlab/Octave
 function [solQP, fval, exitflag, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub)

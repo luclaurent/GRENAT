@@ -154,10 +154,59 @@ classdef KRG < handle
                     tt=typeG(3:end);
                 end
             end
-        end  
+        end            
+        
+        %% Add new gradients
+        addGrad(obj,newG);
+        %% Add new responses
+        addResp(obj,newR);
+        %% Add new sample points
+        addSample(obj,newS);
+        %% Build kernel matrix and remove missing part
+        K=buildMatrix(obj,paraValIn);
+        %% Check if there is missing data
+        flagM=checkMiss(obj);
+        %% Check if there is new missing data
+        flagM=checkNewMiss(obj);
+        %% Build factorization, solve the kriging problem and evaluate the log-likelihood
+        [detK,logDetK]=compute(obj,paraValIn);
+        %% Compute likelihood;
+        variance=computeVariance(obj,rr,ff);
+        %% Core of kriging computation using no factorization
+        [detK,logDetK]=coreClassical(obj);
+        %% Core of kriging computation using Cholesky (LL) factorization
+        [detK,logDetK]=coreLL(obj);
+        %% Core of kriging computation using LU factorization
+        [detK,logDetK]=coreLU(obj);
+        %% Core of kriging computation using QR factorization
+        [detK,logDetK]=coreQR(obj);
+        %% Compute Leave-One-Out Cross-Validation
+        [crit,cv]=cv(obj,paraValIn,type);
+        %% Estimate internal parameters
+        estimPara(obj);
+        %% Evaluation of the metamodel
+        [Z,GZ,variance]=eval(obj,X);
+        %% Force the computation
+        fCompute(obj);
+        %% Get value of the internal parameters
+        pV=getParaVal(obj);
+        %% Compute likelihood
+        [logLi,Li,liSack]=likelihood(obj,paraValIn);
+        %%  for dealing with the the input arguments of the class
+        manageOpt(obj,optIn);
+        %% prepare data for building (deal with missing data)
+        setData(obj);
+        %% Show the result of the CV
+        showCV(obj);
+        %% Show information in the console
+        showInfo(obj,type);
+        %% Building/training metamodel
+        train(obj);
+        %% Building/training the updated metamodel
+        trainUpdate(obj,samplingIn,respIn,gradIn);
+        %% Update metamodel and train it
+        update(obj,newSample,newResp,newGrad,newMissData);
+        %% Update data for building (deal with missing data)
+        updateData(obj,samplingIn,respIn,gradIn);
     end
 end
-
-
-
-

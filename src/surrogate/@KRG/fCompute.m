@@ -19,7 +19,7 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% For the computation
+%% Force the computation
 % INPUTS:
 % - none
 % OUTPUTS:

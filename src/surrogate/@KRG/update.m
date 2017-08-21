@@ -28,7 +28,6 @@
 % OUTPUTS:
 % - none
 
-%% Update metamodel
 function update(obj,newSample,newResp,newGrad,newMissData)
 obj.showInfo('update');
 obj.fCompute;

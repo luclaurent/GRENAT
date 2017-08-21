@@ -2,7 +2,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 % 
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by

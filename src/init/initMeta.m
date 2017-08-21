@@ -281,7 +281,7 @@ classdef initMeta < handle
                 obj.saveEstim=boolIn;
             end
         end
-         function set.typeEstim(obj,charIn)
+        function set.typeEstim(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.typeEstim,charIn)
                     Gfprintf(' >>> Type of criterion used for finding hyperparameters : %s (previous %s)',charIn,obj.typeEstim);

@@ -44,6 +44,18 @@ classdef NormRenorm < handle
     end
     methods
         %% constructor
+        % syntax:
+        % - NormRenorm(inV);                % normalize the inV array and store the data
+        % as current 
+        % - NormRenorm(inV,type);           % normalize the inV array and store the data
+        % as data specified in type (resp, sampling)
+        % - NormRenorm(inV,data)            % renormalize inV using data (structure or
+        % object)
+        % - NormRenorm(sample,resp)         % normalize sampling and
+        % responses and store them (respect order sample, resp)
+        % - NormRenorm(sample,resp,data)         % renormalize sampling and
+        % responses and using data (structure or object) (respect order sample, resp)
+        
         function obj=NormRenorm(in,varargin)
             %% depending of the type of the input arguments
             % look for a string in the input arguments (corresponding to
@@ -104,215 +116,28 @@ classdef NormRenorm < handle
             if ~isempty(val);obj.stdS=val;end
         end
         
-        %%initialize all data
-        function init(obj)
-            listP={'meanC','stdC','meanN','stdN','stdR','meanR','stdS','meanS','respN'};
-            for it=1:length(listP)
-                feval([obj '.' listP{it} '=[];']);
-            end
-        end
-        
-        %% load existing information (defined using structure)
-        function loadConf(obj,StClIn)
-            %read the input data
-            out=checkStCl(StClIn);
-            %
-            obj.meanN=out.meanN;
-            obj.meanR=out.meanR;
-            obj.meanS=out.meanS;
-            obj.stdN=out.stdN;
-            obj.stdR=out.stdR;
-            obj.stdS=out.stdS;
-        end
-        
-        %% compute normalization data
-        function computeNorm(obj,in,type)
-            %in the case of no type specified
-            if nargin<3;type='normal';end
-            if any(isnan(in(:)));Gfprintf(' ++ Caution: NaN detected for normalization OMITTED\n');end
-            %computation of the means and standard deviations
-            obj.meanC=mean(in,'omitnan');
-            obj.stdC=std(in,'omitnan');
-            %depending on the option the storage is changed
-            switch type
-                case {'resp','Resp','r','R','RESP','response','Responses','RESPONSES'}
-                    obj.meanR=obj.meanC;
-                    obj.stdR=obj.stdC;
-                case {'sampling','Sampling','s','S','SAMPLING'}
-                    obj.meanS=obj.meanC;
-                    obj.stdS=obj.stdC;
-                otherwise
-                    obj.meanN=obj.meanC;
-                    obj.stdN=obj.stdC;
-            end
-        end
-        
-        %% add responses
-        function out=addResp(obj,in)
-            obj.computeNorm(in,'r');
-            out=obj.Norm(in,'r');
-            obj.respN=out;
-        end
-        
-        %% add sample points
-        function out=addSampling(obj,in)
-            obj.computeNorm(in,'s');
-            out=obj.Norm(in,'s');
-            obj.samplingN=out;
-        end
-        
-        %% choice of the current normalization data
-        function flag=choiceData(obj,type)
-            flag=true;
-            %in the case of no type specified
-            if nargin<2;type='normal';end
-            switch type
-                case {'resp','Resp','r','R','RESP','response','Responses','RESPONSES'}
-                    obj.meanC=obj.meanR;
-                    obj.stdC=obj.stdR;
-                case {'sampling','Sampling','s','S','SAMPLING'}
-                    obj.meanC=obj.meanS;
-                    obj.stdC=obj.stdS;
-                otherwise
-                    obj.meanC=obj.meanN;
-                    obj.stdC=obj.stdN;
-            end
-            % if empty normalization data
-            if isempty(obj.meanC)||isempty(obj.stdC)
-                Gfprintf(' ++ Caution: normalization data not defined (type: %s)\n',type);
-                flag=false;
-            end
-        end
-        %% normalization
-        function out=Norm(obj,in,type)
-            %
-            if nargin<2;type='normal';end
-            %
-            fl=obj.choiceData(type);
-            %normalization
-            if fl
-                nS=size(in,1);
-                out=(in-obj.meanC(ones(nS,1),:))./obj.stdC(ones(nS,1),:);
-            else
-                out=in;
-            end
-        end
-        
-        %% renormalization
-        function out=reNorm(obj,in,type)
-            %
-            if nargin<2;type='normal';end
-            %
-            fl=obj.choiceData(type);
-            %renormalization
-            if fl
-                nS=size(in,1);
-                out=obj.stdC(ones(nS,1),:).*in+obj.meanC(ones(nS,1),:);
-            else
-                out=in;
-            end
-        end
-        
-        %% normalization of gradients
-        function out=NormG(obj,in)
-            % if empty normalization data
-            if isempty(obj.stdS)||isempty(obj.stdR)
-                Gfprintf(' ++ Caution: normalization data not defined for gradient\n');
-                out=in;
-            else
-                nS=size(in,1);
-                out=in.*obj.stdS(ones(nS,1),:)./obj.stdR;
-            end
-        end
-        
-        %% renormalization of gradients
-        function out=reNormG(obj,in,concat)
-            % if concat (gradients concatenate in vector)
-            if nargin<3;concat=false;end
-            % if empty normalization data
-            if isempty(obj.stdS)||isempty(obj.stdR)
-                Gfprintf(' ++ Caution: normalization data not defined for gradient\n');
-                out=in;
-            else
-                nS=size(in,1);
-                if concat
-                    correct=obj.stdR./obj.stdS;
-                    nbv=numel(obj.stdS);
-                    out=in.*repmat(correct(:),nS/nbv,1);
-                else
-                    out=in*obj.stdR./obj.stdS(ones(nS,1),:);
-                end
-            end
-        end
-        
-        %% renormalization data obtained from difference of normalized data
-        function out=reNormDiff(obj,in,type)
-            %
-            if nargin<2;type='normal';end
-            %
-            fl=obj.choiceData(type);
-            %renormalization
-            if fl
-                nS=size(in,1);
-                out=obj.stdC(ones(nS,1),:).*in;
-            else
-                out=in;
-            end
-        end
+        %% Initialize all data
+        init(obj);
+        %% Load existing information (defined using structure)
+        loadConf(obj,StClIn);
+        %% Compute normalization data
+        computeNorm(obj,in,type);
+        %% Add responses and normalize
+        out=addResp(obj,in);
+        %% Add sample points and normalize
+        out=addSampling(obj,in);
+        %% Choice of the current normalization data
+        flag=choiceData(obj,type);
+        %% Normalization of sampling or responses
+        out=Norm(obj,in,type);
+        %% Renormalization of sample points or responses
+        out=reNorm(obj,in,type);
+        %% Normalization of gradients
+        out=NormG(obj,in);
+        %% Renormalization of gradients
+        out=reNormG(obj,in,concat);
+        %% Renormalization data obtained from difference of normalized data
+        out=reNormDiff(obj,in,type);
     end
 end
 
-%% function for checking and extracting the content of a class or a struct
-function [statVal]=checkStCl(in)
-%load the specific function
-switch class(in)
-    case 'class'
-        fun='ismethod';
-    case 'struct'
-        fun='isfield';
-end
-% initialize variables
-meanN=[];stdN=[];
-meanR=[];stdR=[];
-meanS=[];stdS=[];
-%
-if feval(fun,in,'mean')&&feval(fun,in,'std')
-    meanN=in.mean;
-    stdN=in.std;
-end
-%
-if feval(fun,in,'meanC')&&feval(fun,in,'stdC')
-    meanN=in.meanN;
-    stdN=in.stdN;
-end
-%
-if feval(fun,in,'meanS')&&feval(fun,in,'stdS')
-    meanS=in.meanS;
-    stdS=in.stdS;
-end
-%
-if feval(fun,in,'meanR')&&feval(fun,in,'stdR')
-    meanR=in.meanR;
-    stdR=in.stdR;
-end
-%
-if feval(fun,in,'resp')
-    if feval(fun,in.resp,'mean')&&feval(fun,in.resp,'std')
-        meanR=in.resp.mean;
-        stdR=in.resp.std;
-    end
-end
-%
-if feval(fun,in,'sampling')
-    if feval(fun,in.sampling,'mean')&&feval(fun,in.sampling,'std')
-        meanS=in.sampling.mean;
-        stdS=in.sampling.std;
-    end
-end
-statVal.meanN=meanN;
-statVal.stdN=stdN;
-statVal.meanS=meanS;
-statVal.stdS=stdS;
-statVal.meanR=meanR;
-statVal.stdR=stdR;
-end

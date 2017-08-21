@@ -19,7 +19,7 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Compute likelihood
+%% Compute variance
 % INPUTS:
 % - rr: correlation at the evaluation point
 % - ff: monomial evaluated at the evaluation points

@@ -79,7 +79,7 @@ classdef KRG < handle
         nS;                  % number of sample points
         nP;                  % dimension of the problem
         parallelOk=false;    % flag for using parallel version
-        estimOn=false;       %flag for estimation of the internal parameters
+        estimOn=false;       % flag for estimation of the internal parameters
         %
         typeLOO;             % type of LOO criterion used (mse (default),wmse,lpp)
     end
@@ -170,7 +170,7 @@ classdef KRG < handle
         flagM=checkNewMiss(obj);
         %% Build factorization, solve the kriging problem and evaluate the log-likelihood
         [detK,logDetK]=compute(obj,paraValIn);
-        %% Compute likelihood;
+        %% Compute variance
         variance=computeVariance(obj,rr,ff);
         %% Core of kriging computation using no factorization
         [detK,logDetK]=coreClassical(obj);

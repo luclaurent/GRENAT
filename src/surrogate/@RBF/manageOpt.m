@@ -19,20 +19,19 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Core of RBF computation using LU factorization
+%% Function for dealing with the the input arguments of the class
 % INPUTS:
-% - none
+% - optiIn: object of class MissData or initMeta
 % OUTPUTS:
 % - none
 
-function coreLU(obj)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%LU factorization
-[obj.matrices.LK,obj.matrices.UK,obj.matrices.PK]=lu(obj.K,'vector');
-%
-obj.matrices.iK=obj.matrices.UK\(obj.matrices.LK\obj.matrices.PK);
-yL=obj.matrices.LK\obj.matrices.PK*obj.YYtot;
-obj.W=obj.matrices.UK\yL;
-%
+function manageOpt(obj,optIn)
+fun=@(x)isa(x,'MissData');
+%look for the missing data class (MissData)
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);obj.missData=optIn{sM};end
+%look for the information concerning the metamodel (class initMeta)
+fun=@(x)isa(x,'initMeta');
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);obj.metaData=optIn{sM};end
 end

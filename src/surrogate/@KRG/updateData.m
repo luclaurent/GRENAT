@@ -44,6 +44,7 @@ if obj.flagG
         der=obj.missData.removeGV(der,'n');
     end
 end
+%
 obj.YY=[obj.YY;YYT];
 obj.YYD=[obj.YYD;der];
 %

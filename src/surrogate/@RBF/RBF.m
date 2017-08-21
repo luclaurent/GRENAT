@@ -42,7 +42,7 @@ classdef RBF < handle
         polyOrder=0;        % polynomial order
         kernelFun='sexp';   % kernel function
         %
-        paraVal=1;         % internal parameters used for building (fixed or estimated)
+        paraVal=1;          % internal parameters used for building (fixed or estimated)
         lVal=[];            % internal parameters: length
         pVal=[];            % internal parametersfor generalized squared exponential
         nuVal=[];           % internal parameter for Matérn function
@@ -56,7 +56,7 @@ classdef RBF < handle
         respV=[];            % responses prepared for training
         gradV=[];            % gradients prepared for training
         %
-        flagG=false;      % flag for computing matrices with gradients
+        flagG=false;         % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
         requireRun=true;     % flag if a full building is required
@@ -65,23 +65,23 @@ classdef RBF < handle
         %
         matrices;            % structure for storage of matrices (classical and factorized version)
         %
-        factK='LL';      % factorization strategy (fastest: LL (Cholesky))
+        factK='LL';          % factorization strategy (fastest: LL (Cholesky))
         %
-        debugCV=false;      % flag for the debugging process of the Cross-Validation
+        debugCV=false;       % flag for the debugging process of the Cross-Validation
         %
-        requireCompute=true;   % flag used for establishing the status of computing
+        requireCompute=true; % flag used for establishing the status of computing
     end
     properties (Dependent,Access = private)
-        NnS;               % number of new sample points
-        nS;                 % number of sample points
-        nP;               % dimension of the problem
+        NnS;                 % number of new sample points
+        nS;                  % number of sample points
+        nP;                  % dimension of the problem
         parallelOk=false;    % flag for using parallel version
-        estimOn=false;      %flag for estimation of the internal parameters
+        estimOn=false;       % flag for estimation of the internal parameters
         %
-        typeLOO;            % type of LOO criterion used (mse (default),wmse,lpp)
+        typeLOO;             % type of LOO criterion used (mse (default),wmse,lpp)
     end
     properties (Dependent)
-        Kcond;              % condition number of the kernel matrix
+        Kcond;               % condition number of the kernel matrix
     end
     
     methods
@@ -96,19 +96,7 @@ classdef RBF < handle
             %if everything is ok then train
             obj.train();
         end
-        
-        %% function for dealing with the the input arguments of the class
-        function manageOpt(obj,optIn)
-            fun=@(x)isa(x,'MissData');
-            %look for the missing data class (MissData)
-            sM=find(cellfun(fun,optIn)~=false);
-            if ~isempty(sM);obj.missData=optIn{sM};end
-            %look for the information concerning the metamodel (class initMeta)
-            fun=@(x)isa(x,'initMeta');
-            sM=find(cellfun(fun,optIn)~=false);
-            if ~isempty(sM);obj.metaData=optIn{sM};end
-        end
-        
+                
         %% setters
         function set.paraVal(obj,pVIn)
             if isempty(obj.paraVal)
@@ -154,83 +142,7 @@ classdef RBF < handle
                     tt=typeG(3:end);
                 end
             end
-        end
-        
-        %% add new sample points, new responses and new gradients
-        function addSample(obj,newS)
-            obj.sampling=[obj.sampling;newS];
-        end
-        function addResp(obj,newR)
-            obj.resp=[obj.resp;newR];
-        end
-        function addGrad(obj,newG)
-            obj.grad=[obj.grad;newG];
-        end
-        
-        %% check if there is missing data
-        function flagM=checkMiss(obj)
-            flagM=false;
-            if ~isempty(obj.missData)
-                flagM=obj.missData.on;
-            end
-        end
-        %% check if there is missing newdata
-        function flagM=checkNewMiss(obj)
-            flagM=false;
-            if ~isempty(obj.missData)
-                flagM=obj.missData.onNew;
-            end
-        end
-        
-        %% fix flag for computing
-        function fCompute(obj)
-            obj.requireCompute=true;
-        end        
+        end       
+
     end
-end
-
-
-%% function for display information
-function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)
-boolOut=boolIn;
-if nargin==2
-    txtInFalse=[];
-    returnLine=false;
-elseif nargin==3
-    returnLine=false;
-end
-if isempty(txtInFalse)
-    Gfprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else, fprintf('No');end
-else
-    if boolIn; fprintf('%s',txtInTrue);else, fprintf('%s',txtInFalse);end
-end
-if returnLine
-    fprintf('\n');
-end
-end
-
-%function display table with two columns (first must be text)
-function dispTableTwoColumns(tableA,tableB,separator)
-%size of every components in tableA
-sizeA=cellfun(@numel,tableA);
-maxA=max(sizeA);
-%space after each component
-spaceA=maxA-sizeA+2;
-if nargin>2
-    spaceTxt=separator;
-else
-    spaceTxt=' ';
-end
-%display table
-for itT=1:numel(tableA)
-    if ischar(tableB{itT})
-        mask='%s%s%s\n';
-    elseif isinteger(tableB{itT})
-        mask='%s%s%i\n';
-    else
-        mask='%s%s%+5.4e\n';
-    end
-    %
-    Gfprintf(mask,tableA{itT},[' ' spaceTxt(ones(1,spaceA(itT))) ' '],tableB{itT});
-end
 end

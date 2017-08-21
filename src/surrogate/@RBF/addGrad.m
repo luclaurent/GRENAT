@@ -19,20 +19,12 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Core of RBF computation using LU factorization
+%% Add new gradients
 % INPUTS:
-% - none
+% - newR: array of new gradients
 % OUTPUTS:
 % - none
 
-function coreLU(obj)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%LU factorization
-[obj.matrices.LK,obj.matrices.UK,obj.matrices.PK]=lu(obj.K,'vector');
-%
-obj.matrices.iK=obj.matrices.UK\(obj.matrices.LK\obj.matrices.PK);
-yL=obj.matrices.LK\obj.matrices.PK*obj.YYtot;
-obj.W=obj.matrices.UK\yL;
-%
+function addGrad(obj,newG)
+obj.grad=[obj.grad;newG];
 end

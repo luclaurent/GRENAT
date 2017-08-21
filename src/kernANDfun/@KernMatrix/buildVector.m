@@ -33,6 +33,7 @@ function [V,Vd,Vdd]=buildVector(obj,samplePts,paraV)
 %changing the values of the internal parameters
 if nargin>1;obj.paraVal=paraV;end
 %depending on the number of output arguments
+computeGrad=false;
 if nargout>1;computeGrad=true;end
 %compute distance
 distS=repmat(samplePts,obj.nS,1)-obj.sampling;

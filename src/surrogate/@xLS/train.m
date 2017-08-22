@@ -26,7 +26,7 @@
 % - none
 
 function train(obj,flagRun)
-if nargin==1;flagRun=false;end
+if nargin==1;flagRun=true;end
 obj.showInfo('start');
 %Prepare data
 obj.setData;

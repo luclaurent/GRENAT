@@ -71,5 +71,7 @@ if flagRun
         %                      all(bb(:)==obj.beta)
         %                     keyboard
     end
+    %
+    obj.requireRun=false;
 end
 end

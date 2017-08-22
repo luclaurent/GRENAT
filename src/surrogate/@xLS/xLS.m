@@ -79,17 +79,23 @@ classdef xLS < handle
         % class) and a boolean for training or not directly the metamodel
         % (default train)
         function obj=xLS(samplingIn,respIn,gradIn,orderIn,varargin)
+            flagRun=true;%default
+            flagTrain=false;
             %load data
-            obj.sampling=samplingIn;
-            obj.resp=respIn;
+            if nargin>0;obj.sampling=samplingIn;end
+            if nargin>1
+                obj.resp=respIn;
+                flagTrain=true;
+            end
             if nargin>2;obj.grad=gradIn;end
             if nargin>3;obj.polyOrder=orderIn;end
             %
-            flagRun=true;
             if nargin>5;flagRun=obj.manageOpt(varargin);end
             %if everything is ok then train w/- or w/o running the
             %computation
+            if flagTrain
                 obj.train(flagRun);
+            end
         end
         
         %% setters

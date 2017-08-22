@@ -27,6 +27,9 @@
 % - GZ: approximate gradient
 
 function [Z,GZ]=eval(obj,U)
+%
+if obj.requireRun;obj.train;end
+%
 calcGrad=false;
 if nargout>1
     calcGrad=true;

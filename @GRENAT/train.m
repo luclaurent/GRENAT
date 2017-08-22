@@ -27,10 +27,15 @@
 function train(obj)
 %check if data are missing
 checkMissingData(obj);
-%train surrogate model
-obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
+%populate the surrogate model class
+obj.dataTrain.addSample(obj.samplingN);
+obj.dataTrain.addSample(obj.respN);
+obj.dataTrain.addSample(obj.gradN);
+obj.dataTrain.manageOpt(obj.confMeta,obj.miss);
+%train the metamodel
+obj.dataTrain.train;
 %save estimate parameters
-if isfield(obj.dataTrain.build,'para')
+if obj.isfield(obj.dataTrain.build,'paraVal')
     obj.confMeta.definePara(obj.dataTrain.build.para);
     obj.confMeta.updatePara;
 end

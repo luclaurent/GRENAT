@@ -88,13 +88,23 @@ classdef RBF < handle
         %% Constructor
         function obj=RBF(samplingIn,respIn,gradIn,kernIn,varargin)
             %load data
-            obj.sampling=samplingIn;
-            obj.resp=respIn;
+            flagTrain=false;
+            %load data
+            if nargin>0;obj.sampling=samplingIn;end
+            if nargin>1
+                obj.resp=respIn;
+                flagTrain=true;
+            end
             if nargin>2;obj.grad=gradIn;end
             if nargin>3;obj.kernelFun=kernIn;end
             if nargin>4;obj.manageOpt(varargin);end
+            %check if a configuration has been loaded if not load the
+            %default
+            obj.loadDefaultConf;
             %if everything is ok then train
-            obj.train();
+            if flagTrain
+                obj.train();
+            end
         end
                 
         %% setters

@@ -36,6 +36,10 @@ obj.addResp(newResp);
 if nargin>3;obj.addGrad(newGrad);end
 if nargin>4;obj.missData=newMissData;end
 if nargin<4;newGrad=[];end
+%warning in th case of gradients
+if obj.flagG&&isempty(newGrad)
+    Gfprintf(' +++ New gradients are missing\n');
+end
 %update the data and compute
 obj.trainUpdate(newSample,newResp,newGrad);
 end

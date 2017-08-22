@@ -4,7 +4,7 @@ sampling=[10 20 30;50 60 70; 80 90 50;-1 2 3;4 5 6;10 50 60]/90;
 resp=[10;20;30;5;-1;-5];
 grad=[10 5 80;20 30 50;20 -10 5;10 50 -20;-4 5 6; 5 48 49];
 
-ns=100;
+ns=5;
 sampling=randn(ns,3);
 resp=randn(ns,1);
 grad=randn(ns,3);
@@ -12,7 +12,7 @@ grad=randn(ns,3);
 MM=MissData(sampling,resp,[]);
 %kk=xLS(sampling,resp,grad,2,MM);
 PP=initMeta;
-PP.estimOn=true;
+PP.estimOn=false;
 %PP.cv.full=true;
 kk=RBF(sampling,resp,grad,'sexp',PP);%KRG(sampling,resp,grad,2,'sexp',MM,PP);
 % kk=SVR;
@@ -40,7 +40,7 @@ gradN=randn(nSnew,3);
 %
 %MM.addData(samplingN,respN);%,[])
 PP.estimOn=false;
-kk.update(samplingN,respN);%,gradN)%,MM)
+kk.update(samplingN,respN,gradN);%,gradN)%,MM)
 
 samplingTest=[sampling;samplingN];
 respTest=[resp;respN];

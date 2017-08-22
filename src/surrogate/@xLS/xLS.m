@@ -1,4 +1,4 @@
-%% class for least-squares surrogate model
+%% Class for least-squares surrogate model
 % LS: Least-Squares
 % GLS: gradient-based Least Squares
 % L. LAURENT -- 31/07/2017 -- luc.laurent@lecnam.net
@@ -118,6 +118,35 @@ classdef xLS < handle
             flagG=~isempty(obj.grad);
         end
         
+        %% Add new gradients
+        addGrad(obj,newG);
+        %% Add new responses
+        addResp(obj,newR);
+        %% Add new sample points
+        addSample(obj,newS);
+        %% Regression matrix at the non-sample point
+        [ff,jf]=buildMatrixNonS(obj,U);
+        %% Check if there is missing data
+        flagM=checkMiss(obj);
+        %% Check if there is new missing data
+        flagM=checkNewMiss(obj);
+        %% Compute regressors
+        compute(obj,flagRun);
+        %% Evaluation of the metamodel
+        [Z,GZ]=eval(obj,U);
+        %%  for dealing with the the input arguments of the class
+        flagR=manageOpt(obj,optIn);
+        %% Prepare data for building (deal with missing data)
+        setData(obj);
+        %% Show information in the console
+        showInfo(obj,type);
+        %% Building/training metamodel
+        train(obj,flagRun);
+        %% Building/training the updated metamodel
+        trainUpdate(obj,samplingIn,respIn,gradIn);
+        %% Update metamodel
+        update(obj,newSample,newResp,newGrad,newMissData);
+        %% prepare data for building (deal with missing data)
+        updateData(obj,respIn,gradIn);
     end
-    
 end

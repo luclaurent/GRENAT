@@ -27,7 +27,6 @@
 % OUTPUTS:
 % - none
 
-%% Building/training the updated metamodel
 function trainUpdate(obj,samplingIn,respIn,gradIn)
 %Prepare data
 obj.updateData(samplingIn,respIn,gradIn);

@@ -19,21 +19,22 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Regression matrix at the non-sample point
+%% Function for dealing with the the input arguments of the class
 % INPUTS:
-% - U: point used for evaluation
+% - optiIn: object of class MissData or initMeta
 % OUTPUTS:
-% - ff: values of the monomial terms at U
-% - jf: values of the derivatives of the monomial terms at U
+% - flagR: return the value of a boolean is proposed (if not return true)
 
-function [ff,jf]=buildMatrixNonS(obj,U)
-calcGrad=false;
-if nargout>1
-    calcGrad=true;
-end
-if calcGrad
-    [ff,jf]=MultiMono(U,obj.polyOrder);
-else
-    [ff]=MultiMono(U,obj.polyOrder);
-end
+function flagR=manageOpt(obj,optIn)
+%
+flagR=true; %default
+%
+fun=@(x)isa(x,'MissData');
+%look for the missing data class (MissData)
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);obj.missData=optIn{sM};end
+%look for a boolean
+fun=@(x)islogical(x);
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);flagR=optIn{sM};end
 end

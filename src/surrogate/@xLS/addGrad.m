@@ -19,21 +19,12 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Regression matrix at the non-sample point
+%% Add new gradients
 % INPUTS:
-% - U: point used for evaluation
+% - newR: array of new gradients
 % OUTPUTS:
-% - ff: values of the monomial terms at U
-% - jf: values of the derivatives of the monomial terms at U
+% - none
 
-function [ff,jf]=buildMatrixNonS(obj,U)
-calcGrad=false;
-if nargout>1
-    calcGrad=true;
-end
-if calcGrad
-    [ff,jf]=MultiMono(U,obj.polyOrder);
-else
-    [ff]=MultiMono(U,obj.polyOrder);
-end
+function addGrad(obj,newG)
+obj.grad=[obj.grad;newG];
 end

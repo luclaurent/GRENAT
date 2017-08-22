@@ -19,21 +19,12 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Regression matrix at the non-sample point
+%% Add new sample points
 % INPUTS:
-% - U: point used for evaluation
+% - newS: array of new sample points
 % OUTPUTS:
-% - ff: values of the monomial terms at U
-% - jf: values of the derivatives of the monomial terms at U
+% - none
 
-function [ff,jf]=buildMatrixNonS(obj,U)
-calcGrad=false;
-if nargout>1
-    calcGrad=true;
-end
-if calcGrad
-    [ff,jf]=MultiMono(U,obj.polyOrder);
-else
-    [ff]=MultiMono(U,obj.polyOrder);
-end
+function addSample(obj,newS)
+obj.sampling=[obj.sampling;newS];
 end

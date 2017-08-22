@@ -19,21 +19,15 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Regression matrix at the non-sample point
+%% Check if there is missing data
 % INPUTS:
-% - U: point used for evaluation
+% - none
 % OUTPUTS:
-% - ff: values of the monomial terms at U
-% - jf: values of the derivatives of the monomial terms at U
+% - flagM: true if some data is missing
 
-function [ff,jf]=buildMatrixNonS(obj,U)
-calcGrad=false;
-if nargout>1
-    calcGrad=true;
-end
-if calcGrad
-    [ff,jf]=MultiMono(U,obj.polyOrder);
-else
-    [ff]=MultiMono(U,obj.polyOrder);
+function flagM=checkMiss(obj)
+flagM=false;
+if ~isempty(obj.missData)
+    flagM=obj.missData.on;
 end
 end

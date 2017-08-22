@@ -22,37 +22,37 @@
 
 classdef xLS < handle
     properties
-        sampling=[];        % sample points
-        resp=[];            % sample responses
-        grad=[];            % sample gradients
+        sampling=[];         % sample points
+        resp=[];             % sample responses
+        grad=[];             % sample gradients
         %
-        missData;           % class for missing data
+        missData;            % class for missing data
         %
-        YY=[];              % vector of responses
-        YYD=[];             % vector of gradients
+        YY=[];               % vector of responses
+        YYD=[];              % vector of gradients
         %
-        polyOrder=0;        % polynomial order
-        kernelFun='sexp';   % kernel function
+        polyOrder=0;         % polynomial order
+        kernelFun='sexp';    % kernel function
         %
-        beta=[];            % vector of the regressors
-        valFunPoly=[];      % matrix of the evaluation of the monomial terms
-        valFunPolyD=[];     % matrix of the evaluation of derivatives of the monomial terms
+        beta=[];             % vector of the regressors
+        valFunPoly=[];       % matrix of the evaluation of the monomial terms
+        valFunPolyD=[];      % matrix of the evaluation of derivatives of the monomial terms
         %
-        XX=[];              % full matrix of monomial terms
-        YYtot=[];           % full vector of responses and gradients
-        fct=[];             % computed matrix XX'*XX
-        fcY=[];             % computed matrix XX*YYT
-        nbMonomialTerms=0;  % number of monomial terms
+        XX=[];               % full matrix of monomial terms
+        YYtot=[];            % full vector of responses and gradients
+        fct=[];              % computed matrix XX'*XX
+        fcY=[];              % computed matrix XX*YYT
+        nbMonomialTerms=0;   % number of monomial terms
         %
-        R=[];               % matrices obtained from the QR factorization of the monomial matrix
-        Q=[];               %
+        R=[];                % matrices obtained from the QR factorization of the monomial matrix
+        Q=[];                %
     end
     
     properties (Access = private)
         respV=[];            % responses prepared for training
         gradV=[];            % gradients prepared for training
         %
-        flagGLS=false;       % flag for computing matrices with gradients
+        flagG=false;         % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
         requireRun=true;     % flag if a full building is required
@@ -60,29 +60,36 @@ classdef xLS < handle
         forceGrad=false;     % flag for forcing the computation of 1st and 2nd derivatives of the kernel matrix
     end
     properties (Dependent,Access = private)
-        NnS;               % number of new sample points
-        nS;                 % number of sample points
-        nP;               % dimension of the problem
+        NnS;                 % number of new sample points
+        nS;                  % number of sample points
+        nP;                  % dimension of the problem
         parallelOk=false;    % flag for using parallel version
         %
     end
     
     methods
         %% Constructor
-        function obj=xLS(samplingIn,respIn,gradIn,orderIn,missData,flagRun)
+        % INPUTS:
+        % - samplingIn: array of sample points
+        % - respIn: vector of responses
+        % - gradIn: array of gradients
+        % - orderIn: order of the polynomial regression
+        % - kernIn: chosen kernel function
+        % - varargin: specified in any order the missing data (MissData
+        % class) and a boolean for training or not directly the metamodel
+        % (default train)
+        function obj=xLS(samplingIn,respIn,gradIn,orderIn,varargin)
             %load data
             obj.sampling=samplingIn;
             obj.resp=respIn;
             if nargin>2;obj.grad=gradIn;end
             if nargin>3;obj.polyOrder=orderIn;end
-            if nargin>4;obj.missData=missData;end
+            %
+            flagRun=true;
+            if nargin>5;flagRun=obj.manageOpt(varargin);end
             %if everything is ok then train w/- or w/o running the
             %computation
-            if nargin>5
                 obj.train(flagRun);
-            else
-                obj.train(false);
-            end
         end
         
         %% setters
@@ -101,55 +108,10 @@ classdef xLS < handle
         end
         
         %% getter for GLS building
-        function flagG=get.flagGLS(obj)
+        function flagG=get.flagG(obj)
             flagG=~isempty(obj.grad);
         end
         
-        %% add new sample points, new responses and new gradients
-        function addSample(obj,newS)
-            obj.sampling=[obj.sampling;newS];
-        end
-        function addResp(obj,newR)
-            obj.resp=[obj.resp;newR];
-        end
-        function addGrad(obj,newG)
-            obj.grad=[obj.grad;newG];
-        end
-        
-        %% check if there is missing data
-        function flagM=checkMiss(obj)
-            flagM=false;
-            if ~isempty(obj.missData)
-                flagM=obj.missData.on;
-            end
-        end
-        %% check if there is missing newdata
-        function flagM=checkNewMiss(obj)
-            flagM=false;
-            if ~isempty(obj.missData)
-                flagM=obj.missData.onNew;
-            end
-        end
     end
     
-end
-
-
-%% function for display information
-function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)
-boolOut=boolIn;
-if nargin==2
-    txtInFalse=[];
-    returnLine=false;
-elseif nargin==3
-    returnLine=false;
-end
-if isempty(txtInFalse)
-    Gfprintf('%s',txtInTrue);if boolIn; fprintf('Yes');else, fprintf('No');end
-else
-    if boolIn; fprintf('%s',txtInTrue);else, fprintf('%s',txtInFalse);end
-end
-if returnLine
-    fprintf('\n');
-end
 end

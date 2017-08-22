@@ -28,6 +28,9 @@
 % - variance: variance provided by the metamodel
 
 function [Z,GZ,variance]=eval(obj,X)
+%
+if obj.requireCompute;obj.train;end
+%
 %computation of thr gradients or not (depending on the number of output variables)
 if nargout>=2
     calcGrad=true;

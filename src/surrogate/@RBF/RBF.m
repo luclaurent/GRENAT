@@ -59,7 +59,6 @@ classdef RBF < handle
         flagG=false;         % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
-        requireRun=true;     % flag if a full building is required
         requireUpdate=false; % flag if an update is required
         forceGrad=false;     % flag for forcing the computation of 1st and 2nd derivatives of the kernel matrix
         %

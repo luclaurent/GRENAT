@@ -1,4 +1,4 @@
-%% Method of execParallel class
+%% Static method of execParallel class
 % L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
@@ -18,13 +18,19 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-%% Load default configuration
+%% check if the parallel toolbox is available, if java is loaded and
+% if the function is executed in matlab
 % INPUTS:
 % - none
 % OUTPUTS:
-% - none
+% - runOk: evertything is ok to run a pool
 
-function defaultConf(obj)
-obj.defaultParallel=parcluster;
+function runOk=checkRun()
+javaOk=usejava('jvm');
+matlabOk=~isOctave;
+parallelOk=license('test','Distrib_Computing_Toolbox');
+runOk=javaOk&matlabOk&parallelOk;
+if ~javaOk;Gfprintf('>> Matlab started without java support (remove -nojvm flag)\n');end
+if ~matlabOk;Gfprintf('>> Code run with Octave (no parallelism)\n');end
+if ~parallelOk;Gfprintf('>> The Distibuted Computing Toolbox is unavailable\n');end
 end

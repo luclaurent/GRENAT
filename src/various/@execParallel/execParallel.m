@@ -32,7 +32,7 @@ classdef execParallel < handle
         % - an integer for specifying the number of required workers
         function obj=execParallel(varargin)
             Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            if checkRun
+            if obj.checkRun
                 Gfprintf('Define Parallelism\n');
                 %load the default configuration
                 obj.defaultConf;
@@ -106,16 +106,10 @@ classdef execParallel < handle
         %% Load current configuration
         flag=currentConf(obj);
     end
+    methods (Static)
+        %% check if the parallel toolbox is available, if java is loaded and
+        runOk=checkRun();
+    end
 end
 
-%%check if the parallel toolbox is available, if java is loaded and
-% if the function is executed in matlab
-function runOk=checkRun()
-javaOk=usejava('jvm');
-matlabOk=~isOctave;
-parallelOk=license('test','Distrib_Computing_Toolbox');
-runOk=javaOk&matlabOk&parallelOk;
-if ~javaOk;Gfprintf('>> Matlab started without java support (remove -nojvm flag)\n');end
-if ~matlabOk;Gfprintf('>> Code run with Octave (no parallelism)\n');end
-if ~parallelOk;Gfprintf('>> The Distibuted Computing Toolbox is unavailable\n');end
-end
+

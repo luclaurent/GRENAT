@@ -28,6 +28,8 @@
 % - VV: output matrix after removing data
 
 function VV=removeGM(obj,V,type)
+%
+obj.check;
 %size of the input vector
 sV=size(V);
 %deal with no force parameter

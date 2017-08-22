@@ -28,4 +28,7 @@
 function addResp(obj,in)
 obj.resp=[obj.resp;in];
 obj.newResp=obj.checkResp(in);
+%
+obj.requireCheckResp=true;
+obj.check;
 end

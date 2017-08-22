@@ -28,6 +28,8 @@
 % - VV: output matrix after removing data
 
 function VV=removeRM(obj,V,type)
+%
+obj.check;
 %size of the input matrix
 sV=size(V);
 %deal with no force parameter

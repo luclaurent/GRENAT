@@ -28,4 +28,6 @@
 function addSampling(obj,in)
 obj.sampling=[obj.sampling;in];
 obj.NnS=size(in,1);
+%
+obj.requireCheckResp=true;
 end

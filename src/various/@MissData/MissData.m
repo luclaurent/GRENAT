@@ -43,23 +43,27 @@ classdef MissData < handle
         newResp;                    % structure for new responses
         newGrad;                    % structure for new gradients
         %
-        NnS=0;                    % number of new sample points
+        NnS=0;                      % number of new sample points
+    end
+    properties (Access = private)
+       requireCheckResp=true;       % flag if the checking of responses is required 
+       requireCheckGrad=true;       % flag if the checking of gradients is required
     end
     properties (Dependent,Access = private)
         %
-        nS;                     % number of sample points
-        nP;                     % dimension of the problem
+        nS;                         % number of sample points
+        nP;                         % dimension of the problem
         %
-        emptyGrad;              % flag for empty gradient matrix
+        emptyGrad;                  % flag for empty gradient matrix
         %
     end
     properties (Dependent)
-        on;                     % flag for missing data
-        onNew;                  % flag for missing data in the new added data
-        onResp;                 % flag for missing data in responses
-        onGrad;                 % flag for missing data in gradients
-        onNewResp;                 % flag for missing data in new responses
-        onNewGrad;                 % flag for missing data in new gradients
+        on;                         % flag for missing data
+        onNew;                      % flag for missing data in the new added data
+        onResp;                     % flag for missing data in responses
+        onGrad;                     % flag for missing data in gradients
+        onNewResp;                  % flag for missing data in new responses
+        onNewGrad;                  % flag for missing data in new gradients
     end
     methods
         %% constructor
@@ -68,11 +72,9 @@ classdef MissData < handle
         % gradIn: array of gradients (optional)
         function obj=MissData(samplingIn,respIn,gradIn)
             %initialize class
-            obj.sampling=samplingIn;
-            obj.resp=respIn;
-            if nargin>2
-                obj.grad=gradIn;
-            end
+            if nargin>0;obj.sampling=samplingIn;end
+            if nargin>1;obj.resp=respIn;end
+            if nargin>2;obj.grad=gradIn;end
             %
             obj.check();
         end

@@ -30,7 +30,13 @@ function check(obj)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gfprintf(' >> Check missing data \n');
 %
-obj.checkResp();
-obj.checkGrad();
+if obj.requireCheckResp
+    obj.checkResp();
+    obj.requireCheckResp=false;
+end
+if obj.requireCheckGrad
+    obj.checkGrad();
+    obj.requireCheckResp=true;
+end
 obj.show();
 end

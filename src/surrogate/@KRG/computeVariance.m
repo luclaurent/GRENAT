@@ -35,25 +35,25 @@ function variance=computeVariance(obj,rr,ff)
 %depending on the factorization
 switch obj.factK
     case 'QR'
-        rrP=rr'*obj.PK;
-        Qrr=obj.QtK*rr;
-        u=obj.fcR*Qrr-ff';
-        variance=obj.sig2*(1-(rrP/obj.RK)*Qrr+...
-            u'/obj.fcCfct*u);
+        rrP=rr'*obj.matrices.PK;
+        Qrr=obj.matrices.QtK*rr;
+        u=obj.matrices.fcR*Qrr-ff';
+        variance=obj.sig2*(1-(rrP/obj.matrices.RK)*Qrr+...
+            u'/obj.matrices.fcCfct*u);
     case 'LU'
-        rrP=rr(obj.PK,:);
-        Lrr=obj.LK\rrP;
-        u=obj.fcU*Lrr-ff';
-        variance=obj.sig2*(1-(rr'/obj.UK)*Lrr+...
-            u'/obj.fcCfct*u);
+        rrP=rr(obj.matrices.PK,:);
+        Lrr=obj.matrices.LK\rrP;
+        u=obj.matrices.fcU*Lrr-ff';
+        variance=obj.sig2*(1-(rr'/obj.matrices.UK)*Lrr+...
+            u'/obj.matrices.fcCfct*u);
     case 'LL'
-        Lrr=obj.LK\rr;
-        u=obj.fcL*Lrr-ff';
-        variance=obj.sig2*(1-(rr'/obj.LtK)*Lrr+...
-            u'/obj.fcCfct*u);
+        Lrr=obj.matrices.LK\rr;
+        u=obj.matrices.fcL*Lrr-ff';
+        variance=obj.sig2*(1-(rr'/obj.matrices.LK')*Lrr+...
+            u'/obj.matrices.fcCfct*u);
     otherwise
-        rKrr=obj.KK \ rr;
-        u=obj.fc*rKrr-ff';
-        variance=obj.sig2*(1+u'/obj.fcCfct*u - rr'*rKrr);
+        rKrr=obj.matrices.KK \ rr;
+        u=obj.matrices.fc*rKrr-ff';
+        variance=obj.sig2*(1+u'/obj.matrices.fcCfct*u - rr'*rKrr);
 end
 end

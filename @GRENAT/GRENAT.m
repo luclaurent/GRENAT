@@ -56,9 +56,9 @@ classdef GRENAT < handle
         confDisp=initDisp;          % display configuration
         miss=MissData;              % missing data
         norm=NormRenorm;            % normalization data (NormRenorm class)
-    end
-    properties (Dependent)
         type;                       % type of metamodel
+    end
+    properties (Dependent)       
                 %normalization data        
         normMeanS;                  % mean of sample points
         normStdS;                   % standard deviation of sample points
@@ -120,12 +120,15 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %setter for the sampling
         function set.sampling(obj,samplingIn)
+            %
             if ~isempty(samplingIn)
                 if isempty(obj.sampling)
-                    obj.sampling=samplingIn;                    
+                    obj.sampling=samplingIn;
                 else
                     obj.sampling=[obj.sampling;samplingIn];
                 end
+                %update the sample points
+                obj.updateSampling(samplingIn);
                 %
                 initRunTrain(obj,true);
             else
@@ -134,13 +137,16 @@ classdef GRENAT < handle
         end
         %setter for the responses
         function set.resp(obj,respIn)
+            %
             if ~isempty(respIn)
                 if isempty(obj.resp)
                     obj.resp=respIn;
                 else
                     obj.resp=[obj.resp;respIn];
                 end
-%
+                %update the responses
+                obj.updateResp(respIn);
+                %
                 initRunTrain(obj,true);
             else
                 Gfprintf('ERROR: Empty array of responses\n');
@@ -148,13 +154,17 @@ classdef GRENAT < handle
         end
         %setter for the gradients
         function set.grad(obj,gradIn)
+            %
             if ~isempty(gradIn)
                 if isempty(obj.grad)
                     obj.grad=gradIn;
                 else
                     obj.grad=[obj.grad;gradIn];
                 end
-                initRunTrain(obj,true); 
+                %update the gradients
+                obj.updateGrad(gradIn);
+                %
+                initRunTrain(obj,true);
                 initGradAvail(obj,true);
             end
         end
@@ -166,7 +176,20 @@ classdef GRENAT < handle
             end
         end
         %setter for the type of metamodel
-        function set.type(obj,typeIn);obj.confMeta.type=typeIn;end
+        function set.type(obj,typeIn)
+            obj.setTypeConf(typeIn);
+            obj.type=typeIn;
+        end
+        
+            % set the type of metamodel in the configuration and initialize
+            % the metamodel
+        function setTypeConf(obj,typeIn)
+            obj.confMeta.type=typeIn;
+            %extract the right type of metamodel
+            [InGrad,ClassGrad,typeOk]=obj.checkGE(typeIn);
+            %initialize the metamodel
+            obj.dataTrain=eval(typeOk);
+        end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

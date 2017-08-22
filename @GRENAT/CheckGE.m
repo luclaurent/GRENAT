@@ -1,4 +1,4 @@
-%% Method of GRENAT class
+%% Static method of GRENAT class
 % L. LAURENT -- 26/06/2016 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
@@ -18,28 +18,29 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Train the metamodel
+%% Function for checking if the surrogate model is a classical
+%gradient-enhanced or indirect gradient-enhanced surrogate model
 % INPUTS:
-% - none
+% - typeSurrogate: raw name of the chosen surrogate
 % OUTPUTS:
-% - none
+% - Indirect: flag for indirect gradient-enhanced metamodel
+% - Classical: flag for classical gradient-enhanced metamodel
+% - typeOk: right name of the surrogate model
 
-function train(obj)
-%check if data are missing
-checkMissingData(obj);
-%train surrogate model
-obj.dataTrain=BuildMeta(obj.samplingN,obj.respN,obj.gradN,obj.confMeta);
-%save estimate parameters
-if isfield(obj.dataTrain.build,'para')
-    obj.confMeta.definePara(obj.dataTrain.build.para);
-    obj.confMeta.updatePara;
+function [Indirect,Classical,typeOk]=CheckGE(typeSurrogate)
+%check Indirect
+nn=regexp(typeSurrogate,'^In','ONCE');
+Indirect=~isempty(nn);
+%check gradient-enhanced
+nn=regexp(typeSurrogate,'^G','ONCE');
+Classical=~isempty(nn);
+% remove letter(s)
+iX=1;
+if Indirect
+    iX=3;    
 end
-%change state of flags
-obj.runTrain=false;
-obj.runErr=true;
-
-% keyboard
-% if metaData.norm.on&&~isempty(metaData.norm.resp.std)
-%     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
-% end
+if Classical
+    iX=2;    
+end
+typeOk=typeSurrogate(iX:end);
 end

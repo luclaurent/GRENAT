@@ -20,11 +20,15 @@
 
 %% Update sample points (normalized if necessary)
 % INPUTS:
-% - ~,~: empty inputs (method use for events)
+% - newSample: array of new sample points
 % OUTPUTS:
 % - none
 
-function updateSampling(obj,~,~)
+function updateSampling(obj,newSample)
+%add sample points to the MissingData's object
+obj.miss.addSampling(newSample);
+%
+%add sample points to the NormRenorm's object if normalization is required
 if obj.confMeta.normOn
     obj.samplingN=obj.norm.addSampling(obj.sampling);
 else

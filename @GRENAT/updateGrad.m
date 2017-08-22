@@ -20,13 +20,17 @@
 
 %% Update gradients (normalized if necessary)
 % INPUTS:
-% - ~,~: empty inputs (method use for events)
+% - newGrad: array of new gradients
 % OUTPUTS:
 % - none
 
-function updateGrad(obj,~,~)
+function updateGrad(obj,newGrad)
+%add gradients to the MissingData's object
+obj.miss.addGrad(newGrad);
+%
+%normalize gradients
 if obj.confMeta.normOn
-    obj.gradN=obj.norm.addGrad(obj.grad);
+    obj.gradN=obj.norm.normG(obj.grad);
 else
     obj.gradN=obj.grad;
 end

@@ -20,11 +20,15 @@
 
 %% Update responses (normalized if necessary)
 % INPUTS:
-% - ~,~: empty inputs (method use for events)
+% - newResp: vector of new responses
 % OUTPUTS:
 % - none
 
-function updateResp(obj,~,~)
+function updateResp(obj,newResp)
+%add responses to the MissingData's object
+obj.miss.addResp(newResp);
+%
+%add responses to the NormRenorm's object if normalization is required
 if obj.confMeta.normOn
     obj.respN=obj.norm.addResp(obj.sampling);
 else

@@ -90,10 +90,11 @@ classdef NormRenorm < handle
                     obj.outC{1}=obj.reNorm(in,'s');
                     obj.outC{2}=obj.reNorm(inB,'r');
                 end
-            else
+            end
+            if nargin==1
                 obj.computeNorm(in,obj.type);
                 obj.outC=obj.Norm(in,obj.type);
-            end
+            end            
         end
         
         %% setters

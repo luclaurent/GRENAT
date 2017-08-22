@@ -18,10 +18,9 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 %% Function for dealing with the the input arguments of the class
 % INPUTS:
-% - optiIn: object of class MissData or initMeta
+% - optiIn: cell of objects/string/integer
 % OUTPUTS:
 % - none
 
@@ -34,4 +33,12 @@ if ~isempty(sM);obj.missData=optIn{sM};end
 fun=@(x)isa(x,'initMeta');
 sM=find(cellfun(fun,optIn)~=false);
 if ~isempty(sM);obj.metaData=optIn{sM};end
+%look for the chosen kernel function (string)
+fun=@(x)ischar(x);
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);obj.kernelFun=optIn{sM};end
+%look for the chosen polynomial order (integer
+fun=@(x)(isnumeric(x));
+sM=find(cellfun(fun,optIn)~=false);
+if ~isempty(sM);obj.polyOrder=optIn{sM};end
 end

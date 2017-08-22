@@ -104,6 +104,18 @@ classdef xLS < handle
                 obj.missData=dataIn;
             end
         end
+        function set.polyOrder(obj,pO)
+            fl=false;
+            if isnumeric(pO)
+                if int32(pO)==pO
+                    if pO>=0
+                        obj.polyOrder=pO;
+                        fl=true;
+                    end
+                end
+            end
+            if ~fl;Gfprintf(' Error on the chosen polynomial order (current %i)\n',obj.polyOrder);end
+        end
         
         %% getters
         function nS=get.nS(obj)

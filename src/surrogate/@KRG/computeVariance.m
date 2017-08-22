@@ -31,7 +31,7 @@ function variance=computeVariance(obj,rr,ff)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute the prediction variance (MSE) (Lophaven, Nielsen & Sondergaard
 %2004 / Marcelet 2008 / Chauvet 1999)
-if ~dispWarning;warning off all;end
+%
 %depending on the factorization
 switch obj.factK
     case 'QR'
@@ -56,5 +56,4 @@ switch obj.factK
         u=obj.fc*rKrr-ff';
         variance=obj.sig2*(1+u'/obj.fcCfct*u - rr'*rKrr);
 end
-if ~dispWarning;warning on all;end
 end

@@ -21,7 +21,7 @@
 
 %% Function for dealing with the the input arguments of the class
 % INPUTS:
-% - optiIn: cell of objects/string
+% - optiIn: cell of objects/string/integer
 % OUTPUTS:
 % - none
 

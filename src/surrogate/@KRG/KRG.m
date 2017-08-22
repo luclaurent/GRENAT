@@ -62,7 +62,6 @@ classdef KRG < handle
         flagG=false;         % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
-        requireRun=true;     % flag if a full building is required
         requireUpdate=false; % flag if an update is required
         forceGrad=false;     % flag for forcing the computation of 1st and 2nd derivatives of the kernel matrix
         %
@@ -95,18 +94,29 @@ classdef KRG < handle
         % - gradIn: array of gradients
         % - orderIn: order of the polynomial regression
         % - kernIn: chosen kernel function
-        % - varargin: specified in any order the missing data (MissData
-        % class) and the options of the metamodel (initMeta class)
-        function obj=KRG(samplingIn,respIn,gradIn,orderIn,kernIn,varargin)
+        % - varargin: specified in any order
+        %       - the missing data (MissData class)
+        %       - the options of the metamodel (initMeta class)
+        %       - the chosen kernel function (string)
+        %       - the chosen polynomial order (integer)
+        function obj=KRG(samplingIn,respIn,gradIn,varargin)
             %load data
-            obj.sampling=samplingIn;
-            obj.resp=respIn;
+            flagTrain=false;
+            %load data
+            if nargin>0;obj.sampling=samplingIn;end
+            if nargin>1
+                obj.resp=respIn;
+                flagTrain=true;
+            end
             if nargin>2;obj.grad=gradIn;end
-            if nargin>3;obj.polyOrder=orderIn;end
-            if nargin>4;obj.kernelFun=kernIn;end
-            if nargin>5;obj.manageOpt(varargin);end
+            if nargin>3;obj.manageOpt(varargin);end
+            %check if a configuration has been loaded if not load the
+            %default
+            obj.loadDefaultConf;
             %if everything is ok then train
-            obj.train();
+            if flagTrain
+                obj.train();
+            end;
         end
         
         %% setters
@@ -119,6 +129,18 @@ classdef KRG < handle
                     obj.paraVal=pVIn;
                 end
             end
+        end
+        function set.polyOrder(obj,pO)
+            fl=false;
+            if isnumeric(pO)
+                if int32(pO)==pO
+                    if pO>=0
+                        obj.polyOrder=pO;
+                        fl=true;
+                    end
+                end
+            end
+            if ~fl;Gfprintf(' Error on the chosen polynomial order (current %i)\n',obj.polyOrder);end
         end
         
         %% getters

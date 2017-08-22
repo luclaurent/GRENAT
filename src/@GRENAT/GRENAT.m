@@ -18,8 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-classdef GRENAT < handle
-    
+classdef GRENAT < handle    
     properties
         %building
         sampling=[];
@@ -785,32 +784,3 @@ info.confDisp='Class object (initDisp) containing information about the display 
 info.miss='Structure Containing information about the missing data';
 end
 
-%function display table with two columns of text
-function dispTableTwoColumnsStruct(tableFieldIn,structIn)
-%size of every components in tableA
-sizeA=cellfun(@numel,tableFieldIn);
-maxA=max(sizeA);
-%space after each component
-spaceA=maxA-sizeA+3;
-spaceTxt=' ';
-%display table
-for itT=1:numel(tableFieldIn)
-    if isfield(structIn,tableFieldIn{itT})
-        fprintf('%s%s%s\n',tableFieldIn{itT},spaceTxt(ones(1,spaceA(itT))),structIn.(tableFieldIn{itT}));
-    end
-end
-end
-
-%function display table with two columns of text
-function dispTableTwoColumns(tableA,tableB)
-%size of every components in tableA
-sizeA=cellfun(@numel,tableA);
-maxA=max(sizeA);
-%space after each component
-spaceA=maxA-sizeA+3;
-spaceTxt=' ';
-%display table
-for itT=1:numel(tableA)
-    fprintf('%s%s%s\n',tableA{itT},spaceTxt(ones(1,spaceA(itT))),tableB{itT});
-end
-end

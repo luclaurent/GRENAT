@@ -84,7 +84,16 @@ classdef RBF < handle
     
     methods
         %% Constructor
-        function obj=RBF(samplingIn,respIn,gradIn,kernIn,varargin)
+        % INPUTS:
+        % - samplingIn: array of sample points
+        % - respIn: vector of responses
+        % - gradIn: array of gradients
+        % - kernIn: chosen kernel function
+        % - varargin: specified in any order
+        %       - the missing data (MissData class)
+        %       - the options of the metamodel (initMeta class)
+        %       - the chosen kernel function (string)
+        function obj=RBF(samplingIn,respIn,gradIn,varargin)
             %load data
             flagTrain=false;
             %load data
@@ -94,8 +103,7 @@ classdef RBF < handle
                 flagTrain=true;
             end
             if nargin>2;obj.grad=gradIn;end
-            if nargin>3;obj.kernelFun=kernIn;end
-            if nargin>4;obj.manageOpt(varargin);end
+            if nargin>3;obj.manageOpt(varargin);end
             %check if a configuration has been loaded if not load the
             %default
             obj.loadDefaultConf;
@@ -199,10 +207,10 @@ classdef RBF < handle
         %% Building/training metamodel
         train(obj);
         %% Building/training the updated metamodel
-        trainUpdate(obj,samplingIn,respIn,gradIn);        
-        %% Update metamodel and train it        
-        update(obj,newSample,newResp,newGrad,newMissData);        
+        trainUpdate(obj,samplingIn,respIn,gradIn);
+        %% Update metamodel and train it
+        update(obj,newSample,newResp,newGrad,newMissData);
         %% Update data for building (deal with missing data)
-        updateData(obj,samplingIn,respIn,gradIn);       
+        updateData(obj,samplingIn,respIn,gradIn);
     end
 end

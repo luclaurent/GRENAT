@@ -18,12 +18,17 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Initialize flag for availability of the gradients
+%% Update sample points (normalized if necessary)
 % INPUTS:
-% - flag: boolean
+% - ~,~: empty inputs (method use for events)
 % OUTPUTS:
 % - none
 
-function initGradAvail(obj,flag)
-obj.gradAvail=flag;
+function updateSampling(obj,~,~)
+if obj.confMeta.normOn
+    obj.samplingN=obj.norm.addSampling(obj.sampling);
+else
+    obj.samplingN=obj.sampling;
+end
+obj.normSamplePtsIn=true;
 end

@@ -18,12 +18,15 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Initialize flag for availability of the gradients
+%% Create listeners for OO events
 % INPUTS:
-% - flag: boolean
+% - none
 % OUTPUTS:
 % - none
 
-function initGradAvail(obj,flag)
-obj.gradAvail=flag;
+function createListeners(obj)
+%listeners
+addlistener(obj,'sampling','PostSet',@obj.updateSampling);
+addlistener(obj,'resp','PostSet',@obj.updateResp);
+addlistener(obj,'grad','PostSet',@obj.updateGrad);
 end

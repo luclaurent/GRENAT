@@ -19,12 +19,14 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 classdef GRENAT < handle    
-    properties
+    properties (SetObservable)
         %building
         sampling=[];                % Sample points                                       
         resp=[];                    % responses
-        grad=[];                    % gradients
-        samplingN=[];               % normalized sample points
+        grad=[];                    % gradients   
+    end
+    properties
+                samplingN=[];               % normalized sample points
         respN=[];                   % normalized responses
         gradN=[];                   % normalized gradients
         %evaluating
@@ -42,11 +44,6 @@ classdef GRENAT < handle
         nonsampleVarOrder=[];       %
         nonsampleCI=struct('ci68',[],'ci95',[],'ci99',[]);  % confidence intervals
         nonsampleEI=[];             % expected improvement
-        %normalization data        
-        normMeanS;                  % mean of sample points
-        normStdS;                   % standard deviation of sample points
-        normMeanR;                  % mean of responses
-        normStdR;                   % standard deviation of responses
         %
         err=[];                     % errors of approximation (multiples criteria)
         %reference
@@ -54,14 +51,19 @@ classdef GRENAT < handle
         respRef=[];                 % reference responses
         gradRef=[];                 % refernece gradients
         %structures & class for storing configuration and data
-        confMeta;                   % metamodel configuration
+        confMeta=initMeta;          % metamodel configuration
         dataTrain;                  % training data
-        confDisp;                   % display configuration
-        miss;                       % missing data
-        norm;                       % normalization data (NormRenorm class)
+        confDisp=initDisp;          % display configuration
+        miss=MissData;              % missing data
+        norm=NormRenorm;            % normalization data (NormRenorm class)
     end
     properties (Dependent)
         type;                       % type of metamodel
+                %normalization data        
+        normMeanS;                  % mean of sample points
+        normStdS;                   % standard deviation of sample points
+        normMeanR;                  % mean of responses
+        normStdR;                   % standard deviation of responses
     end
     
     properties (Access = private)
@@ -74,6 +76,10 @@ classdef GRENAT < handle
         runMissingData=true;        % flag for checking missing data
         nbSubplot=0;                % number of subplot for display
         requireUpdate=false;        % flag for checking if GRENAT requires an update
+        %
+        samplingN_=[];              % normalized sample points
+        respN_=[];                  % normalized responses
+        gradN_=[];                  % normalized gradients
     end
     properties (Access = private,Constant)
         infoProp=affectTxtProp;     % list of properties and description
@@ -95,16 +101,18 @@ classdef GRENAT < handle
             Gfprintf(' Create GRENAT Object \n');
             %the date and time
             dispDate;
-            %load default configuration
-            obj.confMeta=initMeta;
-            %load display configuration
-            obj.confDisp=initDisp;
+            %load listeners
+            obj.createListeners;
             %specific configuration
             if nargin>0;obj.confMeta.type=typeIn;end
             if nargin>1;obj.sampling=samplingIn;end
             if nargin>2;obj.resp=respIn;end
             if nargin>3;obj.grad=gradIn;end
         end
+        
+        
+
+    
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -114,15 +122,14 @@ classdef GRENAT < handle
         function set.sampling(obj,samplingIn)
             if ~isempty(samplingIn)
                 if isempty(obj.sampling)
-                    obj.sampling=samplingIn;
+                    obj.sampling=samplingIn;                    
                 else
                     obj.sampling=[obj.sampling;samplingIn];
                 end
+                %
                 initRunTrain(obj,true);
-                resetNorm(obj);
-                initData(obj,'Sampling');
             else
-                fprintf('ERROR: Empty array of sample points\n');
+                Gfprintf('ERROR: Empty array of sample points\n');
             end
         end
         %setter for the responses
@@ -133,10 +140,10 @@ classdef GRENAT < handle
                 else
                     obj.resp=[obj.resp;respIn];
                 end
+%
                 initRunTrain(obj,true);
-                initData(obj,'Resp');
             else
-                fprintf('ERROR: Empty array of responses\n');
+                Gfprintf('ERROR: Empty array of responses\n');
             end
         end
         %setter for the gradients
@@ -147,9 +154,8 @@ classdef GRENAT < handle
                 else
                     obj.grad=[obj.grad;gradIn];
                 end
-                initRunTrain(obj,true);
+                initRunTrain(obj,true); 
                 initGradAvail(obj,true);
-                initData(obj,'Grad');
             end
         end
         %setter for the non sample points
@@ -160,22 +166,17 @@ classdef GRENAT < handle
             end
         end
         %setter for the type of metamodel
-        function set.type(obj,typeIn)
-            obj.confMeta.type=typeIn;
-        end
+        function set.type(obj,typeIn);obj.confMeta.type=typeIn;end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %getter for checking if GRENAT could be updated
-        function s=get.requireUpdate(obj)
-            s=obj.checkUpdate();
-        end
+        function s=get.requireUpdate(obj);s=obj.checkUpdate();end
         %getter for the type of metamodel
-        function type=get.type(obj)
-            type=obj.confMeta.type;
-        end
+        function type=get.type(obj);type=obj.confMeta.type;end
+        
         %setter for the non sample points
         function PtS=get.nonsamplePtsOrder(obj)
             PtS=orderData(obj,obj.nonsamplePts,'sampleIn');
@@ -200,15 +201,12 @@ classdef GRENAT < handle
             if obj.runErr;errCalc(obj);end
             err=obj.err;
         end
-        %getter for normalization data structure
-        function normStruct=get.norm(obj)
-            normStruct.sampling.mean=obj.normMeanS;
-            normStruct.sampling.std=obj.normStdS;
-            normStruct.resp.mean=obj.normMeanR;
-            normStruct.resp.std=obj.normStdR;
-            normStruct.on=obj.confMeta.normOn;
-        end
-
+        % getters for normalization data for sample points
+        function nMS=get.normMeanS(obj);nMS=obj.norm.meanS;end
+        function nSS=get.normStdS(obj);nSS=obj.norm.stdS;end
+        % getters for normalization data for responses
+        function nMR=get.normMeanR(obj);nMR=obj.norm.meanR;end
+        function nSR=get.normStdR(obj);nSR=obj.norm.stdR;end
         
     end
 end

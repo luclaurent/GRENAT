@@ -1,10 +1,6 @@
        %train the metamodel
         function train(obj)
-            %normalization of the input data
-            normInputData(obj,'initSamplePts');
-            normInputData(obj,'initResp');
-            obj.gradN=normInputData(obj,'Grad',obj.grad);
-            %check if data are missing
+             %check if data are missing
             checkMissingData(obj);
             %store normalization data
             obj.confMeta.norm=obj.norm;

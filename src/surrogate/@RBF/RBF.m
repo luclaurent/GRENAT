@@ -39,7 +39,6 @@ classdef RBF < handle
         %
         W=[];               % coefficients of RBF/GRBF
         %
-        polyOrder=0;        % polynomial order
         kernelFun='sexp';   % kernel function
         %
         paraVal=1;          % internal parameters used for building (fixed or estimated)

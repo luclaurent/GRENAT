@@ -65,13 +65,12 @@ classdef KernMatrix < handle
         % fct: chosen kernel function
         % sampling: array of sample points
         % val: array of value of the hyperparameters of the kernel function
-        % parallel: execParallel class
-        
+        % parallel: execParallel class        
         function obj=KernMatrix(fct,sampling,val,parallel)
             %load arguments
-            obj.fctKern=fct;
-            obj.paraVal=val;
-            obj.sampling=sampling;
+            if nargin>0;obj.fctKern=fct;end
+            if nargin>1;obj.paraVal=val;end
+            if nargin>2;obj.sampling=sampling;end
             if nargin>3;obj.parallelW=parallel;end
         end
         %% setters and getters

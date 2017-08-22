@@ -102,7 +102,6 @@ classdef SVR  < handle
         flagG=false;         % flag for computing matrices with gradients
         parallelW=1;         % number of workers for using parallel version
         %
-        requireRun=true;     % flag if a full building is required
         requireUpdate=false; % flag if an update is required
         forceGrad=false;     % flag for forcing the computation of 1st and 2nd derivatives of the kernel matrix
         %
@@ -127,16 +126,33 @@ classdef SVR  < handle
     end
     
     methods
-        %% Constructor
-        function obj=SVR(samplingIn,respIn,gradIn,kernIn,varargin)
+               %% Constructor
+        % INPUTS:
+        % - samplingIn: array of sample points
+        % - respIn: vector of responses
+        % - gradIn: array of gradients
+        % - varargin: specified in any order
+        %       - the missing data (MissData class)
+        %       - the options of the metamodel (initMeta class)
+        %       - the chosen kernel function (string)
+        function obj=SVR(samplingIn,respIn,gradIn,varargin)
             %load data
-            obj.sampling=samplingIn;
-            obj.resp=respIn;
+            flagTrain=false;
+            %load data
+            if nargin>0;obj.sampling=samplingIn;end
+            if nargin>1
+                obj.resp=respIn;
+                flagTrain=true;
+            end
             if nargin>2;obj.grad=gradIn;end
-            if nargin>3;obj.kernelFun=kernIn;end
-            if nargin>4;obj.manageOpt(varargin);end
+            if nargin>3;obj.manageOpt(varargin);end
+            %check if a configuration has been loaded if not load the
+            %default
+            obj.loadDefaultConf;
             %if everything is ok then train
-            obj.train();
+            if flagTrain
+                obj.train();
+            end;
         end
         
         %% setters

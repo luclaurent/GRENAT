@@ -123,9 +123,9 @@ classdef GRENAT < handle
             %
             if ~isempty(samplingIn)
                 if isempty(obj.sampling)
-                    obj.sampling=samplingIn;
+              %      obj.sampling=samplingIn;
                 else
-                    obj.sampling=[obj.sampling;samplingIn];
+              %      obj.sampling=[obj.sampling;samplingIn];
                 end
                 %update the sample points
                 obj.updateSampling(samplingIn);
@@ -231,6 +231,12 @@ classdef GRENAT < handle
         function nMR=get.normMeanR(obj);nMR=obj.norm.meanR;end
         function nSR=get.normStdR(obj);nSR=obj.norm.stdR;end
         
+    end
+    methods (Static)
+       %% Function for declaring the purpose of each properties
+       info=affectTxtProp();
+       %% Function for checking if the surrogate model is a classical
+       [Indirect,Classical,typeOk]=CheckGE(typeSurrogate);
     end
 end
 

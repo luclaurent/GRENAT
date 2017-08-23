@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Ffunction for declaring the purpose of each properties
+%% Function for declaring the purpose of each properties
 %gradient-enhanced or indirect gradient-enhanced surrogate model
 % INPUTS:
 % - none

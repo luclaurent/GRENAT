@@ -152,8 +152,7 @@ classdef GRENAT < handle
         function set.type(obj,typeIn)
             obj.setTypeConf(typeIn);
             obj.type=typeIn;
-        end
-        
+        end       
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

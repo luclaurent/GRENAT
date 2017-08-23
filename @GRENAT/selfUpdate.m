@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Check if update could be done and do it
+%% Update GRENAT toolbox
 % responses and gradients
 % INPUTS:
 % - flag: flag for for forcing update
@@ -27,20 +27,24 @@
 
 function s=selfUpdate(obj,flag)
 if nargin==1
-    flag=obj.requireUpdate;
+    flag=obj.checkUpdate;
 end
 %load folder of GRENAT
 f=fileparts(mfilename('fullpath'));
 if flag
-    if exist(fullfile('.git'),'dir')
-        [e,s]=system(['cd ' f ' && git pull origin']);
-        if e==0
-            Gfprintf('GRENAT has been update\n');
-            s=true;
-            obj.requireUpdate=false;
+    if ismac||isunix
+        if exist(fullfile('.git'),'dir')
+            [e,s]=system(['cd ' f ' && git pull origin']);
+            if e==0
+                Gfprintf('GRENAT has been update\n');
+                s=true;
+                obj.requireUpdate=false;
+            end
+        else
+            Gfprintf('Not a git version: update not available\n');
         end
     else
-        Gfprintf('Not a git version: update not available\n');
+        Gfprintf('Not a linux or mac computer: checking update not available\n');
     end
 end
 end

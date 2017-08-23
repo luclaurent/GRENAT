@@ -28,11 +28,30 @@ function updateResp(obj,newResp)
 %add responses to the MissingData's object
 obj.miss.addResp(newResp);
 %
-%add responses to the NormRenorm's object if normalization is required
-if obj.confMeta.normOn
-    obj.respN=obj.norm.addResp(obj.sampling);
+if ~isempty(respIn)
+    if isempty(obj.resp)
+        %fisrt add of responses
+        obj.resp=respIn;
+        %add responses to the NormRenorm's object if normalization is required
+        if obj.confMeta.normOn
+            obj.respN=obj.norm.addResp(obj.resp);
+        else
+            obj.respN=obj.resp;
+        end
+    else
+        %concatenate responses
+        obj.resp=[obj.resp;respIn];
+        % normalize the new responses using the existing database
+        if obj.confMeta.normOn
+            obj.respN=[obj.respN;obj.norm.Norm(newResp,'r')];
+        else
+            obj.respN=[obj.respN;obj.resp];
+        end
+    end
+    %
+    initRunTrain(obj,true);
 else
-    obj.respN=obj.resp;
+    Gfprintf('ERROR: Empty array of responses\n');
 end
-obj.normRespIn=true;
-end
+
+

@@ -28,10 +28,30 @@ function updateGrad(obj,newGrad)
 %add gradients to the MissingData's object
 obj.miss.addGrad(newGrad);
 %
-%normalize gradients
-if obj.confMeta.normOn
-    obj.gradN=obj.norm.normG(obj.grad);
+if ~isempty(newGrad)
+    if isempty(obj.grad)
+        %first add new gradients
+        obj.grad=newGrad;
+        %add gradients to the NormRenorm's object if normalization is required
+        if obj.confMeta.normOn
+            obj.gradN=obj.norm.addGrad(obj.grad);
+        else
+            obj.gradN=obj.grad;
+        end
+    else
+        % concatenate gradients
+        obj.grad=[obj.grad;newGrad];
+        % normalize the new gradients using the existing database
+        if obj.confMeta.normOn
+            obj.samplingN=[obj.samplingN;obj.norm.normG(newGrad)];
+        else
+            obj.samplingN=[obj.samplingN;newGrad];
+        end
+    end
+    %
+    initRunTrain(obj,true);
+    initGradAvail(obj,true);
 else
-    obj.gradN=obj.grad;
+    Gfprintf('ERROR: Empty array of gradients\n');
 end
-end
+

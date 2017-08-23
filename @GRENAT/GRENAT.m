@@ -120,53 +120,18 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %setter for the sampling
         function set.sampling(obj,samplingIn)
-            %
-            if ~isempty(samplingIn)
-                if isempty(obj.sampling)
-              %      obj.sampling=samplingIn;
-                else
-              %      obj.sampling=[obj.sampling;samplingIn];
-                end
-                %update the sample points
-                obj.updateSampling(samplingIn);
-                %
-                initRunTrain(obj,true);
-            else
-                Gfprintf('ERROR: Empty array of sample points\n');
-            end
+            %update the sampling, normalize it
+            obj.updateSampling(samplingIn);
         end
         %setter for the responses
         function set.resp(obj,respIn)
-            %
-            if ~isempty(respIn)
-                if isempty(obj.resp)
-                    obj.resp=respIn;
-                else
-                    obj.resp=[obj.resp;respIn];
-                end
-                %update the responses
-                obj.updateResp(respIn);
-                %
-                initRunTrain(obj,true);
-            else
-                Gfprintf('ERROR: Empty array of responses\n');
-            end
+            %update the responses, normalize them
+            obj.updateResp(respIn);
         end
         %setter for the gradients
         function set.grad(obj,gradIn)
-            %
-            if ~isempty(gradIn)
-                if isempty(obj.grad)
-                    obj.grad=gradIn;
-                else
-                    obj.grad=[obj.grad;gradIn];
-                end
-                %update the gradients
-                obj.updateGrad(gradIn);
-                %
-                initRunTrain(obj,true);
-                initGradAvail(obj,true);
-            end
+            %update the gradients, normalize them
+            obj.updateGrad(gradIn);
         end
         %setter for the non sample points
         function set.nonsamplePts(obj,samplingIn)

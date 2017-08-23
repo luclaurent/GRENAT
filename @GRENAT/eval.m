@@ -29,24 +29,50 @@
 % - variance: variance of the metamodel
 
 function [Z,GZ,variance]=eval(obj,nonsamplePts,Verb)
+%
+countTime=mesuTime;
+%
+numWorkers=1;
+%
 if nargin<3;Verb=true;end
 %check if the metamodel has been already trained
 if obj.runTrain;train(obj);end
 %store non sample points
-if nargin>1;obj.specifNonSamplePts(nonsamplePts);end
+if nargin>1;obj.NonSamplePts=nonsamplePts;end
 %evaluation of the metamodels
 if obj.runEval
-    %normalization of the input data
-    obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePtsOrder);
-    %evaluation of the metamodel
-    [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta,Verb);
+    %declare variables
+    NnS=size(obj.NonSamplePts,1);
+    NnP=size(obj.NonSamplePts,2);
+    %
+    %end of evaluations
+    if Verb
+        Gfprintf('++ Evaluation at %i points\n',NnS);
+    end
+    %
+    Ztmp=zeros(NnS,1);
+    GZtmp=zeros(NnS,NnP);
+    VarTmp=zeros(NnS,1);
+    %
+    NonSamplePtsTmp=obj.NonSamplePts;
+    %
+    parfor (itS=1:NnS,numWorkers)
+        %current points
+        currPts=NonSamplePtsTmp(itS,:);
+        %evaluation of the metamodel
+        varargout=obj.dataTrain.eval(currPts);
+        %store values
+        Ztmp(itS)=varargout{1};
+        GZtmp(itS,:)=varargout{2};
+        %
+        if numel(varargout)>2
+            VarTmp(itS)=varargout{3};
+        end
+    end
     %store data from the evaluation
-    obj.nonsampleRespN=K.Z;
-    obj.nonsampleGradN=K.GZ;
-    obj.nonsampleVarOrder=K.var;
-    %renormalization of the data
-    obj.nonsampleRespOrder=reNormInputData(obj,'Resp',obj.nonsampleRespN);
-    obj.nonsampleGradOrder=reNormInputData(obj,'Grad',obj.nonsampleGradN);
+    obj.nonsampleRespN=Ztmp;
+    obj.nonsampleGradN=GZtmp;
+    obj.nonsampleVarN=VarTmp;
     %update flags
     obj.runEval=false;
     obj.runErr=true;
@@ -55,4 +81,7 @@ end
 Z=obj.nonsampleResp;
 GZ=obj.nonsampleGrad;
 variance=obj.nonsampleVar;
+%
+countTime.stop;
+%
 end

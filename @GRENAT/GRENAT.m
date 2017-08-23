@@ -138,6 +138,16 @@ classdef GRENAT < handle
             %update non sample points
             obj.updateNonSamplePts(samplingIn);
         end
+        %setter for the non sample normalized responses
+        function set.nonsampleRespN(obj,respIn)
+            %update non sample normalized responses
+            obj.updateNonSampleResp(respIn);
+        end
+        %setter for the non sample normalized gradients
+        function set.nonsampleGradN(obj,gradIn)
+            %update non sample normalized gradients
+            obj.updateNonSampleGrad(gradIn);
+        end
         %setter for the type of metamodel
         function set.type(obj,typeIn)
             obj.setTypeConf(typeIn);

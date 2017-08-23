@@ -18,40 +18,25 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Update gradients (normalized if necessary)
+%% Update unormalized gradients (renormalized if necessary)
 % INPUTS:
 % - newGrad: array of new gradients
 % OUTPUTS:
 % - none
 
-function updateGrad(obj,newGrad)
-%add gradients to the MissingData's object
-obj.miss.addGrad(newGrad);
+function updateNonSampleGrad(obj,newGrad)
 %
 if ~isempty(newGrad)
-    if isempty(obj.grad)
-        %first add new gradients
-        obj.grad=newGrad;
-        %add gradients to the NormRenorm's object if normalization is required
-        if obj.confMeta.normOn
-            obj.gradN=obj.norm.addGrad(obj.grad);
-        else
-            obj.gradN=obj.grad;
-        end
-    else
-        % concatenate gradients
-        obj.grad=[obj.grad;newGrad];
-        % normalize the new gradients using the existing database
-        if obj.confMeta.normOn
-            obj.gradN=[obj.gradN;obj.norm.normG(newGrad)];
-        else
-            obj.gradN=[obj.gradN;newGrad];
-        end
-    end
     %
-    initRunTrain(obj,true);
-    initGradAvail(obj,true);
+    obj.nonsampleGradN=newGrad;
+    % normalize the new gradients using the existing database
+    if obj.confMeta.normOn
+        obj.nonsampleGrad=obj.norm.reNormG(newGrad);
+    else
+        obj.nonsampleGrad=newGrad;
+    end
 else
     Gfprintf('ERROR: Empty array of gradients\n');
+end
 end
 

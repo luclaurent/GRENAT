@@ -135,10 +135,8 @@ classdef GRENAT < handle
         end
         %setter for the non sample points
         function set.nonsamplePts(obj,samplingIn)
-            if ~isempty(samplingIn)
-                obj.nonsamplePts=samplingIn;
-                initRunEval(obj,true);
-            end
+            %update non sample points
+            obj.updateNonSamplePts(samplingIn);
         end
         %setter for the type of metamodel
         function set.type(obj,typeIn)
@@ -146,15 +144,7 @@ classdef GRENAT < handle
             obj.type=typeIn;
         end
         
-            % set the type of metamodel in the configuration and initialize
-            % the metamodel
-        function setTypeConf(obj,typeIn)
-            obj.confMeta.type=typeIn;
-            %extract the right type of metamodel
-            [InGrad,ClassGrad,typeOk]=obj.checkGE(typeIn);
-            %initialize the metamodel
-            obj.dataTrain=eval(typeOk);
-        end
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

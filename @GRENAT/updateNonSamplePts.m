@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Evaluate the metamodel
+%% Declare non sample points
 % responses and gradients
 % INPUTS:
 % - nonsamplePts: evaluation points
@@ -28,31 +28,18 @@
 % - GZ: approximate gradients
 % - variance: variance of the metamodel
 
-function [Z,GZ,variance]=eval(obj,nonsamplePts,Verb)
-if nargin<3;Verb=true;end
-%check if the metamodel has been already trained
-if obj.runTrain;train(obj);end
-%store non sample points
-if nargin>1;obj.specifNonSamplePts(nonsamplePts);end
-%evaluation of the metamodels
-if obj.runEval
-    %normalization of the input data
-    obj.nonsamplePtsN=normInputData(obj,'SamplePts',obj.nonsamplePtsOrder);
-    %evaluation of the metamodel
-    [K]=EvalMeta(obj.nonsamplePtsN,obj.dataTrain,obj.confMeta,Verb);
-    %store data from the evaluation
-    obj.nonsampleRespN=K.Z;
-    obj.nonsampleGradN=K.GZ;
-    obj.nonsampleVarOrder=K.var;
-    %renormalization of the data
-    obj.nonsampleRespOrder=reNormInputData(obj,'Resp',obj.nonsampleRespN);
-    obj.nonsampleGradOrder=reNormInputData(obj,'Grad',obj.nonsampleGradN);
-    %update flags
-    obj.runEval=false;
-    obj.runErr=true;
+function updateNonSamplePts(obj,samplePtsIn)
+if ~isempty(samplePtsIn)
+    %store the non sample points
+    obj.nonsamplePts=samplePtsIn;
+    %normalized them if required
+    % normalize the new sample points using the existing database
+        if obj.confMeta.normOn
+            obj.nonsamplePtsN=obj.norm.Norm(samplePtsIn,'s');
+        else
+            obj.nonsamplePtsN=samplePtsIn;
+        end
+        %update flag
+        initRunEval(obj,true);
 end
-%extract unnormalized data
-Z=obj.nonsampleResp;
-GZ=obj.nonsampleGrad;
-variance=obj.nonsampleVar;
 end

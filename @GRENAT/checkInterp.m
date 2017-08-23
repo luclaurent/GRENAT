@@ -18,16 +18,21 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Compute and show the errors of the metamodel (using reference if it is
+%% Check interpolation
 %available)
 % INPUTS:
 % - none
 % OUTPUTS:
-% - err: structure containing error criteria
+% - statusR,statusG: flag for interpolation status on responses and
+% gradients
 
-function err=errCalc(obj)
-%comptuation of the criteria
-obj.err=critErrDisp(obj.nonsampleResp,obj.respRef,obj.dataTrain.build);
-obj.runErr=false;
-err=obj.err;
+function [statusR,statusG]=checkInterp(obj)
+statusG=true;
+%evaluation of the approximation at the sample points
+[Z,GZ]=obj.eval(obj.sampling);
+%check interpolation
+statusR=checkInterpRG(obj.resp,Z,'resp');
+if  obj.dataTrain.used.availGrad
+    statusG=checkInterpRG(obj.grad,GZ,'grad');
+end
 end

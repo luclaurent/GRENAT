@@ -21,9 +21,15 @@
 %% Update the metamodel by adding sample points and associated
 % responses and gradients
 % INPUTS:
-% - none
+% - samplingIn: new sample points
+% - respIn: new responses
+% - gradIn: new gradients
+% - paraFind: flag for actiavting or not the estimation of the
+% hyperparameters
+% - varargin: update some properties or the metamodel configuration
 % OUTPUTS:
 % - none
+
 
 function update(obj,samplingIn,respIn,gradIn,paraFind,varargin)
 %add data
@@ -35,12 +41,16 @@ if ~isempty(samplingIn)
     initRunTrain(obj,true);
     initRunEval(obj,true);
     %change status of the estimation of the parameters
-    obj.confMeta.conf('estimOn',paraFind);
+    if nargin>4;
+        obj.confMeta.conf('estimOn',paraFind);
+    end
     %deal with additional options
     if nargin>5;
         obj.confMeta.conf(varargin{:});
     end
+    %update options
+    obj.dataTrain.manageOpt(obj.confMeta);
     %train the metamodel
-    obj.train();
+    obj.dataTrain.update(samplingIn,respIn,gradIn);
 end
 end

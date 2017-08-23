@@ -70,16 +70,13 @@ classdef GRENAT < handle
         runTrain=true;              % flag for checking if the training is obsolete
         runEval=true;               % flag for checking if the training is obsolete
         gradAvail=false;            % flag for availability of the gradients
+        gradUsed=false;             % flag for use of the gradients
         runErr=true;                % flag for computation of the error
         normSamplePtsIn=false;      % flag for checking if the input data are normalized
         normRespIn=false;           % flag for checking if the input data are normalized
         runMissingData=true;        % flag for checking missing data
         nbSubplot=0;                % number of subplot for display
         requireUpdate=false;        % flag for checking if GRENAT requires an update
-        %
-        samplingN_=[];              % normalized sample points
-        respN_=[];                  % normalized responses
-        gradN_=[];                  % normalized gradients
     end
     properties (Access = private,Constant)
         infoProp=affectTxtProp;     % list of properties and description

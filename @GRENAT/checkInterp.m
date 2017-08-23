@@ -19,7 +19,6 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %% Check interpolation
-%available)
 % INPUTS:
 % - none
 % OUTPUTS:
@@ -32,7 +31,7 @@ statusG=true;
 [Z,GZ]=obj.eval(obj.sampling);
 %check interpolation
 statusR=checkInterpRG(obj.resp,Z,'resp');
-if  obj.dataTrain.used.availGrad
+if  obj.gradUsed
     statusG=checkInterpRG(obj.grad,GZ,'grad');
 end
 end

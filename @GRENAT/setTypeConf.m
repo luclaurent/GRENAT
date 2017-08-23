@@ -20,7 +20,6 @@
 
 %% Set the type of metamodel in the configuration and initialize
 % the metamodel
-% responses and gradients
 % INPUTS:
 % - typeIn: raw name of the gradients
 % OUTPUTS:
@@ -32,4 +31,8 @@ obj.confMeta.type=typeIn;
 [InGrad,ClassGrad,typeOk]=obj.checkGE(typeIn);
 %initialize the metamodel
 obj.dataTrain=eval(typeOk);
+%for gradient-based approximation
+if InGrad||ClassGrad
+    obj.gradUsed=true;
+end
 end

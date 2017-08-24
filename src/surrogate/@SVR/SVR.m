@@ -231,7 +231,7 @@ classdef SVR  < handle
         %% Get value of the internal parameters
         pV=getParaVal(obj);
         %%  for dealing with the the input arguments of the class
-        manageOpt(obj,optIn);
+        manageOpt(obj,varargin);
         %% Compute the the Span Bound of the LOO error for SVR/GSVR
         %from Vapnik & Chapelle 2000 / Chapelle, Vapnik, Bousquet & S. Mukherjee 2002/Chang & Lin 2005
         spanBound=sb(obj,paraValIn,type);

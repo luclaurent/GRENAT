@@ -22,25 +22,25 @@
 % INPUTS:
 % - newResp: vector of new responses
 % OUTPUTS:
-% - none
+% - respOk: responses ready to be stored
 
-function updateResp(obj,newResp)
+function respOk=updateResp(obj,newResp)
 %add responses to the MissingData's object
 obj.miss.addResp(newResp);
 %
-if ~isempty(respIn)
+if ~isempty(newResp)
     if isempty(obj.resp)
-        %fisrt add of responses
-        obj.resp=respIn;
+        %first add of responses
+        respOk=newResp;
         %add responses to the NormRenorm's object if normalization is required
         if obj.confMeta.normOn
             obj.respN=obj.norm.addResp(obj.resp);
         else
             obj.respN=obj.resp;
-        end
+        end        
     else
         %concatenate responses
-        obj.resp=[obj.resp;respIn];
+        respOk=[obj.resp;newResp];
         % normalize the new responses using the existing database
         if obj.confMeta.normOn
             obj.respN=[obj.respN;obj.norm.Norm(newResp,'r')];

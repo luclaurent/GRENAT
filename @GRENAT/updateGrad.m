@@ -22,28 +22,28 @@
 % INPUTS:
 % - newGrad: array of new gradients
 % OUTPUTS:
-% - none
+% - gradOk: gradients ready to be stored
 
-function updateGrad(obj,newGrad)
+function gradOk=updateGrad(obj,newGrad)
 %add gradients to the MissingData's object
 obj.miss.addGrad(newGrad);
 %
 if ~isempty(newGrad)
     if isempty(obj.grad)
         %first add new gradients
-        obj.grad=newGrad;
+        gradOk=newGrad;
         %add gradients to the NormRenorm's object if normalization is required
         if obj.confMeta.normOn
-            obj.gradN=obj.norm.addGrad(obj.grad);
+            obj.gradN=obj.norm.NormG(obj.grad);
         else
             obj.gradN=obj.grad;
         end
     else
         % concatenate gradients
-        obj.grad=[obj.grad;newGrad];
+        gradOk=[obj.grad;newGrad];
         % normalize the new gradients using the existing database
         if obj.confMeta.normOn
-            obj.gradN=[obj.gradN;obj.norm.normG(newGrad)];
+            obj.gradN=[obj.gradN;obj.norm.NormG(newGrad)];
         else
             obj.gradN=[obj.gradN;newGrad];
         end

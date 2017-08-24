@@ -22,16 +22,16 @@
 % INPUTS:
 % - newSample: array of new sample points
 % OUTPUTS:
-% - none
+% - sampleOk: sample points ready to be stored
 
-function updateSampling(obj,newSample)
+function sampleOk=updateSampling(obj,newSample)
 %add sample points to the MissingData's object
 obj.miss.addSampling(newSample);
 %
 if ~isempty(newSample)
     if isempty(obj.sampling)
         %first add new sampling
-        obj.sampling=newSample;
+        sampleOk=newSample;
         %add sample points to the NormRenorm's object if normalization is required
         if obj.confMeta.normOn
             obj.samplingN=obj.norm.addSampling(obj.sampling);
@@ -40,7 +40,7 @@ if ~isempty(newSample)
         end
     else
         % concatenate sample points
-        obj.sampling=[obj.sampling;newSample];
+        sampleOk=[obj.sampling;newSample];
         % normalize the new sample points using the existing database
         if obj.confMeta.normOn
             obj.samplingN=[obj.samplingN;obj.norm.Norm(newSample,'s')];

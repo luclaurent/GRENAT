@@ -25,17 +25,17 @@
 % OUTPUTS:
 % - none
 
-function manageOpt(obj,optIn)
+function manageOpt(obj,varargin)
 fun=@(x)isa(x,'MissData');
 %look for the missing data class (MissData)
-sM=find(cellfun(fun,optIn)~=false);
-if ~isempty(sM);obj.missData=optIn{sM};end
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.missData=varargin{sM};end
 %look for the information concerning the metamodel (class initMeta)
 fun=@(x)isa(x,'initMeta');
-sM=find(cellfun(fun,optIn)~=false);
-if ~isempty(sM);obj.metaData=optIn{sM};end
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.metaData=varargin{sM};end
 %look for the chosen kernel function (string)
 fun=@(x)ischar(x);
-sM=find(cellfun(fun,optIn)~=false);
-if ~isempty(sM);obj.kernelFun=optIn{sM};end
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.kernelFun=varargin{sM};end
 end

@@ -28,7 +28,7 @@
 function setTypeConf(obj,typeIn)
 obj.confMeta.type=typeIn;
 %extract the right type of metamodel
-[InGrad,ClassGrad,typeOk]=obj.checkGE(typeIn);
+[InGrad,ClassGrad,typeOk]=obj.CheckGE(typeIn);
 %initialize the metamodel
 obj.dataTrain=eval(typeOk);
 %for gradient-based approximation

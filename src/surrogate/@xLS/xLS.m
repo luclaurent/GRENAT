@@ -147,7 +147,7 @@ classdef xLS < handle
         %% Evaluation of the metamodel
         [Z,GZ]=eval(obj,U);
         %%  for dealing with the the input arguments of the class
-        flagR=manageOpt(obj,optIn);
+        flagR=manageOpt(obj,varargin);
         %% Prepare data for building (deal with missing data)
         setData(obj);
         %% Show information in the console

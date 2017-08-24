@@ -197,7 +197,7 @@ classdef RBF < handle
         %% Load default configuration
         loadDefaultConf(obj);
         %%  for dealing with the the input arguments of the class
-        manageOpt(obj,optIn);
+        manageOpt(obj,varargin);
         %% prepare data for building (deal with missing data)
         setData(obj);
         %% Show the result of the CV

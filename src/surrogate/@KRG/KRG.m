@@ -215,7 +215,7 @@ classdef KRG < handle
         %% Compute likelihood
         [logLi,Li,liSack]=likelihood(obj,paraValIn);
         %%  for dealing with the the input arguments of the class
-        manageOpt(obj,optIn);
+        manageOpt(obj,varargin);
         %% prepare data for building (deal with missing data)
         setData(obj);
         %% Show the result of the CV

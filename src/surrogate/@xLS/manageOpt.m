@@ -25,7 +25,7 @@
 % OUTPUTS:
 % - flagR: return the value of a boolean is proposed (if not return true)
 
-function flagR=manageOpt(obj,optIn)
+function flagR=manageOpt(obj,varargin)
 %
 flagR=true; %default
 %

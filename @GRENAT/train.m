@@ -25,8 +25,8 @@
 % - none
 
 function train(obj)
-%check if data are missing
-checkMissingData(obj);
+%display information before building
+obj.showData('train');
 %populate the surrogate model class
 obj.dataTrain.addSample(obj.samplingN);
 obj.dataTrain.addSample(obj.respN);

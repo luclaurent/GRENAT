@@ -28,15 +28,18 @@
 function check(obj)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Gfprintf(' >> Check missing data \n');
+Gfprintf(' >> Check missing data: ');
 %
 if obj.requireCheckResp
+    Gfprintf('Responses ');
     obj.checkResp();
     obj.requireCheckResp=false;
 end
 if obj.requireCheckGrad
+    Gfprintf('Gradients');
     obj.checkGrad();
     obj.requireCheckResp=true;
 end
+Gfprintf('\n');
 obj.show();
 end

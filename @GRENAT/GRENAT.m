@@ -18,15 +18,15 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-classdef GRENAT < handle    
+classdef GRENAT < handle
     properties (SetObservable)
         %building
-        sampling=[];                % Sample points                                       
+        sampling=[];                % Sample points
         resp=[];                    % responses
-        grad=[];                    % gradients   
+        grad=[];                    % gradients
     end
     properties
-                samplingN=[];               % normalized sample points
+        samplingN=[];               % normalized sample points
         respN=[];                   % normalized responses
         gradN=[];                   % normalized gradients
         %evaluating
@@ -34,7 +34,7 @@ classdef GRENAT < handle
         nonsampleResp=[];           % non sample responses
         nonsampleGrad=[];           % non sample gradients
         nonsamplePtsOrder=[];       %
-        nonsampleRespOrder=[];      % 
+        nonsampleRespOrder=[];      %
         nonsampleGradOrder=[];      %
         nonsamplePtsN=[];           % normalized non sample points
         nonsampleRespN=[];          % normalized non sample responses
@@ -58,8 +58,8 @@ classdef GRENAT < handle
         norm=NormRenorm;            % normalization data (NormRenorm class)
         type;                       % type of metamodel
     end
-    properties (Dependent)       
-                %normalization data        
+    properties (Dependent)
+        %normalization data
         normMeanS;                  % mean of sample points
         normStdS;                   % standard deviation of sample points
         normMeanR;                  % mean of responses
@@ -72,14 +72,12 @@ classdef GRENAT < handle
         gradAvail=false;            % flag for availability of the gradients
         gradUsed=false;             % flag for use of the gradients
         runErr=true;                % flag for computation of the error
-  %      normSamplePtsIn=false;      % flag for checking if the input data are normalized
-  %      normRespIn=false;           % flag for checking if the input data are normalized
+        %      normSamplePtsIn=false;      % flag for checking if the input data are normalized
+        %      normRespIn=false;           % flag for checking if the input data are normalized
         runMissingData=true;        % flag for checking missing data
         nbSubplot=0;                % number of subplot for display
         requireUpdate=false;        % flag for checking if GRENAT requires an update
-    end
-    properties (Access = private,Constant)
-        infoProp=affectTxtProp;     % list of properties and description
+        infoProp;     % list of properties and description
     end
     
     methods
@@ -90,45 +88,31 @@ classdef GRENAT < handle
         % - respIn: vector of responses
         % - gradIn: array of gradients
         function obj=GRENAT(typeIn,samplingIn,respIn,gradIn)
-            %load directories on the path
-            initDirGRENAT;
-            %
-            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            Gfprintf(' Create GRENAT Object \n');
-            %the date and time
-            dispDate;
-            %load listeners
-            obj.createListeners;
+            %initialize GRENAT
+            obj.initGRENAT;
             %specific configuration
-            if nargin>0;obj.confMeta.type=typeIn;end
+            if nargin>0;obj.type=typeIn;end
             if nargin>1;obj.sampling=samplingIn;end
             if nargin>2;obj.resp=respIn;end
             if nargin>3;obj.grad=gradIn;end
         end
-        
-        
-
-    
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %setter for the sampling
         function set.sampling(obj,samplingIn)
             %update the sampling, normalize it
-            obj.updateSampling(samplingIn);
+            obj.sampling=obj.updateSampling(samplingIn);
         end
         %setter for the responses
         function set.resp(obj,respIn)
             %update the responses, normalize them
-            obj.updateResp(respIn);
+            obj.resp=obj.updateResp(respIn);
         end
         %setter for the gradients
         function set.grad(obj,gradIn)
             %update the gradients, normalize them
-            obj.updateGrad(gradIn);
+            obj.grad=obj.updateGrad(gradIn);
         end
         %setter for the non sample points
         function set.nonsamplePts(obj,samplingIn)
@@ -149,8 +133,8 @@ classdef GRENAT < handle
         function set.type(obj,typeIn)
             obj.setTypeConf(typeIn);
             obj.type=typeIn;
-        end       
-
+        end
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -194,10 +178,10 @@ classdef GRENAT < handle
         
     end
     methods (Static)
-       %% Function for declaring the purpose of each properties
-       info=affectTxtProp();
-       %% Function for checking if the surrogate model is a classical
-       [Indirect,Classical,typeOk]=CheckGE(typeSurrogate);
+        %% Function for declaring the purpose of each properties
+        info=affectTxtProp();
+        %% Function for checking if the surrogate model is a classical
+        [Indirect,Classical,typeOk]=CheckGE(typeSurrogate);
     end
 end
 

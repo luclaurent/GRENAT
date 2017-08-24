@@ -72,8 +72,8 @@ classdef GRENAT < handle
         gradAvail=false;            % flag for availability of the gradients
         gradUsed=false;             % flag for use of the gradients
         runErr=true;                % flag for computation of the error
-        normSamplePtsIn=false;      % flag for checking if the input data are normalized
-        normRespIn=false;           % flag for checking if the input data are normalized
+  %      normSamplePtsIn=false;      % flag for checking if the input data are normalized
+  %      normRespIn=false;           % flag for checking if the input data are normalized
         runMissingData=true;        % flag for checking missing data
         nbSubplot=0;                % number of subplot for display
         requireUpdate=false;        % flag for checking if GRENAT requires an update

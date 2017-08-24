@@ -34,9 +34,9 @@ if ~isempty(newResp)
         respOk=newResp;
         %add responses to the NormRenorm's object if normalization is required
         if obj.confMeta.normOn
-            obj.respN=obj.norm.addResp(obj.resp);
+            obj.respN=obj.norm.addResp(newResp);
         else
-            obj.respN=obj.resp;
+            obj.respN=newResp;
         end        
     else
         %concatenate responses

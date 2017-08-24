@@ -34,9 +34,9 @@ if ~isempty(newSample)
         sampleOk=newSample;
         %add sample points to the NormRenorm's object if normalization is required
         if obj.confMeta.normOn
-            obj.samplingN=obj.norm.addSampling(obj.sampling);
+            obj.samplingN=obj.norm.addSampling(newSample);
         else
-            obj.samplingN=obj.sampling;
+            obj.samplingN=newSample;
         end
     else
         % concatenate sample points

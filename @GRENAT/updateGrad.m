@@ -34,7 +34,7 @@ if ~isempty(newGrad)
         gradOk=newGrad;
         %add gradients to the NormRenorm's object if normalization is required
         if obj.confMeta.normOn
-            obj.gradN=obj.norm.NormG(obj.grad);
+            obj.gradN=obj.norm.NormG(newGrad);
         else
             obj.gradN=obj.grad;
         end

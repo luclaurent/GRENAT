@@ -29,14 +29,14 @@ function train(obj)
 obj.showData('train');
 %populate the surrogate model class
 obj.dataTrain.addSample(obj.samplingN);
-obj.dataTrain.addSample(obj.respN);
-obj.dataTrain.addSample(obj.gradN);
+obj.dataTrain.addResp(obj.respN);
+obj.dataTrain.addGrad(obj.gradN);
 obj.dataTrain.manageOpt(obj.confMeta,obj.miss);
 %train the metamodel
 obj.dataTrain.train;
 %save estimate parameters
-if obj.isfield(obj.dataTrain.build,'paraVal')
-    obj.confMeta.definePara(obj.dataTrain.build.para);
+if isprop(obj.dataTrain,'paraVal')
+    obj.confMeta.definePara(obj.dataTrain.paraVal);
     obj.confMeta.updatePara;
 end
 %change state of flags

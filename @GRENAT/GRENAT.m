@@ -64,6 +64,9 @@ classdef GRENAT < handle
         normStdS;                   % standard deviation of sample points
         normMeanR;                  % mean of responses
         normStdR;                   % standard deviation of responses
+        %
+        nS;                         % number of sample points
+        nP;                         % number of design parameters
     end
     
     properties (Access = private)
@@ -142,6 +145,12 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %getter for checking if GRENAT could be updated
         function s=get.requireUpdate(obj);s=obj.checkUpdate();end
+        
+        %getter for the number of sample points
+        function s=get.nS(obj);s=size(obj.sampling,1);end
+        %getter for the number of design parameters
+        function s=get.nP(obj);s=size(obj.sampling,2);end
+        
         %getter for the type of metamodel
         function type=get.type(obj);type=obj.confMeta.type;end
         

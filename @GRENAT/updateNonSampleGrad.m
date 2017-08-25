@@ -27,11 +27,13 @@
 function updateNonSampleGrad(obj,newGrad)
 %
 if ~isempty(newGrad)
+    %reorder data if necessary
+    gradOk=obj.orderData(newGrad,'gradOut');
     % normalize the new gradients using the existing database
     if obj.confMeta.normOn
-        obj.nonSampleGrad=obj.norm.reNormG(newGrad);
+        obj.nonSampleGrad=obj.norm.reNormG(gradOk);
     else
-        obj.nonSampleGrad=newGrad;
+        obj.nonSampleGrad=gradOk;
     end
 else
     obj.nonSampleGrad=[];

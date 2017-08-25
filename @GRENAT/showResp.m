@@ -26,5 +26,5 @@
 
 function showResp(obj)
 obj.confDisp.title=('Approximated responses');
-displaySurrogate(obj.nonsamplePts,obj.nonsampleResp,obj.sampling,obj.resp,obj.grad,obj.confDisp);
+displaySurrogate(obj.nonSamplePts,obj.nonSampleResp,obj.sampling,obj.resp,obj.grad,obj.confDisp);
 end

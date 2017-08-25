@@ -26,7 +26,7 @@
 
 function showGradRef(obj,nbG)
 %default value
-if nargin==1;nbG=1:size(obj.nonsampleGrad,3);end
+if nargin==1;nbG=1:size(obj.gradRef,3);end
 for itG=nbG
     obj.confDisp.title=(['Gradients Reference /x' num2str(itG)]);
     displaySurrogate(obj.sampleRef,obj.gradRef(:,:,itG),obj.sampling,obj.resp,obj.grad,obj.confDisp);

@@ -28,12 +28,13 @@
 function updateNonSamplePts(obj,samplePtsIn)
 if ~isempty(samplePtsIn)
     %reorder data if necessary
+    sampleOk=obj.orderData(samplePtsIn,'sampleIn');
     %normalized them if required
     % normalize the new sample points using the existing database
     if obj.confMeta.normOn
-        obj.nonSamplePtsN=obj.norm.Norm(samplePtsIn,'s');
+        obj.nonSamplePtsN=obj.norm.Norm(sampleOk,'s');
     else
-        obj.nonSamplePtsN=samplePtsIn;
+        obj.nonSamplePtsN=sampleOk;
     end
     %update flag
     initRunEval(obj,true);

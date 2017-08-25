@@ -26,6 +26,9 @@ classdef GRENAT < handle
         grad=[];                    % gradients
     end
     properties
+        %%load directories on the path
+        dirGRENAT=initDirGRENAT;
+        %
         samplingN=[];               % normalized sample points
         respN=[];                   % normalized responses
         gradN=[];                   % normalized gradients

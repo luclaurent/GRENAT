@@ -28,8 +28,6 @@
 function initGRENAT(obj)
 %load descriptions of properties
 obj.infoProp=obj.affectTxtProp;
-%%load directories on the path
-initDirGRENAT;
 %
 Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
 Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');

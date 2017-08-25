@@ -27,11 +27,13 @@
 function updateNonSampleResp(obj,newResp)
 %
 if ~isempty(newResp)
+    %reorder data if necessary
+    respOk=obj.orderData(newResp,'respOut');
     % normalize the new gradients using the existing database
     if obj.confMeta.normOn
-        obj.nonSampleResp=obj.norm.reNorm(newResp,'r');
+        obj.nonSampleResp=obj.norm.reNorm(respOk,'r');
     else
-        obj.nonSampleResp=newResp;
+        obj.nonSampleResp=respOk;
     end
 else
     obj.nonSampleResp=[];

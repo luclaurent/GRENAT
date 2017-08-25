@@ -27,7 +27,7 @@
 
 function err=errCalc(obj)
 %comptuation of the criteria
-obj.err=critErrDisp(obj.nonsampleResp,obj.respRef,obj.dataTrain.build);
+obj.err=critErrDisp(obj.nonSampleResp,obj.respRef,obj.dataTrain);
 obj.runErr=false;
 err=obj.err;
 end

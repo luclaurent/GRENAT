@@ -20,23 +20,23 @@
 
 %% Compute infill criterion
 % INPUTS:
-% - nonsamplePts: array of sample points (optional)
+% - nonSamplePts: array of sample points (optional)
 % - Verb: activate or not the verbose mode (optional)
 % OUTPUTS:
 % - ZI: value(s) of the chosen infill criteria
 % - detI: details concerning infill
 
-function [ZI,detI]=evalInfill(obj,nonsamplePts,Verb)
+function [ZI,detI]=evalInfill(obj,nonSamplePts,Verb)
 if nargin<3;Verb=true;end
 %store non sample points
-if nargin>1;obj.nonsamplePts=nonsamplePts;end
+if nargin>1;obj.nonSamplePts=nonSamplePts;end
 %evaluation
 obj.eval([],Verb);
 %minimum response
 respMin=min(obj.resp);
 %computation of infill criteria
 ZI=[];
-if ~isempty(obj.nonsampleVar)
-    [ZI,detI]=InfillCrit(respMin,obj.nonsampleResp,obj.nonsampleVar,obj.confMeta.infill);
+if ~isempty(obj.nonSampleVar)
+    [ZI,detI]=InfillCrit(respMin,obj.nonSampleResp,obj.nonSampleVar,obj.confMeta.infill);
 end
 end

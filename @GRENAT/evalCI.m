@@ -20,19 +20,19 @@
 
 %% Evaluate the CI of the metamodel
 % INPUTS:
-% - nonsamplePts: array of sample points (optional)
+% - nonSamplePts: array of sample points (optional)
 % OUTPUTS:
 % - ci68,ci95,ci99: confidence intervals at 68%, 95% and 99%
 
-function [ci68,ci95,ci99]=evalCI(obj,nonsamplePts)
+function [ci68,ci95,ci99]=evalCI(obj,nonSamplePts)
 %store non sample points
 if nargin>1;
-    obj.nonsamplePts=nonsamplePts;
+    obj.nonSamplePts=nonSamplePts;
     obj.eval;
 end
 %eval the CI
-[ci68,ci95,ci99]=BuildCI(obj.nonsampleResp,obj.nonsampleVar);
-obj.nonsampleCI.ci68=ci68;
-obj.nonsampleCI.ci95=ci95;
-obj.nonsampleCI.ci99=ci99;
+[ci68,ci95,ci99]=BuildCI(obj.nonSampleResp,obj.nonSampleVar);
+obj.nonSampleCI.ci68=ci68;
+obj.nonSampleCI.ci95=ci95;
+obj.nonSampleCI.ci99=ci99;
 end

@@ -26,17 +26,17 @@
 
 function updateNonSampleVar(obj,newVar)
 %
-if ~isempty(newVar)
-    %reorder data if necessary
-    varOk=obj.orderData(newVar,'respOut');
+if ~isempty(newVar)    
     % renormalize the new variance using the existing database
     if obj.confMeta.normOn
-        obj.nonSampleVar=obj.norm.reNormVar(varOk);
+        varOk=obj.norm.reNormVar(newVar);
     else
-        obj.nonSampleVar=varOk;
+        varOk=newVar;
     end
+    %reorder data if necessary
+    obj.nonSampleVarOrder=obj.orderData(varOk,'respOut');
 else
-    obj.nonSampleVar=[];
+    obj.nonSampleVarOrder=[];
 end
 end
 

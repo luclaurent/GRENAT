@@ -27,6 +27,7 @@
 
 function updateNonSamplePts(obj,samplePtsIn)
 if ~isempty(samplePtsIn)
+    %reorder data if necessary
     %normalized them if required
     % normalize the new sample points using the existing database
     if obj.confMeta.normOn

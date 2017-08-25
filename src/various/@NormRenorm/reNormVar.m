@@ -1,5 +1,5 @@
-%% Method of GRENAT class
-% L. LAURENT -- 26/06/2016 -- luc.laurent@lecnam.net
+%% Method of NormRenorm class
+% L. LAURENT -- 02/08/2017 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -18,23 +18,19 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Update unormalized responses (renormalized if necessary)
+
+%% Renormalization of variance
 % INPUTS:
-% - newGrad: array of new gradients
+% - in: array of normalized variance
 % OUTPUTS:
-% - none
+% - out: array of non-normalized gradients
 
-function updateNonSampleResp(obj,newResp)
-%
-if ~isempty(newResp)
-    % normalize the new gradients using the existing database
-    if obj.confMeta.normOn
-        obj.nonSampleResp=obj.norm.reNorm(newResp,'r');
-    else
-        obj.nonSampleResp=newResp;
-    end
+function out=reNormVar(obj,in)
+% if empty normalization data
+if isempty(obj.stdR)
+    Gfprintf(' ++ Caution: normalization data not defined for variance\n');
+    out=in;
 else
-    obj.nonSampleResp=[];
+        out=in.*obj.stdR^2;
 end
 end
-

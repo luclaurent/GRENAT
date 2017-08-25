@@ -30,20 +30,21 @@ classdef GRENAT < handle
         respN=[];                   % normalized responses
         gradN=[];                   % normalized gradients
         %evaluating
-        nonsamplePts=[];            % non sample points
-        nonsampleResp=[];           % non sample responses
-        nonsampleGrad=[];           % non sample gradients
-        nonsamplePtsOrder=[];       %
-        nonsampleRespOrder=[];      %
-        nonsampleGradOrder=[];      %
-        nonsamplePtsN=[];           % normalized non sample points
-        nonsampleRespN=[];          % normalized non sample responses
-        nonsampleGradN=[];          % normalized non sample gradient
+        nonSamplePts=[];            % non sample points
+        nonSampleResp=[];           % non sample responses
+        nonSampleGrad=[];           % non sample gradients
+        nonSamplePtsOrder=[];       %
+        nonSampleRespOrder=[];      %
+        nonSampleGradOrder=[];      %
+        nonSamplePtsN=[];           % normalized non sample points
+        nonSampleRespN=[];          % normalized non sample responses
+        nonSampleGradN=[];          % normalized non sample gradient
         sizeNonSample=zeros(1,3);   % size of the non sample points
-        nonsampleVar=[];            % non sample variance
-        nonsampleVarOrder=[];       %
-        nonsampleCI=struct('ci68',[],'ci95',[],'ci99',[]);  % confidence intervals
-        nonsampleEI=[];             % expected improvement
+        nonSampleVar=[];            % non sample variance
+        nonSampleVarN=[];           % normalized non sample variance
+        nonSampleVarOrder=[];       %
+        nonSampleCI=struct('ci68',[],'ci95',[],'ci99',[]);  % confidence intervals
+        nonSampleEI=[];             % expected improvement
         %
         err=[];                     % errors of approximation (multiples criteria)
         %reference
@@ -118,19 +119,28 @@ classdef GRENAT < handle
             obj.grad=obj.updateGrad(gradIn);
         end
         %setter for the non sample points
-        function set.nonsamplePts(obj,samplingIn)
+        function set.nonSamplePts(obj,samplingIn)
+            obj.nonSamplePts=samplingIn;
             %update non sample points
             obj.updateNonSamplePts(samplingIn);
         end
         %setter for the non sample normalized responses
-        function set.nonsampleRespN(obj,respIn)
+        function set.nonSampleRespN(obj,respIn)
+            obj.nonSampleRespN=respIn;
             %update non sample normalized responses
             obj.updateNonSampleResp(respIn);
         end
         %setter for the non sample normalized gradients
-        function set.nonsampleGradN(obj,gradIn)
+        function set.nonSampleGradN(obj,gradIn)
+            obj.nonSampleGradN=gradIn;
             %update non sample normalized gradients
             obj.updateNonSampleGrad(gradIn);
+        end
+        %setter for the non sample normalized variance
+        function set.nonSampleVarN(obj,varIn)
+            obj.nonSampleVarN=varIn;
+            %update non sample normalized variance
+            obj.updateNonSampleVar(varIn);
         end
         %setter for the type of metamodel
         function set.type(obj,typeIn)
@@ -155,23 +165,23 @@ classdef GRENAT < handle
         function type=get.type(obj);type=obj.confMeta.type;end
         
         %setter for the non sample points
-        function PtS=get.nonsamplePtsOrder(obj)
-            PtS=orderData(obj,obj.nonsamplePts,'sampleIn');
+        function PtS=get.nonSamplePtsOrder(obj)
+            PtS=obj.orderData(obj.nonSamplePts,'sampleIn');
         end
         %getter for the responses at the non sample points
-        function Z=get.nonsampleResp(obj)
+        function Z=get.nonSampleResp(obj)
             if obj.runEval;eval(obj);end
-            Z=orderData(obj,obj.nonsampleRespOrder,'respOut');
+            Z=obj.orderData(obj.nonSampleRespOrder,'respOut');
         end
         %getter for the gradients at the non sample points
-        function GZ=get.nonsampleGrad(obj)
+        function GZ=get.nonSampleGrad(obj)
             if obj.runEval;eval(obj);end
-            GZ=orderData(obj,obj.nonsampleGradOrder,'gradOut');
+            GZ=obj.orderData(obj.nonSampleGradOrder,'gradOut');
         end
         %getter for the variance at the non sample points
-        function variance=get.nonsampleVar(obj)
+        function variance=get.nonSampleVar(obj)
             if obj.runEval;eval(obj);end
-            variance=orderData(obj,obj.nonsampleVarOrder,'respOut');
+            variance=obj.orderData(obj.nonSampleVarOrder,'respOut');
         end
         %getter for error values
         function err=get.err(obj)

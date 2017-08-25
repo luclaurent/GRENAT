@@ -24,7 +24,6 @@
 % - in: array of normalized gradients
 % - concat: flag at true if the input data corresponds to concatenate
 % (optional)
-% gradients
 % OUTPUTS:
 % - out: array of non-normalized gradients
 

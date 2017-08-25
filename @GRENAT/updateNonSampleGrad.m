@@ -27,16 +27,14 @@
 function updateNonSampleGrad(obj,newGrad)
 %
 if ~isempty(newGrad)
-    %
-    obj.nonsampleGradN=newGrad;
     % normalize the new gradients using the existing database
     if obj.confMeta.normOn
-        obj.nonsampleGrad=obj.norm.reNormG(newGrad);
+        obj.nonSampleGrad=obj.norm.reNormG(newGrad);
     else
-        obj.nonsampleGrad=newGrad;
+        obj.nonSampleGrad=newGrad;
     end
 else
-    Gfprintf('ERROR: Empty array of gradients\n');
+    obj.nonSampleGrad=[];
 end
 end
 

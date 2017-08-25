@@ -33,7 +33,7 @@ keyOk={'sampleRef','respRef','gradRef'};
 %argument or string if the use of keywords
 execOk=true;
 if isa(varargin{1},'double')
-    if nargin>1;obj.sampleRef=varargin{1};obj.nonsamplePts=varargin{1};end
+    if nargin>1;obj.sampleRef=varargin{1};obj.nonSamplePts=varargin{1};end
     if nargin>2;obj.respRef=varargin{2};end
     if nargin>3;obj.gradRef=varargin{3};end
 elseif isa(varargin{1},'char')
@@ -48,7 +48,7 @@ elseif isa(varargin{1},'char')
                 obj.(keyTxt)=keyVal;
                 %specific case
                 if keyTxt=='sampleRef'
-                    obj.nonsamplePts=keyVal;
+                    obj.nonSamplePts=keyVal;
                 end
             else
                 execOk=false;

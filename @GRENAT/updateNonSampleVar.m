@@ -18,23 +18,23 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Update unormalized responses (renormalized if necessary)
+%% Update unormalized variance (renormalized if necessary)
 % INPUTS:
-% - newGrad: array of new gradients
+% - newVar: array of new gradients
 % OUTPUTS:
 % - none
 
-function updateNonSampleResp(obj,newResp)
+function updateNonSampleVar(obj,newVar)
 %
-if ~isempty(newResp)
-    % normalize the new gradients using the existing database
+if ~isempty(newVar)
+    % renormalize the new variance using the existing database
     if obj.confMeta.normOn
-        obj.nonSampleResp=obj.norm.reNorm(newResp,'r');
+        obj.nonSampleVar=obj.norm.reNormG(newVar);
     else
-        obj.nonSampleResp=newResp;
+        obj.nonSampleGrad=newVar;
     end
 else
-    obj.nonSampleResp=[];
+    obj.nonSampleGrad=[];
 end
 end
 

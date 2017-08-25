@@ -21,25 +21,23 @@
 %% Declare non sample points
 % responses and gradients
 % INPUTS:
-% - nonsamplePts: evaluation points
-% - Verb: activate verbose mode
+% - samplePtsIn: evaluation points
 % OUTPUTS:
-% - Z: approximate responses
-% - GZ: approximate gradients
-% - variance: variance of the metamodel
+% - none
 
 function updateNonSamplePts(obj,samplePtsIn)
 if ~isempty(samplePtsIn)
-    %store the non sample points
-    obj.nonsamplePts=samplePtsIn;
     %normalized them if required
     % normalize the new sample points using the existing database
-        if obj.confMeta.normOn
-            obj.nonsamplePtsN=obj.norm.Norm(samplePtsIn,'s');
-        else
-            obj.nonsamplePtsN=samplePtsIn;
-        end
-        %update flag
-        initRunEval(obj,true);
+    if obj.confMeta.normOn
+        obj.nonSamplePtsN=obj.norm.Norm(samplePtsIn,'s');
+    else
+        obj.nonSamplePtsN=samplePtsIn;
+    end
+    %update flag
+    initRunEval(obj,true);
+else
+    %clear existing non sample points
+    obj.nonSamplePts=[];
 end
 end

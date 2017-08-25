@@ -21,14 +21,14 @@
 %% Evaluate the metamodel
 % responses and gradients
 % INPUTS:
-% - nonsamplePts: evaluation points
+% - evalPts: evaluation points
 % - Verb: activate verbose mode
 % OUTPUTS:
 % - Z: approximate responses
 % - GZ: approximate gradients
 % - variance: variance of the metamodel
 
-function [Z,GZ,variance]=eval(obj,nonsamplePts,Verb)
+function [Z,GZ,variance]=eval(obj,evalPts,Verb)
 %
 countTime=mesuTime;
 %
@@ -38,12 +38,12 @@ if nargin<3;Verb=true;end
 %check if the metamodel has been already trained
 if obj.runTrain;train(obj);end
 %store non sample points
-if nargin>1;obj.NonSamplePts=nonsamplePts;end
+if nargin>1;obj.nonSamplePts=evalPts;end
 %evaluation of the metamodels
 if obj.runEval
     %declare variables
-    NnS=size(obj.NonSamplePts,1);
-    NnP=size(obj.NonSamplePts,2);
+    NnS=size(obj.nonSamplePts,1);
+    NnP=size(obj.nonSamplePts,2);
     %
     %end of evaluations
     if Verb
@@ -53,34 +53,39 @@ if obj.runEval
     Ztmp=zeros(NnS,1);
     GZtmp=zeros(NnS,NnP);
     VarTmp=zeros(NnS,1);
-    %
-    NonSamplePtsTmp=obj.NonSamplePts;
-    %
-    parfor (itS=1:NnS,numWorkers)
+    %Store the evaluation points
+    NonSamplePtsTmp=obj.nonSamplePts;
+    %Store the function for evaluation
+    funEval=@(x)obj.dataTrain.eval(x);
+    %check if variance could be computed
+    flagVar=false;
+    if isprop(obj.dataTrain,'computeVariance')
+        flagVar=true;
+        funVar=@(x)obj.dataTrain.computeVariance(x);
+    end
+    %Store the function for computing variance
+    for itS=1:NnS
         %current points
         currPts=NonSamplePtsTmp(itS,:);
         %evaluation of the metamodel
-        varargout=obj.dataTrain.eval(currPts);
-        %store values
-        Ztmp(itS)=varargout{1};
-        GZtmp(itS,:)=varargout{2};
-        %
-        if numel(varargout)>2
-            VarTmp(itS)=varargout{3};
+        if flagVar
+            [Ztmp(itS),GZtmp(itS,:),VarTmp(itS)]=funEval(currPts);
+        else
+            [Ztmp(itS),GZtmp(itS,:)]=funEval(currPts);
         end
     end
     %store data from the evaluation
-    obj.nonsampleRespN=Ztmp;
-    obj.nonsampleGradN=GZtmp;
-    obj.nonsampleVarN=VarTmp;
+    obj.nonSampleRespN=Ztmp;
+    obj.nonSampleGradN=GZtmp;
+    obj.nonSampleVarN=VarTmp;
     %update flags
     obj.runEval=false;
     obj.runErr=true;
 end
 %extract unnormalized data
-Z=obj.nonsampleResp;
-GZ=obj.nonsampleGrad;
-variance=obj.nonsampleVar;
+Z=obj.nonSampleResp;
+GZ=obj.nonSampleGrad;
+variance=obj.nonSampleVar;
 %
 countTime.stop;
 %

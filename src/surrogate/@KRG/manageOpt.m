@@ -25,21 +25,20 @@
 % - none
 
 function manageOpt(obj,varargin)
-numel(varargin)
-% fun=@(x)isa(x,'MissData');
-% %look for the missing data class (MissData)
-% sM=find(cellfun(fun,varargin)~=false);
-% if ~isempty(sM);obj.missData=varargin{sM};end
-% %look for the information concerning the metamodel (class initMeta)
-% fun=@(x)isa(x,'initMeta');
-% sM=find(cellfun(fun,varargin)~=false);
-% if ~isempty(sM);obj.metaData=varargin{sM};end
-% %look for the chosen kernel function (string)
-% fun=@(x)ischar(x);
-% sM=find(cellfun(fun,varargin)~=false);
-% if ~isempty(sM);obj.kernelFun=varargin{sM};end
-% %look for the chosen polynomial order (integer
-% fun=@(x)(isnumeric(x));
-% sM=find(cellfun(fun,varargin)~=false);
-% if ~isempty(sM);obj.polyOrder=varargin{sM};end
+fun=@(x)isa(x,'MissData');
+%look for the missing data class (MissData)
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.missData=varargin{sM};end
+%look for the information concerning the metamodel (class initMeta)
+fun=@(x)isa(x,'initMeta');
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.metaData=varargin{sM};end
+%look for the chosen kernel function (string)
+fun=@(x)ischar(x);
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.kernelFun=varargin{sM};end
+%look for the chosen polynomial order (integer
+fun=@(x)(isnumeric(x));
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.polyOrder=varargin{sM};end
 end

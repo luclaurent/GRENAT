@@ -46,7 +46,7 @@ classdef NormRenorm < handle
         %% constructor
         % syntax:
         % - NormRenorm(inV);                % normalize the inV array and store the data
-        % as current 
+        % as current
         % - NormRenorm(inV,type);           % normalize the inV array and store the data
         % as data specified in type (resp, sampling)
         % - NormRenorm(inV,data)            % renormalize inV using data (structure or
@@ -94,7 +94,7 @@ classdef NormRenorm < handle
             if nargin==1
                 obj.computeNorm(in,obj.type);
                 obj.outC=obj.Norm(in,obj.type);
-            end            
+            end
         end
         
         %% setters
@@ -139,6 +139,8 @@ classdef NormRenorm < handle
         out=reNormG(obj,in,concat);
         %% Renormalization data obtained from difference of normalized data
         out=reNormDiff(obj,in,type);
+        %% Renormalization of variance
+        out=reNormVar(obj,in);
     end
 end
 

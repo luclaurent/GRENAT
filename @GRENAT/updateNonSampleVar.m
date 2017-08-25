@@ -29,12 +29,12 @@ function updateNonSampleVar(obj,newVar)
 if ~isempty(newVar)
     % renormalize the new variance using the existing database
     if obj.confMeta.normOn
-        obj.nonSampleVar=obj.norm.reNormG(newVar);
+        obj.nonSampleVar=obj.norm.reNormVar(newVar);
     else
-        obj.nonSampleGrad=newVar;
+        obj.nonSampleVar=newVar;
     end
 else
-    obj.nonSampleGrad=[];
+    obj.nonSampleVar=[];
 end
 end
 

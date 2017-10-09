@@ -32,7 +32,7 @@ function [Z,GZ,variance]=eval(obj,evalPts,Verb)
 %
 countTime=mesuTime;
 %
-numWorkers=1;
+%numWorkers=1;
 %
 if nargin<3;Verb=true;end
 %check if the metamodel has been already trained
@@ -61,7 +61,7 @@ if obj.runEval
     flagVar=false;
     if isprop(obj.dataTrain,'computeVariance')
         flagVar=true;
-        funVar=@(x)obj.dataTrain.computeVariance(x);
+        %funVar=@(x)obj.dataTrain.computeVariance(x);
     end
     %Store the function for computing variance
     for itS=1:NnS

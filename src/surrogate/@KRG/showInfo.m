@@ -60,7 +60,7 @@ switch type
             dispTxtOnOff(obj.metaData.estim.dispIterCmd,'>> Show estimation steps in console: ',[],true);
             dispTxtOnOff(obj.metaData.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
         else
-            Gfprintf('>> Value(s) hyperparameter(s):');
+            Gfprintf('>> Value(s) hyperparameter(s): ');
             fprintf('%d',obj.metaData.para.l.Val);
             fprintf('\n');
             switch obj.kernelFun

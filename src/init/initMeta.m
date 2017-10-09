@@ -365,6 +365,7 @@ classdef initMeta < handle
             end
         end
         function set.normOn(obj,boolIn)
+            crash
             if isG(boolIn,'logical')
                 if xor(obj.normOn,boolIn)
                     Gfprintf(' >>> Normalization of the data : ');
@@ -501,6 +502,7 @@ classdef initMeta < handle
                 end
             end
             if ~paraOk
+                keyboard
                 Gfprintf('Wrong structure used for declaraing parameters\n')
             end
         end

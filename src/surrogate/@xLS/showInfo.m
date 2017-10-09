@@ -28,7 +28,7 @@
 function showInfo(obj,type)
 switch type
     case {'start','START','Start'}
-        textd='++ Type: ';
+        textd=' ++ Type: ';
         textf='';
         Gfprintf('\n%s\n',[textd 'Least-Squares ((G)LS)' textf]);
         Gfprintf('>> Deg : %i \n',obj.polyOrder);
@@ -38,7 +38,7 @@ switch type
         %    dispTxtOnOff(obj.cvDisp,'>> Show CV: ',[],true);
         %end
         %
-        Gfprintf('\n');
+        %Gfprintf('\n');
     case {'update'}
         Gfprintf(' ++ Update xLS\n');
     case {'cv','CV'}

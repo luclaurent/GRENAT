@@ -30,15 +30,14 @@ obj.showData('train');
 %populate the surrogate model class
 obj.dataTrain.addSample(obj.samplingN);
 obj.dataTrain.addResp(obj.respN);
-obj.dataTrain.addGrad(obj.gradN);
+%populate with gradients of the chosen metamodel allows it
+if obj.gradUsed
+    obj.dataTrain.addGrad(obj.gradN);
+end
+%populate with configuration and missing data
 obj.dataTrain.manageOpt(obj.confMeta,obj.miss);
 %train the metamodel
 obj.dataTrain.train;
-%save estimate parameters
-if isprop(obj.dataTrain,'paraVal')
-    obj.confMeta.definePara(obj.dataTrain.paraVal);
-    obj.confMeta.updatePara;
-end
 %change state of flags
 obj.runTrain=false;
 obj.runErr=true;

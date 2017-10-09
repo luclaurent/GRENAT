@@ -31,15 +31,15 @@ function check(obj)
 Gfprintf(' >> Check missing data: ');
 %
 if obj.requireCheckResp
-    Gfprintf('Responses ');
+    fprintf('Responses ');
     obj.checkResp();
     obj.requireCheckResp=false;
 end
 if obj.requireCheckGrad
-    Gfprintf('Gradients');
+    fprintf('Gradients');
     obj.checkGrad();
     obj.requireCheckResp=true;
 end
-Gfprintf('\n');
+fprintf('\n');
 obj.show();
 end

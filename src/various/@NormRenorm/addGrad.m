@@ -27,5 +27,5 @@
 
 function out=addGrad(obj,in)
 out=obj.NormG(in);
-obj.respN=[obj.gradN;out];
+obj.gradN=[obj.gradN;out];
 end

@@ -167,7 +167,38 @@ classdef GRENAT < handle
         %getter for the type of metamodel
         function type=get.type(obj);type=obj.confMeta.type;end
         
-        %setter for the non sample points
+        %getter for normalized sample points
+        function out=get.samplingN(obj)
+            %if normalization is requested
+            if obj.confMeta.normOn
+                out=obj.norm.samplingN;
+            else
+                %no normalization
+                out=obj.sampling;
+            end
+        end
+        %getter for normalized sample points
+        function out=get.respN(obj)
+            %if normalization is requested
+            if obj.confMeta.normOn
+                out=obj.norm.respN;
+            else
+                %no normalization
+                out=obj.resp;
+            end
+        end
+        %getter for normalized sample points
+        function out=get.gradN(obj)
+            %if normalization is requested
+            if obj.confMeta.normOn
+                out=obj.norm.gradN;
+            else
+                %no normalization
+                out=obj.grad;
+            end
+        end
+        
+        %getter for the non sample points
         function PtS=get.nonSamplePtsOrder(obj)
             PtS=obj.orderData(obj.nonSamplePts,'sampleIn');
         end

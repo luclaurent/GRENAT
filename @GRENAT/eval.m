@@ -54,12 +54,12 @@ if obj.runEval
     GZtmp=zeros(NnS,NnP);
     VarTmp=zeros(NnS,1);
     %Store the evaluation points
-    NonSamplePtsTmp=obj.nonSamplePts;
+    NonSamplePtsTmp=obj.nonSamplePtsN;
     %Store the function for evaluation
     funEval=@(x)obj.dataTrain.eval(x);
     %check if variance could be computed
     flagVar=false;
-    if isprop(obj.dataTrain,'computeVariance')
+    if ismethod(obj.dataTrain,'computeVariance')
         flagVar=true;
         %funVar=@(x)obj.dataTrain.computeVariance(x);
     end
@@ -80,7 +80,7 @@ if obj.runEval
     obj.nonSampleVarN=VarTmp;
     %update flags
     obj.runEval=false;
-    obj.runErr=true;
+    obj.runErr=true;   
 end
 %extract unnormalized data
 Z=obj.nonSampleResp;

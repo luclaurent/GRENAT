@@ -365,7 +365,6 @@ classdef initMeta < handle
             end
         end
         function set.normOn(obj,boolIn)
-            crash
             if isG(boolIn,'logical')
                 if xor(obj.normOn,boolIn)
                     Gfprintf(' >>> Normalization of the data : ');

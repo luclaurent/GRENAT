@@ -26,11 +26,9 @@
 
 function updateNonSampleResp(obj,newResp)
 %
-if ~isempty(newResp)
-    
+if ~isempty(newResp)    
     % normalize the new gradients using the existing database
     if obj.confMeta.normOn
-        keyboard
         respOk=obj.norm.reNorm(newResp,'r');
     else
         respOk=newResp;

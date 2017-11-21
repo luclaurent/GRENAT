@@ -33,8 +33,6 @@ classdef initMeta < handle
         estim;              %struct for storing estimation parameters
         infill;             %struct for storing infillment parameters
         cv;                 %struct for storing cross-validation parameters
-        miss;               %struct for storing missing data
-        norm;               %struct for storing normalization data
     end
     properties (SetObservable, AbortSet)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -755,7 +753,7 @@ end
 
 %display change of state
 function SwitchOnOff(boolIn)
-if boolIn;
+if boolIn
     fprintf(' On (previous Off)\n');
 else
     fprintf(' Off (previous On)\n');

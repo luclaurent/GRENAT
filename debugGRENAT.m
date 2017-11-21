@@ -40,7 +40,7 @@ gridRef=linspace(-2,15,300)';
 %create GRENAT Object
 metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 %metaGRENAT.confMeta.conf('estimOn',false)
-metaGRENAT.confMeta.conf('normOn',false)
+%metaGRENAT.confMeta.conf('normOn',false)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

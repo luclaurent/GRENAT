@@ -33,22 +33,10 @@ obj.norm.addResp(newResp);
 if ~isempty(newResp)
     if isempty(obj.resp)
         %first add of responses
-        respOk=newResp;
-        %add responses to the NormRenorm's object if normalization is required
-        %if obj.confMeta.normOn
-        %    obj.respN=obj.norm.addResp(newResp);
-        %else
-        %    obj.respN=newResp;
-        %end        
+        respOk=newResp;      
     else
         %concatenate responses
         respOk=[obj.resp;newResp];
-        % normalize the new responses using the existing database
-        %if obj.confMeta.normOn
-        %    obj.respN=[obj.respN;obj.norm.Norm(newResp,'r')];
-        %else
-        %    obj.respN=[obj.respN;obj.resp];
-        %end
     end
     %
     initRunTrain(obj,true);

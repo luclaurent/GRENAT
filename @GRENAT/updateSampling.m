@@ -28,27 +28,15 @@ function sampleOk=updateSampling(obj,newSample)
 %add sample points to the MissingData's object
 obj.miss.addSampling(newSample);
 %add sample points to the NormRenorm's object
-obj.norm.addGrad(newSample);
+obj.norm.addSampling(newSample);
 %
 if ~isempty(newSample)
     if isempty(obj.sampling)
         %first add new sampling
         sampleOk=newSample;
-        %add sample points to the NormRenorm's object if normalization is required
-        %if obj.confMeta.normOn
-            %obj.samplingN=obj.norm.addSampling(newSample);
-        %else
-        %    obj.sampling=newSample;
-        %end
     else
         % concatenate sample points
         sampleOk=[obj.sampling;newSample];
-        % normalize the new sample points using the existing database
-        %if obj.confMeta.normOn
-        %    obj.samplingN=[obj.samplingN;obj.norm.Norm(newSample,'s')];
-        %else
-        %    obj.sampling=[obj.samplingN;newSample];
-        %end
     end
     %
     initRunTrain(obj,true);

@@ -26,7 +26,9 @@
 % - out: array of normalized sample points
 
 function out=addSampling(obj,in)
-obj.computeNorm(in,'s');
+if isempty(obj.stdS)&&isempty(obj.meanS)
+    obj.computeNorm(in,'s');
+end
 out=obj.Norm(in,'s');
-obj.samplingN=out;
+obj.samplingN=[obj.samplingN;out];
 end

@@ -27,7 +27,7 @@
 
 function out=NormG(obj,in)
 % if empty normalization data
-if isempty(obj.stdS)||isempty(obj.stdR)
+if ~obj.gradOk
     Gfprintf(' ++ Caution: normalization data not defined for gradient\n');
     out=in;
 else

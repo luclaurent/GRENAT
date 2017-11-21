@@ -25,8 +25,19 @@
 % OUTPUTS:
 % - none
 
-function init(obj)
-listP={'meanC','stdC','meanN','stdN','stdR','meanR','stdS','meanS','respN'};
+function init(obj,type)
+if nargin==1
+    listP={'meanC','stdC','meanN','stdN','stdR','meanR','stdS','meanS','respN','samplingN','gradN'};
+else
+    switch type
+        case {'d','D','data','DATA','Data'}
+            listP={'respN','samplingN','gradN'};
+        case {'r','R','responses','resp','RESP','RESPONSES','Resp','Responses'}
+            listP={'stdR','meanR','respN','gradN'};
+        case {'s','S','sampling','samp','Samp','SAMP','SAMPLING'}
+            listP={'stdS','meanS','samplingN','gradN'};
+    end
+end
 for it=1:length(listP)
     feval([obj '.' listP{it} '=[];']);
 end

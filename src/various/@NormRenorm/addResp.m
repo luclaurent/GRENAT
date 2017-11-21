@@ -26,7 +26,9 @@
 % - out: array of normalized responses
 
 function out=addResp(obj,in)
-obj.computeNorm(in,'r');
+if isempty(obj.stdR)&&isempty(obj.meanR)
+    obj.computeNorm(in,'r');
+end
 out=obj.Norm(in,'r');
-obj.respN=out;
+obj.respN=[obj.respN;out];
 end

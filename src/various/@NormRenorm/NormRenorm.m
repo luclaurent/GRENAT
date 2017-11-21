@@ -40,20 +40,23 @@ classdef NormRenorm < handle
         outC=[];
     end
     properties (Access = private)
-        type='n';
+        type='n';       %type of normalization ("n" normal, "r" responses, "s" sampling)
+    end
+    properties (Access = private, Dependent )
+        gradOk=false;   % sufficient data for normalization and renormalization of gradients
     end
     methods
         %% constructor
         % syntax:
-        % - NormRenorm(inV);                % normalize the inV array and store the data
+        % - NormRenorm(inV);                    % normalize the inV array and store the data
         % as current
-        % - NormRenorm(inV,type);           % normalize the inV array and store the data
+        % - NormRenorm(inV,type);               % normalize the inV array and store the data
         % as data specified in type (resp, sampling)
-        % - NormRenorm(inV,data)            % renormalize inV using data (structure or
+        % - NormRenorm(inV,data)                % renormalize inV using data (structure or
         % object)
-        % - NormRenorm(sample,resp)         % normalize sampling and
+        % - NormRenorm(sample,resp)             % normalize sampling and
         % responses and store them (respect order sample, resp)
-        % - NormRenorm(sample,resp,data)         % renormalize sampling and
+        % - NormRenorm(sample,resp,data)        % renormalize sampling and
         % responses and using data (structure or object) (respect order sample, resp)
         
         function obj=NormRenorm(in,varargin)
@@ -117,6 +120,12 @@ classdef NormRenorm < handle
             if ~isempty(val);obj.stdS=val;end
         end
         
+        %% getter for the flag for computing gradients
+        function flag=get.gradOk(obj)
+            flag=(~isempty(obj.stdN)...
+                &&~isempty(obj.stdS));
+        end
+        
         %% Initialize all data
         init(obj);
         %% Load existing information (defined using structure)
@@ -127,6 +136,8 @@ classdef NormRenorm < handle
         out=addResp(obj,in);
         %% Add sample points and normalize
         out=addSampling(obj,in);
+        %% Add gradients and normalize
+        out=addGrad(obj,in);
         %% Choice of the current normalization data
         flag=choiceData(obj,type);
         %% Normalization of sampling or responses

@@ -27,7 +27,7 @@ initDirGRENAT;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Load of a set of 1D data
 %sampling points
-sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
+sampling=[-1 0.3 2 4.5 14]';
 %responses and gradients at sample points
 [resp,grad]=funManu(sampling);
 %%for displaying and comparing with the actual function
@@ -38,7 +38,8 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('KRG',sampling,resp,grad);
+metaGRENAT=GRENAT('GSVR',sampling,resp,grad);
+metaGRENAT.confMeta.conf('kern','sexp')
 %metaGRENAT.confMeta.conf('estimOn',false)
 %metaGRENAT.confMeta.conf('normOn',false)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

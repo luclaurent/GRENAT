@@ -33,5 +33,6 @@ if ~obj.gradOk
 else
     nS=size(in,1);
     out=in.*obj.stdS(ones(nS,1),:)./obj.stdR;
+    obj.gradNormOk=true;
 end
 end

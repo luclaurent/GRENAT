@@ -34,8 +34,16 @@ else
             listP={'respN','samplingN','gradN'};
         case {'r','R','responses','resp','RESP','RESPONSES','Resp','Responses'}
             listP={'stdR','meanR','respN','gradN'};
+            obj.gradOk=false;
+            obj.gradNorm=false;
         case {'s','S','sampling','samp','Samp','SAMP','SAMPLING'}
             listP={'stdS','meanS','samplingN','gradN'};
+            obj.gradOk=false;
+            obj.gradNorm=false;
+        case {'g','G','grad','Grad','GRAD'}
+            listP={'gradN'};
+            obj.gradOk=false;
+            obj.gradNorm=false;
     end
 end
 for it=1:length(listP)

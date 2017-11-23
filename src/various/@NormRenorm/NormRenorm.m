@@ -36,14 +36,16 @@ classdef NormRenorm < handle
         respN=[];
         samplingN=[];
         gradN=[];
+        grad=[];
         %
         outC=[];
     end
     properties (Access = private)
         type='n';       %type of normalization ("n" normal, "r" responses, "s" sampling)
+        gradNormOk=false;   % true if the available gradients have been normalized
     end
     properties (Access = private, Dependent )
-        gradOk=false;   % sufficient data for normalization and renormalization of gradients
+        gradOk=false;       % sufficient data for normalization and renormalization of gradients
     end
     methods
         %% constructor
@@ -122,8 +124,20 @@ classdef NormRenorm < handle
         
         %% getter for the flag for computing gradients
         function flag=get.gradOk(obj)
-            flag=(~isempty(obj.stdN)...
+            flag=(~isempty(obj.stdR)...
                 &&~isempty(obj.stdS));
+        end
+        
+        %% getter for the normalized gradients
+        function out=get.gradN(obj)
+            %if the data hase been already normalized, load it
+            if obj.gradNormOk
+                out=obj.gradN;
+            else
+                out=obj.NormG(obj.grad);
+                obj.gradN=out;
+                obj.grad=[];
+            end
         end
         
         %% Initialize all data

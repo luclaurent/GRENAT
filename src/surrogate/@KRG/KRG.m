@@ -157,6 +157,16 @@ classdef KRG < handle
             end
         end
         
+        %% getter for kernel function
+        function kFun=get.kernelFun(obj)
+            %load default kernel function
+            kFun=obj.kernelFun;
+            %load specific configuration if it is available
+            if ~isempty(obj.metaData.kern)
+                kFun=obj.metaData.kern;
+            end
+        end
+        
         %% getter for GKRG building
         function flagG=get.flagG(obj)
             flagG=~isempty(obj.grad);

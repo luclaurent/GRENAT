@@ -38,7 +38,7 @@ end
 if obj.requireCheckGrad
     fprintf('Gradients');
     obj.checkGrad();
-    obj.requireCheckResp=true;
+    obj.requireCheckGrad=true;
 end
 fprintf('\n');
 obj.show();

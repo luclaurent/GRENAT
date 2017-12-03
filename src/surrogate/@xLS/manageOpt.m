@@ -31,10 +31,10 @@ flagR=true; %default
 %
 fun=@(x)isa(x,'MissData');
 %look for the missing data class (MissData)
-sM=find(cellfun(fun,optIn)~=false);
-if ~isempty(sM);obj.missData=optIn{sM};end
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.missData=varargin{sM};end
 %look for a boolean
 fun=@(x)islogical(x);
-sM=find(cellfun(fun,optIn)~=false);
-if ~isempty(sM);flagR=optIn{sM};end
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);flagR=varargin{sM};end
 end

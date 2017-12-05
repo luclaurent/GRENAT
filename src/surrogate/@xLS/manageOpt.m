@@ -33,6 +33,11 @@ fun=@(x)isa(x,'MissData');
 %look for the missing data class (MissData)
 sM=find(cellfun(fun,varargin)~=false);
 if ~isempty(sM);obj.missData=varargin{sM};end
+%
+fun=@(x)isa(x,'initMeta');
+%look for the information concerning the metamodel (class initMeta)
+sM=find(cellfun(fun,varargin)~=false);
+if ~isempty(sM);obj.metaData=varargin{sM};end
 %look for a boolean
 fun=@(x)islogical(x);
 sM=find(cellfun(fun,varargin)~=false);

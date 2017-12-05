@@ -119,7 +119,7 @@ classdef MissData < handle
         %% Add new sample points to the database
         addSampling(obj,in);
         %% Check database and display
-        check(obj);
+        check(obj,type);
         %% Check missing data in gradients (specified in input as NaN as component)
         iX=checkGrad(obj,gradIn);
         %% Check missing data in responses (specified in input as NaN)

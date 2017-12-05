@@ -21,21 +21,35 @@
 
 %% Check database and display
 % INPUTS:
-% - none
+% - type: type of checking ('r' for responses, 'g' for gradients)
 % OUTPUTS:
 % - none
 
-function check(obj)
+function check(obj,type)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gfprintf(' >> Check missing data: ');
 %
-if obj.requireCheckResp
+checkForceResp=false;
+checkForceGrad=false;
+checkManu=false;
+%
+if nargin>1
+    checkManu=true;
+    switch type
+        case 'r'
+            checkForceResp=true;
+        case 'g'
+            checkForceGrad=true;
+    end
+end
+%
+if (obj.requireCheckResp&&~checkManu)||(checkManu&&checkForceResp)
     fprintf('Responses ');
     obj.checkResp();
     obj.requireCheckResp=false;
 end
-if obj.requireCheckGrad
+if (obj.requireCheckGrad&&~checkManu)||(checkManu&&checkForceGrad)
     fprintf('Gradients');
     obj.checkGrad();
     obj.requireCheckGrad=true;

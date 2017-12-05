@@ -27,6 +27,7 @@ classdef xLS < handle
         grad=[];             % sample gradients
         %
         missData;            % class for missing data
+        metaData;           % class for parameter of the metamodels
         %
         YY=[];               % vector of responses
         YYD=[];              % vector of gradients
@@ -128,6 +129,18 @@ classdef xLS < handle
         %% getter for GLS building
         function flagG=get.flagG(obj)
             flagG=~isempty(obj.grad);
+        end
+        
+        %% getter for order of the polynomial function
+        function pO=get.polyOrder(obj)
+            %load default kernel function
+            pO=obj.polyOrder;
+            %load specific configuration if it is available
+            if ~isempty(obj.metaData)
+                if ~isempty(obj.metaData.polyOrder)
+                    pO=obj.metaData.polyOrder;
+                end
+            end
         end
         
         %% Add new gradients

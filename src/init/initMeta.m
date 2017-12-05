@@ -353,7 +353,7 @@ classdef initMeta < handle
             if isG(charIn,'char')
                 if ismember(charIn,obj.kernAvail)
                     if strcmp(obj.kern,charIn)
-                        Gfprintf(' >>> Kernel function : %s (previous %s)',charIn,obj.kern);
+                        Gfprintf(' >>> Kernel function : %s (previous %s)\n',charIn,obj.kern);
                     end
                     obj.kern=charIn;
                 else

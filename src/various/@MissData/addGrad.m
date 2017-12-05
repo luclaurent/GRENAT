@@ -30,6 +30,5 @@ function addGrad(obj,in)
 obj.grad=[obj.grad;in];
 obj.newGrad=obj.checkGrad(in);
 %
-obj.requireCheckGrad=true;
-obj.check;
+obj.check('g');
 end

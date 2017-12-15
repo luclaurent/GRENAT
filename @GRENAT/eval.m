@@ -42,8 +42,8 @@ if nargin>1;obj.nonSamplePts=evalPts;end
 %evaluation of the metamodels
 if obj.runEval
     %declare variables
-    NnS=size(obj.nonSamplePts,1);
-    NnP=size(obj.nonSamplePts,2);
+    NnS=size(obj.nonSamplePtsN,1);
+    NnP=size(obj.nonSamplePtsN,2);
     %
     %end of evaluations
     if Verb

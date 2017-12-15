@@ -123,7 +123,7 @@ if calcGrad
     %%verif in 2D+
     trGZ=jf*obj.beta;
     stoGZ=jr'*obj.gamma;
-    GZ=trGZ+stoGZ;
+    GZ=trGZ'+stoGZ';
 end
 %compute variance
 if nargout >=3

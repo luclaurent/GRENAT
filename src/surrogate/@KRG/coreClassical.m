@@ -36,6 +36,7 @@ logDetK=sum(log(eigVal));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute gamma and beta coefficients
+obj.matrices.KK=obj.K;
 obj.matrices.fcC=obj.krgLS.XX'/obj.K;
 obj.matrices.fcCfct=obj.matrices.fcC*obj.krgLS.XX;
 block2=((obj.krgLS.XX'/obj.K)*obj.YYtot);

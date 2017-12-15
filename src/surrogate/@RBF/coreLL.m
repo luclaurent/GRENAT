@@ -30,7 +30,11 @@ function coreLL(obj)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Cholesky's fatorization
 %%% to be degugged
+try
 obj.matrices.LK=chol(obj.K,'lower');
+catch
+    keyboard
+end
 %
 obj.matrices.iK=obj.matrices.LK'\inv(obj.matrices.LK);
 yL=obj.matrices.LK\obj.YYtot;

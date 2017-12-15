@@ -53,7 +53,7 @@ switch obj.factK
             u'/obj.matrices.fcCfct*u);
     otherwise
         rKrr=obj.matrices.KK \ rr;
-        u=obj.matrices.fc*rKrr-ff';
+        u=obj.matrices.fcC*rKrr-ff';
         variance=obj.sig2*(1+u'/obj.matrices.fcCfct*u - rr'*rKrr);
 end
 end

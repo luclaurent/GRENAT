@@ -41,7 +41,7 @@ classdef initMeta < handle
         lVal=1;             %internal length (correlation length)
         pVal=2;             %power exponent for generalized exponential kernel function
         nuVal=0.6;          %smoothness coefficient for Matern kernel function
-        lMin=1e-6;
+        lMin=1e-4;
         lMax=30;
         pMax=2;
         pMin=1.001;

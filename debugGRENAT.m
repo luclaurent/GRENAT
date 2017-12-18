@@ -29,7 +29,7 @@ initDirGRENAT;
 testFun=unConstrained('Custom02');
 %%Load of a set of 1D data
 %sampling points
-sampling=[-1 0.3 2 4.5 9 11 12 14]';
+sampling=[-1 0.3 2 4.5 12 14]';
 %responses and gradients at sample points
 [resp,grad]=testFun.eval(sampling);
 %%for displaying and comparing with the actual function
@@ -40,11 +40,11 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('GRBF',sampling,resp,grad);
+metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 metaGRENAT.confMeta.conf('kern','matern32')
 metaGRENAT.confMeta.conf('polyOrder',2)
-%metaGRENAT.confMeta.conf('estimOn',false)
-%metaGRENAT.confMeta.conf('normOn',false)
+metaGRENAT.confMeta.conf('estimOn',false)
+metaGRENAT.confMeta.conf('normOn',false)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

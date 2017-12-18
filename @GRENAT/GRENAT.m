@@ -49,6 +49,9 @@ classdef GRENAT < handle
         nonSampleCI=struct('ci68',[],'ci95',[],'ci99',[]);  % confidence intervals
         nonSampleEI=[];             % expected improvement
         %
+        sig2N=0;                    % normalized variance of process (kriging...)
+        sig2=0;                     % variance of process (kriging...)
+        %
         err=[];                     % errors of approximation (multiples criteria)
         %reference
         sampleRef=[];               % sample points for reference

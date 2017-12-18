@@ -42,8 +42,10 @@ obj.dataTrain.train;
 obj.runTrain=false;
 obj.runErr=true;
 
-% keyboard
-% if metaData.norm.on&&~isempty(metaData.norm.resp.std)
-%     ret.build.sig2=ret.build.sig2*metaData.norm.resp.std^2;
-% end
+%renormalize specific data if exist
+if metaGRENAT.confMeta.normOn&&~isempty(metaData.norm.stdR)&&isprop(obj.dataTrain,'sig2')
+    %variance of kriging process
+    obj.sig2N=obj.dataTrain.sig2;
+    obj.sig2=obj.sig2N*metaData.norm.resp.std^2;
+ end
 end

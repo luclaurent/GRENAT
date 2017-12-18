@@ -40,9 +40,9 @@ gridRef=linspace(-2,15,300)';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('KRG',sampling,resp,grad);
+metaGRENAT=GRENAT('GRBF',sampling,resp,grad);
 metaGRENAT.confMeta.conf('kern','matern32')
-metaGRENAT.confMeta.conf('polyOrder',0)
+metaGRENAT.confMeta.conf('polyOrder',2)
 %metaGRENAT.confMeta.conf('estimOn',false)
 %metaGRENAT.confMeta.conf('normOn',false)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

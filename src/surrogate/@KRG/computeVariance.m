@@ -37,7 +37,7 @@ switch obj.factK
     case 'QR'
         rrP=rr'*obj.matrices.PK;
         Qrr=obj.matrices.QtK*rr;
-        u=obj.matrices.fcR*Qrr-ff';
+        u=obj.matrices.fcK*Qrr-ff';
         variance=obj.sig2*(1-(rrP/obj.matrices.RK)*Qrr+...
             u'/obj.matrices.fcCfct*u);
     case 'LU'

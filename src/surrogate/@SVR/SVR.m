@@ -107,7 +107,7 @@ classdef SVR  < handle
         %
         matrices;            % structure for storage of matrices (classical and factorized version)
         %
-        factK='LL';          % factorization strategy (fastest: LL (Cholesky))
+        factK='QR';          % factorization strategy (fastest: LL (Cholesky))
         %
         debugCV=false;       % flag for the debugging process of the Cross-Validation
         %

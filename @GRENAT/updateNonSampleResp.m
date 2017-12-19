@@ -39,4 +39,3 @@ else
     obj.nonSampleRespOrder=[];
 end
 end
-

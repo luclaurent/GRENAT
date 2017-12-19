@@ -43,9 +43,13 @@ obj.runTrain=false;
 obj.runErr=true;
 
 %renormalize specific data if exist
-if metaGRENAT.confMeta.normOn&&~isempty(metaData.norm.stdR)&&isprop(obj.dataTrain,'sig2')
-    %variance of kriging process
-    obj.sig2N=obj.dataTrain.sig2;
-    obj.sig2=obj.sig2N*metaData.norm.resp.std^2;
+ %variance of kriging process;
+if isprop(obj.dataTrain,'sig2')
+        obj.sig2N=obj.dataTrain.sig2;
+        obj.sig2=obj.sig2N;
+end
+if obj.confMeta.normOn&&~isempty(obj.norm.stdR)
+    %variance of kriging process;
+    obj.sig2=obj.sig2N*obj.norm.stdR^2;
  end
 end

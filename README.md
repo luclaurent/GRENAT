@@ -85,6 +85,11 @@ Available approachs of this toolbox are presented in the following documents:
 * L. Laurent, P.-A. Boucard, and B. Soulier. A dedicated multiparametric strategy for the fast construction of a cokriging metamodel. *Computers & Structures*, 124(0):61-73, 2013. doi: [10.1016/j.compstruc.2013.03.012](https://dx.doi.org/10.1016/j.compstruc.2013.03.012) [hal](https://hal.archives-ouvertes.fr/hal-01376464)
 * L. Laurent, P.-A. Boucard, and B. Soulier. Fast multilevel optimization using a multiparametric strategy and a cokriging metamodel. In Y. Tsompanakis, B.H.V. Topping, (Editors), *Proceedings of the Second International Conference on Soft Computing Technology in Civil, Structural and Environmental Engineering*, 6-9 September, number Paper 50. Civil-Comp Press, Stirlingshire, UK, 2011. doi: [10.4203/ccp.97.50](https://dx.doi.org/10.4203/ccp.97.50)
 
+Applications of this toolbox
+---
+
+* A. Benaouali and S. Kachel. A surrogate-based integrated framework for the aerodynamic design op- timization of a subsonic wing planform shape. Proceedings of the Institution of Mechanical Engineers, Part G: Journal of Aerospace Engineering, 2017. doi: [10.1177/0954410017699007](https://doi.org/10.1177/0954410017699007) [ResearchGate](https://www.researchgate.net/publication/315517815_A_surrogate-based_integrated_framework_for_the_aerodynamic_design_optimization_of_a_subsonic_wing_planform_shape/comments)
+
 License ![GNU GPLv3](http://www.gnu.org/graphics/gplv3-88x31.png)
 ----
 

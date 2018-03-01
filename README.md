@@ -87,7 +87,13 @@ Available approachs of this toolbox are presented in the following documents:
 
 Applications of this toolbox
 ---
+Please [notice me](mailto:luc.laurent@lecnam.net) if you use the toolbox, I will add your publications below.
 
+* Nicolas Courrier. Couplage optimisation à convergence partielle et stratégie multiparamétrique en calcul de structures. Mécanique des solides. Université Paris-Saclay, 2015. Français. [tel](https://tel.archives-ouvertes.fr/tel-01264667)
+* C. Limoge. Méthode de diagnostic à grande échelle de la vulnérabilité sismique des Monuments Historiques : Chapelles et églises baroques des hautes vallées de Savoie. Génie civil. Université Paris-Saclay, 2016. Français. [tel](https://tel.archives-ouvertes.fr/tel-01314443)
+* L. Laurent, A. Legay. Optimal positioning of a wall in an acoustic cavity using reduced models and surrogate based optimization. 12th World Congress of Structural and Multidisciplinary Optimisation, WCSMO 12, Jun 2017, Braunschweig, France. [hal](https://hal.archives-ouvertes.fr/hal-01567251)
+* A. Legay, L. Laurent. Thin wall optimal positioning in an acoustic cavity using XFEM, reduced models and surrogate based optimization. eXtended Discretization MethodS for partial differential equations on complex and evolving domains, X-DMS 2017, Jun 2017, Umeå, Sweden. [hal](https://hal.archives-ouvertes.fr/hal-01567252)
+* L. Laurent, A. Legay. Positionnement optimal de parois en vibro-acoustique à l'aide de modèles réduits et d'optimisation par métamodèle. 13e Colloque National en Calcul des Structures, May 2017, Giens, France. [hal](https://hal.archives-ouvertes.fr/hal-01567253)
 * A. Benaouali and S. Kachel. A surrogate-based integrated framework for the aerodynamic design op- timization of a subsonic wing planform shape. Proceedings of the Institution of Mechanical Engineers, Part G: Journal of Aerospace Engineering, 2017. doi: [10.1177/0954410017699007](https://doi.org/10.1177/0954410017699007) [ResearchGate](https://www.researchgate.net/publication/315517815_A_surrogate-based_integrated_framework_for_the_aerodynamic_design_optimization_of_a_subsonic_wing_planform_shape/comments)
 
 License ![GNU GPLv3](http://www.gnu.org/graphics/gplv3-88x31.png)

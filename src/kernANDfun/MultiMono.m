@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [matX,matDX,matDDX]=MultiMono(X,polyOrder)
+function [matX,matDX,matDDX]=multiMono(X,polyOrder)
 %number of sample points
 ns=size(X,1);
 %number of design variables

@@ -15,16 +15,16 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-dim=2;
-fct1='matern';
-fct2='matern';
+dim=1;
+fct1='multiqua';
+fct2='matern32';
 pas=0.1;
 
 if dim==1
 
 x=-10:pas:10;
-[ev,dev,ddev]=multiKern(fct1,x',2);
-[evv,devv,ddevv]=multiKern(fct2,x',2);
+[ev,dev,ddev]=multiKernel(fct1,x',2);
+[evv,devv,ddevv]=multiKernel(fct2,x',2);
 
 figure
 hold on

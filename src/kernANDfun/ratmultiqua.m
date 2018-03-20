@@ -1,4 +1,4 @@
-%% fonction: rational multiquadratics
+%% function: rational multiquadratics
 %L. LAURENT -- 20/03/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 

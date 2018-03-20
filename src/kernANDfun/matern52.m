@@ -41,7 +41,7 @@ k=co.*etd;
 
 %compute first derivatives
 if nbOut>1
-    %calcul derivees premieres
+    %
     dk=-(5./(3*lP.^2).*xx+5*sqrt(5)./(3*lP.^3).*xx.^2.*sign(xx)).*etd;
 end
 

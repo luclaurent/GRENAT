@@ -42,7 +42,7 @@ k=exp(td);
 
 %compute first derivatives
 if nbOut>1
-    %calcul derivees premieres
+    %
     dk=-xx./lP.^2.*k;
 end
 

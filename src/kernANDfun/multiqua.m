@@ -1,4 +1,4 @@
-%% fonction:  multiquadratics
+%% Function:  multiquadratics
 %L. LAURENT -- 17/01/2012 (r: 31/08/2015) -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
@@ -39,7 +39,7 @@ k=fd.^0.5;
 
 %compute first derivatives
 if nbOut>1
-    %calcul derivees premieres
+    %
     dk=xx./(lP.^2.*k);
 end
 

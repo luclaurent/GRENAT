@@ -1,9 +1,5 @@
-%% Function : Matern (3/2)
-%%L. LAURENT -- 23/01/2011 -- luc.laurent@cnam.fr
-%revision of the 12/11/2012 (from Lockwood 2010)
-%change of the 19/12/2012: change correlation length
-%revision of the 31/08/2015: change function name
-%change of the 02/05/2016: change to unidimensional function
+%% Function: rational multiquadratics
+%L. LAURENT -- 20/03/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -22,12 +18,13 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [k,dk,ddk]=matern32(xx,para)
+function [k,dk,ddk]=wave(xx,para)
 
 %number of output parameters
 nbOut=nargout;
-%check hyperparameters
-nP=size(para,2);
+
+%number of design variables
+nP=size(xx,2);
 if nP~=1
     error(['Wrong number of hyperparameters (',mfilename,')']);
 end
@@ -35,20 +32,24 @@ end
 %extract length and smoothness hyperparameters
 lP=1./para(:,1);
 
-%compute value of the function at point xx
-xxN=abs(xx)./lP*sqrt(3);
-etd=exp(-xxN);
-co=1+xxN;
-k=co.*etd;
+%find null values in xx
+iXNull=(xx==0);
+
+%compute function value at point xx
+td=abs(xx)./lP;
+k=sin(td)./td;
+%precise specific value at xx=0
+k(iXNull)=1;
+
 
 %compute first derivatives
 if nbOut>1
-    %
-    dk=-3./lP.^2.*xx.*etd;
+    %calcul derivees premieres
+    dk=cos(td)./xx-sign(xx).*lP./xx.^2.*sin(td);
 end
 
 %compute second derivatives
 if nbOut>2
-    ddk=3./lP.^2.*(xxN-1).*etd;
+    ddk=-cos(td)./xx.^2+sign(xx)./xx.*sin(td).*(2*lP./xx-1./lP);
 end
 end

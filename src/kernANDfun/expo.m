@@ -1,4 +1,4 @@
-%% Functio: exponential
+%% Function: exponential
 %% L. LAURENT -- 11/05/2010 (r: 31/08/2015) -- luc.laurent@cnam.fr
 
 function [G,dG,ddG]=expo(xx,para)
@@ -20,7 +20,7 @@ G=exp(-xxN);
 
 %compute first derivatives
 if nbOut>1
-    %calcul derivees premieres
+    %
     dG=-sign(xx)./lP.^2.*G;
 end
 

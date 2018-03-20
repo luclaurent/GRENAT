@@ -1,39 +1,34 @@
-%% Fonction: exponentielle
+%% Functio: exponential
 %% L. LAURENT -- 11/05/2010 (r: 31/08/2015) -- luc.laurent@cnam.fr
 
-function [G,dG,ddG]=expo(xx,theta)
+function [G,dG,ddG]=expo(xx,para)
 
-%verification de la dimension du parametre interne
-lt=length(theta);
-d=size(xx,2);
-
-if lt==1
-    %theta est un réel, alors on en fait une matrice
-    theta = repmat(theta,1,d);
-elseif lt~=d
-    error('mauvaise dimension deu parametre interne');
+%number of output parameters
+nbOut=nargout;
+%check hyperparameters
+nP=size(para,2);
+if nP~=1
+    error(['Wrong number of hyperparameters (',mfilename,')']);
 end
 
-%calcul de la valeur de la fonction au point xx
-td=-abs(xx).*theta;
-ev=exp(sum(td,2));
+%extract length and smoothness hyperparameters
+lP=1./para(:,1);
 
-%évaluation ou dérivée
-if nargout==1
-    G=ev;
-elseif nargout==2
-    G=ev;
-    dG=-theta.*sign(xx).*ev;
-elseif nargout==3
-    G=ev;
-    dG=-theta.*sign(xx).*ev;
-    ddG=zeros(d);
-    %calcul de la matrice des dérivées secondes
-    for ll=1:d
-        for mm=1:d
-            ddG(mm,ll)=theta(ll)*theta(mm)*sign(xx(ll))*sign(xx(mm))*ev;
-        end
-    end
-else
-    error('Trop d''arguments de sortie dans l''appel de la fonction corr_exp');
-end  
+%compute value of the function at point xx
+xxN=abs(xx)./lP;
+G=exp(-xxN);
+
+%compute first derivatives
+if nbOut>1
+    %calcul derivees premieres
+    dG=-sign(xx)./lP.^2.*G;
+end
+
+%compute second derivatives
+if nbOut>2
+    ddG=G./lP.^2;
+end
+end
+
+
+

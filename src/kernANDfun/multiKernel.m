@@ -5,7 +5,7 @@
 
 % See Lockwood 2010 for an explanantion of U, L et M.
 
-function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)
+function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara,demoMod)
 
 
 %number of output variables
@@ -13,6 +13,7 @@ nbOut=nargout;
 
 %mode demo
 demo=false;
+if nargin==4;demo=demoMod;end
 moddemo=1;
 if nbOut==0
     if moddemo==1

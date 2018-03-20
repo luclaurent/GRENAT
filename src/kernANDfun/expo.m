@@ -11,7 +11,7 @@ if nP~=1
     error(['Wrong number of hyperparameters (',mfilename,')']);
 end
 
-%extract length and smoothness hyperparameters
+%extract length 
 lP=1./para(:,1);
 
 %compute value of the function at point xx

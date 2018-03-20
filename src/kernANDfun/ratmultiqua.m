@@ -1,5 +1,5 @@
-%% fonction:  multiquadratics
-%L. LAURENT -- 17/01/2012 (r: 31/08/2015) -- luc.laurent@lecnam.net
+%% fonction: rational multiquadratics
+%L. LAURENT -- 20/03/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [k,dk,ddk]=multiqua(xx,para)
+function [k,dk,ddk]=ratmultiqua(xx,para)
 
 %number of output parameters
 nbOut=nargout;
@@ -34,17 +34,17 @@ lP=1./para(:,1);
 
 %compute function value at point xx
 td=xx.^2./lP.^2;
-fd=1+td;
-k=fd.^0.5;
+tdd=1+td;
+k=1-td./tdd;
 
 %compute first derivatives
 if nbOut>1
     %calcul derivees premieres
-    dk=xx./(lP.^2.*k);
+    dk=-2*xx./lP.^2./tdd.^2;
 end
 
 %compute second derivatives
 if nbOut>2
-    ddk=1./(lP.^2.*k)-xx.^2./(lP.^4.*k);
+    ddk=-(2*tdd.^2./lP.^2-8*td.*tdd./lP.^2)./tdd.^4;
 end
 end

@@ -1,4 +1,4 @@
-%% Function: wave
+%% Function: circular
 %L. LAURENT -- 20/03/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [k,dk,ddk]=wave(xx,para)
+function [k,dk,ddk]=circular(xx,para)
 
 %number of output parameters
 nbOut=nargout;
@@ -29,15 +29,20 @@ if nP~=1
     error(['Wrong number of hyperparameters (',mfilename,')']);
 end
 
+%coefficient
+a=2/pi;
+
 %extract length and smoothness hyperparameters
 lP=1./para(:,1);
 
-%find null values in xx
+%find vlaues of xx larger than para
 iXNull=(xx==0);
 
 %compute function value at point xx
 td=abs(xx)./lP;
-k=sin(td)./td;
+tdd=(1-td.^2).^0.5;
+k=a*acos(td)-a*td.*tdd;
+
 %precise specific value at xx=0
 k(iXNull)=1;
 
@@ -45,7 +50,7 @@ k(iXNull)=1;
 %compute first derivatives
 if nbOut>1
     %
-    dk=cos(td)./xx-sign(xx).*lP./xx.^2.*sin(td);
+    dk=-a*sign(xx).*(1./tdd-tdd)+a*td.*xx./lP.^2.*1./tdd;
 end
 
 %compute second derivatives

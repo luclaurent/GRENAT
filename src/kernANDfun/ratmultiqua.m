@@ -39,7 +39,7 @@ k=1-td./tdd;
 
 %compute first derivatives
 if nbOut>1
-    %calcul derivees premieres
+    %
     dk=-2*xx./lP.^2./tdd.^2;
 end
 

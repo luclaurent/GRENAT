@@ -15,8 +15,8 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-dim=2;
-fct1='wave';
+dim=1;
+fct1='wavelet';
 fct2='matern32';
 pas=0.1;
 para=[1 0.5];
@@ -33,7 +33,7 @@ if dim==1
     plot(x,dev,'r')
     plot(x,ddev(:),'k')
     legend('E','G','H')
-    %axis([-10 10 -500 500]);
+    axis([-10 10 -2 2]);
 elseif dim ==2
     x=-5:pas:5;
     [X,Y]=meshgrid(x);

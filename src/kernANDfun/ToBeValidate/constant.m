@@ -1,25 +1,45 @@
-%% Fonction: constante
-%% L. LAURENT --  31/08/2015 -- luc.laurent@cnam.fr
+%% Constant's kernel function
+%L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
-function [G,dG,ddG]=constant(xx,long)
-%nombre de points a evaluer
-nb_pt=size(xx,1);
-%nombre de composantes
-nb_comp=size(xx,2);
-%nombre de sorties
-nb_out=nargout;
+%     GRENAT - GRadient ENhanced Approximation Toolbox 
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
+% 
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+% 
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+% 
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%calcul de la valeur de la fonction au point xx
-ev=1+0.*sum(xx,2);
+function [k,dk,ddk]=constant(xx)
 
-%Evaluation ou derivee
-if nb_out==1
-    G=ev;
-elseif nb_out==2
-    G=ev;
-elseif nb_out==3
-    G=ev;
-else
-    error('Mauvais argument de la fonction constant.m');
+%number of output parameters
+nbOut=nargout;
+
+%number of design variables
+nP=size(xx,2);
+if nP~=1
+    error(['Wrong number of hyperparameters (',mfilename,')']);
+end
+
+%evaluation de la fonction
+k=1+0.*xx;
+
+%compute first derivatives
+if nbOut>1
+    %    
+    dk=0.*k;
+end
+
+%compute second derivatives
+if nbOut>2
+    ddk=dk;
 end
 end

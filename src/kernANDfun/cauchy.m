@@ -22,11 +22,15 @@ function [k,dk,ddk]=cauchy(xx,para)
 
 %number of output parameters
 nbOut=nargout;
-%check hyperparameters
-nP=size(para,2);
-if nP~=2
+
+%number of design variables
+nP=size(xx,2);
+if nP~=1
     error(['Wrong number of hyperparameters (',mfilename,')']);
 end
+
+%extract length hyperparameters
+lP=1./para(:,1);
 
 %evaluation de la fonction
 td=xx./lP;

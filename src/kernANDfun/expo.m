@@ -1,7 +1,7 @@
-%% Function: exponential
+%% Function: exponential (laplacian)
 %% L. LAURENT -- 11/05/2010 (r: 31/08/2015) -- luc.laurent@cnam.fr
 
-function [G,dG,ddG]=expo(xx,para)
+function [k,dk,ddk]=expo(xx,para)
 
 %number of output parameters
 nbOut=nargout;
@@ -16,17 +16,17 @@ lP=1./para(:,1);
 
 %compute value of the function at point xx
 xxN=abs(xx)./lP;
-G=exp(-xxN);
+k=exp(-xxN);
 
 %compute first derivatives
 if nbOut>1
     %
-    dG=-sign(xx)./lP.^2.*G;
+    dk=-sign(xx)./lP.*k;
 end
 
 %compute second derivatives
 if nbOut>2
-    ddG=G./lP.^2;
+    ddk=k./lP.^2;
 end
 end
 

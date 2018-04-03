@@ -1,11 +1,5 @@
-%% Function: squared exponential (gaussian)
-%%L. LAURENT -- 18/01/2012 -- luc.laurent@lecnam.net
-%revision of the 13/11/2012
-%change of the 19/12/2012: change correlation length
-%revision of the 31/08/2015: change of the name of the function
-%change of the 02/05/2016: change to unidimensional function
-%
-%Rasmussen 2006 p. 83
+%% Function:generalized T-student
+%L. LAURENT -- 20/03/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -24,30 +18,34 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [k,dk,ddk]=sexp(xx,para)
+function [k,dk,ddk]=tstudent(xx,para)
+
 %number of output parameters
 nbOut=nargout;
-%check hyperparameters
-nP=size(para,2);
+
+%number of design variables
+nP=size(xx,2);
 if nP~=1
     error(['Wrong number of hyperparameters (',mfilename,')']);
 end
 
 %extract length and smoothness hyperparameters
-lP=1./para(:,1);
+lP=para(:,1);
 
-%compute value of the function at point xx
-td=-xx.^2./lP.^2/2;
-k=exp(td);
+%compute function value at point xx
+td=abs(xx).^lP;
+tdd=1+td;
+k=1./tdd;
 
 %compute first derivatives
 if nbOut>1
     %
-    dk=-xx./lP.^2.*k;
+    sxx=sign(xx);
+    dk=-lP.*sxx.*abs(xx).^(lP-1).*k.^2;
 end
 
 %compute second derivatives
 if nbOut>2
-    ddk=(xx.^2./lP.^4-1./lP.^2).*k;
+    ddk=(2*lP.^2.*abs(xx).^(2*lP-2)-lP.*(lP-1).*sxx.*abs(xx).^(lP-2).*tdd).*k.^3;
 end
 end

@@ -37,7 +37,7 @@ b=30;
 c=1.25;
 
 %extract length hyperparameters
-lP=para(:,1);
+lP=1./para(:,1);
 
 %evaluation of the function
 tc=xx./lP;

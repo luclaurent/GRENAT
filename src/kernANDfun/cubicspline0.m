@@ -1,68 +1,51 @@
-%% Fonction:cubic splines
-%%L. LAURENT -- 17/01/2012 (r: 31/08/2015) -- luc.laurent@cnam.fr
+%% Fonction: Cubic Spline 0
+%% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
-function [G,dG,ddG]=cubic_splines(xx,long)
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%Cette fonction est non paramétrique
+function [k,dk,ddk]=cubicspline0(xx,para)
 
-%nombre de points a evaluer
-pt_eval=size(xx,1);
-%nombre de composantes
-nb_comp=size(xx,2);
+%number of output parameters
+nbOut=nargout;
 
-%calcul de la valeur de la fonction au point xx
-td=xx.^2;
-ev=sqrt(sum(td,2)).^3;
+%number of design variables
+nP=size(xx,2);
+if nP~=1
+    error(['Wrong number of hyperparameters (',mfilename,')']);
+end
 
+%extract length hyperparameters
+lP=1./para(:,1);
 
-if nargout==1
-    G=ev;
-elseif nargout==2
-    G=ev;
-    dG=3*xx.*repmat(ev,1,nb_comp);
-elseif nargout==3
-    G=ev;
-    dG=3*xx.*repmat(ev,1,nb_comp);
-  
-    
-    %calcul des derivees secondes    
-    
-    %suivant la taille de l'evaluation demandee on stocke les derivees
-    %secondes de manieres differentes
-    %si on ne demande le calcul des derivees secondes en un seul point, on
-    %les stocke dans une matrice 
-    if pt_eval==1
-        ddG=zeros(nb_comp);
-        for ll=1:nb_comp
-           for mm=1:nb_comp
-                if(mm==ll)
-                    ddG(mm,ll)=3*xx(mm)^2/ev+3*ev;
-                else
-                    ddG(mm,ll)=3*xx(ll)*xx(mm)/ev;
-                end
-           end
-        end
-       
-    %si on demande le calcul des derivees secondes en plusieurs point, on
-    %les stocke dans un vecteur de matrices
-    else
-        ddG=zeros(nb_comp,nb_comp,pt_eval);
-        for ll=1:nb_comp
-           for mm=1:nb_comp
-                if(mm==ll)                    
-                    ddG(mm,ll,:)=3*xx(:,mm).^2./ev+3*ev;
-                else
-                    ddG(mm,ll,:)=3*xx(:,ll).*xx(:,mm)./ev;
-                end
-           end
-        end
-        if nb_comp==1
-            ddG=vertcat(ddG(:));
-        end
+%evaluation of the function
+td=xx./lP;
 
-    end
-   
-    
-else
-    error('Mauvais argument de sortie de la fonction cubic_splines.m');
+%compute function
+k=abs(td).^3;
+
+%compute first derivatives
+if nbOut>1
+    %    
+    dk=3*sign(xx).*td.^2./lP;
+end
+
+%compute second derivatives
+if nbOut>2
+    %
+    ddk=6*abs(td)./lP.^2;
 end

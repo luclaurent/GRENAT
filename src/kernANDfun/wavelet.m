@@ -36,20 +36,21 @@ a=1.75;
 lP=para(:,1);
 
 %compute function value at point xx
-te=xx./lP;
-td=cos(a*te);
-tdd=exp(-te.^2/2);
-k=td.*tdd;
+te=abs(xx)./lP;
+ca=cos(a*te);
+td=exp(-te.^2/2);
+k=ca.*td;
 
 
 %compute first derivatives (bad definition)
 if nbOut>1
     %
-    dk=-lP.*sign(xx).*abs(xx).^(lP-1)./td;
+    sa=sin(a*te);
+    dk=-td.*(a./lP.*sign(xx).*sa+xx./lP.^2.*ca);
 end
 
 %compute second derivatives (bad definition)
 if nbOut>2
-    ddk=(-abs(xx).^(lP-2).*lP.*(lP-1)+abs(xx).^(2*lP-2).*(2*lP.^2-lP))./td.^2;
+    ddk=td.*(2*te./lP.*sa+ca.*(te.^2./lP.^2-a^2./lP.^2-1./lP));
 end
 end

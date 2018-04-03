@@ -1,7 +1,7 @@
 %% Fonction de Wendland
 %% L. LAURENT -- 31/08/2015 -- luc.laurent@cnam.fr
 
-% ref: H. Wendland. Piecewise polynomial, positive definite and compactly supported radial functions of mini- mal degree. Advances in Computational Mathematics, 4(1):389?396, 1995.
+% ref: H. Wendland. Piecewise polynomial, positive definite and compactly supported radial functions of minimal degree. Advances in Computational Mathematics, 4(1):389?396, 1995.
 
 function [r,dr,ddr]=Wendland10(xx,long)
 

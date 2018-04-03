@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [k,dk,ddk]=constant(xx)
+function [k,dk,ddk]=constant(xx,~)
 
 %number of output parameters
 nbOut=nargout;

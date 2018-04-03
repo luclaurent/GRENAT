@@ -16,9 +16,9 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 dim=1;
-fct1='constant';
+fct1='cubicspline2';
 fct2='matern32';
-pas=0.1;
+pas=0.05;
 para=[1 0.5];
 
 if dim==1
@@ -33,7 +33,7 @@ if dim==1
     plot(x,dev,'r')
     plot(x,ddev(:),'k')
     legend('E','G','H')
-    axis([-10 10 -2 2]);
+    axis([-2 2 -10 10]);
 elseif dim ==2
     x=-5:pas:5;
     [X,Y]=meshgrid(x);

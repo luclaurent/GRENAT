@@ -1,132 +1,73 @@
 %% Fonction: Cubic Spline 1
-%% L. LAURENT -- 12/11/2012 (r: 31/08/2015) -- luc.laurent@cnam.fr
+%% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
-function [G,dG,ddG]=cubicspline1(xx,long)
+%ref: B. A. Lockwood and M. Anitescu. Gradient-enhanced universal kriging for uncertainty propagation. Nuclear Science and Engineering, 170(2):168?195, feb 2012.
 
-%verification de la dimension du parametre interne
-lt=size(long);
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%nombre de points a evaluer
-nb_pt=size(xx,1);
-%nombre de composantes
-nb_comp=size(xx,2);
-%nombre de sorties
-nb_out=nargout;
+function [k,dk,ddk]=cubicspline1(xx,para)
 
+%number of output parameters
+nbOut=nargout;
 
-%Le parametre interne est defini pour toutes les composantes de xx
-if lt(1)*lt(2)==1
-    long = long*ones(nb_pt,nb_comp);
-elseif lt(1)*lt(2)==nb_comp
-    long = long(ones(nb_pt,1),:);
-elseif lt(1)*lt(2)~=nb_comp
-    error('mauvaise dimension du parametre interne');
+%number of design variables
+nP=size(xx,2);
+if nP~=1
+    error(['Wrong number of hyperparameters (',mfilename,')']);
 end
-long=1./long;
 
-%calcul de la valeur de la fonction au point xx
-td=abs(xx)./long;
-%zone de calcul (fonction definie par morceau)
+%coefficients
+a=15;
+b=30;
+c=1.25;
+
+%extract length hyperparameters
+lP=para(:,1);
+
+%evaluation of the function
+tc=xx./lP;
+td=abs(tc);
+
+%piecewise function
 b1=0;b2=0.2;b3=1;
-IX1=(b1<=td).*(td<=b2);
-IX2=(b2<=td).*(td<=b3);
-IX3=(td<=b3);
+IX1=(b1<=td).*(td<b2);
+IX2=(b2<=td).*(td<b3);
 
-%calcul des 3 fonctions
-ev1=1-15.*td.^2+30.*td.^3;
-ev2=1.25*(1-td).^3;
-ev3=zeros(size(td));
-pc=ev1.*IX1+ev2.*IX2+ev3.*IX3;
+%compute function
+ev1=1-a.*td.^2+b.*td.^3;
+ev2=c*(1-td).^3;
+%
+k=ev1.*IX1+ev2.*IX2;
 
-%nouvelle implementation issue de Lockwood 2010/2012
-%calcul derivees premieres et seconde selon chaque dimension puis
-%combinaison
-if nb_out==1
-    %reponse
-    G=prod(pc,2);
-elseif nb_out==2
-    %reponse
-    G=prod(pc,2);
-    %calcul derivees premieres
-    dk1=-30.*xx./long.^2+90.*sign(xx).*xx.^2./long.^3;
-    dk2=-3.75.*sign(xx).*(1-td).^2./long;
-    dk3=ev3;
-    dk=dk1.*IX1+dk2.*IX2+dk3.*IX3;
-    L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
-    U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
-    dG=L.*U.*dk;
-    
-elseif nb_out==3
-    %reponse
-    G=prod(pc,2);
-    %calcul derivees premieres
-    dk1=-30.*xx./long.^2+90.*sign(xx).*xx.^2./long.^3;
-    dk2=-3.75.*sign(xx).*(1-td).^2./long;
-    dk3=ev3;
-    dk=dk1.*IX1+dk2.*IX2+dk3.*IX3;
-    % signification U et L cf. Lockwood 2010
-    L=[ones(nb_pt,1) cumprod(pc(:,1:end-1),2)];
-    U=cumprod(pc(:,end:-1:2),2);U=[U(:,end:-1:1) ones(nb_pt,1)];
-    LdU=L.*U;
-    %derivees premieres
-    dG=LdU.*dk;
-    
-    %calcul derivees secondes
-    %suivant la taille de l'evaluation demandee on stocke les derivees
-    %secondes de manieres differentes
-    ddk1=180./long.^3.*abs(xx)-30./long.^2;
-    ddk2=7.5.*(1-td)./long.^2;
-    ddk3=ev3;
-    ddk=ddk1.*IX1+ddk2.*IX2+ddk3.*IX3;
-    
-    if nb_pt==1
-        % si un seul point d'evaluation (sortie derivees secondes sous la
-        % forme d'une matrice)
-        % signification U, L et M cf. Lockwood 2010
-        prd=dk'*dk;
-        prd(1:nb_comp+1:nb_comp^2)=ddk;
-        %
-        %pc=[1 pc]; %correction pc pour prise en compte dimension 1
-        if nb_comp>1;motif=[1 1];else motif=1;end
-        mm=[motif pc(2:nb_comp-1)];
-        
-        M=mm(ones(nb_comp,1),:);
-        M=triu(M,2)+tril(ones(nb_comp),1);
-        M=cumprod(M,2);
-        %
-        LUMt=triu(L'*U.*M,1);
-        LUM=LUMt+LUMt';
-        LUM(1:nb_comp+1:nb_comp^2)=LdU;
-        %derivees secondes
-        ddG=LUM.*prd;
-    else
-        % si plusieurs points alors on stocke les derivees secondes dans un
-        % vecteur de matrices
-        IX_diag=repmat(logical(eye(nb_comp)),[1 1 nb_pt]); %acces diatgonales des N-D array
-        %passage grandeur en ND-array
-        dk=reshape(dk',1,nb_comp,nb_pt);
-        Lr=reshape(L',nb_comp,1,nb_pt); % + transpose
-        Ur=reshape(U',1,nb_comp,nb_pt);
-        %
-        prd=multiTimes(dk,dk,2.1);
-        prd(IX_diag)=ddk';
-        if nb_comp>1;motif=[1 1];else motif=1;end
-        mm=[motif 3:nb_comp];
-        masq1=mm(ones(nb_comp,1),:); %decalage indice pour cause decalage ds pc
-        masq1=triu(masq1,2)+tril(ones(nb_comp),1);
-        %
-        pcc=reshape([ones(1,nb_pt);pc'],1,nb_comp+1,nb_pt);
-        M=reshape(pcc(1,masq1,:),nb_comp,nb_comp,nb_pt);
-        %
-        masq2=triu(ones(nb_comp));
-        M=cumprod(M,2);
-        M=M.*repmat(masq2,[1 1 nb_pt]);
-        LUMt=multiTimes(Lr,Ur,2).*M;
-        LUM=LUMt+multitransp(LUMt);
-        LUM(IX_diag)=LdU';
-        %derivees secondes
-        ddG=LUM.*prd;
-    end
-else
-    error('Mauvais argument de sortie de la fonction cubicspline1');
+%compute first derivatives
+if nbOut>1
+    %    
+    sxx=sign(xx);
+    %
+    dev1=-2*a*tc./lP+3*b*sxx.*tc.^2./lP;
+    dev2=-c*3*sxx.*(1-td).^2./lP;
+    dk=dev1.*IX1+dev2.*IX2;
+end
+
+%compute second derivatives
+if nbOut>2
+    %
+    ddev1=-2*a./lP.^2+6*b.*td./lP.^2;
+    ddev2=c*6*(1-td)./lP.^2;
+    ddk=ddev1.*IX1+ddev2.*IX2;
 end

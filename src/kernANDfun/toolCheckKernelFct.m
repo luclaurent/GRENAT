@@ -16,7 +16,7 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 dim=1;
-fct1='thinplatespline';
+fct1='expg';
 fct2='matern32';
 pas=0.05;
 para=[1 0.5];
@@ -24,7 +24,7 @@ para=[1 0.5];
 if dim==1
     
     x=-10:pas/10:10;
-    [ev,dev,ddev]=multiKernel(fct1,x',para(1));
+    [ev,dev,ddev]=multiKernel(fct1,x',[1 2]);
     [evv,devv,ddevv]=multiKernel(fct2,x',para(1));
     
     figure

@@ -1,93 +1,54 @@
 %% fonction: exponentielle generalisee
-%%L. LAURENT -- 11/05/2010 -- luc.laurent@cnam.fr
-% revision le 14/11/2012 + inclusion methode de Lockwood 2010
-% revision 31/08/2015 + renommage fonction
+%% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
-% nd+1 parametres possible avec nd la dimension du pb
-% le parametre para(nd+1) ou para(end) doit être compris entre 1 et n
-% (n vaut généralement 2)
+%     GRENAT - GRadient ENhanced Approximation Toolbox
+%     A toolbox for generating and exploiting gradient-enhanced surrogate models
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
+%
+%     This program is free software: you can redistribute it and/or modify
+%     it under the terms of the GNU General Public License as published by
+%     the Free Software Foundation, either version 3 of the License, or
+%     (at your option) any later version.
+%
+%     This program is distributed in the hope that it will be useful,
+%     but WITHOUT ANY WARRANTY; without even the implied warranty of
+%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%     GNU General Public License for more details.
+%
+%     You should have received a copy of the GNU General Public License
+%     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [G,dG,ddG]=expg(xx,para)
 
+function [k,dk,ddk]=expg(xx,para)
 
+%number of output parameters
+nbOut=nargout;
 
-%verification de la dimension de para
-lt=size(para);
-%nombre de points a evaluer
-nb_pt=size(xx,1);
-%nombre de composantes
-nb_comp=size(xx,2);
-%nombre de sorties
-nb_out=nargout;
-
-%Le parametre interne est defini pour toutes les composantes de xx
-%(la puissance est unique)
-if  lt(1)*lt(2)==2
-    pow=para(end);
-    long=para(1);
-    long = long*ones(nb_pt,nb_comp);
-elseif lt(1)*lt(2)==nb_comp+1
-    pow=para(end);
-    long=para(1:end-1);
-    long = long(ones(nb_pt,1),:);
-elseif lt(1)*lt(2)~=nb_comp+1
-    error('mauvaise dimension de parametre interne');
+%number of design variables
+nP=size(xx,2);
+if nP~=1
+    error(['Wrong number of hyperparameters (',mfilename,')']);
 end
 
-long=1./long;
-%calcul de la valeur de la fonction au point xx
-td=-abs(xx).^pow./long;
-ev=exp(sum(td,2));
+%extract length hyperparameters
+lP=1./para(:,1);
+pow=para(:,2);
 
-%evaluation ou derivees
-if nb_out==1
-    G=ev;
-elseif nb_out==2
-    G=ev;
-    dG=-pow./long.*sign(xx).*(abs(xx).^(pow-1)).*...
-        ev(:,ones(1,nb_comp));
-elseif nb_out==3
-    G=ev;
-    dG=-pow./long.*sign(xx).*(abs(xx).^(pow-1)).*...
-        ev(:,ones(1,nb_comp));
-    
-    %calcul des derivees secondes
-    
-    %suivant la taille de l'evaluation demandee on stocke les derivees
-    %secondes de manieres differentes
-    %si on ne demande le calcul des derivees secondes en un seul point, on
-    %les stocke dans une matrice
-    if nb_pt==1
-        ddG=zeros(nb_comp);
-        for ll=1:nb_comp
-            for mm=1:nb_comp
-                if(mm==ll)
-                    ddG(mm,ll)=(pow^2.*abs(xx(mm)).^(2*(pow-1))./long(1,mm).^2-...
-                        pow.*(pow-1).*abs(xx(mm)).^(pow-1)./long(1,mm)).*ev;
-                else 
-                    ddG(mm,ll)=ev/(long(1,mm)*long(1,ll)).*sign(xx(ll)).*...
-                        sign(xx(mm)).*abs(xx(ll))^(pow-1)*abs(xx(mm))^(pow-1).*pow^2.*ev;
-                end
-            end
-        end
-        
-        %si on demande le calcul des derivees secondes en plusieurs point, on
-        %les stocke dans un vecteur de matrices
-    else
-        ddG=zeros(nb_comp,nb_comp,nb_pt);
-        for ll=1:nb_comp
-            for mm=1:nb_comp
-                if(mm==ll)
-                    ddG(mm,ll,:)=(pow^2.*abs(xx(:,mm)).^(2*(pow-1))./long(1,mm).^2-...
-                        pow.*(pow-1).*abs(xx(:,mm)).^(pow-1)./long(1,mm)).*ev;
-                else
-                    ddG(mm,ll,:)=ev./(long(1,mm)*long(1,ll)).*sign(xx(:,ll)).*...
-                        sign(xx(:,mm)).*abs(xx(:,ll)).^(pow-1).*abs(xx(:,mm)).^(pow-1).*pow^2.*ev;
-                end
-                
-            end
-        end
-    end
-else
-        error('Trop d''arguments de sortie dans l''appel de la fonction expg');
+%evaluation of the function
+axx=abs(xx);
+td=axx.^pow./lP;
+%
+k=exp(-td);
+
+%compute first derivatives
+if nbOut>1
+    %    
+    dk=-pow./lP.*sign(xx).*axx.^(pow-1).*k;
+end
+
+%compute second derivatives
+if nbOut>2
+    %
+    ddk=k.*(pow.^2./lP.^2.*axx.^(2.*pow-2)-pow.*(pow-1)./lP.*axx.^(pow-2));
+end
 end

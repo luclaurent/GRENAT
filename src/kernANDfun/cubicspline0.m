@@ -34,8 +34,6 @@ lP=1./para(:,1);
 
 %evaluation of the function
 td=xx./lP;
-
-%compute function
 k=abs(td).^3;
 
 %compute first derivatives

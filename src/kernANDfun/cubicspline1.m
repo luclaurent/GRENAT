@@ -71,3 +71,4 @@ if nbOut>2
     ddev2=c*6*(1-td)./lP.^2;
     ddk=ddev1.*IX1+ddev2.*IX2;
 end
+end

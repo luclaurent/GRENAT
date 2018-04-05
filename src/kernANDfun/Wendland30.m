@@ -3,7 +3,7 @@
 
 % ref: H. Wendland. Piecewise polynomial, positive definite and compactly supported radial functions of mini- mal degree. Advances in Computational Mathematics, 4(1):389?396, 1995.
 
-function [r,dr,ddr]=Wendland30(xx,long)
+function [r,dr,ddr]=wendland30(xx,long)
 
 %verification de la dimension de lalongueur de correlations
 lt=size(long);

@@ -1,7 +1,5 @@
-%% Function: Wendland 4,2
-%% L. LAURENT -- 05/04/2018 -- luc.laurent@lecnam.net
-
-% ref: H. Wendland. Piecewise polynomial, positive definite and compactly supported radial functions of minimal degree. Advances in Computational Mathematics, 4(1):389?396, 1995.
+%% Fonction: linear spline
+%% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -20,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [k,dk,ddk]=wendland42(xx,para)
+function [k,dk,ddk]=linear(xx,para)
 
 %number of output parameters
 nbOut=nargout;
@@ -35,32 +33,24 @@ end
 lP=1./para(:,1);
 
 %evaluation of the function
-tc=xx./lP;
-td=abs(tc);
-
+td=xx./lP;
 %piecewise function
-b1=1;
-IX1=(td<b1);
-
+b2=1;
+IX1=(abs(td)<b2);
 %compute function
-ev1=1-td;
-ev2=35*tc.^2+18*td+3;
+ev1=1-abs(td);
 %
-k=ev1.^6.*IX1.*ev2;
+k=ev1.*IX1;
 
 %compute first derivatives
 if nbOut>1
-    %
-    sxx=sign(xx);
-    %
-    dev1=(-280*sxx.*tc.^2-56*tc)./lP;
-    dk=dev1.*IX1.*ev1.^5;
+    %    
+    dk=-IX1.*sign(xx)./lP;
 end
 
 %compute second derivatives
 if nbOut>2
     %
-    ddev1=(1960*tc.^2-224*td-56)./lP.^2;
-    ddk=ddev1.*IX1.*ev1.^4;
+    ddk=0.*dk;
 end
 end

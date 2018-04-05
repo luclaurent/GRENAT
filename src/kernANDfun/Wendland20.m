@@ -1,5 +1,5 @@
 %% Function: Wendland 2,0
-%% L. LAURENT -- 04/04/2018 -- luc.laurent@lecnam.net
+%% L. LAURENT -- 05/04/2018 -- luc.laurent@lecnam.net
 
 % ref: H. Wendland. Piecewise polynomial, positive definite and compactly supported radial functions of minimal degree. Advances in Computational Mathematics, 4(1):389?396, 1995.
 
@@ -44,23 +44,22 @@ IX1=(td<b1);
 
 %compute function
 ev1=1-td;
-ev2=8*td.^2+5*td+1;
 %
-k=ev1.^5.*IX1.*ev2;
+k=ev1.^2.*IX1;
 
 %compute first derivatives
 if nbOut>1
     %
     sxx=sign(xx);
     %
-    dev1=-56*sxx.*tc.^2./lP-14*tc./lP;
-    dk=dev1.*IX1.*ev1.^4;
+    dev1=-2*sxx./lP;
+    dk=dev1.*IX1.*ev1;
 end
 
 %compute second derivatives
 if nbOut>2
     %
-    ddev1=(336*tc.^2-42*td-14)./lP.^2;
-    ddk=ddev1.*IX1.*ev1.^3;
+    ddev1=2./lP.^2;
+    ddk=ddev1.*IX1;
 end
 end

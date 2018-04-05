@@ -15,8 +15,8 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-dim=1;
-fct1='Wendland32';
+dim=2;
+fct1='wendland52';
 fct2='matern32';
 pas=0.05;
 para=[1 0.5];
@@ -49,43 +49,50 @@ elseif dim ==2
     GGYX=reshape(ddev(2,1,:),size(X,1),size(X,2));
     figure
     subplot(4,2,1)
-    surf(X,Y,Z)
+    h=surf(X,Y,Z);
+    set(h,'LineWidth',0.05)
     title('Z')
     xlabel('X')
     ylabel('Y')
     %figure
     subplot(4,2,3)
     surf(X,Y,GZX)
+    shading interp
     title('GZX')
     xlabel('X')
     ylabel('Y')
     %figure
     subplot(4,2,4)
     surf(X,Y,GZY)
+    shading interp
     title('GZY')
     xlabel('X')
     ylabel('Y')
     %figure
     subplot(4,2,5)
     surf(X,Y,GGXX)
+    shading interp
     title('GGXX')
     xlabel('X')
     ylabel('Y')
     %figure
     subplot(4,2,6)
     surf(X,Y,GGYY)
+    shading interp
     title('GGYY')
     xlabel('X')
     ylabel('Y')
     %figure
     subplot(4,2,7)
     surf(X,Y,GGXY)
+    shading interp
     title('GGXY')
     xlabel('X')
     ylabel('Y')
     %figure
     subplot(4,2,8)
     surf(X,Y,GGYX)
+    shading interp
     title('GGYX')
     xlabel('X')
     ylabel('Y')

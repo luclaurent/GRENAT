@@ -49,7 +49,7 @@ k=ev1.*IX1;
 
 %compute first derivatives
 if nbOut>1
-    %    
+    %
     sxx=sign(xx);
     %
     dev1=-sxx./lP;
@@ -58,7 +58,7 @@ end
 
 %compute second derivatives
 if nbOut>2
- %
+    %
     ddk=0.*dk;
 end
 end

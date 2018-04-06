@@ -15,9 +15,9 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-dim=2;
-fct1='wendland52';
-fct2='matern32';
+dim=1;
+fct1='wendland41';
+fct2='wendland';
 pas=0.05;
 para=[1 0.5];
 
@@ -25,13 +25,21 @@ if dim==1
     
     x=-10:pas/10:10;
     [ev,dev,ddev]=multiKernel(fct1,x',[1 2]);
-    [evv,devv,ddevv]=multiKernel(fct2,x',para(1));
+    [evv,devv,ddevv]=feval(fct2,x',para(1),[4 1]);
     
     figure
+    subplot(2,1,1)
     hold on
     plot(x,ev,'b')
     plot(x,dev,'r')
     plot(x,ddev(:),'k')
+    legend('E','G','H')
+    axis([-2 2 -20 20]);
+subplot(2,1,2)
+    hold on
+    plot(x,evv,'b')
+    plot(x,devv,'r')
+    plot(x,ddevv(:),'k')
     legend('E','G','H')
     axis([-2 2 -20 20]);
 elseif dim ==2

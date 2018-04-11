@@ -51,16 +51,14 @@ k=ev1.^3.*IX1.*ev2;
 %compute first derivatives
 if nbOut>1
     %
-    sxx=sign(xx);
-    %
-    dev1=-12*sxx./lP;
+    dev1=-12*tc./lP;
     dk=dev1.*IX1.*ev1.^2;
 end
 
 %compute second derivatives
 if nbOut>2
     %
-    ddev1=24./lP.^2;
+    ddev1=(36*td-12)./lP.^2;
     ddk=ddev1.*IX1.*ev1;
 end
 end

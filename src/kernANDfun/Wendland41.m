@@ -58,7 +58,7 @@ end
 %compute second derivatives
 if nbOut>2
     %
-    ddev1=(120*td-30)./lP.^2;
+    ddev1=(150*td-30)./lP.^2;
     ddk=ddev1.*IX1.*ev1.^3;
 end
 end

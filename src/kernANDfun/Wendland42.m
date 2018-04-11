@@ -44,7 +44,7 @@ IX1=(td<b1);
 
 %compute function
 ev1=1-td;
-ev2=35*tc.^2+18*td+3;
+ev2=(35*tc.^2+18*td+3)/3;
 %
 k=ev1.^6.*IX1.*ev2;
 
@@ -53,14 +53,14 @@ if nbOut>1
     %
     sxx=sign(xx);
     %
-    dev1=(-280*sxx.*tc.^2-56*tc)./lP;
+    dev1=(-280*sxx.*tc.^2-56*tc)./lP/3;
     dk=dev1.*IX1.*ev1.^5;
 end
 
 %compute second derivatives
 if nbOut>2
     %
-    ddev1=(1960*tc.^2-224*td-56)./lP.^2;
+    ddev1=(1960*tc.^2-224*td-56)./lP.^2/3;
     ddk=ddev1.*IX1.*ev1.^4;
 end
 end

@@ -53,13 +53,13 @@ if nbOut>1
     sxx=sign(xx);
     %
     dev1=-3*sxx./lP;
-    dk=dev1.*IX1.*ev1;
+    dk=dev1.*IX1.*ev1.^2;
 end
 
 %compute second derivatives
 if nbOut>2
     %
     ddev1=6./lP.^2;
-    ddk=ddev1.*IX1;
+    ddk=ddev1.*IX1.*ev1;
 end
 end

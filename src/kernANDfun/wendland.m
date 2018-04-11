@@ -48,10 +48,12 @@ IX1=(td<b1);
 
 %exponents
 exR=0:mu;
-exPhi=nu+mu-exR;
+exPhi=nu+2*mu-exR;
 
 %compute beta's coefficients
 beta=computeBeta(nu,mu,mu);
+useBeta=beta(mu+1,1:mu+1); %values of beta used in the next parts
+useBeta=useBeta./useBeta(1);
 
 %compute function
 ev1=1-td;
@@ -60,10 +62,11 @@ kev1=ev1.^exPhi;
 %
 ev2=td.^exR;
 %
-evt=beta(mu+1,1:mu+1).*kev1.*ev2;
+evt=useBeta.*kev1.*ev2;
 %
 k=sum(evt,2).*IX1;
-
+%k=sum(ev2,2).*IX1;
+%keyboard
 %compute first derivatives
 if nbOut>1
     %
@@ -76,9 +79,11 @@ if nbOut>1
     dkev1=-exPhi.*ev1.^dexPhi;
     dev2=exR.*td.^dexR;
     %
-    devt=beta(mu+1,1:mu+1).*(dkev1.*ev2+kev1.*dev2);
+    devt=useBeta.*(dkev1.*ev2+kev1.*dev2);
     %
     dk=sxx./lP.*sum(devt,2).*IX1;
+    %dk=sxx./lP.*sum(dev2,2).*IX1;
+   % keyboard
 end
 
 %compute second derivatives
@@ -91,10 +96,11 @@ if nbOut>2
     ddkev1=exPhi.*dexPhi.*ev1.^(dexPhi-1);    
     ddev2=exR.*dexR.*td.^ddexR;
     %
-    ddevt=beta(mu+1,1:mu+1).*(ddev2.*kev1+2*dkev1.*dev2+ev2.*ddkev1);
+    ddevt=useBeta.*(ddev2.*kev1+2*dkev1.*dev2+ev2.*ddkev1);
     %
     ddk=1./lP.^2.*sum(ddevt,2).*IX1;
 end
+%keyboard
 end
 
 %% specific functions
@@ -114,18 +120,22 @@ end
 %
 function out=computeBeta(nu,inX,inY)
 %initialize beta values
-out=zeros(inX+2,inY+2);
+out=zeros(inX+1,inY+1);
 out(1,1)=1;
 %compute coefficients
 %partU=bsxfun(@funA,inX-1:inY-1,0:inY-InX);
 %partL=bsxfun(@funB,nu+2*(inY-1:-1:nu+inY-2),1:inY-inX+2);
-for itJ=1:inX+1
-    for itK=1:inY+1
+for itK=1:inY
+    itKK=itK-1;
+    for itJ=1:inX+1
+        itJJ=itJ-1;
         for itN=itJ-1:itK
-            if itN~=0
+            itNN=itN-1;
+            if itNN>-1
+                tmp=funA(itNN+1,itNN-itJJ+1)/funB(nu+2*itKK-itNN+1,itNN-itJJ+2);
                 out(itJ,itK+1)=...
                     out(itJ,itK+1)+...
-                    out(itN,itK)*funA(itN+1,itN-itJ)/funB(nu+2*itK-itN+1,itN-itJ+1);
+                    out(itN,itK)*tmp;     
             end
         end
     end

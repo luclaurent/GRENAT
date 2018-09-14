@@ -39,10 +39,16 @@ td=xx./lP;
 te=log(abs(td));
 k=td.^2.*te;
 
+%correction
+IXz=td<eps;
+k(IXz)=0;
+
 %compute first derivatives
 if nbOut>1
     %    
-    dk=td./lP+2*td./lP.*te;
+    pa=2*td./lP.*te;
+    pa(IXz)=0;
+    dk=td./lP+pa;
 end
 
 %compute second derivatives

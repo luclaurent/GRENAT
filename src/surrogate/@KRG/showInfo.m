@@ -49,6 +49,7 @@ switch type
         dispTxtOnOff(obj.metaData.recond,'>> Correction of matrix condition number:',[],true);
         if dispTxtOnOff(obj.metaData.estim.on,'>> Estimation of the hyperparameters: ',[],true)
             Gfprintf('>> Algorithm for estimation: %s\n',obj.metaData.estim.method);
+            Gfprintf('>> Method used for estimation: %s\n',obj.metaData.estim.type);
             Gfprintf('>> Bounds: [%d , %d]\n',obj.metaData.para.l.Min,obj.metaData.para.l.Max);
             switch obj.kernelFun
                 case {'expg','expgg'}

@@ -34,35 +34,7 @@ countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Definition of the parameters for minimization
-% Number of hyperparameters to estimate
-%anisotropy
-if dataMeta.estim.aniso
-    nbP=nPIn;
-    nbPOptim=nbP;
-else
-    nbP=1;
-    nbPOptim=nbP;
-end
-
-%definition the bounds of the space
-% deal with specific cases (depending on the kernel function)
-switch dataMeta.kern
-    case 'matern'
-        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.nu.Min];
-        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.nu.Max];
-        nbPOptim=nbP+1;
-    case 'expg'
-        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min];
-        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max];
-        nbPOptim=nbP+1;
-    case 'expgg'
-        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min*ones(1,nbP)];
-        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max*ones(1,nbP)];
-        nbPOptim=2*nbP;
-    otherwise
-        lb=dataMeta.para.l.Min*ones(1,nbP);
-        ub=dataMeta.para.l.Max*ones(1,nbP);
-end
+[lb,ub,~,nbPOptim,nbP]=definePara(nPIn,dataMeta.kern,dataMeta.para,dataMeta.estim.aniso,'estim');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,7 +46,7 @@ if sampManuOn
     if isfield(dataMeta.estim,'nbSampInit');if ~isempty(dataMeta.estim.nbSampInit);nbSampleSpecif=false;end, end
     if nbSampleSpecif;nbSampInit=dataMeta.estim.nbSampInit;end
 end
-%definition valeur de depart de la variable
+%definition starting point
 x0=0.01*(ub-lb);
 %function to minimised
 fun=@(para)funObj(para);

@@ -30,7 +30,10 @@ switch typeIn
     case 'train'
         Gfprintf(' >> Number of sample points    : %i\n',obj.nS);
         Gfprintf(' >> Number of design parameters: %i\n',obj.nP);
-    case 'update'        
+        Gfprintf(' >> Normalization of the data: ');
+        if obj.confMeta.normOn;txtN='Yes';else txtN='No';end
+        fprintf('%s\n',txtN);
+    case 'update'
         
 end
 end

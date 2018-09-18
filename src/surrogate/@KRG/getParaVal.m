@@ -25,16 +25,13 @@
 % - pV: value of the hyperparameters
 
 function pV=getParaVal(obj)
-if isempty(obj.paraVal)
-    %w/o estimation, the initial values of hyperparameters are chosen
-    switch obj.kernelFun
-        case {'expg','expgg'}
-            obj.paraVal=[obj.metaData.para.l.Val obj.metaData.para.p.Val];
-        case {'matern'}
-            obj.paraVal=[obj.metaData.para.l.Val obj.metaData.para.nu.Val];
-        otherwise
-            obj.paraVal=obj.metaData.para.l.Val;
-    end
-end
+%load definition of hyperparameter values
+[~,~,obj.paraVal,~]=definePara(...
+    obj.nP,...
+    obj.kernelFun,...
+    obj.metaData.para,...
+    obj.metaData.aniso,...
+    'compute');
+%
 pV=obj.paraVal;
 end

@@ -72,7 +72,6 @@ if nbOut==1
     %response
     respK=prod(uniR,2);
 end
-
 %calculation of the responses and first derivatives
 if nbOut==2
     uniR=zeros(nE,nV);

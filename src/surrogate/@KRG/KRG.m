@@ -116,7 +116,7 @@ classdef KRG < handle
             %if everything is ok then train
             if flagTrain
                 obj.train();
-            end;
+            end
         end
         
         %% setters
@@ -124,9 +124,13 @@ classdef KRG < handle
             if isempty(obj.paraVal)
                 obj.fCompute;
             else
+                try
                 if ~all(obj.paraVal==pVIn)
                     obj.fCompute;
                     obj.paraVal=pVIn;
+                end
+                catch
+                    keyboard
                 end
             end
         end

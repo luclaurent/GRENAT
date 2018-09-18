@@ -1,5 +1,5 @@
 %% Fonction: Cubic Spline 0
-%% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
+% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models

@@ -1,5 +1,5 @@
 %% fonction: exponentielle generalisee
-%% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
+% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -51,4 +51,5 @@ if nbOut>2
     %
     ddk=k.*(pow.^2./lP.^2.*axx.^(2.*pow-2)-pow.*(pow-1)./lP.*axx.^(pow-2));
 end
+%pow
 end

@@ -220,7 +220,7 @@ if modDebug||modFinal
     varC{end+1}=cv.wmse;
     txtC{end+1}='+++ LPP';
     varC{end+1}=cv.lpp;
-    dispTableTwoColumns(txtC,varC,'-');
+    dispTableTwoColumns(txtC,varC,'-');    
 end
 %%
 obj.cvResults=cv;

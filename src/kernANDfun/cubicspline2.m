@@ -1,5 +1,5 @@
 %% Fonction: Cubic Spline 2
-%% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
+% L. LAURENT -- 03/04/2018 -- luc.laurent@lecnam.net
 
 %ref: B. A. Lockwood and M. Anitescu. Gradient-enhanced universal kriging for uncertainty propagation. Nuclear Science and Engineering, 170(2):168?195, feb 2012.
 

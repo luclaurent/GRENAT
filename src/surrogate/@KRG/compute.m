@@ -23,7 +23,7 @@
 % INPUTS:
 % - paraValIn: value of the hyperparameters
 % OUTPUTS:
-% - detK,logDetK: determinant and log of the derterminant of the kernel
+% - detK,logDetK: determinant and log of the determinant of the kernel
 % matrix
 
 function [detK,logDetK]=compute(obj,paraValIn)

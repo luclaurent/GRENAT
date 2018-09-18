@@ -46,7 +46,7 @@ switch type
             dispTxtOnOff(obj.metaData.cv.disp,'>> Show CV: ',[],true);
         end
         %
-        dispTxtOnOff(obj.metaData.recond,'>> Correction of matrix condition number:',[],true);
+        dispTxtOnOff(obj.metaData.recond,'>> Correction of matrix condition number: ',[],true);
         if dispTxtOnOff(obj.metaData.estim.on,'>> Estimation of the hyperparameters: ',[],true)
             Gfprintf('>> Algorithm for estimation: %s\n',obj.metaData.estim.method);
             Gfprintf('>> Method used for estimation: %s\n',obj.metaData.estim.type);

@@ -34,7 +34,17 @@ countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Definition of the parameters for minimization
-[lb,ub,~,nbPOptim,nbP]=definePara(nPIn,dataMeta.kern,dataMeta.para,dataMeta.estim.aniso,'estim');
+[lb,...
+    ub,...
+    ~,...
+    nbPOptim,...
+    nbP,...
+    funCondPara]=definePara(...
+    nPIn,...
+    dataMeta.kern,...
+    dataMeta.para,...
+    dataMeta.estim.aniso,...
+    'estim');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,7 +59,7 @@ end
 %definition starting point
 x0=0.01*(ub-lb);
 %function to minimised
-fun=@(para)funObj(para);
+fun=@(para)funObj(funCondPara(para));
 %options depending on the algorithm
 optionsFmincon = optimsetMOD(...
     'Display', 'iter',...        %display evolution
@@ -366,23 +376,22 @@ switch methodOptim
         error(['Wrong kind of minimization method (',mfilename,')']);
 end
 
-
-
-
+%recondtionning final parameters values
+paraFinal=funCondPara(x);
 %store obtained value of the hyperparameters obtained with the minimization
-paraEstim.Val=x;
+paraEstim.Val=paraFinal;
 %deal with various kind of kernel functions
-paraEstim.l.Val=x(1:nbP);
+paraEstim.l.Val=paraFinal(1:nbP);
 paraEstim.p.Val=NaN;
 paraEstim.nu.Val=NaN;
 
 switch dataMeta.kern
     case 'matern'
-        paraEstim.nu.Val=x(end);
+        paraEstim.nu.Val=paraFinal(end);
     case 'expg'
-        paraEstim.p.Val=x(end);
+        paraEstim.p.Val=paraFinal(end);
     case 'expgg'
-        paraEstim.p.Val=x(nbP+1:end);
+        paraEstim.p.Val=paraFinal(nbP+1:end);
 end
 %display values of HyperParameters
 Gfprintf(' >>> Optimal HyperParameters\n');

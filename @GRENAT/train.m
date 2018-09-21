@@ -28,11 +28,11 @@ function train(obj)
 %display information before building
 obj.showData('train');
 %populate the surrogate model class
-obj.dataTrain.addSample(obj.samplingN);
-obj.dataTrain.addResp(obj.respN);
+obj.dataTrain.sampling=obj.samplingN;
+obj.dataTrain.resp=obj.respN;
 %populate with gradients of the chosen metamodel allows it
 if obj.gradUsed
-    obj.dataTrain.addGrad(obj.gradN);
+    obj.dataTrain.grad=obj.gradN;
 end
 %populate with configuration and missing data
 obj.dataTrain.manageOpt(obj.confMeta,obj.miss);

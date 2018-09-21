@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [lb,ub,val,nbPara,nbPdetails]=definePara(nPIn,kernFun,dataPara,anisoFlag,type)
+function [lb,ub,val,nbPara,nbPdetails,funCondPara]=definePara(nPIn,kernFun,dataPara,anisoFlag,type)
 
 lb=[];
 ub=[];
@@ -94,4 +94,16 @@ switch type
 end
 %total number of hyperparameters
 nbPara=sum(nbPdetails);
+
+%handle function for conditionning parameters (w/- or w/o anisotropy)
+if anisoFlag
+    funCondPara=@(x) x;
+else
+    switch kernFun
+        case {'matern','expg','expgg'}
+            funCondPara=@(x) [x(:,ones(1,nPIn)) x(2:end)];            
+        otherwise
+            funCondPara=@(x) x(:,ones(1,nPIn));
+    end
+end
 end

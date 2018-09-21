@@ -33,6 +33,7 @@ else
     obj.paraVal=paraValIn;
 end
 %
+keyboard
 if obj.requireCompute
     %build the kernel Matrix
     obj.buildMatrix(paraValIn);

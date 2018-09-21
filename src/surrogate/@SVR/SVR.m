@@ -160,9 +160,14 @@ classdef SVR  < handle
             if isempty(obj.paraVal)
                 obj.fCompute;
             else
-                if ~all(obj.paraVal==pVIn)
+                if numel(obj.paraVal)~=numel(pVIn)
                     obj.fCompute;
                     obj.paraVal=pVIn;
+                else
+                    if ~all(obj.paraVal==pVIn)
+                        obj.fCompute;
+                        obj.paraVal=pVIn;
+                    end
                 end
             end
         end
@@ -178,6 +183,16 @@ classdef SVR  < handle
             fl=false;
             if ~isempty(obj.metaData)
                 fl=obj.metaData.estim.on;
+            end
+        end        
+                
+        %% getter for kernel function
+        function kFun=get.kernelFun(obj)
+            %load default kernel function
+            kFun=obj.kernelFun;
+            %load specific configuration if it is available
+            if ~isempty(obj.metaData.kern)
+                kFun=obj.metaData.kern;
             end
         end
         
@@ -195,7 +210,7 @@ classdef SVR  < handle
         function tt=get.typeLOO(obj)
             typeG=obj.metaData.estim.type;
             tt='mse';   %default value
-            if ~isempty(regexp(typeG,'cv','ONCE'))c
+            if ~isempty(regexp(typeG,'cv','ONCE'))
                 if numel(typeG)>2
                     tt=typeG(3:end);
                 end

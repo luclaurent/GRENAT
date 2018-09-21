@@ -124,14 +124,15 @@ classdef KRG < handle
             if isempty(obj.paraVal)
                 obj.fCompute;
             else
-                try
-                if ~all(obj.paraVal==pVIn)
+                if numel(obj.paraVal)~=numel(pVIn)
                     obj.fCompute;
                     obj.paraVal=pVIn;
-                end
-                catch
-                    keyboard
-                end
+                else
+                    if ~all(obj.paraVal==pVIn)
+                        obj.fCompute;
+                        obj.paraVal=pVIn;
+                    end
+                end            
             end
         end
         function set.polyOrder(obj,pO)

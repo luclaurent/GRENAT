@@ -37,7 +37,7 @@ if ~isempty(sM);obj.metaData=varargin{sM};end
 fun=@(x)ischar(x);
 sM=find(cellfun(fun,varargin)~=false);
 if ~isempty(sM);obj.kernelFun=varargin{sM};end
-%look for the chosen polynomial order (integer
+%look for the chosen polynomial order (integer)
 fun=@(x)(isnumeric(x));
 sM=find(cellfun(fun,varargin)~=false);
 if ~isempty(sM);obj.polyOrder=varargin{sM};end

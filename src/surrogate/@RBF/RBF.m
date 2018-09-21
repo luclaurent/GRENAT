@@ -118,9 +118,14 @@ classdef RBF < handle
             if isempty(obj.paraVal)
                 obj.fCompute;
             else
-                if ~all(obj.paraVal==pVIn)
+                if numel(obj.paraVal)~=numel(pVIn)
                     obj.fCompute;
                     obj.paraVal=pVIn;
+                else
+                    if ~all(obj.paraVal==pVIn)
+                        obj.fCompute;
+                        obj.paraVal=pVIn;
+                    end
                 end
             end
         end

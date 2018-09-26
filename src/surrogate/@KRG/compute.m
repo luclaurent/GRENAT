@@ -27,16 +27,27 @@
 % matrix
 
 function [detK,logDetK]=compute(obj,paraValIn)
-if nargin==1;
-    paraValIn=obj.paraVal;
-else
-    obj.paraVal=paraValIn;
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Definition of the hyper-parameters
+if nargin>1
+    [~,~,paraValOk,...
+        ~,~,~]=definePara(...
+        obj.nP,...
+        obj.metaData.kern,...
+        paraValIn,...
+        [],...
+        'check');
+    %store value of parameters
+    obj.paraVal=paraValOk;
+else    
+    paraValOk=obj.paraVal;
 end
 %
-keyboard
 if obj.requireCompute
     %build the kernel Matrix
-    obj.buildMatrix(paraValIn);
+    obj.buildMatrix(paraValOk);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Factorization of the matrix

@@ -26,7 +26,7 @@
 % - err: structure containing error criteria
 
 function err=errCalc(obj)
-%comptuation of the criteria
+%computation of the criteria
 obj.err=critErrDisp(obj.nonSampleResp,obj.respRef,obj.dataTrain);
 obj.runErr=false;
 err=obj.err;

@@ -26,6 +26,7 @@
 % - none
 
 function train(obj)
+%
 obj.showInfo('start');
 %Prepare data
 obj.setData;

@@ -75,6 +75,8 @@ switch type
         end
         %
         Gfprintf('\n');
+    case {'magtrix'}
+        Gfprintf(' ++ Build KRG matrix\n');
     case {'update'}
         Gfprintf(' ++ Update KRG\n');
     case {'cv','CV'}

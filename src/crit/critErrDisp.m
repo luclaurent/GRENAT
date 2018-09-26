@@ -110,19 +110,19 @@ end
 
 %function for displaying existing errors
 function txt=dispERR(err,type,errName)
-%sizes of all names of errors
-sName=cellfun(@numel,errName);
-maxsN=max(sName);
-
-txt=[];
-for ite=1:numel(type)
-    if isfield(err,type{ite})
-        %add spaces (calculate number of spaces
-        nbSpaces=maxsN-sName(ite)+2;
-        charSpace=' ';
-        txt=[txt sprintf('%s:%s%g\n',errName{ite},charSpace(ones(1,nbSpaces)),err.(type{ite}))];
-    end
+%list of error types
+[listType,iT,iF]=intersect(type,fields(err));
+%
+txtC=cell(1,numel(listType));
+varC=cell(1,numel(listType));
+%
+for ite=1:numel(listType)
+        %
+        txtC{ite}=errName{iF(ite)};
+        varC{ite}=err.(type{iT(ite)});
 end
+% show 
+txt=dispTableTwoColumns(txtC,varC,'-');
 end
 
 %founction for concatening errors and their names

@@ -66,7 +66,7 @@ metaGRENAT.train;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
-metaGRENAT.train;
+%metaGRENAT.train;
 %define the reference (optional)
 metaGRENAT.defineRef(gridRef,respRef,gradRef);
 %evaluation of the surrogate model at the grid points

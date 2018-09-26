@@ -34,6 +34,19 @@ else
     nbPdetails=nbP;
 end
 
+%handle function for conditionning parameters (w/- or w/o anisotropy)
+if anisoFlag
+    funCondPara=@(x) x;
+else
+    switch kernFun
+        case {'matern','expg','expgg'}
+            funCondPara=@(x) [x(:,ones(1,nPIn)) x(2:end)];
+        otherwise
+            funCondPara=@(x) x(:,ones(1,nPIn));
+    end
+end
+
+
 %dependig of the computation case (estimation or compute
 switch type
     case 'estim'        
@@ -91,19 +104,29 @@ switch type
             otherwise
                 val=lVal;
         end
+        %reconditionning values
+        val=funCondPara(val);
+        
+    case 'check'
+        % deal with specific cases (depending on the kernel function)
+        switch kernFun
+            case 'matern'
+                nbV=nPIn+1;
+            case 'expg'
+                nbV=nPIn+1;
+            case 'expgg'
+                nbV=nPIn*2;
+            otherwise
+                nbV=nPIn;
+        end
+        %
+        if numel(dataPara)==nbV
+            val=dataPara;
+        else
+            val=funCondPara(dataPara);
+        end
 end
 %total number of hyperparameters
 nbPara=sum(nbPdetails);
 
-%handle function for conditionning parameters (w/- or w/o anisotropy)
-if anisoFlag
-    funCondPara=@(x) x;
-else
-    switch kernFun
-        case {'matern','expg','expgg'}
-            funCondPara=@(x) [x(:,ones(1,nPIn)) x(2:end)];            
-        otherwise
-            funCondPara=@(x) x(:,ones(1,nPIn));
-    end
-end
 end

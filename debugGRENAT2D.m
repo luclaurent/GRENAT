@@ -46,7 +46,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('KRG',sampling,resp,grad);
+metaGRENAT=GRENAT('SVR',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -58,7 +58,7 @@ metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 %             'wendland52','wendland53'
 metaGRENAT.confMeta.conf('kern','matern')
 %metaGRENAT.confMeta.conf('polyOrder',2)
-metaGRENAT.confMeta.conf('estimOn',false)
+metaGRENAT.confMeta.conf('estimOn',true)
 %metaGRENAT.confMeta.conf('normOn',false)
 metaGRENAT.confMeta.conf('aniso',false)
 metaGRENAT.confMeta.conf('typeEstim','cv')

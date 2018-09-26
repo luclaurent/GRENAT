@@ -97,7 +97,8 @@
 
 function [OUT,varargout]=pso_Trelea_mod(functname,D,varargin)
 
-fprintf('\n Algorithm PSOt\n')
+PSOtfprintf('\n +++++ Algorithm PSOt +++++\n');
+PSOtfprintf('\n ++ Dimension %i\n',D);
 
 rand('state',sum(100*clock));
 
@@ -194,7 +195,7 @@ errgoal = P(11);
 trelea  = P(12);
 PSOseed = P(13);
 
-fprintf(' >> %i particles\n',ps);
+PSOtfprintf(' >> %i particles\n',ps);
 
 % used with trainpso, for neural net training
 if strcmp(functname,'pso_neteval')
@@ -262,7 +263,7 @@ message = sprintf('PSO: %%g/%g iter., GBest = %%20.20g.\n',me);
 pos(1:ps,1:D) = normmat(rand([ps,D]),VR',1);
 
 if PSOseed == 1         % initial positions user input, see comments above
-    tmpsz                      = size(PSOseedValue);    
+    tmpsz                      = size(PSOseedValue);
     pos(1:tmpsz(1),1:tmpsz(2)) = PSOseedValue;
 end
 
@@ -360,7 +361,7 @@ for i=1:me  % start epoch loop (iterations)
     % this section does the plots during iterations
     %%%%%%%%% MODMODMODMODMODMODMODMODMODMODMODMODMODMOD
     if (mod(i,100)==0)|| (i==1)     %correction Luc: display every 5 iterations
-        fprintf(message,i,gbestval);        
+        PSOtfprintf(message,i,gbestval);
     end
     if plotflg==1
         if (rem(i,df) == 0 ) | (i==me) | (i==1)
@@ -588,7 +589,7 @@ for i=1:me  % start epoch loop (iterations)
     elseif tmp1 <= ergrd
         cnt2 = cnt2+1;
         if cnt2 >= ergrdep
-            fprintf(message,i,gbestval);
+            PSOtfprintf(message,i,gbestval);
             disp(' ');
             disp(['--> Solution likely, GBest hasn''t changed by at least ',...
                 num2str(ergrd),' for ',...
@@ -603,7 +604,7 @@ for i=1:me  % start epoch loop (iterations)
     % this stops if using constrained optimization and goal is reached
     if ~isnan(errgoal)
         if ((gbestval<=errgoal) & (minmax==0)) | ((gbestval>=errgoal) & (minmax==1))
-            fprintf(message,i,gbestval);
+            PSOtfprintf(message,i,gbestval);
             disp(' ');
             disp(['--> Error Goal reached, successful termination!']);
             if plotflg == 1
@@ -616,7 +617,7 @@ for i=1:me  % start epoch loop (iterations)
         if minmax == 2
             if ((tr(i)<errgoal) & (gbestval>=errgoal)) | ((tr(i)>errgoal) ...
                     & (gbestval <= errgoal))
-                fprintf(message,i,gbestval);
+                PSOtfprintf(message,i,gbestval);
                 disp(' ');
                 disp(['--> Error Goal reached, successful termination!']);
                 if plotflg == 1

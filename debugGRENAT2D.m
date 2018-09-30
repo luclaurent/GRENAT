@@ -56,11 +56,11 @@ metaGRENAT=GRENAT('SVR',sampling,resp,grad);
 %             'wendland10','wendland20','wendland21','wendland30',...
 %             'wendland31','wendland32','wendland41','wendland42',...
 %             'wendland52','wendland53'
-metaGRENAT.confMeta.conf('kern','matern')
+metaGRENAT.confMeta.conf('kern','expg')
 %metaGRENAT.confMeta.conf('polyOrder',2)
 metaGRENAT.confMeta.conf('estimOn',true)
 %metaGRENAT.confMeta.conf('normOn',false)
-metaGRENAT.confMeta.conf('aniso',false)
+metaGRENAT.confMeta.conf('aniso',true)
 metaGRENAT.confMeta.conf('typeEstim','cv')
 metaGRENAT.train;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

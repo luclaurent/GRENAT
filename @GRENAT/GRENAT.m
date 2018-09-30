@@ -232,6 +232,77 @@ classdef GRENAT < handle
         function nMR=get.normMeanR(obj);nMR=obj.norm.meanR;end
         function nSR=get.normStdR(obj);nSR=obj.norm.stdR;end
         
+        %% Check interpolation
+        [statusR,statusG]=checkInterp(obj);
+        %% Check if all data is available for displaying the reference
+        [okAll,okSample,okResp,okGrad]=checkRef(obj);
+        %% Check if update could be done
+        s=checkUpdate(obj);
+        %% Define properties
+        conf(obj,varargin);
+        %% Define the configuration for the display
+        defineDisp(obj,varargin);
+        %% Define the reference surface
+        defineRef(obj,varargin);
+        %% Compute and show the errors of the metamodel
+        err=errCalc(obj);
+        %% Evaluate the metamodel
+        [Z,GZ,variance]=eval(obj,evalPts,Verb);
+        %% Evaluate the CI of the metamodel
+        [ci68,ci95,ci99]=evalCI(obj,nonSamplePts);
+        %% Compute infill criterion
+        [ZI,detI]=evalInfill(obj,nonSamplePts,Verb);
+        %% Initialize GRENAT's class
+        initGRENAT(obj);
+        %% Initialize flag for availability of the gradients
+        initGradAvail(obj,flag);
+        %% Initialize flag for evaluation
+        initRunEval(obj,flag);
+        %% Initialize flag for training
+        initRunTrain(obj,flag);
+        %% Ordering data (for manipulating nd-arrays)
+        dataOut=orderData(obj,dataIn,type);
+        %% Update GRENAT toolbox
+        s=selfUpdate(obj,flag);
+        %% Set the type of metamodel in the configuration and initialize
+        setTypeConf(obj,typeIn);
+        %% Show results
+        show(obj,varargin);
+        %% Show 1D results
+        show1D(obj);
+        %% Show 2D results
+        show2D(obj);
+        %% Show the confidence intervals approximated by the metamodel
+        showCI(obj,ciVal,nonSamplePts);
+        %% Display information in the console
+        showData(obj,typeIn);
+        %% Show the gradients approximated by the metamodel
+        showGrad(obj,nbG);
+        %% Show the reference gradients
+        showGradRef(obj,nbG);
+        %% Show the response approximated by the metamodel
+        showResp(obj);
+        %% Show the reference response
+        showRespRef(obj);
+        %% Train the metamodel
+        train(obj);
+        %% Update the metamodel by adding sample points and associated
+        update(obj,samplingIn,respIn,gradIn,paraFind,varargin);
+        %% Update gradients (normalized if necessary)
+        gradOk=updateGrad(obj,newGrad);
+        %% Update unormalized gradients (renormalized if necessary)
+        updateNonSampleGrad(obj,newGrad);
+        %% Declare non sample points
+        updateNonSamplePts(obj,samplePtsIn);
+        %% Update unormalized responses (renormalized if necessary)
+        updateNonSampleResp(obj,newResp);
+        %% Update unormalized variance (renormalized if necessary)
+        updateNonSampleVar(obj,newVar);
+        %% Update responses (normalized if necessary)
+        respOk=updateResp(obj,newResp);
+        %% Update sample points (normalized if necessary)
+        sampleOk=updateSampling(obj,newSample);
+        
     end
     methods (Static)
         %% Function for declaring the purpose of each properties

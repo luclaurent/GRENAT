@@ -28,32 +28,34 @@
 function check(obj,type)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Gfprintf(' >> Check missing data: ');
-%
-checkForceResp=false;
-checkForceGrad=false;
-checkManu=false;
-%
-if nargin>1
-    checkManu=true;
-    switch type
-        case 'r'
-            checkForceResp=true;
-        case 'g'
-            checkForceGrad=true;
+if ~isempty(obj.resp)&&~isempty(obj.grad)
+    Gfprintf(' >> Check missing data: ');
+    %
+    checkForceResp=false;
+    checkForceGrad=false;
+    checkManu=false;
+    %
+    if nargin>1
+        checkManu=true;
+        switch type
+            case 'r'
+                checkForceResp=true;
+            case 'g'
+                checkForceGrad=true;
+        end
     end
+    %
+    if (obj.requireCheckResp&&~checkManu)||(checkManu&&checkForceResp)
+        fprintf('Responses ');
+        obj.checkResp();
+        obj.requireCheckResp=false;
+    end
+    if (obj.requireCheckGrad&&~checkManu)||(checkManu&&checkForceGrad)
+        fprintf('Gradients');
+        obj.checkGrad();
+        obj.requireCheckGrad=true;
+    end
+    fprintf('\n');
+    obj.show();
 end
-%
-if (obj.requireCheckResp&&~checkManu)||(checkManu&&checkForceResp)
-    fprintf('Responses ');
-    obj.checkResp();
-    obj.requireCheckResp=false;
-end
-if (obj.requireCheckGrad&&~checkManu)||(checkManu&&checkForceGrad)
-    fprintf('Gradients');
-    obj.checkGrad();
-    obj.requireCheckGrad=true;
-end
-fprintf('\n');
-obj.show();
 end

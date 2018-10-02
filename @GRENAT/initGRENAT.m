@@ -26,6 +26,7 @@
 % - none
 
 function initGRENAT(obj)
+
 %load descriptions of properties
 obj.infoProp=obj.affectTxtProp;
 %

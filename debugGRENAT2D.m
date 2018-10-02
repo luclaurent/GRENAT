@@ -28,7 +28,7 @@ initDirGRENAT;
 %% Load test function
 testFun=optiGTest('Rosenbrock');
 %%Load of a set of 2D data
-dimPB=3;
+dimPB=2;
 ns=20; %number if sample points
 typeDOE='IHS'; %type of DOE
 testFunction='Peaks'; %test function
@@ -46,6 +46,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
+keyboard
 metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
@@ -56,7 +57,7 @@ metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 %             'wendland10','wendland20','wendland21','wendland30',...
 %             'wendland31','wendland32','wendland41','wendland42',...
 %             'wendland52','wendland53'
-metaGRENAT.confMeta.conf('kern','expg')
+metaGRENAT.confMeta.conf('kern','matern32')
 %metaGRENAT.confMeta.conf('polyOrder',2)
 metaGRENAT.confMeta.conf('estimOn',true)
 %metaGRENAT.confMeta.conf('normOn',false)

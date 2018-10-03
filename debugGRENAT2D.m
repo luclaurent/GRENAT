@@ -46,8 +46,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-keyboard
-metaGRENAT=GRENAT('KRG',sampling,resp,grad);
+metaGRENAT=GRENAT('InKRG',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -63,6 +62,11 @@ metaGRENAT.confMeta.conf('estimOn',true)
 %metaGRENAT.confMeta.conf('normOn',false)
 metaGRENAT.confMeta.conf('aniso',true)
 metaGRENAT.confMeta.conf('typeEstim','cv')
+metaGRENAT.confMeta.conf('dispEstim',true)
+%metaGRENAT.confMeta.conf('method','pso')
+%metaGRENAT.confMeta.conf('dispIterGraph',true)
+%metaGRENAT.confMeta.conf('dispIterCmd',true)
+%metaGRENAT.confMeta.conf('dispPlotAlgo',true)
 metaGRENAT.train;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

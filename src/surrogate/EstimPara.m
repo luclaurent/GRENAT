@@ -134,8 +134,6 @@ if ~dataMeta.estim.dispIterGraph
     optionsFminbnd=optimsetMOD(optionsFminbnd,'OutputFcn','');
     optionsFminsearch=optimsetMOD(optionsFminbnd,'OutputFcn','');
     optionsGA=gaoptimsetMOD(optionsGA,'OutputFcn','');
-else
-    figure;
 end
 
 if ~dataMeta.estim.dispIterCmd

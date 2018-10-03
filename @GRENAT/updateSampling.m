@@ -25,7 +25,6 @@
 % - sampleOk: sample points ready to be stored
 
 function sampleOk=updateSampling(obj,newSample)
-keyboard
 %add sample points to the MissingData's object
 obj.miss.addSampling(newSample);
 %add sample points to the NormRenorm's object

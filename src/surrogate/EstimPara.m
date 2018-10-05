@@ -374,6 +374,81 @@ switch methodOptim
         error(['Wrong kind of minimization method (',mfilename,')']);
 end
 
+%Plot function used for estimate parameters (only if there is 1 or 2
+%hyperparameter
+if dataMeta.estim.disp
+    if nbPOptim==1
+        Gfprintf('Evaluate the estimation function for display\n');
+        %number of plotting point
+        nbPlotingPts=500;
+        %prepare ploting grid
+        gridH=linspace(lb,ub,nbPlotingPts);
+        estFun=zeros(size(gridH));        
+        %evaluation of the estimation function at the points of the grid
+        for itP=1:numel(gridH)
+            estFun(itP)=fun(gridH(itP));
+            textProgressbar(itP,numel(gridH));
+        end
+        %plot function
+        figure;
+        plotFun='plot';
+        if all(estFun>0)
+            plotFun='semilogy';           
+        end        
+        feval(plotFun,gridH,estFun,'r','LineWidth',2);
+        xlabel('$l$','Interpreter','latex')
+        ylabel('$f_\textrm{estim}$','Interpreter','latex')
+        
+    elseif nbPOptim==2
+        Gfprintf('Evaluate the estimation function for display\n');
+        %number of plotting point
+        nbPlotingPts=25;
+        %prepare ploting grid
+        gridX=linspace(lb(1),ub(1),nbPlotingPts);
+        gridY=linspace(lb(2),ub(2),nbPlotingPts);
+        [gridHX,gridHY]=meshgrid(gridX,gridY);
+        estFun=zeros(size(gridHX));
+        %evaluation of the estimation function at the points of the grid
+        for itP=1:numel(gridHX)
+            estFun(itP)=fun([gridHX(itP),gridHY(itP)]);
+            textProgressbar(itP,numel(gridHX));
+        end
+        %plot function
+        figure;
+        subplot(121)
+        surf(gridHX,gridHY,estFun);
+        %
+        colorbar
+        %
+        if all(estFun>0);set(gca,'ZScale','log');title('log scale');end
+        xlabel('$l_1$','Interpreter','latex')
+        ylabel('$l_2$','Interpreter','latex')
+        zlabel('$f_\textrm{estim}$','Interpreter','latex')
+        %
+        subplot(122)
+        estPlot=estFun;
+        if all(estFun>0);estPlot=log(estFun);end         
+        %
+        contourf(gridHX,gridHY,estPlot);        
+        %
+        if all(estFun>0)
+            title('log scale');            
+            chb=colorbar;
+            colormap(jet);
+            lblValue=get(chb,'YTick');
+            newlblValue=num2cell(exp(lblValue));
+            txtValue=cellfun(@(x)num2str(x,'%e'),newlblValue,'UniformOutput',false);
+            set(chb,'YTickLabel',txtValue');
+        end
+        %
+        contourf(gridHX,gridHY,estPlot,10);
+        %
+        xlabel('$l_1$','Interpreter','latex')
+        ylabel('$l_2$','Interpreter','latex')
+        zlabel('$f_\textrm{estim}$','Interpreter','latex')
+    end
+end
+
 %recondtionning final parameters values
 paraFinal=funCondPara(x);
 %store obtained value of the hyperparameters obtained with the minimization
@@ -430,3 +505,5 @@ else
     varargout{1}=[];
 end
 end
+
+

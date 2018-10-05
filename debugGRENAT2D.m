@@ -46,7 +46,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('KRG',sampling,resp,grad);
+metaGRENAT=GRENAT('InRBF',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -60,18 +60,17 @@ metaGRENAT.confMeta.conf('kern','matern32')
 %metaGRENAT.confMeta.conf('polyOrder',2)
 metaGRENAT.confMeta.conf('estimOn',true)
 %metaGRENAT.confMeta.conf('normOn',false)
-metaGRENAT.confMeta.conf('aniso',false)
-metaGRENAT.confMeta.conf('typeEstim','cv')
+metaGRENAT.confMeta.conf('aniso',true)
+metaGRENAT.confMeta.conf('typeEstim','logli')
 metaGRENAT.confMeta.conf('dispEstim',true)
 %metaGRENAT.confMeta.conf('method','pso')
 %metaGRENAT.confMeta.conf('dispIterGraph',true)
 %metaGRENAT.confMeta.conf('dispIterCmd',true)
 %metaGRENAT.confMeta.conf('dispPlotAlgo',true)
-metaGRENAT.train;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
-%metaGRENAT.train;
+metaGRENAT.train;
 %define the reference (optional)
 metaGRENAT.defineRef(gridRef,respRef,gradRef);
 %evaluation of the surrogate model at the grid points

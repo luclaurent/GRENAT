@@ -26,17 +26,38 @@ initDirGRENAT;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load test function
-testFun=optiGTest('Rosenbrock');
+testFun=optiGTest('Rosenbrock');%Rosenbrock % Branin1
 %%Load of a set of 2D data
 dimPB=2;
 ns=20; %number if sample points
 typeDOE='IHS'; %type of DOE
-testFunction='Peaks'; %test function
 %
 mDOE=multiDOE(dimPB,typeDOE,ns,testFun.xMin,testFun.xMax);
 mDOE.show;
 %
 sampling=mDOE.unsorted;
+% sampling=[%
+%    -24   -15
+%     15    24
+%    -12    12
+%     -6   -27
+%     30     3
+%     27    -9
+%     21   -21
+%     12    -3
+%     -9    30
+%      0    21
+%     24    27
+%     18    15
+%      6     9
+%    -27    18
+%      9   -24
+%    -21     6
+%    -18   -18
+%      3   -12
+%    -15    -6
+%     -3     0
+%    ];
 %
 %evaluate function at sample points
 [resp,~,grad]=testFun.evalObj(sampling);
@@ -46,7 +67,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('InRBF',sampling,resp,grad);
+metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -59,10 +80,11 @@ metaGRENAT=GRENAT('InRBF',sampling,resp,grad);
 metaGRENAT.confMeta.conf('kern','matern32')
 %metaGRENAT.confMeta.conf('polyOrder',2)
 metaGRENAT.confMeta.conf('estimOn',true)
-%metaGRENAT.confMeta.conf('normOn',false)
+metaGRENAT.confMeta.conf('lVal',[1 1]);%Branin1 [4.662201911444302e-01     2.644279506437699e-01])
+metaGRENAT.confMeta.conf('normOn',true)
 metaGRENAT.confMeta.conf('aniso',true)
 metaGRENAT.confMeta.conf('typeEstim','logli')
-metaGRENAT.confMeta.conf('dispEstim',true)
+metaGRENAT.confMeta.conf('dispEstim',false)
 %metaGRENAT.confMeta.conf('method','pso')
 %metaGRENAT.confMeta.conf('dispIterGraph',true)
 %metaGRENAT.confMeta.conf('dispIterCmd',true)
@@ -71,6 +93,8 @@ metaGRENAT.confMeta.conf('dispEstim',true)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
 metaGRENAT.train;
+metaGRENAT.dataTrain.paraVal
+
 %define the reference (optional)
 metaGRENAT.defineRef(gridRef,respRef,gradRef);
 %evaluation of the surrogate model at the grid points
@@ -83,6 +107,10 @@ metaGRENAT.show;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute display error
 metaGRENAT.errCalc;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%check interpolation
+metaGRENAT.checkInterp;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Stop workers

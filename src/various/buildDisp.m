@@ -20,8 +20,8 @@
 
 function [XY,dispData]=buildDisp(doeData,nbSteps)
 
-fprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
-fprintf('     >>> BUILD DISPLAY <<<\n');
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('     >>> BUILD DISPLAY <<<\n');
 countTime=mesuTime;
 %dimension of the sapce
 spaDim=numel(doeData.Xmin);

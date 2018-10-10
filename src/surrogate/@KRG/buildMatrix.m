@@ -42,6 +42,7 @@ if obj.metaData.recond
     %
     obj.K=obj.K+coefRecond*speye(size(obj.K));
 end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %remove missing parts

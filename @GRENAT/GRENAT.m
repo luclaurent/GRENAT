@@ -81,6 +81,7 @@ classdef GRENAT < handle
         runEval=true;               % flag for checking if the training is obsolete
         gradAvail=false;            % flag for availability of the gradients
         gradUsed=false;             % flag for use of the gradients
+        inGrad=false;               % flag for use of indirect gradients
         runErr=true;                % flag for computation of the error
         %      normSamplePtsIn=false;      % flag for checking if the input data are normalized
         %      normRespIn=false;           % flag for checking if the input data are normalized
@@ -160,16 +161,13 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %getter for checking if GRENAT could be updated
-        function s=get.requireUpdate(obj);s=obj.checkUpdate();end
-        
+        function s=get.requireUpdate(obj);s=obj.checkUpdate();end        
         %getter for the number of sample points
         function s=get.nS(obj);s=size(obj.sampling,1);end
         %getter for the number of design parameters
-        function s=get.nP(obj);s=size(obj.sampling,2);end
-        
+        function s=get.nP(obj);s=size(obj.sampling,2);end        
         %getter for the type of metamodel
-        function type=get.type(obj);type=obj.confMeta.type;end
-        
+        function type=get.type(obj);type=obj.confMeta.type;end        
         %getter for normalized sample points
         function out=get.samplingN(obj)
             %if normalization is requested
@@ -199,8 +197,7 @@ classdef GRENAT < handle
                 %no normalization
                 out=obj.grad;
             end
-        end
-        
+        end        
         %getter for the non sample points
         function PtS=get.nonSamplePtsOrder(obj)
             PtS=obj.orderData(obj.nonSamplePts,'sampleIn');

@@ -62,7 +62,7 @@ switch type
             dispTxtOnOff(obj.metaData.estim.dispIterGraph,'>> Plot estimation steps: ',[],true);
         else
             Gfprintf('>> Value(s) hyperparameter(s): ');
-            fprintf('%d',obj.metaData.para.l.Val);
+            fprintf('%d ',obj.metaData.para.l.Val);
             fprintf('\n');
             switch obj.kernelFun
                 case {'expg','expgg'}

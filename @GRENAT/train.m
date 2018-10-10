@@ -27,12 +27,24 @@
 function train(obj)
 %display information before building
 obj.showData('train');
+%depending of direct or indirect gradient-based approach
+if obj.inGrad
+    %prepare indirect gradient data
+    [obj.dataTrain.sampling,...
+        obj.dataTrain.resp]=PrepIn(...
+        obj.samplingN,...
+        obj.respN,...
+        obj.gradN,...
+        obj.confMeta,...
+        obj.miss);
+else
 %populate the surrogate model class
 obj.dataTrain.sampling=obj.samplingN;
 obj.dataTrain.resp=obj.respN;
 %populate with gradients of the chosen metamodel allows it
 if obj.gradUsed
     obj.dataTrain.grad=obj.gradN;
+end
 end
 %populate with configuration and missing data
 obj.dataTrain.manageOpt(obj.confMeta,obj.miss);

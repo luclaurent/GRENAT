@@ -26,13 +26,12 @@
 % - none
 
 function setTypeConf(obj,typeIn)
-obj.confMeta.type=typeIn;
 %extract the right type of metamodel
 [InGrad,ClassGrad,typeOk]=obj.CheckGE(typeIn);
+obj.confMeta.type=typeOk;
 %initialize the metamodel
 obj.dataTrain=eval(typeOk);
-%for gradient-based approximation
-if InGrad||ClassGrad
-    obj.gradUsed=true;
-end
+%for direct or indirect gradient-based approximation
+obj.gradUsed=ClassGrad||InGrad;
+obj.inGrad=InGrad;
 end

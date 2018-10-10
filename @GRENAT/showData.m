@@ -31,7 +31,15 @@ switch typeIn
         Gfprintf(' >> Number of sample points    : %i\n',obj.nS);
         Gfprintf(' >> Number of design parameters: %i\n',obj.nP);
         Gfprintf(' >> Normalization of the data: ');
-        if obj.confMeta.normOn;txtN='Yes';else txtN='No';end
+        if obj.confMeta.normOn;txtN='Yes';else, txtN='No';end
+        fprintf('%s\n',txtN);
+        Gfprintf(' >> Use gradients: ');
+        if obj.gradUsed
+            txtN='Yes ';
+            if obj.inGrad;txtN=[txtN '(Indirect)'];else, txtN=[txtN '(Direct)'];end
+        else
+            txtN='No';
+        end
         fprintf('%s\n',txtN);
     case 'update'
         

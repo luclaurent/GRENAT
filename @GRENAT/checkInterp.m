@@ -22,7 +22,7 @@
 % INPUTS:
 % - none
 % OUTPUTS:
-% - statusR,statusG: flag for interpolation status on responses and
+% - statusR, statusG: flag for interpolation status on responses and
 % gradients
 
 function [statusR,statusG]=checkInterp(obj)

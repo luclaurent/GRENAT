@@ -19,23 +19,9 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function displaySurrogateCI(Xpts,ic,dispData,Z)
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %load default configuration for display
-% dispDef=initDisp;
-% %deal with missing data 
-% fDef=fieldnames(dispDef);
-% fAvail=fieldnames(dispData);
-% fMiss=setxor(fDef,fAvail);
-% %add missing options
-% if ~isempty(fMiss)
-%     Gfprintf('Missing display options (add)\n');
-%     for ii=1:numel(fMiss)
-%         Gfprintf('%s ',fMiss{ii});
-%         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
-%     end
-%     Gfprintf('\n')
-% end
+
+%load default option
+uniForce=true;
 
 %new figure or not
 if dispData.newFig
@@ -52,7 +38,6 @@ elseif numel(sX)==2
         d1=true;
     end
 end
-
 %dimension 1
 if d1
     hold on;
@@ -90,7 +75,7 @@ elseif d2
     zlabel(dispData.zlabel)
     
     %unique color
-    if dispData.uni
+    if dispData.uni||uniForce
         set(hs,'FaceColor','red');
         set(hi,'FaceColor','blue');
     end

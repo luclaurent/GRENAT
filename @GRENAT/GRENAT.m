@@ -161,13 +161,13 @@ classdef GRENAT < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %getter for checking if GRENAT could be updated
-        function s=get.requireUpdate(obj);s=obj.checkUpdate();end        
+        function s=get.requireUpdate(obj);s=obj.checkUpdate();end
         %getter for the number of sample points
         function s=get.nS(obj);s=size(obj.sampling,1);end
         %getter for the number of design parameters
-        function s=get.nP(obj);s=size(obj.sampling,2);end        
+        function s=get.nP(obj);s=size(obj.sampling,2);end
         %getter for the type of metamodel
-        function type=get.type(obj);type=obj.confMeta.type;end        
+        function type=get.type(obj);type=obj.confMeta.type;end
         %getter for normalized sample points
         function out=get.samplingN(obj)
             %if normalization is requested
@@ -197,7 +197,7 @@ classdef GRENAT < handle
                 %no normalization
                 out=obj.grad;
             end
-        end        
+        end
         %getter for the non sample points
         function PtS=get.nonSamplePtsOrder(obj)
             PtS=obj.orderData(obj.nonSamplePts,'sampleIn');
@@ -216,6 +216,11 @@ classdef GRENAT < handle
         function variance=get.nonSampleVar(obj)
             if obj.runEval;eval(obj);end
             variance=obj.orderData(obj.nonSampleVarOrder,'respOut');
+        end
+        %getter for the infill criterion at the non sample points
+        function infillCrit=get.nonSampleEI(obj)
+            if obj.runEval;eval(obj);end
+            infillCrit=obj.evalInfill;
         end
         %getter for error values
         function err=get.err(obj)
@@ -281,6 +286,10 @@ classdef GRENAT < handle
         showResp(obj);
         %% Show the reference response
         showRespRef(obj);
+        %% Show the variance approximated by the metamodel
+        showVar(obj);
+        %% Show the infill criterion provided by the metamodel
+        showEI(obj);
         %% Train the metamodel
         train(obj);
         %% Update the metamodel by adding sample points and associated

@@ -45,7 +45,8 @@ classdef initDisp < handle
         num=0;                  %number of the display
         tex=true;               %save data in TeX file
         bar=false;              %display using bar
-        trans=false;            %display using transparency
+        trans=true;             %display using transparency
+        logScale=false;         %use log scale
         nv=Inf;                 %number of sample points on the reference grid
         nbSteps=0;              %number of steps on the reference grid
         step=[];                %size of the step of the grid
@@ -340,6 +341,16 @@ classdef initDisp < handle
                     SwitchOnOff(boolIn);
                 end
                 obj.trans=boolIn;
+            end
+        end  
+        %
+        function set.logScale(obj,boolIn)
+            if isG(boolIn,'logical')
+                if xor(obj.logScale,boolIn)
+                    Gfprintf(' >>> Log scale: ');
+                    SwitchOnOff(boolIn);
+                end
+                obj.logScale=boolIn;
             end
         end  
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

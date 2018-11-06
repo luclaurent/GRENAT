@@ -38,7 +38,11 @@ if nargin<3;Verb=true;end
 %check if the metamodel has been already trained
 if obj.runTrain;train(obj);end
 %store non sample points
-if nargin>1;obj.nonSamplePts=evalPts;end
+if nargin>1
+    if ~isempty(evalPts)
+        obj.nonSamplePts=evalPts;
+    end
+end
 %evaluation of the metamodels
 if obj.runEval
     %declare variables

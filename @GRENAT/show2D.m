@@ -48,4 +48,12 @@ obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
 showGrad(obj,2);
 obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
 showCI(obj,[]);
+obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
+obj.confDisp.conf('logScale',false);
+showVar(obj);
+obj.confDisp.conf('logScale',false);
+obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
+obj.confDisp.conf('logScale',false);
+showEI(obj);
+obj.confDisp.conf('logScale',false);
 end

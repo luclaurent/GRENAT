@@ -26,7 +26,7 @@ initDirGRENAT;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load test function
-testFun=optiGTest('Rosenbrock');%Rosenbrock % Branin1
+testFun=optiGTest('Branin1');%Rosenbrock % Branin1
 %%Load of a set of 2D data
 dimPB=2;
 ns=20; %number if sample points

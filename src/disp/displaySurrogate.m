@@ -53,23 +53,7 @@ function figHandle=displaySurrogate(gridXY,Z,GZ,sampling,resp,grad,dispData)
 %           * dispData.directory: directory used for saving figures
 %           * dispData.step: step of the grid used for plotting
 %           * dispData.missData: information about the missing data
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %Load default options
-% dispDef=initDisp;
-% %deal with missing options (added to the options structure)
-% fDef=fieldnames(dispDef);
-% fAvail=fieldnames(dispData);
-% fMiss=setxor(fDef,fAvail);
-% %adding missing options
-% if ~isempty(fMiss)
-%     Gfprintf('Some display options are missing (add its)\n');
-%     for ii=1:numel(fMiss)
-%         Gfprintf('%s ',fMiss{ii});
-%         dispData.(fMiss{ii})=dispDef.(fMiss{ii});
-%     end
-%     Gfprintf('\n');
-% end
+%           * dispData.logScale: use log scale
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 figHandle=[];
@@ -374,6 +358,12 @@ if dispData.on
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %change to log scale
+        if dispData.logScale
+            set(gca, 'ZScale', 'log')
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %display 1D
     elseif spa1D
         if dispData.gridGrad
@@ -453,6 +443,12 @@ if dispData.on
         title(dispData.title);
         xlabel(dispData.xlabel);
         ylabel(dispData.ylabel);
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %change to log scale
+        if dispData.logScale
+            set(gca, 'YScale', 'log')
+        end
     end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -137,7 +137,7 @@ classdef initDisp < handle
         %
         function set.directory(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.directory,charIn)
+                if ~strcmp(obj.directory,charIn)
                     Gfprintf(' >>> Saving directory : %s (previous %s)',charIn,obj.directory);
                 end
                 obj.directory=charIn;
@@ -204,7 +204,7 @@ classdef initDisp < handle
         %
         function set.xlabel(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.xlabel,charIn)
+                if ~strcmp(obj.xlabel,charIn)
                     Gfprintf(' >>> X label : %s (previous %s)',charIn,obj.xlabel);
                 end
                 obj.xlabel=charIn;
@@ -213,7 +213,7 @@ classdef initDisp < handle
         %
         function set.ylabel(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.ylabel,charIn)
+                if ~strcmp(obj.ylabel,charIn)
                     Gfprintf(' >>> Y label : %s (previous %s)',charIn,obj.ylabel);
                 end
                 obj.ylabel=charIn;
@@ -222,7 +222,7 @@ classdef initDisp < handle
         %
         function set.zlabel(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.zlabel,charIn)
+                if ~strcmp(obj.zlabel,charIn)
                     Gfprintf(' >>> Z label : %s (previous %s)',charIn,obj.zlabel);
                 end
                 obj.zlabel=charIn;
@@ -231,8 +231,8 @@ classdef initDisp < handle
         %
         function set.title(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.title,charIn)
-                    Gfprintf(' >>> Z label : %s (previous %s)',charIn,obj.title);
+                if ~strcmp(obj.title,charIn)
+                    Gfprintf(' >>> Z label : %s (previous %s)\n',charIn,obj.title);
                 end
                 obj.title=charIn;
             end
@@ -240,7 +240,7 @@ classdef initDisp < handle
         %
         function set.color(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.color,charIn)
+                if ~strcmp(obj.color,charIn)
                     Gfprintf(' >>> Color for uniform display : %s (previous %s)',charIn,obj.color);
                 end
                 obj.color=charIn;
@@ -279,7 +279,7 @@ classdef initDisp < handle
         %
         function set.num(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.num~=doubleIn)
+                if any(obj.num~=doubleIn)
                     Gfprintf(' >>> Number of the plot: %d (previous %d)',doubleIn,obj.num);
                 end
                 obj.num=doubleIn;
@@ -288,7 +288,7 @@ classdef initDisp < handle
         %
         function set.nbSteps(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.nbSteps~=doubleIn)
+                if any(obj.nbSteps~=doubleIn)
                     Gfprintf(' >>> Number of steps of the reference grid: %d (previous %d)',doubleIn,obj.nbSteps);
                 end
                 obj.nbSteps=doubleIn;
@@ -297,7 +297,7 @@ classdef initDisp < handle
         %
         function set.step(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.step~=doubleIn)
+                if any(obj.step~=doubleIn)
                     Gfprintf(' >>> Size of steps of the reference grid: %d (previous %d)',doubleIn,obj.step);
                 end
                 obj.step=doubleIn;
@@ -306,7 +306,7 @@ classdef initDisp < handle
         %
         function set.nv(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.nv~=doubleIn)
+                if any(obj.nv~=doubleIn)
                     Gfprintf(' >>> Number of sample points of the reference grid: %d (previous %d)',doubleIn,obj.nv);
                 end
                 obj.nv=doubleIn;

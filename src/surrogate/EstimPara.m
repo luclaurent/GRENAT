@@ -375,12 +375,15 @@ switch methodOptim
 end
 
 %Plot function used for estimate parameters (only if there is 1 or 2
-%hyperparameter
+%hyperparameter(s))
 if dataMeta.estim.disp
     plotEstimFun(fun,nbPOptim,lb,ub);
+    %reeavaluate the optimization function for the optimal values of the
+    %hyperparameters
+    fun(x);
 end
 
-%recondtionning final parameters values
+%reconditionning final parameters values
 paraFinal=funCondPara(x);
 %store obtained value of the hyperparameters obtained with the minimization
 paraEstim.Val=paraFinal;

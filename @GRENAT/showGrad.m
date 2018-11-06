@@ -29,6 +29,6 @@ function showGrad(obj,nbG)
 if nargin==1;nbG=1:size(obj.nonSampleGrad,3);end
 for itG=nbG
     obj.confDisp.title=(['Approximated gradients /x' num2str(itG)]);
-    displaySurrogate(obj.nonSamplePts,obj.nonSampleGrad(:,:,itG),obj.sampling,obj.resp,obj.grad,obj.confDisp);
+    displaySurrogate(obj.nonSamplePts,obj.nonSampleGrad(:,:,itG),[],obj.sampling,obj.grad(:,itG),[],obj.confDisp);
 end
 end

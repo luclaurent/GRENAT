@@ -20,7 +20,7 @@
 
 function [XY,dispData]=buildDisp(doeData,nbSteps)
 
-Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n')
+Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
 Gfprintf('     >>> BUILD DISPLAY <<<\n');
 countTime=mesuTime;
 %dimension of the sapce

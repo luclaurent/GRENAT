@@ -26,5 +26,5 @@
 
 function showRespRef(obj)
 obj.confDisp.title=('Reference');
-displaySurrogate(obj.sampleRef,obj.respRef,obj.sampling,obj.resp,obj.grad,obj.confDisp);
+displaySurrogate(obj.sampleRef,obj.respRef,obj.gradRef,obj.sampling,obj.resp,obj.grad,obj.confDisp);
 end

@@ -37,7 +37,7 @@ classdef initDisp < handle
         uni=false;              %use uniform color
         color=[];               %choose display color
         xlabel='x_1';           %X-axis label
-        ylabel='x_2';           %Y-axis label
+        ylabel='';              %Y-axis label
         zlabel='';              %Z-axis label
         title='';               %title of the figure
         render=false;           %enable/disable 3D rendering

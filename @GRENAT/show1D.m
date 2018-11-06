@@ -28,7 +28,7 @@ function show1D(obj)
 figure;
 %depend if the reference is available or not
 if checkRef(obj)
-    obj.nbSubplot=231;
+    obj.nbSubplot=421;
     if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
     obj.confDisp.conf('samplePts',true,'sampleGrad',false);
     showRespRef(obj);
@@ -36,7 +36,6 @@ if checkRef(obj)
     %remove display of sample points
     obj.confDisp.conf('samplePts',true,'sampleGrad',true);
     showGradRef(obj);
-    obj.nbSubplot=obj.nbSubplot+1;
 else
     obj.nbSubplot=221;
 end
@@ -49,4 +48,12 @@ obj.confDisp.conf('samplePts',true,'sampleGrad',true);
 showGrad(obj);
 obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
 showCI(obj,[]);
+obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
+obj.confDisp.conf('logScale',false);
+showVar(obj);
+obj.confDisp.conf('logScale',false);
+obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
+obj.confDisp.conf('logScale',false);
+showEI(obj);
+obj.confDisp.conf('logScale',false);
 end

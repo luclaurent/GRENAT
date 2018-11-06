@@ -55,8 +55,6 @@ classdef execParallel < handle
                 % start or not
                 if obj.on
                     obj.start;
-                else
-                    obj.stop;
                 end
             else
                 %kill the object because the initialization is not possible

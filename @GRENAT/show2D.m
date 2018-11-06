@@ -26,6 +26,8 @@
 
 function show2D(obj)
 figure;
+%
+obj.confDisp.conf('ylabel','x_2');
 %depend if the reference is available or not
 if checkRef(obj)
     obj.nbSubplot=331;

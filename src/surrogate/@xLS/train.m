@@ -33,14 +33,14 @@ obj.setData;
 %Build regression matrix (for the trend model)
 %depending on the availability of the gradients
 if ~obj.flagG
-    obj.valFunPoly=multiMono(obj.sampling,obj.polyOrder);
+    obj.valFunPoly=multiMono(obj.sampling,obj.funPoly);
     if obj.checkMiss
         %remove missing response(s)
         obj.valFunPoly=obj.missData.removeRV(obj.valFunPoly);
     end
 else
     %gradient-based
-    [MatX,MatDX]=multiMono(obj.sampling,obj.polyOrder);
+    [MatX,MatDX]=multiMono(obj.sampling,obj.funPoly);
     %remove lines associated to the missing data
     if obj.checkMiss
         obj.valFunPoly=obj.missData.removeRV(MatX);

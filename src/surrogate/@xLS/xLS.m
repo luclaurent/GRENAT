@@ -59,6 +59,8 @@ classdef xLS < handle
         requireRun=true;     % flag if a full building is required
         requireUpdate=false; % flag if an update is required
         forceGrad=false;     % flag for forcing the computation of 1st and 2nd derivatives of the kernel matrix
+        %
+        funPoly=[];          % string corresponding to the name of the polynomial funcion used
     end
     properties (Dependent,Access = private)
         NnS;                 % number of new sample points
@@ -112,6 +114,8 @@ classdef xLS < handle
                     if pO>=0
                         obj.polyOrder=pO;
                         fl=true;
+                        %define polynomial function
+                        obj.buildFunPoly;
                     end
                 end
             end
@@ -149,6 +153,8 @@ classdef xLS < handle
         addResp(obj,newR);
         %% Add new sample points
         addSample(obj,newS);
+        %% Define polynomial function (or build it if the function is not available)
+        buildFunPoly(obj);
         %% Regression matrix at the non-sample point
         [ff,jf]=buildMatrixNonS(obj,U);
         %% Check if there is missing data

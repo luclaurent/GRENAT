@@ -1,5 +1,5 @@
 %% Method of xLS class
-% L. LAURENT -- 31/07/2017 -- luc.laurent@lecnam.net
+% L. LAURENT -- 07/11/2018 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -19,21 +19,23 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-%% Regression matrix at the non-sample point
-% INPUTS:
-% - U: point used for evaluation
+%% Define polynomial function (or build it if the function is not available)
+% INPUTS (if arguments are precised, two must be given):
+% - polyOrder: order of the polynomial (optional)
+% - nP: number of parameters (optional)
 % OUTPUTS:
-% - ff: values of the monomial terms at U
-% - jf: values of the derivatives of the monomial terms at U
+% - none
 
-function [ff,jf]=buildMatrixNonS(obj,U)
-calcGrad=false;
-if nargout>1
-    calcGrad=true;
+function buildFunPoly(obj,polyOrder,nP)
+if nargin<3
+    polyOrder=obj.polyOrder;
+    nP=obj.nP;
 end
-if calcGrad
-    [ff,jf]=multiMono(U,obj.funPoly);
-else
-    [ff]=multiMono(U,obj.funPoly);
+
+%choose polynomial function
+obj.funPoly=['mono_' num2str(polyOrder,'%02i') '_' num2str(nP,'%03i')];
+%check if the function exist (if not create it)
+if ~exist(obj.funPoly,'file')
+    toolGeneMonomial(polyOrder,np);
 end
 end

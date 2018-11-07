@@ -18,18 +18,11 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [matX,matDX,matDDX]=multiMono(X,polyOrder)
+function [matX,matDX,matDDX]=multiMono(X,funPoly)
 %number of sample points
 ns=size(X,1);
 %number of design variables
 np=size(X,2);
-
-%choose polynomial function
-funPoly=['mono_' num2str(polyOrder,'%02i') '_' num2str(np,'%03i')];
-%check if the function exist (if not create it)
-if ~exist(funPoly,'file')
-    toolGeneMonomial(polyOrder,np);
-end
 
 %deal with what quantities is required
 derFirst=false;

@@ -20,7 +20,7 @@
 
 %% Update unormalized variance (renormalized if necessary)
 % INPUTS:
-% - newVar: array of new gradients
+% - newVar: array of new variance
 % OUTPUTS:
 % - none
 

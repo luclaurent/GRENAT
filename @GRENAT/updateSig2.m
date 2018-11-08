@@ -18,39 +18,25 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%% Show the confidence intervals approximated by the metamodel
+%% Update variance (renormalized if necessary)
 % INPUTS:
-% - ciVal: type of confidence interval (68, 95, 99)
-% - nonSamplePts: give specific points
+% - newVar: value of variance
 % OUTPUTS:
 % - none
 
-function showCI(obj,ciVal,nonSamplePts)
-%type of confidence intervals
-ciOk=false;
-ciValDef=obj.confDisp.ciType;
+function updateSig2(obj,newVar)
 %
-if nargin>1
-    if ~isempty(ciVal)
-        if ismember(ciVal,[68,95,99])
-            ciOk=true;
-        end
+if ~isempty(newVar)    
+    % renormalize the new variance using the existing database
+    if obj.confMeta.normOn
+        varOk=obj.norm.reNormVar(newVar);
+    else
+        varOk=newVar;
     end
+    %store data
+    obj.sig2=varOk;
+else
+    obj.sig2=[];
 end
-%
-if ~ciOk
-    ciVal=ciValDef;
 end
-%store non sample points
-if nargin>2
-    obj.nonSamplePts=nonSamplePts;
-end
-%
-obj.confDisp.title=([num2str(ciVal) ' ' char(37) ' confidence intervals']);
-%evaluation of the confidence interval
-evalCI(obj);
-%load data to display
-ciDisp=obj.nonSampleCI.(['ci' num2str(ciVal)]);
-%display the CI
-displaySurrogateCI(obj.nonSamplePts,ciDisp,obj.confDisp,obj.nonSampleResp);
-end
+

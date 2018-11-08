@@ -134,20 +134,26 @@ classdef GRENAT < handle
         %setter for the non sample normalized responses
         function set.nonSampleRespN(obj,respIn)
             obj.nonSampleRespN=respIn;
-            %update non sample normalized responses
+            %update non sample renormalized responses
             obj.updateNonSampleResp(respIn);
         end
         %setter for the non sample normalized gradients
         function set.nonSampleGradN(obj,gradIn)
             obj.nonSampleGradN=gradIn;
-            %update non sample normalized gradients
+            %update non sample renormalized gradients
             obj.updateNonSampleGrad(gradIn);
         end
         %setter for the non sample normalized variance
         function set.nonSampleVarN(obj,varIn)
             obj.nonSampleVarN=varIn;
-            %update non sample normalized variance
+            %update non sample renormalized variance
             obj.updateNonSampleVar(varIn);
+        end
+        %setter for the normalized variance of Kriging or RBF
+        function set.sig2N(obj,varIn)
+            obj.sig2N=varIn;
+            %update non sample renormalized variance
+            obj.updateSig2(varIn);
         end
         %setter for the type of metamodel
         function set.type(obj,typeIn)
@@ -304,6 +310,8 @@ classdef GRENAT < handle
         updateNonSampleResp(obj,newResp);
         %% Update unormalized variance (renormalized if necessary)
         updateNonSampleVar(obj,newVar);
+        %% Update variance (renormalized if necessary)
+        updateSig2(obj,newVar);
         %% Update responses (normalized if necessary)
         respOk=updateResp(obj,newResp);
         %% Update sample points (normalized if necessary)

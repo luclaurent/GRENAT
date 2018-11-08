@@ -215,7 +215,7 @@ classdef initDisp < handle
         function set.ylabel(obj,charIn)
             if isG(charIn,'char')
                 if ~strcmp(obj.ylabel,charIn)
-                    Gfprintf(' >>> Y label : %s (previous %s)',charIn,obj.ylabel);
+                    Gfprintf(' >>> Y label : %s (previous %s)\n',charIn,obj.ylabel);
                 end
                 obj.ylabel=charIn;
             end
@@ -224,7 +224,7 @@ classdef initDisp < handle
         function set.zlabel(obj,charIn)
             if isG(charIn,'char')
                 if ~strcmp(obj.zlabel,charIn)
-                    Gfprintf(' >>> Z label : %s (previous %s)',charIn,obj.zlabel);
+                    Gfprintf(' >>> Z label : %s (previous %s)\n',charIn,obj.zlabel);
                 end
                 obj.zlabel=charIn;
             end
@@ -242,7 +242,7 @@ classdef initDisp < handle
         function set.color(obj,charIn)
             if isG(charIn,'char')
                 if ~strcmp(obj.color,charIn)
-                    Gfprintf(' >>> Color for uniform display : %s (previous %s)',charIn,obj.color);
+                    Gfprintf(' >>> Color for uniform display : %s (previous %s)\n',charIn,obj.color);
                 end
                 obj.color=charIn;
             end

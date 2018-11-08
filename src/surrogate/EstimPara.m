@@ -21,15 +21,12 @@
 function paraEstim=EstimPara(nPIn,dataMeta,funObj)
 % display warning or not
 dispWarning=false;
-
-%value of the criteria for stopping minimization
-critOpti=dataMeta.estim.critOpti;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Gfprintf(' - - - - - - - - - - - - - - - - - - - - \n');
-Gfprintf('    > Estimation of hyperparameters <\n');
+Gfprintf('    > Estimation of hyperparameters <    \n');
 Gfprintf(' - - - - - - - - - - - - - - - - - - - - \n');
+%
 countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,106 +57,6 @@ end
 x0=0.01*(ub-lb);
 %function to minimised
 fun=@(para)funObj(funCondPara(para));
-%options depending on the algorithm
-optionsFmincon = optimsetMOD(...
-    'Display', 'iter',...        %display evolution
-    'Algorithm','interior-point',... %choice of the type of algorithm
-    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
-    'FunValCheck','off',...      %check value of the function (Nan,Inf)
-    'UseParallel','never',...
-    'PlotFcns','',...
-    'TolFun',critOpti);
-optionsSQP = optimsetMOD(...
-    'Display', 'iter',...        %display evolution
-    'Algorithm','sqp',... %choice of the type of algorithm
-    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
-    'FunValCheck','off',...      %check value of the function (Nan,Inf)
-    'UseParallel','never',...
-    'PlotFcns','',...   %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
-    'TolFun',critOpti);
-optionsFminbnd = optimsetMOD(...
-    'Display', 'iter',...        %display evolution
-    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
-    'FunValCheck','off',...      %check value of the function (Nan,Inf)
-    'UseParallel','never',...
-    'PlotFcns','');
-optionsGA = gaoptimsetMOD(...
-    'Display', 'iter',...        %display evolution
-    'OutputFcn','',...      %function used for following the algorithm and dealing with the various status of it
-    'UseParallel','never',...
-    'PopInitRange',[lb(:)';ub(:)'],...  %definition area of the initial population
-    'PlotFcns','',...
-    'TolFun',critOpti,...
-    'StallGenLimit',20);
-optionsFminsearch = optimsetMOD(...
-    'Display', 'iter',...        %display evolution    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
-    'FunValCheck','off',...      %check value of the function (Nan,Inf)
-    'TolFun',critOpti,...
-    'PlotFcns','');
-%%%%% PSOt
-%options of the PSO algorithm from the PSOt toolbox
-ac      = [2.1,2.1];% acceleration constants, only used for modl=0
-Iwt     = [0.9,0.6];  % intertia weights, only used for modl=0
-epoch   = 2000; % max iterations
-wtEnd  = 100; % iterations it takes to go from Iwt(1) to Iwt(2), only for modl=0
-errGrad = eps;   % lowest error gradient tolerance
-errGradIter=100; % max # of epochs without error change >= errgrad
-PSOseed = 0;    % if=1 then can input particle starting positions, if= 0 then all random
-% starting particle positions (first 20 at zero, just for an example)
-PSOTplot=[];
-PSOTsampling = [];
-PSOTmv=4; %maximum speed of the particles (=4 def)
-shw=0;      %update display at each iteration (0 for no display)
-ps=nbSampInit; %nb of particules
-errGoal=NaN;    %cible minimisation
-modl=3;         %type of PSO
-%                   0 = Common PSO w/intertia (default)
-%                 1,2 = Trelea types 1,2
-%                 3   = Clerc's Constricted PSO, Type 1"
-
-PSOTOptions=...
-    [shw epoch ps ac(1) ac(2) Iwt(1) Iwt(2) ...
-    wtEnd errGrad errGradIter errGoal modl PSOseed];
-%range of the parameters
-PSOTVarRange=[lb(:) ub(:)];
-%minimization
-PSOTMinMax=0;
-
-%%%%%
-
-%display iterations
-if ~dataMeta.estim.dispIterGraph
-    optionsFmincon=optimsetMOD(optionsFmincon,'OutputFcn','');
-    optionsSQP=optimsetMOD(optionsSQP,'OutputFcn','');
-    optionsFminbnd=optimsetMOD(optionsFminbnd,'OutputFcn','');
-    optionsFminsearch=optimsetMOD(optionsFminbnd,'OutputFcn','');
-    optionsGA=gaoptimsetMOD(optionsGA,'OutputFcn','');
-end
-
-if ~dataMeta.estim.dispIterCmd
-    optionsFmincon=optimsetMOD(optionsFmincon,'Display','final');
-    optionsSQP=optimsetMOD(optionsSQP,'Display', 'final');
-    optionsFminbnd=optimsetMOD(optionsFminbnd,'Display','final');
-    optionsFminsearch=optimsetMOD(optionsFminbnd,'Display', 'final');
-    optionsGA=gaoptimsetMOD(optionsGA,'Display','final');
-end
-
-%display information of the algorithm on a graph
-if dataMeta.estim.dispPlotAlgo
-    optionsFmincon=optimsetMOD(optionsFmincon,'PlotFcns',{@optimplotx,@optimplotfunccount,...
-        @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
-    optionsSQP=optimsetMOD(optionsSQP,'PlotFcns',{@optimplotx,@optimplotfunccount,...
-        @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
-    optionsFminbnd=optimsetMOD(optionsFminbnd,'PlotFcns',{@optimplotx,@optimplotfunccount,...
-        @optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval});
-    optionsGA=gaoptimsetMOD(optionsGA,'PlotFcns',{@gaplotbestf,@gaplotbestindiv,@gaplotdistance,...
-        @gaplotexpectation,@gaplotmaxconstr,@gaplotrange,@gaplotselection,...
-        @gaplotscorediversity,@gaplotscores,@gaplotstopping});
-    %%PSOT
-    PSOTplot='goplotpso_perso1';
-    PSOTOptions(1)=10;
-end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Deal with 'SampleMin_xxxx' strategies
@@ -184,16 +81,19 @@ if sampleMinOk
     for tir=1:nbSample
         critS(tir)=fun(samplePop(tir,:));
     end
-    [fval1,IX]=min(critS);
+    [paraEstim.outAlgo.fval1,IX]=min(critS);
     x0=samplePop(IX,:);
 end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %manual definition of the initial population for GA or PSOt
 if sampManuOn&&sampleMinOk
     samplePop=buildDOE(dataMeta.para.sampManu,nbSampInit,lb,ub);
-    optionsGA=gaoptimsetMOD(optionsGA,'PopulationSize',nbSampInit,'InitialPopulation',samplePop);
-    %PSOt
-    PSOTsampling=samplePop.sorted;
-    PSOTOptions(13)=1;
+    %load configuration for optimizer
+    optionsOpti=loadConf(methodOptim,lb,ub,dataMeta.estim,nbSampInit,samplePop);
+else
+    %load configuration for optimizer
+    optionsOpti=loadConf(methodOptim,lb,ub,dataMeta.estim);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -202,7 +102,7 @@ switch methodOptim
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'simplex'  %simplix method
-        Gfprintf('||Simplex|| Starting point:\n');
+        Gfprintf('||Simplex|| Starting point: ');
         fprintf('%g ',x0); fprintf('\n');
         if ~dispWarning;warning off all;end
         [x, fmax, nf] = nmsmax(fun, x0, [], []);
@@ -233,19 +133,18 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'sqp'
-        Gfprintf('||Fmincon (SQP)|| Starting point:\n');
+        Gfprintf('||Fmincon (SQP)|| Starting point: ');
         fprintf('%g ',x0); fprintf('\n');
         %deal with undefined starting point
         if ~dispWarning;warning off all;end
         %minimization
-        [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsSQP);
+        [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsOpti);
         %stop minimiszation
         if exitflag==1||exitflag==0||exitflag==2
             disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
-            if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
             Gfprintf('Issue SQP\n');
         end
@@ -255,11 +154,14 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminbnd'
-        Gfprintf('||Fminbnd|| Starting point:\n');
+        if numel(lb)>1
+            error('Fminbnd only usable for 1-dimensional problem')
+        end
+        Gfprintf('||Fminbnd|| Starting point: ');
         fprintf('%g ',x0); fprintf('\n');
         %minimization
         if ~dispWarning;warning off all;end
-        [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsFminbnd);
+        [x,fval,exitflag,output] = fminbnd(fun,lb,ub,optionsOpti);
         if ~dispWarning;warning on all;end
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
@@ -267,7 +169,6 @@ switch methodOptim
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
-            if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
             Gfprintf('Issue SQP\n');
         end
@@ -276,17 +177,16 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fminsearch'
-        Gfprintf('||Fminsearch|| Starting point:\n');
+        Gfprintf('||Fminsearch|| Starting point: ');
         fprintf('%g ',x0); fprintf('\n');
         %minimization
-        [x,fval,exitflag,output] = fminsearch(fun,x0,optionsFminsearch);
+        [x,fval,exitflag,output] = fminsearch(fun,x0,optionsOpti);
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
             disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
-            if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
             Gfprintf('Issue Fminsearch\n');
         end
@@ -295,19 +195,18 @@ switch methodOptim
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     case 'fmincon'
-        Gfprintf('||Fmincon|| Starting point:\n');
+        Gfprintf('||Fmincon|| Starting point: ');
         fprintf('%g ',x0); fprintf('\n');
         %deal with undefined starting point
         if ~dispWarning;warning off all;end
         %minimization
-        [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsFmincon);
+        [x,fval,exitflag,output] = fmincon(fun,x0,[],[],[],[],lb,ub,[],optionsOpti);
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
             disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
-            if exist(fval1,'var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
             Gfprintf('Issue Fmincon\n');
         end
@@ -319,14 +218,13 @@ switch methodOptim
     case 'ga'
         Gfprintf('||Ga|| Initialisation with sampling %s:\n',sampManuOn);
         if ~dispWarning;warning off all;end
-        [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsGA);
+        [x,fval,exitflag,output] = ga(fun,nbPOptim,[],[],[],[],lb,ub,[],optionsOpti);
         %stop minimization
         if exitflag==1||exitflag==0||exitflag==2
             disp('Stop');
             paraEstim.outAlgo=output;
             paraEstim.outAlgo.fval=fval;
             paraEstim.outAlgo.exitflag=exitflag;
-            if exist('fval1','var');paraEstim.outAlgo.fval1=fval1;end
         elseif exitflag==-2
             Gfprintf('Issue Ga\n');
         end
@@ -339,19 +237,21 @@ switch methodOptim
     case 'pso'
         if sampManuOn;Gfprintf('||PSOt|| Initialisation with sampling %s:\n',sampManuOn);end
         if ~dispWarning;warning off all;end
+        %precise number of samples
+        optionsOpti.opt(3)=nbSampInit;
         %vectorized version of PSOt
-        [psoOut,...    %minimum point and associated responses
+        [psoOut,...     %minimum point and associated responses
             tr,...      %minimum point at each iteration
             te...       %epoch iterations
             ]=pso_Trelea_mod(...
-            fun,...             %function
-            nbPOptim,...         %number variables
-            PSOTmv,...         %maximal speed particles (def. 4)
-            PSOTVarRange,...   %matrix of the range of the parameters
-            PSOTMinMax,...     %minimization (=0 def), maximization (=1) or other (=2)
-            PSOTOptions,...    %vector of options
-            PSOTplot,...       %plotting function (optional)
-            PSOTsampling);     %initial random sampling (=0) other iuser defined  (=1)
+            fun,...                     %function
+            nbPOptim,...                %number variables
+            optionsOpti.PSOTmv,...         %maximal speed particles (def. 4)
+            optionsOpti.PSOTVarRange,...   %matrix of the range of the parameters
+            optionsOpti.PSOTMinMax,...     %minimization (=0 def), maximization (=1) or other (=2)
+            optionsOpti.opt,...    %vector of options
+            optionsOpti.PSOTplot,...       %plotting function (optional)
+            optionsOpti.PSOTsampling);     %initial random sampling (=0) other iuser defined  (=1)
         
         %store information of algorithm
         Xmin=psoOut(1:end-1)';
@@ -514,4 +414,136 @@ elseif nbPOptim==2
 end
 end
 
+%% load configurations of optimizers
+function optOptim=loadConf(methodOptim,lb,ub,optEstim,nbSampInit,samplePop)
+%options depending on the algorithm
+switch methodOptim
+    case 'sqp'
+        optOptim = optimsetMOD(...
+            'Display', 'iter',...           %display evolution
+            'Algorithm','sqp',...           %choice of the type of algorithm
+            'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
+            'FunValCheck','off',...         %check value of the function (Nan,Inf)
+            'UseParallel','never',...
+            'PlotFcns','',...               %{@optimplotx,@optimplotfunccount,@optimplotstepsize,@optimplotfirstorderopt,@optimplotconstrviolation,@optimplotfval}
+            'TolFun',optEstim.critOpti);
+    case 'fminbnd'
+        optOptim = optimsetMOD(...
+            'Display', 'iter',...           %display evolution
+            'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
+            'FunValCheck','off',...         %check value of the function (Nan,Inf)
+            'UseParallel','never',...
+            'PlotFcns','');
+    case 'fminsearch'
+        optOptim = optimsetMOD(...
+            'Display', 'iter',...           %display evolution    'OutputFcn',@stopEstim,...      %function used for following the algorithm and dealing with the various status of it
+            'FunValCheck','off',...         %check value of the function (Nan,Inf)
+            'TolFun',optEstim.critOpti,...
+            'PlotFcns','');
+    case 'fmincon'
+        optOptim = optimsetMOD(...
+            'Display', 'iter',...            %display evolution
+            'Algorithm','interior-point',... %choice of the type of algorithm
+            'OutputFcn',@stopEstim,...       %function used for following the algorithm and dealing with the various status of it
+            'FunValCheck','off',...          %check value of the function (Nan,Inf)
+            'UseParallel','never',...
+            'PlotFcns','',...
+            'TolFun',optEstim.critOpti);
+    case 'ga'
+        optOptim = gaoptimsetMOD(...
+            'Display', 'iter',...           %display evolution
+            'OutputFcn','',...              %function used for following the algorithm and dealing with the various status of it
+            'UseParallel','never',...
+            'PopInitRange',[lb(:)';ub(:)'],...  %definition area of the initial population
+            'PlotFcns','',...
+            'TolFun',optEstim.critOpti,...
+            'StallGenLimit',20);
+    case 'pso'
+        %%%%% PSOt
+        %options of the PSO algorithm from the PSOt toolbox
+        ac      = [2.1,2.1];    % acceleration constants, only used for modl=0
+        Iwt     = [0.9,0.6];    % intertia weights, only used for modl=0
+        epoch   = 2000;         % max iterations
+        wtEnd  = 100;           % iterations it takes to go from Iwt(1) to Iwt(2), only for modl=0
+        errGrad = eps;          % lowest error gradient tolerance
+        errGradIter=100;        % max # of epochs without error change >= errgrad
+        PSOseed = 0;            % if=1 then can input particle starting positions, if= 0 then all random
+        % starting particle positions (first 20 at zero, just for an example)
+        optOptim.PSOTplot=[];
+        optOptim.PSOTsampling = [];
+        optOptim.PSOTmv=4;      %maximum speed of the particles (=4 def)
+        shw=0;                  %update display at each iteration (0 for no display)
+        ps=10;                  %nb of particules
+        errGoal=NaN;            %cible minimisation
+        modl=3;                 %type of PSO
+        %    0 = Common PSO w/intertia (default)
+        %    1,2 = Trelea types 1,2
+        %    3   = Clerc's Constricted PSO, Type 1"
+        
+        optOptim.opt=...
+            [shw epoch ps ac(1) ac(2) Iwt(1) Iwt(2) ...
+            wtEnd errGrad errGradIter errGoal modl PSOseed];
+        %range of the parameters
+        optOptim.PSOTVarRange=[lb(:) ub(:)];
+        %minimization
+        optOptim.PSOTMinMax=0;
+        %%%%%
+end
 
+%display iterations
+if ~optEstim.dispIterGraph
+    switch methodOptim
+        case 'ga'
+        case 'pso'
+        otherwise
+            optOptim=optimsetMOD(optOptim,'OutputFcn','');
+    end
+end
+if ~optEstim.dispIterCmd
+    switch methodOptim
+        case 'ga'
+        case 'pso'
+        otherwise
+            optOptim=optimsetMOD(optOptim,'Display','final');
+    end
+end
+%display information of the algorithm on a graph
+if optEstim.dispPlotAlgo
+    switch methodOptim
+        case 'ga'
+            optOptim=gaoptimsetMOD(optOptim,...
+                'PlotFcns',{@gaplotbestf,...
+                @gaplotbestindiv,...
+                @gaplotdistance,...
+                @gaplotexpectation,...
+                @gaplotmaxconstr,...
+                @gaplotrange,...
+                @gaplotselection,...
+                @gaplotscorediversity,...
+                @gaplotscores,...
+                @gaplotstopping});
+        case 'pso'
+            %%PSOT
+            optOptim.PSOTplot='goplotpso_perso1';
+            optOptim.PSOTOptions(1)=10;
+        otherwise
+            optOptim=optimsetMOD(optOptim,'PlotFcns',{@optimplotx,...
+                @optimplotfunccount,...
+                @optimplotstepsize,...
+                @optimplotfirstorderopt,...
+                @optimplotconstrviolation,...
+                @optimplotfval});
+    end
+end
+%manual definition of the initial population for GA or PSOt
+if nargin>=6
+    switch methodOptim
+        case 'ga'
+            optOptim=gaoptimsetMOD(optOptim,'PopulationSize',nbSampInit,'InitialPopulation',samplePop);
+        case 'pso'
+            %PSOt
+            optOptim.PSOTsampling=samplePop.sorted;
+            optOptim.PSOTOptions(13)=1;
+    end
+end
+end

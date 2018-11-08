@@ -31,7 +31,7 @@ classdef initDisp < handle
         gridGrad=false;         %display gradients at the points of the grid
         sampleGrad=false;       %display gradients at sample points
         ciOn=false;             %display confidence intervals (if available)
-        ciType='0';             %choose CI to display
+        ciType='95';             %choose CI to display
         newFig=false;           %display in new figure
         opt=[];                 %plot options
         uni=false;              %use uniform color

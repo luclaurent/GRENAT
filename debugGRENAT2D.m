@@ -26,7 +26,7 @@ initDirGRENAT;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load test function
-testFun=optiGTest('Rosenbrock');%Rosenbrock % Branin1
+testFun=optiGTest('Branin1');%Rosenbrock % Branin1
 %%Load of a set of 2D data
 dimPB=2;
 ns=20; %number if sample points
@@ -67,7 +67,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('GKRG',sampling,resp,grad);
+metaGRENAT=GRENAT('RBF',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -77,10 +77,10 @@ metaGRENAT=GRENAT('GKRG',sampling,resp,grad);
 %             'wendland10','wendland20','wendland21','wendland30',...
 %             'wendland31','wendland32','wendland41','wendland42',...
 %             'wendland52','wendland53'
-metaGRENAT.confMeta.conf('kern','sexp')
+metaGRENAT.confMeta.conf('kern','matern32')
 %metaGRENAT.confMeta.conf('polyOrder',2)
 metaGRENAT.confMeta.conf('estimOn',true)
-metaGRENAT.confMeta.conf('lVal',[1 1]);%Branin1 [4.662201911444302e-01     2.644279506437699e-01])
+metaGRENAT.confMeta.conf('lVal',[0.01 0.01]);%Branin1 [4.662201911444302e-01     2.644279506437699e-01])
 %metaGRENAT.confMeta.conf('recond',false)
 metaGRENAT.confMeta.conf('normOn',true)
 metaGRENAT.confMeta.conf('aniso',true)

@@ -30,21 +30,20 @@ if isa(varargin{1},'double')
     %use the classical fprintf function
     nbT=fprintf(varargin{:});
 else
-    argOk=varargin;   
+    argOk=varargin;
     
     %convert all inputs to a string
     str = sprintf(argOk{:});
     
     %find new lines
     strSplit=regexp(str,'\n','split');
-    
     % display text and adding new keyword
     nbT=0;
     for itS=1:numel(strSplit)
         if itS==numel(strSplit)&&isempty(strSplit{itS})
         else
             txtD=[ txtAdd ' | ' strSplit{itS}];
-            nbytes=fprintf(txtD);
+            nbytes=fprintf('%s',txtD);
             nbT=nbT+nbytes;
         end
         if itS<numel(strSplit)

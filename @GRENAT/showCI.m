@@ -27,12 +27,28 @@
 
 function showCI(obj,ciVal,nonSamplePts)
 %type of confidence intervals
-ciOk=false;ciValDef=95;
-if nargin>1;if ~isempty(ciVal);if ismember(ciVal,[68,95,99]);ciOk=true;end, end, end
-if ~ciOk;ciVal=ciValDef;end
+ciOk=false;
+ciValDef=obj.confDisp.ciType;
+%
+if nargin>1
+    if ~isempty(ciVal)
+        if ismember(ciVal,[68,95,99])
+            ciOk=true;
+        end
+    end
+end
+%
+if ~ciOk
+    ciVal=ciValDef;
+end
 %store non sample points
-if nargin>2;obj.nonSamplePts=nonSamplePts;end
-obj.confDisp.title=([num2str(ciVal) '% confidence intervals']);
+if nargin>2
+    obj.nonSamplePts=nonSamplePts;
+end
+%
+keyboard
+obj.confDisp.title=([num2str(ciVal) ' ' char(37) ' confidence intervals']);
+keyboard
 %evaluation of the confidence interval
 evalCI(obj);
 %load data to display

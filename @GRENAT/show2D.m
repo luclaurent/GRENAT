@@ -49,6 +49,7 @@ showGrad(obj,1);
 obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
 showGrad(obj,2);
 obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
+error('')
 showCI(obj,[]);
 obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
 obj.confDisp.conf('logScale',false);

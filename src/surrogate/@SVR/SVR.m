@@ -112,6 +112,8 @@ classdef SVR  < handle
         debugCV=false;       % flag for the debugging process of the Cross-Validation
         %
         requireCompute=true; % flag used for establishing the status of computing
+        %
+        optsQP = optimoptions('quadprog','Diagnostics','off','Display','none');
     end
     properties (Dependent,Access = private)
         nS;                 % number of sample points

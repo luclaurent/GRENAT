@@ -32,8 +32,8 @@ TMPerrV=[];
 TMPErrNAME=[];
 
 %list of available errors (comparison exact/approximated values) 
-errREF={'emse','rmse','r','radj','r2','r2adj','rccc','eraae','ermae','eq1','eq2','eq3'};
-errREFname={'MSE','RMSE','R','Radj','R2','R2adj','Rccc','RAAE','RMAE','Q1','Q2','Q3'};
+errREF={'emse','rmse','r','radj','r2','r2adj','rccc','eraae','ermae','enmse','enmae','eq1','eq2','eq3'};
+errREFname={'MSE','RMSE','R','Radj','R2','R2adj','Rccc','RAAE','RMAE','NMSE','NMAE','Q1','Q2','Q3'};
 %list of Cross-validation errors
 errCV={'bm','eloor','eloog','eloot','scvr_mean','scvr_min','scvr_max','press','errp','adequ'};
 errCVname={'Mean Bias','MSE (resp)','MSE (grad)','MSE (mix)','SCVR (Mean)',...
@@ -49,6 +49,8 @@ if ~isempty(Zref)
     [err.r,err.radj,err.r2,err.r2adj,err.rccc]=corrFact(Zref,Zap);
     err.eraae=calcRAAE(Zref,Zap);
     err.ermae=calcRMAE(Zref,Zap);
+    err.enmse=calcNMSE(Zref,Zap);
+    err.enmae=calcNMAE(Zref,Zap);
     [err.eq1,err.eq2,err.eq3]=qualError(Zref,Zap);
     txt=dispERR(err,errREF,errREFname);
     [TMPval,TMPname]=concatERR(err,errREF,'ref');

@@ -32,8 +32,8 @@ if nargout>1
     calcGrad=true;
 end
 if calcGrad
-    [ff,jf]=multiMono(U,obj.polyOrder);
+    [ff,jf]=MultiMono(U,obj.polyOrder);
 else
-    [ff]=multiMono(U,obj.polyOrder);
+    [ff]=MultiMono(U,obj.polyOrder);
 end
 end

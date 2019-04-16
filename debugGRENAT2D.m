@@ -26,13 +26,15 @@ initDirGRENAT;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load test function
-testFun=optiGTest('Branin1');%Rosenbrock % Branin1
+testFun=optiGTest('CamelbackSixHump');%Rosenbrock % Branin1
 %%Load of a set of 2D data
 dimPB=2;
-ns=20; %number if sample points
+ns=30; %number if sample points
 typeDOE='IHS'; %type of DOE
 %
-mDOE=multiDOE(dimPB,typeDOE,ns,testFun.xMin,testFun.xMax);
+xMin=[-2 -1];
+xMax=[2 1];
+mDOE=multiDOE(dimPB,typeDOE,ns,xMin,xMax);
 mDOE.show;
 %
 sampling=mDOE.unsorted;
@@ -83,7 +85,7 @@ metaGRENAT.confMeta.conf('estimOn',true)
 metaGRENAT.confMeta.conf('lVal',[1 1]);%Branin1 [4.662201911444302e-01     2.644279506437699e-01])
 metaGRENAT.confMeta.conf('normOn',true)
 metaGRENAT.confMeta.conf('aniso',true)
-metaGRENAT.confMeta.conf('typeEstim','logli')
+metaGRENAT.confMeta.conf('typeEstim','cv')
 metaGRENAT.confMeta.conf('dispEstim',false)
 %metaGRENAT.confMeta.conf('method','pso')
 %metaGRENAT.confMeta.conf('dispIterGraph',true)

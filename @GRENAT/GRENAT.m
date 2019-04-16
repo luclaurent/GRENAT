@@ -123,7 +123,9 @@ classdef GRENAT < handle
         %setter for the gradients
         function set.grad(obj,gradIn)
             %update the gradients, normalize them
-            obj.grad=obj.updateGrad(gradIn);
+            if ~isempty(gradIn)
+                obj.grad=obj.updateGrad(gradIn);
+            end
         end
         %setter for the non sample points
         function set.nonSamplePts(obj,samplingIn)

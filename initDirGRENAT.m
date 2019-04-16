@@ -3,7 +3,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -34,11 +34,11 @@ function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)
 if nargin<3;flagNested=false;end
 
 %folders of the GRENAToolbox
-foldersLoad={'funTest',...
+foldersLoad={'optigtest',...
     'src',...
     'src/disp',...
-    'src/various',...
-    'src/kernANDfun',...
+    'src/various',... 
+    'src/kernANDfun',... 
     'src/kernANDfun/monomial_basis',...
     'src/init',...
     'src/surrogate',...
@@ -49,6 +49,7 @@ foldersLoad={'funTest',...
     'src/libs/multidoe',...
     'src/libs/MultiDOE',...
     'src/libs/matlab2tikz'};
+
 
 %depending on the parameters
 specifDir=true;
@@ -66,6 +67,13 @@ end
 
 %absolute paths
 pathAbsolute=cellfun(@(c)fullfile(pathcustom,c),foldersLoad,'uni',false);
+
+%scan all directory to find "@" folder (used for classes)
+folderAt={};
+for iP=1:numel(pathAbsolute)
+    folderAtTmp=scanATfolder(pathAbsolute{iP});
+    folderAt=[folderAt;folderAtTmp'];
+end
 
 %add to the PATH
 flA=cellfun(@(x)addpathExisted(x),pathAbsolute);
@@ -115,8 +123,26 @@ if ispc
 else
     onPath = ~isempty(strfind(path,folder));
 end
-if exist(folder,'dir')&&~onPath
+%check of the folder contains @ (if yes it will not be added to the path)
+inAt=contains(folder,'@');
+if exist(folder,'dir')&&~onPath&&~inAt
     flag=2;
     addpath(folder)
 end
 end
+
+%scan folder for finding "@" (classes) folder
+function listDir=scanATfolder(folder)
+%scan the folder
+resScan=dir(folder);
+%
+listDir={};
+for ii=1:numel(resScan)
+    if resScan(ii).isdir
+        if resScan(ii).name(1)=='@'
+            listDir{end+1}=[folder filesep resScan(ii).name];
+        end
+    end
+end
+end
+

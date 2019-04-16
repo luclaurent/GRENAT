@@ -1,44 +1,23 @@
 /* Created by mdot for Matlab */
 digraph m2html {
-  BuildMeta -> KRGBuild;
-  BuildMeta -> LSBuild;
   BuildMeta -> PrepIn;
   BuildMeta -> RBFBuild;
   BuildMeta -> SVRBuild;
   EstimPara -> stopEstim;
-  EvalMeta -> KRGEval;
-  EvalMeta -> LSEval;
   EvalMeta -> RBFEval;
   EvalMeta -> SVREval;
-  KRGBloc -> KRGLikelihood;
-  KRGBloc -> KernMatrix;
-  KRGBuild -> EstimPara;
-  KRGBuild -> KRGBloc;
-  KRGBuild -> KRGCV;
-  KRGCV -> KRGEval;
-  RBFBloc -> KernMatrix;
   RBFBloc -> RBFCV;
   RBFBuild -> EstimPara;
   RBFBuild -> RBFBloc;
   RBFBuild -> RBFComputePara;
   RBFCV -> RBFEval;
-  SVRBloc -> KernMatrix;
   SVRBloc -> SVRSB;
   SVRBuild -> EstimPara;
-  SVRBuild -> KRGBloc;
   SVRBuild -> SVRBloc;
 
   BuildMeta [URL="BuildMeta.html"];
   EstimPara [URL="EstimPara.html"];
   EvalMeta [URL="EvalMeta.html"];
-  KRGBloc [URL="KRGBloc.html"];
-  KRGBuild [URL="KRGBuild.html"];
-  KRGCV [URL="KRGCV.html"];
-  KRGEval [URL="KRGEval.html"];
-  KRGLikelihood [URL="KRGLikelihood.html"];
-  KernMatrix [URL="KernMatrix.html"];
-  LSBuild [URL="LSBuild.html"];
-  LSEval [URL="LSEval.html"];
   PrepIn [URL="PrepIn.html"];
   RBFBloc [URL="RBFBloc.html"];
   RBFBuild [URL="RBFBuild.html"];
@@ -49,5 +28,7 @@ digraph m2html {
   SVRBuild [URL="SVRBuild.html"];
   SVREval [URL="SVREval.html"];
   SVRSB [URL="SVRSB.html"];
+  allcomb [URL="allcomb.html"];
   stopEstim [URL="stopEstim.html"];
+  testXLS [URL="testXLS.html"];
 }

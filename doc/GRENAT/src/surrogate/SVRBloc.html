@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html surrogate -->
 <h1>SVRBloc
 </h1>
 
@@ -36,7 +36,7 @@ hyperparameters via optimization</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="SVRSB.html" class="code" title="function [spanBound]=SVRSB(dataBloc,dataIn,metaData)">SVRSB</a>	% Function for computing the Span Bound of the LOO error for SVR/GSVR</li><li><a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>	% Script for checking if the code is executed on Matlab or Octave</li></ul>
+<li><a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/KernMatrix.html" class="code" title="">KernMatrix</a>	% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="SVRSB.html" class="code" title="function [spanBound]=SVRSB(dataBloc,dataIn,metaData)">SVRSB</a>	% Function for computing the Span Bound of the LOO error for SVR/GSVR</li><li><a href="../../../GRENATdevel/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>	% Script for checking if the code is executed on Matlab or Octave</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="SVRBuild.html" class="code" title="function [ret]=SVRBuild(samplingIn,respIn,gradIn,metaData,missData)">SVRBuild</a>	% function for building gradient and non-gradient based SVR</li></ul>
@@ -107,14 +107,14 @@ This function is called by:
 0058 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0059 <span class="comment">%Build of the SVR/GSVR matrix</span>
 0060 <span class="keyword">if</span> dataIn.used.availGrad
-0061     [KK,KKa,KKi]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0061     [KK,KKa,KKi]=<a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/KernMatrix.html" class="code" title="">KernMatrix</a>(fctKern,dataIn,paraVal);
 0062     Psi=[KK -KK;-KK KK];
 0063     PsiDo=-[KKa -KKa; -KKa KKa];
 0064     PsiDDo=-[KKi -KKi;-KKi KKi];
 0065     PsiT=[Psi PsiDo;PsiDo' PsiDDo];
 0066     PsiR=[KK -KKa;-KKa' -KKi];
 0067 <span class="keyword">else</span>
-0068     [KK]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0068     [KK]=<a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/KernMatrix.html" class="code" title="">KernMatrix</a>(fctKern,dataIn,paraVal);
 0069     PsiT=[KK -KK;-KK KK];
 0070     PsiR=KK;
 0071 <span class="keyword">end</span>
@@ -298,7 +298,7 @@ This function is called by:
 0249 
 0250 <span class="comment">%specific execution of Quadratic Programming depending on Matlab/Octave</span>
 0251 <a name="_sub1" href="#_subfunctions" class="code">function [solQP, fval, exitflag, lmQP]=ExecQP(PsiT,CC,AA,bb,Aeq,beq,lb,ub)</a>
-0252 <span class="keyword">if</span> <a href="../../../GRENAT/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
+0252 <span class="keyword">if</span> <a href="../../../GRENATdevel/src/various/isOctave.html" class="code" title="function r = isOctave ()">isOctave</a>
 0253 [solQP, fval, info, lambda] = qp (zeros(size(CC)),PsiT,CC,Aeq,beq,lb,ub,[], AA, bb);
 0254 exitflag=info.info;
 0255 lmQP.ineqlin=lambda((end-numel(bb)+1):end);
@@ -311,6 +311,6 @@ This function is called by:
 0262 <span class="keyword">end</span>
 0263 <span class="keyword">end</span>
 0264</pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

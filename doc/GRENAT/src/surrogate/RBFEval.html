@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html surrogate -->
 <h1>RBFEval
 </h1>
 
@@ -36,7 +36,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>	% function for evaluating multidimensional kernel function</li></ul>
+<li><a href="../../../GRENATdevel/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>	% function for evaluating multidimensional kernel function</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="EvalMeta.html" class="code" title="function [Z]=EvalMeta(evalSample,dataTrain,metaConf,Verb)">EvalMeta</a>	% Evaluation of the surrogate model</li><li><a href="RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li></ul>
@@ -102,7 +102,7 @@ This function is called by:
 0055 <span class="keyword">if</span> metaData.used.availGrad
 0056     <span class="keyword">if</span> calcGrad  <span class="comment">%if compute gradients</span>
 0057         <span class="comment">%evaluate kernel function</span>
-0058         [ev,dev,ddev]=<a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);
+0058         [ev,dev,ddev]=<a href="../../../GRENATdevel/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);
 0059         <span class="comment">%reordering responses and gradients</span>
 0060         <span class="comment">%P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]</span>
 0061         P=[ev' -reshape(dev',1,ns*np)];
@@ -129,7 +129,7 @@ This function is called by:
 0082         
 0083     <span class="keyword">else</span> <span class="comment">%otherwise</span>
 0084         <span class="comment">%evaluate kernel function</span>
-0085         [ev,dev]=<a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);
+0085         [ev,dev]=<a href="../../../GRENATdevel/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);
 0086         <span class="comment">%reordering responses and gradients</span>
 0087         <span class="comment">%P=[F1 F2 ... Fn dF1/dx1 dF1/dx2 ... dF1/dxp dF2/dx1 dF2/dx2 ...dFn/dxp]</span>
 0088         P=[ev' -reshape(dev',1,ns*np)];
@@ -140,7 +140,7 @@ This function is called by:
 0093     <span class="keyword">end</span>
 0094 <span class="keyword">else</span>
 0095     <span class="keyword">if</span> calcGrad  <span class="comment">%if compute gradients</span>
-0096         [P,dP]=<a href="../../../GRENAT/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);P=P';dP=dP';
+0096         [P,dP]=<a href="../../../GRENATdevel/src/kernANDfun/multiKernel.html" class="code" title="function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)">multiKernel</a>(metaData.build.kern,distS,metaData.build.para.Val);P=P';dP=dP';
 0097         <span class="comment">%if missing responses</span>
 0098         <span class="keyword">if</span> metaData.miss.resp.on
 0099             P(metaData.miss.resp.ixMiss)=[];
@@ -175,6 +175,6 @@ This function is called by:
 0128     <span class="keyword">if</span> ~dispWarning;warning on all;<span class="keyword">end</span>
 0129 <span class="keyword">end</span>
 0130 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

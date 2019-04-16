@@ -5,7 +5,7 @@
 
 % See Lockwood 2010 for an explanantion of U, L et M.
 
-function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara)
+function [respK,derK,dderK]=multiKernel(kernelFun,X,metaPara,demoMod)
 
 
 %number of output variables
@@ -13,6 +13,7 @@ nbOut=nargout;
 
 %mode demo
 demo=false;
+if nargin==4;demo=demoMod;end
 moddemo=1;
 if nbOut==0
     if moddemo==1
@@ -71,7 +72,6 @@ if nbOut==1
     %response
     respK=prod(uniR,2);
 end
-
 %calculation of the responses and first derivatives
 if nbOut==2
     uniR=zeros(nE,nV);
@@ -110,7 +110,7 @@ if nbOut>2
         if nV>1;maskM=[1 1];else maskM=1;end
         mm=[maskM uniR(2:nV-1)];
         %
-        M=mm(ones(nb_comp,1),:);
+        M=mm(ones(nV,1),:);
         M=triu(M,2)+tril(ones(nV),1);
         M=cumprod(M,2);
         %

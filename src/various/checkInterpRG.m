@@ -5,7 +5,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -27,33 +27,35 @@ if nargin<4;critR=[];end
 statusI=true;
 
 %check parameters
-if isempty(critG);limitGrad=1e-4;else limitGrad=critG;end
-if isempty(critR);limitResp=1e-4;else limitResp=critR;end
+if isempty(critG);limitGrad=1e-4;else, limitGrad=critG;end
+if isempty(critR);limitResp=1e-4;else, limitResp=critR;end
 
 switch type
     case 'resp'
         diffZ=abs(ZApp-ZRef);
+        diffZRatio=diffZ./abs(ZRef);
         IXZcheck=find(diffZ>limitResp);
         if ~isempty(IXZcheck)
             Gfprintf('Interpolation issue (responses)\n');
-            Gfprintf('Num\t||DiffZ \t||Eval \t\t||Zcheck\n');
-            conc=vertcat(IXZcheck',diffZ(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
-            Gfprintf('%d\t||%4.2e\t||%4.2e\t||%4.2e\n',conc(:));
+            Gfprintf('Num\t||DiffZ \t||DiffZ ratio \t||Resp (actual) ||Resp (approx)\n');
+            conc=vertcat(IXZcheck',diffZ(IXZcheck)',diffZRatio(IXZcheck)',ZRef(IXZcheck)',ZApp(IXZcheck)');
+            Gfprintf('%d\t||%4.2e\t||%4.2e\t||%4.2e\t||%4.2e\n',conc(:));
             statusI=false;
         end
     case 'grad'
         diffGZ=abs(ZApp-ZRef);
+        diffGZRatio=abs(ZApp-ZRef)./abs(ZRef);
         IXGZcheck=find(diffGZ>limitGrad);
         if ~isempty(IXGZcheck)
             [IXi,~]=ind2sub(size(diffGZ),IXGZcheck);
             IXi=unique(IXi);
             Gfprintf('Interpolation issue (gradient)\n');
-            nb_var=size(ZApp,2);
-            tt=repmat('\t',1,nb_var);
-            Gfprintf(['Num\t||DiffGZ' tt '||Grad\t' tt '||GZcheck\n']);
-            conc=[IXi,diffGZ(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
-            tt=repmat('%4.2e\t',1,nb_var);
-            tt=['%d\t||' tt '||' tt '||' tt '\n'];
+            nbVar=size(ZApp,2);
+            tt=repmat('\t',1,nbVar);
+            Gfprintf(['Num\t||DiffGZ\t' tt '||DiffGZ ratio\t' tt '||Grad\t\t' tt '||GZcheck\n']);
+            conc=[IXi,diffGZ(IXi,:),diffGZRatio(IXi,:),ZRef(IXi,:),ZApp(IXi,:)]';
+            tt=repmat('%4.2e\t',1,nbVar);
+            tt=['%d\t||' tt '||' tt '||' tt '||' tt '\n'];
             Gfprintf(tt,conc(:));
             statusI=false;
         end

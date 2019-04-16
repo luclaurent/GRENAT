@@ -1,24 +1,24 @@
 %% Function for estimating hyperparameters
 % L. LAURENT -- 24/01/2012 -- luc.laurent@lecnam.net
 
-%     GRENAT - GRadient ENhanced Approximation Toolbox 
+%     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
-% 
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
+%
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
 %     the Free Software Foundation, either version 3 of the License, or
 %     (at your option) any later version.
-% 
+%
 %     This program is distributed in the hope that it will be useful,
 %     but WITHOUT ANY WARRANTY; without even the implied warranty of
 %     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 %     GNU General Public License for more details.
-% 
+%
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function paraEstim=EstimPara(dataProb,dataMeta,funObj)
+function paraEstim=EstimPara(nPIn,dataMeta,funObj)
 % display warning or not
 dispWarning=false;
 
@@ -34,35 +34,17 @@ countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Definition of the parameters for minimization
-% Number of hyperparameters to estimate
-%anisotropy
-if dataMeta.estim.aniso
-    nbP=dataProb.used.np;
-    nbPOptim=nbP;
-else
-    nbP=1;
-    nbPOptim=nbP;
-end
-
-%definition the bounds of the space
-% deal with specific cases (depending on the kernel function)
-switch dataMeta.kern
-    case 'matern'
-        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.nu.Min];
-        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.nu.Max];
-        nbPOptim=nbP+1;
-    case 'expg'
-        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min];
-        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max];
-        nbPOptim=nbP+1;
-    case 'expgg'
-        lb=[dataMeta.para.l.Min*ones(1,nbP) dataMeta.para.p.Min*ones(1,nbP)];
-        ub=[dataMeta.para.l.Max*ones(1,nbP) dataMeta.para.p.Max*ones(1,nbP)];
-        nbPOptim=2*nbP;
-    otherwise
-        lb=dataMeta.para.l.Min*ones(1,nbP);
-        ub=dataMeta.para.l.Max*ones(1,nbP);
-end
+[lb,...
+    ub,...
+    ~,...
+    nbPOptim,...
+    nbP,...
+    funCondPara]=definePara(...
+    nPIn,...
+    dataMeta.kern,...
+    dataMeta.para,...
+    dataMeta.estim.aniso,...
+    'estim');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,10 +56,10 @@ if sampManuOn
     if isfield(dataMeta.estim,'nbSampInit');if ~isempty(dataMeta.estim.nbSampInit);nbSampleSpecif=false;end, end
     if nbSampleSpecif;nbSampInit=dataMeta.estim.nbSampInit;end
 end
-%definition valeur de depart de la variable
+%definition starting point
 x0=0.01*(ub-lb);
 %function to minimised
-fun=@(para)feval(funObj,dataProb,dataMeta,para,'estim');
+fun=@(para)funObj(funCondPara(para));
 %options depending on the algorithm
 optionsFmincon = optimsetMOD(...
     'Display', 'iter',...        %display evolution
@@ -152,8 +134,6 @@ if ~dataMeta.estim.dispIterGraph
     optionsFminbnd=optimsetMOD(optionsFminbnd,'OutputFcn','');
     optionsFminsearch=optimsetMOD(optionsFminbnd,'OutputFcn','');
     optionsGA=gaoptimsetMOD(optionsGA,'OutputFcn','');
-else
-    figure;
 end
 
 if ~dataMeta.estim.dispIterCmd
@@ -199,16 +179,16 @@ if sampleMinOk
     nbSample=nbPOptim*10;
     samplingType='LHS_O1';
     Gfprintf('||SampleMin + opti||  Sampling %s on %i points\n',samplingType,nbSample);
-    samplePop=buildDOE(samplingType,nbSample,lb,ub);    
+    samplePop=buildDOE(samplingType,nbSample,lb,ub);
     critS=zeros(1,nbSample);
     for tir=1:nbSample
         critS(tir)=fun(samplePop(tir,:));
     end
     [fval1,IX]=min(critS);
-    x0=samplePop(IX,:);    
+    x0=samplePop(IX,:);
 end
 %manual definition of the initial population for GA or PSOt
-if sampManuOn&&sampleMinOk    
+if sampManuOn&&sampleMinOk
     samplePop=buildDOE(dataMeta.para.sampManu,nbSampInit,lb,ub);
     optionsGA=gaoptimsetMOD(optionsGA,'PopulationSize',nbSampInit,'InitialPopulation',samplePop);
     %PSOt
@@ -394,23 +374,31 @@ switch methodOptim
         error(['Wrong kind of minimization method (',mfilename,')']);
 end
 
+%Plot function used for estimate parameters (only if there is 1 or 2
+%hyperparameter(s))
+if dataMeta.estim.disp
+    plotEstimFun(fun,nbPOptim,lb,ub);
+    %reeavaluate the optimization function for the optimal values of the
+    %hyperparameters
+    fun(x);
+end
 
-
-
+%reconditionning final parameters values
+paraFinal=funCondPara(x);
 %store obtained value of the hyperparameters obtained with the minimization
-paraEstim.Val=x;
+paraEstim.Val=paraFinal;
 %deal with various kind of kernel functions
-paraEstim.l.Val=x(1:nbP);
+paraEstim.l.Val=paraFinal(1:nbP);
 paraEstim.p.Val=NaN;
 paraEstim.nu.Val=NaN;
 
 switch dataMeta.kern
     case 'matern'
-        paraEstim.nu.Val=x(end);
+        paraEstim.nu.Val=paraFinal(end);
     case 'expg'
-        paraEstim.p.Val=x(end);
+        paraEstim.p.Val=paraFinal(end);
     case 'expgg'
-        paraEstim.p.Val=x(nbP+1:end);
+        paraEstim.p.Val=paraFinal(nbP+1:end);
 end
 %display values of HyperParameters
 Gfprintf(' >>> Optimal HyperParameters\n');
@@ -451,3 +439,79 @@ else
     varargout{1}=[];
 end
 end
+
+%function for plotting the estimation function
+function plotEstimFun(fun,nbPOptim,lb,ub)
+if nbPOptim==1
+    Gfprintf('Evaluate the estimation function for display\n');
+    %number of plotting point
+    nbPlotingPts=500;
+    %prepare ploting grid
+    gridH=linspace(lb,ub,nbPlotingPts);
+    estFun=zeros(size(gridH));
+    %evaluation of the estimation function at the points of the grid
+    for itP=1:numel(gridH)
+        estFun(itP)=fun(gridH(itP));
+        textProgressbar(itP,numel(gridH));
+    end
+    %plot function
+    figure;
+    plotFun='plot';
+    if all(estFun>0)
+        plotFun='semilogy';
+    end
+    feval(plotFun,gridH,estFun,'r','LineWidth',2);
+    xlabel('$l$','Interpreter','latex')
+    ylabel('$f_\textrm{estim}$','Interpreter','latex')
+    
+elseif nbPOptim==2
+    Gfprintf('Evaluate the estimation function for display\n');
+    %number of plotting point
+    nbPlotingPts=25;
+    %prepare ploting grid
+    gridX=linspace(lb(1),ub(1),nbPlotingPts);
+    gridY=linspace(lb(2),ub(2),nbPlotingPts);
+    [gridHX,gridHY]=meshgrid(gridX,gridY);
+    estFun=zeros(size(gridHX));
+    %evaluation of the estimation function at the points of the grid
+    for itP=1:numel(gridHX)
+        estFun(itP)=fun([gridHX(itP),gridHY(itP)]);
+        textProgressbar(itP,numel(gridHX));
+    end
+    %plot function
+    figure;
+    subplot(121)
+    surf(gridHX,gridHY,estFun);
+    %
+    colorbar
+    %
+    if all(estFun>0);set(gca,'ZScale','log');title('log scale');end
+    xlabel('$l_1$','Interpreter','latex')
+    ylabel('$l_2$','Interpreter','latex')
+    zlabel('$f_\textrm{estim}$','Interpreter','latex')
+    %
+    subplot(122)
+    estPlot=estFun;
+    if all(estFun>0);estPlot=log(estFun);end
+    %
+    contourf(gridHX,gridHY,estPlot);
+    %
+    if all(estFun>0)
+        title('log scale');
+        chb=colorbar;
+        colormap(jet);
+        lblValue=get(chb,'YTick');
+        newlblValue=num2cell(exp(lblValue));
+        txtValue=cellfun(@(x)num2str(x,'%e'),newlblValue,'UniformOutput',false);
+        set(chb,'YTickLabel',txtValue');
+    end
+    %
+    contourf(gridHX,gridHY,estPlot,10);
+    %
+    xlabel('$l_1$','Interpreter','latex')
+    ylabel('$l_2$','Interpreter','latex')
+    zlabel('$f_\textrm{estim}$','Interpreter','latex')
+end
+end
+
+

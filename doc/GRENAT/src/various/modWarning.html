@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of modWarning</title>
+  <meta name="keywords" content="modWarning">
+  <meta name="description" content="% class for dealing with the display or not of the warning message">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html various -->
+<h1>modWarning
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% class for dealing with the display or not of the warning message</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% class for dealing with the display or not of the warning message
+ KRG: kriging
+ GKRG: cokriging w/- gradients
+ L. LAURENT -- 10/08/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="modWarning.html" class="code" title="">modWarning</a>	% class for dealing with the display or not of the warning message</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENATdevel/src/surrogate/RBFBloc.html" class="code" title="function [critMin,ret]=RBFBloc(dataIn,metaData,paraValIn,type)">RBFBloc</a>	% Building of the RBF/GRBF matrix and computation of the CV criteria</li><li><a href="../../../GRENATdevel/src/surrogate/RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li><li><a href="../../../GRENATdevel/src/surrogate/SVRSB.html" class="code" title="function [spanBound]=SVRSB(dataBloc,dataIn,metaData)">SVRSB</a>	% Function for computing the Span Bound of the LOO error for SVR/GSVR</li><li><a href="modWarning.html" class="code" title="">modWarning</a>	% class for dealing with the display or not of the warning message</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj=modWarning(requireStatus)</a></li><li><a href="#_sub2" class="code">function cS=get.currentStatus(obj)</a></li><li><a href="#_sub3" class="code">function manageStatus(obj,requireStatus)</a></li><li><a href="#_sub4" class="code">function change(obj,requestIn)</a></li><li><a href="#_sub5" class="code">function switchStatus(obj)</a></li><li><a href="#_sub6" class="code">function init(obj)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% class for dealing with the display or not of the warning message</span>
+0002 <span class="comment">% KRG: kriging</span>
+0003 <span class="comment">% GKRG: cokriging w/- gradients</span>
+0004 <span class="comment">% L. LAURENT -- 10/08/2017 -- luc.laurent@lecnam.net</span>
+0005 
+0006 classdef <a href="modWarning.html" class="code" title="">modWarning</a>
+0007     properties (Access = private)
+0008         initStatus;     <span class="comment">% initial status obtained when the object is created</span>
+0009     <span class="keyword">end</span>
+0010     properties (Dependent)
+0011         currentStatus;  <span class="comment">%</span>
+0012     <span class="keyword">end</span>
+0013     methods
+0014         <span class="comment">%% constructor</span>
+0015         <a name="_sub0" href="#_subfunctions" class="code">function obj=modWarning(requireStatus)</a>
+0016             obj.initStatus=warning;
+0017             <span class="comment">%if a specific status if requested manage it</span>
+0018             <span class="keyword">if</span> nargin&gt;=1
+0019                 obj.manageStatus(requireStatus);
+0020             <span class="keyword">end</span>
+0021         <span class="keyword">end</span>
+0022         
+0023         <span class="comment">%% get the current status</span>
+0024         <a name="_sub1" href="#_subfunctions" class="code">function cS=get.currentStatus(obj)</a>
+0025             cS=warning;
+0026         <span class="keyword">end</span>
+0027         
+0028         <span class="comment">%% manage with requested status</span>
+0029         <a name="_sub2" href="#_subfunctions" class="code">function manageStatus(obj,requireStatus)</a>
+0030             txtCmd=<span class="string">''</span>;
+0031             <span class="comment">%for different kinds of input command</span>
+0032             <span class="keyword">if</span> islogical(requireStatus)
+0033                 <span class="keyword">if</span> requireStatus
+0034                     txtCmd=<span class="string">'on'</span>;
+0035                 <span class="keyword">else</span>
+0036                     txtCmd=<span class="string">'off'</span>;
+0037                 <span class="keyword">end</span>
+0038             <span class="keyword">elseif</span> isnumeric(requireStatus)
+0039                 <span class="keyword">if</span> requireStatus==0
+0040                     txtCmd=<span class="string">'off'</span>;
+0041                 <span class="keyword">else</span>
+0042                     txtCmd=<span class="string">'on'</span>;
+0043                 <span class="keyword">end</span>
+0044             <span class="keyword">elseif</span> ischar(requireStatus)
+0045                 txtCmd=requireStatus;
+0046             <span class="keyword">end</span>
+0047             <span class="comment">%for different keywords</span>
+0048             <span class="keyword">switch</span> txtCmd
+0049                 <span class="keyword">case</span> {<span class="string">'on'</span>,<span class="string">'o'</span>,<span class="string">'O'</span>,<span class="string">'On'</span>,<span class="string">'ON'</span>}
+0050                     obj.change(<span class="string">'on'</span>);
+0051                 <span class="keyword">case</span> {<span class="string">'off'</span>,<span class="string">'f'</span>,<span class="string">'F'</span>,<span class="string">'Off'</span>,<span class="string">'OFF'</span>}
+0052                     obj.change(<span class="string">'off'</span>);
+0053                 <span class="keyword">case</span> {<span class="string">'switch'</span>,<span class="string">'s'</span>,<span class="string">'Switch'</span>,<span class="string">'SWITCH'</span>}
+0054                     obj.switchStatus;
+0055             <span class="keyword">end</span>
+0056         <span class="keyword">end</span>
+0057         
+0058         <span class="comment">%% change status depending of the request</span>
+0059         <a name="_sub3" href="#_subfunctions" class="code">function change(obj,requestIn)</a>
+0060             varW=obj.initStatus;
+0061             varW.state=requestIn;
+0062             warning(varW);
+0063         <span class="keyword">end</span>
+0064         <span class="comment">%% switch status</span>
+0065         <a name="_sub4" href="#_subfunctions" class="code">function switchStatus(obj)</a>
+0066             <span class="keyword">if</span> strcmp(obj.currentStatus.state,<span class="string">'on'</span>)
+0067                 obj.change(<span class="string">'off'</span>);
+0068             <span class="keyword">else</span>
+0069                 obj.change(<span class="string">'on'</span>);
+0070             <span class="keyword">end</span>
+0071         <span class="keyword">end</span>
+0072         
+0073         <span class="comment">%% initialize the warning state</span>
+0074         <a name="_sub5" href="#_subfunctions" class="code">function init(obj)</a>
+0075             warning(obj.initStatus);
+0076         <span class="keyword">end</span>
+0077     <span class="keyword">end</span>
+0078     
+0079 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

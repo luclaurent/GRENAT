@@ -1,0 +1,291 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of KRG</title>
+  <meta name="keywords" content="KRG">
+  <meta name="description" content="% class for kriging/cokriging metamodel">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html surrogate --><!-- menu.html @KRG -->
+<h1>KRG
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% class for kriging/cokriging metamodel</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% class for kriging/cokriging metamodel
+ KRG: kriging
+ GKRG: gradient-based kriging
+ L. LAURENT -- 07/08/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="KRG.html" class="code" title="">KRG</a>	% class for kriging/cokriging metamodel</li><li><a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/README.html" class="code" title="">README</a>	</li><li><a href="KRG.html" class="code" title="">KRG</a>	% class for kriging/cokriging metamodel</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj=KRG(samplingIn,respIn,gradIn,orderIn,kernIn,varargin)</a></li><li><a href="#_sub2" class="code">function manageOpt(obj,optIn)</a></li><li><a href="#_sub3" class="code">function set.paraVal(obj,pVIn)</a></li><li><a href="#_sub4" class="code">function nS=get.nS(obj)</a></li><li><a href="#_sub5" class="code">function nP=get.nP(obj)</a></li><li><a href="#_sub6" class="code">function fl=get.estimOn(obj)</a></li><li><a href="#_sub7" class="code">function flagG=get.flagGKRG(obj)</a></li><li><a href="#_sub8" class="code">function valC=get.Kcond(obj)</a></li><li><a href="#_sub9" class="code">function tt=get.typeLOO(obj)</a></li><li><a href="#_sub10" class="code">function addSample(obj,newS)</a></li><li><a href="#_sub11" class="code">function addResp(obj,newR)</a></li><li><a href="#_sub12" class="code">function addGrad(obj,newG)</a></li><li><a href="#_sub13" class="code">function flagM=checkMiss(obj)</a></li><li><a href="#_sub14" class="code">function flagM=checkNewMiss(obj)</a></li><li><a href="#_sub15" class="code">function fCompute(obj)</a></li><li><a href="#_sub16" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a></li><li><a href="#_sub17" class="code">function dispTableTwoColumns(tableA,tableB,separator)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% class for kriging/cokriging metamodel</span>
+0002 <span class="comment">% KRG: kriging</span>
+0003 <span class="comment">% GKRG: gradient-based kriging</span>
+0004 <span class="comment">% L. LAURENT -- 07/08/2017 -- luc.laurent@lecnam.net</span>
+0005 
+0006 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0007 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0008 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0011 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0012 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0013 <span class="comment">%     (at your option) any later version.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0016 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0017 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0018 <span class="comment">%     GNU General Public License for more details.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0021 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0022 
+0023 classdef <a href="KRG.html" class="code" title="">KRG</a> &lt; handle
+0024     properties
+0025         sampling=[];        <span class="comment">% sample points</span>
+0026         resp=[];            <span class="comment">% sample responses</span>
+0027         grad=[];            <span class="comment">% sample gradients</span>
+0028         <span class="comment">%</span>
+0029         missData;           <span class="comment">% class for missing data</span>
+0030         krgLS;              <span class="comment">% class for polynomial regression</span>
+0031         kernelMatrix;       <span class="comment">% class for kernel matrix</span>
+0032         metaData;           <span class="comment">% class for parameter of the metamodels</span>
+0033         <span class="comment">%</span>
+0034         paraEstim;          <span class="comment">% structure for all information obtained from the estimation of the internal parameters</span>
+0035         <span class="comment">%</span>
+0036         YY=[];              <span class="comment">% vector of responses</span>
+0037         YYD=[];             <span class="comment">% vector of gradients</span>
+0038         YYtot=[];           <span class="comment">% full vector of responses and gradients</span>
+0039         K=[];               <span class="comment">% kernel matrix</span>
+0040         <span class="comment">%</span>
+0041         beta=[];            <span class="comment">% regressors of the kriging generalized Least-Square</span>
+0042         gamma=[];           <span class="comment">% coefficients of the stochastic prt of the kriging</span>
+0043         sig2=[];            <span class="comment">% variance of the Gaussian Process</span>
+0044         <span class="comment">%</span>
+0045         polyOrder=0;        <span class="comment">% polynomial order</span>
+0046         kernelFun=<span class="string">'sexp'</span>;   <span class="comment">% kernel function</span>
+0047         <span class="comment">%</span>
+0048         paraVal=1;         <span class="comment">% internal parameters used for building (fixed or estimated)</span>
+0049         lVal=[];            <span class="comment">% internal parameters: length</span>
+0050         pVal=[];            <span class="comment">% internal parametersfor generalized squared exponential</span>
+0051         nuVal=[];           <span class="comment">% internal parameter for Matérn function</span>
+0052         <span class="comment">%</span>
+0053         normLOO=<span class="string">'L2'</span>;       <span class="comment">% norm used for Leave-One-Out cross-validation</span>
+0054         debugLOO=false;     <span class="comment">% flag for debug in Leave-One-Out cross-validation</span>
+0055         cvResults;          <span class="comment">% structure used for storing the CV results</span>
+0056     <span class="keyword">end</span>
+0057     
+0058     properties (Access = private)
+0059         respV=[];            <span class="comment">% responses prepared for training</span>
+0060         gradV=[];            <span class="comment">% gradients prepared for training</span>
+0061         <span class="comment">%</span>
+0062         flagG=false;      <span class="comment">% flag for computing matrices with gradients</span>
+0063         parallelW=1;         <span class="comment">% number of workers for using parallel version</span>
+0064         <span class="comment">%</span>
+0065         requireRun=true;     <span class="comment">% flag if a full building is required</span>
+0066         requireUpdate=false; <span class="comment">% flag if an update is required</span>
+0067         forceGrad=false;     <span class="comment">% flag for forcing the computation of 1st and 2nd derivatives of the kernel matrix</span>
+0068         <span class="comment">%</span>
+0069         matrices;            <span class="comment">% structure for storage of matrices (classical and factorized version)</span>
+0070         <span class="comment">%</span>
+0071         factK=<span class="string">'LL'</span>;      <span class="comment">% factorization strategy (fastest: LL (Cholesky))</span>
+0072         <span class="comment">%</span>
+0073         debugCV=false;      <span class="comment">% flag for the debugging process of the Cross-Validation</span>
+0074         <span class="comment">%</span>
+0075         requireCompute=true;   <span class="comment">% flag used for establishing the status of computing</span>
+0076     <span class="keyword">end</span>
+0077     properties (Dependent,Access = private)
+0078         NnS;               <span class="comment">% number of new sample points</span>
+0079         nS;                 <span class="comment">% number of sample points</span>
+0080         nP;               <span class="comment">% dimension of the problem</span>
+0081         parallelOk=false;    <span class="comment">% flag for using parallel version</span>
+0082         estimOn=false;      <span class="comment">%flag for estimation of the internal parameters</span>
+0083         <span class="comment">%</span>
+0084         typeLOO;            <span class="comment">% type of LOO criterion used (mse (default),wmse,lpp)</span>
+0085     <span class="keyword">end</span>
+0086     properties (Dependent)
+0087         Kcond;              <span class="comment">% condition number of the kernel matrix</span>
+0088     <span class="keyword">end</span>
+0089     
+0090     methods
+0091         <span class="comment">%% Constructor</span>
+0092         <a name="_sub0" href="#_subfunctions" class="code">function obj=KRG(samplingIn,respIn,gradIn,orderIn,kernIn,varargin)</a>
+0093             <span class="comment">%load data</span>
+0094             obj.sampling=samplingIn;
+0095             obj.resp=respIn;
+0096             <span class="keyword">if</span> nargin&gt;2;obj.grad=gradIn;<span class="keyword">end</span>
+0097             <span class="keyword">if</span> nargin&gt;3;obj.polyOrder=orderIn;<span class="keyword">end</span>
+0098             <span class="keyword">if</span> nargin&gt;4;obj.kernelFun=kernIn;<span class="keyword">end</span>
+0099             <span class="keyword">if</span> nargin&gt;5;obj.manageOpt(varargin);<span class="keyword">end</span>
+0100             <span class="comment">%if everything is ok then train</span>
+0101             obj.train();
+0102         <span class="keyword">end</span>
+0103         
+0104         <span class="comment">%% function for dealing with the the input arguments of the class</span>
+0105         <a name="_sub1" href="#_subfunctions" class="code">function manageOpt(obj,optIn)</a>
+0106             fun=@(x)isa(x,<span class="string">'MissData'</span>);
+0107             <span class="comment">%look for the missing data class (MissData)</span>
+0108             sM=find(cellfun(fun,optIn)~=false);
+0109             <span class="keyword">if</span> ~isempty(sM);obj.missData=optIn{sM};<span class="keyword">end</span>
+0110             <span class="comment">%look for the information concerning the metamodel (class initMeta)</span>
+0111             fun=@(x)isa(x,<span class="string">'initMeta'</span>);
+0112             sM=find(cellfun(fun,optIn)~=false);
+0113             <span class="keyword">if</span> ~isempty(sM);obj.metaData=optIn{sM};<span class="keyword">end</span>
+0114         <span class="keyword">end</span>
+0115         
+0116         <span class="comment">%% setters</span>
+0117         <a name="_sub2" href="#_subfunctions" class="code">function set.paraVal(obj,pVIn)</a>
+0118             <span class="keyword">if</span> isempty(obj.paraVal)
+0119                 obj.fCompute;
+0120             <span class="keyword">else</span>
+0121                 <span class="keyword">if</span> ~all(obj.paraVal==pVIn)
+0122                     obj.fCompute;
+0123                     obj.paraVal=pVIn;
+0124                 <span class="keyword">end</span>
+0125             <span class="keyword">end</span>
+0126         <span class="keyword">end</span>
+0127         
+0128         <span class="comment">%% getters</span>
+0129         <a name="_sub3" href="#_subfunctions" class="code">function nS=get.nS(obj)</a>
+0130             nS=numel(obj.resp);
+0131         <span class="keyword">end</span>
+0132         <a name="_sub4" href="#_subfunctions" class="code">function nP=get.nP(obj)</a>
+0133             nP=size(obj.sampling,2);
+0134         <span class="keyword">end</span>
+0135         <a name="_sub5" href="#_subfunctions" class="code">function fl=get.estimOn(obj)</a>
+0136             fl=false;
+0137             <span class="keyword">if</span> ~isempty(obj.metaData)
+0138                 fl=obj.metaData.estim.on;
+0139             <span class="keyword">end</span>
+0140         <span class="keyword">end</span>
+0141         
+0142         <span class="comment">%% getter for GKRG building</span>
+0143         <a name="_sub6" href="#_subfunctions" class="code">function flagG=get.flagGKRG(obj)</a>
+0144             flagG=~isempty(obj.grad);
+0145         <span class="keyword">end</span>
+0146         
+0147         <span class="comment">%% getter for the condition number of the kernel matrix</span>
+0148         <a name="_sub7" href="#_subfunctions" class="code">function valC=get.Kcond(obj)</a>
+0149             valC=condest(obj.K);
+0150         <span class="keyword">end</span>
+0151         
+0152         <span class="comment">%% getter for the type of LOO criterion</span>
+0153         <a name="_sub8" href="#_subfunctions" class="code">function tt=get.typeLOO(obj)</a>
+0154             typeG=obj.metaData.estim.type;
+0155             tt=<span class="string">'mse'</span>;   <span class="comment">%default value</span>
+0156             <span class="keyword">if</span> ~isempty(regexp(typeG,<span class="string">'cv'</span>,<span class="string">'ONCE'</span>))
+0157                 <span class="keyword">if</span> numel(typeG)&gt;2
+0158                     tt=typeG(3:end);
+0159                 <span class="keyword">end</span>
+0160             <span class="keyword">end</span>
+0161         <span class="keyword">end</span>
+0162         
+0163         <span class="comment">%% add new sample points, new responses and new gradients</span>
+0164         <a name="_sub9" href="#_subfunctions" class="code">function addSample(obj,newS)</a>
+0165             obj.sampling=[obj.sampling;newS];
+0166         <span class="keyword">end</span>
+0167         <a name="_sub10" href="#_subfunctions" class="code">function addResp(obj,newR)</a>
+0168             obj.resp=[obj.resp;newR];
+0169         <span class="keyword">end</span>
+0170         <a name="_sub11" href="#_subfunctions" class="code">function addGrad(obj,newG)</a>
+0171             obj.grad=[obj.grad;newG];
+0172         <span class="keyword">end</span>
+0173         
+0174         <span class="comment">%% check if there is missing data</span>
+0175         <a name="_sub12" href="#_subfunctions" class="code">function flagM=checkMiss(obj)</a>
+0176             flagM=false;
+0177             <span class="keyword">if</span> ~isempty(obj.missData)
+0178                 flagM=obj.missData.on;
+0179             <span class="keyword">end</span>
+0180         <span class="keyword">end</span>
+0181         <span class="comment">%% check if there is missing newdata</span>
+0182         <a name="_sub13" href="#_subfunctions" class="code">function flagM=checkNewMiss(obj)</a>
+0183             flagM=false;
+0184             <span class="keyword">if</span> ~isempty(obj.missData)
+0185                 flagM=obj.missData.onNew;
+0186             <span class="keyword">end</span>
+0187         <span class="keyword">end</span>
+0188         
+0189         <span class="comment">%% fix flag for computing</span>
+0190         <a name="_sub14" href="#_subfunctions" class="code">function fCompute(obj)</a>
+0191             obj.requireCompute=true;
+0192         <span class="keyword">end</span>
+0193     <span class="keyword">end</span>
+0194 <span class="keyword">end</span>
+0195 
+0196 
+0197 <span class="comment">%% function for display information</span>
+0198 <a name="_sub15" href="#_subfunctions" class="code">function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)</a>
+0199 boolOut=boolIn;
+0200 <span class="keyword">if</span> nargin==2
+0201     txtInFalse=[];
+0202     returnLine=false;
+0203 <span class="keyword">elseif</span> nargin==3
+0204     returnLine=false;
+0205 <span class="keyword">end</span>
+0206 <span class="keyword">if</span> isempty(txtInFalse)
+0207     <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">if</span> boolIn; fprintf(<span class="string">'Yes'</span>);<span class="keyword">else</span>, fprintf(<span class="string">'No'</span>);<span class="keyword">end</span>
+0208 <span class="keyword">else</span>
+0209     <span class="keyword">if</span> boolIn; fprintf(<span class="string">'%s'</span>,txtInTrue);<span class="keyword">else</span>, fprintf(<span class="string">'%s'</span>,txtInFalse);<span class="keyword">end</span>
+0210 <span class="keyword">end</span>
+0211 <span class="keyword">if</span> returnLine
+0212     fprintf(<span class="string">'\n'</span>);
+0213 <span class="keyword">end</span>
+0214 <span class="keyword">end</span>
+0215 
+0216 <span class="comment">%function display table with two columns (first must be text)</span>
+0217 <a name="_sub16" href="#_subfunctions" class="code">function dispTableTwoColumns(tableA,tableB,separator)</a>
+0218 <span class="comment">%size of every components in tableA</span>
+0219 sizeA=cellfun(@numel,tableA);
+0220 maxA=max(sizeA);
+0221 <span class="comment">%space after each component</span>
+0222 spaceA=maxA-sizeA+2;
+0223 <span class="keyword">if</span> nargin&gt;2
+0224     spaceTxt=separator;
+0225 <span class="keyword">else</span>
+0226     spaceTxt=<span class="string">' '</span>;
+0227 <span class="keyword">end</span>
+0228 <span class="comment">%display table</span>
+0229 <span class="keyword">for</span> itT=1:numel(tableA)
+0230     <span class="keyword">if</span> ischar(tableB{itT})
+0231         mask=<span class="string">'%s%s%s\n'</span>;
+0232     <span class="keyword">elseif</span> isinteger(tableB{itT})
+0233         mask=<span class="string">'%s%s%i\n'</span>;
+0234     <span class="keyword">else</span>
+0235         mask=<span class="string">'%s%s%+5.4e\n'</span>;
+0236     <span class="keyword">end</span>
+0237     <span class="comment">%</span>
+0238     <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(mask,tableA{itT},[<span class="string">' '</span> spaceTxt(ones(1,spaceA(itT))) <span class="string">' '</span>],tableB{itT});
+0239 <span class="keyword">end</span>
+0240 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

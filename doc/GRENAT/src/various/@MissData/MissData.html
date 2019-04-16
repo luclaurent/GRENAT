@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MissData</title>
+  <meta name="keywords" content="MissData">
+  <meta name="description" content="% class for checking input data for finding missing information">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html various --><!-- menu.html @MissData -->
+<h1>MissData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% class for checking input data for finding missing information</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% class for checking input data for finding missing information
+ L. LAURENT -- 02/08/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="MissData.html" class="code" title="">MissData</a>	% class for checking input data for finding missing information</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/src/surrogate/testXLS.html" class="code" title="">testXLS</a>	</li><li><a href="MissData.html" class="code" title="">MissData</a>	% class for checking input data for finding missing information</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj=MissData(samplingIn,respIn,gradIn)</a></li><li><a href="#_sub2" class="code">function n=get.nP(obj)</a></li><li><a href="#_sub3" class="code">function n=get.nS(obj)</a></li><li><a href="#_sub4" class="code">function f=get.emptyGrad(obj)</a></li><li><a href="#_sub5" class="code">function f=get.onResp(obj)</a></li><li><a href="#_sub6" class="code">function f=get.onGrad(obj)</a></li><li><a href="#_sub7" class="code">function f=get.on(obj)</a></li><li><a href="#_sub8" class="code">function f=get.onNewResp(obj)</a></li><li><a href="#_sub9" class="code">function f=get.onNewGrad(obj)</a></li><li><a href="#_sub10" class="code">function f=get.onNew(obj)</a></li><li><a href="#_sub11" class="code">function addSampling(obj,in)</a></li><li><a href="#_sub12" class="code">function addResp(obj,in)</a></li><li><a href="#_sub13" class="code">function addGrad(obj,in)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% class for checking input data for finding missing information</span>
+0002 <span class="comment">% L. LAURENT -- 02/08/2017 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 classdef <a href="MissData.html" class="code" title="">MissData</a> &lt; handle
+0022     properties
+0023         verbose=true;               <span class="comment">% display information or note</span>
+0024         <span class="comment">%</span>
+0025         sampling=[];                <span class="comment">% sample points</span>
+0026         resp=[];                    <span class="comment">% sample responses</span>
+0027         grad=[];                    <span class="comment">% sample gradients</span>
+0028         <span class="comment">%</span>
+0029         maskResp=[];                <span class="comment">% mask of non-nan responses</span>
+0030         nbMissResp=0;               <span class="comment">% number of missing responses</span>
+0031         ixMissResp=[];              <span class="comment">% indices of the missing responses</span>
+0032         ixAvailResp;                <span class="comment">% indices of available responses</span>
+0033         missRespAll=false;          <span class="comment">% flag at true if all responses are missing</span>
+0034         <span class="comment">%</span>
+0035         maskGrad=[];                <span class="comment">% mask of non-nan gradients</span>
+0036         nbMissGrad=0;               <span class="comment">% number of missing gradients</span>
+0037         ixMissGrad=[];              <span class="comment">% indices of the missing gradients</span>
+0038         ixAvailGrad;                <span class="comment">% indices of available gradients</span>
+0039         ixMissGradLine=[];          <span class="comment">% linear indices of the missing gradients</span>
+0040         ixAvailGradLine;            <span class="comment">% linear indices of available gradients</span>
+0041         missGradAll=false;          <span class="comment">% flag at true if all gradients are missing</span>
+0042         <span class="comment">%</span>
+0043         newResp;                    <span class="comment">% structure for new responses</span>
+0044         newGrad;                    <span class="comment">% structure for new gradients</span>
+0045         <span class="comment">%</span>
+0046         NnS=0;                    <span class="comment">% number of new sample points</span>
+0047     <span class="keyword">end</span>
+0048     properties (Dependent,Access = private)
+0049         <span class="comment">%</span>
+0050         nS;                     <span class="comment">% number of sample points</span>
+0051         nP;                     <span class="comment">% dimension of the problem</span>
+0052         <span class="comment">%</span>
+0053         emptyGrad;              <span class="comment">% flag for empty gradient matrix</span>
+0054         <span class="comment">%</span>
+0055     <span class="keyword">end</span>
+0056     properties (Dependent)
+0057         on;                     <span class="comment">% flag for missing data</span>
+0058         onNew;                  <span class="comment">% flag for missing data in the new added data</span>
+0059         onResp;                 <span class="comment">% flag for missing data in responses</span>
+0060         onGrad;                 <span class="comment">% flag for missing data in gradients</span>
+0061         onNewResp;                 <span class="comment">% flag for missing data in new responses</span>
+0062         onNewGrad;                 <span class="comment">% flag for missing data in new gradients</span>
+0063     <span class="keyword">end</span>
+0064     methods
+0065         <span class="comment">%% constructor</span>
+0066         <a name="_sub0" href="#_subfunctions" class="code">function obj=MissData(samplingIn,respIn,gradIn)</a>
+0067             <span class="comment">%initialize class</span>
+0068             obj.sampling=samplingIn;
+0069             obj.resp=respIn;
+0070             <span class="keyword">if</span> nargin&gt;2
+0071                 obj.grad=gradIn;
+0072             <span class="keyword">end</span>
+0073             <span class="comment">%</span>
+0074             obj.check();
+0075         <span class="keyword">end</span>
+0076         <span class="comment">%% getters</span>
+0077         <a name="_sub1" href="#_subfunctions" class="code">function n=get.nP(obj)</a>
+0078             n=size(obj.sampling,2);
+0079         <span class="keyword">end</span>
+0080         <a name="_sub2" href="#_subfunctions" class="code">function n=get.nS(obj)</a>
+0081             n=size(obj.sampling,1);
+0082         <span class="keyword">end</span>
+0083         <a name="_sub3" href="#_subfunctions" class="code">function f=get.emptyGrad(obj)</a>
+0084             f=isempty(obj.grad);
+0085         <span class="keyword">end</span>
+0086         <a name="_sub4" href="#_subfunctions" class="code">function f=get.onResp(obj)</a>
+0087             f=(obj.nbMissResp~=0);
+0088         <span class="keyword">end</span>
+0089         <a name="_sub5" href="#_subfunctions" class="code">function f=get.onGrad(obj)</a>
+0090             f=(obj.nbMissGrad~=0);
+0091         <span class="keyword">end</span>
+0092         <a name="_sub6" href="#_subfunctions" class="code">function f=get.on(obj)</a>
+0093             f=(obj.onResp||obj.onGrad);
+0094         <span class="keyword">end</span>
+0095         <a name="_sub7" href="#_subfunctions" class="code">function f=get.onNewResp(obj)</a>
+0096             f=false;
+0097             <span class="keyword">if</span> ~isempty(obj.newResp);f=(obj.newResp.nbMissResp~=0);<span class="keyword">end</span>
+0098         <span class="keyword">end</span>
+0099         <a name="_sub8" href="#_subfunctions" class="code">function f=get.onNewGrad(obj)</a>
+0100             f=false;
+0101             <span class="keyword">if</span> ~isempty(obj.newGrad);f=(obj.newGrad.nbMissGrad~=0);<span class="keyword">end</span>
+0102         <span class="keyword">end</span>
+0103         <a name="_sub9" href="#_subfunctions" class="code">function f=get.onNew(obj)</a>
+0104             f=(obj.onNewResp||obj.onNewGrad);
+0105         <span class="keyword">end</span>
+0106         
+0107         <span class="comment">%% add sampling, responses and gradients</span>
+0108         <a name="_sub10" href="#_subfunctions" class="code">function addSampling(obj,in)</a>
+0109             obj.sampling=[obj.sampling;in];
+0110             obj.NnS=size(in,1);
+0111         <span class="keyword">end</span>
+0112         <a name="_sub11" href="#_subfunctions" class="code">function addResp(obj,in)</a>
+0113             obj.resp=[obj.resp;in];
+0114             obj.newResp=obj.checkResp(in);
+0115         <span class="keyword">end</span>
+0116         <a name="_sub12" href="#_subfunctions" class="code">function addGrad(obj,in)</a>
+0117             obj.grad=[obj.grad;in];
+0118             obj.newGrad=obj.checkGrad(in);
+0119         <span class="keyword">end</span>
+0120     <span class="keyword">end</span>
+0121 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

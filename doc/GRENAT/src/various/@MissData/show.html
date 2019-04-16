@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of show</title>
+  <meta name="keywords" content="show">
+  <meta name="description" content="% show information">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html various --><!-- menu.html @MissData -->
+<h1>show
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% show information</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function show(obj) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% show information</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/LICENSE.html" class="code" title="">LICENSE</a>	</li><li><a href="../../../../GRENATdevel/src/libs/MultiDOE/LICENSE.html" class="code" title="">LICENSE</a>	</li><li><a href="../../../../GRENATdevel/src/libs/matlab2tikz/CONTRIBUTING.html" class="code" title="">CONTRIBUTING</a>	</li><li><a href="../../../../GRENATdevel/src/libs/multidoe/LICENSE.html" class="code" title="">LICENSE</a>	</li><li><a href="../../../../GRENATdevel/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% show information</span>
+0002 <a name="_sub0" href="#_subfunctions" class="code">function show(obj)</a>
+0003 <span class="keyword">if</span> obj.verbose
+0004     <span class="keyword">if</span> obj.nbMissResp==0&amp;&amp;obj.nbMissGrad==0
+0005         <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; No missing data\n'</span>);
+0006     <span class="keyword">end</span>
+0007     <span class="comment">%</span>
+0008     <span class="keyword">if</span> obj.nbMissResp~=0
+0009         <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; %i Missing response(s) at point(s):\n'</span>,obj.nbMissResp);
+0010         <span class="comment">%</span>
+0011         <span class="keyword">for</span> ii=1:obj.nbMissResp
+0012             numPts=obj.ixMissResp(ii);
+0013             <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' n%s %i (%4.2f'</span>,char(176),numPts,obj.sampling(numPts,1));
+0014             <span class="keyword">if</span> obj.nP&gt;1;fprintf(<span class="string">',%4.2f'</span>,obj.sampling(numPts,2:end));<span class="keyword">end</span>
+0015             fprintf(<span class="string">')\n'</span>);
+0016         <span class="keyword">end</span>
+0017     <span class="keyword">end</span>
+0018     <span class="comment">%</span>
+0019     <span class="keyword">if</span> ~obj.emptyGrad
+0020         <span class="keyword">if</span> obj.nbMissGrad~=0
+0021             <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; %i Missing gradient(s) at point(s):\n'</span>,obj.nbMissGrad);
+0022             <span class="comment">%sort responses</span>
+0023             [~,iS]=sort(obj.ixMissGrad(:,1));
+0024             <span class="comment">%</span>
+0025             <span class="keyword">for</span> ii=1:obj.nbMissGrad
+0026                 numPts=obj.ixMissGrad(iS(ii),1);
+0027                 component=obj.ixMissGrad(ii,2);
+0028                 <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' n%s %i (%4.2f'</span>,char(176),numPts,obj.sampling(numPts,1));
+0029                 <span class="keyword">if</span> obj.nP&gt;1;fprintf(<span class="string">',%4.2f'</span>,obj.sampling(numPts,2:end));<span class="keyword">end</span>
+0030                 fprintf(<span class="string">')'</span>);
+0031                 fprintf(<span class="string">'  component: %i\n'</span>,component);
+0032             <span class="keyword">end</span>
+0033             <a href="../../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'----------------\n'</span>)
+0034         <span class="keyword">end</span>
+0035     <span class="keyword">end</span>
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

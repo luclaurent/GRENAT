@@ -5,7 +5,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 % 
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ for ii=1:numel(dirT)
     %find files in directories
     fileDir=listFileDir(dirT{ii});
     %add name of the directory
-    fun=@(x) sprintf('%s/%s',dirT{ii},x);
+    fun=@(x) sprintf('%s%s%s',dirT{ii},filesep,x);
     fileDirOk=cellfun(fun,fileDir,'UniformOutput',false);
     %add to the whole list
     listF={listF{:},fileDirOk{:}};
@@ -63,11 +63,11 @@ end
 
 
 % list files in a directory 
-function [filDir]=listFileDir(dirM)
+function [fileDir]=listFileDir(dirM)
 %rawlist
 rawList=dir(dirM);
 %flag file
 flag_file=~[rawList.isdir];
 %list of files in the directory
-filDir={rawList(flag_file).name};
+fileDir={rawList(flag_file).name};
 end

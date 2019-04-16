@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of updateData</title>
+  <meta name="keywords" content="updateData">
+  <meta name="description" content="% Prepare data for building (deal with missing data)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html surrogate --><!-- menu.html @KRG -->
+<h1>updateData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Prepare data for building (deal with missing data)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function updateData(obj,samplingIn,respIn,gradIn) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Prepare data for building (deal with missing data)
+Responses and gradients at sample points</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Prepare data for building (deal with missing data)</span>
+0002 <a name="_sub0" href="#_subfunctions" class="code">function updateData(obj,samplingIn,respIn,gradIn)</a>
+0003 <span class="comment">%Responses and gradients at sample points</span>
+0004 YYT=respIn;
+0005 <span class="comment">%remove missing response(s)</span>
+0006 <span class="keyword">if</span> obj.checkNewMiss
+0007     YYT=obj.missData.removeRV(YYT,<span class="string">'n'</span>);
+0008 <span class="keyword">end</span>
+0009 <span class="comment">%</span>
+0010 der=[];
+0011 <span class="keyword">if</span> obj.flagG
+0012     tmp=gradIn';
+0013     der=tmp(:);
+0014     <span class="comment">%remove missing gradient(s)</span>
+0015     <span class="keyword">if</span> obj.checkNewMiss
+0016         der=obj.missData.removeGV(der,<span class="string">'n'</span>);
+0017     <span class="keyword">end</span>
+0018 <span class="keyword">end</span>
+0019 obj.YY=[obj.YY;YYT];
+0020 obj.YYD=[obj.YYD;der];
+0021 <span class="comment">%</span>
+0022 obj.YYtot=[obj.YY;obj.YYD];
+0023 <span class="comment">%update regressor operator</span>
+0024 obj.krgLS.update(samplingIn,respIn,gradIn,obj.missData);
+0025 <span class="comment">%initialize kernel matrix</span>
+0026 obj.kernelMatrix.updateMatrix(samplingIn);
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

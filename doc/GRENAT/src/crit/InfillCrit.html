@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html crit -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html crit -->
 <h1>InfillCrit
 </h1>
 
@@ -33,10 +33,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+<li><a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
+<li><a href="../../../GRENATdevel/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
 <!-- crossreference -->
 
 
@@ -105,15 +105,15 @@ This function is called by:
 0061 <span class="comment">%check variance</span>
 0062 ixInf=find(varZ&lt;0);
 0063 <span class="keyword">if</span> ~isempty(ixInf)
-0064     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue: variance lower than zero at %i points \n'</span>,numel(ixInf));
+0064     <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue: variance lower than zero at %i points \n'</span>,numel(ixInf));
 0065     disp(varZ(ixInf))
-0066     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt; Correction to zero\n'</span>);
+0066     <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt; Correction to zero\n'</span>);
 0067     varZ(ixInf)=0;
 0068 <span class="keyword">end</span>
 0069 ixInf=find(varZ&lt;eps);
 0070 <span class="keyword">if</span> ~isempty(ixInf)
-0071     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue: variance close to zero at %i points \n'</span>,numel(ixInf));
-0072     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt; Correction to zero\n'</span>);
+0071     <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Issue: variance close to zero at %i points \n'</span>,numel(ixInf));
+0072     <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt; Correction to zero\n'</span>);
 0073     varZ(ixInf)=0;
 0074 <span class="keyword">end</span>
 0075 
@@ -229,6 +229,6 @@ This function is called by:
 0185 <span class="comment">%details of the enrichement</span>
 0186 detInfill.exploitEI=exploitEI;
 0187 detInfill.explorEI=explorEI;</pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

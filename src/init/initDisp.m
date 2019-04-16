@@ -3,7 +3,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ classdef initDisp < handle
         uni=false;              %use uniform color
         color=[];               %choose display color
         xlabel='x_1';           %X-axis label
-        ylabel='x_2';           %Y-axis label
+        ylabel='';              %Y-axis label
         zlabel='';              %Z-axis label
         title='';               %title of the figure
         render=false;           %enable/disable 3D rendering
@@ -45,7 +45,8 @@ classdef initDisp < handle
         num=0;                  %number of the display
         tex=true;               %save data in TeX file
         bar=false;              %display using bar
-        trans=false;            %display using transparency
+        trans=true;             %display using transparency
+        logScale=false;         %use log scale
         nv=Inf;                 %number of sample points on the reference grid
         nbSteps=0;              %number of steps on the reference grid
         step=[];                %size of the step of the grid
@@ -137,7 +138,7 @@ classdef initDisp < handle
         %
         function set.directory(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.directory,charIn)
+                if ~strcmp(obj.directory,charIn)
                     Gfprintf(' >>> Saving directory : %s (previous %s)',charIn,obj.directory);
                 end
                 obj.directory=charIn;
@@ -204,7 +205,7 @@ classdef initDisp < handle
         %
         function set.xlabel(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.xlabel,charIn)
+                if ~strcmp(obj.xlabel,charIn)
                     Gfprintf(' >>> X label : %s (previous %s)',charIn,obj.xlabel);
                 end
                 obj.xlabel=charIn;
@@ -213,7 +214,7 @@ classdef initDisp < handle
         %
         function set.ylabel(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.ylabel,charIn)
+                if ~strcmp(obj.ylabel,charIn)
                     Gfprintf(' >>> Y label : %s (previous %s)',charIn,obj.ylabel);
                 end
                 obj.ylabel=charIn;
@@ -222,7 +223,7 @@ classdef initDisp < handle
         %
         function set.zlabel(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.zlabel,charIn)
+                if ~strcmp(obj.zlabel,charIn)
                     Gfprintf(' >>> Z label : %s (previous %s)',charIn,obj.zlabel);
                 end
                 obj.zlabel=charIn;
@@ -231,8 +232,8 @@ classdef initDisp < handle
         %
         function set.title(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.title,charIn)
-                    Gfprintf(' >>> Z label : %s (previous %s)',charIn,obj.title);
+                if ~strcmp(obj.title,charIn)
+                    Gfprintf(' >>> Z label : %s (previous %s)\n',charIn,obj.title);
                 end
                 obj.title=charIn;
             end
@@ -240,7 +241,7 @@ classdef initDisp < handle
         %
         function set.color(obj,charIn)
             if isG(charIn,'char')
-                if strcmp(obj.color,charIn)
+                if ~strcmp(obj.color,charIn)
                     Gfprintf(' >>> Color for uniform display : %s (previous %s)',charIn,obj.color);
                 end
                 obj.color=charIn;
@@ -279,7 +280,7 @@ classdef initDisp < handle
         %
         function set.num(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.num~=doubleIn)
+                if any(obj.num~=doubleIn)
                     Gfprintf(' >>> Number of the plot: %d (previous %d)',doubleIn,obj.num);
                 end
                 obj.num=doubleIn;
@@ -288,7 +289,7 @@ classdef initDisp < handle
         %
         function set.nbSteps(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.nbSteps~=doubleIn)
+                if any(obj.nbSteps~=doubleIn)
                     Gfprintf(' >>> Number of steps of the reference grid: %d (previous %d)',doubleIn,obj.nbSteps);
                 end
                 obj.nbSteps=doubleIn;
@@ -297,7 +298,7 @@ classdef initDisp < handle
         %
         function set.step(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.step~=doubleIn)
+                if any(obj.step~=doubleIn)
                     Gfprintf(' >>> Size of steps of the reference grid: %d (previous %d)',doubleIn,obj.step);
                 end
                 obj.step=doubleIn;
@@ -306,7 +307,7 @@ classdef initDisp < handle
         %
         function set.nv(obj,doubleIn)
             if isG(doubleIn,'double')
-                if all(obj.nv~=doubleIn)
+                if any(obj.nv~=doubleIn)
                     Gfprintf(' >>> Number of sample points of the reference grid: %d (previous %d)',doubleIn,obj.nv);
                 end
                 obj.nv=doubleIn;
@@ -340,6 +341,16 @@ classdef initDisp < handle
                     SwitchOnOff(boolIn);
                 end
                 obj.trans=boolIn;
+            end
+        end  
+        %
+        function set.logScale(obj,boolIn)
+            if isG(boolIn,'logical')
+                if xor(obj.logScale,boolIn)
+                    Gfprintf(' >>> Log scale: ');
+                    SwitchOnOff(boolIn);
+                end
+                obj.logScale=boolIn;
             end
         end  
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

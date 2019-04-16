@@ -7,3 +7,6 @@
 [submodule "src/libs/m2html"]
 	path = src/libs/m2html
 	url = git@github.com:l2/m2html.git
+[submodule "optigtest"]
+	path = optigtest
+	url = git@bitbucket.org:luclaurent/optigtest.git

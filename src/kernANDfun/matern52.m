@@ -36,7 +36,7 @@ lP=1./para(:,1);
 
 %compute value of the function at point xx
 etd=exp(-abs(xx)./lP*sqrt(5));
-co=1+abs(xx)./lP*sqrt(5)+sqrt(5).*xx.^2./(3*lP);
+co=1+abs(xx)./lP*sqrt(5)+sqrt(5).*xx.^2./(3*lP.^2);
 k=co.*etd;
 
 %compute first derivatives

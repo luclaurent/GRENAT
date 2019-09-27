@@ -378,7 +378,6 @@ elseif nbPOptim==2
         estFun(itP)=fun([gridHX(itP),gridHY(itP)]);
         textProgressbar(itP,numel(gridHX));
     end
-    keyboard
     %plot function
     figure;
     subplot(121)

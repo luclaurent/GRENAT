@@ -31,7 +31,7 @@ testFun=optiGTest('Trigonometric3');%Rosenbrock % Branin1
 %%Load of a set of 2D data
 dimPB=2;
 ns=20; %number if sample points
-typeDOE='LHS'; %type of DOE
+typeDOE='LHS_manu'; %type of DOE
 %
 xMin=[-2 -1];
 xMax=[2 1];
@@ -85,17 +85,11 @@ metaGRENAT.confMeta.conf('kern','matern52')
 metaGRENAT.confMeta.conf('estimOn',true)
 metaGRENAT.confMeta.conf('lVal',[0.01 0.01]);%Branin1 [4.662201911444302e-01     2.644279506437699e-01])
 %metaGRENAT.confMeta.conf('recond',false)
-metaGRENAT.confMeta.conf('normOn',true)
+metaGRENAT.confMeta.conf('normOn',false)
 metaGRENAT.confMeta.conf('aniso',true)
-<<<<<<< HEAD
 metaGRENAT.confMeta.conf('typeEstim','logli')
 metaGRENAT.confMeta.conf('dispEstim',true)
 metaGRENAT.confMeta.conf('method','pso')
-=======
-metaGRENAT.confMeta.conf('typeEstim','cv')
-metaGRENAT.confMeta.conf('dispEstim',false)
-%metaGRENAT.confMeta.conf('method','pso')
->>>>>>> e4a39f94cf3ec6b1a3d237b0efcebdb9fb50eafe
 %metaGRENAT.confMeta.conf('dispIterGraph',true)
 %metaGRENAT.confMeta.conf('dispIterCmd',true)
 %metaGRENAT.confMeta.conf('dispPlotAlgo',true)

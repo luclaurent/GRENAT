@@ -603,6 +603,7 @@ classdef initMeta < handle
                                 okConf=true;
                                 obj.(keyW)=keyV;
                             else
+                                Gfprintf('\n');
                                 Gfprintf('>> Wrong keyword %s\n',keyW);
                             end
                         end
@@ -611,8 +612,9 @@ classdef initMeta < handle
                 if ~okConf
                     Gfprintf('\nWrong syntax used for conf method\n');
                     Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n');
-                    Gfprintf('\nList of the avilable keywords:\n');
+                    Gfprintf('\nList of the available keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
+                    Gfprintf('\n');
                 end
             else
                 Gfprintf('Current configuration\n');

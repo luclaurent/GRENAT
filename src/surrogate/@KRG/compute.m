@@ -41,7 +41,7 @@ if nargin>1
         'check');
     %store value of parameters
     obj.paraVal=paraValOk;
-else    
+else
     paraValOk=obj.paraVal;
 end
 %
@@ -70,7 +70,7 @@ if obj.requireCompute
         ((obj.YYtot-obj.krgLS.XX*obj.beta)'*obj.gamma);
     %obj.sig2
     if obj.sig2<0
-    keyboard
+        keyboard
     end
 end
 end

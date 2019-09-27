@@ -91,6 +91,6 @@ Z=obj.nonSampleResp;
 GZ=obj.nonSampleGrad;
 variance=obj.nonSampleVar;
 %
-countTime.stop;
+%countTime.stop;
 %
 end

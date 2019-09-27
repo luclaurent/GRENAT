@@ -33,7 +33,9 @@ dimPB=2;
 ns=20; %number if sample points
 typeDOE='LHS'; %type of DOE
 %
-mDOE=multiDOE(dimPB,typeDOE,ns,testFun.xMin,testFun.xMax);
+xMin=[-2 -1];
+xMax=[2 1];
+mDOE=multiDOE(dimPB,typeDOE,ns,xMin,xMax);
 mDOE.show;
 %
 sampling=mDOE.unsorted;
@@ -85,9 +87,15 @@ metaGRENAT.confMeta.conf('lVal',[0.01 0.01]);%Branin1 [4.662201911444302e-01    
 %metaGRENAT.confMeta.conf('recond',false)
 metaGRENAT.confMeta.conf('normOn',true)
 metaGRENAT.confMeta.conf('aniso',true)
+<<<<<<< HEAD
 metaGRENAT.confMeta.conf('typeEstim','logli')
 metaGRENAT.confMeta.conf('dispEstim',true)
 metaGRENAT.confMeta.conf('method','pso')
+=======
+metaGRENAT.confMeta.conf('typeEstim','cv')
+metaGRENAT.confMeta.conf('dispEstim',false)
+%metaGRENAT.confMeta.conf('method','pso')
+>>>>>>> e4a39f94cf3ec6b1a3d237b0efcebdb9fb50eafe
 %metaGRENAT.confMeta.conf('dispIterGraph',true)
 %metaGRENAT.confMeta.conf('dispIterCmd',true)
 %metaGRENAT.confMeta.conf('dispPlotAlgo',true)

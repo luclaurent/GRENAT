@@ -34,7 +34,7 @@ obj.updateData(respIn,gradIn);
 %
 %depending on the availability of the gradients
 if ~obj.flagG
-    newVal=multiMono(samplingIn,obj.polyOrder);
+    newVal=MultiMono(samplingIn,obj.polyOrder);
     if obj.checkNewMiss
         %remove missing response(s)
         newVal=obj.missData.removeRV(newVal,'n');
@@ -42,7 +42,7 @@ if ~obj.flagG
     obj.valFunPoly=[obj.valFunPoly;newVal];
 else
     %gradient-based
-    [MatX,MatDX]=multiMono(samplingIn,obj.polyOrder);
+    [MatX,MatDX]=MultiMono(samplingIn,obj.polyOrder);
     %remove lines associated to the missing data
     if obj.checkNewMiss
         MatX=obj.missData.removeRV(MatX,'n');

@@ -25,7 +25,9 @@
 % OUTPUTS:
 % - none
 
-function dispTableTwoColumns(tableA,tableB,separator)
+%% function display table with two columns of text
+
+function txt=dispTableTwoColumns(tableA,tableB,separator)
 %size of every components in tableA
 sizeA=cellfun(@numel,tableA);
 maxA=max(sizeA);
@@ -36,6 +38,7 @@ if nargin>2
 else
     spaceTxt=' ';
 end
+txtOk=[];
 %display table
 for itT=1:numel(tableA)
     if ischar(tableB{itT})
@@ -46,6 +49,11 @@ for itT=1:numel(tableA)
         mask='%s%s%+5.4e\n';
     end
     %
-    Gfprintf(mask,tableA{itT},[' ' spaceTxt(ones(1,spaceA(itT))) ' '],tableB{itT});
+    txtOk=[txtOk sprintf(mask,tableA{itT},[' ' spaceTxt(ones(1,spaceA(itT))) ' '],tableB{itT})];
+end
+if nargout==1
+    txt=txtOk;
+else
+    Gfprintf(txtOk);
 end
 end

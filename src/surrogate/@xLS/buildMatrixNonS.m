@@ -36,4 +36,3 @@ if calcGrad
 else
     [ff]=multiMono(U,obj.funPoly);
 end
-end

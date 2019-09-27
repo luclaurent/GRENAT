@@ -24,7 +24,7 @@ initDirGRENAT;
 %customClean;
 countTime=mesuTime;
 %parallel execution (options and starting of the workers)
-paraCluster=execParallel(false);
+%paraCluster=execParallel(false);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,7 +32,7 @@ paraCluster=execParallel(false);
 dimPB=2; %number of design parameters
 ns=20; %number if sample points
 typeDOE='IHS'; %type of DOE
-testFunction='Peaks'; %test function
+testFunction='Trigonometric3'; %test function
 %
 mDOE=multiDOE(dimPB,typeDOE,ns,[],[],testFunction);
 mDOE.show;

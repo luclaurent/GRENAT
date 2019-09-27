@@ -26,6 +26,6 @@ function nmae=calcNMAE(Zex,Zap)
 STD=std(Zap(:));
 vec=abs(Zex-Zap);
 
-nmae=1/numel(Zap(:)*max(vec(:))/STD;
+nmae=1/numel(Zap(:))*max(vec(:))/STD;
 
 end

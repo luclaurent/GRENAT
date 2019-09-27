@@ -28,5 +28,11 @@ function showEI(obj)
 if ~isempty(obj.nonSampleEI)
     obj.confDisp.title=('Infill criterion (EI)');
     displaySurrogate(obj.nonSamplePts,obj.nonSampleEI,[],obj.sampling,obj.resp*0,[],obj.confDisp);
+    if isfield(obj.detInfill,'exploitEI')
+        displaySurrogate(obj.nonSamplePts,obj.detInfill.exploitEI,[],obj.sampling,obj.resp*0,[],obj.confDisp);
+    end
+    if isfield(obj.detInfill,'explorEI')
+        displaySurrogate(obj.nonSamplePts,obj.detInfill.explorEI,[],obj.sampling,obj.resp*0,[],obj.confDisp);
+    end
 end
 end

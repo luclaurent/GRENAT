@@ -26,7 +26,7 @@ function enmse=calcNMSE(Zex,Zap)
 %mean exact
 mZex=mean(Zex);
 diffZex=(mZex-Zex).^2;
-sumZex=sum(diffZex((:));
+sumZex=sum(diffZex(:));
 %
 diff=(Zex-Zap).^2;
 MSE=sum(diff(:));

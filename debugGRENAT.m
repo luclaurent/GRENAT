@@ -26,17 +26,23 @@ initDirGRENAT;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load test function
-testFun=unConstrained('Custom02');
+testFun=optiGTest('Custom02');
+Fx = @(x) 0.002201370*x.^10 - 0.1052876*x.^9 + 2.151650*x.^8 - ...
+        24.60697*x.^7 + 173.4160*x.^6 - 782.1379*x.^5 +...
+        2267.874*x.^4 -4114.980*x.^3 + 4357.030*x.^2 -...
+        2327.900*x + 550 ;
 %%Load of a set of 1D data
 %sampling points
-sampling=[-1 0.3 2 4.5 12 14]';
+sampling=[0.6 1.5 3 5.2 6.5 8 10]';
 %responses and gradients at sample points
-[resp,grad]=testFun.eval(sampling);
+[resp,grad]=testFun.evalObj(sampling);
+resp=Fx(sampling);
 %%for displaying and comparing with the actual function
 %regular grid
-gridRef=linspace(-2,15,300)';
+gridRef=linspace(0,10,300)';
 %responses at the grid points
-[respRef,gradRef]=testFun.eval(gridRef);
+[respRef,gradRef]=testFun.evalObj(gridRef);
+respRef=Fx(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
@@ -50,11 +56,13 @@ metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 %             'wendland10','wendland20','wendland21','wendland30',...
 %             'wendland31','wendland32','wendland41','wendland42',...
 %             'wendland52','wendland53'
-metaGRENAT.confMeta.conf('kern','wendland53')
-%metaGRENAT.confMeta.conf('polyOrder',2)
-%metaGRENAT.confMeta.conf('estimOn',false)
-%metaGRENAT.confMeta.conf('normOn',false)
-metaGRENAT.confMeta.conf('typeEstim','cv')
+metaGRENAT.confMeta.conf('kern','matern32')
+metaGRENAT.confMeta.conf('polyOrder',0)
+metaGRENAT.confMeta.conf('estimOn',false)
+metaGRENAT.confMeta.conf('normOn',true)
+metaGRENAT.confMeta.conf('recond',false)
+metaGRENAT.confMeta.conf('lVal',0.6173);
+metaGRENAT.confMeta.conf('typeEstim','logli')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

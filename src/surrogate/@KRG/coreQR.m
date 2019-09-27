@@ -50,5 +50,4 @@ obj.beta=obj.matrices.fcCfct\block2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %compute gamma coefficient
 obj.gamma=obj.matrices.PK*(obj.matrices.RK\(yQ-fctQ*obj.beta));
-
 end

@@ -24,7 +24,7 @@ initDirGRENAT;
 %customClean;
 countTime=mesuTime;
 %parallel execution (options and starting of the workers)
-paraCluster=execParallel(false);
+%paraCluster=execParallel(false);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34,7 +34,7 @@ testFun=optiGTest('Custom06');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Load of a set of 1D data
 %sampling points
-sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
+sampling=[-1 0 1 2 4 6 8 10 11 12 14]';%[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
 %responses and gradients at sample points
 [resp,~,grad]=testFun.evalObj(sampling);
 %%for displaying and comparing with the actual function

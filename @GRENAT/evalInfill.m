@@ -39,4 +39,5 @@ ZI=[];
 if ~isempty(obj.nonSampleVar)
     [ZI,detI]=InfillCrit(respMin,obj.nonSampleResp,obj.nonSampleVar,obj.confMeta.infill);
 end
+obj.detInfill=detI;
 end

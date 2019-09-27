@@ -48,6 +48,7 @@ classdef GRENAT < handle
         nonSampleVarOrder=[];       %
         nonSampleCI=struct('ci68',[],'ci95',[],'ci99',[]);  % confidence intervals
         nonSampleEI=[];             % expected improvement
+        detInfill;                  % details concerning infill criterion
         %
         sig2N=0;                    % normalized variance of process (kriging...)
         sig2=0;                     % variance of process (kriging...)

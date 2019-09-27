@@ -22,15 +22,16 @@ clear all
 
 %load folder structure
 initDirGRENAT;
+addpath('optigtest')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Load test function
-testFun=optiGTest('Branin1');%Rosenbrock % Branin1
+testFun=optiGTest('Trigonometric3');%Rosenbrock % Branin1
 %%Load of a set of 2D data
 dimPB=2;
 ns=20; %number if sample points
-typeDOE='IHS'; %type of DOE
+typeDOE='LHS'; %type of DOE
 %
 mDOE=multiDOE(dimPB,typeDOE,ns,testFun.xMin,testFun.xMax);
 mDOE.show;
@@ -67,7 +68,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('SVR',sampling,resp,grad);
+metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -77,7 +78,7 @@ metaGRENAT=GRENAT('SVR',sampling,resp,grad);
 %             'wendland10','wendland20','wendland21','wendland30',...
 %             'wendland31','wendland32','wendland41','wendland42',...
 %             'wendland52','wendland53'
-metaGRENAT.confMeta.conf('kern','matern32')
+metaGRENAT.confMeta.conf('kern','matern52')
 %metaGRENAT.confMeta.conf('polyOrder',2)
 metaGRENAT.confMeta.conf('estimOn',true)
 metaGRENAT.confMeta.conf('lVal',[0.01 0.01]);%Branin1 [4.662201911444302e-01     2.644279506437699e-01])
@@ -85,7 +86,7 @@ metaGRENAT.confMeta.conf('lVal',[0.01 0.01]);%Branin1 [4.662201911444302e-01    
 metaGRENAT.confMeta.conf('normOn',true)
 metaGRENAT.confMeta.conf('aniso',true)
 metaGRENAT.confMeta.conf('typeEstim','logli')
-metaGRENAT.confMeta.conf('dispEstim',false)
+metaGRENAT.confMeta.conf('dispEstim',true)
 metaGRENAT.confMeta.conf('method','pso')
 %metaGRENAT.confMeta.conf('dispIterGraph',true)
 %metaGRENAT.confMeta.conf('dispIterCmd',true)

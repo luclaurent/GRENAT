@@ -33,6 +33,11 @@ obj.infoProp=obj.affectTxtProp;
 Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
 Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
 Gfprintf(' Create GRENAT Object \n');
-%the date and time
+% the date and time
 dispDate;
+% load subclasses
+obj.confMeta=initMeta;          % metamodel configuration
+obj.confDisp=initDisp;          % display configuration
+obj.miss=MissData;              % missing data
+obj.norm=NormRenorm;            % normalization data (NormRenorm class)
 end

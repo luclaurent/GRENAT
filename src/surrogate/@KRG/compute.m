@@ -68,9 +68,5 @@ if obj.requireCompute
     sizeK=size(obj.K,1);
     obj.sig2=1/sizeK*...
         ((obj.YYtot-obj.krgLS.XX*obj.beta)'*obj.gamma);
-    %obj.sig2
-    if obj.sig2<0
-        keyboard
-    end
 end
 end

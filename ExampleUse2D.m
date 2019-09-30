@@ -47,7 +47,7 @@ gradRef=C.ref.grad;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
 metaGRENAT=GRENAT('GKRG',sampling,resp,grad);
-metaGRENAT.confMeta.conf('typeEstim','cv')
+metaGRENAT.confMeta.conf('typeEstim','logli')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model

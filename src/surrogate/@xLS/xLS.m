@@ -27,7 +27,7 @@ classdef xLS < handle
         grad=[];             % sample gradients
         %
         missData;            % class for missing data
-        metaData;           % class for parameter of the metamodels
+        metaData;            % class for parameter of the metamodels
         %
         YY=[];               % vector of responses
         YYD=[];              % vector of gradients

@@ -29,6 +29,7 @@ function sampleOk=updateSampling(obj,newSample)
 obj.miss.addSampling(newSample);
 %add sample points to the NormRenorm's object
 obj.norm.addSampling(newSample);
+
 %
 if ~isempty(newSample)
     if isempty(obj.sampling)

@@ -29,7 +29,7 @@ countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %define the sampling using MultiDOE toolbox
-dimPB=2; %number of design parameters
+dimPB=3; %number of design parameters
 ns=20; %number if sample points
 typeDOE='IHS'; %type of DOE
 testFunction='Trigonometric3'; %test function

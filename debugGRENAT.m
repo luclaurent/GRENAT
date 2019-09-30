@@ -46,7 +46,7 @@ respRef=Fx(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('KRG',sampling,resp,grad);
+metaGRENAT=GRENAT('GRBF',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -56,7 +56,7 @@ metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 %             'wendland10','wendland20','wendland21','wendland30',...
 %             'wendland31','wendland32','wendland41','wendland42',...
 %             'wendland52','wendland53'
-metaGRENAT.confMeta.conf('kern','matern32')
+metaGRENAT.confMeta.conf('kern','matern52')
 metaGRENAT.confMeta.conf('polyOrder',0)
 metaGRENAT.confMeta.conf('estimOn',false)
 metaGRENAT.confMeta.conf('normOn',true)

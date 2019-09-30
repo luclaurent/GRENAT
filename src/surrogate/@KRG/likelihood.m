@@ -48,7 +48,4 @@ end
 if isinf(logLi)||isnan(logLi)
     logLi=1e16;
 end
-if ~isreal(logLi)
-    keyboard
-end
 end

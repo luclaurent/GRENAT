@@ -70,7 +70,7 @@ sampling=mDOE.unsorted;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('KRG',sampling,resp,grad);
+metaGRENAT=GRENAT('GSVR',sampling,resp,grad);
 % 'cauchy','circular','constant',...
 %             'cubicspline0','cubicspline1','cubicspline2',...
 %             'expg','expo','invmultiqua','linear','linearspline',...
@@ -80,12 +80,12 @@ metaGRENAT=GRENAT('KRG',sampling,resp,grad);
 %             'wendland10','wendland20','wendland21','wendland30',...
 %             'wendland31','wendland32','wendland41','wendland42',...
 %             'wendland52','wendland53'
-metaGRENAT.confMeta.conf('kern','matern52')
+metaGRENAT.confMeta.conf('kern','matern32')
 %metaGRENAT.confMeta.conf('polyOrder',2)
 metaGRENAT.confMeta.conf('estimOn',true)
 metaGRENAT.confMeta.conf('lVal',[0.01 0.01]);%Branin1 [4.662201911444302e-01     2.644279506437699e-01])
 %metaGRENAT.confMeta.conf('recond',false)
-metaGRENAT.confMeta.conf('normOn',false)
+metaGRENAT.confMeta.conf('normOn',true)
 metaGRENAT.confMeta.conf('aniso',true)
 metaGRENAT.confMeta.conf('typeEstim','logli')
 metaGRENAT.confMeta.conf('dispEstim',true)

@@ -59,11 +59,11 @@ classdef GRENAT < handle
         respRef=[];                 % reference responses
         gradRef=[];                 % refernece gradients
         %structures & class for storing configuration and data
-        confMeta=initMeta;          % metamodel configuration
+        confMeta;                   % metamodel configuration
         dataTrain;                  % training data
-        confDisp=initDisp;          % display configuration
-        miss=MissData;              % missing data
-        norm=NormRenorm;            % normalization data (NormRenorm class)
+        confDisp;                   % display configuration
+        miss;                       % missing data
+        norm;                       % normalization data (NormRenorm class)
         type;                       % type of metamodel
     end
     properties (Dependent)

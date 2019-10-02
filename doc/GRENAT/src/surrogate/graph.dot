@@ -1,0 +1,11 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  EstimPara -> definePara;
+  EstimPara -> stopEstim;
+
+  EstimPara [URL="EstimPara.html"];
+  PrepIn [URL="PrepIn.html"];
+  definePara [URL="definePara.html"];
+  stopEstim [URL="stopEstim.html"];
+  testXLS [URL="testXLS.html"];
+}

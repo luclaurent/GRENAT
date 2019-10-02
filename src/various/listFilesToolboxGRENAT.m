@@ -21,6 +21,8 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 function listF=listFilesToolboxGRENAT(dirT)
+
+%
 listF={};
 %process all directories in the directory 'dirT'
 for ii=1:numel(dirT)
@@ -30,12 +32,12 @@ for ii=1:numel(dirT)
     fun=@(x) sprintf('%s%s%s',dirT{ii},filesep,x);
     fileDirOk=cellfun(fun,fileDir,'UniformOutput',false);
     %add to the whole list
-    listF={listF{:},fileDirOk{:}};
+    listF=[listF(:)',fileDirOk(:)'];
 end
 %add the root directory of the Toolbox
 fileDirOk=listFileDir('.');
 %add to the whole list
-listF={listF{:},fileDirOk{:}};
+listF=[listF(:)',fileDirOk(:)'];
 
 
 %Files to avoid

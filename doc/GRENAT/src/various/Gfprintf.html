@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Gfprintf</title>
+  <meta name="keywords" content="Gfprintf">
+  <meta name="description" content="% function for printing information on the command window (based on fprintf)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html various -->
+<h1>Gfprintf
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% function for printing information on the command window (based on fprintf)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function nbT = Gfprintf(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function for printing information on the command window (based on fprintf)
+% L. LAURENT -- 12/09/2016 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/@GRENAT/checkRef.html" class="code" title="function [okAll,okSample,okResp,okGrad]=checkRef(obj)">checkRef</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/checkUpdate.html" class="code" title="function s=checkUpdate(obj)">checkUpdate</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/conf.html" class="code" title="function conf(obj,varargin)">conf</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/eval.html" class="code" title="function [Z,GZ,variance]=eval(obj,evalPts,Verb)">eval</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/initGRENAT.html" class="code" title="function initGRENAT(obj)">initGRENAT</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/selfUpdate.html" class="code" title="function s=selfUpdate(obj,flag)">selfUpdate</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/showData.html" class="code" title="function showData(obj,typeIn)">showData</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/updateGrad.html" class="code" title="function gradOk=updateGrad(obj,newGrad)">updateGrad</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/updateResp.html" class="code" title="function respOk=updateResp(obj,newResp)">updateResp</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/updateSampling.html" class="code" title="function sampleOk=updateSampling(obj,newSample)">updateSampling</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/initDirGRENAT.html" class="code" title="function [foldersLoad,pathAtAbsolute]=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../../../GRENAT/src/crit/BuildCI.html" class="code" title="function [ci68,ci95,ci99]=BuildCI(ZZ,var)">BuildCI</a>	% function for building confidence intervals (CI)</li><li><a href="../../../GRENAT/src/crit/InfillCrit.html" class="code" title="function [ZI,detInfill]=InfillCrit(respMin,Z,varZ,infillData)">InfillCrit</a>	% Compute infill criteria EI/WEI/LCB</li><li><a href="../../../GRENAT/src/crit/critErrDisp.html" class="code" title="function [err,errV,errNAME]=critErrDisp(Zap,Zref,data)">critErrDisp</a>	% Compute error criteria and display</li><li><a href="../../../GRENAT/src/disp/dispDate.html" class="code" title="function dispDate(type)">dispDate</a>	% Display date and time</li><li><a href="../../../GRENAT/src/disp/saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/init/initDisp.html" class="code" title="">initDisp</a>	% Initialization of display variables</li><li><a href="../../../GRENAT/src/init/initMeta.html" class="code" title="">initMeta</a>	% Initialization of the surrogate model</li><li><a href="../../../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>	% Function for calculating th right number of sample points for the reference grid</li><li><a href="../../../GRENAT/src/kernANDfun/@KernMatrix/addSample.html" class="code" title="function flag=addSample(obj,newS)">addSample</a>	% Method of KernMatrix class</li><li><a href="../../../GRENAT/src/kernANDfun/@KernMatrix/showKernel.html" class="code" title="function showKernel(obj)">showKernel</a>	% Method of KernMatrix class</li><li><a href="../../../GRENAT/src/surrogate/@KRG/KRG.html" class="code" title="">KRG</a>	% class for kriging/cokriging metamodel</li><li><a href="../../../GRENAT/src/surrogate/@KRG/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Method of KRG class</li><li><a href="../../../GRENAT/src/surrogate/@KRG/showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of KRG class</li><li><a href="../../../GRENAT/src/surrogate/@KRG/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of KRG class</li><li><a href="../../../GRENAT/src/surrogate/@RBF/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Method of RBF class</li><li><a href="../../../GRENAT/src/surrogate/@RBF/showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of RBF class</li><li><a href="../../../GRENAT/src/surrogate/@RBF/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of RBF class</li><li><a href="../../../GRENAT/src/surrogate/@SVR/cv.html" class="code" title="function cv=cv(obj)">cv</a>	% Method of SVR class</li><li><a href="../../../GRENAT/src/surrogate/@SVR/showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of SVR class</li><li><a href="../../../GRENAT/src/surrogate/@SVR/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of SVR class</li><li><a href="../../../GRENAT/src/surrogate/@xLS/compute.html" class="code" title="function compute(obj,flagRun)">compute</a>	% Method of xLS class</li><li><a href="../../../GRENAT/src/surrogate/@xLS/showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of xLS class</li><li><a href="../../../GRENAT/src/surrogate/@xLS/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of xLS class</li><li><a href="../../../GRENAT/src/surrogate/@xLS/xLS.html" class="code" title="">xLS</a>	% Class for least-squares surrogate model</li><li><a href="../../../GRENAT/src/surrogate/EstimPara.html" class="code" title="function paraEstim=EstimPara(nPIn,dataMeta,funObj)">EstimPara</a>	% Function for estimating hyperparameters</li><li><a href="../../../GRENAT/src/surrogate/PrepIn.html" class="code" title="function [newSampling,newResp]=PrepIn(samplingIn,respIn,gradIn,metaData,missData)">PrepIn</a>	% Preparation for Indirect Gradient-Enhanced Surrogate Models</li><li><a href="../../../GRENAT/src/surrogate/definePara.html" class="code" title="function [lb,ub,val,nbPara,nbPdetails,funCondPara]=definePara(nPIn,kernFun,dataPara,anisoFlag,type)">definePara</a>	% definition of the hyperparameters bounds (for estimation) or values (w/o estimation)</li><li><a href="../../../GRENAT/src/various/@MissData/check.html" class="code" title="function check(obj,type)">check</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@MissData/removeGM.html" class="code" title="function VV=removeGM(obj,V,type)">removeGM</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@MissData/removeGRM.html" class="code" title="function VV=removeGRM(obj,V,type)">removeGRM</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@MissData/removeGRV.html" class="code" title="function VV=removeGRV(obj,V,type)">removeGRV</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@MissData/removeGV.html" class="code" title="function VV=removeGV(obj,V,type)">removeGV</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@MissData/removeRM.html" class="code" title="function VV=removeRM(obj,V,type)">removeRM</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@MissData/removeRV.html" class="code" title="function VV=removeRV(obj,V,type)">removeRV</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@MissData/show.html" class="code" title="function show(obj)">show</a>	% Method of MissData class</li><li><a href="../../../GRENAT/src/various/@NormRenorm/NormG.html" class="code" title="function out=NormG(obj,in)">NormG</a>	% Method of NormRenorm class</li><li><a href="../../../GRENAT/src/various/@NormRenorm/choiceData.html" class="code" title="function flag=choiceData(obj,type)">choiceData</a>	% Method of NormRenorm class</li><li><a href="../../../GRENAT/src/various/@NormRenorm/computeNorm.html" class="code" title="function computeNorm(obj,in,type)">computeNorm</a>	% Method of NormRenorm class</li><li><a href="../../../GRENAT/src/various/@NormRenorm/reNormG.html" class="code" title="function out=reNormG(obj,in,concat)">reNormG</a>	% Method of NormRenorm class</li><li><a href="../../../GRENAT/src/various/@NormRenorm/reNormVar.html" class="code" title="function out=reNormVar(obj,in)">reNormVar</a>	% Method of NormRenorm class</li><li><a href="../../../GRENAT/src/various/@execParallel/checkRun.html" class="code" title="function runOk=checkRun()">checkRun</a>	% Static method of execParallel class</li><li><a href="../../../GRENAT/src/various/@execParallel/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../../../GRENAT/src/various/@execParallel/start.html" class="code" title="function start(obj)">start</a>	% Method of execParallel class</li><li><a href="../../../GRENAT/src/various/@execParallel/stop.html" class="code" title="function stop(obj)">stop</a>	% Method of execParallel class</li><li><a href="buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,nbSteps)">buildDisp</a>	% Build space for plotting 1D/2D function</li><li><a href="checkInterpRG.html" class="code" title="function statusI=checkInterpRG(ZRef,ZApp,type,critR,critG)">checkInterpRG</a>	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</li><li><a href="dispTableTwoColumns.html" class="code" title="function txt=dispTableTwoColumns(tableA,tableB,separator)">dispTableTwoColumns</a>	% Function display table with two columns (first must be text)</li><li><a href="dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>	% Function to display information depending on a boolean</li><li><a href="evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>	% Evaluation of the function and the gradients</li><li><a href="mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li><li><a href="textProgressbar.html" class="code" title="function textProgressbar(it,itFull,nbitemIn,charItemIn,charBoundIn)">textProgressbar</a>	% Text progess bar</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% function for printing information on the command window (based on fprintf)</span>
+0002 <span class="comment">%% L. LAURENT -- 12/09/2016 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 
+0022 <a name="_sub0" href="#_subfunctions" class="code">function nbT = Gfprintf(varargin)</a>
+0023 
+0024 <span class="comment">%adding text in front of the original text</span>
+0025 txtAdd=<span class="string">'GRENAT'</span>;
+0026 
+0027 <span class="comment">%check if the first argument is a double (corresponding to a file id)</span>
+0028 <span class="keyword">if</span> isa(varargin{1},<span class="string">'double'</span>)
+0029     <span class="comment">%argOk=varargin{2:end};</span>
+0030     <span class="comment">%use the classical fprintf function</span>
+0031     nbT=fprintf(varargin{:});
+0032 <span class="keyword">else</span>
+0033     argOk=varargin;
+0034     
+0035     <span class="comment">%convert all inputs to a string</span>
+0036     str = sprintf(argOk{:});
+0037     
+0038     <span class="comment">%find new lines</span>
+0039     strSplit=regexp(str,<span class="string">'\n'</span>,<span class="string">'split'</span>);
+0040     <span class="comment">% display text and adding new keyword</span>
+0041     nbT=0;
+0042     <span class="keyword">for</span> itS=1:numel(strSplit)
+0043         <span class="keyword">if</span> itS==numel(strSplit)&amp;&amp;isempty(strSplit{itS})
+0044         <span class="keyword">else</span>
+0045             txtD=[ txtAdd <span class="string">' | '</span> strSplit{itS}];
+0046             nbytes=fprintf(<span class="string">'%s'</span>,txtD);
+0047             nbT=nbT+nbytes;
+0048         <span class="keyword">end</span>
+0049         <span class="keyword">if</span> itS&lt;numel(strSplit)
+0050             nbytes=fprintf(<span class="string">'\n'</span>);
+0051             nbT=nbT+nbytes;
+0052         <span class="keyword">end</span>
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,858 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ConsoleProgressBar</title>
+  <meta name="keywords" content="ConsoleProgressBar">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html libs -->
+<h1>ConsoleProgressBar
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = ConsoleProgressBar()</a></li><li><a href="#_sub2" class="code">function start(obj)</a></li><li><a href="#_sub3" class="code">function stop(obj)</a></li><li><a href="#_sub4" class="code">function reset(obj)</a></li><li><a href="#_sub5" class="code">function setLength(obj, len)</a></li><li><a href="#_sub6" class="code">function setLeftMargin(obj, margin)</a></li><li><a href="#_sub7" class="code">function setTopMargin(obj, margin)</a></li><li><a href="#_sub8" class="code">function setValue(obj, val)</a></li><li><a href="#_sub9" class="code">function setMinimum(obj, minVal)</a></li><li><a href="#_sub10" class="code">function setMaximum(obj, maxVal)</a></li><li><a href="#_sub11" class="code">function setText(obj, userText)</a></li><li><a href="#_sub12" class="code">function setTextVisible(obj, flag)</a></li><li><a href="#_sub13" class="code">function setTextPosition(obj, pos)</a></li><li><a href="#_sub14" class="code">function setPercentVisible(obj, flag)</a></li><li><a href="#_sub15" class="code">function setPercentPosition(obj, pos)</a></li><li><a href="#_sub16" class="code">function setElapsedTimeVisible(obj, flag)</a></li><li><a href="#_sub17" class="code">function setElapsedTimePosition(obj, pos)</a></li><li><a href="#_sub18" class="code">function setRemainedTimeVisible(obj, flag)</a></li><li><a href="#_sub19" class="code">function setRemainedTimePosition(obj, pos)</a></li><li><a href="#_sub20" class="code">function str = getElapsedTimeStr(obj, format)</a></li><li><a href="#_sub21" class="code">function str = getRemainedTimeStr(obj, format)</a></li><li><a href="#_sub22" class="code">function update(obj)</a></li><li><a href="#_sub23" class="code">function calculatePercent(obj)</a></li><li><a href="#_sub24" class="code">function fillProgressBuffer(obj)</a></li><li><a href="#_sub25" class="code">function updateProgressString(obj)</a></li><li><a href="#_sub26" class="code">function addPercentString(obj)</a></li><li><a href="#_sub27" class="code">function addTimeString(obj)</a></li><li><a href="#_sub28" class="code">function addTextString(obj)</a></li><li><a href="#_sub29" class="code">function showProgressBar(obj)</a></li><li><a href="#_sub30" class="code">function shiftToNewLine(obj)</a></li><li><a href="#_sub31" class="code">function resetTime(obj)</a></li><li><a href="#_sub32" class="code">function measureTime(obj)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="ConsoleProgressBar.html" class="code" title="">ConsoleProgressBar</a> &lt; handle
+0002     <span class="comment">%ConsoleProgressBar Console progress bar for long-running operations</span>
+0003     <span class="comment">%</span>
+0004     <span class="comment">% Description:</span>
+0005     <span class="comment">%   This class creates a console progress bar (status bar)</span>
+0006     <span class="comment">%   for long-running operations.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">%   It is possible to measure the elapsed and remained time of progress.</span>
+0009     <span class="comment">%</span>
+0010     <span class="comment">%</span>
+0011     <span class="comment">% Usage:</span>
+0012     <span class="comment">%   cpb = ConsoleProgressBar();</span>
+0013     <span class="comment">%</span>
+0014     <span class="comment">%</span>
+0015     <span class="comment">% Example:</span>
+0016     <span class="comment">%   % Create Instance</span>
+0017     <span class="comment">%   cpb = ConsoleProgressBar();</span>
+0018     <span class="comment">%</span>
+0019     <span class="comment">%   % Set progress bar parameters</span>
+0020     <span class="comment">%   cpb.setLeftMargin(1);   % progress bar left margin</span>
+0021     <span class="comment">%   cpb.setTopMargin(1);    % rows margin</span>
+0022     <span class="comment">%</span>
+0023     <span class="comment">%   cpb.setLength(40);      % progress bar length: [.....]</span>
+0024     <span class="comment">%   cpb.setMinimum(0);      % minimum value of progress range [min max]</span>
+0025     <span class="comment">%   cpb.setMaximum(100);    % maximum value of progress range [min max]</span>
+0026     <span class="comment">%</span>
+0027     <span class="comment">%   cpb.start();</span>
+0028     <span class="comment">%</span>
+0029     <span class="comment">%   for k = 0:100</span>
+0030     <span class="comment">%       userText = sprintf('Progress: [%d/%d]', k, 100);</span>
+0031     <span class="comment">%</span>
+0032     <span class="comment">%       cpb.setValue(k);           % update progress value</span>
+0033     <span class="comment">%       cpb.setText(userText)   % update user text</span>
+0034     <span class="comment">%</span>
+0035     <span class="comment">%       pause(0.025)</span>
+0036     <span class="comment">%   end</span>
+0037     <span class="comment">%</span>
+0038     <span class="comment">%   cpb.stop();</span>
+0039     <span class="comment">%</span>
+0040     <span class="comment">%</span>
+0041     <span class="comment">% See also WAITBAR</span>
+0042     <span class="comment">%</span>
+0043     
+0044     <span class="comment">% ---------------------------------------------------------------------</span>
+0045     <span class="comment">%   Version   :  0.3</span>
+0046     <span class="comment">%   Author    :  Evgeny Prilepin aka iroln &lt;esp.home@gmail.com&gt;</span>
+0047     <span class="comment">%   Created   :  03.02.11</span>
+0048     <span class="comment">%   Updated   :  05.02.11</span>
+0049     <span class="comment">%</span>
+0050     <span class="comment">%   Copyright :  (C) 2011 Evgeny Prilepin</span>
+0051     <span class="comment">% ---------------------------------------------------------------------</span>
+0052     
+0053     
+0054     properties (GetAccess = public, SetAccess = private)
+0055         <span class="comment">% GetAccess public properties</span>
+0056         
+0057         leftMargin = 1                  <span class="comment">% Left margin in characters</span>
+0058         topMargin = 0                   <span class="comment">% Top margin in rows</span>
+0059         progressLength = 50             <span class="comment">% Length of progress bar in characters</span>
+0060         minimum = 0                     <span class="comment">% Minimum progress value</span>
+0061         maximum = 100                   <span class="comment">% Maximum progress value</span>
+0062         value = 0                       <span class="comment">% Current progress value</span>
+0063         
+0064         text = <span class="string">''</span>                       <span class="comment">% User text</span>
+0065         isTextVisible = true            <span class="comment">% User text visible flag</span>
+0066         textPosition = <span class="string">'right'</span>          <span class="comment">% User text position 'left' or 'right'</span>
+0067         
+0068         isPercentVisible = true         <span class="comment">% Percent text visible flag</span>
+0069         percentPosition = <span class="string">'left'</span>        <span class="comment">% Percent text position 'left' or 'right'</span>
+0070         
+0071         isElapsedTimeVisible = false    <span class="comment">% Elapsed time text visible flag</span>
+0072         elapsedTimePosition = <span class="string">'right'</span>   <span class="comment">% Elapsed time text position</span>
+0073         
+0074         isRemainedTimeVisible = false   <span class="comment">% Remained time text visible flag</span>
+0075         remainedTimePosition = <span class="string">'right'</span>  <span class="comment">% Remained time text position</span>
+0076         
+0077         progressPercent = 0             <span class="comment">% Percent of progress</span>
+0078         elapsedSeconds = 0              <span class="comment">% Elapsed time from start in seconds</span>
+0079         remainedSeconds = Inf           <span class="comment">% Remained time (prediction)</span>
+0080         
+0081     <span class="keyword">end</span> <span class="comment">% GetAccess public properties</span>
+0082     
+0083     
+0084     properties (Access = private)
+0085         <span class="comment">% Private Properties</span>
+0086         
+0087         isStarted = false
+0088         
+0089         progressBuffer = <span class="string">''</span>
+0090         progressString = <span class="string">''</span>
+0091         prevProgressStringLength = 0
+0092         
+0093         timeStart = 0
+0094         timeStamp = []
+0095         pctStamp = []
+0096         
+0097     <span class="keyword">end</span> <span class="comment">% Private Properties</span>
+0098     
+0099     
+0100     <span class="comment">%======================================================================</span>
+0101     methods (Access = public)
+0102         <span class="comment">% Public Methods</span>
+0103         
+0104         <span class="comment">%------------------------------------------------------------------</span>
+0105         <a name="_sub0" href="#_subfunctions" class="code">function obj = ConsoleProgressBar()</a>
+0106             <span class="comment">%ConsoleProgressBar Constructor</span>
+0107             <span class="comment">%</span>
+0108             <span class="comment">% Description:</span>
+0109             <span class="comment">%   Creates an instance of ConsoleProgressBar</span>
+0110             <span class="comment">%</span>
+0111             <span class="comment">% Usage:</span>
+0112             <span class="comment">%   obj = ConsoleProgressBar()</span>
+0113             <span class="comment">%</span>
+0114             
+0115             error(nargchk(0, 0, nargin));
+0116         <span class="keyword">end</span>
+0117         
+0118         <span class="comment">%------------------------------------------------------------------</span>
+0119         <a name="_sub1" href="#_subfunctions" class="code">function start(obj)</a>
+0120             <span class="comment">%start Start progress bar</span>
+0121             <span class="comment">%</span>
+0122             <span class="comment">% Description:</span>
+0123             <span class="comment">%   Initialize and start new progress bar</span>
+0124             <span class="comment">%</span>
+0125             <span class="comment">% Usage:</span>
+0126             <span class="comment">%   obj.start()</span>
+0127             <span class="comment">%   start(obj)</span>
+0128             <span class="comment">%</span>
+0129             
+0130             error(nargchk(1, 1, nargin));
+0131             
+0132             obj.stop();
+0133             
+0134             obj.isStarted = true;
+0135             obj.update();
+0136             obj.resetTime();
+0137         <span class="keyword">end</span>
+0138         
+0139         <span class="comment">%------------------------------------------------------------------</span>
+0140         <a name="_sub2" href="#_subfunctions" class="code">function stop(obj)</a>
+0141             <span class="comment">%start Stop progress bar</span>
+0142             <span class="comment">%</span>
+0143             <span class="comment">% Description:</span>
+0144             <span class="comment">%   Stop the current progress bar</span>
+0145             <span class="comment">%</span>
+0146             <span class="comment">% Usage:</span>
+0147             <span class="comment">%   obj.stop()</span>
+0148             <span class="comment">%   stop(obj)</span>
+0149             <span class="comment">%</span>
+0150             
+0151             error(nargchk(1, 1, nargin));
+0152             
+0153             obj.progressString = <span class="string">''</span>;
+0154             obj.prevProgressStringLength = 0;
+0155             
+0156             obj.isStarted = false;
+0157             obj.shiftToNewLine();
+0158         <span class="keyword">end</span>
+0159         
+0160         <span class="comment">%------------------------------------------------------------------</span>
+0161         <a name="_sub3" href="#_subfunctions" class="code">function reset(obj)</a>
+0162             <span class="comment">%reset Reset progress bar</span>
+0163             <span class="comment">%</span>
+0164             <span class="comment">% Description:</span>
+0165             <span class="comment">%   Reset progress bar to the minimum value.</span>
+0166             <span class="comment">%</span>
+0167             <span class="comment">% Usage:</span>
+0168             <span class="comment">%   obj.reset()</span>
+0169             <span class="comment">%   reset(obj)</span>
+0170             <span class="comment">%</span>
+0171             
+0172             error(nargchk(1, 1, nargin));
+0173             
+0174             obj.setValue(obj.minimum);
+0175             obj.resetTime();
+0176         <span class="keyword">end</span>
+0177         
+0178         <span class="comment">%------------------------------------------------------------------</span>
+0179         <a name="_sub4" href="#_subfunctions" class="code">function setLength(obj, len)</a>
+0180             <span class="comment">%setLength Set progress bar length</span>
+0181             <span class="comment">%</span>
+0182             <span class="comment">% Description:</span>
+0183             <span class="comment">%   Sets the length of progress bar</span>
+0184             <span class="comment">%</span>
+0185             <span class="comment">% Usage:</span>
+0186             <span class="comment">%   obj.setLength(len)</span>
+0187             <span class="comment">%   setLength(obj, len)</span>
+0188             <span class="comment">%</span>
+0189             <span class="comment">% Inputs:</span>
+0190             <span class="comment">%   len -- length in characters</span>
+0191             <span class="comment">%</span>
+0192             
+0193             error(nargchk(2, 2, nargin));
+0194             
+0195             validateattributes(len, {<span class="string">'numeric'</span>}, <span class="keyword">...</span>
+0196                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, 10, <span class="string">'&lt;='</span>, 500}, <span class="keyword">...</span>
+0197                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Progress Bar Length'</span>);
+0198             
+0199             obj.progressLength = len;
+0200             obj.update();
+0201         <span class="keyword">end</span>
+0202         
+0203         <span class="comment">%------------------------------------------------------------------</span>
+0204         <a name="_sub5" href="#_subfunctions" class="code">function setLeftMargin(obj, margin)</a>
+0205             <span class="comment">%setLeftMargin Set progress bar left margin</span>
+0206             <span class="comment">%</span>
+0207             <span class="comment">% Description:</span>
+0208             <span class="comment">%   Sets margin of the left edge of the command window</span>
+0209             <span class="comment">%</span>
+0210             <span class="comment">% Usage:</span>
+0211             <span class="comment">%   obj.setLeftMargin(margin)</span>
+0212             <span class="comment">%   setLeftMargin(obj, margin)</span>
+0213             <span class="comment">%</span>
+0214             <span class="comment">% Inputs:</span>
+0215             <span class="comment">%   margin -- margin in characters</span>
+0216             <span class="comment">%</span>
+0217             
+0218             error(nargchk(2, 2, nargin));
+0219             
+0220             validateattributes(margin, {<span class="string">'numeric'</span>}, <span class="keyword">...</span>
+0221                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, 0, <span class="string">'&lt;='</span>, 100}, <span class="keyword">...</span>
+0222                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Left Margin'</span>);
+0223             
+0224             obj.leftMargin = margin;
+0225             obj.update();
+0226         <span class="keyword">end</span>
+0227         
+0228         <span class="comment">%------------------------------------------------------------------</span>
+0229         <a name="_sub6" href="#_subfunctions" class="code">function setTopMargin(obj, margin)</a>
+0230             <span class="comment">%setTopMargin Set progress bar top margin</span>
+0231             <span class="comment">%</span>
+0232             <span class="comment">% Description:</span>
+0233             <span class="comment">%   Sets the number of lines shift progress bar down</span>
+0234             <span class="comment">%</span>
+0235             <span class="comment">% Usage:</span>
+0236             <span class="comment">%   obj.setTopMargin(margin)</span>
+0237             <span class="comment">%   setTopMargin(obj, margin)</span>
+0238             <span class="comment">%</span>
+0239             <span class="comment">% Inputs:</span>
+0240             <span class="comment">%   margin -- margin in rows</span>
+0241             <span class="comment">%</span>
+0242             
+0243             error(nargchk(2, 2, nargin));
+0244             
+0245             validateattributes(margin, {<span class="string">'numeric'</span>}, <span class="keyword">...</span>
+0246                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, 0, <span class="string">'&lt;='</span>, 10}, <span class="keyword">...</span>
+0247                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Top Margin'</span>);
+0248             
+0249             obj.topMargin = margin;
+0250         <span class="keyword">end</span>
+0251         
+0252         <span class="comment">%------------------------------------------------------------------</span>
+0253         <a name="_sub7" href="#_subfunctions" class="code">function setValue(obj, val)</a>
+0254             <span class="comment">%setValue Set current progress value</span>
+0255             <span class="comment">%</span>
+0256             <span class="comment">% Description:</span>
+0257             <span class="comment">%   Sets current progress value</span>
+0258             <span class="comment">%</span>
+0259             <span class="comment">% Usage:</span>
+0260             <span class="comment">%   obj.setValue(val)</span>
+0261             <span class="comment">%   setValue(obj, val)</span>
+0262             <span class="comment">%</span>
+0263             <span class="comment">% Inputs:</span>
+0264             <span class="comment">%   val -- progres value in range [min max]</span>
+0265             <span class="comment">%</span>
+0266             
+0267             error(nargchk(2, 2, nargin));
+0268             
+0269             validateattributes(val, {<span class="string">'numeric'</span>}, <span class="keyword">...</span>
+0270                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, obj.minimum, <span class="string">'&lt;='</span>, obj.maximum}, <span class="keyword">...</span>
+0271                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Progress Value'</span>);
+0272             
+0273             obj.value = val;
+0274             obj.update();
+0275             obj.measureTime()
+0276         <span class="keyword">end</span>
+0277         
+0278         <span class="comment">%------------------------------------------------------------------</span>
+0279         <a name="_sub8" href="#_subfunctions" class="code">function setMinimum(obj, minVal)</a>
+0280             <span class="comment">%setMinimum Set minimum progress range value</span>
+0281             <span class="comment">%</span>
+0282             <span class="comment">% Description:</span>
+0283             <span class="comment">%   Sets minimum value of progress range</span>
+0284             <span class="comment">%</span>
+0285             <span class="comment">% Usage:</span>
+0286             <span class="comment">%   obj.setMinimum(minVal)</span>
+0287             <span class="comment">%   setMinimum(obj, minVal)</span>
+0288             <span class="comment">%</span>
+0289             <span class="comment">% Inputs:</span>
+0290             <span class="comment">%   minVal -- minimum value of progress range [min max]</span>
+0291             <span class="comment">%</span>
+0292             
+0293             error(nargchk(2, 2, nargin));
+0294             
+0295             validateattributes(minVal, {<span class="string">'numeric'</span>}, <span class="keyword">...</span>
+0296                 {<span class="string">'scalar'</span>, <span class="string">'&lt;'</span>, obj.maximum}, <span class="keyword">...</span>
+0297                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Minimum Value'</span>);
+0298             
+0299             obj.minimum = minVal;
+0300             
+0301             <span class="keyword">if</span> (obj.value &lt; obj.minimum)
+0302                 obj.value = obj.minimum;
+0303             <span class="keyword">end</span>
+0304             
+0305             obj.update();
+0306         <span class="keyword">end</span>
+0307         
+0308         <span class="comment">%------------------------------------------------------------------</span>
+0309         <a name="_sub9" href="#_subfunctions" class="code">function setMaximum(obj, maxVal)</a>
+0310             <span class="comment">%setMaximum Set maximum progress range value</span>
+0311             <span class="comment">%</span>
+0312             <span class="comment">% Description:</span>
+0313             <span class="comment">%   Sets maximum value of progress range</span>
+0314             <span class="comment">%</span>
+0315             <span class="comment">% Usage:</span>
+0316             <span class="comment">%   obj.setMaximum(maxVal)</span>
+0317             <span class="comment">%   setMaximum(obj, maxVal)</span>
+0318             <span class="comment">%</span>
+0319             <span class="comment">% Inputs:</span>
+0320             <span class="comment">%   maxVal -- maximum value of progress range [min max]</span>
+0321             <span class="comment">%</span>
+0322             
+0323             error(nargchk(2, 2, nargin));
+0324             
+0325             validateattributes(maxVal, {<span class="string">'numeric'</span>}, <span class="keyword">...</span>
+0326                 {<span class="string">'scalar'</span>, <span class="string">'&gt;'</span>, obj.minimum}, <span class="keyword">...</span>
+0327                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Maximum Value'</span>);
+0328             
+0329             obj.maximum = maxVal;
+0330             
+0331             <span class="keyword">if</span> (obj.value &gt; obj.maximum)
+0332                 obj.value = obj.maximum;
+0333             <span class="keyword">end</span>
+0334             
+0335             obj.update();
+0336         <span class="keyword">end</span>
+0337         
+0338         <span class="comment">%------------------------------------------------------------------</span>
+0339         <a name="_sub10" href="#_subfunctions" class="code">function setText(obj, userText)</a>
+0340             <span class="comment">%setText Set user text</span>
+0341             <span class="comment">%</span>
+0342             <span class="comment">% Description:</span>
+0343             <span class="comment">%   Sets any text, which will be displayed</span>
+0344             <span class="comment">%</span>
+0345             <span class="comment">% Usage:</span>
+0346             <span class="comment">%   obj.setText(text)</span>
+0347             <span class="comment">%   setText(obj, text)</span>
+0348             <span class="comment">%</span>
+0349             <span class="comment">% Inputs:</span>
+0350             <span class="comment">%   text -- text string</span>
+0351             <span class="comment">%</span>
+0352             
+0353             error(nargchk(2, 2, nargin));
+0354             
+0355             validateattributes(userText, {<span class="string">'char'</span>}, {<span class="string">'row'</span>}, <span class="keyword">...</span>
+0356                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Text'</span>);
+0357             
+0358             <span class="comment">% Remove \n and \r characters</span>
+0359             userText = regexprep(userText, sprintf(<span class="string">'(\n|\r)'</span>), <span class="string">''</span>);
+0360             obj.text = userText;
+0361             
+0362             obj.update();
+0363         <span class="keyword">end</span>
+0364         
+0365         <span class="comment">%------------------------------------------------------------------</span>
+0366         <a name="_sub11" href="#_subfunctions" class="code">function setTextVisible(obj, flag)</a>
+0367             <span class="comment">%setTextVisible Set user text visible</span>
+0368             <span class="comment">%</span>
+0369             <span class="comment">% Description:</span>
+0370             <span class="comment">%   Sets visible flag of user text</span>
+0371             <span class="comment">%</span>
+0372             <span class="comment">% Usage:</span>
+0373             <span class="comment">%   obj.setTextVisible(flag)</span>
+0374             <span class="comment">%   setTextVisible(obj, flag)</span>
+0375             <span class="comment">%</span>
+0376             <span class="comment">% Inputs:</span>
+0377             <span class="comment">%   flag -- true - visible, false - invisible</span>
+0378             <span class="comment">%</span>
+0379             
+0380             error(nargchk(2, 2, nargin));
+0381             
+0382             validateattributes(flag, {<span class="string">'numeric'</span>, <span class="string">'logical'</span>}, <span class="keyword">...</span>
+0383                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, 0, <span class="string">'&lt;='</span>, 1}, <span class="keyword">...</span>
+0384                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Text Visible'</span>);
+0385             
+0386             obj.isTextVisible = flag;
+0387             
+0388             obj.update();
+0389             obj.showProgressBar();
+0390         <span class="keyword">end</span>
+0391         
+0392         <span class="comment">%------------------------------------------------------------------</span>
+0393         <a name="_sub12" href="#_subfunctions" class="code">function setTextPosition(obj, pos)</a>
+0394             <span class="comment">%setTextPosition Set user text position</span>
+0395             <span class="comment">%</span>
+0396             <span class="comment">% Description:</span>
+0397             <span class="comment">%   Sets position of user text</span>
+0398             <span class="comment">%</span>
+0399             <span class="comment">% Usage:</span>
+0400             <span class="comment">%   obj.setTextPosition(pos)</span>
+0401             <span class="comment">%   setTextPosition(obj, pos)</span>
+0402             <span class="comment">%</span>
+0403             <span class="comment">% Inputs:</span>
+0404             <span class="comment">%   pos -- text position: 'left' or 'right'</span>
+0405             <span class="comment">%</span>
+0406             
+0407             error(nargchk(2, 2, nargin));
+0408             
+0409             pos = validatestring(lower(pos), {<span class="string">'left'</span>, <span class="string">'right'</span>}, <span class="keyword">...</span>
+0410                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Text Position'</span>);
+0411             
+0412             obj.textPosition = pos;
+0413             obj.update();
+0414         <span class="keyword">end</span>
+0415         
+0416         <span class="comment">%------------------------------------------------------------------</span>
+0417         <a name="_sub13" href="#_subfunctions" class="code">function setPercentVisible(obj, flag)</a>
+0418             <span class="comment">%setPercentVisible Set percent text visible</span>
+0419             <span class="comment">%</span>
+0420             <span class="comment">% Description:</span>
+0421             <span class="comment">%   Sets visible flag of percent text</span>
+0422             <span class="comment">%</span>
+0423             <span class="comment">% Usage:</span>
+0424             <span class="comment">%   obj.setPercentVisible(flag)</span>
+0425             <span class="comment">%   setPercentVisible(obj, flag)</span>
+0426             <span class="comment">%</span>
+0427             <span class="comment">% Inputs:</span>
+0428             <span class="comment">%   flag -- true - text visible, false - text invisible</span>
+0429             <span class="comment">%</span>
+0430             
+0431             error(nargchk(2, 2, nargin));
+0432             
+0433             validateattributes(flag, {<span class="string">'numeric'</span>, <span class="string">'logical'</span>}, <span class="keyword">...</span>
+0434                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, 0, <span class="string">'&lt;='</span>, 1}, <span class="keyword">...</span>
+0435                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Percent Text Visible'</span>);
+0436             
+0437             obj.isPercentVisible = flag;
+0438             obj.update();
+0439         <span class="keyword">end</span>
+0440         
+0441         <span class="comment">%------------------------------------------------------------------</span>
+0442         <a name="_sub14" href="#_subfunctions" class="code">function setPercentPosition(obj, pos)</a>
+0443             <span class="comment">%setPercentPosition Set percent text position</span>
+0444             <span class="comment">%</span>
+0445             <span class="comment">% Description:</span>
+0446             <span class="comment">%   Sets position of percent text</span>
+0447             <span class="comment">%</span>
+0448             <span class="comment">% Usage:</span>
+0449             <span class="comment">%   obj.setPercentPosition(pos)</span>
+0450             <span class="comment">%   setPercentPosition(obj, pos)</span>
+0451             <span class="comment">%</span>
+0452             <span class="comment">% Inputs:</span>
+0453             <span class="comment">%   pos -- text position: 'left' or 'right'</span>
+0454             <span class="comment">%</span>
+0455             
+0456             error(nargchk(2, 2, nargin));
+0457             
+0458             pos = validatestring(lower(pos), {<span class="string">'left'</span>, <span class="string">'right'</span>}, <span class="keyword">...</span>
+0459                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Percent Text Position'</span>);
+0460             
+0461             obj.percentPosition = pos;
+0462             obj.update();
+0463         <span class="keyword">end</span>
+0464         
+0465         <span class="comment">%------------------------------------------------------------------</span>
+0466         <a name="_sub15" href="#_subfunctions" class="code">function setElapsedTimeVisible(obj, flag)</a>
+0467             <span class="comment">%setElapsedTimeVisible Set elapsed time text visible</span>
+0468             <span class="comment">%</span>
+0469             <span class="comment">% Description:</span>
+0470             <span class="comment">%   Sets visible flag of elapsed time text</span>
+0471             <span class="comment">%</span>
+0472             <span class="comment">% Usage:</span>
+0473             <span class="comment">%   obj.setElapsedTimeVisible(flag)</span>
+0474             <span class="comment">%   setElapsedTimeVisible(obj, flag)</span>
+0475             <span class="comment">%</span>
+0476             <span class="comment">% Inputs:</span>
+0477             <span class="comment">%   flag -- true - text visible, false - text invisible</span>
+0478             <span class="comment">%</span>
+0479             
+0480             error(nargchk(2, 2, nargin));
+0481             
+0482             validateattributes(flag, {<span class="string">'numeric'</span>, <span class="string">'logical'</span>}, <span class="keyword">...</span>
+0483                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, 0, <span class="string">'&lt;='</span>, 1}, <span class="keyword">...</span>
+0484                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Elapsed Time Text Visible'</span>);
+0485             
+0486             obj.isElapsedTimeVisible = flag;
+0487             obj.update();
+0488         <span class="keyword">end</span>
+0489         
+0490         <span class="comment">%------------------------------------------------------------------</span>
+0491         <a name="_sub16" href="#_subfunctions" class="code">function setElapsedTimePosition(obj, pos)</a>
+0492             <span class="comment">%setElapsedTimePosition Set elapsed time text position</span>
+0493             <span class="comment">%</span>
+0494             <span class="comment">% Description:</span>
+0495             <span class="comment">%   Sets position of elapsed time text</span>
+0496             <span class="comment">%</span>
+0497             <span class="comment">% Usage:</span>
+0498             <span class="comment">%   obj.setElapsedTimePosition(pos)</span>
+0499             <span class="comment">%   setElapsedTimePosition(obj, pos)</span>
+0500             <span class="comment">%</span>
+0501             <span class="comment">% Inputs:</span>
+0502             <span class="comment">%   pos -- text position: 'left' or 'right'</span>
+0503             <span class="comment">%</span>
+0504             
+0505             error(nargchk(2, 2, nargin));
+0506             
+0507             pos = validatestring(lower(pos), {<span class="string">'left'</span>, <span class="string">'right'</span>}, <span class="keyword">...</span>
+0508                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Elapsed Time Text Position'</span>);
+0509             
+0510             obj.elapsedTimePosition = pos;
+0511             obj.update();
+0512         <span class="keyword">end</span>
+0513         
+0514         <span class="comment">%------------------------------------------------------------------</span>
+0515         <a name="_sub17" href="#_subfunctions" class="code">function setRemainedTimeVisible(obj, flag)</a>
+0516             <span class="comment">%setRemainedTimeVisible Set elapsed time text visible</span>
+0517             <span class="comment">%</span>
+0518             <span class="comment">% Description:</span>
+0519             <span class="comment">%   Sets visible flag of remained time text</span>
+0520             <span class="comment">%</span>
+0521             <span class="comment">% Usage:</span>
+0522             <span class="comment">%   obj.setRemainedTimeVisible(flag)</span>
+0523             <span class="comment">%   setRemainedTimeVisible(obj, flag)</span>
+0524             <span class="comment">%</span>
+0525             <span class="comment">% Inputs:</span>
+0526             <span class="comment">%   flag -- true - text visible, false - text invisible</span>
+0527             <span class="comment">%</span>
+0528             
+0529             error(nargchk(2, 2, nargin));
+0530             
+0531             validateattributes(flag, {<span class="string">'numeric'</span>, <span class="string">'logical'</span>}, <span class="keyword">...</span>
+0532                 {<span class="string">'scalar'</span>, <span class="string">'&gt;='</span>, 0, <span class="string">'&lt;='</span>, 1}, <span class="keyword">...</span>
+0533                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Elapsed Time Text Visible'</span>);
+0534             
+0535             obj.isRemainedTimeVisible = flag;
+0536             obj.update();
+0537         <span class="keyword">end</span>
+0538         
+0539         <span class="comment">%------------------------------------------------------------------</span>
+0540         <a name="_sub18" href="#_subfunctions" class="code">function setRemainedTimePosition(obj, pos)</a>
+0541             <span class="comment">%setRemainedTimePosition Set remained time text position</span>
+0542             <span class="comment">%</span>
+0543             <span class="comment">% Description:</span>
+0544             <span class="comment">%   Sets position of remained time text</span>
+0545             <span class="comment">%</span>
+0546             <span class="comment">% Usage:</span>
+0547             <span class="comment">%   obj.setRemainedTimePosition(pos)</span>
+0548             <span class="comment">%   setRemainedTimePosition(obj, pos)</span>
+0549             <span class="comment">%</span>
+0550             <span class="comment">% Inputs:</span>
+0551             <span class="comment">%   pos -- text position: 'left' or 'right'</span>
+0552             <span class="comment">%</span>
+0553             
+0554             error(nargchk(2, 2, nargin));
+0555             
+0556             pos = validatestring(lower(pos), {<span class="string">'left'</span>, <span class="string">'right'</span>}, <span class="keyword">...</span>
+0557                 mfilename(<span class="string">'fullpath'</span>), <span class="string">'Remained Time Position'</span>);
+0558             
+0559             obj.remainedTimePosition = pos;
+0560             obj.update();
+0561         <span class="keyword">end</span>
+0562         
+0563         <span class="comment">%------------------------------------------------------------------</span>
+0564         <a name="_sub19" href="#_subfunctions" class="code">function str = getElapsedTimeStr(obj, format)</a>
+0565             <span class="comment">%getElapsedTimeStr Get elapsed time formated string</span>
+0566             <span class="comment">%</span>
+0567             <span class="comment">% Description:</span>
+0568             <span class="comment">%   Gets formated string of elapsed time from start progress</span>
+0569             <span class="comment">%</span>
+0570             <span class="comment">% Note:</span>
+0571             <span class="comment">%   This method is slow.</span>
+0572             <span class="comment">%</span>
+0573             <span class="comment">% Usage:</span>
+0574             <span class="comment">%   obj.getElapsedTimeStr(format)</span>
+0575             <span class="comment">%   getElapsedTimeStr(obj, format)</span>
+0576             <span class="comment">%</span>
+0577             <span class="comment">% Inputs:</span>
+0578             <span class="comment">%   format -- DATESTR supported format</span>
+0579             <span class="comment">%</span>
+0580             <span class="comment">% Example:</span>
+0581             <span class="comment">%   str = obj.getElapsedTimeStr('HH:MM:SS.FFF')</span>
+0582             <span class="comment">%</span>
+0583             
+0584             error(nargchk(2, 2, nargin));
+0585             
+0586             elapsedTimeNum = datenum([0 0 0 0 0 obj.elapsedSeconds]);
+0587             str = datestr(elapsedTimeNum, format);
+0588         <span class="keyword">end</span>
+0589         
+0590         <span class="comment">%------------------------------------------------------------------</span>
+0591         <a name="_sub20" href="#_subfunctions" class="code">function str = getRemainedTimeStr(obj, format)</a>
+0592             <span class="comment">%getRemainedTimeStr Get remained time formated string</span>
+0593             <span class="comment">%</span>
+0594             <span class="comment">% Description:</span>
+0595             <span class="comment">%   Gets formated string of remained time from progress</span>
+0596             <span class="comment">%</span>
+0597             <span class="comment">% Usage:</span>
+0598             <span class="comment">%   obj.getRemainedTimeStr(format)</span>
+0599             <span class="comment">%   getRemainedTimeStr(obj, format)</span>
+0600             <span class="comment">%</span>
+0601             <span class="comment">% Inputs:</span>
+0602             <span class="comment">%   format -- DATESTR supported format</span>
+0603             <span class="comment">%</span>
+0604             <span class="comment">% Example:</span>
+0605             <span class="comment">%   str = obj.getRemainedTimeStr('HH:MM:SS.FFF')</span>
+0606             <span class="comment">%</span>
+0607             
+0608             error(nargchk(2, 2, nargin));
+0609             
+0610             <span class="keyword">if</span> ~isinf(obj.remainedSeconds)
+0611                 remainedTimeNum = datenum([0 0 0 0 0 obj.remainedSeconds]);
+0612                 str = datestr(remainedTimeNum, format);
+0613             <span class="keyword">else</span>
+0614                 str = <span class="string">'--/--'</span>;
+0615             <span class="keyword">end</span>
+0616         <span class="keyword">end</span>
+0617         
+0618     <span class="keyword">end</span> <span class="comment">% Public Methods</span>
+0619     
+0620     
+0621     <span class="comment">%======================================================================</span>
+0622     methods (Access = private)
+0623         <span class="comment">% Private Methods</span>
+0624         
+0625         <span class="comment">%------------------------------------------------------------------</span>
+0626         <a name="_sub21" href="#_subfunctions" class="code">function update(obj)</a>
+0627             <span class="comment">%update</span>
+0628             
+0629             <span class="keyword">if</span> obj.isStarted
+0630                 obj.calculatePercent();
+0631                 obj.fillProgressBuffer();
+0632                 obj.updateProgressString();
+0633                 obj.showProgressBar();
+0634             <span class="keyword">end</span>
+0635         <span class="keyword">end</span>
+0636         
+0637         <span class="comment">%------------------------------------------------------------------</span>
+0638         <a name="_sub22" href="#_subfunctions" class="code">function calculatePercent(obj)</a>
+0639             <span class="comment">%calculatePercent</span>
+0640             
+0641             obj.progressPercent = <span class="keyword">...</span>
+0642                 ((obj.value - obj.minimum) / (obj.maximum - obj.minimum)) * 100;
+0643         <span class="keyword">end</span>
+0644         
+0645         <span class="comment">%------------------------------------------------------------------</span>
+0646         <a name="_sub23" href="#_subfunctions" class="code">function fillProgressBuffer(obj)</a>
+0647             <span class="comment">%fillProgressBuffer</span>
+0648             
+0649             obj.progressBuffer = repmat(<span class="string">'.'</span>, [1 obj.progressLength]);
+0650             
+0651             filledPart = round(<span class="keyword">...</span>
+0652                 obj.progressLength * obj.progressPercent / 100);
+0653             
+0654             <span class="keyword">if</span> (filledPart &gt; 0)
+0655                 obj.progressBuffer(1:filledPart-1) = <span class="string">'='</span>;
+0656                 obj.progressBuffer(filledPart) = <span class="string">'&gt;'</span>;
+0657             <span class="keyword">end</span>
+0658             
+0659             obj.progressBuffer = [<span class="string">'['</span>, obj.progressBuffer, <span class="string">']'</span>];
+0660         <span class="keyword">end</span>
+0661         
+0662         <span class="comment">%------------------------------------------------------------------</span>
+0663         <a name="_sub24" href="#_subfunctions" class="code">function updateProgressString(obj)</a>
+0664             <span class="comment">%updateProgressString</span>
+0665             
+0666             obj.prevProgressStringLength = length(obj.progressString);
+0667             obj.progressString = obj.progressBuffer;
+0668             
+0669             obj.addPercentString();
+0670             obj.addTimeString();
+0671             obj.addTextString();
+0672             
+0673             obj.progressString = [blanks(obj.leftMargin), obj.progressString];
+0674         <span class="keyword">end</span>
+0675         
+0676         <span class="comment">%------------------------------------------------------------------</span>
+0677         <a name="_sub25" href="#_subfunctions" class="code">function addPercentString(obj)</a>
+0678             <span class="comment">%addPercentString</span>
+0679             
+0680             <span class="keyword">if</span> obj.isPercentVisible
+0681                 percentText = sprintf(<span class="string">'%d%%'</span>, fix(obj.progressPercent));
+0682                 marginBlanks = blanks(4 - length(percentText));
+0683                 
+0684                 <span class="keyword">switch</span> obj.percentPosition
+0685                     <span class="keyword">case</span> <span class="string">'left'</span>,  obj.progressString = [marginBlanks, percentText, <span class="string">' '</span>, obj.progressString];
+0686                     <span class="keyword">case</span> <span class="string">'right'</span>, obj.progressString = [obj.progressString, <span class="string">' '</span>, marginBlanks, percentText];
+0687                 <span class="keyword">end</span>
+0688             <span class="keyword">end</span>
+0689         <span class="keyword">end</span>
+0690         
+0691         <span class="comment">%------------------------------------------------------------------</span>
+0692         <a name="_sub26" href="#_subfunctions" class="code">function addTimeString(obj)</a>
+0693             <span class="comment">%addTimeString</span>
+0694             
+0695             <span class="keyword">if</span> all(strcmpi(<span class="string">'left'</span>, {obj.elapsedTimePosition, obj.remainedTimePosition}))
+0696                 <span class="comment">%</span>
+0697                 cat_fun = @(e,r,es,rs) [e, es, r, rs, obj.progressString];
+0698                 
+0699             <span class="keyword">elseif</span> all(strcmpi(<span class="string">'right'</span>, {obj.elapsedTimePosition, obj.remainedTimePosition}))
+0700                 <span class="comment">%</span>
+0701                 cat_fun = @(e,r,es,rs) [obj.progressString, es, e, rs, r];
+0702                 
+0703             <span class="keyword">elseif</span> all(strcmpi({<span class="string">'left'</span>, <span class="string">'right'</span>}, {obj.elapsedTimePosition, obj.remainedTimePosition}))
+0704                 <span class="comment">%</span>
+0705                 cat_fun = @(e,r,es,rs) [e, es, obj.progressString, rs, r];
+0706             
+0707             <span class="keyword">elseif</span> all(strcmpi({<span class="string">'right'</span>, <span class="string">'left'</span>}, {obj.elapsedTimePosition, obj.remainedTimePosition}))
+0708                 <span class="comment">%</span>
+0709                 cat_fun = @(e,r,es,rs) [r, rs, obj.progressString, es, e];
+0710             
+0711             <span class="keyword">end</span>
+0712             
+0713             <span class="comment">%FIXME: slow</span>
+0714             
+0715             elapsedTimeStr = <span class="string">''</span>;
+0716             remainedTimeStr = <span class="string">''</span>;
+0717             es = <span class="string">''</span>;
+0718             rs = <span class="string">''</span>;
+0719             
+0720             to_vec = @(s) datevec(datenum([0 0 0 0 0 round(s)]));
+0721             to_str = @(h,m,s) sprintf(<span class="string">'%02d:%02d:%02d'</span>, h, m, s);
+0722             
+0723             <span class="keyword">if</span> obj.isElapsedTimeVisible
+0724                 dv = to_vec(obj.elapsedSeconds);
+0725                 elapsedTimeStr = [<span class="string">'E '</span>, to_str(dv(4), dv(5), dv(6))];
+0726                 es = <span class="string">' '</span>;
+0727             <span class="keyword">end</span>
+0728             
+0729             <span class="keyword">if</span> obj.isRemainedTimeVisible
+0730                 <span class="keyword">if</span> ~isinf(obj.remainedSeconds)
+0731                     dv = to_vec(obj.remainedSeconds);
+0732                     remainedTimeStr = [<span class="string">'R '</span>, to_str(dv(4), dv(5), dv(6))];
+0733                 <span class="keyword">else</span>
+0734                     remainedTimeStr = <span class="string">'R --/--'</span>;
+0735                 <span class="keyword">end</span>
+0736                 rs = <span class="string">' '</span>;
+0737             <span class="keyword">end</span>
+0738             
+0739             obj.progressString = cat_fun(elapsedTimeStr, remainedTimeStr, es, rs);
+0740         <span class="keyword">end</span>
+0741         
+0742         <span class="comment">%------------------------------------------------------------------</span>
+0743         <a name="_sub27" href="#_subfunctions" class="code">function addTextString(obj)</a>
+0744             <span class="comment">%addTextString</span>
+0745             
+0746             <span class="keyword">if</span> obj.isTextVisible
+0747                 <span class="keyword">switch</span> obj.textPosition
+0748                     <span class="keyword">case</span> <span class="string">'left'</span>,  obj.progressString = [obj.text, <span class="string">' '</span>, obj.progressString];
+0749                     <span class="keyword">case</span> <span class="string">'right'</span>, obj.progressString = [obj.progressString, <span class="string">' '</span>, obj.text];
+0750                 <span class="keyword">end</span>
+0751             <span class="keyword">end</span>
+0752         <span class="keyword">end</span>
+0753         
+0754         <span class="comment">%------------------------------------------------------------------</span>
+0755         <a name="_sub28" href="#_subfunctions" class="code">function showProgressBar(obj)</a>
+0756             <span class="comment">%showProgressBar</span>
+0757             
+0758             backspaceStr = sprintf(<span class="string">'\b'</span>);
+0759             backspaceStr = backspaceStr(ones(1, obj.prevProgressStringLength));
+0760             
+0761             fprintf(<span class="string">'%s%s'</span>, backspaceStr, obj.progressString);
+0762         <span class="keyword">end</span>
+0763         
+0764         <span class="comment">%------------------------------------------------------------------</span>
+0765         <a name="_sub29" href="#_subfunctions" class="code">function shiftToNewLine(obj)</a>
+0766             <span class="comment">%switchNewLine</span>
+0767             
+0768             newLines = sprintf(<span class="string">'\n'</span>);
+0769             newLines = newLines(ones(1, obj.topMargin));
+0770             
+0771             fprintf(newLines);
+0772         <span class="keyword">end</span>
+0773         
+0774         <span class="comment">%------------------------------------------------------------------</span>
+0775         <a name="_sub30" href="#_subfunctions" class="code">function resetTime(obj)</a>
+0776             <span class="comment">%resetTime</span>
+0777             
+0778             obj.timeStart = tic;
+0779             
+0780             obj.elapsedSeconds = 0;
+0781             obj.remainedSeconds = Inf;
+0782             obj.timeStamp = [];
+0783             obj.pctStamp = [];
+0784         <span class="keyword">end</span>
+0785         
+0786         <span class="comment">%------------------------------------------------------------------</span>
+0787         <a name="_sub31" href="#_subfunctions" class="code">function measureTime(obj)</a>
+0788             <span class="comment">%measureTime</span>
+0789             
+0790             obj.elapsedSeconds = toc(obj.timeStart);
+0791             
+0792             <span class="comment">% Accumulation time and percent values (timespent)</span>
+0793             obj.timeStamp = horzcat(obj.timeStamp, obj.elapsedSeconds);
+0794             obj.pctStamp = horzcat(obj.pctStamp, obj.progressPercent);
+0795             
+0796             <span class="comment">% Prediction remained time (simple linear least square estimate method)</span>
+0797             <span class="keyword">if</span> (length(obj.timeStamp) &gt; 1)
+0798                 <span class="comment">% y = k*x + b, b == 0</span>
+0799                 xy = sum(obj.timeStamp .* obj.pctStamp);
+0800                 x2 = sum(obj.pctStamp .* obj.pctStamp);
+0801                 predictionSeconds = (xy / x2) * 100;
+0802                 
+0803                 obj.remainedSeconds = abs(predictionSeconds - obj.elapsedSeconds);
+0804             <span class="keyword">end</span>
+0805         <span class="keyword">end</span>
+0806         
+0807     <span class="keyword">end</span> <span class="comment">% Private Methods</span>
+0808     
+0809 <span class="keyword">end</span> <span class="comment">% ConsoleProgressBar</span>
+0810</pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

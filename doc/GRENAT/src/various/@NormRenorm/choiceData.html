@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of choiceData</title>
+  <meta name="keywords" content="choiceData">
+  <meta name="description" content="% Method of NormRenorm class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html various --><!-- menu.html @NormRenorm -->
+<h1>choiceData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Method of NormRenorm class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function flag=choiceData(obj,type) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Method of NormRenorm class
+ L. LAURENT -- 02/08/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="NormRenorm.html" class="code" title="">NormRenorm</a>	% Normalization and renormalization of the Data (class version)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Method of NormRenorm class</span>
+0002 <span class="comment">% L. LAURENT -- 02/08/2017 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 
+0022 <span class="comment">%% Choice of the current normalization data</span>
+0023 <span class="comment">% INPUTS:</span>
+0024 <span class="comment">% - type: kind of input data: sampling, responses or normal (use current statistics data) (optional)</span>
+0025 <span class="comment">% OUTPUTS:</span>
+0026 <span class="comment">% - flag: flag as false since no statistics data can be loaded</span>
+0027 
+0028 <a name="_sub0" href="#_subfunctions" class="code">function flag=choiceData(obj,type)</a>
+0029 flag=true;
+0030 <span class="comment">%in the case of no type specified</span>
+0031 <span class="keyword">if</span> nargin&lt;2;type=<span class="string">'normal'</span>;<span class="keyword">end</span>
+0032 <span class="keyword">switch</span> type
+0033     <span class="keyword">case</span> {<span class="string">'resp'</span>,<span class="string">'Resp'</span>,<span class="string">'r'</span>,<span class="string">'R'</span>,<span class="string">'RESP'</span>,<span class="string">'response'</span>,<span class="string">'Responses'</span>,<span class="string">'RESPONSES'</span>}
+0034         obj.meanC=obj.meanR;
+0035         obj.stdC=obj.stdR;
+0036     <span class="keyword">case</span> {<span class="string">'sampling'</span>,<span class="string">'Sampling'</span>,<span class="string">'s'</span>,<span class="string">'S'</span>,<span class="string">'SAMPLING'</span>}
+0037         obj.meanC=obj.meanS;
+0038         obj.stdC=obj.stdS;
+0039     <span class="keyword">otherwise</span>
+0040         obj.meanC=obj.meanN;
+0041         obj.stdC=obj.stdN;
+0042 <span class="keyword">end</span>
+0043 <span class="comment">% if empty normalization data</span>
+0044 <span class="keyword">if</span> isempty(obj.meanC)||isempty(obj.stdC)
+0045     <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' ++ Caution: normalization data not defined (type: %s)\n'</span>,type);
+0046     flag=false;
+0047 <span class="keyword">end</span>
+0048 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

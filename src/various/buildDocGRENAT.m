@@ -19,7 +19,8 @@
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %load paths
-dirPath=initDirGRENAT;
+[dirPath,dirAt]=initDirGRENAT;
+dirPath=[dirPath(:)',dirAt(:)'];
 
 %% Build documentation
 

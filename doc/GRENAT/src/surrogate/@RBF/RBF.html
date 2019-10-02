@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RBF</title>
+  <meta name="keywords" content="RBF">
+  <meta name="description" content="% class for RBF/GRBF metamodel">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html surrogate --><!-- menu.html @RBF -->
+<h1>RBF
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% class for RBF/GRBF metamodel</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% class for RBF/GRBF metamodel
+ RBF: Radial Basis Function
+ GRBF: Gradient-based Radial Basis Function
+ L. LAURENT -- 15/08/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/@GRENAT/eval.html" class="code" title="function [Z,GZ,variance]=eval(obj,evalPts,Verb)">eval</a>	% Method of GRENAT class</li><li><a href="../../../../GRENAT/@GRENAT/train.html" class="code" title="function train(obj)">train</a>	% Method of GRENAT class</li><li><a href="../../../../GRENAT/@GRENAT/update.html" class="code" title="function update(obj,samplingIn,respIn,gradIn,paraFind,varargin)">update</a>	% Method of GRENAT class</li><li><a href="../../../../GRENAT/src/kernANDfun/@KernMatrix/addSample.html" class="code" title="function flag=addSample(obj,newS)">addSample</a>	% Method of KernMatrix class</li><li><a href="../../../../GRENAT/src/kernANDfun/@KernMatrix/buildMatrix.html" class="code" title="function [KK,KKd,KKdd]=buildMatrix(obj,paraV)">buildMatrix</a>	% Method of KernMatrix class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/addGrad.html" class="code" title="function addGrad(obj,newG)">addGrad</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/addResp.html" class="code" title="function addResp(obj,newR)">addResp</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/buildMatrix.html" class="code" title="function K=buildMatrix(obj,paraValIn)">buildMatrix</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/checkMiss.html" class="code" title="function flagM=checkMiss(obj)">checkMiss</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/checkNewMiss.html" class="code" title="function flagM=checkNewMiss(obj)">checkNewMiss</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/compute.html" class="code" title="function [detK,logDetK]=compute(obj,paraValIn)">compute</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/computeVariance.html" class="code" title="function variance=computeVariance(obj,rr,ff)">computeVariance</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/coreClassical.html" class="code" title="function [detK,logDetK]=coreClassical(obj)">coreClassical</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/coreLL.html" class="code" title="function [detK,logDetK]=coreLL(obj)">coreLL</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/coreLU.html" class="code" title="function [detK,logDetK]=coreLU(obj)">coreLU</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/coreQR.html" class="code" title="function [detK,logDetK]=coreQR(obj)">coreQR</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/estimPara.html" class="code" title="function estimPara(obj)">estimPara</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/eval.html" class="code" title="function [Z,GZ,variance]=eval(obj,X)">eval</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/fCompute.html" class="code" title="function fCompute(obj)">fCompute</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/getParaVal.html" class="code" title="function pV=getParaVal(obj)">getParaVal</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/loadDefaultConf.html" class="code" title="function loadDefaultConf(obj)">loadDefaultConf</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/manageOpt.html" class="code" title="function manageOpt(obj,varargin)">manageOpt</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/setData.html" class="code" title="function setData(obj)">setData</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/showCV.html" class="code" title="function showCV(obj)">showCV</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/train.html" class="code" title="function train(obj)">train</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/trainUpdate.html" class="code" title="function trainUpdate(obj,samplingIn,respIn,gradIn)">trainUpdate</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/updateData.html" class="code" title="function updateData(obj,samplingIn,respIn,gradIn)">updateData</a>	% Method of KRG class</li><li><a href="RBF.html" class="code" title="">RBF</a>	% class for RBF/GRBF metamodel</li><li><a href="addGrad.html" class="code" title="function addGrad(obj,newG)">addGrad</a>	% Method of RBF class</li><li><a href="addResp.html" class="code" title="function addResp(obj,newR)">addResp</a>	% Method of RBF class</li><li><a href="addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of RBF class</li><li><a href="buildMatrix.html" class="code" title="function K=buildMatrix(obj,paraValIn)">buildMatrix</a>	% Method of RBF class</li><li><a href="checkMiss.html" class="code" title="function flagM=checkMiss(obj)">checkMiss</a>	% Method of RBF class</li><li><a href="checkNewMiss.html" class="code" title="function flagM=checkNewMiss(obj)">checkNewMiss</a>	% Method of RBF class</li><li><a href="compute.html" class="code" title="function compute(obj,paraValIn)">compute</a>	% Method of RBF class</li><li><a href="computeVariance.html" class="code" title="function variance=computeVariance(obj,rr)">computeVariance</a>	% Method of RBF class</li><li><a href="coreClassical.html" class="code" title="function coreClassical(obj)">coreClassical</a>	% Method of RBF class</li><li><a href="coreLL.html" class="code" title="function coreLL(obj)">coreLL</a>	% Method of RBF class</li><li><a href="coreLU.html" class="code" title="function coreLU(obj)">coreLU</a>	% Method of RBF class</li><li><a href="coreQR.html" class="code" title="function coreQR(obj)">coreQR</a>	% Method of RBF class</li><li><a href="cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Method of RBF class</li><li><a href="estimPara.html" class="code" title="function estimPara(obj)">estimPara</a>	% Method of RBF class</li><li><a href="eval.html" class="code" title="function [Z,GZ,variance]=eval(obj,X)">eval</a>	% Method of RBF class</li><li><a href="fCompute.html" class="code" title="function fCompute(obj)">fCompute</a>	% Method of RBF class</li><li><a href="getParaVal.html" class="code" title="function pV=getParaVal(obj)">getParaVal</a>	% Method of RBF class</li><li><a href="loadDefaultConf.html" class="code" title="function loadDefaultConf(obj)">loadDefaultConf</a>	% Method of RBF class</li><li><a href="manageOpt.html" class="code" title="function manageOpt(obj,varargin)">manageOpt</a>	% Method of RBF class</li><li><a href="setData.html" class="code" title="function setData(obj)">setData</a>	% Method of RBF class</li><li><a href="showCV.html" class="code" title="function showCV(obj)">showCV</a>	% Method of RBF class</li><li><a href="showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of RBF class</li><li><a href="train.html" class="code" title="function train(obj)">train</a>	% Method of RBF class</li><li><a href="trainUpdate.html" class="code" title="function trainUpdate(obj,samplingIn,respIn,gradIn)">trainUpdate</a>	% Method of RBF class</li><li><a href="update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of RBF class</li><li><a href="updateData.html" class="code" title="function updateData(obj,samplingIn,respIn,gradIn)">updateData</a>	% Method of RBF class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/addGrad.html" class="code" title="function addGrad(obj,newG)">addGrad</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/addResp.html" class="code" title="function addResp(obj,newR)">addResp</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/buildMatrix.html" class="code" title="function K=buildMatrix(obj,paraValIn)">buildMatrix</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/checkMiss.html" class="code" title="function flagM=checkMiss(obj)">checkMiss</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/checkNewMiss.html" class="code" title="function flagM=checkNewMiss(obj)">checkNewMiss</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/compute.html" class="code" title="function compute(obj,paraValIn)">compute</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/computeVariance.html" class="code" title="function variance=computeVariance(obj,rr)">computeVariance</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/coreClassical.html" class="code" title="function coreClassical(obj)">coreClassical</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/cv.html" class="code" title="function cv=cv(obj)">cv</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/estimPara.html" class="code" title="function estimPara(obj)">estimPara</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/eval.html" class="code" title="function [Z,GZ,variance]=eval(obj,X)">eval</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/fCompute.html" class="code" title="function fCompute(obj)">fCompute</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/getParaVal.html" class="code" title="function pV=getParaVal(obj)">getParaVal</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/loadDefaultConf.html" class="code" title="function loadDefaultConf(obj)">loadDefaultConf</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/manageOpt.html" class="code" title="function manageOpt(obj,varargin)">manageOpt</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/setData.html" class="code" title="function setData(obj)">setData</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/showCV.html" class="code" title="function showCV(obj)">showCV</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/train.html" class="code" title="function train(obj)">train</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/trainUpdate.html" class="code" title="function trainUpdate(obj,samplingIn,respIn,gradIn)">trainUpdate</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/updateData.html" class="code" title="function updateData(obj,samplingIn,respIn,gradIn)">updateData</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/addGrad.html" class="code" title="function addGrad(obj,newG)">addGrad</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/addResp.html" class="code" title="function addResp(obj,newR)">addResp</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/checkMiss.html" class="code" title="function flagM=checkMiss(obj)">checkMiss</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/checkNewMiss.html" class="code" title="function flagM=checkNewMiss(obj)">checkNewMiss</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/compute.html" class="code" title="function compute(obj,flagRun)">compute</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/eval.html" class="code" title="function [Z,GZ]=eval(obj,U)">eval</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/manageOpt.html" class="code" title="function flagR=manageOpt(obj,varargin)">manageOpt</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/setData.html" class="code" title="function setData(obj)">setData</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/train.html" class="code" title="function train(obj,flagRun)">train</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/trainUpdate.html" class="code" title="function trainUpdate(obj,samplingIn,respIn,gradIn)">trainUpdate</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/updateData.html" class="code" title="function updateData(obj,respIn,gradIn)">updateData</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/various/@MissData/addGrad.html" class="code" title="function addGrad(obj,in)">addGrad</a>	% Method of MissData class</li><li><a href="../../../../GRENAT/src/various/@MissData/addResp.html" class="code" title="function addResp(obj,in)">addResp</a>	% Method of MissData class</li><li><a href="../../../../GRENAT/src/various/@NormRenorm/addGrad.html" class="code" title="function out=addGrad(obj,in)">addGrad</a>	% Method of NormRenorm class</li><li><a href="../../../../GRENAT/src/various/@NormRenorm/addResp.html" class="code" title="function out=addResp(obj,in)">addResp</a>	% Method of NormRenorm class</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/README.html" class="code" title="">README</a>	</li><li><a href="RBF.html" class="code" title="">RBF</a>	% class for RBF/GRBF metamodel</li><li><a href="../../../../GRENAT/src/surrogate/testXLS.html" class="code" title="">testXLS</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj=RBF(samplingIn,respIn,gradIn,varargin)</a></li><li><a href="#_sub2" class="code">function set.paraVal(obj,pVIn)</a></li><li><a href="#_sub3" class="code">function nS=get.nS(obj)</a></li><li><a href="#_sub4" class="code">function nP=get.nP(obj)</a></li><li><a href="#_sub5" class="code">function fl=get.estimOn(obj)</a></li><li><a href="#_sub6" class="code">function kFun=get.kernelFun(obj)</a></li><li><a href="#_sub7" class="code">function flagG=get.flagG(obj)</a></li><li><a href="#_sub8" class="code">function valC=get.Kcond(obj)</a></li><li><a href="#_sub9" class="code">function tt=get.typeLOO(obj)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% class for RBF/GRBF metamodel</span>
+0002 <span class="comment">% RBF: Radial Basis Function</span>
+0003 <span class="comment">% GRBF: Gradient-based Radial Basis Function</span>
+0004 <span class="comment">% L. LAURENT -- 15/08/2017 -- luc.laurent@lecnam.net</span>
+0005 
+0006 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0007 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0008 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0011 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0012 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0013 <span class="comment">%     (at your option) any later version.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0016 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0017 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0018 <span class="comment">%     GNU General Public License for more details.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0021 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0022 
+0023 classdef <a href="RBF.html" class="code" title="">RBF</a> &lt; handle
+0024     properties
+0025         sampling=[];        <span class="comment">% sample points</span>
+0026         resp=[];            <span class="comment">% sample responses</span>
+0027         grad=[];            <span class="comment">% sample gradients</span>
+0028         <span class="comment">%</span>
+0029         missData;           <span class="comment">% class for missing data</span>
+0030         kernelMatrix;       <span class="comment">% class for kernel matrix</span>
+0031         metaData;           <span class="comment">% class for parameter of the metamodels</span>
+0032         <span class="comment">%</span>
+0033         paraEstim;          <span class="comment">% structure for all information obtained from the estimation of the internal parameters</span>
+0034         <span class="comment">%</span>
+0035         YY=[];              <span class="comment">% vector of responses</span>
+0036         YYD=[];             <span class="comment">% vector of gradients</span>
+0037         YYtot=[];           <span class="comment">% full vector of responses and gradients</span>
+0038         K=[];               <span class="comment">% kernel matrix</span>
+0039         <span class="comment">%</span>
+0040         W=[];               <span class="comment">% coefficients of RBF/GRBF</span>
+0041         <span class="comment">%</span>
+0042         kernelFun=<span class="string">'sexp'</span>;   <span class="comment">% kernel function</span>
+0043         <span class="comment">%</span>
+0044         paraVal=1;          <span class="comment">% internal parameters used for building (fixed or estimated)</span>
+0045         lVal=[];            <span class="comment">% internal parameters: length</span>
+0046         pVal=[];            <span class="comment">% internal parametersfor generalized squared exponential</span>
+0047         nuVal=[];           <span class="comment">% internal parameter for Matérn function</span>
+0048         <span class="comment">%</span>
+0049         normLOO=<span class="string">'L2'</span>;       <span class="comment">% norm used for Leave-One-Out cross-validation</span>
+0050         debugLOO=false;     <span class="comment">% flag for debug in Leave-One-Out cross-validation</span>
+0051         cvResults;          <span class="comment">% structure used for storing the CV results</span>
+0052     <span class="keyword">end</span>
+0053     
+0054     properties (Access = private)
+0055         respV=[];            <span class="comment">% responses prepared for training</span>
+0056         gradV=[];            <span class="comment">% gradients prepared for training</span>
+0057         <span class="comment">%</span>
+0058         flagG=false;         <span class="comment">% flag for computing matrices with gradients</span>
+0059         parallelW=1;         <span class="comment">% number of workers for using parallel version</span>
+0060         <span class="comment">%</span>
+0061         requireUpdate=false; <span class="comment">% flag if an update is required</span>
+0062         forceGrad=false;     <span class="comment">% flag for forcing the computation of 1st and 2nd derivatives of the kernel matrix</span>
+0063         <span class="comment">%</span>
+0064         matrices;            <span class="comment">% structure for storage of matrices (classical and factorized version)</span>
+0065         <span class="comment">%</span>
+0066         factK=<span class="string">'QR'</span>;          <span class="comment">% factorization strategy (fastest: LL (Cholesky))</span>
+0067         <span class="comment">%</span>
+0068         debugCV=false;       <span class="comment">% flag for the debugging process of the Cross-Validation</span>
+0069         <span class="comment">%</span>
+0070         requireCompute=true; <span class="comment">% flag used for establishing the status of computing</span>
+0071     <span class="keyword">end</span>
+0072     properties (Dependent,Access = private)
+0073         NnS;                 <span class="comment">% number of new sample points</span>
+0074         nS;                  <span class="comment">% number of sample points</span>
+0075         nP;                  <span class="comment">% dimension of the problem</span>
+0076         parallelOk=false;    <span class="comment">% flag for using parallel version</span>
+0077         estimOn=false;       <span class="comment">% flag for estimation of the internal parameters</span>
+0078         <span class="comment">%</span>
+0079         typeLOO;             <span class="comment">% type of LOO criterion used (mse (default),wmse,lpp)</span>
+0080     <span class="keyword">end</span>
+0081     properties (Dependent)
+0082         Kcond;               <span class="comment">% condition number of the kernel matrix</span>
+0083     <span class="keyword">end</span>
+0084     
+0085     methods
+0086         <span class="comment">%% Constructor</span>
+0087         <span class="comment">% INPUTS:</span>
+0088         <span class="comment">% - samplingIn: array of sample points</span>
+0089         <span class="comment">% - respIn: vector of responses</span>
+0090         <span class="comment">% - gradIn: array of gradients</span>
+0091         <span class="comment">% - kernIn: chosen kernel function</span>
+0092         <span class="comment">% - varargin: specified in any order</span>
+0093         <span class="comment">%       - the missing data (MissData class)</span>
+0094         <span class="comment">%       - the options of the metamodel (initMeta class)</span>
+0095         <span class="comment">%       - the chosen kernel function (string)</span>
+0096         <a name="_sub0" href="#_subfunctions" class="code">function obj=RBF(samplingIn,respIn,gradIn,varargin)</a>
+0097             <span class="comment">%load data</span>
+0098             flagTrain=false;
+0099             <span class="comment">%load data</span>
+0100             <span class="keyword">if</span> nargin&gt;0;obj.sampling=samplingIn;<span class="keyword">end</span>
+0101             <span class="keyword">if</span> nargin&gt;1
+0102                 obj.resp=respIn;
+0103                 flagTrain=true;
+0104             <span class="keyword">end</span>
+0105             <span class="keyword">if</span> nargin&gt;2;obj.grad=gradIn;<span class="keyword">end</span>
+0106             <span class="keyword">if</span> nargin&gt;3;obj.manageOpt(varargin);<span class="keyword">end</span>
+0107             <span class="comment">%check if a configuration has been loaded if not load the</span>
+0108             <span class="comment">%default</span>
+0109             obj.loadDefaultConf;
+0110             <span class="comment">%if everything is ok then train</span>
+0111             <span class="keyword">if</span> flagTrain
+0112                 obj.train();
+0113             <span class="keyword">end</span>
+0114         <span class="keyword">end</span>
+0115         
+0116         <span class="comment">%% setters</span>
+0117         <a name="_sub1" href="#_subfunctions" class="code">function set.paraVal(obj,pVIn)</a>
+0118             <span class="keyword">if</span> isempty(obj.paraVal)
+0119                 obj.fCompute;
+0120             <span class="keyword">else</span>
+0121                 <span class="keyword">if</span> numel(obj.paraVal)~=numel(pVIn)
+0122                     obj.fCompute;
+0123                     obj.paraVal=pVIn;
+0124                 <span class="keyword">else</span>
+0125                     <span class="keyword">if</span> ~all(obj.paraVal==pVIn)
+0126                         obj.fCompute;
+0127                         obj.paraVal=pVIn;
+0128                     <span class="keyword">end</span>
+0129                 <span class="keyword">end</span>
+0130             <span class="keyword">end</span>
+0131         <span class="keyword">end</span>
+0132         
+0133         <span class="comment">%% getters</span>
+0134         <a name="_sub2" href="#_subfunctions" class="code">function nS=get.nS(obj)</a>
+0135             nS=numel(obj.resp);
+0136         <span class="keyword">end</span>
+0137         <a name="_sub3" href="#_subfunctions" class="code">function nP=get.nP(obj)</a>
+0138             nP=size(obj.sampling,2);
+0139         <span class="keyword">end</span>
+0140         <a name="_sub4" href="#_subfunctions" class="code">function fl=get.estimOn(obj)</a>
+0141             fl=false;
+0142             <span class="keyword">if</span> ~isempty(obj.metaData)
+0143                 fl=obj.metaData.estim.on;
+0144             <span class="keyword">end</span>
+0145         <span class="keyword">end</span>
+0146         
+0147         <span class="comment">%% getter for kernel function</span>
+0148         <a name="_sub5" href="#_subfunctions" class="code">function kFun=get.kernelFun(obj)</a>
+0149             <span class="comment">%load default kernel function</span>
+0150             kFun=obj.kernelFun;
+0151             <span class="comment">%load specific configuration if it is available</span>
+0152             <span class="keyword">if</span> ~isempty(obj.metaData.kern)
+0153                 kFun=obj.metaData.kern;
+0154             <span class="keyword">end</span>
+0155         <span class="keyword">end</span>
+0156         
+0157         <span class="comment">%% getter for GRBF building</span>
+0158         <a name="_sub6" href="#_subfunctions" class="code">function flagG=get.flagG(obj)</a>
+0159             flagG=~isempty(obj.grad);
+0160         <span class="keyword">end</span>
+0161         
+0162         <span class="comment">%% getter for the condition number of the kernel matrix</span>
+0163         <a name="_sub7" href="#_subfunctions" class="code">function valC=get.Kcond(obj)</a>
+0164             valC=condest(obj.K);
+0165         <span class="keyword">end</span>
+0166         
+0167         <span class="comment">%% getter for the type of LOO criterion</span>
+0168         <a name="_sub8" href="#_subfunctions" class="code">function tt=get.typeLOO(obj)</a>
+0169             typeG=obj.metaData.estim.type;
+0170             tt=<span class="string">'mse'</span>;   <span class="comment">%default value</span>
+0171             <span class="keyword">if</span> ~isempty(regexp(typeG,<span class="string">'cv'</span>,<span class="string">'ONCE'</span>))
+0172                 <span class="keyword">if</span> numel(typeG)&gt;2
+0173                     tt=typeG(3:end);
+0174                 <span class="keyword">end</span>
+0175             <span class="keyword">end</span>
+0176         <span class="keyword">end</span>
+0177         
+0178         <span class="comment">%% Add new gradients</span>
+0179         <a href="addGrad.html" class="code" title="function addGrad(obj,newG)">addGrad</a>(obj,newG);
+0180         <span class="comment">%% Add new responses</span>
+0181         <a href="addResp.html" class="code" title="function addResp(obj,newR)">addResp</a>(obj,newR);
+0182         <span class="comment">%% Add new sample points</span>
+0183         <a href="addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>(obj,newS);
+0184         <span class="comment">%% Build kernel matrix and remove missing part</span>
+0185         K=<a href="buildMatrix.html" class="code" title="function K=buildMatrix(obj,paraValIn)">buildMatrix</a>(obj,paraValIn);
+0186         <span class="comment">%% Check if there is missing data</span>
+0187         flagM=<a href="checkMiss.html" class="code" title="function flagM=checkMiss(obj)">checkMiss</a>(obj);
+0188         <span class="comment">%% Check if there is new missing data</span>
+0189         flagM=<a href="checkNewMiss.html" class="code" title="function flagM=checkNewMiss(obj)">checkNewMiss</a>(obj);
+0190         <span class="comment">%% Build factorization, solve the RBF problem</span>
+0191         <a href="compute.html" class="code" title="function compute(obj,paraValIn)">compute</a>(obj,paraValIn);
+0192         <span class="comment">%% Compute variance</span>
+0193         variance=<a href="computeVariance.html" class="code" title="function variance=computeVariance(obj,rr)">computeVariance</a>(obj,rr);
+0194         <span class="comment">%% Core of RBF computation using no factorization</span>
+0195         <a href="coreClassical.html" class="code" title="function coreClassical(obj)">coreClassical</a>(obj);
+0196         <span class="comment">%% Core of RBF computation using Cholesky (LL) factorization</span>
+0197         <a href="coreLL.html" class="code" title="function coreLL(obj)">coreLL</a>(obj);
+0198         <span class="comment">%% Core of RBF computation using LU factorization</span>
+0199         <a href="coreLU.html" class="code" title="function coreLU(obj)">coreLU</a>(obj);
+0200         <span class="comment">%% Core of RBF computation using QR factorization</span>
+0201         <a href="coreQR.html" class="code" title="function coreQR(obj)">coreQR</a>(obj);
+0202         <span class="comment">%% Compute Leave-One-Out Cross-Validation</span>
+0203         [crit,<a href="cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>]=<a href="cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>(obj,paraValIn,type);
+0204         <span class="comment">%% Estimate internal parameters</span>
+0205         <a href="estimPara.html" class="code" title="function estimPara(obj)">estimPara</a>(obj);
+0206         <span class="comment">%% Evaluation of the metamodel</span>
+0207         [Z,GZ,variance]=<a href="eval.html" class="code" title="function [Z,GZ,variance]=eval(obj,X)">eval</a>(obj,X);
+0208         <span class="comment">%% Force the computation</span>
+0209         <a href="fCompute.html" class="code" title="function fCompute(obj)">fCompute</a>(obj);
+0210         <span class="comment">%% Get value of the internal parameters</span>
+0211         pV=<a href="getParaVal.html" class="code" title="function pV=getParaVal(obj)">getParaVal</a>(obj);
+0212         <span class="comment">%% Load default configuration</span>
+0213         <a href="loadDefaultConf.html" class="code" title="function loadDefaultConf(obj)">loadDefaultConf</a>(obj);
+0214         <span class="comment">%%  for dealing with the the input arguments of the class</span>
+0215         <a href="manageOpt.html" class="code" title="function manageOpt(obj,varargin)">manageOpt</a>(obj,varargin);
+0216         <span class="comment">%% prepare data for building (deal with missing data)</span>
+0217         <a href="setData.html" class="code" title="function setData(obj)">setData</a>(obj);
+0218         <span class="comment">%% Show the result of the CV</span>
+0219         <a href="showCV.html" class="code" title="function showCV(obj)">showCV</a>(obj);
+0220         <span class="comment">%% Show information in the console</span>
+0221         <a href="showInfo.html" class="code" title="function showInfo(obj,type)">showInfo</a>(obj,type);
+0222         <span class="comment">%% Building/training metamodel</span>
+0223         <a href="train.html" class="code" title="function train(obj)">train</a>(obj);
+0224         <span class="comment">%% Building/training the updated metamodel</span>
+0225         <a href="trainUpdate.html" class="code" title="function trainUpdate(obj,samplingIn,respIn,gradIn)">trainUpdate</a>(obj,samplingIn,respIn,gradIn);
+0226         <span class="comment">%% Update metamodel and train it</span>
+0227         <a href="update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>(obj,newSample,newResp,newGrad,newMissData);
+0228         <span class="comment">%% Update data for building (deal with missing data)</span>
+0229         <a href="updateData.html" class="code" title="function updateData(obj,samplingIn,respIn,gradIn)">updateData</a>(obj,samplingIn,respIn,gradIn);
+0230     <span class="keyword">end</span>
+0231 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,34 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  NormRenorm -> Norm;
+  NormRenorm -> NormG;
+  NormRenorm -> NormRenorm;
+  NormRenorm -> addGrad;
+  NormRenorm -> addResp;
+  NormRenorm -> addSampling;
+  NormRenorm -> choiceData;
+  NormRenorm -> computeNorm;
+  NormRenorm -> init;
+  NormRenorm -> loadConf;
+  NormRenorm -> reNorm;
+  NormRenorm -> reNormDiff;
+  NormRenorm -> reNormG;
+  NormRenorm -> reNormVar;
+  loadConf -> checkStCl;
+
+  Norm [URL="Norm.html"];
+  NormG [URL="NormG.html"];
+  NormRenorm [URL="NormRenorm.html"];
+  addGrad [URL="addGrad.html"];
+  addResp [URL="addResp.html"];
+  addSampling [URL="addSampling.html"];
+  checkStCl [URL="checkStCl.html"];
+  choiceData [URL="choiceData.html"];
+  computeNorm [URL="computeNorm.html"];
+  init [URL="init.html"];
+  loadConf [URL="loadConf.html"];
+  reNorm [URL="reNorm.html"];
+  reNormDiff [URL="reNormDiff.html"];
+  reNormG [URL="reNormG.html"];
+  reNormVar [URL="reNormVar.html"];
+}

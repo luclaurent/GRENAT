@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of execParallel</title>
+  <meta name="keywords" content="execParallel">
+  <meta name="description" content="% Script for starting &amp; stopping workers (parallel)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html various --><!-- menu.html @execParallel -->
+<h1>execParallel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Script for starting &amp; stopping workers (parallel)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Script for starting &amp; stopping workers (parallel)
+ L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="checkLoadDef.html" class="code" title="function fl=checkLoadDef(obj)">checkLoadDef</a>	% Method of execParallel class</li><li><a href="checkRun.html" class="code" title="function runOk=checkRun()">checkRun</a>	% Static method of execParallel class</li><li><a href="currentConf.html" class="code" title="function flag=currentConf(obj)">currentConf</a>	% Method of execParallel class</li><li><a href="defNumWorkers.html" class="code" title="function defNumWorkers(obj)">defNumWorkers</a>	% Method of execParallel class</li><li><a href="defaultConf.html" class="code" title="function defaultConf(obj)">defaultConf</a>	% Method of execParallel class</li><li><a href="execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="getDefNumWorkers.html" class="code" title="function nbW=getDefNumWorkers(obj)">getDefNumWorkers</a>	% Method of execParallel class</li><li><a href="start.html" class="code" title="function start(obj)">start</a>	% Method of execParallel class</li><li><a href="stop.html" class="code" title="function stop(obj)">stop</a>	% Method of execParallel class</li><li><a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/ExampleUse1D.html" class="code" title="">ExampleUse1D</a>	Example of use of GRENAT without the sampling toolbox</li><li><a href="execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj=execParallel(varargin)</a></li><li><a href="#_sub2" class="code">function set.on(obj,stateIn)</a></li><li><a href="#_sub3" class="code">function set.numWorkers(obj,numReq)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Script for starting &amp; stopping workers (parallel)</span>
+0002 <span class="comment">% L. LAURENT -- 01/10/2012 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 classdef <a href="execParallel.html" class="code" title="">execParallel</a> &lt; handle
+0022     properties
+0023         nameCluster=<span class="string">'local'</span>     <span class="comment">% name of the cluster</span>
+0024         defaultParallel=[];     <span class="comment">% default configuration accepted by the computer</span>
+0025         currentParallel=[];     <span class="comment">% current configuration</span>
+0026         on=true;                <span class="comment">% flag for running or not the pool</span>
+0027         numWorkers=[];          <span class="comment">% number of required workers</span>
+0028     <span class="keyword">end</span>
+0029     methods
+0030         <span class="comment">%% Constructor</span>
+0031         <span class="comment">% INPUTS (in any order and optional)</span>
+0032         <span class="comment">% - a boolean value for starting or not directly the parallel pool</span>
+0033         <span class="comment">% - an integer for specifying the number of required workers</span>
+0034         <a name="_sub0" href="#_subfunctions" class="code">function obj=execParallel(varargin)</a>
+0035             <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n'</span>);            
+0036             <span class="keyword">if</span> obj.checkRun                
+0037                 <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Define Parallelism\n'</span>);
+0038                 <span class="comment">%load the default configuration</span>
+0039                 obj.defaultConf;
+0040                 <span class="comment">% deal with input arguments</span>
+0041                 <span class="keyword">if</span> nargin&gt;0
+0042                     <span class="comment">%scan input arguments</span>
+0043                     <span class="comment">%boolean</span>
+0044                     boolC=cellfun(@islogical,varargin);
+0045                     <span class="comment">%integer</span>
+0046                     intC=cellfun(@isnumeric,varargin);
+0047                     <span class="comment">%</span>
+0048                     <span class="keyword">if</span> any(boolC)
+0049                         
+0050                         obj.on=varargin{boolC};
+0051                     <span class="keyword">end</span>
+0052                     <span class="comment">%initialize value</span>
+0053                     <span class="keyword">if</span> any(intC)
+0054                         obj.numWorkers=varargin{intC};
+0055                     <span class="keyword">end</span>
+0056                 <span class="keyword">end</span>
+0057                 <span class="comment">% start or not</span>
+0058                 <span class="keyword">if</span> obj.on
+0059                     obj.start;
+0060                 <span class="keyword">end</span>
+0061             <span class="keyword">else</span>
+0062                 <span class="comment">%kill the object because the initialization is not possible</span>
+0063                 delete(obj);
+0064             <span class="keyword">end</span>
+0065         <span class="keyword">end</span>
+0066         <span class="comment">%% setter for on</span>
+0067         <a name="_sub1" href="#_subfunctions" class="code">function set.on(obj,stateIn)</a>
+0068             <span class="comment">%check previous state and new required state</span>
+0069             <span class="keyword">if</span> ~obj.on&amp;&amp;stateIn
+0070                 <span class="comment">%load default configuration</span>
+0071                 <a href="defaultConf.html" class="code" title="function defaultConf(obj)">defaultConf</a>(obj);
+0072                 <span class="comment">%set number of workers</span>
+0073                 obj.defNumWorkers;
+0074             <span class="keyword">end</span>
+0075             <span class="comment">%set state of parallelism</span>
+0076             obj.on=stateIn;
+0077         <span class="keyword">end</span>
+0078         <span class="comment">%% setter for numWorkers</span>
+0079         <a name="_sub2" href="#_subfunctions" class="code">function set.numWorkers(obj,numReq)</a>
+0080             <span class="comment">%check if the default configuration is already loaded</span>
+0081             <span class="keyword">if</span> obj.checkLoadDef;<a href="defaultConf.html" class="code" title="function defaultConf(obj)">defaultConf</a>(obj);<span class="keyword">end</span>
+0082             <span class="comment">%check if the required number of workers is available</span>
+0083             <span class="keyword">if</span> numReq&gt;obj.getDefNumWorkers
+0084                 <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Too large number of required workers\n'</span>);
+0085             <span class="keyword">elseif</span> numReq&lt;=0
+0086                 <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Wrong number of required workers\n'</span>);
+0087                 numReq=1;
+0088             <span class="keyword">end</span>
+0089             <span class="comment">%choose the number of worker</span>
+0090             obj.numWorkers=min(numReq,obj.getDefNumWorkers);
+0091             <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt; Number of workers required/available: %i/%i\n'</span>,obj.numWorkers,obj.getDefNumWorkers);
+0092         <span class="keyword">end</span>
+0093         <span class="comment">%% force number of workers to the default value</span>
+0094         <a href="defNumWorkers.html" class="code" title="function defNumWorkers(obj)">defNumWorkers</a>(obj);
+0095         <span class="comment">%% function for getting manually the number of workers</span>
+0096         nbW=<a href="getDefNumWorkers.html" class="code" title="function nbW=getDefNumWorkers(obj)">getDefNumWorkers</a>(obj);
+0097         <span class="comment">%% Function for checking if default configuration has been already</span>
+0098         <span class="comment">%loaded</span>
+0099         fl=<a href="checkLoadDef.html" class="code" title="function fl=checkLoadDef(obj)">checkLoadDef</a>(obj);
+0100         <span class="comment">%% start parallel workers</span>
+0101         <a href="start.html" class="code" title="function start(obj)">start</a>(obj);
+0102         <span class="comment">%% Stop parallel workers</span>
+0103         <a href="stop.html" class="code" title="function stop(obj)">stop</a>(obj);
+0104         <span class="comment">%% Load default configuration</span>
+0105         <a href="defaultConf.html" class="code" title="function defaultConf(obj)">defaultConf</a>(obj);
+0106         <span class="comment">%% Load current configuration</span>
+0107         flag=<a href="currentConf.html" class="code" title="function flag=currentConf(obj)">currentConf</a>(obj);
+0108     <span class="keyword">end</span>
+0109     methods (Static)
+0110         <span class="comment">%% check if the parallel toolbox is available, if java is loaded and</span>
+0111         runOk=<a href="checkRun.html" class="code" title="function runOk=checkRun()">checkRun</a>();
+0112     <span class="keyword">end</span>
+0113 <span class="keyword">end</span>
+0114 
+0115</pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

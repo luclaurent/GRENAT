@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ExampleUse2D</title>
+  <meta name="keywords" content="ExampleUse2D">
+  <meta name="description" content="% Example of use of GRENAT without the sampling toolbox">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GRENAT -->
+<h1>ExampleUse2D
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>% Example of use of GRENAT without the sampling toolbox</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Example of use of GRENAT without the sampling toolbox
+ L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function [foldersLoad,pathAtAbsolute]=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Example of use of GRENAT without the sampling toolbox</span>
+0002 <span class="comment">% L. LAURENT -- 30/01/2014 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <span class="comment">%load folder structure</span>
+0022 <a href="initDirGRENAT.html" class="code" title="function [foldersLoad,pathAtAbsolute]=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>;
+0023 <span class="comment">%customClean;</span>
+0024 countTime=<a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
+0025 <span class="comment">%parallel execution (options and starting of the workers)</span>
+0026 <span class="comment">%paraCluster=execParallel(false);</span>
+0027 
+0028 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0030 <span class="comment">%%Load of a set of 2D data</span>
+0031 C=load(<span class="string">'src/various/example2D.mat'</span>);
+0032 <span class="comment">%sampling points</span>
+0033 sampling=C.samples.sampling;
+0034 <span class="comment">%responses at sample points</span>
+0035 resp=C.samples.resp;
+0036 <span class="comment">%gradients at sample points</span>
+0037 grad=C.samples.grad;
+0038 
+0039 <span class="comment">%%for displaying and comparing with the actual function</span>
+0040 <span class="comment">%regular grid</span>
+0041 gridRef=C.ref.grid;
+0042 <span class="comment">%responses at the grid points</span>
+0043 respRef=C.ref.resp;
+0044 <span class="comment">%responses at the grid points</span>
+0045 gradRef=C.ref.grad;
+0046 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0047 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0048 <span class="comment">%create GRENAT Object</span>
+0049 metaGRENAT=<a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'GKRG'</span>,sampling,resp,grad);
+0050 metaGRENAT.confMeta.conf(<span class="string">'typeEstim'</span>,<span class="string">'logli'</span>)
+0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0052 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0053 <span class="comment">%building of the surrogate model</span>
+0054 metaGRENAT.train;
+0055 <span class="comment">%define the reference (optional)</span>
+0056 metaGRENAT.defineRef(gridRef,respRef,gradRef);
+0057 <span class="comment">%evaluation of the surrogate model at the grid points</span>
+0058 metaGRENAT.eval(gridRef);
+0059 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0060 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0061 <span class="comment">%display the result</span>
+0062 metaGRENAT.show;
+0063 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0064 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0065 <span class="comment">%compute display error</span>
+0066 metaGRENAT.errCalc;
+0067 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0068 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0069 <span class="comment">%%Stop workers</span>
+0070 <span class="comment">%paraCluster.stop();</span>
+0071 
+0072 countTime.stop();
+0073</pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of KernMatrix</title>
+  <meta name="keywords" content="KernMatrix">
+  <meta name="description" content="% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html kernANDfun --><!-- menu.html @KernMatrix -->
+<h1>KernMatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model
+ L. LAURENT -- 27/04/2016 -- luc.laurent@lecnam.net
+ class version - 18/07/2017</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="KernMatrix.html" class="code" title="">KernMatrix</a>	% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="addSample.html" class="code" title="function flag=addSample(obj,newS)">addSample</a>	% Method of KernMatrix class</li><li><a href="buildMatrix.html" class="code" title="function [KK,KKd,KKdd]=buildMatrix(obj,paraV)">buildMatrix</a>	% Method of KernMatrix class</li><li><a href="buildVector.html" class="code" title="function [V,Vd,Vdd]=buildVector(obj,samplePts,paraV)">buildVector</a>	% Method of KernMatrix class</li><li><a href="checkMatrix.html" class="code" title="function f=checkMatrix(obj)">checkMatrix</a>	% Method of KernMatrix class</li><li><a href="computeDist.html" class="code" title="function distC=computeDist(obj)">computeDist</a>	% Method of KernMatrix class</li><li><a href="computeIX.html" class="code" title="function iX=computeIX(obj)">computeIX</a>	% Method of KernMatrix class</li><li><a href="computeNbPara.html" class="code" title="function nbP=computeNbPara(obj)">computeNbPara</a>	% Method of KernMatrix class</li><li><a href="computeNewDist.html" class="code" title="function [distN,distNO]=computeNewDist(obj)">computeNewDist</a>	% Method of KernMatrix class</li><li><a href="computeNewIX.html" class="code" title="function iX=computeNewIX(obj)">computeNewIX</a>	% Method of KernMatrix class</li><li><a href="fGrad.html" class="code" title="function fGrad(obj)">fGrad</a>	% Method of KernMatrix class</li><li><a href="fIX.html" class="code" title="function fIX(obj)">fIX</a>	% Method of KernMatrix class</li><li><a href="fRun.html" class="code" title="function fRun(obj)">fRun</a>	% Method of KernMatrix class</li><li><a href="getKK.html" class="code" title="function K=getKK(obj)">getKK</a>	% Method of KernMatrix class</li><li><a href="getKKd.html" class="code" title="function K=getKKd(obj)">getKKd</a>	% Method of KernMatrix class</li><li><a href="getKKdd.html" class="code" title="function K=getKKdd(obj)">getKKdd</a>	% Method of KernMatrix class</li><li><a href="init.html" class="code" title="function init(obj)">init</a>	% Method of KernMatrix class</li><li><a href="loadKern.html" class="code" title="function l=loadKern(obj)">loadKern</a>	% Method of KernMatrix class</li><li><a href="showKernel.html" class="code" title="function showKernel(obj)">showKernel</a>	% Method of KernMatrix class</li><li><a href="updateMatrix.html" class="code" title="function [KK,KKd,KKdd]=updateMatrix(obj,newS)">updateMatrix</a>	% Method of KernMatrix class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/buildMatrix.html" class="code" title="function K=buildMatrix(obj,paraValIn)">buildMatrix</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@RBF/addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of RBF class</li><li><a href="../../../../GRENAT/src/surrogate/@RBF/buildMatrix.html" class="code" title="function K=buildMatrix(obj,paraValIn)">buildMatrix</a>	% Method of RBF class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/buildMatrix.html" class="code" title="function K=buildMatrix(obj,paraValIn)">buildMatrix</a>	% Method of SVR class</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/addSample.html" class="code" title="function addSample(obj,newS)">addSample</a>	% Method of xLS class</li><li><a href="../../../../GRENAT/src/various/@NormRenorm/init.html" class="code" title="function init(obj,type)">init</a>	% Method of NormRenorm class</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="KernMatrix.html" class="code" title="">KernMatrix</a>	% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="../../../../GRENAT/src/surrogate/@KRG/setData.html" class="code" title="function setData(obj)">setData</a>	% Method of KRG class</li><li><a href="../../../../GRENAT/src/surrogate/@RBF/setData.html" class="code" title="function setData(obj)">setData</a>	% Method of RBF class</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/setData.html" class="code" title="function setData(obj)">setData</a>	% Method of SVR class</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj=KernMatrix(fct,sampling,val,parallel)</a></li><li><a href="#_sub2" class="code">function set.fctKern(obj,fct)</a></li><li><a href="#_sub3" class="code">function set.computeD(obj,bool)</a></li><li><a href="#_sub4" class="code">function set.paraVal(obj,pV)</a></li><li><a href="#_sub5" class="code">function set.forceGrad(obj,boolIn)</a></li><li><a href="#_sub6" class="code">function nb=get.nbParaOk(obj)</a></li><li><a href="#_sub7" class="code">function nS=get.nS(obj)</a></li><li><a href="#_sub8" class="code">function nS=get.NnS(obj)</a></li><li><a href="#_sub9" class="code">function nP=get.nP(obj)</a></li><li><a href="#_sub10" class="code">function pO=get.parallelOk(obj)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</span>
+0002 <span class="comment">% L. LAURENT -- 27/04/2016 -- luc.laurent@lecnam.net</span>
+0003 <span class="comment">% class version - 18/07/2017</span>
+0004 
+0005 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0006 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0007 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0010 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0011 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0012 <span class="comment">%     (at your option) any later version.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0015 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0016 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0017 <span class="comment">%     GNU General Public License for more details.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0020 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0021 
+0022 classdef <a href="KernMatrix.html" class="code" title="">KernMatrix</a> &lt; handle
+0023     properties
+0024         KK=[];                  <span class="comment">% matrix of kernel</span>
+0025         KKd=[];                 <span class="comment">% matrix of first derivatives</span>
+0026         KKdd=[];                <span class="comment">% matrix of second derivatives</span>
+0027         <span class="comment">%</span>
+0028         paraVal=[];             <span class="comment">% values of the internal parameters</span>
+0029         sampling=[];            <span class="comment">% sampling points</span>
+0030         newSample=[];           <span class="comment">% in the cas of adding new sample points</span>
+0031         distC=[];               <span class="comment">% vector of inter-points distances</span>
+0032         distN=[];               <span class="comment">% vector of inter-points distances for new sample points</span>
+0033         distNO=[];              <span class="comment">% vector of inter-points distances for new sample points (distance to the old ones)</span>
+0034         fctKern=<span class="string">'sexp'</span>;         <span class="comment">% chosen kernel function</span>
+0035     <span class="keyword">end</span>
+0036     properties (Dependent)
+0037         
+0038     <span class="keyword">end</span>
+0039     
+0040     properties (Access = private)
+0041         computeD=false;         <span class="comment">% flag for computing matrices with gradients</span>
+0042         parallelW=1;            <span class="comment">% number of workers for using parallel version</span>
+0043         <span class="comment">%</span>
+0044         iX;                     <span class="comment">% structure of indices</span>
+0045         NiX;                    <span class="comment">% structure of indices for new sampling points</span>
+0046         requireRun=true;        <span class="comment">% flag if a full building is required</span>
+0047         requireUpdate=false;    <span class="comment">% flag if an update is required</span>
+0048         requireIndices=true;    <span class="comment">% flag if an update of indices is required</span>
+0049         forceGrad=false;        <span class="comment">% flag for forcing the computation of 1st and énd derivatives of the kernel matrix</span>
+0050         <span class="comment">%</span>
+0051         nbParaOk=[];            <span class="comment">%number of acceptable internal parameters</span>
+0052         listKernel={<span class="string">'cauchy'</span>,<span class="string">'circular'</span>,<span class="string">'constant'</span>,<span class="keyword">...</span>
+0053             <span class="string">'cubicspline0'</span>,<span class="string">'cubicspline1'</span>,<span class="string">'cubicspline2'</span>,<span class="keyword">...</span>
+0054             <span class="string">'expg'</span>,<span class="string">'expo'</span>,<span class="string">'invmultiqua'</span>,<span class="string">'linear'</span>,<span class="string">'linearspline'</span>,<span class="keyword">...</span>
+0055             <span class="string">'logk'</span>,<span class="string">'matern'</span>,<span class="string">'matern32'</span>,<span class="string">'matern52'</span>,<span class="string">'multiqua'</span>,<span class="string">'powerk'</span>,<span class="keyword">...</span>
+0056             <span class="string">'quadraticspline'</span>,<span class="string">'ratmultiqua'</span>,<span class="string">'tstudent'</span>,<span class="string">'thinplatespline'</span>,<span class="keyword">...</span>
+0057             <span class="string">'spherical'</span>,<span class="string">'sexp'</span>,<span class="string">'wave'</span>,<span class="string">'wavelet'</span>,<span class="string">'wendland'</span>,<span class="keyword">...</span>
+0058             <span class="string">'wendland10'</span>,<span class="string">'wendland20'</span>,<span class="string">'wendland21'</span>,<span class="string">'wendland30'</span>,<span class="keyword">...</span>
+0059             <span class="string">'wendland31'</span>,<span class="string">'wendland32'</span>,<span class="string">'wendland41'</span>,<span class="string">'wendland42'</span>,<span class="keyword">...</span>
+0060             <span class="string">'wendland52'</span>,<span class="string">'wendland53'</span>};  <span class="comment">%list of available kernel functions</span>
+0061         listKernelTxt={<span class="string">'Squared exponential'</span>,<span class="string">'Matern'</span>,<span class="string">'Matern 3/2'</span>,<span class="string">'Matern 5/2'</span>};  <span class="comment">%list of available kernel functions</span>
+0062     <span class="keyword">end</span>
+0063     properties (Dependent,Access = private)
+0064         NnS;                    <span class="comment">% number of new sample points</span>
+0065         nS;                     <span class="comment">% number of sample points</span>
+0066         nP;                     <span class="comment">% dimension of the problem</span>
+0067         parallelOk=false;       <span class="comment">% flag for using parallel version</span>
+0068         <span class="comment">%</span>
+0069     <span class="keyword">end</span>
+0070     <span class="comment">%</span>
+0071     methods
+0072         <span class="comment">%% Constructor</span>
+0073         <span class="comment">% fct: chosen kernel function</span>
+0074         <span class="comment">% sampling: array of sample points</span>
+0075         <span class="comment">% val: array of value of the hyperparameters of the kernel function</span>
+0076         <span class="comment">% parallel: execParallel class</span>
+0077         <a name="_sub0" href="#_subfunctions" class="code">function obj=KernMatrix(fct,sampling,val,parallel)</a>
+0078             <span class="comment">%load arguments</span>
+0079             <span class="keyword">if</span> nargin&gt;0;obj.fctKern=fct;<span class="keyword">end</span>
+0080             <span class="keyword">if</span> nargin&gt;1;obj.paraVal=val;<span class="keyword">end</span>
+0081             <span class="keyword">if</span> nargin&gt;2;obj.sampling=sampling;<span class="keyword">end</span>
+0082             <span class="keyword">if</span> nargin&gt;3;obj.parallelW=parallel;<span class="keyword">end</span>
+0083         <span class="keyword">end</span>
+0084         <span class="comment">%% setters and getters</span>
+0085         <span class="comment">%setter for kernel function</span>
+0086         <a name="_sub1" href="#_subfunctions" class="code">function set.fctKern(obj,fct)</a>
+0087             checkKernel=any(ismember(obj.loadKern,fct));
+0088             <span class="keyword">if</span> checkKernel
+0089                 obj.fctKern=fct;
+0090             <span class="keyword">else</span>
+0091                 fprintf(<span class="string">'Kernel function %s not available (force %s)\n'</span>,fct,obj.fctKern);
+0092                 obj.showKernel;
+0093             <span class="keyword">end</span>
+0094         <span class="keyword">end</span>
+0095         <span class="comment">%setter for gradients calculations</span>
+0096         <a name="_sub2" href="#_subfunctions" class="code">function set.computeD(obj,bool)</a>
+0097             oldFlag=obj.computeD;
+0098             <span class="keyword">if</span> ~oldFlag&amp;&amp;bool
+0099                 obj.fRun;
+0100             <span class="keyword">end</span>
+0101             obj.computeD=bool;
+0102         <span class="keyword">end</span>
+0103         <span class="comment">%setter for internal parameter</span>
+0104         <a name="_sub3" href="#_subfunctions" class="code">function set.paraVal(obj,pV)</a>
+0105             oldpV=obj.paraVal;
+0106             <span class="keyword">if</span> ~isempty(oldpV)
+0107                 <span class="keyword">if</span> numel(oldpV(:))==numel(pV(:))
+0108                     <span class="keyword">if</span> ~all(oldpV(:)==pV(:))
+0109                         obj.fRun;
+0110                     <span class="keyword">end</span>
+0111                 <span class="keyword">else</span>
+0112                     obj.fRun;
+0113                 <span class="keyword">end</span>
+0114             <span class="keyword">else</span>
+0115                 obj.fRun;
+0116             <span class="keyword">end</span>
+0117             obj.paraVal=pV;
+0118         <span class="keyword">end</span>
+0119         <span class="comment">%setter for the flag to force gradient-matrix computation</span>
+0120         <a name="_sub4" href="#_subfunctions" class="code">function set.forceGrad(obj,boolIn)</a>
+0121             oldFG=obj.forceGrad;
+0122             <span class="keyword">if</span> ~oldFG&amp;&amp;boolIn
+0123                 obj.fRun;
+0124             <span class="keyword">end</span>
+0125             obj.forceGrad=boolIn;
+0126         <span class="keyword">end</span>
+0127         <span class="comment">%getter for the number of acceptable internal parameters</span>
+0128         <a name="_sub5" href="#_subfunctions" class="code">function nb=get.nbParaOk(obj)</a>
+0129             nb=obj.computeNbPara;
+0130         <span class="keyword">end</span>
+0131         <span class="comment">%getter for the number of sample points</span>
+0132         <a name="_sub6" href="#_subfunctions" class="code">function nS=get.nS(obj)</a>
+0133             nS=size(obj.sampling,1);
+0134         <span class="keyword">end</span>
+0135         <span class="comment">%getter for the number of new sample points</span>
+0136         <a name="_sub7" href="#_subfunctions" class="code">function nS=get.NnS(obj)</a>
+0137             nS=size(obj.newSample,1);
+0138         <span class="keyword">end</span>
+0139         <span class="comment">%getter for the dimension</span>
+0140         <a name="_sub8" href="#_subfunctions" class="code">function nP=get.nP(obj)</a>
+0141             nP=size(obj.sampling,2);
+0142         <span class="keyword">end</span>
+0143         <span class="comment">%getter for the flag for parallel</span>
+0144         <a name="_sub9" href="#_subfunctions" class="code">function pO=get.parallelOk(obj)</a>
+0145             pO=(obj.parallelW&gt;1);
+0146         <span class="keyword">end</span>
+0147         <span class="comment">%%</span>
+0148         
+0149         <span class="comment">%% other methods %%</span>
+0150         
+0151         <span class="comment">%% initialize all flag</span>
+0152         <a href="init.html" class="code" title="function init(obj)">init</a>(obj);
+0153         <span class="comment">%% Check matrices</span>
+0154         f=<a href="checkMatrix.html" class="code" title="function f=checkMatrix(obj)">checkMatrix</a>(obj);
+0155         <span class="comment">%% Load list Kernel functions</span>
+0156         l=<a href="loadKern.html" class="code" title="function l=loadKern(obj)">loadKern</a>(obj);
+0157         <span class="comment">%% New run required</span>
+0158         <a href="fRun.html" class="code" title="function fRun(obj)">fRun</a>(obj);
+0159         <span class="comment">%% Force gradients matrices computation</span>
+0160         <a href="fGrad.html" class="code" title="function fGrad(obj)">fGrad</a>(obj);
+0161         <span class="comment">%% Force indices computation</span>
+0162         <a href="fIX.html" class="code" title="function fIX(obj)">fIX</a>(obj);
+0163         <span class="comment">%% Compute number of required internal parameters</span>
+0164         nbP=<a href="computeNbPara.html" class="code" title="function nbP=computeNbPara(obj)">computeNbPara</a>(obj);
+0165         <span class="comment">%% Manual getters for matrices</span>
+0166         K=<a href="getKK.html" class="code" title="function K=getKK(obj)">getKK</a>(obj);
+0167         K=<a href="getKKd.html" class="code" title="function K=getKKd(obj)">getKKd</a>(obj);
+0168         K=<a href="getKKdd.html" class="code" title="function K=getKKdd(obj)">getKKdd</a>(obj);
+0169         <span class="comment">%% Show the list of available kernel functions</span>
+0170         <a href="showKernel.html" class="code" title="function showKernel(obj)">showKernel</a>(obj);
+0171         <span class="comment">%% Add new sample points</span>
+0172         flag=<a href="addSample.html" class="code" title="function flag=addSample(obj,newS)">addSample</a>(obj,newS);
+0173         <span class="comment">%% Build the kernel matrices</span>
+0174         [KK,KKd,KKdd]=<a href="buildMatrix.html" class="code" title="function [KK,KKd,KKdd]=buildMatrix(obj,paraV)">buildMatrix</a>(obj,paraV);
+0175         <span class="comment">%% Build a correlation (kernel) vector depending on the distance between existing sample points and specific points</span>
+0176         [V,Vd,Vdd]=<a href="buildVector.html" class="code" title="function [V,Vd,Vdd]=buildVector(obj,samplePts,paraV)">buildVector</a>(obj,samplePts,paraV)
+0177         <span class="comment">%% Compute inter-distances between sample points</span>
+0178         distC=<a href="computeDist.html" class="code" title="function distC=computeDist(obj)">computeDist</a>(obj);
+0179         <span class="comment">%% Compute structure of indices for building the kernel matrices</span>
+0180         iX=<a href="computeIX.html" class="code" title="function iX=computeIX(obj)">computeIX</a>(obj);
+0181         <span class="comment">%% Compute new inter-points distances (since new sample points are added)</span>
+0182         [distN,distNO]=<a href="computeNewDist.html" class="code" title="function [distN,distNO]=computeNewDist(obj)">computeNewDist</a>(obj);
+0183         <span class="comment">%% Compute new structure of indices (after adding new sample points)</span>
+0184         iX=<a href="computeNewIX.html" class="code" title="function iX=computeNewIX(obj)">computeNewIX</a>(obj)
+0185         <span class="comment">%% Update existing kernel matrices</span>
+0186         [KK,KKd,KKdd]=<a href="updateMatrix.html" class="code" title="function [KK,KKd,KKdd]=updateMatrix(obj,newS)">updateMatrix</a>(obj,newS)
+0187     <span class="keyword">end</span>
+0188 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

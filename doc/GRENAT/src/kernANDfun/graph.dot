@@ -1,0 +1,47 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  toolCheckKernelFct -> multiKernel;
+
+  Wendland10 [URL="Wendland10.html"];
+  Wendland20 [URL="Wendland20.html"];
+  Wendland21 [URL="Wendland21.html"];
+  Wendland30 [URL="Wendland30.html"];
+  Wendland31 [URL="Wendland31.html"];
+  Wendland32 [URL="Wendland32.html"];
+  Wendland41 [URL="Wendland41.html"];
+  Wendland42 [URL="Wendland42.html"];
+  Wendland52 [URL="Wendland52.html"];
+  Wendland53 [URL="Wendland53.html"];
+  cauchy [URL="cauchy.html"];
+  circular [URL="circular.html"];
+  constant [URL="constant.html"];
+  cubicspline0 [URL="cubicspline0.html"];
+  cubicspline1 [URL="cubicspline1.html"];
+  cubicspline2 [URL="cubicspline2.html"];
+  expg [URL="expg.html"];
+  expo [URL="expo.html"];
+  invmultiqua [URL="invmultiqua.html"];
+  linear [URL="linear.html"];
+  linearspline [URL="linearspline.html"];
+  logk [URL="logk.html"];
+  matern [URL="matern.html"];
+  matern32 [URL="matern32.html"];
+  matern52 [URL="matern52.html"];
+  multiKernel [URL="multiKernel.html"];
+  multiMono [URL="multiMono.html"];
+  multiqua [URL="multiqua.html"];
+  powerk [URL="powerk.html"];
+  quadraticspline [URL="quadraticspline.html"];
+  ratmultiqua [URL="ratmultiqua.html"];
+  sexp [URL="sexp.html"];
+  spherical [URL="spherical.html"];
+  thinplatespline [URL="thinplatespline.html"];
+  toolBenchmarkFct [URL="toolBenchmarkFct.html"];
+  toolCheckKernelFct [URL="toolCheckKernelFct.html"];
+  toolExportFct [URL="toolExportFct.html"];
+  toolGeneMonomial [URL="toolGeneMonomial.html"];
+  tstudent [URL="tstudent.html"];
+  wave [URL="wave.html"];
+  wavelet [URL="wavelet.html"];
+  wendland [URL="wendland.html"];
+}

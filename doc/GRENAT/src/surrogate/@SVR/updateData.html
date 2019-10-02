@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of updateData</title>
+  <meta name="keywords" content="updateData">
+  <meta name="description" content="% Method of SVR class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html surrogate --><!-- menu.html @SVR -->
+<h1>updateData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Method of SVR class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function updateData(obj,samplingIn,respIn,gradIn) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Method of SVR class
+ L. LAURENT -- 18/08/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/src/surrogate/@KRG/KRG.html" class="code" title="">KRG</a>	% class for kriging/cokriging metamodel</li><li><a href="../../../../GRENAT/src/surrogate/@RBF/RBF.html" class="code" title="">RBF</a>	% class for RBF/GRBF metamodel</li><li><a href="SVR.html" class="code" title="">SVR</a>	% class for Support Vector Regression metamodel</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/xLS.html" class="code" title="">xLS</a>	% Class for least-squares surrogate model</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Method of SVR class</span>
+0002 <span class="comment">% L. LAURENT -- 18/08/2017 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <span class="comment">%% Update data for building (deal with missing data)</span>
+0022 <span class="comment">% INPUTS:</span>
+0023 <span class="comment">% - samplingIn: array of sample points</span>
+0024 <span class="comment">% - respIn: vector of responses</span>
+0025 <span class="comment">% - gradIn: array of gradients</span>
+0026 <span class="comment">% OUTPUTS:</span>
+0027 <span class="comment">% - none</span>
+0028 
+0029 <a name="_sub0" href="#_subfunctions" class="code">function updateData(obj,samplingIn,respIn,gradIn)</a>
+0030 <span class="comment">%number of new data</span>
+0031 NnS=numel(respIn);
+0032 <span class="comment">%load data</span>
+0033 np=obj.nP;
+0034 c0l=obj.metaData.c0;
+0035 ckl=obj.metaData.ck;
+0036 <span class="comment">%Responses and gradients at sample points</span>
+0037 YYT=respIn;
+0038 <span class="comment">%remove missing response(s)</span>
+0039 <span class="keyword">if</span> obj.checkNewMiss
+0040     YYT=obj.missData.removeRV(YYT,<span class="string">'n'</span>);
+0041 <span class="keyword">end</span>
+0042 <span class="comment">%</span>
+0043 der=[];
+0044 <span class="keyword">if</span> obj.flagG
+0045     tmp=gradIn';
+0046     der=tmp(:);
+0047     <span class="comment">%remove missing gradient(s)</span>
+0048     <span class="keyword">if</span> obj.checkNewMiss
+0049         der=obj.missData.removeGV(der,<span class="string">'n'</span>);
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 obj.YY=[obj.YY;-YYT];
+0053 obj.YYD=[obj.YYD;-der];
+0054 <span class="comment">%</span>
+0055 obj.YYtot=[obj.YY;obj.YYD];
+0056 obj.CC=[-obj.YY;obj.YY;-obj.YYD;obj.YYD];
+0057 <span class="comment">%initialize kernel matrix</span>
+0058 obj.kernelMatrix.updateMatrix(samplingIn);
+0059 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0060 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0061 <span class="comment">%Bounds of the dual variables (R: responses and G: gradients)</span>
+0062 nlbR=zeros(NnS,1);
+0063 cv0=c0l/obj.nS*ones(NnS,1);
+0064 obj.ubR=obj.ubR*(obj.nS-NnS)/obj.nS;
+0065 <span class="keyword">if</span> obj.checkMiss
+0066     nlbR=obj.missData.removeRV(nlbR,<span class="string">'n'</span>);
+0067     cv0=obj.missData.removeRV(cv0,<span class="string">'n'</span>);
+0068 <span class="keyword">end</span>
+0069 obj.lbR=[obj.lbR;nlbR];
+0070 obj.ubR=[obj.ubR;cv0];
+0071 <span class="comment">%</span>
+0072 obj.lbG=[];
+0073 obj.ubG=[];
+0074 <span class="keyword">if</span> obj.flagG
+0075     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0076     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0077     <span class="comment">%Conditioning data for gradient-based approach</span>
+0078     <span class="keyword">if</span> numel(ckl)==1
+0079         ckl=ckl(:,ones(1,np));
+0080     <span class="keyword">end</span>
+0081     nlbG=zeros(np*NnS,1);
+0082     ckV=ckl(:,ones(1,np*NnS))/NnS;
+0083     nubG=ckV(:);
+0084     obj.ubG=obj.ubG*(obj.nS-NnS)/obj.nS;
+0085     <span class="comment">%</span>
+0086     <span class="keyword">if</span> obj.checkMiss
+0087         nubG=obj.missData.removeGV(nubG,<span class="string">'n'</span>);
+0088         nlbG=obj.missData.removeGV(nlbG,<span class="string">'n'</span>);
+0089     <span class="keyword">end</span>
+0090     obj.lbG=[obj.lbG;nlbG];
+0091     obj.ubG=[obj.ubG;nubG];
+0092 <span class="keyword">end</span>
+0093 obj.ub=[obj.ubR;obj.ubR;obj.ubG;obj.ubG];
+0094 obj.lb=[obj.lbR;obj.lbR;obj.lbG;obj.lbG];
+0095 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0096 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0097 <span class="comment">%Build equality constraints</span>
+0098 nAeqR=ones(1,NnS);
+0099 <span class="keyword">if</span> obj.checkMiss
+0100     nAeqR=obj.missData.removeRV(nAeqR',<span class="string">'n'</span>);
+0101     nAeqR=nAeqR';
+0102 <span class="keyword">end</span>
+0103 <span class="comment">%</span>
+0104 obj.AeqR=[obj.AeqR nAeqR];
+0105 <span class="keyword">if</span> obj.flagG
+0106     nAeqG=zeros(1,NnS*np);
+0107     <span class="keyword">if</span> obj.checkMiss
+0108         nAeqG=obj.missData.removeGV(nAeqG',<span class="string">'n'</span>);
+0109         nAeqG=nAeqG';
+0110     <span class="keyword">end</span>
+0111     obj.AeqG=[obj.AeqG nAeqG];
+0112 <span class="keyword">end</span>
+0113 obj.Aeq=[obj.AeqR -obj.AeqR obj.AeqG -obj.AeqG];
+0114 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0115 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0116 <span class="comment">%Build inequality constraints</span>
+0117 nAineqR=ones(1,NnS);
+0118 <span class="keyword">if</span> obj.checkMiss
+0119     nAineqR=obj.missData.removeRV(nAineqR',<span class="string">'n'</span>);
+0120     nAineqR=nAineqR';
+0121 <span class="keyword">end</span>
+0122 <span class="comment">%</span>
+0123 obj.AineqR=[obj.AineqR nAineqR];
+0124 <span class="keyword">if</span> obj.flagG
+0125     nAineqG=repmat(eye(np),1,NnS);
+0126     <span class="comment">%</span>
+0127     <span class="keyword">if</span> obj.checkMiss
+0128         nAineqG=obj.missData.removeGV(nAineqG',<span class="string">'n'</span>);
+0129         nAineqG=nAineqG';
+0130     <span class="keyword">end</span>
+0131     obj.AineqG=[obj.AineqG nAineqG];
+0132 <span class="keyword">end</span>
+0133 <span class="keyword">if</span> ~isempty(obj.AineqG)
+0134     sizA=size(obj.AineqG);
+0135     obj.Aineq=[obj.AineqR obj.AineqR zeros(1,2*sizA(2));
+0136         zeros(sizA(1),2*obj.nS) obj.AineqG obj.AineqG];
+0137 <span class="keyword">else</span>
+0138     obj.Aineq=[obj.AineqR obj.AineqR];
+0139 <span class="keyword">end</span>
+0140 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

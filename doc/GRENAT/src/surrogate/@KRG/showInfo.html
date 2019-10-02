@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of showInfo</title>
+  <meta name="keywords" content="showInfo">
+  <meta name="description" content="% Method of KRG class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html surrogate --><!-- menu.html @KRG -->
+<h1>showInfo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Method of KRG class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function showInfo(obj,type) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Method of KRG class
+ L. LAURENT -- 07/08/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>	% Function to display information depending on a boolean</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="KRG.html" class="code" title="">KRG</a>	% class for kriging/cokriging metamodel</li><li><a href="../../../../GRENAT/src/surrogate/@RBF/RBF.html" class="code" title="">RBF</a>	% class for RBF/GRBF metamodel</li><li><a href="../../../../GRENAT/src/surrogate/@SVR/SVR.html" class="code" title="">SVR</a>	% class for Support Vector Regression metamodel</li><li><a href="../../../../GRENAT/src/surrogate/@xLS/xLS.html" class="code" title="">xLS</a>	% Class for least-squares surrogate model</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Method of KRG class</span>
+0002 <span class="comment">% L. LAURENT -- 07/08/2017 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 
+0022 <span class="comment">%% Show information in the console</span>
+0023 <span class="comment">% INPUTS:</span>
+0024 <span class="comment">% - type: type of information to display (start,end,cv,update)</span>
+0025 <span class="comment">% OUTPUTS:</span>
+0026 <span class="comment">% - none</span>
+0027 
+0028 <a name="_sub0" href="#_subfunctions" class="code">function showInfo(obj,type)</a>
+0029 <span class="keyword">switch</span> type
+0030     <span class="keyword">case</span> {<span class="string">'start'</span>,<span class="string">'START'</span>,<span class="string">'Start'</span>}
+0031         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0032         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0033         <span class="comment">% Display Building information</span>
+0034         textd=<span class="string">'++ Type: '</span>;
+0035         textf=<span class="string">''</span>;
+0036         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n%s\n'</span>,[textd <span class="string">'Kriging ((G)KRG)'</span> textf]);
+0037         <span class="comment">%</span>
+0038         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; Building : '</span>);
+0039         <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.flagG,<span class="string">'GKRG'</span>,<span class="string">'KRG'</span>,true);
+0040         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Kernel function: %s\n'</span>,obj.kernelFun);
+0041         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Deg : %i '</span>,obj.polyOrder);
+0042         <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.polyOrder==0,<span class="string">'(Ordinary)'</span>,<span class="string">'(Universal)'</span>,true);
+0043         <span class="comment">%</span>
+0044         <span class="keyword">if</span> <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.cv.on,<span class="string">'&gt;&gt; CV: '</span>,[],true)
+0045             <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.cv.full,<span class="string">'&gt;&gt; Computation all CV criteria: '</span>,[],true);
+0046             <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.cv.disp,<span class="string">'&gt;&gt; Show CV: '</span>,[],true);
+0047         <span class="keyword">end</span>
+0048         <span class="comment">%</span>
+0049         <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.recond,<span class="string">'&gt;&gt; Correction of matrix condition number: '</span>,[],true);
+0050         <span class="keyword">if</span> <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.estim.on,<span class="string">'&gt;&gt; Estimation of the hyperparameters: '</span>,[],true)
+0051             <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Algorithm for estimation: %s\n'</span>,obj.metaData.estim.method);
+0052             <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Method used for estimation: %s\n'</span>,obj.metaData.estim.type);
+0053             <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Bounds: [%d , %d]\n'</span>,obj.metaData.para.l.Min,obj.metaData.para.l.Max);
+0054             <span class="keyword">switch</span> obj.kernelFun
+0055                 <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
+0056                     <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Bounds for exponent: [%d , %d]\n'</span>,obj.metaData.para.p.Min,obj.metaData.para.p.Max);
+0057                 <span class="keyword">case</span> <span class="string">'matern'</span>
+0058                     <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Bounds for nu (Matern): [%d , %d]\n'</span>,obj.metaData.para.nu.Min,obj.metaData.para.nu.Max);
+0059             <span class="keyword">end</span>
+0060             <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.estim.aniso,<span class="string">'&gt;&gt; Anisotropy: '</span>,[],true);
+0061             <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.estim.dispIterCmd,<span class="string">'&gt;&gt; Show estimation steps in console: '</span>,[],true);
+0062             <a href="../../../../GRENAT/src/various/dispTxtOnOff.html" class="code" title="function boolOut=dispTxtOnOff(boolIn,txtInTrue,txtInFalse,returnLine)">dispTxtOnOff</a>(obj.metaData.estim.dispIterGraph,<span class="string">'&gt;&gt; Plot estimation steps: '</span>,[],true);
+0063         <span class="keyword">else</span>
+0064             <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value(s) hyperparameter(s): '</span>);
+0065             fprintf(<span class="string">'%d '</span>,obj.metaData.para.l.Val);
+0066             fprintf(<span class="string">'\n'</span>);
+0067             <span class="keyword">switch</span> obj.kernelFun
+0068                 <span class="keyword">case</span> {<span class="string">'expg'</span>,<span class="string">'expgg'</span>}
+0069                     <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of the exponent:'</span>);
+0070                     fprintf(<span class="string">' %d'</span>,obj.metaData.para.p.Val);
+0071                     fprintf(<span class="string">'\n'</span>);
+0072                 <span class="keyword">case</span> {<span class="string">'matern'</span>}
+0073                     <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Value of nu (Matern): %d \n'</span>,obj.metaData.para.nu.Val);
+0074             <span class="keyword">end</span>
+0075         <span class="keyword">end</span>
+0076         <span class="comment">%</span>
+0077         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'\n'</span>);
+0078     <span class="keyword">case</span> {<span class="string">'magtrix'</span>}
+0079         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' ++ Build KRG matrix\n'</span>);
+0080     <span class="keyword">case</span> {<span class="string">'update'</span>}
+0081         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' ++ Update KRG\n'</span>);
+0082     <span class="keyword">case</span> {<span class="string">'cv'</span>,<span class="string">'CV'</span>}
+0083         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' ++ Run final Cross-Validation\n'</span>);
+0084     <span class="keyword">case</span> {<span class="string">'end'</span>,<span class="string">'End'</span>,<span class="string">'END'</span>}
+0085         <a href="../../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' ++ END building KRG\n'</span>);
+0086 <span class="keyword">end</span>
+0087 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

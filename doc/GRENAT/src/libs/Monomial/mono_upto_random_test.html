@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mono_upto_random_test</title>
+  <meta name="keywords" content="mono_upto_random_test">
+  <meta name="description" content="*****************************************************************************80">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html libs --><!-- menu.html Monomial -->
+<h1>mono_upto_random_test
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>*****************************************************************************80</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function monomial_test11 ( ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">*****************************************************************************80
+
+% MONOMIAL_TEST11 tests MONO_UPTO_RANDOM.
+
+  Licensing:
+
+    This code is distributed under the GNU LGPL license.
+
+  Modified:
+
+    20 November 2013
+
+  Author:
+
+    John Burkardt</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="mono_upto_random.html" class="code" title="function [ x, rank, seed ] = mono_upto_random ( m, n, seed )">mono_upto_random</a>	*****************************************************************************80</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="monomial_test.html" class="code" title="function monomial_test ( )">monomial_test</a>	*****************************************************************************80</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function monomial_test11 ( )</a>
+0002 
+0003 <span class="comment">%*****************************************************************************80</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%% MONOMIAL_TEST11 tests MONO_UPTO_RANDOM.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  Licensing:</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%    This code is distributed under the GNU LGPL license.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%  Modified:</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%    20 November 2013</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%  Author:</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%    John Burkardt</span>
+0018 <span class="comment">%</span>
+0019   fprintf ( 1, <span class="string">'\n'</span> );
+0020   fprintf ( 1, <span class="string">'MONOMIAL_TEST11\n'</span> );
+0021   fprintf ( 1, <span class="string">'  MONO_UPTO_RANDOM selects at random a monomial\n'</span> );
+0022   fprintf ( 1, <span class="string">'  in M dimensions of total degree no greater than N.\n'</span> );
+0023 
+0024   m = 3;
+0025   n = 4;
+0026 
+0027   fprintf ( 1, <span class="string">'\n'</span> );
+0028   fprintf ( 1, <span class="string">'  Let M = %d\n'</span>, m );
+0029   fprintf ( 1, <span class="string">'      N = %d\n'</span>, n );
+0030   fprintf ( 1, <span class="string">'\n'</span> );
+0031 
+0032   seed = 123456789;
+0033   test_num = 5;
+0034 
+0035   <span class="keyword">for</span> test = 1 : test_num
+0036 
+0037     [ x, rank, seed ] = <a href="mono_upto_random.html" class="code" title="function [ x, rank, seed ] = mono_upto_random ( m, n, seed )">mono_upto_random</a> ( m, n, seed );
+0038 
+0039     fprintf ( 1, <span class="string">'  %3d:'</span>, rank );
+0040     <span class="keyword">for</span> j = 1 : m
+0041       fprintf ( 1, <span class="string">'  %1d'</span>, x(j) );
+0042     <span class="keyword">end</span>
+0043     fprintf ( 1, <span class="string">'\n'</span> );
+0044 
+0045   <span class="keyword">end</span>
+0046 
+0047   <span class="keyword">return</span>
+0048 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

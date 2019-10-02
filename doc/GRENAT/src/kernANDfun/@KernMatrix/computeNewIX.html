@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeNewIX</title>
+  <meta name="keywords" content="computeNewIX">
+  <meta name="description" content="% Method of KernMatrix class">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENAT --><!-- # src --><!-- ../menu.html kernANDfun --><!-- menu.html @KernMatrix -->
+<h1>computeNewIX
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>% Method of KernMatrix class</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function iX=computeNewIX(obj) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Method of KernMatrix class
+ L. LAURENT -- 18/07/2017 -- luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="KernMatrix.html" class="code" title="">KernMatrix</a>	% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% Method of KernMatrix class</span>
+0002 <span class="comment">% L. LAURENT -- 18/07/2017 -- luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 
+0022 <span class="comment">%% Compute new inter-distances between sample points (after adding new sample points)</span>
+0023 <span class="comment">% INPUTS:</span>
+0024 <span class="comment">% - None</span>
+0025 <span class="comment">% OUTPUTS:</span>
+0026 <span class="comment">% - iX: structure that stores all the indices required for building the</span>
+0027 <span class="comment">% kernel matrices for new sample points</span>
+0028 
+0029 <a name="_sub0" href="#_subfunctions" class="code">function iX=computeNewIX(obj)</a>
+0030 oldNs=obj.nS;
+0031 newNs=obj.NnS;
+0032 np=obj.nP;
+0033 <span class="comment">% Building indices system</span>
+0034 <span class="keyword">if</span> obj.computeD
+0035     <span class="comment">%</span>
+0036     sizeMatRc=(newNs^2+newNs)/2;
+0037     sizeMatRa=np*sizeMatRc;
+0038     sizeMatRi=np^2*sizeMatRc;
+0039     iXmatrixAb=zeros(sizeMatRa,1);
+0040     iXmatrixI=zeros(sizeMatRi,1);
+0041     <span class="comment">%</span>
+0042     iteAb=0;
+0043     <span class="comment">%table of indices for inter-lengths (1), responses (1) and 1st</span>
+0044     <span class="comment">%derivatives (2)</span>
+0045     <span class="keyword">if</span> newNs&gt;1
+0046         <span class="keyword">for</span> ii=1:newNs
+0047             <span class="comment">%</span>
+0048             iteAb=iteAb(end)+(1:((newNs-ii+1)*np));
+0049             <span class="comment">%</span>
+0050             debb=(ii-1)*newNs*np+ii;
+0051             finb=newNs*(newNs*np-1)+ii;
+0052             lib=debb:newNs:finb;
+0053             iXmatrixAb(iteAb)=lib;
+0054         <span class="keyword">end</span>
+0055         <span class="comment">%table of indices for second derivatives</span>
+0056         a=zeros(newNs*np,np);
+0057         decal=0;
+0058         precI=0;
+0059         <span class="keyword">for</span> ii=1:newNs
+0060             li=1:newNs*np^2;
+0061             a(:)=decal+li;
+0062             decal=a(end);
+0063             b=a';
+0064             <span class="comment">%</span>
+0065             iteI=precI+(1:(np^2*(newNs-(ii-1))));
+0066             <span class="comment">%</span>
+0067             debb=(ii-1)*np^2+1;
+0068             finb=np^2*newNs;
+0069             iteb=debb:finb;
+0070             iXmatrixI(iteI)=b(iteb);
+0071             precI=iteI(end);
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">end</span>
+0074     <span class="comment">%store variables</span>
+0075     iX.matrixAb=iXmatrixAb;
+0076     iX.matrixI=iXmatrixI;
+0077 <span class="keyword">end</span>
+0078 <span class="comment">%table of indices for inter-lenghts  (1), responses (1)</span>
+0079 iXsamplingNO=allcomb(1:newNs,1:oldNs);      <span class="comment">%old and new</span>
+0080 tmpIX=allcomb(1:newNs,1:newNs);
+0081 iXsamplingN=tmpIX(tmpIX(:,1)&lt;=tmpIX(:,2),:); <span class="comment">%new only</span>
+0082 <span class="comment">%linear indices</span>
+0083 iXmatrixNO=(iXsamplingNO(:,1)-1)*oldNs+iXsamplingNO(:,2);
+0084 iXmatrixN=(iXsamplingN(:,1)-1)*newNs+iXsamplingN(:,2);
+0085 <span class="comment">%keyboard</span>
+0086 <span class="comment">%</span>
+0087 iX.iXsamplingNO=iXsamplingNO;
+0088 iX.iXsamplingN=iXsamplingN;
+0089 iX.matrixNO=iXmatrixNO;
+0090 iX.matrixN=iXmatrixN;
+0091 <span class="comment">%</span>
+0092 obj.NiX=iX;
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

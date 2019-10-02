@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of toolBenchmarkFct</title>
+  <meta name="keywords" content="toolBenchmarkFct">
+  <meta name="description" content="benchmark de test des fonctions de correlation (tps calcul)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html kernANDfun -->
+<h1>toolBenchmarkFct
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>benchmark de test des fonctions de correlation (tps calcul)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> benchmark de test des fonctions de correlation (tps calcul)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% benchmark de test des fonctions de correlation (tps calcul)</span>
+0002 
+0003 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0004 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0005 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0008 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0009 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0010 <span class="comment">%     (at your option) any later version.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0013 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0014 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0015 <span class="comment">%     GNU General Public License for more details.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0018 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0019 
+0020 clear all
+0021 close all
+0022 
+0023 typef=<span class="string">'corr_'</span>; <span class="comment">%'rf_' ou 'corr_'</span>
+0024 fct=<span class="string">'sexp'</span>;
+0025 
+0026 fct_all=[typef fct];
+0027 
+0028 <span class="comment">%%nouvelle et ancienne version</span>
+0029 new=<span class="string">'_new'</span>;old=<span class="string">'_old'</span>;
+0030 <span class="comment">%points en 1D, 2D, 3D, 4D, 5D et 6D</span>
+0031 pt{1}=0.1;
+0032 pt{2}=[0.1 -0.3];
+0033 pt{3}=[0.1 -0.3 0.6];
+0034 pt{4}=[0.1 -0.3 0.6 0.8];
+0035 pt{5}=[0.1 -0.3 0.6 0.8 -0.1];
+0036 pt{6}=[0.1 -0.3 0.6 0.8 -0.1 -0.4];
+0037 dim=6;
+0038 <span class="comment">%nombre points</span>
+0039 nb_pt=5000;
+0040 pas=50;
+0041 <span class="comment">%parametre</span>
+0042 para=0.9;
+0043 <span class="comment">%borne verification</span>
+0044 verif=1e-10;
+0045 bilan=true;
+0046 <span class="comment">%affichage</span>
+0047 aff=false;
+0048 
+0049 stps_new=zeros(dim,length(1:pas:nb_pt),3);
+0050 stps_old=zeros(dim,length(1:pas:nb_pt),3);
+0051 sgain=zeros(dim,length(1:pas:nb_pt),3);
+0052 ite_j=1;
+0053 <span class="comment">%balayage des possibilit�s</span>
+0054 <span class="keyword">for</span> ii=1:dim
+0055     fprintf(<span class="string">'============\n'</span>),
+0056     fprintf(<span class="string">'Dimension %i\n'</span>,ii);
+0057     ite_j=1;
+0058     <span class="keyword">for</span> jj=1:pas:nb_pt
+0059         <span class="keyword">if</span> aff;fprintf(<span class="string">'nb de pts %i\n'</span>,jj);<span class="keyword">end</span>
+0060         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0061         <span class="comment">%calcul reponse seule</span>
+0062         <span class="keyword">if</span> aff;fprintf(<span class="string">'&gt;&gt;Reponses seules\n'</span>);<span class="keyword">end</span>
+0063         tic
+0064         rep_new=feval([fct_all new],repmat(pt{ii},jj,1),para);
+0065         tps_new=toc;
+0066         tic
+0067         rep_old=feval([fct_all old],repmat(pt{ii},jj,1),para);
+0068         tps_old=toc;
+0069         gain=(tps_old-tps_new)/tps_old;
+0070         stps_new(ii,ite_j,1)=tps_new;
+0071         stps_old(ii,ite_j,1)=tps_old;
+0072         sgain(ii,ite_j,1)=gain;
+0073         etat_rep=all(abs(rep_new-rep_old)&lt;verif);
+0074         bilan=bilan&amp;&amp;etat_rep;
+0075         <span class="keyword">if</span> aff;
+0076             fprintf(<span class="string">'Reponses: '</span>);<span class="keyword">if</span> etat_rep;fprintf(<span class="string">'OK\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'BUG\n'</span>);<span class="keyword">end</span> 
+0077         <span class="keyword">end</span>
+0078         <span class="keyword">if</span> aff;fprintf(<span class="string">'Temps: NEW [%4.2e s]// OLD [%4.2e s] || GAIN: %4.2e\n'</span>,tps_new,tps_old,gain);<span class="keyword">end</span>
+0079         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0080         <span class="comment">%calcul reponse et derivees premieres</span>
+0081         <span class="keyword">if</span> aff;fprintf(<span class="string">'&gt;&gt;Reponses et derivees premieres\n'</span>);<span class="keyword">end</span>
+0082         tic
+0083         [rep_new,drep_new]=feval([fct_all new],repmat(pt{ii},jj,1),para);
+0084         tps_new=toc;
+0085         tic
+0086         [rep_old,drep_old]=feval([fct_all old],repmat(pt{ii},jj,1),para);
+0087         tps_old=toc;
+0088         gain=(tps_old-tps_new)/tps_old;
+0089         stps_new(ii,ite_j,2)=tps_new;
+0090         stps_old(ii,ite_j,2)=tps_old;
+0091         sgain(ii,ite_j,2)=gain;
+0092         etat_rep=all(abs(rep_new-rep_old)&lt;verif);
+0093         etat_drep=all(abs(drep_new(:)-drep_old(:))&lt;verif);
+0094         bilan=bilan&amp;&amp;etat_rep&amp;&amp;etat_drep;
+0095         <span class="keyword">if</span> aff;
+0096             fprintf(<span class="string">'Reponses: '</span>);<span class="keyword">if</span> etat_rep;fprintf(<span class="string">'OK\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'BUG\n'</span>);<span class="keyword">end</span> 
+0097         <span class="keyword">end</span>
+0098         <span class="keyword">if</span> aff;
+0099             fprintf(<span class="string">'Derivees 1eres: '</span>);<span class="keyword">if</span> etat_drep;fprintf(<span class="string">'OK\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'BUG\n'</span>);<span class="keyword">end</span> 
+0100         <span class="keyword">end</span>
+0101         <span class="keyword">if</span> aff;fprintf(<span class="string">'Temps: NEW [%4.2e s]// OLD [%4.2e s] || GAIN: %4.2e\n'</span>,tps_new,tps_old,gain);<span class="keyword">end</span>
+0102         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0103         <span class="comment">%calcul reponse et derivees premieres et secondes</span>
+0104         <span class="keyword">if</span> aff;fprintf(<span class="string">'&gt;&gt;Reponses et derivees premieres et secondes\n'</span>);<span class="keyword">end</span>
+0105         tic
+0106         [rep_new,drep_new,ddrep_new]=feval([fct_all new],repmat(pt{ii},jj,1),para);
+0107         tps_new=toc;
+0108         tic
+0109         [rep_old,drep_old,ddrep_old]=feval([fct_all old],repmat(pt{ii},jj,1),para);
+0110         tps_old=toc;
+0111         gain=(tps_old-tps_new)/tps_old;
+0112         stps_new(ii,ite_j,3)=tps_new;
+0113         stps_old(ii,ite_j,3)=tps_old;
+0114         sgain(ii,ite_j,3)=gain;
+0115         etat_rep=all(abs(rep_new-rep_old)&lt;verif);
+0116         etat_drep=all(abs(drep_new(:)-drep_old(:))&lt;verif);
+0117         etat_ddrep=all(abs(ddrep_new(:)-ddrep_old(:))&lt;verif);
+0118         bilan=bilan&amp;&amp;etat_rep&amp;&amp;etat_drep&amp;&amp;etat_ddrep;
+0119         <span class="keyword">if</span> aff;
+0120             fprintf(<span class="string">'Reponses: '</span>);<span class="keyword">if</span> etat_rep;fprintf(<span class="string">'OK\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'BUG\n'</span>);<span class="keyword">end</span> 
+0121         <span class="keyword">end</span>
+0122         <span class="keyword">if</span> aff;
+0123             fprintf(<span class="string">'Derivees 1eres: '</span>);<span class="keyword">if</span> etat_drep;fprintf(<span class="string">'OK\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'BUG\n'</span>);<span class="keyword">end</span> 
+0124         <span class="keyword">end</span>
+0125         <span class="keyword">if</span> aff;
+0126             fprintf(<span class="string">'Derivees 2ndes: '</span>);<span class="keyword">if</span> etat_ddrep;fprintf(<span class="string">'OK\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'BUG\n'</span>);<span class="keyword">end</span> 
+0127         <span class="keyword">end</span>
+0128         <span class="keyword">if</span> aff;fprintf(<span class="string">'Temps: NEW [%4.2e s]// OLD [%4.2e s] || GAIN: %4.2e\n'</span>,tps_new,tps_old,gain);<span class="keyword">end</span>
+0129         ite_j=ite_j+1;
+0130        
+0131     <span class="keyword">end</span>
+0132 <span class="keyword">end</span>
+0133 <span class="keyword">if</span> bilan;fprintf(<span class="string">'\n\n TOUT: OK\n'</span>);<span class="keyword">else</span> fprintf(<span class="string">'\n\n TOUT: BUG\n'</span>);<span class="keyword">end</span>
+0134 
+0135 <span class="comment">%trac� graphs</span>
+0136 figure
+0137 xx=1:pas:nb_pt;
+0138 <span class="keyword">for</span> ii=1:dim
+0139     subplot(2,3,ii)    
+0140     semilogy(xx,stps_new(ii,:,1),<span class="string">'b'</span>)
+0141     hold on
+0142     semilogy(xx,stps_old(ii,:,1),<span class="string">'r'</span>)
+0143     hold on
+0144     semilogy(xx,stps_new(ii,:,2),<span class="string">'--b'</span>)
+0145     hold on
+0146     semilogy(xx,stps_old(ii,:,2),<span class="string">'--r'</span>)
+0147     hold on
+0148     semilogy(xx,stps_new(ii,:,3),<span class="string">'.-b'</span>)
+0149     hold on
+0150     semilogy(xx,stps_old(ii,:,3),<span class="string">'.-r'</span>)
+0151     legend(<span class="string">'new R'</span>,<span class="string">'old R'</span>,<span class="string">'new R,D1'</span>,<span class="string">'old R,D1'</span>,<span class="string">'new R,D1,D2'</span>,<span class="string">'old R,D1,D2'</span>)
+0152     title([<span class="string">'Dim '</span> num2str(ii)]);
+0153     
+0154 <span class="keyword">end</span>
+0155 figure
+0156 <span class="keyword">for</span> ii=1:dim
+0157     subplot(2,3,ii)
+0158     
+0159     plot(xx,sgain(ii,:,1),<span class="string">'k'</span>)
+0160     hold on
+0161     plot(xx,sgain(ii,:,2),<span class="string">'r'</span>)
+0162     hold on
+0163     plot(xx,sgain(ii,:,3),<span class="string">'b'</span>)
+0164     legend(<span class="string">'R'</span>,<span class="string">'R,D1'</span>,<span class="string">'R,D1,D2'</span>)
+0165     title([<span class="string">'Dim '</span> num2str(ii)]);
+0166 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,24 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  critErrDisp -> calcMSE;
+  critErrDisp -> calcNMAE;
+  critErrDisp -> calcNMSE;
+  critErrDisp -> calcRAAE;
+  critErrDisp -> calcRMAE;
+  critErrDisp -> calcRMSE;
+  critErrDisp -> corrFact;
+  critErrDisp -> qualError;
+
+  BuildCI [URL="BuildCI.html"];
+  InfillCrit [URL="InfillCrit.html"];
+  LOOCalcError [URL="LOOCalcError.html"];
+  calcMSE [URL="calcMSE.html"];
+  calcNMAE [URL="calcNMAE.html"];
+  calcNMSE [URL="calcNMSE.html"];
+  calcRAAE [URL="calcRAAE.html"];
+  calcRMAE [URL="calcRMAE.html"];
+  calcRMSE [URL="calcRMSE.html"];
+  corrFact [URL="corrFact.html"];
+  critErrDisp [URL="critErrDisp.html"];
+  qualError [URL="qualError.html"];
+}

@@ -18,7 +18,7 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)
+function [foldersLoad,pathAtAbsolute]=initDirGRENAT(pathcustom,other,flagNested)
 
 
 % variable 'other' (optional) of type cell must constain the list of other
@@ -69,11 +69,14 @@ end
 pathAbsolute=cellfun(@(c)fullfile(pathcustom,c),foldersLoad,'uni',false);
 
 %scan all directory to find "@" folder (used for classes)
-folderAt={};
+folderAt=scanATfolder(pathcustom);
 for iP=1:numel(pathAbsolute)
     folderAtTmp=scanATfolder(pathAbsolute{iP});
     folderAt=[folderAt;folderAtTmp'];
 end
+
+%absolute paths
+pathAtAbsolute=cellfun(@(c)strrep(c,pathcustom,''),folderAt,'uni',false);
 
 %add to the PATH
 flA=cellfun(@(x)addpathExisted(x),pathAbsolute);
@@ -119,9 +122,9 @@ flag=1;
 folder=fullfile(folder);
 if ispc
     % Windows is not case-sensitive
-    onPath = ~isempty(strfind(lower(path),lower(folder)));
+    onPath = contains(lower(path),lower(folder));
 else
-    onPath = ~isempty(strfind(path,folder));
+    onPath = contains(path,folder);
 end
 %check of the folder contains @ (if yes it will not be added to the path)
 inAt=contains(folder,'@');
@@ -140,7 +143,11 @@ listDir={};
 for ii=1:numel(resScan)
     if resScan(ii).isdir
         if resScan(ii).name(1)=='@'
-            listDir{end+1}=[folder filesep resScan(ii).name];
+            if ~isempty(folder)
+                listDir{end+1}=fullfile(folder,resScan(ii).name);
+            else
+                listDir{end+1}=resScan(ii).name;
+            end
         end
     end
 end

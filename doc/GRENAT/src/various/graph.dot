@@ -1,0 +1,34 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  ExecQP -> isOctave;
+  buildDisp -> Gfprintf;
+  buildDisp -> mesuTime;
+  buildDocGRENAT -> listFilesToolboxGRENAT;
+  checkInterpRG -> Gfprintf;
+  dispTableTwoColumns -> Gfprintf;
+  dispTxtOnOff -> Gfprintf;
+  evalFunGrad -> Gfprintf;
+  evalFunGrad -> mesuTime;
+  mesuTime -> Gfprintf;
+  mesuTime -> mesuTime;
+  modWarning -> modWarning;
+  textProgressbar -> Gfprintf;
+
+  ExecQP [URL="ExecQP.html"];
+  Gfprintf [URL="Gfprintf.html"];
+  buildDisp [URL="buildDisp.html"];
+  buildDocGRENAT [URL="buildDocGRENAT.html"];
+  checkInterpRG [URL="checkInterpRG.html"];
+  customClean [URL="customClean.html"];
+  dispTableTwoColumns [URL="dispTableTwoColumns.html"];
+  dispTableTwoColumnsStruct [URL="dispTableTwoColumnsStruct.html"];
+  dispTxtOnOff [URL="dispTxtOnOff.html"];
+  evalFunGrad [URL="evalFunGrad.html"];
+  example2D [URL="example2D.html"];
+  isOctave [URL="isOctave.html"];
+  listFilesToolboxGRENAT [URL="listFilesToolboxGRENAT.html"];
+  mesuTime [URL="mesuTime.html"];
+  modWarning [URL="modWarning.html"];
+  statusParallel [URL="statusParallel.html"];
+  textProgressbar [URL="textProgressbar.html"];
+}

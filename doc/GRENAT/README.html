@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of README</title>
+  <meta name="keywords" content="README">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GRENAT -->
+<h1>README
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="../GRENAT/@GRENAT/update.html" class="code" title="function update(obj,samplingIn,respIn,gradIn,paraFind,varargin)">update</a>	% Method of GRENAT class</li><li><a href="../GRENAT/src/kernANDfun/@KernMatrix/init.html" class="code" title="function init(obj)">init</a>	% Method of KernMatrix class</li><li><a href="../GRENAT/src/surrogate/@KRG/KRG.html" class="code" title="">KRG</a>	% class for kriging/cokriging metamodel</li><li><a href="../GRENAT/src/surrogate/@KRG/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of KRG class</li><li><a href="../GRENAT/src/surrogate/@RBF/RBF.html" class="code" title="">RBF</a>	% class for RBF/GRBF metamodel</li><li><a href="../GRENAT/src/surrogate/@RBF/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of RBF class</li><li><a href="../GRENAT/src/surrogate/@SVR/SVR.html" class="code" title="">SVR</a>	% class for Support Vector Regression metamodel</li><li><a href="../GRENAT/src/surrogate/@SVR/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of SVR class</li><li><a href="../GRENAT/src/surrogate/@xLS/update.html" class="code" title="function update(obj,newSample,newResp,newGrad,newMissData)">update</a>	% Method of xLS class</li><li><a href="../GRENAT/src/various/@NormRenorm/init.html" class="code" title="function init(obj,type)">init</a>	% Method of NormRenorm class</li><li><a href="../GRENAT/src/various/@execParallel/start.html" class="code" title="function start(obj)">start</a>	% Method of execParallel class</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a> 
+0002 =======
+0003 <a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>  = **GR**adient **EN**hanced **A**pproximation **T**oolbox
+0004 
+0005 
+0006 <a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a> regroups many techniques <span class="keyword">for</span> generating surrogate models. These surrogate models can be built using responses and gradients obtained at some sample points.
+0007 
+0008 The available surrogate models are
+0009 
+0010 * Radial Basis Function (<a href="../GRENAT/src/surrogate/@RBF/RBF.html" class="code" title="">RBF</a>/GRBF)
+0011 * Kriging/Cokriging (<a href="../GRENAT/src/surrogate/@KRG/KRG.html" class="code" title="">KRG</a>/GKRG)
+0012 * Support Vector Regression (<a href="../GRENAT/src/surrogate/@SVR/SVR.html" class="code" title="">SVR</a>/GSVR)
+0013 
+0014 This toolbox is the result of the PhD thesis of [Luc LAURENT](http://www.lmssc.cnam.fr/fr/equipe/luc-laurent) ([LMSSC](http://www.lmssc.cnam.fr)), supervised by [Pierre-Alain Boucard](http://w3.lmt.ens-cachan.fr/site/php_perso/perso_page_lmt.php?nom=BOUCARD) ([LMT-Cachan](http://www.lmt.ens-cachan.fr/)) and [Bruno Soulier](http://w3.lmt.ens-cachan.fr/site/php_perso/perso_page_lmt.php?nom=SOULIER) ([LMT-Cachan](http://www.lmt.ens-cachan.fr/)). 
+0015 
+0016 Features
+0017 ------
+0018 <a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a> is able to 
+0019 
+0020 * Normalize the input data
+0021 * Build the surrogate models
+0022 * Estimate hyperparameters (using optimizer and dedicated criteria)
+0023 * Evaluate the surrogate model at sample and non-sample points (and calculate the gradients of the approximation)
+0024 * Compute the variance of the prediction
+0025 * Compute the Cross-Validation of the surrogate model
+0026 * Compute the Expected Improvement (and derivated formulations)
+0027 
+0028 External included toolboxes
+0029 ------
+0030 
+0031 <a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a> uses the
+0032  
+0033 * [MultiDOE](https://bitbucket.org/luclaurent/multidoe) toolbox
+0034 * A modified version of the Particle Swarm Optimization Toolbox [PSOt](http://www.mathworks.com/matlabcentral/fileexchange/7506-particle-swarm-optimization-toolbox)
+0035 
+0036 These toolbox are included in GRENAT.
+0037 
+0038 Download
+0039 ------
+0040 
+0041 The toolbox can be downloaded [here](https://bitbucket.org/luclaurent/grenat/downloads).
+0042 
+0043 If you use `git`, you can clone the repository using the following command
+0044 
+0045     git clone --recursive git@bitbucket.org:luclaurent/grenat.git <a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>
+0046 
+0047 Due to the use of submodules, the option  `--recursive` is *mandatory*.
+0048 
+0049 If you forgot to use this option, you can activate the submodules by going in the folder on which you have cloned the repository and execute the following command:
+0050 
+0051     git submodule <a href="../GRENAT/@GRENAT/update.html" class="code" title="function update(obj,samplingIn,respIn,gradIn,paraFind,varargin)">update</a> --<a href="../GRENAT/src/kernANDfun/@KernMatrix/init.html" class="code" title="function init(obj)">init</a> --recursive
+0052  
+0053 
+0054 First <a href="../GRENAT/src/various/@execParallel/start.html" class="code" title="function start(obj)">start</a>
+0055 ------
+0056 
+0057 Some examples are proposed by functions:
+0058 
+0059 * `ExampleUse1D.m` 1 dimensional example
+0060 * `ExampleUse2D.m` 2 dimensional example
+0061 * `ExampleUseDOE.m` example using the included sampling techniques
+0062 
+0063 
+0064 Requirements
+0065 ------
+0066 The toolbox requires:
+0067 
+0068 
+0069 * the Global Optimization Toolbox of the Matlab's software (optional)
+0070 * the Parallel Computing Toolbox of the Matlab's software (optional)
+0071 
+0072 [Documentation](https://goo.gl/FlnVAK)
+0073 ------
+0074 The automatic building of the documentation is based on the [m2html](http://www.artefact.tk/software/matlab/m2html/) software.
+0075 
+0076 The obtained documentation is available [here](https://goo.gl/FlnVAK).
+0077 
+0078 References
+0079 ----
+0080 Available approachs of this toolbox are presented in the following documents:
+0081 
+0082 * L. Laurent, R. Le Riche, B. Soulier and P.-A. Boucard. An Overview of Gradient-Enhanced Metamodels with Applications. *Archives of Computational Methods in Engineering*, July 2017. doi: [10.1007/s11831-017-9226-3](https://doi.org/10.1007/s11831-017-9226-3) [hal](https://hal-emse.ccsd.cnrs.fr/emse-01525674)
+0083 * [Luc Laurent PhD Thesis](https://tel.archives-ouvertes.fr/tel-00972299) in french
+0084 * L. Laurent, P.-A. Boucard, and B. Soulier. Generation of a cokriging metamodel using a multiparametric strategy. *Computational Mechanics*, 51(2):151-169, February 2013. doi: [10.1007/s00466-012-0711-0](https://dx.doi.org/10.1007/s00466-012-0711-0) [hal](https://hal.archives-ouvertes.fr/hal-01376462)
+0085 * L. Laurent, P.-A. Boucard, and B. Soulier. A dedicated multiparametric strategy <span class="keyword">for</span> the fast construction of a cokriging metamodel. *Computers &amp; Structures*, 124(0):61-73, 2013. doi: [10.1016/j.compstruc.2013.03.012](https://dx.doi.org/10.1016/j.compstruc.2013.03.012) [hal](https://hal.archives-ouvertes.fr/hal-01376464)
+0086 * L. Laurent, P.-A. Boucard, and B. Soulier. Fast multilevel optimization using a multiparametric strategy and a cokriging metamodel. In Y. Tsompanakis, B.H.V. Topping, (Editors), *Proceedings of the Second International Conference on Soft Computing Technology in Civil, Structural and Environmental Engineering*, 6-9 September, number Paper 50. Civil-Comp Press, Stirlingshire, UK, 2011. doi: [10.4203/ccp.97.50](https://dx.doi.org/10.4203/ccp.97.50)
+0087 
+0088 Applications of this toolbox
+0089 ---
+0090 Please [notice me](mailto:luc.laurent@lecnam.net) <span class="keyword">if</span> you use the toolbox, I will add your publications below.
+0091 
+0092 * Nicolas Courrier. Couplage optimisation à convergence partielle et stratégie multiparamétrique en calcul de structures. Mécanique des solides. Université Paris-Saclay, 2015. Français. [tel](https://tel.archives-ouvertes.fr/tel-01264667)
+0093 * C. Limoge. Méthode de diagnostic à grande échelle de la vulnérabilité sismique des Monuments Historiques : Chapelles et églises baroques des hautes vallées de Savoie. Génie civil. Université Paris-Saclay, 2016. Français. [tel](https://tel.archives-ouvertes.fr/tel-01314443)
+0094 * L. Laurent, A. Legay. Optimal positioning of a wall in an acoustic cavity using reduced models and surrogate based optimization. 12th World Congress of Structural and Multidisciplinary Optimisation, WCSMO 12, Jun 2017, Braunschweig, France. [hal](https://hal.archives-ouvertes.fr/hal-01567251)
+0095 * A. Legay, L. Laurent. Thin wall optimal positioning in an acoustic cavity using XFEM, reduced models and surrogate based optimization. eXtended Discretization MethodS <span class="keyword">for</span> partial differential equations on complex and evolving domains, X-DMS 2017, Jun 2017, Umeå, Sweden. [hal](https://hal.archives-ouvertes.fr/hal-01567252)
+0096 * L. Laurent, A. Legay. Positionnement optimal de parois en vibro-acoustique à l'aide de modèles réduits et d'optimisation par métamodèle. 13e Colloque National en Calcul des Structures, May 2017, Giens, France. [hal](https://hal.archives-ouvertes.fr/hal-01567253)
+0097 * A. Benaouali and S. Kachel. A surrogate-based integrated framework <span class="keyword">for</span> the aerodynamic design op- timization of a subsonic wing planform shape. Proceedings of the Institution of Mechanical Engineers, Part G: Journal of Aerospace Engineering, 2017. doi: [10.1177/0954410017699007](https://doi.org/10.1177/0954410017699007) [ResearchGate](https://www.researchgate.net/publication/315517815_A_surrogate-based_integrated_framework_for_the_aerodynamic_design_optimization_of_a_subsonic_wing_planform_shape/comments)
+0098 
+0099 License ![GNU GPLv3](http://www.gnu.org/graphics/gplv3-88x31.png)
+0100 ----
+0101 
+0102     <a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a> - GRadient ENhanced Approximation Toolbox 
+0103     A toolbox <span class="keyword">for</span> generating and exploiting gradient-enhanced surrogate models
+0104     Copyright (C) 2016  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;
+0105 
+0106     This program is free software: you can redistribute it and/or modify
+0107     it under the terms of the GNU General Public License as published by
+0108     the Free Software Foundation, either version 3 of the License, or
+0109     (at your option) any later version.
+0110 
+0111     This program is distributed in the hope that it will be useful,
+0112     but WITHOUT ANY WARRANTY; without even the implied warranty of
+0113     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+0114     GNU General Public License <span class="keyword">for</span> more details.
+0115 
+0116     You should have received a copy of the GNU General Public License
+0117     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

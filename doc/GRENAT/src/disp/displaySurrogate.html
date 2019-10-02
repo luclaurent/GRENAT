@@ -1,0 +1,594 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of displaySurrogate</title>
+  <meta name="keywords" content="displaySurrogate">
+  <meta name="description" content="% function for displaying response surfaces">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html disp -->
+<h1>displaySurrogate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% function for displaying response surfaces</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function figHandle=displaySurrogate(gridXY,Z,GZ,sampling,resp,grad,dispData) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function for displaying response surfaces
+L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../GRENAT/@GRENAT/showEI.html" class="code" title="function showEI(obj)">showEI</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/showGrad.html" class="code" title="function showGrad(obj,nbG)">showGrad</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/showGradRef.html" class="code" title="function showGradRef(obj,nbG)">showGradRef</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/showResp.html" class="code" title="function showResp(obj)">showResp</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/showRespRef.html" class="code" title="function showRespRef(obj)">showRespRef</a>	% Method of GRENAT class</li><li><a href="../../../GRENAT/@GRENAT/showVar.html" class="code" title="function showVar(obj)">showVar</a>	% Method of GRENAT class</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [vec,nMax]=analyzeGrad(GR1,GR2)</a></li><li><a href="#_sub2" class="code">function [scaleFactor,gridDim,rDim]=analyseGrid(vZ,gridX,gridY)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% function for displaying response surfaces</span>
+0002 <span class="comment">%L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net</span>
+0003 
+0004 <span class="comment">%     GRENAT - GRadient ENhanced Approximation Toolbox</span>
+0005 <span class="comment">%     A toolbox for generating and exploiting gradient-enhanced surrogate models</span>
+0006 <span class="comment">%     Copyright (C) 2016-2017  Luc LAURENT &lt;luc.laurent@lecnam.net&gt;</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%     This program is free software: you can redistribute it and/or modify</span>
+0009 <span class="comment">%     it under the terms of the GNU General Public License as published by</span>
+0010 <span class="comment">%     the Free Software Foundation, either version 3 of the License, or</span>
+0011 <span class="comment">%     (at your option) any later version.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%     This program is distributed in the hope that it will be useful,</span>
+0014 <span class="comment">%     but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+0015 <span class="comment">%     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+0016 <span class="comment">%     GNU General Public License for more details.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%     You should have received a copy of the GNU General Public License</span>
+0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+0020 
+0021 <a name="_sub0" href="#_subfunctions" class="code">function figHandle=displaySurrogate(gridXY,Z,GZ,sampling,resp,grad,dispData)</a>
+0022 
+0023 <span class="comment">%% input parameters:</span>
+0024 <span class="comment">%       - gridXY: grid used for plotting the responses surface,</span>
+0025 <span class="comment">%       gridXY(:,:,1) and gridXY(:,:,2) in 2D. In 1D, gridXY is only a</span>
+0026 <span class="comment">%       vector of reals obtained for instance using linspace</span>
+0027 <span class="comment">%       - Z: value of the function at the grid points</span>
+0028 <span class="comment">%       - GZ (nd-array): value of the gradients at the grid points</span>
+0029 <span class="comment">%       - sampling: vector of the sample points (using DOE for instance)</span>
+0030 <span class="comment">%       - resp: values at the sample points</span>
+0031 <span class="comment">%       - grad: gradients at the sample points</span>
+0032 <span class="comment">%       - dispData: structure that contains all options of the function</span>
+0033 <span class="comment">%           * dispData.on: active display or not</span>
+0034 <span class="comment">%           * dispData.newFig: show in a new figure</span>
+0035 <span class="comment">%           * dispData.gridGrad=false: display gradients at the points of the grid</span>
+0036 <span class="comment">%           * dispData.sampleGrad=false: display gradients at sample points</span>
+0037 <span class="comment">%           * dispData.d3: show 3D plots (surf quiver3...)</span>
+0038 <span class="comment">%           * dispData.d2: show 2D plots (plot quiver...)</span>
+0039 <span class="comment">%           * dispData.contour: show isolines</span>
+0040 <span class="comment">%           * dispData.samplePts: show sample points</span>
+0041 <span class="comment">%           * dispData.uni: show surface with only one color</span>
+0042 <span class="comment">%           * dispData.color: chosen color</span>
+0043 <span class="comment">%           * dispData.render: rendering 3D plots</span>
+0044 <span class="comment">%           * dispData.save: save figures using eps &amp; png formats</span>
+0045 <span class="comment">%           * dispData.tikz: save figures using Tikz (TeX) format</span>
+0046 <span class="comment">%           * dispData.tex: write associated TeX file</span>
+0047 <span class="comment">%           * dispData.opt: options for 1D plots</span>
+0048 <span class="comment">%           * dispData.title: title of the figure</span>
+0049 <span class="comment">%           * dispData.xlabel: name of x-axis</span>
+0050 <span class="comment">%           * dispData.ylabel: name of y-axis</span>
+0051 <span class="comment">%           * dispData.zlabel: name of z-axis</span>
+0052 <span class="comment">%           * dispData.scale: scale the gradients (quiver)</span>
+0053 <span class="comment">%           * dispData.directory: directory used for saving figures</span>
+0054 <span class="comment">%           * dispData.step: step of the grid used for plotting</span>
+0055 <span class="comment">%           * dispData.missData: information about the missing data</span>
+0056 <span class="comment">%           * dispData.logScale: use log scale</span>
+0057 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0058 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0059 figHandle=[];
+0060 
+0061 <span class="comment">%load default</span>
+0062 <span class="keyword">if</span> isempty(dispData.view)
+0063     dispData.view=3;
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0067 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0068 <span class="comment">%deal with 1D/2D plots</span>
+0069 spa1D=false;spa2D=false;
+0070 <span class="keyword">if</span> size(sampling,2)==1
+0071     spa1D=true;
+0072 <span class="keyword">elseif</span> size(sampling,2)==2
+0073     spa2D=true;
+0074     <span class="keyword">if</span> size(gridXY,3)&gt;1
+0075         gridX=gridXY(:,:,1);
+0076         gridY=gridXY(:,:,2);
+0077     <span class="keyword">else</span>
+0078         gridX=gridXY(:,1);
+0079         gridY=gridXY(:,2);
+0080     <span class="keyword">end</span>
+0081 <span class="keyword">else</span>
+0082     dispData.bar=true;
+0083 <span class="keyword">end</span>
+0084 
+0085 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0086 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0087 <span class="comment">%deal with gradients</span>
+0088 <span class="keyword">if</span> ~isempty(GZ)&amp;&amp;spa2D
+0089     GR1=GZ(:,:,1);
+0090     GR2=GZ(:,:,2);
+0091 <span class="keyword">end</span>
+0092 <span class="keyword">if</span> ~isempty(grad)&amp;&amp;spa2D
+0093     sampGR1=grad(:,1);
+0094     sampGR2=grad(:,2);
+0095 <span class="keyword">end</span>
+0096 
+0097 <span class="comment">% gradients at grid points available</span>
+0098 dispData.gridGrad=~isempty(GZ)&amp;&amp;dispData.gridGrad;
+0099 <span class="comment">% gradients at sample points available</span>
+0100 dispData.sampleGrad=~isempty(grad)&amp;&amp;dispData.sampleGrad;
+0101 
+0102 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0103 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0104 <span class="comment">%seeking and dealing with missing data</span>
+0105 listPtsOk=1:size(sampling,1);
+0106 listMissResp=[];
+0107 listMissGrad=[];
+0108 listMissBoth=[];
+0109 <span class="keyword">if</span> isfield(dispData,<span class="string">'missData'</span>)
+0110     <span class="keyword">if</span> dispData.missData.resp.on
+0111         listMissResp=unique(dispData.missData.resp.ixMiss(:));
+0112         <span class="keyword">for</span> ii=1:numel(listMissResp)
+0113             ix= listPtsOk==listMissResp(ii);
+0114             listPtsOk(ix)=[];
+0115         <span class="keyword">end</span>
+0116     <span class="keyword">end</span>
+0117     <span class="keyword">if</span> dispData.missData.grad.on
+0118         listMissGrad=unique(dispData.missData.grad.ix_manq(:,1));
+0119         <span class="keyword">for</span> ii=1:numel(listMissGrad)
+0120             ix= listPtsOk==listMissGrad(ii);
+0121             listPtsOk(ix)=[];
+0122         <span class="keyword">end</span>
+0123     <span class="keyword">end</span>
+0124     <span class="keyword">if</span> dispData.missData.eval.on|| dispData.missData.grad.on
+0125         listMissBoth=intersect(listMissResp,listMissGrad);
+0126         <span class="keyword">for</span> ii=1:numel(listMissBoth)
+0127             ix= listMissResp==listMissBoth(ii);
+0128             listMissResp(ix)=[];
+0129             ix= listMissGrad==listMissBoth(ii);
+0130             listMissGrad(ix)=[];
+0131         <span class="keyword">end</span>
+0132     <span class="keyword">end</span>
+0133 <span class="keyword">end</span>
+0134 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0135 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0136 <span class="comment">%active display</span>
+0137 <span class="keyword">if</span> dispData.on
+0138     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0139     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0140     <span class="comment">%display graph in a new window</span>
+0141     <span class="keyword">if</span> dispData.newFig
+0142         figHandle=figure;
+0143     <span class="keyword">else</span>
+0144         hold on;
+0145     <span class="keyword">end</span>
+0146     
+0147     <span class="comment">%display in 2D (2 design parameters)</span>
+0148     <span class="keyword">if</span> spa2D
+0149         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0150         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0151         <span class="comment">%%scale gradients</span>
+0152         GZmax=0;sampGZmax=0;
+0153         <span class="keyword">if</span> dispData.gridGrad
+0154             [GZvec,GZmax]=<a href="#_sub1" class="code" title="subfunction [vec,nMax]=analyzeGrad(GR1,GR2)">analyzeGrad</a>(GR1,GR2);
+0155         <span class="keyword">end</span>
+0156         <span class="keyword">if</span> dispData.sampleGrad
+0157             [sampGZvec,sampGZmax]=<a href="#_sub1" class="code" title="subfunction [vec,nMax]=analyzeGrad(GR1,GR2)">analyzeGrad</a>(sampGR1,sampGR2);
+0158         <span class="keyword">end</span>
+0159         nMax=max([GZmax sampGZmax]);
+0160         <span class="comment">%%compute scale factor</span>
+0161         <span class="keyword">if</span> dispData.gridGrad||dispData.sampleGrad
+0162             [scaleFactor,gridDim,rDim]=<a href="#_sub2" class="code" title="subfunction [scaleFactor,gridDim,rDim]=analyseGrid(vZ,gridX,gridY)">analyseGrid</a>(Z,gridX,gridY);
+0163         <span class="keyword">end</span>
+0164         
+0165         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0166         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0167         <span class="comment">%show 3D surface</span>
+0168         <span class="keyword">if</span> dispData.d3
+0169             <span class="comment">%show contour</span>
+0170             <span class="keyword">if</span> dispData.contour
+0171                 h=surfc(gridX,gridY,Z);
+0172             <span class="keyword">else</span>
+0173                 h=surf(gridX,gridY,Z);
+0174             <span class="keyword">end</span>
+0175             <span class="comment">%</span>
+0176             <span class="keyword">if</span> dispData.uni
+0177                 <span class="comment">%show surface with unique color</span>
+0178                 set(h,<span class="string">'FaceColor'</span>,dispData.color,<span class="string">'EdgeColor'</span>,dispData.color);
+0179             <span class="keyword">end</span>
+0180             <span class="comment">%show sample points</span>
+0181             <span class="keyword">if</span> dispData.samplePts
+0182                 hold on;                
+0183                 <span class="comment">%show sample points on which all information is known</span>
+0184                 plot3(sampling(listPtsOk,1),sampling(listPtsOk,2),resp(listPtsOk),<span class="keyword">...</span>
+0185                     <span class="string">'.'</span>,<span class="keyword">...</span>
+0186                     <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0187                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0188                     <span class="string">'MarkerSize'</span>,15);
+0189                 <span class="comment">%show sample points on which response is missing</span>
+0190                 plot3(sampling(listMissResp,1),sampling(listMissResp,2),resp(listMissResp),<span class="keyword">...</span>
+0191                     <span class="string">'rs'</span>,<span class="keyword">...</span>
+0192                     <span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0193                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0194                     <span class="string">'MarkerSize'</span>,7);
+0195                 <span class="comment">%show sample points on which gradient(s) is missing</span>
+0196                 plot3(sampling(listMissGrad,1),sampling(listMissGrad,2),resp(listMissGrad),<span class="keyword">...</span>
+0197                     <span class="string">'v'</span>,<span class="keyword">...</span>
+0198                     <span class="string">'MarkerEdgeColor'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0199                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0200                     <span class="string">'MarkerSize'</span>,15);
+0201                 <span class="comment">%show sample points on which gradient(s) and response are missing</span>
+0202                 plot3(sampling(listMissBoth,1),sampling(listMissBoth,2),resp(listMissBoth),<span class="keyword">...</span>
+0203                     <span class="string">'d'</span>,<span class="keyword">...</span>
+0204                     <span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0205                     <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0206                     <span class="string">'MarkerSize'</span>,15);
+0207             <span class="keyword">end</span>
+0208             
+0209             <span class="comment">%show gradients at sample points</span>
+0210             <span class="keyword">if</span> dispData.sampleGrad
+0211                 quiver3(sampling(:,1),<span class="keyword">...</span>
+0212                     sampling(:,2),<span class="keyword">...</span>
+0213                     resp,<span class="keyword">...</span>
+0214                     scaleFactor(1)*sampGZvec.X/nMax,<span class="keyword">...</span>
+0215                     scaleFactor(2)*sampGZvec.Y/nMax,<span class="keyword">...</span>
+0216                     sampGZvec.Z/nMax,<span class="keyword">...</span>
+0217                     <span class="string">'r'</span>,<span class="keyword">...</span>
+0218                     <span class="string">'AutoScale'</span>,<span class="string">'off'</span>,<span class="string">'MaxHeadSize'</span>,0.1/nMax);
+0219                 <span class="comment">%</span>
+0220                 <span class="keyword">if</span> dispData.contour
+0221                     quiver3(sampling(:,1),<span class="keyword">...</span>
+0222                         sampling(:,2),<span class="keyword">...</span>
+0223                         0.*resp,<span class="keyword">...</span>
+0224                         scaleFactor(1)*sampGZvec.X/nMax,<span class="keyword">...</span>
+0225                         scaleFactor(2)*sampGZvec.Y/nMax,<span class="keyword">...</span>
+0226                         0.*sampGZvec.Z,<span class="keyword">...</span>
+0227                         <span class="string">'r'</span>,<span class="keyword">...</span>
+0228                         <span class="string">'MaxHeadSize'</span>,0.1/nMax,<span class="keyword">...</span>
+0229                         <span class="string">'AutoScale'</span>,<span class="string">'off'</span>);
+0230                 <span class="keyword">end</span>
+0231             <span class="keyword">end</span>
+0232             <span class="comment">%show gradients at grid points</span>
+0233             <span class="keyword">if</span> dispData.gridGrad
+0234                 quiver3(gridX,<span class="keyword">...</span>
+0235                     gridY,<span class="keyword">...</span>
+0236                     Z,<span class="keyword">...</span>
+0237                     scaleFactor(1)*GZvec.X/nMax,<span class="keyword">...</span>
+0238                     scaleFactor(2)*GZvec.Y/nMax,<span class="keyword">...</span>
+0239                     GZvec.Z/nMax,<span class="keyword">...</span>
+0240                     <span class="string">'b'</span>,<span class="keyword">...</span>
+0241                     <span class="string">'AutoScale'</span>,<span class="string">'off'</span>,<span class="string">'MaxHeadSize'</span>,0.1/nMax);
+0242                 <span class="comment">%</span>
+0243                 <span class="keyword">if</span> dispData.contour
+0244                     quiver3(gridX,<span class="keyword">...</span>
+0245                         gridY,<span class="keyword">...</span>
+0246                         0.*Z,<span class="keyword">...</span>
+0247                         scaleFactor(1)*GZvec.X/nMax,<span class="keyword">...</span>
+0248                         scaleFactor(2)*GZvec.Y/nMax,<span class="keyword">...</span>
+0249                         0.*GZvec.Z,<span class="keyword">...</span>
+0250                         <span class="string">'b'</span>,<span class="keyword">...</span>
+0251                         <span class="string">'MaxHeadSize'</span>,0.1/nMax,<span class="keyword">...</span>
+0252                         <span class="string">'AutoScale'</span>,<span class="string">'off'</span>);
+0253                 <span class="keyword">end</span>
+0254             <span class="keyword">end</span>
+0255         <span class="keyword">end</span>
+0256         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0257         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0258         <span class="comment">%show 2D surfaces (using contours)</span>
+0259         <span class="keyword">if</span> dispData.d2
+0260             <span class="comment">%display contours</span>
+0261             <span class="keyword">if</span> dispData.contour
+0262                 [C,h]=contourf(gridX,gridY,vZ);
+0263                 clabel(C,h,<span class="string">'BackgroundColor'</span>,[1 1 .6],<span class="keyword">...</span>
+0264                     <span class="string">'Edgecolor'</span>,[.7 .7 .7]);
+0265                 set(h,<span class="string">'LineWidth'</span>,2);
+0266                 <span class="comment">%display gradients</span>
+0267                 <span class="keyword">if</span> dispData.gridGrad
+0268                     hold on;
+0269                     <span class="comment">%scaling the gradients</span>
+0270                     <span class="keyword">if</span> dispData.scale
+0271                         quiver(gridX,gridY,<span class="keyword">...</span>
+0272                             scaleFactor(1)*GR1,<span class="keyword">...</span>
+0273                             scaleFactor(2)*GR2,<span class="keyword">...</span>
+0274                             <span class="string">'Color'</span>,<span class="string">'b'</span>,<span class="keyword">...</span>
+0275                             <span class="string">'AutoScale'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0276                             <span class="string">'MaxHeadSize'</span>,0);
+0277                     <span class="keyword">else</span>
+0278                         quiver(gridX,gridY,<span class="keyword">...</span>
+0279                             GR1,<span class="keyword">...</span>
+0280                             GR2,<span class="keyword">...</span>
+0281                             <span class="string">'Color'</span>,<span class="string">'b'</span>,<span class="keyword">...</span>
+0282                             <span class="string">'AutoScale'</span>,<span class="string">'off'</span>);
+0283                     <span class="keyword">end</span>
+0284                 <span class="keyword">end</span>
+0285                 <span class="comment">%show sample points</span>
+0286                 <span class="keyword">if</span> dispData.samplePts
+0287                     hold on;
+0288                     <span class="comment">%show sample points on which all information is known</span>
+0289                     plot(sampling(listPtsOk,1),sampling(listPtsOk,2),<span class="keyword">...</span>
+0290                         <span class="string">'o'</span>,<span class="keyword">...</span>
+0291                         <span class="string">'LineWidth'</span>,2,<span class="keyword">...</span>
+0292                         <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0293                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0294                         <span class="string">'MarkerSize'</span>,7);
+0295                     <span class="comment">%show sample points on which response is missing</span>
+0296                     plot(sampling(listMissResp,1),sampling(listMissResp,2),<span class="keyword">...</span>
+0297                         <span class="string">'rs'</span>,<span class="keyword">...</span>
+0298                         <span class="string">'LineWidth'</span>,2,<span class="keyword">...</span>
+0299                         <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0300                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0301                         <span class="string">'MarkerSize'</span>,7);
+0302                     <span class="comment">%show sample points on which gradient(s) is missing</span>
+0303                     plot(sampling(listMissGrad,1),sampling(listMissGrad,2),<span class="keyword">...</span>
+0304                         <span class="string">'v'</span>,<span class="keyword">...</span>
+0305                         <span class="string">'LineWidth'</span>,2,<span class="keyword">...</span>
+0306                         <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0307                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0308                         <span class="string">'MarkerSize'</span>,7);
+0309                     <span class="comment">%show sample points on which gradient(s) and response are missing</span>
+0310                     plot(sampling(listMissBoth,1),sampling(listMissBoth,2),<span class="keyword">...</span>
+0311                         <span class="string">'d'</span>,<span class="keyword">...</span>
+0312                         <span class="string">'LineWidth'</span>,2,<span class="keyword">...</span>
+0313                         <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0314                         <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0315                         <span class="string">'MarkerSize'</span>,7);
+0316                     
+0317                 <span class="keyword">end</span>
+0318                 <span class="comment">%shows gradients</span>
+0319                 <span class="keyword">if</span> dispData.sampleGrad
+0320                     hold on;
+0321                     <span class="comment">%scaling gradients</span>
+0322                     <span class="keyword">if</span> dispData.scale
+0323                         quiver(sampling(:,1),sampling(:,2),<span class="keyword">...</span>
+0324                             scaleFactor(1)*grad(:,1),scaleFactor(2)*grad(:,2),<span class="keyword">...</span>
+0325                             <span class="string">'Color'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0326                             <span class="string">'LineWidth'</span>,2,<span class="keyword">...</span>
+0327                             <span class="string">'AutoScale'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0328                             <span class="string">'MaxHeadSize'</span>,0);
+0329                     <span class="keyword">else</span>
+0330                         quiver(sampling(:,1),sampling(:,2),<span class="keyword">...</span>
+0331                             grad(:,1),grad(:,2),<span class="keyword">...</span>
+0332                             <span class="string">'Color'</span>,<span class="string">'g'</span>,<span class="keyword">...</span>
+0333                             <span class="string">'LineWidth'</span>,2,<span class="keyword">...</span>
+0334                             <span class="string">'AutoScale'</span>,<span class="string">'off'</span>);
+0335                     <span class="keyword">end</span>
+0336                 <span class="keyword">end</span>
+0337             <span class="keyword">end</span>
+0338         <span class="keyword">end</span>
+0339         
+0340         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0341         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0342         <span class="comment">%rendering</span>
+0343         <span class="keyword">if</span> dispData.render
+0344             hlight=light;               <span class="comment">% active light</span>
+0345             lighting(<span class="string">'gouraud'</span>);         <span class="comment">% type of rendering</span>
+0346             lightangle(hlight,48,70);    <span class="comment">% direction of the light</span>
+0347         <span class="keyword">end</span>
+0348         
+0349         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0350         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0351         <span class="comment">% show label</span>
+0352         title(dispData.title);
+0353         xlabel(dispData.xlabel);
+0354         ylabel(dispData.ylabel);
+0355         <span class="keyword">if</span> dispData.d3
+0356             zlabel(dispData.zlabel);
+0357             view(dispData.view);
+0358         <span class="keyword">end</span>
+0359         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0360         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0361         <span class="comment">%change to log scale</span>
+0362         <span class="keyword">if</span> dispData.logScale
+0363             set(gca, <span class="string">'ZScale'</span>, <span class="string">'log'</span>)
+0364         <span class="keyword">end</span>
+0365         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0366         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0367         <span class="comment">%display 1D</span>
+0368     <span class="keyword">elseif</span> spa1D
+0369         <span class="keyword">if</span> dispData.gridGrad
+0370             <span class="keyword">if</span> ~isempty(dispData.color)
+0371                 <span class="keyword">if</span> ~isempty(dispData.opt)
+0372                     plot(gridXY,GR1,<span class="keyword">...</span>
+0373                         dispData.opt,<span class="keyword">...</span>
+0374                         <span class="string">'Color'</span>,dispData.color,<span class="keyword">...</span>
+0375                         <span class="string">'LineWidth'</span>,2);
+0376                 <span class="keyword">else</span>
+0377                     plot(gridXY,GR1,<span class="keyword">...</span>
+0378                         <span class="string">'Color'</span>,dispData.color,<span class="keyword">...</span>
+0379                         <span class="string">'LineWidth'</span>,2);
+0380                 <span class="keyword">end</span>
+0381             <span class="keyword">else</span>
+0382                 <span class="keyword">if</span> ~isempty(dispData.opt)
+0383                     plot(gridXY,GR1,<span class="keyword">...</span>
+0384                         dispData.opt,<span class="keyword">...</span>
+0385                         <span class="string">'LineWidth'</span>,2);
+0386                 <span class="keyword">else</span>
+0387                     plot(gridXY,GR1,<span class="keyword">...</span>
+0388                         <span class="string">'LineWidth'</span>,2);
+0389                 <span class="keyword">end</span>
+0390             <span class="keyword">end</span>
+0391         <span class="keyword">else</span>
+0392             <span class="keyword">if</span> ~isempty(dispData.color)
+0393                 <span class="keyword">if</span> ~isempty(dispData.opt)
+0394                     plot(gridXY,Z,<span class="keyword">...</span>
+0395                         dispData.opt,<span class="keyword">...</span>
+0396                         <span class="string">'Color'</span>,dispData.color,<span class="keyword">...</span>
+0397                         <span class="string">'LineWidth'</span>,2);
+0398                 <span class="keyword">else</span>
+0399                     plot(gridXY,Z,<span class="keyword">...</span>
+0400                         <span class="string">'Color'</span>,dispData.color,<span class="keyword">...</span>
+0401                         <span class="string">'LineWidth'</span>,2);
+0402                 <span class="keyword">end</span>
+0403             <span class="keyword">else</span>
+0404                 <span class="keyword">if</span> ~isempty(dispData.opt)
+0405                     plot(gridXY,Z,<span class="keyword">...</span>
+0406                         dispData.opt,<span class="keyword">...</span>
+0407                         <span class="string">'LineWidth'</span>,2);
+0408                 <span class="keyword">else</span>
+0409                     plot(gridXY,Z,<span class="keyword">...</span>
+0410                         <span class="string">'LineWidth'</span>,2);
+0411                 <span class="keyword">end</span>
+0412             <span class="keyword">end</span>
+0413         <span class="keyword">end</span>
+0414         <span class="comment">%show sample points</span>
+0415         <span class="keyword">if</span> dispData.samplePts
+0416             hold on;
+0417             <span class="keyword">if</span> dispData.sampleGrad;valPlot=sampGR1;<span class="keyword">else</span>, valPlot=resp;<span class="keyword">end</span>
+0418             <span class="comment">%show sample points on which all information is known</span>
+0419             plot(sampling(listPtsOk),valPlot(listPtsOk),<span class="keyword">...</span>
+0420                 <span class="string">'rs'</span>,<span class="keyword">...</span>
+0421                 <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0422                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'w'</span>,<span class="keyword">...</span>
+0423                 <span class="string">'MarkerSize'</span>,7);
+0424             <span class="comment">%show sample points on which response is missing</span>
+0425             plot(sampling(listMissResp),valPlot(listMissResp),<span class="keyword">...</span>
+0426                 <span class="string">'o'</span>,<span class="keyword">...</span>
+0427                 <span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0428                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0429                 <span class="string">'MarkerSize'</span>,7);
+0430             <span class="comment">%show sample points on which gradient(s) is missing</span>
+0431             plot(sampling(listMissGrad),valPlot(listMissGrad),<span class="keyword">...</span>
+0432                 <span class="string">'v'</span>,<span class="keyword">...</span>
+0433                 <span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0434                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0435                 <span class="string">'MarkerSize'</span>,7);
+0436             <span class="comment">%show sample points on which gradient(s) and response are missing</span>
+0437             plot(sampling(listMissBoth),valPlot(listMissBoth),<span class="keyword">...</span>
+0438                 <span class="string">'d'</span>,<span class="keyword">...</span>
+0439                 <span class="string">'MarkerEdgeColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0440                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'r'</span>,<span class="keyword">...</span>
+0441                 <span class="string">'MarkerSize'</span>,7);
+0442         <span class="keyword">end</span>
+0443         title(dispData.title);
+0444         xlabel(dispData.xlabel);
+0445         ylabel(dispData.ylabel);
+0446         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0447         <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0448         <span class="comment">%change to log scale</span>
+0449         <span class="keyword">if</span> dispData.logScale
+0450             set(gca, <span class="string">'YScale'</span>, <span class="string">'log'</span>)
+0451         <span class="keyword">end</span>
+0452     <span class="keyword">end</span>
+0453     
+0454     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0455     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0456     <span class="comment">%save figure and create</span>
+0457     <span class="keyword">if</span> dispData.save
+0458         <span class="keyword">global</span> numPlot
+0459         <span class="keyword">if</span> isempty(numPlot); numPlot=1; <span class="keyword">else</span> numPlot=numPlot+1; <span class="keyword">end</span>
+0460         fileName=<a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>(numPlot,dispData.directory);
+0461         <span class="keyword">if</span> dispData.tex
+0462             fid=fopen([dispData.directory <span class="string">'/fig.tex'</span>],<span class="string">'a+'</span>);
+0463             fprintf(fid,<span class="string">'\\figcen{%2.1f}{../%s}{%s}{%s}\n'</span>,0.7,fileName,dispData.title,fileName);
+0464             <span class="comment">%fprintf(fid,'\\verb{%s}\n',fich);</span>
+0465             fclose(fid);
+0466         <span class="keyword">end</span>
+0467     <span class="keyword">end</span>
+0468     
+0469     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0470     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0471     <span class="comment">%Plot responses in nD</span>
+0472     <span class="keyword">if</span> dispData.bar
+0473         Zs=Z(:);
+0474         nbv=numel(Zs);
+0475         <span class="keyword">if</span> ~isempty(dispData.color)
+0476             plot(1:nbv,Zs,<span class="string">'o'</span>,<span class="keyword">...</span>
+0477                 <span class="string">'MarkerEdgeColor'</span>,dispData.color,<span class="keyword">...</span>
+0478                 <span class="string">'MarkerFaceColor'</span>,dispData.color,<span class="keyword">...</span>
+0479                 <span class="string">'Markersize'</span>,5);
+0480             <span class="comment">%line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',dispData.color,'lineStyle','--')</span>
+0481         <span class="keyword">else</span>
+0482             plot(1:nbv,Zs,<span class="string">'o'</span>,<span class="keyword">...</span>
+0483                 <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0484                 <span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0485                 <span class="string">'Markersize'</span>,5);
+0486             <span class="comment">%line([1:nb_eval;1:nb_eval],[zeros(1,nb_eval);Zs'],'LineWidth',1,'Color',[0. 0. .8],'lineStyle','--')</span>
+0487         <span class="keyword">end</span>
+0488         title(dispData.title);
+0489         xlabel(dispData.xlabel);
+0490         ylabel(dispData.ylabel);
+0491     <span class="keyword">end</span>
+0492     
+0493     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0494     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0495     <span class="comment">%export using tikz</span>
+0496     <span class="keyword">if</span> dispData.tikz
+0497         nameFig=[dispData.directory <span class="string">'/fig_'</span> num2str(dispData.num,<span class="string">'%04.0f'</span>) <span class="string">'.tex'</span>];
+0498         matlab2tikz(nameFig);
+0499     <span class="keyword">end</span>
+0500     
+0501     hold off;
+0502 <span class="keyword">end</span>
+0503 <span class="keyword">end</span>
+0504 
+0505 <span class="comment">%% compute data for gradients if plotted with quiver</span>
+0506 <a name="_sub1" href="#_subfunctions" class="code">function [vec,nMax]=analyzeGrad(GR1,GR2)</a>
+0507 <span class="keyword">if</span> nargin&gt;1
+0508     <span class="comment">%define vector of gradients</span>
+0509     vec.X=-GR1;
+0510     vec.Y=-GR2;
+0511     vec.Z=-(GR1.^2+GR2.^2);
+0512     <span class="comment">%compute norm of the gradients</span>
+0513     vec.N=sqrt(-vec.Z);
+0514     <span class="comment">%maximal norm of the gradients</span>
+0515     nMax=max(vec.N(:));
+0516 <span class="keyword">else</span>
+0517     
+0518 <span class="keyword">end</span>
+0519 <span class="keyword">end</span>
+0520 
+0521 <span class="comment">%% Analyze the grid</span>
+0522 <a name="_sub2" href="#_subfunctions" class="code">function [scaleFactor,gridDim,rDim]=analyseGrid(vZ,gridX,gridY)</a>
+0523 <span class="comment">%size of the response space</span>
+0524 rDim=abs(max(vZ(:))-min(vZ(:)));
+0525 <span class="comment">%</span>
+0526 <span class="keyword">if</span> nargin&gt;2    
+0527     <span class="comment">%minimal size of the display grid</span>
+0528     gx=abs(gridX-gridX(1));
+0529     gx(gx==0)=Inf;
+0530     gridDim(1)=min(gx(:));
+0531     gy=abs(gridY-gridY(1));
+0532     gy(gy==0)=Inf;
+0533     gridDim(2)=min(gy(:));
+0534     <span class="comment">%size of the biggest arrow  (used for displaying gradients)</span>
+0535     paraAr=0.9;
+0536     sizeGfinal=paraAr*gridDim*0.5;    
+0537     <span class="comment">%scale factor</span>
+0538     scaleFactor=sizeGfinal;<span class="comment">%./[n1 n2];</span>
+0539 <span class="keyword">else</span>
+0540     
+0541 <span class="keyword">end</span>
+0542 
+0543 
+0544 <span class="keyword">end</span>
+0545</pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

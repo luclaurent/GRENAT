@@ -26,5 +26,6 @@
 % - none
 
 function defaultConf(obj)
-obj.defaultParallel=parcluster;
+obj.defaultParallel=parcluster(obj.nameCluster);
+obj.defNumWorkers;
 end

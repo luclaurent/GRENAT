@@ -20,6 +20,7 @@
 
 classdef execParallel < handle
     properties
+        nameCluster='local'     % name of the cluster
         defaultParallel=[];     % default configuration accepted by the computer
         currentParallel=[];     % current configuration
         on=true;                % flag for running or not the pool
@@ -31,8 +32,8 @@ classdef execParallel < handle
         % - a boolean value for starting or not directly the parallel pool
         % - an integer for specifying the number of required workers
         function obj=execParallel(varargin)
-            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');
-            if obj.checkRun
+            Gfprintf('=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=\n');            
+            if obj.checkRun                
                 Gfprintf('Define Parallelism\n');
                 %load the default configuration
                 obj.defaultConf;
@@ -45,6 +46,7 @@ classdef execParallel < handle
                     intC=cellfun(@isnumeric,varargin);
                     %
                     if any(boolC)
+                        
                         obj.on=varargin{boolC};
                     end
                     %initialize value

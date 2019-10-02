@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html surrogate -->
 <h1>RBFBloc
 </h1>
 
@@ -36,7 +36,7 @@ hyperparameters via optimization</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>	% Function for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li><li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+<li><a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/KernMatrix.html" class="code" title="">KernMatrix</a>	% Class for building Kernel Matrix for classical and gradient-enhanced kernel-based surrogate model</li><li><a href="../../../GRENATdevel/src/surrogate/@KRG/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Compute Cross-Validation</li><li><a href="../../../GRENATdevel/src/surrogate/@RBF/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>	% Compute Cross-Validation</li><li><a href="RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>	% Function for computing various Cross-Validation criteria for RBF/GRBF</li><li><a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li><li><a href="../../../GRENATdevel/src/various/modWarning.html" class="code" title="">modWarning</a>	% class for dealing with the display or not of the warning message</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="RBFBuild.html" class="code" title="function ret=RBFBuild(samplingIn,respIn,gradIn,metaData)">RBFBuild</a>	% Function for building Radial Basis Function surrogate model</li></ul>
@@ -74,7 +74,7 @@ This function is called by:
 0025 
 0026 <span class="comment">% display warning(s) or not</span>
 0027 dispWarning=false;
-0028 statusWarning=<a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>([],[]);
+0028 statusWarning=<a href="../../../GRENATdevel/src/various/modWarning.html" class="code" title="">modWarning</a>([],[]);
 0029 <span class="comment">% function to be minimised for finding hyperparameters</span>
 0030 fctMin=<span class="string">'eloot'</span>; <span class="comment">%eloot/eloor/eloog</span>
 0031 <span class="comment">%coefficient of reconditionning</span>
@@ -109,10 +109,10 @@ This function is called by:
 0060 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0061 <span class="comment">%Build of the RBF/GRBF matrix</span>
 0062 <span class="keyword">if</span> dataIn.used.availGrad
-0063     [KK,KKa,KKi]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0063     [KK,KKa,KKi]=<a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/KernMatrix.html" class="code" title="">KernMatrix</a>(fctKern,dataIn,paraVal);
 0064     KK=[KK -KKa;-KKa' -KKi];
 0065 <span class="keyword">else</span>
-0066     [KK]=<a href="KernMatrix.html" class="code" title="function [KK,KKd,KKdd]=KernMatrix(fctKern,dataIn,paraVal,parallelW)">KernMatrix</a>(fctKern,dataIn,paraVal);
+0066     [KK]=<a href="../../../GRENATdevel/src/kernANDfun/@KernMatrix/KernMatrix.html" class="code" title="">KernMatrix</a>(fctKern,dataIn,paraVal);
 0067 <span class="keyword">end</span>
 0068 <span class="comment">%in the case of missing data</span>
 0069 <span class="comment">%responses</span>
@@ -145,9 +145,9 @@ This function is called by:
 0096 <span class="comment">%condition number of the RBF/GRBF Matrix</span>
 0097 <span class="keyword">if</span> nargin==2 <span class="comment">% in the phase of building</span>
 0098     newCond=condest(KK);
-0099     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Condition number RBF/GRBF matrix: %4.2e\n'</span>,newCond);
+0099     <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'Condition number RBF/GRBF matrix: %4.2e\n'</span>,newCond);
 0100     <span class="keyword">if</span> newCond&gt;1e16
-0101         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ !!!!! Bad condition number\n'</span>);
+0101         <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'+++ !!!!! Bad condition number\n'</span>);
 0102     <span class="keyword">end</span>
 0103 <span class="keyword">end</span>
 0104 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -203,20 +203,20 @@ This function is called by:
 0154 <span class="comment">%%%%%Cross-Validation (mandatory for estimating the hyperparameters</span>
 0155 <span class="comment">%%%%%Computation of various errors</span>
 0156 <span class="keyword">if</span> metaData.cv.on||metaData.para.estim
-0157     [cv]=<a href="RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>(ret,dataIn,metaData,typeCV);
-0158     <span class="keyword">if</span> isfield(cv,fctMin)
+0157     [<a href="../../../GRENATdevel/src/surrogate/@KRG/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>]=<a href="RBFCV.html" class="code" title="function [cv]=RBFCV(dataBloc,data,metaData,type)">RBFCV</a>(ret,dataIn,metaData,typeCV);
+0158     <span class="keyword">if</span> isfield(<a href="../../../GRENATdevel/src/surrogate/@KRG/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>,fctMin)
 0159         critMin=cv.(fctMin);
 0160     <span class="keyword">else</span>
 0161         critMin=cv.eloot;
 0162     <span class="keyword">end</span>
 0163 <span class="keyword">else</span>
-0164     cv=[];
+0164     <a href="../../../GRENATdevel/src/surrogate/@KRG/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>=[];
 0165     critMin=[];
 0166 <span class="keyword">end</span>
 0167 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0168 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0169 ret.build.cv=cv;
-0170 <a href="#_sub1" class="code" title="subfunction retStatus=modWarning(requireStatus,oldStatus)">modWarning</a>([],statusWarning)
+0169 ret.build.cv=<a href="../../../GRENATdevel/src/surrogate/@KRG/cv.html" class="code" title="function [crit,cv]=cv(obj,paraValIn,type)">cv</a>;
+0170 <a href="../../../GRENATdevel/src/various/modWarning.html" class="code" title="">modWarning</a>([],statusWarning)
 0171 <span class="keyword">end</span>
 0172 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0173 <span class="comment">% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -236,6 +236,6 @@ This function is called by:
 0187 <span class="keyword">end</span>
 0188 <span class="keyword">end</span>
 0189</pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

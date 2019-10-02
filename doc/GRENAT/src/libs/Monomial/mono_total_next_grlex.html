@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mono_total_next_grlex</title>
+  <meta name="keywords" content="mono_total_next_grlex">
+  <meta name="description" content="*****************************************************************************80">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html libs --><!-- menu.html Monomial -->
+<h1>mono_total_next_grlex
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>*****************************************************************************80</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function x = mono_total_next_grlex ( m, n, x ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">*****************************************************************************80
+
+% MONO_TOTAL_NEXT_GRLEX: grlex next monomial with total degree equal to N.
+
+  Discussion:
+
+    We consider all monomials in an M dimensional space, with total degree N.
+
+    For example:
+
+    M = 3
+    N = 3
+
+    #  X(1)  X(2)  X(3)  Degree
+      +------------------------
+    1 |  0     0     3        3
+    2 |  0     1     2        3
+    3 |  0     2     1        3
+    4 |  0     3     0        3
+    5 |  1     0     2        3
+    6 |  1     1     1        3
+    7 |  1     2     0        3
+    8 |  2     0     1        3
+    9 |  2     1     0        3
+   10 |  3     0     0        3
+
+  Licensing:
+
+    This code is distributed under the GNU LGPL license.
+
+  Modified:
+
+    09 September 2014
+
+  Author:
+
+    John Burkardt
+
+  Parameters:
+
+    Input, integer M, the spatial dimension.
+
+    Input, integer N, the degree.
+    0 &lt;= N.
+
+    Input, integer X(M), the current monomial.
+    To start the sequence, set X = [ 0, 0, ..., 0, N ].
+
+    Output, integer X(M), the next monomial.
+    The last value in the sequence is X = [ N, 0, ..., 0, 0 ].</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="mono_next_grlex.html" class="code" title="function x = mono_next_grlex ( m, x )">mono_next_grlex</a>	*****************************************************************************80</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="mono_total_next_grlex_test.html" class="code" title="function mono_total_next_grlex_test ( )">mono_total_next_grlex_test</a>	*****************************************************************************80</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x = mono_total_next_grlex ( m, n, x )</a>
+0002 
+0003 <span class="comment">%*****************************************************************************80</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%% MONO_TOTAL_NEXT_GRLEX: grlex next monomial with total degree equal to N.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  Discussion:</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%    We consider all monomials in an M dimensional space, with total degree N.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%    For example:</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%    M = 3</span>
+0014 <span class="comment">%    N = 3</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%    #  X(1)  X(2)  X(3)  Degree</span>
+0017 <span class="comment">%      +------------------------</span>
+0018 <span class="comment">%    1 |  0     0     3        3</span>
+0019 <span class="comment">%    2 |  0     1     2        3</span>
+0020 <span class="comment">%    3 |  0     2     1        3</span>
+0021 <span class="comment">%    4 |  0     3     0        3</span>
+0022 <span class="comment">%    5 |  1     0     2        3</span>
+0023 <span class="comment">%    6 |  1     1     1        3</span>
+0024 <span class="comment">%    7 |  1     2     0        3</span>
+0025 <span class="comment">%    8 |  2     0     1        3</span>
+0026 <span class="comment">%    9 |  2     1     0        3</span>
+0027 <span class="comment">%   10 |  3     0     0        3</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%  Licensing:</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">%    This code is distributed under the GNU LGPL license.</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%  Modified:</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%    09 September 2014</span>
+0036 <span class="comment">%</span>
+0037 <span class="comment">%  Author:</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%    John Burkardt</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">%  Parameters:</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">%    Input, integer M, the spatial dimension.</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">%    Input, integer N, the degree.</span>
+0046 <span class="comment">%    0 &lt;= N.</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">%    Input, integer X(M), the current monomial.</span>
+0049 <span class="comment">%    To start the sequence, set X = [ 0, 0, ..., 0, N ].</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">%    Output, integer X(M), the next monomial.</span>
+0052 <span class="comment">%    The last value in the sequence is X = [ N, 0, ..., 0, 0 ].</span>
+0053 <span class="comment">%</span>
+0054   <span class="keyword">if</span> ( n &lt; 0 )
+0055     fprintf ( 1, <span class="string">'\n'</span> );
+0056     fprintf ( 1, <span class="string">'MONO_TOTAL_NEXT_GRLEX - Fatal error!\n'</span> );
+0057     fprintf ( 1, <span class="string">'  N &lt; 0.\n'</span> );
+0058     error ( <span class="string">'MONO_TOTAL_NEXT_GRLEX - Fatal error!'</span> );
+0059   <span class="keyword">end</span>
+0060 
+0061   <span class="keyword">if</span> ( sum ( x(1:m) ) ~= n )
+0062     fprintf ( 1, <span class="string">'\n'</span> );
+0063     fprintf ( 1, <span class="string">'MONO_TOTAL_NEXT_GRLEX - Fatal error!\n'</span> );
+0064     fprintf ( 1, <span class="string">'  Input X does not sum to N.\n'</span> );
+0065     error ( <span class="string">'MONO_TOTAL_NEXT_GRLEX - Fatal error!'</span> );
+0066   <span class="keyword">end</span>
+0067 
+0068   <span class="keyword">if</span> ( n == 0 )
+0069     <span class="keyword">return</span>
+0070   <span class="keyword">end</span>
+0071 
+0072   <span class="keyword">if</span> ( x(1) == n )
+0073     x(1) = 0;
+0074     x(m) = n;
+0075   <span class="keyword">else</span>
+0076     x = <a href="mono_next_grlex.html" class="code" title="function x = mono_next_grlex ( m, x )">mono_next_grlex</a> ( m, x );
+0077   <span class="keyword">end</span>
+0078   <span class="keyword">return</span>
+0079 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

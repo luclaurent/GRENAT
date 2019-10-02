@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html disp -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html disp -->
 <h1>displaySurrogate
 </h1>
 
@@ -33,10 +33,10 @@ L. LAURENT   --  22/03/2010   --  luc.laurent@lecnam.net</pre></div>
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENAT/src/libs/matlab2tikz/matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li></ul>
+<li><a href="saveDisp.html" class="code" title="function fileFig=saveDisp(num,foldS)">saveDisp</a>	% save figure in file</li><li><a href="../../../GRENATdevel/src/libs/matlab2tikz/matlab2tikz.html" class="code" title="">matlab2tikz</a>	</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
+<li><a href="../../../GRENATdevel/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li></ul>
 <!-- crossreference -->
 
 
@@ -240,7 +240,7 @@ This function is called by:
 0196         <span class="keyword">if</span> dispData.d3
 0197             <span class="comment">%shwo contour</span>
 0198             <span class="keyword">if</span> dispData.contour
-0199                 surfc(gridX,gridY,vZ);
+0199                 h=surfc(gridX,gridY,vZ);
 0200                 <span class="keyword">if</span> dispData.uni
 0201                     <span class="comment">%show surface with unique color</span>
 0202                     set(h,<span class="string">'FaceColor'</span>,dispData.color,<span class="string">'EdgeColor'</span>,dispData.color);
@@ -523,13 +523,13 @@ This function is called by:
 0479     <span class="comment">%export using tikz</span>
 0480     <span class="keyword">if</span> dispData.tikz
 0481         nomfig=[dispData.directory <span class="string">'/fig_'</span> num2str(dispData.num,<span class="string">'%04.0f'</span>) <span class="string">'.tex'</span>];
-0482         <a href="../../../GRENAT/src/libs/matlab2tikz/matlab2tikz.html" class="code" title="">matlab2tikz</a>(nomfig);
+0482         <a href="../../../GRENATdevel/src/libs/matlab2tikz/matlab2tikz.html" class="code" title="">matlab2tikz</a>(nomfig);
 0483     <span class="keyword">end</span>
 0484     
 0485     hold off;
 0486 <span class="keyword">end</span>
 0487 <span class="keyword">end</span>
 0488</pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

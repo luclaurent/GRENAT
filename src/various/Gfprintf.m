@@ -3,7 +3,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -30,21 +30,20 @@ if isa(varargin{1},'double')
     %use the classical fprintf function
     nbT=fprintf(varargin{:});
 else
-    argOk=varargin;   
+    argOk=varargin;
     
     %convert all inputs to a string
     str = sprintf(argOk{:});
     
     %find new lines
     strSplit=regexp(str,'\n','split');
-    
     % display text and adding new keyword
     nbT=0;
     for itS=1:numel(strSplit)
         if itS==numel(strSplit)&&isempty(strSplit{itS})
         else
             txtD=[ txtAdd ' | ' strSplit{itS}];
-            nbytes=fprintf(txtD);
+            nbytes=fprintf('%s',txtD);
             nbT=nbT+nbytes;
         end
         if itS<numel(strSplit)

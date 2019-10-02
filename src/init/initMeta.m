@@ -3,7 +3,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 %
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -33,8 +33,6 @@ classdef initMeta < handle
         estim;              %struct for storing estimation parameters
         infill;             %struct for storing infillment parameters
         cv;                 %struct for storing cross-validation parameters
-        miss;               %struct for storing missing data
-        norm;               %struct for storing normalization data
     end
     properties (SetObservable, AbortSet)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,7 +41,7 @@ classdef initMeta < handle
         lVal=1;             %internal length (correlation length)
         pVal=2;             %power exponent for generalized exponential kernel function
         nuVal=0.6;          %smoothness coefficient for Matern kernel function
-        lMin=1e-6;
+        lMin=1e-4;
         lMax=30;
         pMax=2;
         pMin=1.001;
@@ -64,7 +62,8 @@ classdef initMeta < handle
         estimOn=true;       % seek for best values of the internal parameters
         aniso=true;         % anisotropic model (one internal length per variable)
         dispEstim=false;    % display objective function to be minimised
-        saveEstim=false;         %save evolution function to be minimized
+        saveEstim=false;    % save evolution function to be minimized
+        typeEstim='logli';  % type of criterion used for estimated the parameters (logli or cv or cvmse or cvwmse or cvlpp)
         dispIterGraph=false;% display iterations of the optimisation process on a figure (1D/2D)
         dispIterCmd=false;  % display iteration in the console
         dispPlotAlgo=false; % display converg ence information on figures
@@ -87,8 +86,16 @@ classdef initMeta < handle
     end
     properties (Access = private,Constant)
         infoProp=affectTxtProp;
-        kernAvail={'matern','matern32','matern52','sexp'};
-        typeAvail={'SWF','IDW','RBF','InRBF','GRBF','KRG','InKRG','GKRG','SVR','InSVR','GSVR','DACE','InDACE','LS','GLS','InLS'};%,'PRG','ILIN','ILAG'};
+        kernAvail={'cauchy','circular','constant',...
+            'cubicspline0','cubicspline1','cubicspline2',...
+            'expg','expo','invmultiqua','linear','linearspline',...
+            'logk','matern','matern32','matern52','multiqua','powerk',...
+            'quadraticspline','ratmultiqua','tstudent','thinplatespline',...
+            'spherical','sexp','wave','wavelet','wendland',...
+            'wendland10','wendland20','wendland21','wendland30',...
+            'wendland31','wendland32','wendland41','wendland42',...
+            'wendland52','wendland53'};
+        typeAvail={'SWF','IDW','RBF','InRBF','GRBF','KRG','InKRG','GKRG','SVR','InSVR','GSVR','DACE','InDACE','xLS','GxLS','InxLS'};%,'PRG','ILIN','ILAG'};
         typeTxt={'Shepard Weighting Function or Inverse Distance Weighting',...
             'idem',...
             'Radial Basis Function',...
@@ -280,6 +287,14 @@ classdef initMeta < handle
                 obj.saveEstim=boolIn;
             end
         end
+        function set.typeEstim(obj,charIn)
+            if isG(charIn,'char')
+                if strcmp(obj.typeEstim,charIn)
+                    Gfprintf(' >>> Type of criterion used for finding hyperparameters : %s (previous %s)',charIn,obj.typeEstim);
+                end
+                obj.typeEstim=charIn;
+            end
+        end
         function set.dispIterGraph(obj,boolIn)
             if isG(boolIn,'logical')
                 if xor(obj.dispIterGraph,boolIn)
@@ -346,12 +361,12 @@ classdef initMeta < handle
             if isG(charIn,'char')
                 if ismember(charIn,obj.kernAvail)
                     if strcmp(obj.kern,charIn)
-                        Gfprintf(' >>> Kernel function : %s (previous %s)',charIn,obj.kern);
+                        Gfprintf(' >>> Kernel function : %s (previous %s)\n',charIn,obj.kern);
                     end
                     obj.kern=charIn;
                 else
                     Gfprintf(' Kernel function %s not available\n',charIn);
-                    availableKern(obj);
+                    availableKernel(obj);
                 end
             end
         end
@@ -492,6 +507,7 @@ classdef initMeta < handle
                 end
             end
             if ~paraOk
+                keyboard
                 Gfprintf('Wrong structure used for declaraing parameters\n')
             end
         end
@@ -537,6 +553,7 @@ classdef initMeta < handle
             obj.estim.aniso=obj.aniso;
             obj.estim.disp=obj.dispEstim;
             obj.estim.save=obj.saveEstim;
+            obj.estim.type=obj.typeEstim;
             obj.estim.dispIterGraph=obj.dispIterGraph;
             obj.estim.dispIterCmd=obj.dispIterCmd;
             obj.estim.dispPlotAlgo=obj.dispPlotAlgo;
@@ -586,6 +603,7 @@ classdef initMeta < handle
                                 okConf=true;
                                 obj.(keyW)=keyV;
                             else
+                                Gfprintf('\n');
                                 Gfprintf('>> Wrong keyword %s\n',keyW);
                             end
                         end
@@ -594,8 +612,9 @@ classdef initMeta < handle
                 if ~okConf
                     Gfprintf('\nWrong syntax used for conf method\n');
                     Gfprintf('use: conf(''key1'',val1,''key2'',val2...)\n');
-                    Gfprintf('\nList of the avilable keywords:\n');
+                    Gfprintf('\nList of the available keywords:\n');
                     dispTableTwoColumnsStruct(listProp,obj.infoProp);
+                    Gfprintf('\n');
                 end
             else
                 Gfprintf('Current configuration\n');
@@ -640,6 +659,7 @@ info.estimOn='Seek for best values of the internal parameters';
 info.aniso='Anisotropic model (one internal length per variable)';
 info.dispEstim='Display objective function to be minimised';
 info.saveEstim='Save evolution function to be minimized';
+info.typeEstim='Type of criterion used for estimated the parameters (logli or cv)';
 info.dispIterGraph='Display iterations of the optimisation process on a figure (1D/2D)';
 info.dispIterCmd='Display iteration in the console';
 info.dispPlotAlgo='Display convergence information on figures';
@@ -743,7 +763,7 @@ end
 
 %display change of state
 function SwitchOnOff(boolIn)
-if boolIn;
+if boolIn
     fprintf(' On (previous Off)\n');
 else
     fprintf(' Off (previous On)\n');

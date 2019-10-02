@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html surrogate -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html surrogate -->
 <h1>PrepIn
 </h1>
 
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
+<li><a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>	% function for printing information on the command window (based on fprintf)</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 <li><a href="BuildMeta.html" class="code" title="function [outMeta]=BuildMeta(samplingIn,respIn,gradIn,metaData)">BuildMeta</a>	% function for building surrogate model</li></ul>
@@ -67,7 +67,7 @@ This function is called by:
 0023 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0024 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0025 <span class="comment">% Display information about the function</span>
-0026 <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; Preparation of data for Indirect Gradient-Based Surrogate Models  \n'</span>);
+0026 <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt;&gt; Preparation of data for Indirect Gradient-Based Surrogate Models  \n'</span>);
 0027 
 0028 <span class="comment">%dimension of the problem (number of parameters)</span>
 0029 np=size(samplingIn,2);
@@ -82,7 +82,7 @@ This function is called by:
 0038 
 0039 <span class="comment">%with respect with the kind of gradient data</span>
 0040 <span class="keyword">if</span> ~isstruct(gradIn)
-0041     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Step of the Taylor expansion (manu):'</span>);
+0041     <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Step of the Taylor expansion (manu):'</span>);
 0042     fprintf(<span class="string">' %d'</span>,metaData.para.stepTaylor);
 0043     fprintf(<span class="string">'\n'</span>);
 0044     
@@ -113,13 +113,13 @@ This function is called by:
 0069     
 0070     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0071     <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0072     <span class="comment">%%% Cleaning if missing data (Caution in the case of missing response, the Nettoyage si donnees manquantes (attention en cas de reponse</span>
+0072     <span class="comment">%%% Cleaning if missing data (Caution in the case of missing response, the</span>
 0073     <span class="comment">%%% the associated gradients is also removed because it will be unable</span>
 0074     <span class="comment">%%% to estimate the response without this value)</span>
 0075     posR=[];
 0076     <span class="keyword">if</span> missData.resp.on
 0077         pos_tmp=missData.eval.ix_manq;
-0078         <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Remove information (missing data at point(s):'</span>);
+0078         <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">' &gt;&gt;&gt; Remove information (missing data at point(s):'</span>);
 0079         fprintf(<span class="string">' %i'</span>,posR);
 0080         fprintf(<span class="string">'\n'</span>);
 0081         <span class="comment">%renumber for extracting right values</span>
@@ -189,7 +189,7 @@ This function is called by:
 0145         newResp(li_tirg)=gradIn.eval{ii};
 0146     <span class="keyword">end</span>
 0147     
-0148     <a href="../../../GRENAT/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Step of the Taylor expansion (auto):'</span>);
+0148     <a href="../../../GRENATdevel/src/various/Gfprintf.html" class="code" title="function nbT = Gfprintf(varargin)">Gfprintf</a>(<span class="string">'&gt;&gt; Step of the Taylor expansion (auto):'</span>);
 0149     fprintf(<span class="string">' %d'</span>,stepTaylor);
 0150     fprintf(<span class="string">'\n'</span>);
 0151     
@@ -201,6 +201,6 @@ This function is called by:
 0157 ret.new.sampling=newSampling;
 0158 ret.new.resp=newResp;
 0159 ret.stepTaylor=stepTaylor;</pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

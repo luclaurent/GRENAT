@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of computeNewIX</title>
+  <meta name="keywords" content="computeNewIX">
+  <meta name="description" content="compute new indices (after adding new sample points)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../../menu.html GRENATdevel --><!-- # src --><!-- ../menu.html kernANDfun --><!-- menu.html @KernMatrix -->
+<h1>computeNewIX
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>compute new indices (after adding new sample points)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="box"><strong>function iX=computeNewIX(obj) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">compute new indices (after adding new sample points)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+<li><a href="../../../../GRENATdevel/src/surrogate/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>	ALLCOMB - All combinations</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%compute new indices (after adding new sample points)</span>
+0002 <a name="_sub0" href="#_subfunctions" class="code">function iX=computeNewIX(obj)</a>
+0003 oldNs=obj.nS;
+0004 newNs=obj.NnS;
+0005 np=obj.nP;
+0006 <span class="comment">% Building indices system</span>
+0007 <span class="keyword">if</span> obj.computeD
+0008     <span class="comment">%</span>
+0009     sizeMatRc=(newNs^2+newNs)/2;
+0010     sizeMatRa=np*sizeMatRc;
+0011     sizeMatRi=np^2*sizeMatRc;
+0012     iXmatrixAb=zeros(sizeMatRa,1);
+0013     iXmatrixI=zeros(sizeMatRi,1);
+0014     <span class="comment">%</span>
+0015     iteAb=0;
+0016     <span class="comment">%table of indices for inter-lengths (1), responses (1) and 1st</span>
+0017     <span class="comment">%derivatives (2)</span>
+0018     <span class="keyword">if</span> newNs&gt;1
+0019         <span class="keyword">for</span> ii=1:newNs
+0020             <span class="comment">%</span>
+0021             iteAb=iteAb(end)+(1:((newNs-ii+1)*np));
+0022             <span class="comment">%</span>
+0023             debb=(ii-1)*newNs*np+ii;
+0024             finb=newNs*(newNs*np-1)+ii;
+0025             lib=debb:newNs:finb;
+0026             iXmatrixAb(iteAb)=lib;
+0027         <span class="keyword">end</span>
+0028         <span class="comment">%table of indices for second derivatives</span>
+0029         a=zeros(newNs*np,np);
+0030         decal=0;
+0031         precI=0;
+0032         <span class="keyword">for</span> ii=1:newNs
+0033             li=1:newNs*np^2;
+0034             a(:)=decal+li;
+0035             decal=a(end);
+0036             b=a';
+0037             <span class="comment">%</span>
+0038             iteI=precI+(1:(np^2*(newNs-(ii-1))));
+0039             <span class="comment">%</span>
+0040             debb=(ii-1)*np^2+1;
+0041             finb=np^2*newNs;
+0042             iteb=debb:finb;
+0043             iXmatrixI(iteI)=b(iteb);
+0044             precI=iteI(end);
+0045         <span class="keyword">end</span>
+0046     <span class="keyword">end</span>
+0047 <span class="keyword">end</span>
+0048 <span class="comment">%table of indices for inter-lenghts  (1), responses (1)</span>
+0049 iXsamplingNO=<a href="../../../../GRENATdevel/src/surrogate/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>(1:newNs,1:oldNs);      <span class="comment">%old and new</span>
+0050 tmpIX=<a href="../../../../GRENATdevel/src/surrogate/allcomb.html" class="code" title="function A = allcomb(varargin)">allcomb</a>(1:newNs,1:newNs);
+0051 iXsamplingN=tmpIX(tmpIX(:,1)&lt;=tmpIX(:,2),:); <span class="comment">%new only</span>
+0052 <span class="comment">%linear indices</span>
+0053 iXmatrixNO=(iXsamplingNO(:,1)-1)*oldNs+iXsamplingNO(:,2);
+0054 iXmatrixN=(iXsamplingN(:,1)-1)*newNs+iXsamplingN(:,2);
+0055 <span class="comment">%keyboard</span>
+0056 <span class="comment">%</span>
+0057 iX.iXsamplingNO=iXsamplingNO;
+0058 iX.iXsamplingN=iXsamplingN;
+0059 iX.matrixNO=iXmatrixNO;
+0060 iX.matrixN=iXmatrixN;
+0061 <span class="comment">%iXmatrixAb</span>
+0062 iX.matrixAb=iXmatrixAb;
+0063 iX.matrixI=iXmatrixI;
+0064 obj.NiX=iX;
+0065 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

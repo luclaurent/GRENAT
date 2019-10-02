@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html various -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html various -->
 <h1>listFilesToolboxGRENAT
 </h1>
 
@@ -43,7 +43,7 @@ This function is called by:
 
 <h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="#_sub1" class="code">function [filDir]=listFileDir(dirM)</a></li></ul>
+<li><a href="#_sub1" class="code">function [fileDir]=listFileDir(dirM)</a></li></ul>
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 <div class="fragment"><pre>0001 <span class="comment">%% List all files of the GRENAT Toolbox</span>
@@ -73,15 +73,15 @@ This function is called by:
 0025 <span class="comment">%process all directories in the directory 'dirT'</span>
 0026 <span class="keyword">for</span> ii=1:numel(dirT)
 0027     <span class="comment">%find files in directories</span>
-0028     fileDir=<a href="#_sub1" class="code" title="subfunction [filDir]=listFileDir(dirM)">listFileDir</a>(dirT{ii});
+0028     fileDir=<a href="#_sub1" class="code" title="subfunction [fileDir]=listFileDir(dirM)">listFileDir</a>(dirT{ii});
 0029     <span class="comment">%add name of the directory</span>
-0030     fun=@(x) sprintf(<span class="string">'%s/%s'</span>,dirT{ii},x);
+0030     fun=@(x) sprintf(<span class="string">'%s%s%s'</span>,dirT{ii},filesep,x);
 0031     fileDirOk=cellfun(fun,fileDir,<span class="string">'UniformOutput'</span>,false);
 0032     <span class="comment">%add to the whole list</span>
 0033     listF={listF{:},fileDirOk{:}};
 0034 <span class="keyword">end</span>
 0035 <span class="comment">%add the root directory of the Toolbox</span>
-0036 fileDirOk=<a href="#_sub1" class="code" title="subfunction [filDir]=listFileDir(dirM)">listFileDir</a>(<span class="string">'.'</span>);
+0036 fileDirOk=<a href="#_sub1" class="code" title="subfunction [fileDir]=listFileDir(dirM)">listFileDir</a>(<span class="string">'.'</span>);
 0037 <span class="comment">%add to the whole list</span>
 0038 listF={listF{:},fileDirOk{:}};
 0039 
@@ -111,14 +111,14 @@ This function is called by:
 0063 
 0064 
 0065 <span class="comment">% list files in a directory</span>
-0066 <a name="_sub1" href="#_subfunctions" class="code">function [filDir]=listFileDir(dirM)</a>
+0066 <a name="_sub1" href="#_subfunctions" class="code">function [fileDir]=listFileDir(dirM)</a>
 0067 <span class="comment">%rawlist</span>
 0068 rawList=dir(dirM);
 0069 <span class="comment">%flag file</span>
 0070 flag_file=~[rawList.isdir];
 0071 <span class="comment">%list of files in the directory</span>
-0072 filDir={rawList(flag_file).name};
+0072 fileDir={rawList(flag_file).name};
 0073 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

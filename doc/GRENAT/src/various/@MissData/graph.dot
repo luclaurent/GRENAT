@@ -1,0 +1,17 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  MissData -> MissData;
+
+  MissData [URL="MissData.html"];
+  addData [URL="addData.html"];
+  check [URL="check.html"];
+  checkGrad [URL="checkGrad.html"];
+  checkResp [URL="checkResp.html"];
+  removeGM [URL="removeGM.html"];
+  removeGRM [URL="removeGRM.html"];
+  removeGRV [URL="removeGRV.html"];
+  removeGV [URL="removeGV.html"];
+  removeRM [URL="removeRM.html"];
+  removeRV [URL="removeRV.html"];
+  show [URL="show.html"];
+}

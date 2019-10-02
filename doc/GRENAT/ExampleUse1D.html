@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- menu.html GRENAT -->
+<!-- menu.html GRENATdevel -->
 <h1>ExampleUse1D
 </h1>
 
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="../GRENAT/funTest/funManu.html" class="code" title="function [fct,dfct,infos,ddfct]=funManu(x,~)">funManu</a>	GRENAT - GRadient ENhanced Approximation Toolbox</li><li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
+<li><a href="GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="../GRENATdevel/funTest/funManu.html" class="code" title="function [fct,dfct,infos,ddfct]=funManu(x,~)">funManu</a>	GRENAT - GRadient ENhanced Approximation Toolbox</li><li><a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENATdevel/src/various/execParallel.html" class="code" title="">execParallel</a>	% Script for starting & stopping workers (parallel)</li><li><a href="../GRENATdevel/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -66,9 +66,9 @@ This function is called by:
 0022 <a href="initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>;
 0023 
 0024 <span class="comment">%customClean;</span>
-0025 countTime=<a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
+0025 countTime=<a href="../GRENATdevel/src/various/mesuTime.html" class="code" title="">mesuTime</a>;
 0026 <span class="comment">%parallel execution (options and starting of the workers)</span>
-0027 paraCluster=<a href="../GRENAT/src/various/execParallel.html" class="code" title="">execParallel</a>(false);
+0027 paraCluster=<a href="../GRENATdevel/src/various/execParallel.html" class="code" title="">execParallel</a>(false);
 0028 
 0029 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0030 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
@@ -76,16 +76,16 @@ This function is called by:
 0032 <span class="comment">%sampling points</span>
 0033 sampling=[-1 0.3 4 4.5 5 7.5 7.6 10 12.5 14]';
 0034 <span class="comment">%responses and gradients at sample points</span>
-0035 [resp,grad]=<a href="../GRENAT/funTest/funManu.html" class="code" title="function [fct,dfct,infos,ddfct]=funManu(x,~)">funManu</a>(sampling);
+0035 [resp,grad]=<a href="../GRENATdevel/funTest/funManu.html" class="code" title="function [fct,dfct,infos,ddfct]=funManu(x,~)">funManu</a>(sampling);
 0036 <span class="comment">%%for displaying and comparing with the actual function</span>
 0037 <span class="comment">%regular grid</span>
 0038 gridRef=linspace(-2,15,300)';
 0039 <span class="comment">%responses at the grid points</span>
-0040 [respRef,gradRef]=<a href="../GRENAT/funTest/funManu.html" class="code" title="function [fct,dfct,infos,ddfct]=funManu(x,~)">funManu</a>(gridRef);
+0040 [respRef,gradRef]=<a href="../GRENATdevel/funTest/funManu.html" class="code" title="function [fct,dfct,infos,ddfct]=funManu(x,~)">funManu</a>(gridRef);
 0041 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0042 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0043 <span class="comment">%create GRENAT Object</span>
-0044 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'LS'</span>,sampling,resp,grad);
+0044 metaGRENAT=<a href="GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'KRG'</span>,sampling,resp,grad);
 0045 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0046 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0047 <span class="comment">%building of the surrogate model</span>
@@ -109,6 +109,6 @@ This function is called by:
 0065 
 0066 countTime.stop();
 0067</pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

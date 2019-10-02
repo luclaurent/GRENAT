@@ -3,7 +3,7 @@
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox 
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
-%     Copyright (C) 2016  Luc LAURENT <luc.laurent@lecnam.net>
+%     Copyright (C) 2016-2017  Luc LAURENT <luc.laurent@lecnam.net>
 % 
 %     This program is free software: you can redistribute it and/or modify
 %     it under the terms of the GNU General Public License as published by
@@ -32,8 +32,8 @@ TMPerrV=[];
 TMPErrNAME=[];
 
 %list of available errors (comparison exact/approximated values) 
-errREF={'emse','rmse','r','radj','r2','r2adj','rccc','eraae','ermae','eq1','eq2','eq3'};
-errREFname={'MSE','RMSE','R','Radj','R2','R2adj','Rccc','RAAE','RMAE','Q1','Q2','Q3'};
+errREF={'emse','rmse','r','radj','r2','r2adj','rccc','eraae','ermae','enmse','enmae','eq1','eq2','eq3'};
+errREFname={'MSE','RMSE','R','Radj','R2','R2adj','Rccc','RAAE','RMAE','NMSE','NMAE','Q1','Q2','Q3'};
 %list of Cross-validation errors
 errCV={'bm','eloor','eloog','eloot','scvr_mean','scvr_min','scvr_max','press','errp','adequ'};
 errCVname={'Mean Bias','MSE (resp)','MSE (grad)','MSE (mix)','SCVR (Mean)',...
@@ -49,6 +49,8 @@ if ~isempty(Zref)
     [err.r,err.radj,err.r2,err.r2adj,err.rccc]=corrFact(Zref,Zap);
     err.eraae=calcRAAE(Zref,Zap);
     err.ermae=calcRMAE(Zref,Zap);
+    err.enmse=calcNMSE(Zref,Zap);
+    err.enmae=calcNMAE(Zref,Zap);
     [err.eq1,err.eq2,err.eq3]=qualError(Zref,Zap);
     txt=dispERR(err,errREF,errREFname);
     [TMPval,TMPname]=concatERR(err,errREF,'ref');
@@ -110,19 +112,19 @@ end
 
 %function for displaying existing errors
 function txt=dispERR(err,type,errName)
-%sizes of all names of errors
-sName=cellfun(@numel,errName);
-maxsN=max(sName);
-
-txt=[];
-for ite=1:numel(type)
-    if isfield(err,type{ite})
-        %add spaces (calculate number of spaces
-        nbSpaces=maxsN-sName(ite)+2;
-        charSpace=' ';
-        txt=[txt sprintf('%s:%s%g\n',errName{ite},charSpace(ones(1,nbSpaces)),err.(type{ite}))];
-    end
+%list of error types
+[listType,iT,iF]=intersect(type,fields(err));
+%
+txtC=cell(1,numel(listType));
+varC=cell(1,numel(listType));
+%
+for ite=1:numel(listType)
+        %
+        txtC{ite}=errName{iF(ite)};
+        varC{ite}=err.(type{iT(ite)});
 end
+% show 
+txt=dispTableTwoColumns(txtC,varC,'-');
 end
 
 %founction for concatening errors and their names

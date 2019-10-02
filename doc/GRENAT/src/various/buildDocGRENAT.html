@@ -15,7 +15,7 @@
 </head>
 <body>
 <a name="_top"></a>
-<!-- ../../menu.html GRENAT --><!-- # src --><!-- menu.html various -->
+<!-- ../../menu.html GRENATdevel --><!-- # src --><!-- menu.html various -->
 <h1>buildDocGRENAT
 </h1>
 
@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
-<li><a href="../../../GRENAT/initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="listFilesToolboxGRENAT.html" class="code" title="function listF=listFilesToolboxGRENAT(dirT)">listFilesToolboxGRENAT</a>	% List all files of the GRENAT Toolbox</li></ul>
+<li><a href="../../../GRENATdevel/initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="listFilesToolboxGRENAT.html" class="code" title="function listF=listFilesToolboxGRENAT(dirT)">listFilesToolboxGRENAT</a>	% List all files of the GRENAT Toolbox</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../../../matlabicon.gif)">
 </ul>
@@ -63,37 +63,58 @@ This function is called by:
 0019 <span class="comment">%     along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
 0020 
 0021 <span class="comment">%load paths</span>
-0022 dirPath=<a href="../../../GRENAT/initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>;
+0022 dirPath=<a href="../../../GRENATdevel/initDirGRENAT.html" class="code" title="function foldersLoad=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>;
 0023 
 0024 <span class="comment">%% Build documentation</span>
 0025 
 0026 <span class="comment">%add configurtation to bash (for finding 'dot' script of graphviz)</span>
 0027 setenv(<span class="string">'BASH_ENV'</span>,<span class="string">'~/.bash_profile'</span>);
 0028 
-0029 <span class="comment">%directory to be analysed</span>
-0030 analyseDir=<span class="string">'GRENAT'</span>;
-0031 <span class="comment">%ignoring directory</span>
-0032 <span class="comment">%ignDir={'};</span>
-0033 
-0034 <span class="comment">%listof files</span>
-0035 listFiles=<a href="listFilesToolboxGRENAT.html" class="code" title="function listF=listFilesToolboxGRENAT(dirT)">listFilesToolboxGRENAT</a>(dirPath);
-0036 <span class="comment">%add path to all files</span>
-0037 listFiles=cellfun(@(x) sprintf(<span class="string">'%s/%s'</span>,analyseDir,x),listFiles,<span class="string">'UniformOutput'</span>,false);
-0038 
-0039 cd ..
-0040 <span class="comment">%execute generation of the doc (Graphviz is optional)</span>
-0041 m2html(<span class="string">'mfiles'</span>,listFiles,<span class="keyword">...</span>
-0042     <span class="string">'htmldir'</span>,[analyseDir <span class="string">'/doc'</span>],<span class="keyword">...</span>
-0043     <span class="string">'recursive'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
-0044     <span class="string">'global'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
-0045     <span class="string">'globalHypertextLinks'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
-0046     <span class="string">'index'</span>,<span class="string">'menu'</span>,<span class="keyword">...</span>
-0047     <span class="string">'template'</span>,<span class="string">'frame'</span>,<span class="keyword">...</span>
-0048     <span class="string">'index'</span>,<span class="string">'menu'</span>,<span class="keyword">...</span>
-0049     <span class="string">'download'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
-0050     <span class="string">'graph'</span>,<span class="string">'on'</span>)
-0051 cd(analyseDir)
-0052 <span class="comment">%%%%%%</span></pre></div>
-<hr><address>Generated on Thu 09-Feb-2017 16:13:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0029 
+0030 <span class="comment">%orirignal name of the toolbox</span>
+0031 origName=<span class="string">'GRENAT'</span>;
+0032 <span class="comment">%fullpath of this script</span>
+0033 fp=mfilename(<span class="string">'fullpath'</span>);
+0034 fps=strsplit(fp,filesep);
+0035 <span class="comment">%directory to be analysed</span>
+0036 analyseDir=fps(end-3);
+0037 analyseDir=analyseDir{1};
+0038 <span class="comment">%ignoring directory</span>
+0039 <span class="comment">%ignDir={'};</span>
+0040 
+0041 <span class="comment">%listof files</span>
+0042 listFiles=<a href="listFilesToolboxGRENAT.html" class="code" title="function listF=listFilesToolboxGRENAT(dirT)">listFilesToolboxGRENAT</a>(dirPath);
+0043 <span class="comment">%add path to all files</span>
+0044 listFiles=cellfun(@(x) sprintf(<span class="string">'%s%s%s'</span>,analyseDir,filesep,x),listFiles,<span class="string">'UniformOutput'</span>,false);
+0045 
+0046 cd ..
+0047 <span class="comment">%execute generation of the doc (Graphviz is optional)</span>
+0048 <span class="keyword">try</span>
+0049     m2html(<span class="string">'mfiles'</span>,listFiles,<span class="keyword">...</span>
+0050         <span class="string">'htmldir'</span>,fullfile(analyseDir,<span class="string">'doc'</span>),<span class="keyword">...</span>
+0051         <span class="string">'recursive'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
+0052         <span class="string">'global'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
+0053         <span class="string">'globalHypertextLinks'</span>,<span class="string">'on'</span>,<span class="keyword">...</span>
+0054         <span class="string">'index'</span>,<span class="string">'menu'</span>,<span class="keyword">...</span>
+0055         <span class="string">'template'</span>,<span class="string">'frame'</span>,<span class="keyword">...</span>
+0056         <span class="string">'index'</span>,<span class="string">'menu'</span>,<span class="keyword">...</span>
+0057         <span class="string">'download'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0058         <span class="string">'graph'</span>,<span class="string">'on'</span>)
+0059     <span class="comment">%restore original name</span>
+0060     pathTodoc=fullfile(analyseDir,<span class="string">'doc'</span>,analyseDir);
+0061     newName=fullfile(analyseDir,<span class="string">'doc'</span>,origName);
+0062     <span class="keyword">if</span> exist(pathTodoc,<span class="string">'dir'</span>)&amp;&amp;~strcmp(analyseDir,origName)
+0063         <span class="keyword">if</span> exist(newName,<span class="string">'dir'</span>)
+0064             rmdir(newName,<span class="string">'s'</span>);
+0065         <span class="keyword">end</span>
+0066         movefile([pathTodoc filesep],newName);
+0067     <span class="keyword">end</span>
+0068 <span class="keyword">catch</span> ME
+0069     fprintf(<span class="string">'ERROR during the building of the documentation\n'</span>);
+0070     disp( getReport( ME, <span class="string">'extended'</span>, <span class="string">'hyperlinks'</span>, <span class="string">'on'</span> ) );
+0071 <span class="keyword">end</span>
+0072 cd(analyseDir)
+0073 <span class="comment">%%%%%%</span></pre></div>
+<hr><address>Generated on Fri 18-Aug-2017 00:34:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

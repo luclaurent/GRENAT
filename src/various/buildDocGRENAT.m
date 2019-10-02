@@ -38,10 +38,19 @@ fps=strsplit(fp,filesep);
 analyseDir=fps(end-3);
 analyseDir=analyseDir{1};
 %ignoring directory
-%ignDir={'};
+ignDir={'optigtest','multidoe','PSOt','matlab2tikz'};
 
 %listof files
 listFiles=listFilesToolboxGRENAT(dirPath);
+%remove ignored directory
+for itI=1:numel(ignDir)
+   for itL=numel(listFiles):-1:1
+       iXFind=strfind(lower(listFiles{itL}),lower(ignDir{itI}));
+       if ~isempty(iXFind)
+           listFiles(itL)=[];
+       end
+   end
+end
 %add path to all files
 listFiles=cellfun(@(x) sprintf('%s%s%s',analyseDir,filesep,x),listFiles,'UniformOutput',false);
 

@@ -57,6 +57,9 @@ listFiles=cellfun(@(x) sprintf('%s%s%s',analyseDir,filesep,x),listFiles,'Uniform
 cd ..
 %execute generation of the doc (Graphviz is optional)
 try
+    %addpath of m2html
+    addpath(fullfile(analyseDir,'src','libs','m2html'));
+    %run m2html
     m2html('mfiles',listFiles,...
         'htmldir',fullfile(analyseDir,'doc'),...
         'recursive','on',...

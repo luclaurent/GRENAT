@@ -33,7 +33,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function [foldersLoad,pathAtAbsolute]=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>	% Function for calculating th right number of sample points for the reference grid</li><li><a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,nbSteps)">buildDisp</a>	% Build space for plotting 1D/2D function</li><li><a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>	% Evaluation of the function and the gradients</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
+<li><a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>	% GRENAT class for manipulating gradient-enhanced metamodels</li><li><a href="initDirGRENAT.html" class="code" title="function [foldersLoad,pathAtAbsolute]=initDirGRENAT(pathcustom,other,flagNested)">initDirGRENAT</a>	% Initialization of the directories (MATLAB's path)</li><li><a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>	% Function for calculating th right number of sample points for the reference grid</li><li><a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,nbSteps)">buildDisp</a>	% Build space for plotting 1D/2D function</li><li><a href="../GRENAT/src/various/mesuTime.html" class="code" title="">mesuTime</a>	% Script dedicated to the initialisation, the measure and the display of the spent time</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -77,44 +77,48 @@ This function is called by:
 0033 ns=20; <span class="comment">%number if sample points</span>
 0034 typeDOE=<span class="string">'IHS'</span>; <span class="comment">%type of DOE</span>
 0035 testFunction=<span class="string">'Trigonometric3'</span>; <span class="comment">%test function</span>
-0036 <span class="comment">%</span>
-0037 mDOE=multiDOE(dimPB,typeDOE,ns,[],[],testFunction);
-0038 mDOE.show;
-0039 <span class="comment">%</span>
-0040 samplePts=mDOE.unsorted;
-0041 <span class="comment">%</span>
-0042 <span class="comment">%evaluate function at sample points</span>
-0043 [resp,grad]=<a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>(mDOE.funTest,samplePts,<span class="string">'eval'</span>);
-0044 <span class="comment">%Data for plotting functions</span>
-0045 [gridRef]=<a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,nbSteps)">buildDisp</a>(mDOE,<a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>(mDOE.dimPB));
-0046 [respRef,gradRef]=<a href="../GRENAT/src/various/evalFunGrad.html" class="code" title="function [eval,grad]=evalFunGrad(funR,X,type)">evalFunGrad</a>(mDOE.funTest,gridRef,<span class="string">'disp'</span>);
-0047 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0048 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0049 <span class="comment">%create GRENAT Object</span>
-0050 metaGRENAT=<a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'KRG'</span>,samplePts,resp,grad);
+0036 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0037 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0038 <span class="comment">%% Load test function</span>
+0039 testFun=optiGTest(testFunction);
+0040 <span class="comment">%</span>
+0041 mDOE=multiDOE(typeDOE,ns,testFun.xMin,testFun.xMax);
+0042 mDOE.show;
+0043 <span class="comment">%</span>
+0044 samplePts=mDOE.unsorted;
+0045 <span class="comment">%</span>
+0046 <span class="comment">%evaluate function at sample points</span>
+0047 [resp,~,grad]=testFun.evalObj(samplePts);
+0048 <span class="comment">%Data for plotting functions</span>
+0049 [gridRef]=<a href="../GRENAT/src/various/buildDisp.html" class="code" title="function [XY,dispData]=buildDisp(doeData,nbSteps)">buildDisp</a>(mDOE,<a href="../GRENAT/src/init/initNbPts.html" class="code" title="function nbV=initNbPts(dim)">initNbPts</a>(mDOE.dimPB));
+0050 [respRef,gradRef]=testFun.evalObj(gridRef);
 0051 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0052 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0053 <span class="comment">%building of the surrogate model</span>
-0054 metaGRENAT.train;
-0055 <span class="comment">%define the reference (optional)</span>
-0056 metaGRENAT.defineRef(gridRef,respRef,gradRef);
-0057 <span class="comment">%evaluation of the surrogate model at the grid points</span>
-0058 metaGRENAT.eval(gridRef);
-0059 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0060 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0061 <span class="comment">%display the result</span>
-0062 metaGRENAT.show;
+0053 <span class="comment">%create GRENAT Object</span>
+0054 metaGRENAT=<a href="../GRENAT/@GRENAT/GRENAT.html" class="code" title="">GRENAT</a>(<span class="string">'KRG'</span>,samplePts,resp,grad);
+0055 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0056 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0057 <span class="comment">%building of the surrogate model</span>
+0058 metaGRENAT.train;
+0059 <span class="comment">%define the reference (optional)</span>
+0060 metaGRENAT.defineRef(gridRef,respRef,gradRef);
+0061 <span class="comment">%evaluation of the surrogate model at the grid points</span>
+0062 metaGRENAT.eval(gridRef);
 0063 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0064 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0065 <span class="comment">%compute display error</span>
-0066 metaGRENAT.errCalc;
+0065 <span class="comment">%display the result</span>
+0066 metaGRENAT.show;
 0067 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
 0068 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
-0069 <span class="comment">%%Stop workers</span>
-0070 paraCluster.stop();
-0071 
-0072 countTime.stop();
-0073</pre></div>
-<hr><address>Generated on Wed 02-Oct-2019 17:20:49 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+0069 <span class="comment">%compute display error</span>
+0070 metaGRENAT.errCalc;
+0071 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0072 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+0073 <span class="comment">%%Stop workers</span>
+0074 paraCluster.stop();
+0075 
+0076 countTime.stop();
+0077</pre></div>
+<hr><address>Generated on Wed 02-Oct-2019 17:46:23 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -131,7 +131,6 @@ digraph m2html {
   ExampleUseDOE -> initDirGRENAT;
   ExampleUseDOE -> initNbPts;
   ExampleUseDOE -> buildDisp;
-  ExampleUseDOE -> evalFunGrad;
   ExampleUseDOE -> mesuTime;
   LICENSE -> show;
   LICENSE -> LICENSE;

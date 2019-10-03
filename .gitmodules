@@ -10,3 +10,6 @@
 [submodule "optigtest"]
 	path = optigtest
 	url = git@bitbucket.org:luclaurent/optigtest.git
+[submodule "src/libs/builddoc"]
+	path = src/libs/builddoc
+	url = git@bitbucket.org:luclaurent/builddoc.git

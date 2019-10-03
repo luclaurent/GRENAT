@@ -1,5 +1,5 @@
-%% Generate list of ignored files and manually added ones for documentation
-% L. LAURENT -- 03/10/2019  -- luc.laurent@lecnam.net
+%% Build documentation (using builddoc submodule)
+% L. LAURENT -- 03/10/2019 -- luc.laurent@lecnam.net
 
 %     GRENAT - GRadient ENhanced Approximation Toolbox
 %     A toolbox for generating and exploiting gradient-enhanced surrogate models
@@ -18,15 +18,21 @@
 %     You should have received a copy of the GNU General Public License
 %     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-function [ignPattern,addFiles]=ignGRENAT()
+%path of this script
+fp=mfilename('fullpath');
+fps=strsplit(fp,filesep);
+fps{1}='/';
+%
+folderSrc=fullfile(fps{1:end-2});
+folderLibs=fullfile(folderSrc,'libs');
+folderDocs=fullfile(folderLibs,'builddoc');
 
-ignPattern= {'.git',char(126),'m2html','.DS_Store',...
-    'lightspeed','mmx','mtimesx','Multiprod',...
-    'sqplab-0.4.5-distrib','toolbox','PSOt',...
-    'monomial_basis','.travis.yml','optigtest',...
-    'multidoe','PSOt','matlab2tikz','multiprod',...
-    'old','ToBeValidate','Monomial'};
+% update the submodule
+system(['cd ' folderLibs ';git submodule update builddoc']);
 
-addFiles={'src/libs/PSOt/pso_Trelea_mod.m'};
+% add builddoc in path
+addpath(folderDocs);
 
-end
+% run buildDoc
+buildDoc('GRENAT')
+

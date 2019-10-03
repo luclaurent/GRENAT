@@ -88,3 +88,5 @@ catch ME
 end
 cd(analyseDir)
 %%%%%%
+% sync
+system(['rsync -auvb ' fullfile(analyseDir,'doc') ' ZAMOK:~/codes/GRENAT']);

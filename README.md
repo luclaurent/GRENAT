@@ -72,11 +72,11 @@ The toolbox requires:
 * the Global Optimization Toolbox of the Matlab's software (optional)
 * the Parallel Computing Toolbox of the Matlab's software (optional)
 
-[Documentation](https://goo.gl/FlnVAK)
+[Documentation](http://bit.ly/docgrenat)
 ------
 The automatic building of the documentation is based on the [m2html](http://www.artefact.tk/software/matlab/m2html/) software.
 
-The obtained documentation is available [here](https://goo.gl/FlnVAK).
+The obtained documentation is available [here](http://bit.ly/docgrenat).
 
 References
 ----

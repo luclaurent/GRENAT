@@ -3,7 +3,7 @@ GRENAT
 GRENAT  = **GR**adient **EN**hanced **A**pproximation **T**oolbox
 
 [![GitHub license](https://img.shields.io/github/license/luclaurent/GRENAT.svg)](https://github.com/luclaurent/GRENAT/blob/master/LICENSE.md)
- [![Github Releases](https://img.shields.io/github/release/luclaurent/MultiDOE.svg)](https://github.com/luclaurent/GRENAT/releases) [![DOI](https://zenodo.org/badge/132956485.svg)](https://zenodo.org/badge/latestdoi/132956485)
+ [![Github Releases](https://img.shields.io/github/release/luclaurent/GRENAT.svg)](https://github.com/luclaurent/GRENAT/releases) [![DOI](https://zenodo.org/badge/132956485.svg)](https://zenodo.org/badge/latestdoi/132956485)
 
 
 GRENAT is a MATLAB's toolbox that regroups many techniques for generating surrogate models. These surrogate models can be built using responses and gradients obtained at some sample points.

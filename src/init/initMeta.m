@@ -78,7 +78,7 @@ classdef initMeta < handle
         cvDisp=false;       %display QQ plot CV
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %% infill strategy
-        infillOn=false;     %activate/desactivate computation of the infill criterion
+        %infillOn=false;     %activate/desactivate computation of the infill criterion
         infillCrit='EI';    %type of criterion used for the infill strategy
         infillParaWEI=0.5;  %parameters for Weighted Expected Improvement
         infillParaGEI=1;    %parameters for Generalized Expected Improvement
@@ -416,15 +416,15 @@ classdef initMeta < handle
             end
         end
         
-        function set.infillOn(obj,boolIn)
-            if isG(boolIn,'logical')
-                if xor(obj.infillOn,boolIn)
-                    Gfprintf(' >>> Computation of the infill criterion : ');
-                    SwitchOnOff(boolIn);
-                end
-                obj.infillOn=boolIn;
-            end
-        end
+%         function set.infillOn(obj,boolIn)
+%             if isG(boolIn,'logical')
+%                 if xor(obj.infillOn,boolIn)
+%                     Gfprintf(' >>> Computation of the infill criterion : ');
+%                     SwitchOnOff(boolIn);
+%                 end
+%                 obj.infillOn=boolIn;
+%             end
+%         end
         function set.infillCrit(obj,charIn)
             if isG(charIn,'char')
                 if strcmp(obj.infillCrit,charIn)
@@ -539,7 +539,7 @@ classdef initMeta < handle
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %update infill struct
         function updateInfill(obj)
-            obj.infill.on=obj.infillOn;
+%             obj.infill.on=obj.infillOn;
             obj.infill.crit=obj.infillCrit;
             obj.infill.wei=obj.infillParaWEI;
             obj.infill.gei=obj.infillParaGEI;

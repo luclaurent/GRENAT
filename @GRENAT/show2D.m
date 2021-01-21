@@ -44,10 +44,12 @@ end
 obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
 obj.confDisp.conf('samplePts',true);
 showResp(obj);
-obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
-showGrad(obj,1);
-obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
-showGrad(obj,2);
+if obj.gradUsed
+    obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
+    showGrad(obj,1);
+    obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
+    showGrad(obj,2);
+end
 obj.nbSubplot=obj.nbSubplot+1;if ~obj.confDisp.newFig;subplot(obj.nbSubplot);end
 error('')
 showCI(obj,[]);

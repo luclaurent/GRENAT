@@ -29,7 +29,6 @@ countTime=mesuTime;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %define the sampling using MultiDOE toolbox
-dimPB=3; %number of design parameters
 ns=20; %number if sample points
 typeDOE='IHS'; %type of DOE
 testFunction='Trigonometric3'; %test function
@@ -47,17 +46,17 @@ samplePts=mDOE.unsorted;
 [resp,~,grad]=testFun.evalObj(samplePts);
 %Data for plotting functions
 [gridRef]=buildDisp(mDOE,initNbPts(mDOE.dimPB));
-[respRef,gradRef]=testFun.evalObj(gridRef);
+[respRef]=testFun.evalObj(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %create GRENAT Object
-metaGRENAT=GRENAT('KRG',samplePts,resp,grad);
+metaGRENAT=GRENAT('KRG',samplePts,resp);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %building of the surrogate model
 metaGRENAT.train;
 %define the reference (optional)
-metaGRENAT.defineRef(gridRef,respRef,gradRef);
+metaGRENAT.defineRef(gridRef,respRef);
 %evaluation of the surrogate model at the grid points
 metaGRENAT.eval(gridRef);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,7 +70,7 @@ metaGRENAT.errCalc;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Stop workers
-paraCluster.stop();
+%paraCluster.stop();
 
 countTime.stop();
 

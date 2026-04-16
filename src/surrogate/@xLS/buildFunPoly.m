@@ -36,6 +36,6 @@ end
 obj.funPoly=['mono_' num2str(polyOrder,'%02i') '_' num2str(nP,'%03i')];
 %check if the function exist (if not create it)
 if ~exist(obj.funPoly,'file')
-    toolGeneMonomial(polyOrder,np);
+    toolGeneMonomial(polyOrder,nP);
 end
 end

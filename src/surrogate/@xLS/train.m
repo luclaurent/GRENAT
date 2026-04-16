@@ -30,6 +30,10 @@ if nargin==1;flagRun=true;end
 obj.showInfo('start');
 %Prepare data
 obj.setData;
+% populate polynomial function
+if isempty(obj.funPoly)
+    obj.buildFunPoly;
+end
 %Build regression matrix (for the trend model)
 %depending on the availability of the gradients
 if ~obj.flagG
